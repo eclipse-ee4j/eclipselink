@@ -153,6 +153,10 @@ public class MetadataProcessor {
         m_project.createDynamicClasses(m_loader);
     }
     
+    public void createRestInterfaces(){
+        m_project.createRestInterfaces(m_loader);
+    }
+        
     /**
      * INTERNAL:
      */

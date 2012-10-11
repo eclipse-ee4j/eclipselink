@@ -66,10 +66,11 @@ public class TransformerFactory {
     protected boolean weaveLazy;
     protected boolean weaveFetchGroups;
     protected boolean weaveInternal;
+    protected boolean weaveRest;
 
     public static PersistenceWeaver createTransformerAndModifyProject(
             Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader,
-            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
+            boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal, boolean weaveRest) {
         if (session == null) {
             throw new IllegalArgumentException("Weaver session cannot be null");
         }
@@ -77,12 +78,12 @@ public class TransformerFactory {
             ((AbstractSession)session).log(SessionLog.SEVERE, SessionLog.WEAVER, WEAVER_NULL_PROJECT, null);
             throw new IllegalArgumentException("Weaver session's project cannot be null");
         }
-        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         tf.buildClassDetailsAndModifyProject();
         return tf.buildPersistenceWeaver();
     }
 
-    public TransformerFactory(Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
+    public TransformerFactory(Session session, Collection<MetadataClass> entityClasses, ClassLoader classLoader, boolean weaveLazy, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal, boolean weaveRest) {
         this.session = session;
         this.entityClasses = entityClasses;
         this.classLoader = classLoader;
@@ -91,6 +92,7 @@ public class TransformerFactory {
         this.weaveChangeTracking = weaveChangeTracking;
         this.weaveFetchGroups = weaveFetchGroups;
         this.weaveInternal = weaveInternal;
+        this.weaveRest = weaveRest;
     }
 
     /**
@@ -118,7 +120,7 @@ public class TransformerFactory {
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
         List stillUnMappedMappings = null;
-        ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+        ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         superClassDetails.setIsMappedSuperClass(true);
         if (!initialDescriptor.usesPropertyAccessForWeaving()){
             superClassDetails.useAttributeAccess();
@@ -156,7 +158,7 @@ public class TransformerFactory {
                     boolean weaveValueHoldersForClass = weaveLazy && canWeaveValueHolders(metaClass, descriptor.getMappings());
                     boolean weaveChangeTrackingForClass = canChangeTrackingBeEnabled(descriptor, metaClass, weaveChangeTracking);
                     
-                    ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal);
+                    ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal, weaveRest);
                     if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
                         classDetails.setShouldWeaveFetchGroups(false);
@@ -183,7 +185,7 @@ public class TransformerFactory {
                 ClassDetails classDetails = (ClassDetails)i.next();
                 ClassDetails superClassDetails = classDetailsMap.get(classDetails.getSuperClassName());
                 if (superClassDetails == null) {
-                    ClassDescriptor descriptor = findDescriptor(session.getProject(), classDetails.getClassName());
+                    ClassDescriptor descriptor = findDescriptor(session.getProject(), classDetails.getDescribedClass().getName());
                     if (descriptor != null && descriptor.hasInheritance()){
                         superClassDetails = classDetailsMap.get(descriptor.getInheritancePolicy().getParentClassName());
                     }
@@ -259,7 +261,7 @@ public class TransformerFactory {
         return weaveValueHolders;
     }
 
-    private ClassDetails createClassDetails(MetadataClass metadataClass, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal) {
+    private ClassDetails createClassDetails(MetadataClass metadataClass, boolean weaveValueHolders, boolean weaveChangeTracking, boolean weaveFetchGroups, boolean weaveInternal, boolean weaveRest) {
         // compose className in JVM 'slash' format
         // instead of regular Java 'dotted' format
         String className = Helper.toSlashedClassName(metadataClass.getName());
@@ -272,6 +274,7 @@ public class TransformerFactory {
         classDetails.setShouldWeaveChangeTracking(weaveChangeTracking);
         classDetails.setShouldWeaveFetchGroups(weaveFetchGroups);
         classDetails.setShouldWeaveInternal(weaveInternal);
+        classDetails.setShouldWeaveREST(weaveRest);
         MetadataMethod method = metadataClass.getMethod("clone", new ArrayList(), false);
         classDetails.setImplementsCloneMethod(method != null);
         return classDetails;

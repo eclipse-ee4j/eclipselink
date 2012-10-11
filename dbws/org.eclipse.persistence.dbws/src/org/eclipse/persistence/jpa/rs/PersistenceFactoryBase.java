@@ -62,6 +62,7 @@ public class PersistenceFactoryBase {
         for (String key: dynamicPersistenceContexts.keySet()){
             dynamicPersistenceContexts.get(key).stop();
         }
+        dynamicPersistenceContexts.clear();
     }
     
     /**
@@ -108,13 +109,15 @@ public class PersistenceFactoryBase {
                     properties.putAll(initializationProperties);
                 }
                 
-                EntityManagerFactory factory =  Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                if (!factory.getServerSession().getLoader().getClass().isAssignableFrom(DynamicClassLoader.class)) {
+                    factory.refreshMetadata(properties);
+                }
     
                 if (factory != null){
                     app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
                 }
             } catch (Exception e){
-                e.printStackTrace();
                 JPARSLogger.fine("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()});
             }
         }

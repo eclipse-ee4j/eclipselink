@@ -279,6 +279,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     boolean weaveEager;
     boolean weaveFetchGroups;
     boolean weaveInternal;
+    boolean weaveRest;
     
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
@@ -434,6 +435,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // state is PREDEPLOYED or DEPLOYED
         session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         
+        ClassLoader classLoaderToUse = realClassLoader;
+        
+        if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)){
+            classLoaderToUse = (ClassLoader)additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
+        }
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {
@@ -449,22 +455,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (state == STATE_PREDEPLOYED) {
                     if (!isSessionLoadedFromSessionsXML) {
                         if (isComposite()) {
-                            deployCompositeMembers(deployProperties, realClassLoader);
+                            deployCompositeMembers(deployProperties, classLoaderToUse);
                         } else {
                             if (processor.getMetadataSource() != null) {
-                                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, realClassLoader, session.getSessionLog());
+                                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, classLoaderToUse, session.getSessionLog());
                                 if (metadataProperties != null && !metadataProperties.isEmpty()) {
                                     translateOldProperties(metadataProperties, session);
                                     deployProperties = mergeMaps(metadataProperties, deployProperties);
                                 }
                             }
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
-                            processor.setClassLoader(realClassLoader);
+                            processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            
+                            processor.createRestInterfaces();
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                            session.getProject().convertClassNamesToClasses(realClassLoader);
+                            session.getProject().convertClassNamesToClasses(classLoaderToUse);
                             
                             processor.addEntityListeners();
                             if (!isCompositeMember()) {
@@ -491,7 +497,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         session.handleException(new IntegrityException(session.getIntegrityChecker()));
                     }
             
-                    session.getDatasourcePlatform().getConversionManager().setLoader(realClassLoader);
+                    session.getDatasourcePlatform().getConversionManager().setLoader(classLoaderToUse);
                     state = STATE_HALF_DEPLOYED;
                     // keep deployLock
                 } else {
@@ -520,7 +526,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             throw persistenceException;
                         }
                         session.setProperties(deployProperties);
-                        updateSession(deployProperties, realClassLoader);
+                        updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /**
                              * for 324213 we could add a session.loginAndDetectDatasource() call 
@@ -1220,7 +1226,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @see #deploy(ClassLoader, Map)
      */
     public synchronized ClassTransformer predeploy(PersistenceUnitInfo info, Map extendedProperties) {
-        //ClassLoader privateClassLoader = null;
         ClassLoader classLoaderToUse = null;
         if (state == STATE_DEPLOY_FAILED || state == STATE_UNDEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state, persistenceException));
@@ -1253,6 +1258,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             // composite can't be in STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER
             boolean isComposite = false;
             if(state != STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER) {
+                //set the claasloader early on and change it if needed
+                classLoaderToUse = persistenceUnitInfo.getClassLoader();
+
                 predeployProperties = mergeMaps(extendedProperties, persistenceUnitInfo.getProperties());
                 // Translate old properties.
                 // This should be done before using properties (i.e. ServerPlatform).
@@ -1282,15 +1290,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                 if (this.compositeEmSetupImpl == null) {
                     // session name and ServerPlatform must be set prior to setting the loggers.
-                    ClassLoader realClassLoader = persistenceUnitInfo.getClassLoader();
                     if (this.staticWeaveInfo == null) {
-                        updateServerPlatform(predeployProperties, realClassLoader);
+                        updateServerPlatform(predeployProperties, classLoaderToUse);
                         // Update loggers and settings for the singleton logger and the session logger.
-                        updateLoggers(predeployProperties, true, realClassLoader);
+                        updateLoggers(predeployProperties, true, classLoaderToUse);
                         // Get the temporary classLoader based on the platform
                         
                         //Update performance profiler
-                        updateProfiler(predeployProperties,realClassLoader);
+                        updateProfiler(predeployProperties, classLoaderToUse);
                     } else {
                         // predeploy is used for static weaving
                         Writer writer = this.staticWeaveInfo.getLogWriter(); 
@@ -1427,12 +1434,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 weaveEager = false;
                 weaveFetchGroups = false;
                 weaveInternal = false;
+                weaveRest = false;
                 if (enableWeaving) {
                     weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
                     weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
                 }
             }
             if (!isSessionLoadedFromSessionsXML ) {
@@ -1459,7 +1468,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         processor = new MetadataProcessor(persistenceUnitInfo, session, classLoaderToUse, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, usesMultitenantSharedCache, predeployProperties, compositeProcessor);
                         
                         //need to use the real classloader to create the repository class
-                        updateMetadataRepository(predeployProperties, persistenceUnitInfo.getClassLoader()); 
+                        updateMetadataRepository(predeployProperties, classLoaderToUse); 
         
                         //bug:299926 - Case insensitive table / column matching with native SQL queries
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
@@ -1490,7 +1499,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (enableWeaving) {                
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
-                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
                     }
                 }
             } else {
@@ -1505,7 +1514,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     for (Iterator iterator = session.getProject().getDescriptors().keySet().iterator(); iterator.hasNext(); ) {
                         persistenceClasses.add(factory.getMetadataClass(((Class)iterator.next()).getName()));
                     }
-                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
                 }
             }
             

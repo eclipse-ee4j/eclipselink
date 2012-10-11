@@ -77,7 +77,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
  * @author dclarke, mnorman
  * @since EclipseLink 1.2
  */
-public class DynamicClassWriter {
+public class DynamicClassWriter implements EclipseLinkClassWriter {
 
     /*
      * Pattern is as follows: <pre> public class Foo extends DynamicEntityImpl {
@@ -364,7 +364,7 @@ public class DynamicClassWriter {
      * to verify if a duplicate request of the same className can proceed and
      * return the same class that may already exist.
      */
-    protected boolean isCompatible(DynamicClassWriter writer) {
+    public boolean isCompatible(EclipseLinkClassWriter writer) {
         if (writer == null) {
             return false;
         }

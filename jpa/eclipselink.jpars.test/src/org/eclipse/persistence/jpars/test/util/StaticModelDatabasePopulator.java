@@ -49,10 +49,13 @@ public class StaticModelDatabasePopulator {
         em.persist(user2);
         StaticUser user3 = user3();
         em.persist(user3);
+        
         StaticAuction auction1 = auction1();
         em.persist(auction1);
+        
         StaticAuction auction2 = auction1();
         em.persist(auction2);
+        
         StaticAuction auction3 = auction1();
         em.persist(auction3);
         

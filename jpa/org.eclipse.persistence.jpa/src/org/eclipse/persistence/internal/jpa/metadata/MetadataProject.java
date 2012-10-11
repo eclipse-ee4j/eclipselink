@@ -145,6 +145,7 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
+import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
@@ -304,6 +305,20 @@ public class MetadataProject {
     // persistence unit (unless they exclude them).
     private Set<EntityListenerMetadata> m_defaultListeners;
     
+    public void createRestInterfaces(ClassLoader loader) {
+        if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
+            DynamicClassLoader dcl = (DynamicClassLoader) loader;
+            for (EntityAccessor accessor : getEntityAccessors()) {
+                String className = accessor.getParentClassName();
+                if (className == null || getEntityAccessor(className) == null) {
+                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(
+                            accessor.getJavaClassName());
+                    dcl.addClass(restAdapter.getClassName(), restAdapter);
+                }
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo, 

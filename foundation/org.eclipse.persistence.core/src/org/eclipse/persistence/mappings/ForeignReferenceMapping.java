@@ -131,6 +131,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** Allow the mapping's queries to be targeted at specific connection pools. */
     protected String partitioningPolicyName;
     
+    /** Stores JPA metadata about whether another mapping is the owning mapping.  Only populated for JPA models **/
+    protected String mappedBy;
+    
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
         this.hasCustomSelectionQuery = false;
@@ -143,7 +146,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.forceInitializationOfSelectionCriteria = false;
         this.extendPessimisticLockScope = ExtendPessimisticLockScope.NONE;
     }
-    
+   
+    /**
+     * ADVANCED: Allows the retrieval of the owning mapping for a particular
+     * mapping. Note: This will only be set for JPA models
+     * 
+     * @return
+     */
+    public String getMappedBy() {
+        return mappedBy;
+    }
+
     /**
      * PUBLIC:
      * Return the mapping's partitioning policy.
@@ -1880,6 +1893,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         return joinFetch;
     }
         
+    /**
+     * INTERNAL: Called by JPA metadata processing to store the owning mapping
+     * for this mapping
+     * 
+     * @param mappedBy
+     */
+    public void setMappedBy(String mappedBy) {
+        this.mappedBy = mappedBy;
+    }        
+    
     /**
      * PUBLIC:
      * Return if this relationship should always be join fetched.

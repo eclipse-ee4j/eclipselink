@@ -12,7 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.crud;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -22,8 +25,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
@@ -48,10 +51,11 @@ public class StaticCrudTests {
         ExamplePropertiesLoader.loadProperties(properties); 
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = null;
         try{
             factory = new PersistenceFactoryBase();
-            persistenceContext = factory.bootstrapPersistenceContext("auction-static-local", Persistence.createEntityManagerFactory("auction-static-local", properties), new URI("http://localhost:8080/JPA-RS/"), true);
+            persistenceContext = factory.bootstrapPersistenceContext("auction-static-local", Persistence.createEntityManagerFactory("auction-static-local", properties), new URI("http://localhost:9090/JPA-RS/"), true);
         } catch (Exception e){
             e.printStackTrace();
             fail(e.toString());
@@ -77,7 +81,7 @@ public class StaticCrudTests {
     
     @Test
     public void testCreateAndDelete() {
-        StaticUser user = new StaticUser();;
+        StaticUser user = new StaticUser();
         user.setName("Jim");
         user.setId(1);
         persistenceContext.create(null, user);

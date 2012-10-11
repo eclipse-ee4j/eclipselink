@@ -10,7 +10,7 @@
  * Contributors:
  *      tware - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.service;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -2485,6 +2485,21 @@ public class PersistenceUnitProperties {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }
 
+
+    /**
+     * The <code>"eclipselink.weaving.rest"</code> property configures
+     * whether classes will be weaved to support our JPA_RS functionality
+     * <p>
+     * This property will only be considered if weaving is enabled.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"true" (DEFAULT)
+     * <li>"false"
+     * </ul>
+     */
+    public static final String WEAVING_REST = "eclipselink.weaving.rest";
+
     /**
      * INTERNAL: Return the overridden log string.
      */

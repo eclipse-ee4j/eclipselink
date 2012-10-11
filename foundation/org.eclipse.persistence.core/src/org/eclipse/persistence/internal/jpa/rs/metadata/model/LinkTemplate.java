@@ -1,40 +1,45 @@
-package org.eclipse.persistence.jpa.rs.metadata.model;
+package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-@XmlType(propOrder={"type", "href", "rel"})
+@XmlType(propOrder = { "method", "href", "rel" })
 public class LinkTemplate {
-    
+
     private String rel;
-    private String type;
+    private String method;
     private String href;
-    
-    public LinkTemplate(){
+
+    public LinkTemplate() {
     }
-    
-    public LinkTemplate(String rel, String type, String href){
+
+    public LinkTemplate(String rel, String method, String href) {
         this.rel = rel;
-        this.type = type;
+        this.method = method;
         this.href = href;
     }
-    
+
     public String getRel() {
         return rel;
     }
+
     public void setRel(String rel) {
         this.rel = rel;
     }
-    public String getType() {
-        return type;
+
+    public String getMethod() {
+        return method;
     }
-    public void setType(String type) {
-        this.type = type;
+
+    public void setMethod(String method) {
+        this.method = method;
     }
+
     public String getHref() {
         return href;
     }
+
     public void setHref(String href) {
         this.href = href;
     }

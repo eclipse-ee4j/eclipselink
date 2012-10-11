@@ -18,12 +18,7 @@
 package org.eclipse.persistence.testing.tests.dynamic.dynamicclassloader;
 
 //javase imports
-import java.io.ObjectStreamException;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-
-//JUnit4 imports
-import org.junit.Test;
+import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -31,15 +26,19 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-//EclipseLink imports
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.SerializationHelper;
-import static org.eclipse.persistence.exceptions.DynamicException.INCOMPATIBLE_DYNAMIC_CLASSWRITERS;
+import org.junit.Test;
 
 public class DynamicClassLoaderTestSuite {
 
@@ -129,14 +128,14 @@ public class DynamicClassLoaderTestSuite {
         assertNotNull(dynamicClass);
         assertEquals(MY_CLASSNAME, dynamicClass.getName());
 
-        DynamicClassWriter writer = dcl.getClassWriter(MY_CLASSNAME);
+        EclipseLinkClassWriter writer = dcl.getClassWriter(MY_CLASSNAME);
         assertNotNull(writer);
 
         Class<?> dynamicClass2 = dcl.createDynamicClass(MY_CLASSNAME);
 
         assertSame(dynamicClass, dynamicClass2);
 
-        DynamicClassWriter writer2 = dcl.getClassWriter(MY_CLASSNAME);
+        EclipseLinkClassWriter writer2 = dcl.getClassWriter(MY_CLASSNAME);
         assertNotNull(writer);
         assertSame(writer, writer2);
     }
@@ -235,16 +234,15 @@ public class DynamicClassLoaderTestSuite {
         assertNotNull(dynamicClass);
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
-        DynamicClassWriter firstWriter = dcl.getClassWriter(MY_CLASSNAME);
-
+        EclipseLinkClassWriter firstWriter = dcl.getClassWriter(MY_CLASSNAME);
         DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
 
         assertNotNull(entity);
         assertNotNull("DCL does not contain expected writer", dcl.getClassWriter(MY_CLASSNAME));
 
         dcl.addClass(MY_CLASSNAME, DefaultConstructor.class);
-        DynamicClassWriter secondWriter = dcl.getClassWriter(MY_CLASSNAME);
-
+        EclipseLinkClassWriter secondWriter = dcl.getClassWriter(MY_CLASSNAME);
+        
         assertSame(firstWriter, secondWriter);
     }
 

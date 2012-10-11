@@ -217,6 +217,7 @@ public class OneToManyAccessor extends CollectionAccessor {
               processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
               // Set the mapping to read only
               mapping.setIsReadOnly(true);
+              mapping.setMappedBy(getMappedBy());
            } else {
                // Create a 1-M mapping and process common collection mapping 
                // metadata first followed by specific metadata.
@@ -240,6 +241,7 @@ public class OneToManyAccessor extends CollectionAccessor {
                 
                    mapping.addTargetForeignKeyField(fkField, pkField);
                }
+               mapping.setMappedBy(getMappedBy());
            }
        } else {
            // If improper mapping encountered, throw an exception.

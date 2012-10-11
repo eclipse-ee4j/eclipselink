@@ -34,6 +34,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -382,6 +383,20 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     
     public void _persistence_setRelationships(List<RelationshipInfo> relationships){
         set("_persistence_relationshipInfo", relationships, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#getPersistence_href()
+     */
+    public Link _persistence_getHref() {
+        return get("_persistence_href");
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#setPersistence_href(sun.awt.image.ImageWatched.Link)
+     */
+    public void _persistence_setHref(Link href) {
+        set("_persistence_href", href, false);
     }
     
     /**

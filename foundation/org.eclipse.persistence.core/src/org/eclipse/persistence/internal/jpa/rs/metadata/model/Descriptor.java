@@ -1,4 +1,4 @@
-package org.eclipse.persistence.jpa.rs.metadata.model;
+package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
 import java.util.ArrayList;
 import java.util.List;

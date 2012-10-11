@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpars.test.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -42,7 +42,7 @@ public class StaticAuction {
     
     private boolean sold;
     
-    @OneToMany(mappedBy="auction")
+    @OneToMany(mappedBy="auction", cascade=CascadeType.ALL)
     private List<StaticBid> bids = new ArrayList<StaticBid>();
 
     public int getId() {
@@ -108,6 +108,6 @@ public class StaticAuction {
     public void setBids(List<StaticBid> bids) {
         this.bids = bids;
     }
-    
+
 }
 

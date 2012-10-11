@@ -10,7 +10,7 @@
  * Contributors:
  *      tware - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.service;
 
 import javax.ws.rs.Path;
 

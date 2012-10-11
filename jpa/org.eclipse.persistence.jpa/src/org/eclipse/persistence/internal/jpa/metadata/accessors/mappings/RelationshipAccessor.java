@@ -479,6 +479,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             if (! mappingAccessor.isProcessed()) {
                 mappingAccessor.process();
             }
+            
+            if (this.getMapping() != null
+                    && this.getMapping().isForeignReferenceMapping()) {
+                ((ForeignReferenceMapping) this.getMapping())
+                        .setMappedBy(mappedBy);
+            }
         }
         
         return mappingAccessor.getMapping();

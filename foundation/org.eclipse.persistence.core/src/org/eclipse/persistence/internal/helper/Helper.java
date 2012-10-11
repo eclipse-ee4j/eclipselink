@@ -34,6 +34,9 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.*;
 
 /**
@@ -1140,7 +1143,60 @@ public class Helper implements Serializable {
         returnVector.addElement(theObject);
         return returnVector;
     }
+        
+    /**
+     * Used by our byte code weaving to enable users who are debugging to output
+     * the generated class to a file
+     * 
+     * @param className
+     * @param classBytes
+     * @param outputPath
+     */
+    public static void outputClassFile(String className, byte[] classBytes,
+            String outputPath) {
+        StringBuffer directoryName = new StringBuffer();
+        StringTokenizer tokenizer = new StringTokenizer(className, "\n\\/");
+        String token = null;
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+            if (tokenizer.hasMoreTokens()) {
+                directoryName.append(token + File.separator);
+            }
+        }
+        FileOutputStream fos = null;
+        try {
+            String usedOutputPath = outputPath;
+            if (!outputPath.endsWith(File.separator)) {
+                usedOutputPath = outputPath + File.separator;
+            }
+            File file = new File(usedOutputPath + directoryName);
+            file.mkdirs();
+            file = new File(file, token + ".class");
+            if (!file.exists()) {
+                file.createNewFile();
+            } else {
+                if (!System.getProperty(
+                        SystemProperties.WEAVING_SHOULD_OVERWRITE, "false")
+                        .equalsIgnoreCase("true")) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                            SessionLog.WEAVER, "weaver_not_overwriting",
+                            className);
+                    return;
+                }
+            }
 
+            fos = new FileOutputStream(file);
+            fos.write(classBytes);
+        } catch (Exception e) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                    SessionLog.WEAVER, "weaver_could_not_write", className, e);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.FINEST,
+                    SessionLog.WEAVER, e);
+        } finally {
+            Helper.close(fos);
+        }
+    }        
+    
     /**
      * Return a string containing the platform-appropriate
      * characters for separating entries in a path (e.g. the classpath)

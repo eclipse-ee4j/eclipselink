@@ -20,12 +20,15 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.server.Server;
 
 
@@ -119,40 +122,50 @@ public class IdHelper {
      * @param id
      * @return
      */
-    public static Object buildObjectShell(PersistenceContext context, String entityType, Object id){
+    public static Object buildObjectShell(PersistenceContext context,  String entityType, Object id) {
         ClassDescriptor descriptor = context.getDescriptor(entityType);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
-        DynamicEntityImpl entity = null;
+        Object entity = null;
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            entity = (DynamicEntityImpl)policy.createBeanUsingKey(id, context.getJpaSession());
-        } else { 
-            entity = (DynamicEntityImpl)context.newEntity(entityType);
-            // if there is only one PK mapping, we assume the id object represents the value of that mapping
-            if (pkMappings.size() == 1){
-                entity.set(pkMappings.get(0).getAttributeName(), id);
+            entity = policy.createBeanUsingKey(id, context.getJpaSession());
+        } else if (entity instanceof DynamicEntity) {
+            DynamicEntityImpl dynamicEntity = (DynamicEntityImpl) context.newEntity(entityType);
+            // if there is only one PK mapping, we assume the id object
+            // represents the value of that mapping
+            if (pkMappings.size() == 1) {
+                dynamicEntity.set(pkMappings.get(0).getAttributeName(), id);
             } else {
-                // If there are more that one PK, we assume an array as produced by buildId() above with the keys
+                // If there are more that one PK, we assume an array as produced
+                // by buildId() above with the keys
                 // based on a sorted order of PK fields
                 List<SortableKey> pkIndices = new ArrayList<SortableKey>();
                 int index = 0;
-                for (DatabaseMapping mapping: pkMappings){
+                for (DatabaseMapping mapping : pkMappings) {
                     pkIndices.add(new SortableKey(mapping, index));
                     index++;
                 }
                 Collections.sort(pkIndices);
-                Object[] keyElements = (Object[])id;
-                for (SortableKey key: pkIndices){
-                    entity.set(key.getMapping().getAttributeName(), keyElements[key.getIndex()]);
+                Object[] keyElements = (Object[]) id;
+                for (SortableKey key : pkIndices) {
+                    dynamicEntity.set(key.getMapping().getAttributeName(), keyElements[key.getIndex()]);
                 }
             }
+            entity = dynamicEntity;
+        } else {
+            throw new RuntimeException("Could not create shell for entity.");
         }
 
-        entity._persistence_setId(id);
-        entity._persistence_setSession(JpaHelper.getDatabaseSession(context.getEmf()));
+        if (entity instanceof PersistenceEntity) {
+            ((PersistenceEntity) entity)._persistence_setId(id);
+        }
+        if (entity instanceof FetchGroupTracker) {
+            ((FetchGroupTracker) entity)._persistence_setSession(JpaHelper.getDatabaseSession(context.getEmf()));
+        }
 
         return entity;
     }
+
     
     private static class SortableKey implements Comparable<SortableKey>{
         
