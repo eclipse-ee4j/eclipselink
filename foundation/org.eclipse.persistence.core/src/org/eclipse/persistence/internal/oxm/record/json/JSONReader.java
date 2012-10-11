@@ -230,13 +230,15 @@ public class JSONReader extends XMLReaderAdapter {
                 	break;
                 }
                 String uri = XMLConstants.EMPTY_STRING;
-                if(namespaceAware && namespaces != null){
+ 
+                if(namespaceAware && namespaces != null){                    
                 	int nsIndex = localName.indexOf(namespaceSeparator);
+                	String prefix = XMLConstants.EMPTY_STRING;
                 	if(nsIndex > -1){
-                		String prefix = localName.substring(0, nsIndex);
+                		prefix = localName.substring(0, nsIndex);
                 		localName = localName.substring(nsIndex + 1);
-                		uri = namespaces.resolveNamespacePrefix(prefix);                		
                 	}
+                	uri = namespaces.resolveNamespacePrefix(prefix);
                 	if(localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)){
             			break;
             		}  
@@ -555,14 +557,15 @@ public class JSONReader extends XMLReaderAdapter {
                             }
                         }
 
-                        String uri = XMLConstants.EMPTY_STRING;
+                        String uri = XMLConstants.EMPTY_STRING;                        
                         if(namespaceAware && namespaces != null){
+                            String prefix = XMLConstants.EMPTY_STRING;
                             int nsIndex = attributeLocalName.indexOf(namespaceSeparator);
                             if(nsIndex > -1){
-                                String prefix = attributeLocalName.substring(0, nsIndex);
+                                prefix = attributeLocalName.substring(0, nsIndex);
                                 attributeLocalName = attributeLocalName.substring(nsIndex + 1);
-                                uri = namespaces.resolveNamespacePrefix(prefix);                        
                             }
+                            uri = namespaces.resolveNamespacePrefix(prefix);
                         }
 
                         Tree childValueTree = childTree.getChild(1);
