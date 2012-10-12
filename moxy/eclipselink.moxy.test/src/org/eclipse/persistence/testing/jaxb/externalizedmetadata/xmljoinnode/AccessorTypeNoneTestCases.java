@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,8 +49,18 @@ public class AccessorTypeNoneTestCases extends JAXBWithJSONTestCases {
         AtnEmployee e3 = new AtnEmployee(); e3.id = 2; e3.name = "Fco";
 
         e1.manager = e3; e2.manager = e3;
+        
+        AtnEmployee r2 = new AtnEmployee(); r2.id = 242; r2.name = "Report1";
+        AtnEmployee r1 = new AtnEmployee(); r1.id = 243; r1.name = "Report2";
+
+        e1.reports = new ArrayList<AtnEmployee>();
+        e1.reports.add(r1);
+        e1.reports.add(r2);
+        
 
         company.employees.add(e1); company.employees.add(e2); company.employees.add(e3);
+        company.employees.add(r1);
+        company.employees.add(r2);
 
         return company;
     }

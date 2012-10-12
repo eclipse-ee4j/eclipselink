@@ -83,9 +83,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         if (cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
-        } else {
+        } else {            
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, false);
         }
+        marshalRecord.startCollection(); 
+
         if(xPathFragment != XPathFragment.SELF_FRAGMENT) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         }
@@ -96,6 +98,8 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         if(xPathFragment != XPathFragment.SELF_FRAGMENT) {
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }
+        marshalRecord.endCollection();
+
         return true;
     }
 

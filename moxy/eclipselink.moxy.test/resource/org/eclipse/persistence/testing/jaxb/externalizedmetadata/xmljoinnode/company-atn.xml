@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <company>
    <employee id="0" name="Octimus">
+      <report id="243" name="Report2"/>
+	  <report id="242" name="Report1"/>
       <manager id="2" name="Fco"/>
    </employee>
    <employee id="1" name="Lauris">
       <manager id="2" name="Fco"/>
    </employee>
    <employee id="2" name="Fco"/>
+   <employee id="243" name="Report2"/>
+   <employee id="242" name="Report1"/>
 </company>
