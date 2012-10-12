@@ -209,7 +209,11 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * at the given index.
      */
     public List buildObjectsFromRecords(List databaseRecords, int index){
-        return buildObjectsFromRecords(databaseRecords, getSQLResultSetMappings().get(index));
+        if (getSQLResultSetMappings().isEmpty()) {
+            return buildObjectsFromRecords(databaseRecords, null);
+        } else {
+            return buildObjectsFromRecords(databaseRecords, getSQLResultSetMappings().get(index));
+        }
     }
     
     /**

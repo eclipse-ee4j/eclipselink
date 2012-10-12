@@ -47,7 +47,6 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa21.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
-import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.ConstructorResult;
@@ -103,6 +102,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         // These tests call stored procedures from EM API
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithPositionalParameters"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithAliasedColumns"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithSqlResultSetMapping"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureUpdateQuery"));
@@ -228,13 +228,64 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
             } finally {
                 closeEntityManager(em);
             }
         }
     }  
+    
+    /**
+     * Tests a NamedStoredProcedureQuery using a result-set-mapping using
+     * positional parameters (and more than the procedure expects). 
+     */
+    public void testEMCreateStoredProcedureQueryWithAliasedColumns() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                beginTransaction(em);
+                
+                Address address1 = new Address();
+                address1.setCity("Ottawa");
+                address1.setPostalCode("K2J 0L7");
+                address1.setProvince("ON");
+                address1.setStreet("321 Main");
+                address1.setCountry("Canada");
+                em.persist(address1);
+                commitTransaction(em);
+                
+                // Clear the cache
+                em.clear();
+                clearCache();
+    
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_By_Alias", "address-field-result-map-positional");
+                query.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+                
+                List<Address> addresses = query.setParameter(1, address1.getId()).getResultList();
+                
+                assertTrue("Too many addresses returned", addresses.size() == 1);
+                
+                Address address2 = addresses.get(0);
+                
+                assertNotNull("Address returned from stored procedure is null", address2); 
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
+                assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                //closeEntityManager(em);
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    } 
     
     /**
      * Tests a StoredProcedureQuery using a class though EM API 
@@ -1256,7 +1307,11 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
             
             try {
-                assertTrue("Execute didn't return true", em.createStoredProcedureQuery("Read_All_Employees").execute());
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_All_Employees");
+                boolean returnValue = query.execute();
+                assertTrue("Execute didn't return true", returnValue);
+                List<Employee> employees = query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
             } catch (ClassCastException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);

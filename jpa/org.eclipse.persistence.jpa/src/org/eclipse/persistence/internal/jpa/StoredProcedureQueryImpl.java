@@ -427,8 +427,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 }
             } else {
                 if (hasMoreResults()) {
-                    entityManager.verifyOpen();
-                    
                     // Build the result records first.
                     List result = buildResultRecords(executeStatement.getResultSet());
                     

@@ -798,6 +798,24 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddressByAlias(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address_By_Alias");
+        
+        proc.addArgument("ADDRESS_ID", Integer.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
+        } else {
+            statement = "SELECT t0.ADDRESS_ID AS '1', t0.STREET AS '2', t0.CITY AS '3', t0.COUNTRY AS '4', t0.PROVINCE AS '5', t0.P_CODE AS '6' FROM JPA21_ADDRESS t0 WHERE (t0.ADDRESS_ID = ADDRESS_ID)";
+        }
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadFromAddressMapped(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address_Mapped");
@@ -1381,6 +1399,7 @@ public class EmployeePopulator {
             try {
                 SchemaManager schema = new SchemaManager((DatabaseSession) session);
                 schema.replaceObject(buildStoredProcedureReadFromAddress(platform));
+                schema.replaceObject(buildStoredProcedureReadFromAddressByAlias(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddressMapped(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddressResultSet());
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
