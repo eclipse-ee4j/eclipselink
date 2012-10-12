@@ -3077,7 +3077,7 @@
     </target>
 
     <!-- Testing Metadata Cache by running JPA tests in the server -->
-    <target name="server-test-lrg-project-cache" depends="clean-test">
+    <target name="server-test-project-cache" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenantEMF" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenant123" inheritRefs="true"/>
