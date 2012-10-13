@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.CollectionValuedPathExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.StateFieldPathExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.VirtualIdentificationVariableFinder;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
@@ -111,7 +110,6 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -126,7 +124,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractGrammarValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -169,8 +167,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected StateFieldPathExpressionVisitor stateFieldPathExpressionVisitor;
 
+	/**
+	 *
+	 */
 	private SubqueryFirstDeclarationVisitor subqueryFirstDeclarationVisitor;
 
+	/**
+	 *
+	 */
 	private TopLevelFirstDeclarationVisitor topLevelFirstDeclarationVisitor;
 
 	/**
@@ -184,7 +188,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * This finder is responsible to retrieve the virtual identification variable from the
 	 * <b>UPDATE</b> range declaration since it is optional.
 	 */
-	protected VirtualIdentificationVariableFinder virtualIdentificationVariableFinder;
+	protected BaseDeclarationIdentificationVariableFinder virtualIdentificationVariableFinder;
 
 	/**
 	 * Creates a new <code>AbstractSemanticValidator</code>.
@@ -231,7 +235,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * <code><b>UPDATE</b></code> query
 	 */
 	protected IdentificationVariable findVirtualIdentificationVariable(AbstractSchemaName expression) {
-		VirtualIdentificationVariableFinder visitor = getVirtualIdentificationVariableFinder();
+		BaseDeclarationIdentificationVariableFinder visitor = getVirtualIdentificationVariableFinder();
 		try {
 			expression.accept(visitor);
 			return visitor.expression;
@@ -306,9 +310,9 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 *
 	 * @return The visitor that can traverse the query and returns the {@link IdentificationVariable}
 	 */
-	protected VirtualIdentificationVariableFinder getVirtualIdentificationVariableFinder() {
+	protected BaseDeclarationIdentificationVariableFinder getVirtualIdentificationVariableFinder() {
 		if (virtualIdentificationVariableFinder == null) {
-			virtualIdentificationVariableFinder = new VirtualIdentificationVariableFinder();
+			virtualIdentificationVariableFinder = new BaseDeclarationIdentificationVariableFinder();
 		}
 		return virtualIdentificationVariableFinder;
 	}
@@ -581,32 +585,34 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		Object managedType = helper.getEntityNamed(abstractSchemaName);
 		boolean valid = true;
 
-		// If a subquery is defined in a WHERE clause of an update query,
-		// then check for a path expression
 		if (managedType == null) {
 
-			// Find the identification variable from the UPDATE range declaration
-			IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
-			String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
+			// If a subquery is defined in a WHERE clause of an update query,
+			// then check for a path expression
+			if (isSubquery(expression)) {
 
-			if (ExpressionTools.stringIsNotEmpty(variableName)) {
+				// Find the identification variable from the UPDATE range declaration
+				IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
+				String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
 
-				Object mapping = helper.resolveMapping(variableName, abstractSchemaName);
-				Object type = helper.getMappingType(mapping);
+				if (ExpressionTools.stringIsNotEmpty(variableName)) {
 
-				// Does not resolve to a valid path
-				if (!helper.isTypeResolvable(type)) {
-					if (isSubquery(expression)) {
+					Object mapping = helper.resolveMapping(variableName, abstractSchemaName);
+					Object type = helper.getMappingType(mapping);
+
+					// Does not resolve to a valid path
+					if (!helper.isTypeResolvable(type)) {
 						addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+						valid = false;
 					}
-					else {
-						addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
+					// Not a relationship mapping
+					else if (!helper.isRelationshipMapping(mapping)) {
+						addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+						valid = false;
 					}
-					valid = false;
 				}
-				// Not a relationship mapping
-				else if (!helper.isRelationshipMapping(mapping)) {
-					addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+				else {
+					addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
 					valid = false;
 				}
 			}

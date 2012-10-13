@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 
 @Entity
 @NamedQueries
@@ -24,7 +25,9 @@ import javax.persistence.NamedQuery;
 @SuppressWarnings("unused")
 public class Product extends AbstractProduct {
 
-	@Id private int id;
+	@Id
+	private int id;
+	@OneToOne
 	private Project project;
 	private int quantity;
 	private Date releaseDate;

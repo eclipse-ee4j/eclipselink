@@ -39,7 +39,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -100,4 +100,11 @@ public interface ResolverVisitor {
 	 * @param resolver The {@link Resolver} to visit
 	 */
 	void visit(ValueResolver resolver);
+
+	/**
+	 * Visits the given {@link SubqueryEntityResolver}.
+	 *
+	 * @param resolver The {@link Resolver} to visit
+	 */
+	void visitor(SubqueryEntityResolver resolver);
 }

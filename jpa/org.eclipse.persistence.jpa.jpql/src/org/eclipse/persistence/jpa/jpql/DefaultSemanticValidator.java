@@ -21,7 +21,6 @@ import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
@@ -39,8 +38,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
-import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
-import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
@@ -84,11 +81,9 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
-import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -106,7 +101,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see DefaultGrammarValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -1712,112 +1707,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		@Override
 		public void visit(UpdateItem expression) {
 			expression.getParent().accept(this);
-		}
-	}
-
-	/**
-	 * This visitor traverses the parsed tree and retrieves the {@link IdentificationVariable}
-	 * defined for a range variable declaration.
-	 */
-	protected static class VirtualIdentificationVariableFinder extends AbstractTraverseParentVisitor {
-
-		/**
-		 * The {@link IdentificationVariable} used to define the abstract schema name from either the
-		 * <b>UPDATE</b> or <b>DELETE</b> clause.
-		 */
-		protected IdentificationVariable expression;
-
-		/**
-		 * Determines if the {@link RangeVariableDeclaration} should traverse its identification
-		 * variable expression or simply visit the parent hierarchy.
-		 */
-		protected boolean traverse;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			if (traverse) {
-				// Invalid query, scan the first expression only
-				expression.getChild(0).accept(this);
-			}
-			else {
-				super.visit(expression);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteClause expression) {
-			try {
-				traverse = true;
-				expression.getRangeVariableDeclaration().accept(this);
-			}
-			finally {
-				traverse = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteStatement expression) {
-			expression.getDeleteClause().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			this.expression = expression;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullExpression expression) {
-			// Incomplete/invalid query, stop here
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(RangeVariableDeclaration expression) {
-			if (traverse) {
-				expression.getIdentificationVariable().accept(this);
-			}
-			else {
-				super.visit(expression);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateClause expression) {
-			try {
-				traverse = true;
-				expression.getRangeVariableDeclaration().accept(this);
-			}
-			finally {
-				traverse = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateStatement expression) {
-			expression.getUpdateClause().accept(this);
 		}
 	}
 }

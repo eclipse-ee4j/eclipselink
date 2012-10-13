@@ -264,6 +264,16 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
+	public final void test_AbstractSchemaName_Invalid_5() throws Exception {
+
+		String jpqlQuery = "update Employee set name = 'JPQL' " +
+		                   "where (select a from address a where a.city = 'Cary') is not null";
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
 	public final void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
 
 		String jpqlQuery = "SELECT a FROM Address a JOIN a.customerList c";
