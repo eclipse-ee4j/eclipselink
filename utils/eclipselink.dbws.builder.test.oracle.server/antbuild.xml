@@ -134,20 +134,21 @@
         <selectbundle basename="${wsdl.prefix}"  directory="${dbwsbldrorcltst.2.plugins.dir}"
                      criterion="${wsdl.criteria}" property="wsdl.jar"
         />
-        <echo message="junit.lib    ='${junit.lib}'"/>
-        <echo message="asm.jar      ='${dbwsbldrorcltst.2.common.plugins.dir}/${asm.jar}'"/>
-        <echo message="dbwsbldr.jar ='${dbwsbldrorcltst.2.common.plugins.dir}/${dbwsbldr.jar}'"/>
-        <!-- property name="dbwsbldr.jar"  value="${dbwsbldr.prefix}_${version.string}.jar"/>
-        <echo message="dbwsbldr.jar ='${dbwsbldr.jar}'"/ -->
-        <echo message="servlet.jar  ='${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}'"/>
-        <echo message="ddlparser.jar='${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}'"/>
-        <echo message="wsdl.jar     ='${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrorcltst.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrorcltst.2.common.plugins.dir}/${asm.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="dbwsbldr.lib"     value="${dbwsbldrorcltst.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}"/>
+        <!--When Oracle WSDL jar is used as wsdl.lib, specify its dependency as wsdl.depend.lib -->
+        <property name="wsdl.depend.lib"  value="dummy.dir/dummy.jar"/>
+        <echo message="junit.lib    ='${junit.lib}'"/>
+        <echo message="asm.lib      ='${asm.lib}'"/>
+        <echo message="dbwsbldr.lib ='${dbwsbldr.lib}'"/>
+        <echo message="servlet.lib  ='${servlet.lib}'"/>
+        <echo message="ddlparser.lib='${ddlparser.lib}'"/>
+        <echo message="wsdl.lib     ='${wsdl.lib}'"/>
+        <echo message="wsdl.depend.lib     ='${wsdl.depend.lib}'"/>
 
         <!-- dependency tests -->
         <available file="${junit.lib}"            property="junit.lib.exist"/>
@@ -174,6 +175,7 @@
             <pathelement path="${dbwsbldr.lib}"/>
             <pathelement path="${ddlparser.lib}"/>
             <pathelement path="${wsdl.lib}"/>
+            <pathelement path="${wsdl.depend.lib}"/>
         </path>
     </target>
 
