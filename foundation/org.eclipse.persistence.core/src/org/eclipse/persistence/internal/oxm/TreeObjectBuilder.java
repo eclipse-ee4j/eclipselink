@@ -259,29 +259,36 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((XMLFragmentCollectionMapping)xmlMapping);
                     } else if (xmlMapping instanceof XMLCollectionReferenceMapping) {
                         XMLCollectionReferenceMapping xmlColMapping = (XMLCollectionReferenceMapping)xmlMapping;
+                        
                         List fields = xmlColMapping.getFields();
                         XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
                         XPathNode branchNode;
                         if(null == xmlColMappingField) {
-                            if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {
+                            if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {                                
                                 addChild(XPathFragment.SELF_FRAGMENT, new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
                             }
                             branchNode = rootXPathNode;
                         } else {
                             branchNode = addChild(((XMLField) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
-                        }
-                        Iterator fieldIt = fields.iterator();
-                        while (fieldIt.hasNext()) {
-                            XMLField xmlFld = (XMLField)fieldIt.next();
+                        }                        
+                    
+                        int containerIndex = -1;
+                        for(int i=0; i<fields.size(); i++){
+                            XMLField xmlFld = (XMLField)fields.get(i);
                             mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
-                            if (mappingNodeValue.isContainerValue()) {
+                            if(i == 0){
                                 addContainerValue((ContainerValue)mappingNodeValue);
+                                containerIndex = ((ContainerValue)mappingNodeValue).getIndex();
+                            }else{
+                                ((ContainerValue)mappingNodeValue).setIndex(containerIndex);
                             }
                             if (mappingNodeValue.isNullCapableValue()) {
                                 addNullCapableValue((NullCapableValue)mappingNodeValue);
                             }
                             branchNode.addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
+                       
+                      
                         continue;
                     } else if (xmlMapping instanceof XMLObjectReferenceMapping) {
                         XMLObjectReferenceMapping xmlORMapping = (XMLObjectReferenceMapping)xmlMapping;
