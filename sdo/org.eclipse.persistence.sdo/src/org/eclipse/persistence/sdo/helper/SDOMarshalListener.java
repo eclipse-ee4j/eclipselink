@@ -53,6 +53,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
     private QName marshalledObjectRootQName;
     private MarshalRecord rootMarshalRecord;
     private SDOTypeHelper typeHelper;
+    private NamespaceResolver resolver;
 
     /** maintain narrowed context from the larger HelperContext (inside the xmlMarshaller)<br>
      * Visibility reduced from [public] in 2.1.0. May 15 2007 */
@@ -577,16 +578,34 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
     private void marshalNilAttribute(SDOProperty property, DOMRecord row) {
         //Marshal out xsi:nil=true   
-        String xsiPrefix = typeHelper.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        NamespaceResolver resolver;
+        if(this.resolver == null) {
+            resolver = typeHelper.getNamespaceResolver();
+        } else {
+            resolver = this.resolver;
+        }
+        String xsiPrefix = resolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         if ((xsiPrefix == null) || xsiPrefix.equals(SDOConstants.EMPTY_STRING)) {
-            xsiPrefix = typeHelper.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            typeHelper.getNamespaceResolver().put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            this.resolver = new NamespaceResolver();
+            resolver = this.resolver;
+            copyNamespaces(typeHelper.getNamespaceResolver(), resolver);
+            xsiPrefix = resolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
+            resolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         }
         String xPath = getXPathForProperty(property, true);
         xPath = xPath + "/@" + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
 
         XMLField field = new XMLField(xPath);
-        field.setNamespaceResolver(typeHelper.getNamespaceResolver());
+        field.setNamespaceResolver(resolver);
         row.put(field, XMLConstants.BOOLEAN_STRING_TRUE);
+    }
+
+    private void copyNamespaces(NamespaceResolver source, NamespaceResolver target) {
+        if (null != source && null != target) {            
+            if(source.hasPrefixesToNamespaces()) {
+                target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());
+            }
+            target.setDefaultNamespaceURI(source.getDefaultNamespaceURI());
+        }        
     }
 }
