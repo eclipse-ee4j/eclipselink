@@ -284,11 +284,31 @@ public class PropertyTestCases extends TestCase {
     
     public void testMarshallerJsonValueWrapper() throws Exception {
         m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "wrapper");
-        assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));
-        m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, null);
-        assertEquals(null, m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));
+        assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));        
     }
 
+    public void testMarshallerJsonValueWrapperNull() throws Exception {
+        try{
+            m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, null);
+        }catch(PropertyException e){
+            return;
+        }catch(Exception e){
+            e.printStackTrace();
+            fail();
+        }
+    }
+
+    public void testMarshallerJsonValueWrapperEmptyString() throws Exception {
+        try{
+            m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "");
+        }catch(PropertyException e){            
+                return;
+            }catch(Exception e){
+                e.printStackTrace();
+                fail();
+            }
+    }
+    
     public void testUnmarshallerMediaTypeString() throws Exception {
         u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
