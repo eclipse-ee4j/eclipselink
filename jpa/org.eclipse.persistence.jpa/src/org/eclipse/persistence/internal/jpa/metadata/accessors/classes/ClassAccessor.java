@@ -71,6 +71,8 @@
  *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
  *     04/07/2012-2.5 Guy Pelletier    
  *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 3746888: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -213,6 +215,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+    private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
+    private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
     
     // In the normal case owning descriptors is a single list. Could only be
     // multiples when dealing with embeddable accessors.
@@ -227,9 +231,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private String m_description;
     
     private XMLAttributes m_attributes;
-    
-    private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
-    private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
     
     private StructMetadata m_struct;
     private NoSqlMetadata m_noSql;
@@ -1247,6 +1248,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the property metadata.
         processProperties();
      
+        // Process the PLSQL type metadata.
         processPLSQLTypes();
         
         // Process the MappedSuperclass(es) metadata now after all our. There 

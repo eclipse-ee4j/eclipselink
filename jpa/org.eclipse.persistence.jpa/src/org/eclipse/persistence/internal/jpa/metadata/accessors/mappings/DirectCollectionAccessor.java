@@ -34,6 +34,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 3746888: JPA 2.1 Converter support
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -431,10 +433,10 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // the collection table be processed before hand.
         process(mapping);
 
-        processContainerPolicyAndIndirection((ContainerMapping)mapping);
+        processContainerPolicyAndIndirection((ContainerMapping) mapping);
         
         if (mapping instanceof DirectCollectionMapping) {
-            DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping)mapping;
+            DirectCollectionMapping directCollectionMapping = (DirectCollectionMapping) mapping;
             // Process the container and indirection policies.
             
             // Process the value column (we must process this field before the 
@@ -448,7 +450,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
                 directCollectionMapping.setDirectFieldClassificationName(getJavaClassName(getReferenceClass()));
             }
         } else if (mapping.isAbstractCompositeDirectCollectionMapping()) {
-            ((AbstractCompositeDirectCollectionMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
+            ((AbstractCompositeDirectCollectionMapping) mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }
         
         // Process a converter for this mapping. We will look for a convert

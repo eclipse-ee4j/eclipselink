@@ -8,26 +8,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/09/2012-2.5 Guy Pelletier 
+ *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/ 
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.enums;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
-@Converter(autoApply=true)
-public class LongToStringConverter implements AttributeConverter<Long, String> {
-
-    //public LongToStringConverter() {}
-    
-    @Override
-    public String convertToDatabaseColumn(Long attribute) {
-        return (attribute == null) ? null : attribute.toString(); 
-    }
-
-    @Override
-    public Long convertToEntityAttribute(String dbData) {
-        return (dbData == null) ? null : new Long(dbData);
-    }
+public enum Health {
+    H, 
+    HEALTHY, 
+    I, 
+    INJURED, 
+    S, 
+    SICK
 }

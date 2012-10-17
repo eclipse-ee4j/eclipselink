@@ -75,6 +75,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -1482,6 +1484,20 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Process the JPA defined convert(s)
+     */
+    protected void processConverts(DatabaseMapping mapping, MetadataClass referenceClass) {
+        // If there are converts specified on the descriptor for this
+        // mapping's attribute name, then use those (must override)
+        List<ConvertMetadata> converts = (getDescriptor().hasConverts(getAttributeName())) ? getDescriptor().getConverts(getAttributeName()) : getConverts();
+       
+        for (ConvertMetadata convert : converts) {
+            convert.process(mapping, referenceClass, getClassAccessor());
+        }
+    }
+    
+    /**
+     * INTERNAL:
      */
     protected AbstractDirectMapping processDirectMapKeyClass(MappedKeyMapAccessor mappedKeyMapAccessor) {
         AbstractDirectMapping keyMapping = new DirectToFieldMapping();
@@ -1606,21 +1622,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // for the value of the map and there exist an auto apply converter 
             // for the map key type, that auto-apply convert is not applied. 
             // The same holds true in the reverse case. The user must 
-            // explicitely specify all parts of the convert at this  point.
+            // explicitely specify all parts of the convert at this point.
             // TODO: check if this flies with the spec ... something tells me no ...
             if (! isForMapKey) {
-                // If there are converts specified on the descriptor for this
-                // mapping's attribute name, then use those (must override)
-                List<ConvertMetadata> converts = (getDescriptor().hasConverts(getAttributeName())) ? getDescriptor().getConverts(getAttributeName()) : getConverts();
-               
-                for (ConvertMetadata convert : converts) {
-                    convert.process(mapping, referenceClass, isForMapKey);
-                }
+                processConverts(mapping, referenceClass);
             }
         } else if (getProject().hasAutoApplyConverter(referenceClass)) {
             // If no convert is specified and there exist an auto-apply
             // converter for the reference class, apply it.
-            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey);
+            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, null);
         } else {
             // Check for an enum first since it will fall into a serializable 
             // mapping otherwise (Enums are serialized)

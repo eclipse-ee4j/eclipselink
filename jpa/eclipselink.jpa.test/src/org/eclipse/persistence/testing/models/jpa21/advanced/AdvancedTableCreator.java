@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -38,6 +40,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPROJECTTable());
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
+        addTableDefinition(buildRUNNERTable());
+        addTableDefinition(buildRUNNER_PBSTable());
+        addTableDefinition(buildXMLRUNNERTable());
+        addTableDefinition(buildXMLRUNNER_PBSTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -552,6 +558,131 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildRUNNER_PBSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNER_PBS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DISTANCE");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("TIME");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
+    public TableDefinition buildRUNNERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("F_NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("L_NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("GENDER");
+        field.setTypeName("VARCHAR");
+        field.setSize(1);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("AGE");
+        field.setTypeName("INTEGER");
+        field.setSize(3);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_LEVEL");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_HEALTH");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_STATUS");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
     public TableDefinition buildSALARYTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_SALARY");
@@ -590,6 +721,131 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setShouldAllowNull(true);
         table.addField(field);
 
+        return table;
+    }
+    
+    public TableDefinition buildXMLRUNNER_PBSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_RUNNER_PBS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DISTANCE");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("TIME");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
+    public TableDefinition buildXMLRUNNERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_RUNNER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("F_NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("L_NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("GENDER");
+        field.setTypeName("VARCHAR");
+        field.setSize(1);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("AGE");
+        field.setTypeName("INTEGER");
+        field.setSize(3);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_LEVEL");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_HEALTH");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("R_STATUS");
+        field.setTypeName("VARCHAR");
+        field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
         return table;
     }
 }

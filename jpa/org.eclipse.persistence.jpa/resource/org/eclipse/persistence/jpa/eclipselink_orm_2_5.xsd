@@ -705,63 +705,45 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-        <xsd:element name="description" type="xsd:string"
-                     minOccurs="0"/>
-        <xsd:element name="persistence-unit-metadata" 
-                     type="orm:persistence-unit-metadata"
-                     minOccurs="0"/>
-        <xsd:element name="package" type="xsd:string"
-                     minOccurs="0"/>
-        <xsd:element name="schema" type="xsd:string"
-                     minOccurs="0"/>
-        <xsd:element name="catalog" type="xsd:string"
-                     minOccurs="0"/>
-        <xsd:element name="access" type="orm:access-type"
-                     minOccurs="0"/>
-        <xsd:element name="access-methods" type="orm:access-methods" 
-                     minOccurs="0"/>
-        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="sequence-generator" type="orm:sequence-generator"
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="table-generator" type="orm:table-generator" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="uuid-generator" type="orm:uuid-generator" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="partitioning" type="orm:partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="replication-partitioning" type="orm:replication-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="round-robin-partitioning" type="orm:round-robin-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="pinned-partitioning" type="orm:pinned-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="range-partitioning" type="orm:range-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="value-partitioning" type="orm:value-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="hash-partitioning" type="orm:hash-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="union-partitioning" type="orm:union-partitioning" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-query" type="orm:named-query" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-native-query" type="orm:named-native-query"
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="sql-result-set-mapping" 
-                     type="orm:sql-result-set-mapping" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="mapped-superclass" type="orm:mapped-superclass" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="entity" type="orm:entity" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="embeddable" type="orm:embeddable" 
-                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="persistence-unit-metadata" type="orm:persistence-unit-metadata" minOccurs="0"/>
+        <xsd:element name="package" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="schema" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="catalog" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="access" type="orm:access-type" minOccurs="0"/>
+        <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
+        <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="converter" type="orm:mixed-converter"/>
+            <xsd:element name="type-converter" type="orm:type-converter"/>
+            <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+            <xsd:element name="struct-converter" type="orm:struct-converter"/>
+            <xsd:element name="sequence-generator" type="orm:sequence-generator"/>
+            <xsd:element name="table-generator" type="orm:table-generator"/>
+            <xsd:element name="uuid-generator" type="orm:uuid-generator"/>
+            <xsd:element name="partitioning" type="orm:partitioning"/>
+            <xsd:element name="replication-partitioning" type="orm:replication-partitioning"/>
+            <xsd:element name="round-robin-partitioning" type="orm:round-robin-partitioning"/>
+            <xsd:element name="pinned-partitioning" type="orm:pinned-partitioning"/>
+            <xsd:element name="range-partitioning" type="orm:range-partitioning"/>
+            <xsd:element name="value-partitioning" type="orm:value-partitioning"/>
+            <xsd:element name="hash-partitioning" type="orm:hash-partitioning"/>
+            <xsd:element name="union-partitioning" type="orm:union-partitioning"/>
+            <xsd:element name="named-query" type="orm:named-query"/>
+            <xsd:element name="named-native-query" type="orm:named-native-query"/>
+            <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query"/>
+            <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query"/>
+            <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query"/>
+            <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query"/>
+            <xsd:element name="plsql-record" type="orm:plsql-record"/>
+            <xsd:element name="plsql-table" type="orm:plsql-table"/>
+            <xsd:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping"/>
+            <xsd:element name="mapped-superclass" type="orm:mapped-superclass"/>
+            <xsd:element name="entity" type="orm:entity"/>
+            <xsd:element name="embeddable" type="orm:embeddable"/>
+      </xsd:choice>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:supported-versions-type" 
-                     default="2.3" use="optional"/>
+      <xsd:attribute name="version" type="orm:supported-versions-type" default="2.5" use="optional"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -1592,6 +1574,48 @@
     <xsd:attribute name="object-value" type="xsd:string" use="required"/>
   </xsd:complexType>
 
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="mixed-converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        This converter is used a mix between the jpa and eclipselink converter
+        at the entity-mappings level. If a name is provided then it is treated
+        as a named eclipselink converter. Otherwise it is treated as a JPA
+        converter class.
+        
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface Converter {
+          /**
+           * (Required) Name this converter. The name should be unique across 
+           * the whole persistence unit.
+           */
+          String name();
+
+          /**
+           * (Required) The converter class to be used. This class must implement
+           * the org.eclipse.persistence.mappings.converters.Converter interface.
+           */
+          Class converterClass(); 
+        }
+        
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface Converter {
+            boolean autoApply() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
+    <xsd:attribute name="auto-apply" type="xsd:boolean"/>
+  </xsd:complexType>
+  
   <!-- **************************************************** -->
 
   <xsd:complexType name="converter">

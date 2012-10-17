@@ -13,6 +13,8 @@
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  *     08/01/2012-2.5 Chris Delahunt
  *       - 371950: Metadata caching 
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -36,6 +38,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
@@ -97,6 +100,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected List<UnidirectionalOneToManyMapping> overrideUnidirectionalOneToManyMappings;
     
     /**
+     * List of converters to apply at initialize time to their cloned aggregate mappings.
+     */
+    protected Map<String, Converter> converters;
+    
+    /**
      * List of maps id mappings that need to be set to read only at initialize
      * time on their cloned aggregate mappings.
      */
@@ -111,6 +119,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         mapsIdMappings = new ArrayList<DatabaseMapping>();
         overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
+        converters = new HashMap<String, Converter>();
         isNullAllowed = true;
     }
 
@@ -136,6 +145,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
     }
 
+    /**
+     * Add a converter to be applied to a mapping of the aggregate descriptor.
+     */
+    public void addConverter(Converter converter, String attributeName) {
+        converters.put(attributeName, converter);
+    }
+    
     /**
      * INTERNAL:
      * Used when initializing queries for mappings that use a Map
@@ -1280,6 +1296,30 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         initializeReferenceDescriptor(clonedDescriptor, referenceSession);
         clonedDescriptor.preInitialize(referenceSession);
         clonedDescriptor.initialize(referenceSession);
+        
+        // Apply any converters to their cloned mappings (after initialization
+        // so we can successfully traverse dot notation names)
+        for (String attributeName : converters.keySet()) {
+            String attr = attributeName;
+            
+            ClassDescriptor desc = clonedDescriptor;
+            
+            while (attr.contains(".")) {
+                desc = desc.getMappingForAttributeName(attr.substring(0, attr.indexOf("."))).getReferenceDescriptor();
+                attr = attr.substring(attr.indexOf(".") + 1);
+            }
+            
+            DatabaseMapping mapping = desc.getMappingForAttributeName(attr);
+             
+            if (mapping != null) {
+                // Initialize and set the converter on the mapping. 
+                converters.get(attributeName).initialize(mapping, session);
+            }
+            
+            // Else, silently ignored for now. These converters are set and 
+            // controlled through JPA metadata processing.
+        }
+        
         translateFields(clonedDescriptor, referenceSession);
 
         if (clonedDescriptor.hasInheritance() && clonedDescriptor.getInheritancePolicy().hasChildren()) {

@@ -10,19 +10,22 @@
  * Contributors:
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 
 /**
  * Object to hold onto convert metadata.
@@ -115,6 +118,13 @@ public class ConvertMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    public MetadataClass getConverterClass() {
+        return m_converterClass;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getConverterClassName() {
@@ -167,64 +177,68 @@ public class ConvertMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * TODO: don't think we need is forMapKey passed in here .. figure it out
-     * in the convert metadata attribute name.
      */
-    // Likely have to pass in the mapping accessor.
-    public void process(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
-        // If this convert metadata doesn't have text then process it. Otherwise,
-        // return since this is a legacy specificiation that will have been 
-        // processed already.
+    public void process(DatabaseMapping mapping, MetadataClass referenceClass, ClassAccessor accessor) {
+        // If the convert metadata doesn't have text then process it. Otherwise, 
+        // return  since this is a legacy specification that will have already 
+        // been processed.
         if (! hasText()) {
-            boolean applyToKey = false;
-            DatabaseMapping mappingToApplyConvert = mapping;
+            boolean isForMapKey = false;
+            DatabaseMapping mappingToApplyConvert = null;
             
             // Process the attribute name first if there is one.
-            if (hasAttributeName()) {
-                // The attributeName element must be specified unless the 
-                // Convert annotation is on an attribute of basic type or on an 
-                // element collection of basic type.  In these cases, the 
-                // attributeName element must not be specified.
-                if (mapping.isAggregateMapping()) {
-                    throw new RuntimeException("Work in progress. Converts for embedded mappings not supported yet.");
-                } else if (mapping.isMapKeyMapping()) {
-                    MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy) mapping.getContainerPolicy();
-
-                    // TODO: look up the 
-                    if (getAttributeName().startsWith(KEY + ".")) {
-                        mappingToApplyConvert = (DatabaseMapping) policy.getKeyMapping();
-                        
-                        // may have to dig further if the mapping is embedded and more attribute dot name to look at.
-                    } else {
-                        // may have to dig further if the mapping is embedded and more attribute dot name to look at.
-                        mappingToApplyConvert = (DatabaseMapping) policy.getValueMapping();
-                    }
+            if (hasAttributeName()) {                
+                String attributeName = getAttributeName();
+                
+                if (attributeName.equals(KEY) || attributeName.startsWith(KEY + ".")) {
+                    attributeName = getAttributeName().equals(KEY) ? "" : attributeName.substring(KEY.length() + 1);
                     
-                    // If either is an aggregate do more shit ...
+                    isForMapKey = true;
+                    
+                    if (! mapping.isMapKeyMapping() && ! mapping.isDirectMapMapping()) {
+                        throw ValidationException.invalidMappingForKeyAttributeNameConvert(accessor.getJavaClassName(), mapping.getAttributeName());
+                    }
+                } 
+                
+                // If map key mapping, get the key or value mapping that will 
+                // receive the converter.
+                if (mapping.isMapKeyMapping()) {
+                    MappedKeyMapContainerPolicy policy = (MappedKeyMapContainerPolicy) mapping.getContainerPolicy();
+                    mappingToApplyConvert = (DatabaseMapping) ((isForMapKey) ? policy.getKeyMapping() : policy.getValueMapping());
                 } else {
-                    // Likely could just silenty ignore.
-                    throw new RuntimeException("Attribute name should not be specified.");
+                    mappingToApplyConvert = mapping;
+                }
+                
+                // If the mapping is an aggregate object mapping, validate the 
+                // attribute name existing on the embeddable.
+                if (mappingToApplyConvert.isAggregateObjectMapping()) {
+                    ClassAccessor embeddableAccessor = getProject().getEmbeddableAccessor(referenceClass);
+                    MappingAccessor mappingAccessor = embeddableAccessor.getDescriptor().getMappingAccessor(attributeName);
+                    
+                    if (mappingAccessor == null) {
+                        throw ValidationException.embeddableAttributeNameForConvertNotFound(accessor.getJavaClassName(), mapping.getAttributeName(), embeddableAccessor.getJavaClassName(), attributeName);
+                    }
                 }
             } else {
-                // No attribute name specified, make some validation checks.
-                if (mapping.isAggregateMapping()) {
-                    throw new RuntimeException("Convert applied to embedded mapping with no attribute name specified");
+                // In an aggregate object case, the attribute name must be specified.
+                if (mapping.isAggregateObjectMapping()) {
+                    throw ValidationException.missingMappingConvertAttributeName(accessor.getJavaClassName(), mapping.getAttributeName());
                 }
+                
+                mappingToApplyConvert = mapping;
             }
             
+            // If we have a converter class, validate its existence and apply.
             if (hasConverterClass()) {
-                // TODO: Check the attribute type (might be for a key or an embedded attribute)
-                ConverterAccessor converterAccessor = getProject().getConverterAccessor(m_converterClass);
-                
-                if (converterAccessor == null) {
-                    // TODO: new exception
-                    throw new RuntimeException("Converter class  not found: " + m_converterClass);
+                if (getProject().hasConverterAccessor(getConverterClass())) {
+                    getProject().getConverterAccessor(getConverterClass()).process(mappingToApplyConvert, isForMapKey, getAttributeName());
                 } else {
-                    converterAccessor.process(mappingToApplyConvert, applyToKey);
+                    throw ValidationException.converterClassNotFound(accessor.getJavaClassName(), mapping.getAttributeName(), getConverterClass().getName());
                 }
             } else {
+                // Check for any auto apply converters.
                 if (getProject().hasAutoApplyConverter(referenceClass) && ! disableConversion()) {
-                    getProject().getAutoApplyConverter(referenceClass).process(mapping, applyToKey);
+                    getProject().getAutoApplyConverter(referenceClass).process(mappingToApplyConvert, isForMapKey, getAttributeName());
                 }
             }
         }

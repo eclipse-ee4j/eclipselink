@@ -10,6 +10,8 @@
  * Contributors:
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -19,6 +21,7 @@ import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterClass;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -143,16 +146,18 @@ public class ConverterAccessor extends ORMetadata {
      * INTERNAL:
      * Process this converter for the given mapping.
      */
-    public void process(DatabaseMapping mapping, boolean isForMapKey) {
+    public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName) {
         if (mapping.isDirectMapMapping() && isForMapKey) {
             ((DirectMapMapping) mapping).setKeyConverter(new ConverterClass(getJavaClassName()));
         } else if (mapping.isDirectCollectionMapping()) {
             ((DirectCollectionMapping) mapping).setValueConverter(new ConverterClass(getJavaClassName()));
-        } else if (mapping.isAggregateCollectionMapping()) {
-            // TODO: Be nice to support converters on AggregateCollections keys.
-            // For now they are silently ignored.
         } else if (mapping.isDirectToFieldMapping()) {
             ((AbstractDirectMapping) mapping).setConverter(new ConverterClass(getJavaClassName()));
+        } else if (mapping.isAggregateObjectMapping()) {
+            ((AggregateObjectMapping) mapping).addConverter(new ConverterClass(getJavaClassName(), isForMapKey), attributeName);
+        }  else if (mapping.isAggregateCollectionMapping()) {
+            // TODO: Be nice to support converters on AggregateCollections keys.
+            // For now they are silently ignored.
         }
     }
     

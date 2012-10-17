@@ -89,6 +89,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 3746888: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -640,6 +642,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the cascade on delete metadata.
         processCascadeOnDelete();
         
+        // Process the JPA converts metadata.
+        processConverts();
+        
         // Process our parents metadata after processing our own.
         super.process();
         
@@ -878,8 +883,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 convert.setAttributeName(remainder);
                 getDescriptor().addConvert(attributeName, convert);
             } else {
-                // Update the convert attribute name for correct convert processing.
-                convert.setAttributeName("");
                 getDescriptor().addConvert(convert.getAttributeName(), convert);
             }
         } else {

@@ -13,6 +13,8 @@
  *       - 312253: Descriptor exception with Embeddable on DDL gen
  *     07/27/2012-2.5 Chris Delahunt
  *       - 371950: Metadata caching 
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -60,6 +62,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -183,6 +186,13 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * silently ignored and does nothing.
      */
     public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping) {
+        // Not supported at this time ...
+    }
+    
+    /**
+     * Add a converter to be applied to a mapping of the aggregate descriptor.
+     */
+    public void addConverter(Converter converter, String attributeName) {
         // Not supported at this time ...
     }
     

@@ -25,6 +25,8 @@
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -444,6 +446,10 @@ public class ValidationException extends EclipseLinkException {
     public static final int MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED = 7346;
     
     public static final int MISSING_CONVERT_ATTRIBUTE_NAME = 7347;
+    public static final int MISSING_MAPPING_CONVERT_ATTRIBUTE_NAME = 7348;
+    public static final int INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT = 7349;
+    public static final int EMBEDDABLE_ATTRIBUTE_NAME_FOR_CONVERT_NOT_FOUND = 7350;
+    public static final int CONVERTER_CLASS_NOT_FOUND = 7351;
     
     /**
      * INTERNAL:
@@ -1245,7 +1251,7 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(EMBEDDABLE_ATTRIBUTE_OVERRIDE_NOT_FOUND);
         return validationException;
     }
-
+    
     /**
      * PUBLIC:
      * Possible cause:  Either the URL for the entity-mappings document is invalid, or there is an error in the document.
@@ -2249,11 +2255,43 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
-    public static ValidationException missingConvertAttributeName(String entityClass) {
-        Object[] args = { entityClass };
+    public static ValidationException missingConvertAttributeName(String className) {
+        Object[] args = { className };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_CONVERT_ATTRIBUTE_NAME, args));
         validationException.setErrorCode(MISSING_CONVERT_ATTRIBUTE_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException missingMappingConvertAttributeName(String className, String attributeName) {        
+        Object[] args = { className, attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_MAPPING_CONVERT_ATTRIBUTE_NAME, args));
+        validationException.setErrorCode(MISSING_MAPPING_CONVERT_ATTRIBUTE_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException invalidMappingForKeyAttributeNameConvert(String className, String attributeName) {        
+        Object[] args = { className, attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT, args));
+        validationException.setErrorCode(INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT);
+        return validationException;
+    }
+    
+    public static ValidationException embeddableAttributeNameForConvertNotFound(String className, String attributeName, String embeddableClassName, String embeddableAttributeName) {
+        Object[] args = { className, attributeName, embeddableClassName, embeddableAttributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, EMBEDDABLE_ATTRIBUTE_NAME_FOR_CONVERT_NOT_FOUND, args));
+        validationException.setErrorCode(EMBEDDABLE_ATTRIBUTE_NAME_FOR_CONVERT_NOT_FOUND);
+        return validationException;
+    }
+    
+    public static ValidationException converterClassNotFound(String className, String attributeName, String converterClass) {
+        Object[] args = { className, attributeName, converterClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONVERTER_CLASS_NOT_FOUND, args));
+        validationException.setErrorCode(CONVERTER_CLASS_NOT_FOUND);
         return validationException;
     }
     

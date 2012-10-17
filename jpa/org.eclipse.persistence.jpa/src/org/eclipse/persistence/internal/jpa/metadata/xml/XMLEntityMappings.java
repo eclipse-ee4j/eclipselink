@@ -31,6 +31,8 @@
  *       - 349906: NPE while using eclipselink in the application
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -57,6 +59,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataF
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFile;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
@@ -100,11 +103,15 @@ public class XMLEntityMappings extends ORMetadata {
     private ClassLoader m_loader;
     
     private List<EntityAccessor> m_entities;
-    // These are the JPA converters
-    // TODO: temp until mapped in XML
-    private List<ConverterAccessor> m_converterAccessors = new ArrayList<ConverterAccessor>();
-    // These are the named EclipseLink converters.
+    
+    // These are the mixed converters as read from the orm.xml file. This list
+    // will be used to populate the following two lists. 
+    private List<MixedConverterMetadata> m_mixedConverters;
+    // These are the JPA converters (built from the mixed converters list)
+    private List<ConverterAccessor> m_converterAccessors;
+    // These are the named EclipseLink converters (build from the mixed converters list)
     private List<ConverterMetadata> m_converters;
+    
     private List<EmbeddableAccessor> m_embeddables;
     private List<MappedSuperclassAccessor> m_mappedSuperclasses;
     private List<NamedNativeQueryMetadata> m_namedNativeQueries;
@@ -189,22 +196,6 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public String getCatalog() {
         return m_catalog;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<ConverterAccessor> getConverterAccessors() {
-        return m_converterAccessors;   
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public List<ConverterMetadata> getConverters() {
-        return m_converters;
     }
     
     /**
@@ -334,6 +325,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<MixedConverterMetadata> getMixedConverters() {
+        return m_mixedConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<NamedNativeQueryMetadata> getNamedNativeQueries() {
         return m_namedNativeQueries;
     }
@@ -409,6 +408,22 @@ public class XMLEntityMappings extends ORMetadata {
     public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
         return m_pinnedPartitioning;
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLRecordMetadata> getPLSQLRecords() {
+        return m_plsqlRecords;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLTableMetadata> getPLSQLTables() {
+        return m_plsqlTables;
+    } 
     
     /**
      * INTERNAL:
@@ -526,7 +541,20 @@ public class XMLEntityMappings extends ORMetadata {
      * Assumes the correct class loader has been set before calling this
      * method.
      */
-    public void initPersistenceUnitClasses(HashMap<String, EntityAccessor> allEntities, HashMap<String, EmbeddableAccessor> allEmbeddables) {
+    public void initPersistenceUnitClasses(HashMap<String, EntityAccessor> allEntities, HashMap<String, EmbeddableAccessor> allEmbeddables) { 
+        // Build our ConverterAccessor and ConverterMetadata lists from
+        // the mixed converter metadata list.
+        m_converters = new ArrayList<ConverterMetadata>();
+        m_converterAccessors = new ArrayList<ConverterAccessor>();
+        
+        for (MixedConverterMetadata mixedConverter : m_mixedConverters) {
+            if (mixedConverter.isConverterMetadata()) {
+                m_converters.add(mixedConverter.buildConverterMetadata());
+            } else {
+                m_converterAccessors.add(mixedConverter.buildConverterAccessor());
+            }
+        }
+        
         // Process the entities
         for (EntityAccessor entity : getEntities()) {
             // Initialize the class with the package from entity mappings.
@@ -582,7 +610,7 @@ public class XMLEntityMappings extends ORMetadata {
         }
         
         // Process the JPA converter classes.
-        for (ConverterAccessor converterAccessor : getConverterAccessors()) {
+        for (ConverterAccessor converterAccessor : m_converterAccessors) {
             // Initialize the class with the package from entity mappings.
             MetadataClass converterClass = getMetadataClass(getPackageQualifiedClassName(converterAccessor.getClassName()), false);
 
@@ -685,31 +713,37 @@ public class XMLEntityMappings extends ORMetadata {
             m_project.addPartitioningPolicy(partitioning);
         }
         
+        // Add the replication partitioning to the project.
         for (ReplicationPartitioningMetadata partitioning : m_replicationPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
-        
+
+        // Add the round robin partitioning to the project.
         for (RoundRobinPartitioningMetadata partitioning : m_roundRobinPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
         
+        // Add the pinned partitioning to the project.
         for (PinnedPartitioningMetadata partitioning : m_pinnedPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
         
+        // Add the range partitioning to the project.
         for (RangePartitioningMetadata partitioning : m_rangePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
         
+        // Add the value partitioning to the project.
         for (ValuePartitioningMetadata partitioning : m_valuePartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
         }
         
+        // Add the hash partitioning to the project.
         for (HashPartitioningMetadata partitioning : m_hashPartitioning) {
             partitioning.initXMLObject(m_file, this);
             m_project.addPartitioningPolicy(partitioning);
@@ -762,6 +796,8 @@ public class XMLEntityMappings extends ORMetadata {
             record.initXMLObject(m_file, this);
             m_project.addPLSQLComplexType(record);
         }
+        
+        // Add the PLSQL tables to the project.
         for (PLSQLTableMetadata table : m_plsqlTables) {
             table.initXMLObject(m_file, this);
             m_project.addPLSQLComplexType(table);
@@ -939,22 +975,6 @@ public class XMLEntityMappings extends ORMetadata {
     public void setCatalog(String catalog) {
         m_catalog = catalog;
     }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setConverterAccessors(List<ConverterAccessor> converterAccessors) {
-        m_converterAccessors = converterAccessors;   
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for OX mapping
-     */
-    public void setConverters(List<ConverterMetadata> converters) {
-        m_converters = converters;
-    }
     
     /**
      * INTERNAL:
@@ -1035,6 +1055,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setMixedConverters(List<MixedConverterMetadata> mixedConverters) {
+        m_mixedConverters = mixedConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setNamedNativeQueries(List<NamedNativeQueryMetadata> namedNativeQueries) {
         m_namedNativeQueries = namedNativeQueries;
     }
@@ -1109,6 +1137,22 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setPinnedPartitioning(List<PinnedPartitioningMetadata> pinnedPartitioning) {
         m_pinnedPartitioning = pinnedPartitioning;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
+        m_plsqlRecords = records;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
+        m_plsqlTables = tables;
     }
     
     /**
@@ -1221,22 +1265,5 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setVersion(String version) {
         m_version = version;
-    }
-
-    public List<PLSQLRecordMetadata> getPLSQLRecords() {
-        return m_plsqlRecords;
-    }
-
-    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
-        m_plsqlRecords = records;
-    }
-
-    public List<PLSQLTableMetadata> getPLSQLTables() {
-        return m_plsqlTables;
-    }
-
-    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
-        m_plsqlTables = tables;
-    }
-    
+    }   
 }

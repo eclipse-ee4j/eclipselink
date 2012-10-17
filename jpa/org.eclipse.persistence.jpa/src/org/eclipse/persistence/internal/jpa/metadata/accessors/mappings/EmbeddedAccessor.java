@@ -31,6 +31,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -237,7 +239,7 @@ public class EmbeddedAccessor extends MappingAccessor {
 
         // EIS and ORDT mappings may not be aggregate object mappings.
         if (mapping.isAggregateObjectMapping()) {
-            AggregateObjectMapping aggregateMapping = (AggregateObjectMapping)mapping;
+            AggregateObjectMapping aggregateMapping = (AggregateObjectMapping) mapping;
             aggregateMapping.setIsNullAllowed(true);
             
             // Process attribute overrides.
@@ -246,8 +248,8 @@ public class EmbeddedAccessor extends MappingAccessor {
             // Process association overrides.
             processAssociationOverrides(m_associationOverrides, aggregateMapping, getReferenceDescriptor());
             
-            // TODO: Process converts.
-            
+            // Process converts.
+            processConverts(aggregateMapping, getReferenceClass());
         } else if (mapping.isAbstractCompositeObjectMapping()) {
             ((AbstractCompositeObjectMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }

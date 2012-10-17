@@ -22,10 +22,10 @@ import org.eclipse.persistence.sessions.Session;
  * @author Gordon Yorke
  * @since EclipseLink 2.2
  */
-public class EmptyElementConverter implements Converter{
+public class EmptyElementConverter implements Converter {
 
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-        if ("".equals(dataValue)){
+        if ("".equals(dataValue)) {
             return Boolean.TRUE;
         }
         return session.getDatasourcePlatform().getConversionManager().convertObject(dataValue, Boolean.class);
@@ -35,14 +35,9 @@ public class EmptyElementConverter implements Converter{
         return objectValue;
     }
 
-    public void initialize(DatabaseMapping mapping, Session session) {
-        // TODO Auto-generated method stub
-        
-    }
+    public void initialize(DatabaseMapping mapping, Session session) {}
 
     public boolean isMutable() {
-        // TODO Auto-generated method stub
         return false;
     }
-
 }

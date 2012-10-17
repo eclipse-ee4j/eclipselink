@@ -8,8 +8,6 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/09/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
@@ -20,30 +18,23 @@ import javax.persistence.EntityManager;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterClass;
-
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
-import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
-import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerInfo;
-import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerStatus;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
+import org.eclipse.persistence.testing.models.jpa21.advanced.xml.Runner;
+import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerInfo;
+import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerStatus;
 
-public class ConverterTestSuite extends JUnitTestCase {
+public class XMLConverterTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
-
-    public ConverterTestSuite() {}
     
-    public ConverterTestSuite(String name) {
+    protected static final String XML_PU = "xml-default";
+
+    public XMLConverterTestSuite() {}
+    
+    public XMLConverterTestSuite(String name) {
         super(name);
     }
     
@@ -63,37 +54,18 @@ public class ConverterTestSuite extends JUnitTestCase {
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("ConverterTestSuite");
+        suite.setName("XMLConverterTestSuite");
         
-        suite.addTest(new ConverterTestSuite("testAutoApplyConverter"));
-        suite.addTest(new ConverterTestSuite("testAnnotationConverters"));
-        
-        suite.addTest(XMLConverterTestSuite.suite());
+        suite.addTest(new XMLConverterTestSuite("testXMLConverters"));
         
         return suite;
     }
     
     /**
-     * Test that an attribute picks up an auto apply converter. 
-     */
-    public void testAutoApplyConverter() {
-        ServerSession session = JUnitTestCase.getServerSession();
-        
-        ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
-        DirectToFieldMapping salaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("salary");
-        
-        assertNotNull("Salary mapping did not have the auto apply converter", salaryMapping.getConverter());
-        
-        DirectToFieldMapping previousSalaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("previousSalary");
-        
-        assertNull("Salary mapping did not have the auto apply converter", previousSalaryMapping.getConverter());
-    }  
-    
-    /**
      * Test that converters are set.
      */
-    public void testAnnotationConverters() {
-        EntityManager em = createEntityManager();
+    public void testXMLConverters() {
+        EntityManager em = createEntityManager(XML_PU);
             
         try {
             beginTransaction(em);
@@ -112,13 +84,13 @@ public class ConverterTestSuite extends JUnitTestCase {
             runnerStatus.setRunningStatus(RunningStatus.D);
             runnerInfo.setStatus(runnerStatus);
             runner.setInfo(runnerInfo);
-            
+                
             em.persist(runner);
             commitTransaction(em);
                 
             // Clear the cache
             em.clear();
-            clearCache();
+            clearCache(XML_PU);
     
             Runner runnerRefreshed = em.find(Runner.class, runner.getId());
             assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);

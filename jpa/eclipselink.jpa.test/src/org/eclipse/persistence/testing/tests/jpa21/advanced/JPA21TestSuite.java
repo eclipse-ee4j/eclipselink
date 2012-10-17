@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -26,7 +28,7 @@ public class JPA21TestSuite extends TestSuite {
         
         fullSuite.addTest(NamedStoredProcedureQueryTestSuite.suite());
         fullSuite.addTest(ConverterTestSuite.suite());
-        //fullSuite.addTest(CriteriaQueryTestSuite.suite());
+        fullSuite.addTest(CriteriaQueryTestSuite.suite());
         
         return fullSuite;
     }

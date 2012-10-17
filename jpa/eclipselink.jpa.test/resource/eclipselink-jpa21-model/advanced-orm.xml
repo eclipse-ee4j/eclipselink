@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_1.xsd">
+    <description>Mapping Document containing persistence unit metadata.</description>
+    
+    <package>org.eclipse.persistence.testing.models.jpa21.advanced.xml</package>
+    
+    <mapped-superclass class="Athlete">
+        <attributes>
+            <basic name="age"/>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+        </attributes>
+    </mapped-superclass>
+    
+    <entity name="XMLRunner" class="Runner">
+        <table name="JPA21_XML_RUNNER"/>
+        <convert attribute-name="age" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="gender">
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
+            </basic>
+            <element-collection name="personalBests">
+                <map-key-column name="DISTANCE"/>
+                <column name="TIME"/>
+                <convert attribute-name="key" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
+                <collection-table name="JPA21_XML_RUNNER_PBS">
+                    <join-column name="RUNNER_ID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="info">
+                <convert attribute-name="level" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
+                <convert attribute-name="health" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
+                <convert attribute-name="status.runningStatus" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter"/>
+            </embedded>
+        </attributes>
+    </entity>
+    
+    <embeddable class="RunnerInfo">
+        <attributes>
+            <basic name="level">
+                <column name="R_LEVEL"/>
+            </basic>
+            <basic name="health">
+                <column name="R_HEALTH"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    
+    <embeddable class="RunnerStatus">
+        <attributes>
+            <basic name="runningStatus">
+                <column name="R_STATUS"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>    
+
+</entity-mappings>

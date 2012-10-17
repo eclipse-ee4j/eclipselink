@@ -73,6 +73,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/25/2012-2.5 Guy Pelletier 
+ *       - 3746888: JPA 2.1 Converter support
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -127,6 +129,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
@@ -319,6 +322,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildEnumeratedDescriptor());
         addDescriptor(buildConvertDescriptor());
         addDescriptor(buildConverterDescriptor());
+        addDescriptor(buildMixedConverterDescriptor());
         addDescriptor(buildTypeConverterDescriptor());
         addDescriptor(buildObjectTypeConverterDescriptor());
         addDescriptor(buildConversionValueDescriptor());
@@ -1475,6 +1479,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getAssociationOverrideMapping());
+        descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getAttributesMapping());
         
         // Attribute mappings.
@@ -1549,7 +1554,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getAccessMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getTenantDiscriminatorColumnsMapping());
-        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getMixedConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
@@ -2207,6 +2212,21 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMetadataCompleteAttributeMapping());
         descriptor.addMapping(getExcludeDefaultMappingsAttributeMapping());
         descriptor.addMapping(getReadOnlyAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: converter
+     */
+    protected ClassDescriptor buildMixedConverterDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(MixedConverterMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getClassAttributeMapping());
+        descriptor.addMapping(getAutoApplyAttributeMapping());
         
         return descriptor;
     }
@@ -3650,6 +3670,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getAutoApplyAttributeMapping() {
+        XMLDirectMapping nameMapping = new XMLDirectMapping();
+        nameMapping.setAttributeName("m_autoApply");
+        nameMapping.setGetMethodName("getAutoApply");
+        nameMapping.setSetMethodName("setAutoApply");
+        nameMapping.setXPath("@auto-apply");
+        return nameMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLDirectMapping getBatchFetchMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("m_batchFetch");
@@ -4786,6 +4818,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         methodMapping.setSetMethodName("setMethod");
         methodMapping.setXPath("@method");
         return methodMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getMixedConverterMapping() {
+        XMLCompositeCollectionMapping convertersMapping = new XMLCompositeCollectionMapping();
+        convertersMapping.setAttributeName("m_mixedConverters");
+        convertersMapping.setGetMethodName("getMixedConverters");
+        convertersMapping.setSetMethodName("setMixedConverters");
+        convertersMapping.setReferenceClass(MixedConverterMetadata.class);
+        convertersMapping.setXPath("orm:converter");
+        return convertersMapping;
     }
     
     /**
