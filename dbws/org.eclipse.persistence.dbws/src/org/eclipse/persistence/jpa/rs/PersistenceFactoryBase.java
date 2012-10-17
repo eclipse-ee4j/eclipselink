@@ -110,7 +110,14 @@ public class PersistenceFactoryBase {
                 }
                 
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnit, properties);
-                if (!factory.getServerSession().getLoader().getClass().isAssignableFrom(DynamicClassLoader.class)) {
+                ClassLoader sessionLoader = factory.getServerSession().getLoader();
+                if (!sessionLoader.getClass().isAssignableFrom(DynamicClassLoader.class) ) {
+                    properties = new HashMap<String, Object>();
+                    dcl = new DynamicClassLoader(sessionLoader);
+                    properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
+                    if (initializationProperties != null){
+                        properties.putAll(initializationProperties);
+                    }
                     factory.refreshMetadata(properties);
                 }
     
