@@ -114,9 +114,8 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                    <!-- Not needed. Compiler compatibility setting gotten from "Bundle-RequiredExecutionEnvironment" in manifest -->
-                    <!-- source>1.6</source -->
-                    <!-- target>1.6</target -->
+                    <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
+                    <!-- requireJREPackageImports>true</requireJREPackageImports -->
                     <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
                     <!-- compilerArgument>-warn:[+|-]warning_tokens_separated_by_comma - Specify the set of enabled warnings </compilerArgument -->
                     <!-- compilerArgument>-err:warning_tokens_separated_by_comma - convert exactly the listed warnings to errors  </compilerArgument -->
@@ -252,8 +251,8 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>tycho-0.15.0-staged</id>
-            <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-255/</url>
+            <id>tycho-0.16.0-staged</id>
+            <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-207/</url>
         </pluginRepository>
         <pluginRepository>
             <id>tycho-public</id>

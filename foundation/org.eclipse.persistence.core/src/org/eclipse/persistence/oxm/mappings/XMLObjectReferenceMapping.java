@@ -26,7 +26,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
-import org.eclipse.persistence.internal.oxm.ReferenceListener;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -37,6 +36,7 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -140,7 +140,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
      * @return
      */
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
-        ReferenceResolver resolver = ReferenceResolver.getInstance(session);
+        ReferenceResolver resolver = record.getReferenceResolver();
         if (resolver == null) {
             return;
         }
@@ -329,11 +329,6 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
             super.initialize(session);
         }
 
-        ReferenceListener listener = new ReferenceListener();
-        if (!(session.getEventManager().getListeners().contains(listener))) {
-            session.getEventManager().addListener(listener);
-        }
-
         // iterate over each source & target XMLField and set the 
         // appropriate namespace resolver
         XMLDescriptor descriptor = (XMLDescriptor) this.getDescriptor();
@@ -427,7 +422,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
         }
         // store the Reference instance on the resolver for use during mapping
         // resolution phase
-        ReferenceResolver resolver = ReferenceResolver.getInstance(sourceQuery.getSession());
+        ReferenceResolver resolver = ((DOMRecord) databaseRow).getReferenceResolver();
         if (resolver != null) {
             resolver.addReference(new Reference(this, targetObject, referenceClass, primaryKeys));
         }

@@ -108,7 +108,7 @@ public class JSONWriterRecord extends MarshalRecord {
     	 if(marshaller.isMarshalEmptyCollections()){  
     		 super.emptyCollection(xPathFragment, namespaceResolver, true);
     		 startCollection();
-    		 if(xPathFragment != null){
+    		 if(xPathFragment != null && !xPathFragment.isSelfFragment()){
 	    		 openStartElement(xPathFragment, namespaceResolver);	    		 
 	    		 if(!levels.isEmpty()){
 	          	   Level position = levels.peek();

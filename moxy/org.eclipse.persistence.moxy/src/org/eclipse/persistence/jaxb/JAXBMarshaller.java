@@ -756,8 +756,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	 if(value == null){
                  	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
                  }    
-                xmlMarshaller.setIncludeRoot((Boolean)value);
+                xmlMarshaller.setIncludeRoot((Boolean)value);                
             } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
+                if(value == null || (((String)value).length() == 0)){
+                    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+                }                  
                 xmlMarshaller.setValueWrapper((String)value); 
             } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
             	if(value == null){

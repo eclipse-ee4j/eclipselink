@@ -483,7 +483,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
 
         // resolve mapping references
-        xmlUnmarshaller.resolveReferences(session);
+        unmarshalRecord.resolveReferences(session, xmlUnmarshaller.getIDResolver());
 
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
@@ -583,7 +583,7 @@ if(clazz == ClassConstants.OBJECT) {
         }
 
         // resolve mapping references
-        xmlUnmarshaller.resolveReferences(session);
+        unmarshalRecord.resolveReferences(session, xmlUnmarshaller.getIDResolver());
 
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
@@ -839,7 +839,8 @@ if(clazz == ClassConstants.OBJECT) {
         }
 
         // resolve mapping references
-        xmlUnmarshaller.resolveReferences(session);
+        unmarshalRecord.resolveReferences(session, xmlUnmarshaller.getIDResolver());
+        
 
         if (isPrimitiveWrapper) {
             return unmarshalRecord.getCurrentObject();
@@ -947,7 +948,7 @@ if(clazz == ClassConstants.OBJECT) {
             extendedXMLReader.parse(inputSource);
 
             // resolve mapping references
-            xmlUnmarshaller.resolveReferences(session);
+            unmarshalRecord.resolveReferences(session, xmlUnmarshaller.getIDResolver());
 
             if (isPrimitiveWrapper || clazz == ClassConstants.OBJECT) {
                 return unmarshalRecord.getCurrentObject();
