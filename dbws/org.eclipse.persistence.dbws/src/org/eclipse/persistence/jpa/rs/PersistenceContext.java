@@ -317,6 +317,7 @@ public class PersistenceContext {
     
     @Override
     public void finalize(){
+        this.emf.close();
         this.emf = null;
         this.context = null;
     }
