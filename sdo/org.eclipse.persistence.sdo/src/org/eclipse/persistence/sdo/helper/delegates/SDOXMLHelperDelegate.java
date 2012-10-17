@@ -451,9 +451,11 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         writerRecord.setWriter(outputWriter);
         writerRecord.setMarshaller(anXMLMarshaller);
         
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
+        SDOMarshalListener listener = ((SDOMarshalListener)anXMLMarshaller.getMarshalListener());
+        
+        listener.setMarshalledObject(xmlDocument.getRootObject());
+        listener.setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
+        listener.setRootMarshalRecord(writerRecord);
         
         try{
             anXMLMarshaller.marshal(xmlDocument, writerRecord);
@@ -463,7 +465,11 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     			     throw SDOException.dataObjectNotFromHelperContext();
     		   }    	
             }
-    	} 
+    	} finally{
+    	    listener.setMarshalledObject(null);
+    	    listener.setMarshalledObjectRootQName(null);
+    	    listener.setRootMarshalRecord(null);
+    	}
         outputWriter.flush();
     }
 
@@ -491,20 +497,23 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
             anXMLMarshaller.setEncoding(xmlDocument.getEncoding());
             anXMLMarshaller.setSchemaLocation(xmlDocument.getSchemaLocation());
             anXMLMarshaller.setNoNamespaceSchemaLocation(xmlDocument.getNoNamespaceSchemaLocation());
-            ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(xmlDocument.getRootObject());
-            ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
+            
+            SDOMarshalListener listener = ((SDOMarshalListener)anXMLMarshaller.getMarshalListener());
+            
+            listener.setMarshalledObject(xmlDocument.getRootObject());
+            listener.setMarshalledObjectRootQName(new QName(xmlDocument.getRootElementURI(), xmlDocument.getRootElementName()));
             
             if(result instanceof SAXResult) {
                 ContentHandlerRecord marshalRecord = new ContentHandlerRecord();
                 marshalRecord.setContentHandler(((SAXResult)result).getHandler());
                 marshalRecord.setMarshaller(anXMLMarshaller);
-                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(marshalRecord);
+                listener.setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
             } else if(result instanceof DOMResult) {
                 NodeRecord marshalRecord = new NodeRecord();
                 marshalRecord.setDOM(((DOMResult)result).getNode());
                 marshalRecord.setMarshaller(anXMLMarshaller);
-                ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(marshalRecord);
+                listener.setRootMarshalRecord(marshalRecord);
                 anXMLMarshaller.marshal(xmlDocument, marshalRecord);
             } else {
                 StringWriter writer = new StringWriter();
@@ -513,6 +522,9 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                 StreamSource source = new StreamSource(new java.io.StringReader(xml));
                 anXMLMarshaller.getTransformer().transform(source, result);
             }
+            listener.setMarshalledObject(null);
+            listener.setMarshalledObjectRootQName(null);
+            listener.setRootMarshalRecord(null);
         }
 
     }
@@ -572,9 +584,11 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
         writerRecord.setWriter(writer);
         writerRecord.setMarshaller(anXMLMarshaller);
         
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObject(rootObject);
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
-        ((SDOMarshalListener)anXMLMarshaller.getMarshalListener()).setRootMarshalRecord(writerRecord);
+        SDOMarshalListener listener = ((SDOMarshalListener)anXMLMarshaller.getMarshalListener());
+        
+        listener.setMarshalledObject(rootObject);
+        listener.setMarshalledObjectRootQName(new QName(rootElementURI, rootElementName));
+        listener.setRootMarshalRecord(writerRecord);
   
         try{
             anXMLMarshaller.marshal(xmlDocument, writerRecord);
@@ -584,7 +598,12 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     			     throw SDOException.dataObjectNotFromHelperContext();
     		   }    	
             }
-    	} 
+    	}finally{
+    	    listener.setMarshalledObject(null);
+    	    listener.setMarshalledObjectRootQName(null);
+    	    listener.setRootMarshalRecord(null);
+    	}
+    	
         
         try {
             writer.flush();

@@ -17,7 +17,12 @@ import commonj.sdo.Type;
 import java.util.ArrayList;
 import java.util.List;
 import junit.textui.TestRunner;
+
+import org.eclipse.persistence.oxm.XMLMarshalListener;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sdo.SDOConstants;
+import org.eclipse.persistence.sdo.helper.SDOMarshalListener;
+import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
 import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 
@@ -292,5 +297,14 @@ public class LoadAndSavePurchaseOrderComplexTestCases extends LoadAndSaveTestCas
         itemsType.set(prop, "Items");
         DataObject itemProp = addProperty(itemsType, "item", itemType, true, true, true);
         return typeHelper.define(itemsType);
+    }
+    
+    protected void compareXML(String controlFileName, String testString, boolean compareNodes) throws Exception {
+           super.compareXML(controlFileName, testString, compareNodes);           
+           XMLMarshaller marshaller = ((SDOXMLHelper)xmlHelper).getXmlMarshaller();
+           XMLMarshalListener listener = marshaller.getMarshalListener();
+           assertNull(((SDOMarshalListener)listener).getMarshalledObject());
+           assertNull(((SDOMarshalListener)listener).getMarshalledObjectRootQName());
+           assertNull(((SDOMarshalListener)listener).getRootMarshalRecord());
     }
 }
