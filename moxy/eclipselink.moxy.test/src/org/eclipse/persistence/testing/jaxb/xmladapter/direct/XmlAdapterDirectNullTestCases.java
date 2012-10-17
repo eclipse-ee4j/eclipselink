@@ -50,6 +50,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue(actualException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testJSONMarshalToOutputStream() throws Exception{
@@ -62,6 +63,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue(actualException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testJSONMarshalToStringWriter() throws Exception{
@@ -72,6 +74,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);            
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
@@ -82,6 +85,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testObjectToContentHandler() throws Exception{
@@ -92,6 +96,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testObjectToOutputStream() throws Exception{
@@ -104,6 +109,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testObjectToOutputStreamASCIIEncoding() throws Exception{
@@ -116,6 +122,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testObjectToXMLDocument() throws Exception{
@@ -128,6 +135,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testObjectToXMLEventWriter() throws Exception{
@@ -138,6 +146,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     public void testObjectToXMLStreamWriter() throws Exception{
         try{
@@ -147,6 +156,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     public void testObjectToXMLStreamWriterRecord() throws Exception{
         try{
@@ -165,6 +175,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
+        fail("An exception should have been thrown");
     }
     
     public void testRoundTrip(){
