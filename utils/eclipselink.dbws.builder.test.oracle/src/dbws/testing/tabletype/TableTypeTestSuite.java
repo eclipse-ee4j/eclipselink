@@ -1097,6 +1097,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                     "</attribute-mapping>\n" +
                  "</attribute-mappings>\n" +
                  "<descriptor-type>aggregate</descriptor-type>\n" +
+                 "<caching>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</caching>\n" +
+                 "<remote-caching>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</remote-caching>\n" +
                  "<instantiation/>\n" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
                  "<default-root-element>tabletypeType</default-root-element>\n" +
@@ -1141,6 +1147,12 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                     "</attribute-mapping>\n" +
                  "</attribute-mappings>\n" +
                  "<descriptor-type>aggregate</descriptor-type>\n" +
+                 "<caching>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</caching>\n" +
+                 "<remote-caching>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</remote-caching>\n" +
                  "<instantiation/>\n" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
                  "<default-root-element>tabletype2Type</default-root-element>\n" +
