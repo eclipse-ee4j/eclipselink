@@ -74,6 +74,16 @@
     <target name="init" depends="pre-init, common-init"/>
 
     <target name="set-defaults">
+        <!-- The following variables should be passed from Hudson:
+                 env.JAVA_HOME   - JAVA_HOME as defined by Hudson
+                 git.exec        - fully qualified path to git executable
+                 build.deps.dir  - location on buildserver that stores dependencies (/shared/rt/eclipselink/bld_deps/master)
+                 junit.dir       - directory where junit.jar can be found
+                 junit.lib       - fully qualified path to junit jarfile (junit.dir/junit.jarname)
+                 build.tool.root - root of build server (from here releng and db data files can be found)
+                 hudson.workspace- WORKSPACE as defined by the Hudson slave
+                 M2_HOME         - location of Maven3 install (on build server)
+        -->
         <property name="branch" value="master"/>
 
         <condition property="git.exec"   value="${env.GIT_EXEC}">
@@ -84,10 +94,19 @@
         <property name="junit.dir"       value="${build.deps.dir}/junit"/>
         <property name="build.tool.root" value="${build.location}"/>
         <property file="${build.tool.root}/db-${branch}.properties"/>
+
+        <echo message=" "/>
+        <echo message="git.exec        ='${git.exec}'"/>
+        <echo message="build.deps.dir  = '${build.deps.dir}'"/>
+        <echo message="build.tool.root = '${build.tool.root}'"/>
+        <echo message="hudson.workspace= '${hudson.workspace}'"/>
+        <echo message="M2_HOME         = '${M2_HOME}'"/>
+        <echo message=" "/>
+        <echo message="branch          = '${branch}'"/>
     </target>
 
     <target name="get-git-hash" unless="git.hash" depends="set-defaults">
-        <!-- get git.hash    NOTE: if get fails defaulted to "NA" -->
+        <!-- get git.hash    NOTE: if "get" fails defaulted to "NA" -->
         <exec outputproperty="git.hash"
             failonerror="false"
             failifexecutionfails="false"
@@ -193,8 +212,8 @@
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
-        <!-- Set extract.dir appropriately for this build  (not used for milestones, but has to be here due to use of "release.version"  -->
-        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
+        <!-- Set extract.root.dir for this publishing  (not used for milestones, but has to be here due to use of "release.version"  -->
+        <property name="extract.root.dir" value="${build.tool.root}/exported_builds"/>
 
         <!-- For signed archive name need "version.string" defined first -->
         <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
@@ -217,7 +236,7 @@
         <echo message="branch          ='${branch}'"/>
         <echo message="basedir         ='${basedir}'"/>
         <echo message="build.location  ='${build.location}'"/>
-        <echo message="extract.dir     ='${extract.dir}'"/>
+        <echo message="extract.root.dir='${extract.root.dir}'"/>
         <echo message="log.dir         ='${log.dir}'"/>
         <echo message="junit.dir       ='${junit.dir}'"/>
         <echo message="junit.lib       ='${junit.lib}'"/>
@@ -344,19 +363,20 @@
 
     <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
         <!-- New Publish Architecture -->
-        <mkdir dir="${extract.dir}"/>
-        <echo message="Extracting build artifacts..."/>
+        <property name="build.extract.dir" value="${extract.root.dir}/build/${release.version}/${version.qualifier}"/>
+        <mkdir dir="${build.extract.dir}"/>
+        <echo message="Extracting Build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
-        <echo message="     to '${extract.dir}'"/>
-        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
-        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
-        <copy todir="${extract.dir}" failonerror="false">
+        <echo message="     to '${build.extract.dir}'"/>
+        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${build.extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${build.extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${build.extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${build.extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${build.extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${build.extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${build.extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${build.extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
+        <copy todir="${build.extract.dir}" failonerror="false">
             <fileset  dir="${hudson.workspace}">
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
             </fileset>
@@ -365,32 +385,32 @@
         <antcall target="generate-handoff">
             <param name="procedure"   value="build"/>
             <param name="host"        value="Eclipse"/>
-            <param name="extract.loc" value="${extract.dir}"/>
+            <param name="extract.loc" value="${build.extract.dir}"/>
         </antcall>
     </target>
 
     <target name="extract-test-results" depends="common-init">
         <!-- 'Publish' from Hudson to Build -->
         <property name="host" value="Eclipse"/>
-        <property name="result.host.dir" value="${extract.dir}/${host}"/>
-        <mkdir dir="${result.host.dir}"/>
-        <echo message="Extracting test artifacts..."/>
+        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${version.qualifier}/${host}"/>
+        <mkdir dir="${test.extract.dir}"/>
+        <echo message="Exporting test artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
-        <echo message="     to '${result.host.dir}'"/>
-        <copy file="${hudson.workspace}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${result.host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${result.host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${result.host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.jpars.test}/${report.dir}/junit-noframes.html"        tofile="${result.host.dir}/eclipselink-jpars-lrg-${version.string}.html"     failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"    tofile="${result.host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"     tofile="${result.host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"     tofile="${result.host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${result.host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${result.host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <echo message="     to '${test.extract.dir}'"/>
+        <copy file="${hudson.workspace}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${test.extract.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${test.extract.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${test.extract.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpars.test}/${report.dir}/junit-noframes.html"        tofile="${test.extract.dir}/eclipselink-jpars-lrg-${version.string}.html"     failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"    tofile="${test.extract.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"     tofile="${test.extract.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"     tofile="${test.extract.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${test.extract.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${test.extract.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
             <param name="procedure"   value="test"/>
-            <param name="host"        value="Eclipse"/>
-            <param name="extract.loc" value="${result.host.dir}"/>
+            <param name="host"        value="${host}"/>
+            <param name="extract.loc" value="${test.extract.dir}"/>
         </antcall>
     </target>
 
@@ -399,6 +419,13 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
+        <echo message="Generating Publishing handoff file with the following values:"/>
+        <echo message="    procedure    ='${procedure}'"/>
+        <echo message="    extract.loc  ='${extract.loc}'"/>
+        <echo message="    host         ='${host}'"/>
+        <echo message="    milestone.tag='${milestone.tag}'"/>
+        <echo message="    handoff.file ='${handoff.file}'"/>
+
         <echo message="extract.loc=${extract.loc} host=${host} maven.tag=${milestone.tag}" file="${handoff.file}" append="false"/>
         <!-- could use ${line.separator} to generate on separate lines, but don't as yet -->
     </target>
