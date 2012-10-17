@@ -27,6 +27,9 @@ public class MyCalendar {
             return false;
         }
         MyCalendarType mcType = ((MyCalendar) obj).date;
+        if(date == null){
+            return mcType == null;
+        }
         return mcType.equals(date);
     }
 }

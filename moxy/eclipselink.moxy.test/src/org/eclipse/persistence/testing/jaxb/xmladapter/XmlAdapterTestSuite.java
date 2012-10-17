@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.CollapsedStringTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.ListToStringAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.NormalizedStringTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectNullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
@@ -58,6 +59,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterCompositeCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterCompositeDirectCollectionTestCases.class);
         suite.addTestSuite(XmlAdapterDirectTestCases.class);
+        suite.addTestSuite(XmlAdapterDirectNullTestCases.class);
         suite.addTestSuite(ListToStringAdapterTestCases.class);
         suite.addTestSuite(PackageLevelAdapterTestCases.class);
         suite.addTestSuite(PackageLevelAdaptersTestCases.class);
