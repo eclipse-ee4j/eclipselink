@@ -11719,6 +11719,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             commitTransaction(em);
             assertNotNull(vegetable);
             assertNotNull(vegetable2);
+            assertTrue(vegetable.getType() == '\u0000');
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
