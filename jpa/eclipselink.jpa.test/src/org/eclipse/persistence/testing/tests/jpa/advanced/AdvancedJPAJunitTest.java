@@ -1867,7 +1867,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             commitTransaction(em);
             beginTransaction(em);
 
-            em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getID()).executeUpdate();
+            em.createNamedQuery("SProcInOutReturningRawData").setParameter("ADDRESS_ID", address1.getID()).getSingleResult();
        } catch (RuntimeException exception) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

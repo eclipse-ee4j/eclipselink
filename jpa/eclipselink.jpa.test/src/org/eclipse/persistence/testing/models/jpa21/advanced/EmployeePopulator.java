@@ -768,6 +768,13 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadAllAddresses() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_All_Addresses");
+        proc.addStatement("SELECT ADDRESS_ID from JPA21_ADDRESS");
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadAllEmployees() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_All_Employees");
@@ -1404,6 +1411,7 @@ public class EmployeePopulator {
                 schema.replaceObject(buildStoredProcedureReadFromAddressResultSet());
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
+                schema.replaceObject(buildStoredProcedureReadAllAddresses());
                 schema.replaceObject(buildStoredProcedureReadAllEmployees());
                 schema.replaceObject(buildStoredProcedureDeleteAllResponsibilities());
                 

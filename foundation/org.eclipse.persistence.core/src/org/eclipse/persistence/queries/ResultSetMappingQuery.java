@@ -300,6 +300,14 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     }
     
     /**
+     * PUBLIC:
+     * Return true if there are results set mappings associated with this query.
+     */
+    public boolean hasResultSetMappings() {
+        return ! getSQLResultSetMappings().isEmpty();
+    }
+    
+    /**
      * PUBLIC: Return true if this is a result set mapping query.
      */
     public boolean isResultSetMappingQuery() {

@@ -115,6 +115,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetSingleResultOnUpdateQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListOnDeleteQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetSingleResultOnDeleteQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteUpdateOnSelectQueryWithResultClass"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteUpdateOnSelectQueryWithNoResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testClassCastExceptionOnExecuteWithNoOutputParameters"));
         
         return suite;
@@ -279,7 +281,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                //closeEntityManager(em);
                 throw e;
             } finally {
                 closeEntityManager(em);
@@ -1299,6 +1300,58 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         }
     }
     
+    /**
+     * Tests an execute update on a named stored procedure that does a select.
+     * NamedStoredProcedure defines a result class.
+     */
+    public void testExecuteUpdateOnSelectQueryWithResultClass() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                beginTransaction(em);
+                em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("ADDRESS_ID", 1).executeUpdate();
+                commitTransaction(em);
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                return;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            fail("Expected Illegal state exception was not thrown.");
+        }
+    }
+    
+    /**
+     * Tests an execute update on a named stored procedure that does a select.
+     * NamedStoredProcedure defines a result class.
+     */
+    public void testExecuteUpdateOnSelectQueryWithNoResultClass() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                beginTransaction(em);
+                em.createNamedStoredProcedureQuery("ReadAllAddressesWithNoResultClass").executeUpdate();
+                commitTransaction(em);
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                return;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            fail("Expected Illegal state exception was not thrown.");
+        }
+    }
+
     /**
      * Test a class cast exception. 
      */

@@ -48,14 +48,14 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 @Entity
 @Table(name="JPA21_ADDRESS")
 @NamedStoredProcedureQueries({
-        
+    
     @NamedStoredProcedureQuery(
         name = "ReadAddressUsingPositionalParameterAndSingleResultSet",
         resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
         procedureName = "Read_Address_Result_Set",
         parameters = @StoredProcedureParameter(mode=IN, type=Integer.class)
     ),
-      
+        
     @NamedStoredProcedureQuery(
         name = "ReadAddressWithResultClass",
         resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
@@ -69,6 +69,11 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @StoredProcedureParameter(mode=OUT, name="P_CODE", type=String.class)
         }
     ),
+    
+    @NamedStoredProcedureQuery(
+        name = "ReadAllAddressesWithNoResultClass",
+        procedureName = "Read_All_Addresses"
+     ),
         
     @NamedStoredProcedureQuery(
         name = "ReadAddressWithPositionalParameters",

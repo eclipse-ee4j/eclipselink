@@ -630,10 +630,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     protected void setAsSQLModifyQuery() {
-        // TODO: probably could check if their are entity results or the likes
-        // on the query?! Likely don't want to convert it to a data modify query
-        // at the point and let an exception be thrown (from executeUpdate)
-        setAsDataModifyQuery();
+        if (! getDatabaseQueryInternal().isResultSetMappingQuery() || ! getResultSetMappingQuery().hasResultSetMappings()) {
+            setAsDataModifyQuery();
+        }
     }
     
     /**
