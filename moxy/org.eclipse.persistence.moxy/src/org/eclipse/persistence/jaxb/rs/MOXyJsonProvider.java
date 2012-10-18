@@ -27,6 +27,7 @@ import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -205,13 +206,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     protected Providers providers;
 
     private String attributePrefix = null;
+    private Map<Class<?>, JAXBContext> contextCache = new HashMap<Class<?>, JAXBContext>();
     private boolean formattedOutput = false;
     private boolean includeRoot = false;
     private boolean marshalEmptyCollections = true;
     private Map<String, String> namespacePrefixMapper;
     private char namespaceSeperator = XMLConstants.DOT;
     private String valueWrapper;
-
 
     /**
      * The value that will be prepended to all keys that are mapped to an XML
@@ -283,14 +284,19 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @throws JAXBException
      */
     protected JAXBContext getJAXBContext(Class<?> domainClass, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, ?> httpHeaders) throws JAXBException {
+        JAXBContext jaxbContext = contextCache.get(domainClass);
+        if(null != jaxbContext) {
+            return jaxbContext;
+        }
         ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
-        JAXBContext jaxbContext;
         if(null == resolver || null == (jaxbContext = resolver.getContext(domainClass))) {
             return JAXBContextFactory.createContext(new Class[] {domainClass}, null); 
         } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
             return jaxbContext;
         } else {
-            return JAXBContextFactory.createContext(new Class[] {domainClass}, null); 
+            jaxbContext = JAXBContextFactory.createContext(new Class[] {domainClass}, null);
+            contextCache.put(domainClass, jaxbContext);
+            return jaxbContext;
         }
     }
 
