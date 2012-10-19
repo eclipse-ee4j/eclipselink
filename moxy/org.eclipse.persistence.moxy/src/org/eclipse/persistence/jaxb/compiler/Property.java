@@ -139,7 +139,9 @@ public class Property implements Cloneable {
     private List<XmlJoinNodes> xmlJoinNodesList;
     private boolean isSuperClassProperty;
 
+    private boolean isTransientType;
     private static final String MARSHAL_METHOD_NAME = "marshal";
+    
     
     public Property() {}
 
@@ -407,6 +409,16 @@ public class Property implements Cloneable {
         return isRequired;
     }
     
+
+
+    public boolean isTransientType() {
+        return isTransientType;
+    }
+
+    public void setTransientType(boolean isTransientType) {
+        this.isTransientType = isTransientType;
+    }
+
     public void setIsRequired(boolean b) {
         isRequired = b;
     }

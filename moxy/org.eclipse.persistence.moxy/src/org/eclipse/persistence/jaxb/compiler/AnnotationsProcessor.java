@@ -834,7 +834,7 @@ public class AnnotationsProcessor {
                 JavaClass typeClass = property.getActualType();
                 TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
                 if (targetInfo != null && targetInfo.isTransient() && property.getXmlElements() == null) {
-                    throw JAXBException.invalidReferenceToTransientClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
+                    property.setTransientType(true);
                 }
                 // only one XmlValue is allowed per class, and if there is one
                 // only XmlAttributes are allowed
@@ -1825,26 +1825,19 @@ public class AnnotationsProcessor {
         property.setElement(javaHasAnnotations);
 
         // if there is a TypeInfo for ptype check it for transient, otherwise
-        // check the class
-        TypeInfo pTypeInfo = typeInfo.get(ptype.getQualifiedName());
-        if ((pTypeInfo != null && !pTypeInfo.isTransient()) || !helper.isAnnotationPresent(ptype, XmlTransient.class)) {
-            property.setType(ptype);
-        } else {
-            JavaClass parent = ptype.getSuperclass();
-            while (parent != null) {
-                if (parent.getName().equals(JAVA_LANG_OBJECT)) {
-                    property.setType(parent);
-                    break;
-                }
-                // if there is a TypeInfo for parent check it for transient,
-                // otherwise check the class
-                TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
-                if ((parentTypeInfo != null && !parentTypeInfo.isTransient()) || !helper.isAnnotationPresent(parent, XmlTransient.class)) {
-                    property.setType(parent);
-                    break;
-                }
-                parent = parent.getSuperclass();
+        // check the class        
+        if (isCollectionType(ptype)) {
+            JavaClass componentType = helper.getJavaClass(Object.class);;
+            if(ptype.hasActualTypeArguments()){
+                ArrayList typeArgs =  (ArrayList) ptype.getActualTypeArguments();
+                if(typeArgs.size() > 0) {
+                    componentType = (JavaClass) typeArgs.get(0);                    
+                } 
             }
+            
+            updatePropertyType(property, ptype, componentType);
+        }else{
+            updatePropertyType(property, ptype, ptype);
         }
         if((ptype.isArray()  && !areEquals(ptype, byte[].class))  || (property.isCollectionType(ptype) && !helper.isAnnotationPresent(javaHasAnnotations, XmlList.class)) ){
         	property.setNillable(true);
@@ -1958,6 +1951,31 @@ public class AnnotationsProcessor {
         return property;
     }
 
+    
+    private void updatePropertyType(Property property, JavaClass ptype, JavaClass componentType){
+        TypeInfo componentTypeInfo = typeInfo.get(componentType);
+        if((componentTypeInfo != null && !componentTypeInfo.isTransient()) || !helper.isAnnotationPresent(componentType, XmlTransient.class)){
+            property.setType(ptype);
+        }else{
+            JavaClass parent = componentType.getSuperclass();
+            while (parent != null) {
+                if (parent.getName().equals(JAVA_LANG_OBJECT)) {
+                    property.setTransientType(true);
+                    property.setType(ptype);
+                    break;
+                }
+                // if there is a TypeInfo for parent check it for transient,
+                // otherwise check the class
+                TypeInfo parentTypeInfo = typeInfo.get(parent.getQualifiedName());
+                if ((parentTypeInfo != null && !parentTypeInfo.isTransient()) || !helper.isAnnotationPresent(parent, XmlTransient.class)) {
+                    property.setType(parent);
+                    break;
+                }
+                parent = parent.getSuperclass();
+            }
+        }
+    }
+    
     /**
      * Build a new 'choice' property. Here, we flag a new property as a 'choice'
      * and create/set an XmlModel XmlElements object based on the @XmlElements

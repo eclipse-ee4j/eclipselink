@@ -1282,6 +1282,9 @@ public class MappingsGenerator {
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
+            if(property.isTransientType()){
+                mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);
+            }
 
         if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
@@ -1988,12 +1991,15 @@ public class MappingsGenerator {
         XMLField xmlField = getXPathForField(property, namespaceInfo, false);
         mapping.setXPath(xmlField.getXPath());
 
-        if (referenceClassName == null){
+        if (referenceClassName == null){                   
         	((XMLField)mapping.getField()).setIsTypedTextField(true);
         	((XMLField)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
+        if(property.isTransientType()){
+            mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);   
+        }    
 
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
