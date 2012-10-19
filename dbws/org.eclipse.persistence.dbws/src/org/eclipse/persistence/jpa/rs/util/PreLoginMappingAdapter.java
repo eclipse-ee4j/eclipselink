@@ -46,11 +46,11 @@ import org.eclipse.persistence.sessions.SessionEvent;
 public class PreLoginMappingAdapter extends SessionEventListener {
 
     protected AbstractSession jpaSession;
-    
+
     public PreLoginMappingAdapter(AbstractSession jpaSession){
         this.jpaSession = jpaSession;
     }
-    
+
     @SuppressWarnings({ "unchecked" })
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
@@ -82,7 +82,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 hrefMapping.setXPath(".");
                 descriptor.addMapping(hrefMapping);
             }
-            
+
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
             Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
             for (DatabaseMapping mapping: descriptorMappings){
@@ -100,40 +100,45 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                             }
                         }
 
-                        if (jpaDescriptor != null){
-                            ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping)jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-
-                            if (jpaMapping != null) {
-                                if (jpaMapping.getMappedBy() != null){
-                                    ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
-                                    DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
-                                    convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
+                        if (jpaDescriptor != null) {
+                            DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
+                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
+                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                                if (jpaMapping != null) {
+                                    if (jpaMapping.getMappedBy() != null) {
+                                        ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
+                                        DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
+                                        convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-            
+
             ClassLoader cl = jpaSession.getPlatform().getConversionManager().getLoader();
             descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
 
-            for (DatabaseMapping mapping: descriptorMappings){
+            for (DatabaseMapping mapping : descriptorMappings) {
                 if (jpaDescriptor != null && mapping.isXMLMapping()){
-                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()){
-                        ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping)jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                        if (jpaMapping != null) {
-                            // Convert all ForeignReferenceMappings that are visible in JPA
-                            // to ChoiceMapping to allow a link to be returned instead of the whole Object
-                            // XMLInverseMappings are ignored in JAXB, so we should not convert those
-                            convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
+                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
+                        DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
+                        if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
+                            ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                            if (jpaMapping != null) {
+                                // Convert all ForeignReferenceMappings that are visible in JPA
+                                // to ChoiceMapping to allow a link to be returned instead of the whole Object
+                                // XMLInverseMappings are ignored in JAXB, so we should not convert those
+                                convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
+                            }
                         }
                     }
-                }                
+                }
             }
         }
     }
-    
+
     /**
      * Update the targetMapping to have the same accessor as the originMapping
      * @param originMapping
@@ -155,7 +160,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             targetMapping.setSetMethodName(originMapping.getSetMethodName());
         }
     }
-    
+
     /**
      * Build an XMLInverseMapping based on a particular mapping and replace that mapping with
      * the newly created XMLInverseMapping in jaxbDescriptor
@@ -181,7 +186,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         jaxbDescriptor.removeMappingForAttributeName(mapping.getAttributeName());
         jaxbDescriptor.addMapping(jaxbInverseMapping);
     }
-    
+
     /**
      * Build an XMLChoiceObjectMapping based on a particular mapping and replace that mapping with
      * the newly created XMLChoiceObjectMapping in jaxbDescriptor.

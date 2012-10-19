@@ -309,19 +309,19 @@ public class PersistenceContext {
             em.close();
         }
     }
-    
+
     public boolean doesExist(Map<String, String> tenantId, Object entity){
         DatabaseSession session = JpaHelper.getDatabaseSession(getEmf());
         return session.doesObjectExist(entity);
     }
-    
+
     @Override
     public void finalize(){
         this.emf.close();
         this.emf = null;
         this.context = null;
     }
-    
+
     /**
      * A part of the facade over the JPA API
      * Find an entity with the given name and id in JPA
@@ -805,7 +805,7 @@ public class PersistenceContext {
         }
         return entity;
     }
-    
+
     /**
      * Marshall an entity to either JSON or XML
      * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
@@ -903,21 +903,16 @@ public class PersistenceContext {
                     if (mapping.isForeignReferenceMapping()){
                         ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
 
-                            RelationshipInfo info = new RelationshipInfo();
+                        RelationshipInfo info = new RelationshipInfo();
 
-                            info.setAttributeName(frMapping.getAttributeName());
-                            info.setOwningEntity(entity);
-                            info.setOwningEntityAlias(descriptor.getAlias());
-                            info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, getJpaSession()));
-                            ((PersistenceWeavedRest)entity)._persistence_getRelationships().add(info);
-
-                            //String href = baseURI + this.name + "/entity/"  + info.getOwningEntityAlias() + "/" + 
-                            //               IdHelper.stringifyId(info.getOwningEntity(), info.getOwningEntityAlias(), this) + "/" + frMapping.getAttributeName();
-                            // ((PersistenceWeavedRest)entity)._persistence_setHref(href);
+                        info.setAttributeName(frMapping.getAttributeName());
+                        info.setOwningEntity(entity);
+                        info.setOwningEntityAlias(descriptor.getAlias());
+                        info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, getJpaSession()));
+                        ((PersistenceWeavedRest)entity)._persistence_getRelationships().add(info);
                     }
                 }
             }
-
         }
     }
 
@@ -960,22 +955,18 @@ public class PersistenceContext {
     protected List<XmlAdapter> getAdapters() throws Exception {
         if (adapters == null) {
             adapters = new ArrayList<XmlAdapter>();
-            for (ClassDescriptor desc : this.getJpaSession().getDescriptors()
-                    .values()) {
-                Class clz = desc.getJavaClass();
-                String referenceAdapterName = clz.getName() + "."
-                        + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
-                ClassLoader cl = getJpaSession().getDatasourcePlatform()
-                        .getConversionManager().getLoader();
-                Class referenceAdaptorClass = Class.forName(
-                        referenceAdapterName, true, cl);
-
-                Class[] argTypes = { String.class, PersistenceContext.class };
-                Constructor referenceAdaptorConstructor = referenceAdaptorClass
-                            .getDeclaredConstructor(argTypes);
-                Object[] args = new Object[] { getBaseURI().toString(), this };
-                adapters.add((XmlAdapter) referenceAdaptorConstructor
-                        .newInstance(args));
+            for (ClassDescriptor desc : this.getJpaSession().getDescriptors().values()) {
+                // avoid embeddables
+                if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
+                    Class clz = desc.getJavaClass();
+                    String referenceAdapterName = clz.getName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+                    ClassLoader cl = getJpaSession().getDatasourcePlatform().getConversionManager().getLoader();
+                    Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
+                    Class[] argTypes = { String.class, PersistenceContext.class };
+                    Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);
+                    Object[] args = new Object[] { getBaseURI().toString(), this };
+                    adapters.add((XmlAdapter) referenceAdaptorConstructor.newInstance(args));
+                }
             }
         }
         return adapters;
