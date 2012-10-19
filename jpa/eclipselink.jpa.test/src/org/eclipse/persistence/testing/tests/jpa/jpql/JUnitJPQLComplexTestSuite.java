@@ -2982,9 +2982,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // Bug 372178 - JPQL: query fails on Symfoware
         if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSymfoware())
         {
-            warning("The test 'caseTypeTest' is not supported on Symfoware, "  
+            warning("The test 'caseTypeTest' is not supported on Symfoware, "
                   + "EclipseLink will convert some (not all) Integer into String, "
-                  + "and because Symfoware does not support implicit type conversion, " 
+                  + "and because Symfoware does not support implicit type conversion, "
                   + "we ended up with the addition between String and Integer which is illegal on Symfoware.");
             closeEntityManager(em);
             return;
@@ -3773,7 +3773,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select b from Buyer b join b.creditLines l where l in :arg");
         List args = new ArrayList();
         args.add(0);
-        args.add(1);
+        query.setParameter("arg", args);
+        query.getResultList();
+        query = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
         query.setParameter("arg", args);
         query.getResultList();
         closeEntityManager(em);
@@ -4290,7 +4292,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             try {
                 // P2 (Non-repeatable read)
                 Runnable runnable = new Runnable() {
-                    public void run() {
+                    @Override
+						public void run() {
                         try {
                             beginTransaction(em2);
                             Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
