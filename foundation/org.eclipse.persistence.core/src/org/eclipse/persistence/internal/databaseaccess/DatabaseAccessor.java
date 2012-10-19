@@ -863,9 +863,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // If we don't expect a result to be returned from a stored procedure (presumably because the 
             // the procedure does only an update) and the row count doesn't equal the update count from the 
             // statement then we are in an illegal state, throw an exception.
-            if (call.isStoredProcedureCall() && call.isNothingReturned() && rowCount != statement.getUpdateCount()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
-            }
+            // TODO: revisit this. have to throw this exception for JPA when an executeUpdate is called
+            // on a stored procedure that does not do an update.
+            // also, check the call is not null 
+            //if (call.isStoredProcedureCall() && call.isNothingReturned() && rowCount != statement.getUpdateCount()) {
+                //throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
+            //}
             
             if ((!getPlatform().supportsAutoCommit()) && (!this.isInTransaction)) {
                 getPlatform().autoCommit(this);
