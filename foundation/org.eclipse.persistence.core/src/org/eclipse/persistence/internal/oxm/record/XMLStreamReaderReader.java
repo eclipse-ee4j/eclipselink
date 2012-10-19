@@ -257,6 +257,9 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
         @Override
         public String getValue(String uri, String localName) {
+            if (XMLConstants.EMPTY_STRING.equals(uri)) {
+                uri = null;
+            }
             return xmlStreamReader.getAttributeValue(uri, localName);
         }
 
