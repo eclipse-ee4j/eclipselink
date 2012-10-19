@@ -51,7 +51,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         this.jpaSession = jpaSession;
     }
     
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked" })
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
         for (Object descriptorAlias: project.getAliasDescriptors().keySet()){
@@ -119,7 +119,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
 
             for (DatabaseMapping mapping: descriptorMappings){
-                if (mapping.isXMLMapping()){
+                if (jpaDescriptor != null && mapping.isXMLMapping()){
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()){
                         ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping)jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
                         if (jpaMapping != null) {
