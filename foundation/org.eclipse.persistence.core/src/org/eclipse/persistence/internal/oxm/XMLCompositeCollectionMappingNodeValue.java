@@ -306,7 +306,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             marshalRecord.endElement(xPathFragment, namespaceResolver);
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
            
-        } else {
+        } else {            
+            if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeCollectionMapping.getReferenceClassName())){                
+                throw XMLMarshalException.descriptorNotFoundInProject(value.getClass().getName());                            
+            }
             xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
             QName schemaType = ((XMLField) xmlCompositeCollectionMapping.getField()).getSchemaTypeForValue(value, session);

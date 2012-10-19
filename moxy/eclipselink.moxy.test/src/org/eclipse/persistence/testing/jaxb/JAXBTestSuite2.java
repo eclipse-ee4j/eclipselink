@@ -26,6 +26,8 @@ import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTyp
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.simple.XmlValueInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.ElementTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.TextNodeTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
@@ -80,6 +82,8 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlValueAnnotationWithEnumTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumChoiceObjectTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumChoiceCollectionTestCases.class);
+        suite.addTestSuite(TextNodeTestCases.class);
+        suite.addTestSuite(ElementTestCases.class);
         suite.addTestSuite(JAXBElementSimpleTestCases.class);
         suite.addTestSuite(JAXBElementNestedTestCases.class);
         suite.addTestSuite(JAXBElementComplexTestCases.class);
