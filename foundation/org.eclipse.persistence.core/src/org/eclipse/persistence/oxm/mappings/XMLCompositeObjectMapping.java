@@ -324,6 +324,15 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
         return this.inverseReferenceMapping.getSetMethodName();
     }
 
+    
+    public void convertClassNamesToClasses(ClassLoader classLoader){        
+        if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(referenceClassName)){
+            return;
+        }
+        super.convertClassNamesToClasses(classLoader);
+    }
+    
+    
     /**
      * INTERNAL:
      * The mapping is initialized with the given session. This mapping is fully initialized
@@ -332,7 +341,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
         if ((getReferenceClass() == null) && (getReferenceClassName() != null)) {
-            setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
+            if(!getReferenceClassName().equals(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS)){
+                setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
+            }
         }
         if (getReferenceClass() != null) {
             super.initialize(session);

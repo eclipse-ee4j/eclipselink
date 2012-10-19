@@ -26,6 +26,8 @@ public class XmlTransientTestSuite extends TestCase {
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(TransientClassTestCases.class);
         suite.addTestSuite(PropertyOverrideTestCases.class);
+        suite.addTestSuite(ObjectWithTransientTestCases.class);
+        suite.addTestSuite(ObjectWithTransientListTestCases.class);
         return suite;
     }
 

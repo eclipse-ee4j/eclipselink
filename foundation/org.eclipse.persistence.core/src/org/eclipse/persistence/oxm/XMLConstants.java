@@ -106,6 +106,7 @@ public class XMLConstants {
     public static final String ANY_TYPE = "anyType";
     public static final String ANY_URI = "anyURI";
     public static final String SWA_REF = "swaRef";
+    public static final String UNKNOWN_OR_TRANSIENT_CLASS = "UNKNOWN_OR_TRANSIENT_CLASS";
 
     // Schema Type QNames
     public static final QName ANY_QNAME = new QName(SCHEMA_URL, ANY);

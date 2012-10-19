@@ -49,6 +49,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -181,13 +182,18 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof Node) {
             if(isSelfFragment){
                 NodeList children = ((org.w3c.dom.Element) objectValue).getChildNodes();
-                for(int i =0, size=children.getLength(); i<size ; i++) {
-                    Node next = children.item(i);
-                    if(next.getNodeType() == Node.ELEMENT_NODE){
-                        marshalRecord.node(next, marshalRecord.getNamespaceResolver());
-                        return true;
+                int childrenLength  = children.getLength();
+                    for(int i =0; i<childrenLength ; i++) {
+                        Node next = children.item(i);
+                        if(next.getNodeType() == Node.ELEMENT_NODE){
+                            marshalRecord.node(next, marshalRecord.getNamespaceResolver());
+                            return true;
+                        }else if(next.getNodeType() == Node.TEXT_NODE){
+                            marshalRecord.characters(((Text)next).getNodeValue());
+                            return true;
+                        }
                     }
-                }
+                return false;
             }else{
                 marshalRecord.node((Node) objectValue, marshalRecord.getNamespaceResolver());
                 return true;
@@ -227,7 +233,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
-        } else {
+        } else {            
+            if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeObjectMapping.getReferenceClassName())){
+                throw XMLMarshalException.descriptorNotFoundInProject(objectValue.getClass().getName());
+            }
+            
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }

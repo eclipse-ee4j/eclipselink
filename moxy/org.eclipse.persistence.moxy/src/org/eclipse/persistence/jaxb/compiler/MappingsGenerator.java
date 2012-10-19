@@ -1282,6 +1282,9 @@ public class MappingsGenerator {
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
+            if(property.isTransientType()){
+                mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);
+            }
 
         if (property.getInverseReferencePropertyName() != null) {
             mapping.setContainerAttributeName(property.getInverseReferencePropertyName());
@@ -1994,6 +1997,9 @@ public class MappingsGenerator {
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
+        if(property.isTransientType()){
+            mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);   
+        }    
 
         if (property.isRequired()) {
             ((XMLField) mapping.getField()).setRequired(true);
