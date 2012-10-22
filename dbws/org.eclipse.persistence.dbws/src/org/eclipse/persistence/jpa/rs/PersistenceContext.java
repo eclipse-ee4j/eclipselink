@@ -714,7 +714,9 @@ public class PersistenceContext {
      * Stop the current application instance
      */
     public void stop() {
-        emf.close();
+        if (emf != null && emf.isOpen()){
+            emf.close();
+        }
         this.emf = null;
         this.context = null;
     }
