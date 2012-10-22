@@ -290,7 +290,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
         ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
         if(null == resolver || null == (jaxbContext = resolver.getContext(domainClass))) {
-            return JAXBContextFactory.createContext(new Class[] {domainClass}, null); 
+            jaxbContext = JAXBContextFactory.createContext(new Class[] {domainClass}, null);
+            contextCache.put(domainClass, jaxbContext);
+            return jaxbContext;
         } else if (jaxbContext instanceof org.eclipse.persistence.jaxb.JAXBContext) {
             return jaxbContext;
         } else {
