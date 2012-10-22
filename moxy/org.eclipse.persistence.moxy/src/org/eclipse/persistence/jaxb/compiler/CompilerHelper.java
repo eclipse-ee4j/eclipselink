@@ -53,6 +53,7 @@ public class CompilerHelper {
 
     private static JAXBContext xmlBindingsModelContext;
     private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
+
     private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
     private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
     private static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
@@ -66,16 +67,30 @@ public class CompilerHelper {
     
     static {
         try {
-            ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME);
-            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
-            INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME);
-            INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
-            XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_LOCATION_ANNOTATION_NAME);
-            INTERNAL_XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_XML_LOCATION_ANNOTATION_NAME);
+            ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
+            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});            
+        } catch (Exception ex) {        
+        }
+        
+        try {
+            XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_LOCATION_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
         } catch (Exception ex) {
         }
+        
+        try{
+            INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME);
+            INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+        } catch (Exception ex) {         
+        }
+        
+        try{
+            INTERNAL_XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_XML_LOCATION_ANNOTATION_NAME);
+        }catch (Exception ex) {         
+        }
+        
+        
     }
-    
+   
     /**
      * If 2 TypeMappingInfo objects would generate the same generated class (and
      * therefore complex type) then return the existing class otherwise return
