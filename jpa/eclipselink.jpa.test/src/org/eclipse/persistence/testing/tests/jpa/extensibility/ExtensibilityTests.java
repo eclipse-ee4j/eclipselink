@@ -88,9 +88,9 @@ public class ExtensibilityTests extends JUnitTestCase {
         return "extensibility";
     }
 
-    public void testWriteProjectCache(){
+    /*public void testWriteProjectCache(){
         new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading("extensibility");
-    }
+    }*/
     
     public void persistEmployeeData(EntityManager em){
         beginTransaction(em);
