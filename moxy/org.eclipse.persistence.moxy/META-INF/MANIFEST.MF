@@ -21,7 +21,9 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="2.5.0";visibility:=
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
-Import-Package: javax.activation;resolution:=optional,
+Import-Package: com.sun.xml.bind;resolution:=optional,
+ com.sun.xml.bind.annotation;resolution:=optional,
+ javax.activation;resolution:=optional,
  javax.ws.rs;resolution:=optional,
  javax.ws.rs.core;resolution:=optional,
  javax.ws.rs.ext;resolution:=optional,
