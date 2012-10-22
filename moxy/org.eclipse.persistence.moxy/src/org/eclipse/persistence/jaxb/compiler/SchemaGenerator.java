@@ -32,9 +32,9 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.schema.model.All;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;

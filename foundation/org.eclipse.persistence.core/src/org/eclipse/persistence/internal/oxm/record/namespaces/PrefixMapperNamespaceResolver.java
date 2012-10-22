@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
-import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 

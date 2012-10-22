@@ -26,7 +26,7 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOSetting;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;

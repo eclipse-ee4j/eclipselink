@@ -30,7 +30,7 @@ import java.util.Vector;
 
 import javax.activation.DataHandler;
 
-import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;

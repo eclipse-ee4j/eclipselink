@@ -22,7 +22,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identi
 
 import java.util.Vector;
 
-import org.eclipse.persistence.internal.descriptors.Namespace;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
