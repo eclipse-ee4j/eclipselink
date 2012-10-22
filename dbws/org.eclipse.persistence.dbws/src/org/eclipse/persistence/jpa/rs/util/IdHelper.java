@@ -23,6 +23,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.CMP3Policy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -43,7 +44,7 @@ import org.eclipse.persistence.sessions.server.Server;
 public class IdHelper {
 
     private static final String SEPARATOR_STRING = "+";
-    
+
     public static Object buildId(PersistenceContext app, String entityName, String idString, Map<String, String> multitenantDiscriminators) {
         Server session = app.getJpaSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
@@ -60,7 +61,7 @@ public class IdHelper {
             }
         }
         Collections.sort(pkIndices);
-        
+
         // Handle composite key in map
         Object[] keyElements = new Object[pkMappings.size() - multitenantPKMappings];
         StringTokenizer tokenizer = new StringTokenizer(idString, SEPARATOR_STRING);
@@ -87,33 +88,66 @@ public class IdHelper {
         }
         return keyElements;
     }
-    
-    public static String stringifyId(Object entity, String typeName, PersistenceContext app){
+
+    public static String stringifyId(Object entity, String typeName, PersistenceContext app) {
         ClassDescriptor descriptor = app.getDescriptor(typeName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
-        if (pkMappings.isEmpty()){
+        if (pkMappings.isEmpty()) {
             return "";
         }
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
         int index = 0;
-        for (DatabaseMapping mapping: pkMappings){
+        for (DatabaseMapping mapping : pkMappings) {
             pkIndices.add(new SortableKey(mapping, index));
             index++;
         }
         Collections.sort(pkIndices);
         StringBuffer key = new StringBuffer();
         Iterator<SortableKey> sortableKeys = pkIndices.iterator();
-        while (sortableKeys.hasNext()){
+        List<DatabaseField> refObjectdbFields = null;
+        while (sortableKeys.hasNext()) {
             DatabaseMapping mapping = sortableKeys.next().getMapping();
-            key.append(mapping.getAttributeValueFromObject(entity).toString());
-            if (sortableKeys.hasNext()){
+            ClassDescriptor refDesc = mapping.getReferenceDescriptor();
+            List<DatabaseField> dbFields = mapping.getDescriptor().getPrimaryKeyFields();
+            if (refDesc != null) {
+                refObjectdbFields = refDesc.getFields();
+            }
+
+            if ((refObjectdbFields != null) && (!refObjectdbFields.isEmpty())) {
+                for (DatabaseField dbField : dbFields) {
+                    String dbFieldName = dbField.getName();
+                    String refObjectDbFieldName = null;
+                    if (refDesc != null) {
+                        for (DatabaseField refObjectDbField : refObjectdbFields) {
+                            refObjectDbFieldName = refObjectDbField.getName();
+                            if ((refObjectDbFieldName != null) && (dbFieldName != null)) {
+                                if (dbFieldName.equals(refObjectDbFieldName)) {
+                                    List<DatabaseMapping> refMappings = refDesc.getMappings();
+                                    for (DatabaseMapping refMapping : refMappings) {
+                                        String field = refMapping.getField().getName();
+                                        if ((field != null) && (dbFieldName.equals(field))) {
+                                            Object value = descriptor.getObjectBuilder().getBaseValueForField(dbField, entity);
+                                            Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, app.getJpaSession());
+                                            key.append(realAttributeValue);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Object part = mapping.getAttributeValueFromObject(entity);
+                key.append(part);
+            }
+            if (sortableKeys.hasNext()) {
                 key.append(SEPARATOR_STRING);
+                refObjectdbFields = null;
             }
         }
         return key.toString();
     }
-     
-    
+
     /**
      * build a shell of an object based on a primary key.  The object shell will be an instance of the object with
      * only primary key populated
@@ -166,25 +200,25 @@ public class IdHelper {
         return entity;
     }
 
-    
+
     private static class SortableKey implements Comparable<SortableKey>{
-        
+
         private DatabaseMapping mapping;
         private int index;
-        
+
         public SortableKey(DatabaseMapping mapping, int index){
             this.mapping = mapping;
             this.index = index;
         }
-        
+
         public int compareTo(SortableKey o){
             return mapping.getAttributeName().compareTo(o.getMapping().getAttributeName());
         }
-        
+
         public DatabaseMapping getMapping(){
             return mapping;
         }
-        
+
         public int getIndex(){
             return index;
         }
