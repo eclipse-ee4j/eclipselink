@@ -53,6 +53,8 @@ import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.tools.schemaframework.*;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
+import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
@@ -167,6 +169,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexExistsTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexNotExistsTest"));
+        suite.addTest(new JUnitJPQLComplexTestSuite("complexExistsSubqueryJoinTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexInSubqueryJoinInTest"));
         suite.addTest(new JUnitJPQLComplexTestSuite("complexMemberOfTest"));
@@ -1555,7 +1558,41 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
     }
 
-    public void complexInSubqueryJoinTest() 
+    public void complexExistsSubqueryJoinTest()
+    {
+        EntityManager em = createEntityManager();
+
+        Collection allEmps = getServerSession().readAllObjects(Employee.class);
+        List expectedResult = new ArrayList();
+        // find an employees with dealers having customers with budget greater than 0
+        for (Iterator i = allEmps.iterator(); i.hasNext();) {
+            Employee e = (Employee)i.next();
+            // Get Dealers
+            Collection dealers = e.getDealers();
+            if (dealers != null && dealers.size() > 0) {
+                for (Iterator dealerIter = dealers.iterator(); dealerIter.hasNext();) {
+                    Dealer d = (Dealer)dealerIter.next();
+                    // Get Customers.
+                    Collection customers = d.getCustomers();
+                    if (customers != null && customers.size() > 0) {
+                        for (Iterator custIter = customers.iterator(); custIter.hasNext();) {
+                            Customer c = (Customer)custIter.next();
+                            // Verify Budget
+                            if (c.getBudget() > 0) {
+                                expectedResult.add(e.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        String ejbqlString = "SELECT emp FROM Employee AS emp WHERE EXISTS (SELECT dealers FROM emp.dealers AS dealers join dealers.customers AS customers WHERE customers.budget > 0)";
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("Complex Exists Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+    }
+
+    public void complexInSubqueryJoinTest()
     {
         EntityManager em = createEntityManager();
 
