@@ -15,6 +15,11 @@
         <maven>3.0</maven>
     </prerequisites>
 
+    <organization>
+        <name>Eclipse.org - EclipseLink Project</name>
+        <url>http://www.eclipse.org/eclipselink</url>
+    </organization>
+
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,50 +39,27 @@
         <eclipse.drop>juno</eclipse.drop>
     </properties>
 
-    <organization>
-        <name>Eclipse.org - EclipseLink Project</name>
-        <url>http://www.eclipse.org/eclipselink</url>
-    </organization>
-
+    <!-- Default modules set and added to by all profiles -->
     <modules>
         <module>../../jpa/org.eclipse.persistence.jpa.jpql</module>
         <module>../../foundation/org.eclipse.persistence.core</module>
-        <module>../../foundation/org.eclipse.persistence.nosql</module>
-        <module>../../jpa/org.eclipse.persistence.jpa</module>
-        <module>../../jpa/org.eclipse.persistence.jpa.osgi</module>
-        <module>../../jpa/org.eclipse.persistence.jpa.equinox.weaving</module>
-        <module>../../jpa/org.eclipse.persistence.jpa.equinox</module>
-        <module>../../jpa/org.eclipse.persistence.jpars</module>
-        <module>../../moxy/org.eclipse.persistence.moxy</module>
-        <module>../../sdo/org.eclipse.persistence.sdo</module>
-        <module>../../dbws/org.eclipse.persistence.dbws</module>
-        <!-- module>../../utils/org.eclipse.persistence.dbws.builder</module -->
     </modules>
 
+    <!-- Default repositories set and added to by all profiles -->
+    <repositories>
+        <repository>
+            <id>Orbit</id>
+            <layout>p2</layout>
+            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+        </repository>
+        <repository>
+            <id>Eclipse</id>
+            <layout>p2</layout>
+            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+        </repository>
+    </repositories>
+
     <profiles>
-        <profile>
-            <id>tycho.default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>Eclipse</id>
-                    <layout>p2</layout>
-                    <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
-                </repository>
-                <repository>
-                    <id>Orbit</id>
-                    <layout>p2</layout>
-                    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
-                </repository>
-                <repository>
-                    <id>EL_CompDeps</id>
-                    <layout>p2</layout>
-                    <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
-                </repository>
-             </repositories>
-        </profile>
         <profile>
             <id>tycho.local.compdeps</id>
             <activation>
@@ -88,21 +70,110 @@
             </activation>
             <repositories>
                 <repository>
-                    <id>Eclipse</id>
-                    <layout>p2</layout>
-                    <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
-                </repository>
-                <repository>
-                    <id>Orbit</id>
-                    <layout>p2</layout>
-                    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
-                </repository>
-                <repository>
                      <id>Local_CompDeps</id>
                      <layout>p2</layout>
                      <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
                 </repository>
              </repositories>
+        </profile>
+        <profile>
+            <id>hosted.compdeps</id>
+            <activation>
+                <property>
+                    <name>local.compdeps</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>EL_CompDeps</id>
+                    <layout>p2</layout>
+                    <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
+                </repository>
+             </repositories>
+        </profile>
+        <profile>
+            <id>full-build</id>
+            <activation>
+              <property>
+                <name>eclipselink.full</name>
+                <value>true</value>
+              </property>
+            </activation>
+            <modules>
+                <module>../../jpa/org.eclipse.persistence.jpa</module>
+                <module>../../jpa/org.eclipse.persistence.jpa.osgi</module>
+                <module>../../jpa/org.eclipse.persistence.jpa.equinox.weaving</module>
+                <module>../../jpa/org.eclipse.persistence.jpa.equinox</module>
+                <module>../../jpa/org.eclipse.persistence.jpars</module>
+                <module>../../moxy/org.eclipse.persistence.moxy</module>
+                <module>../../sdo/org.eclipse.persistence.sdo</module>
+                <module>../../dbws/org.eclipse.persistence.dbws</module>
+                <!-- module>../../utils/org.eclipse.persistence.dbws.builder</module -->
+            </modules>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <activation>
+              <property>
+                <name>oracle</name>
+                <value>true</value>
+              </property>
+            </activation>
+            <modules>
+                <module>../../foundation/org.eclipse.persistence.nosql</module>
+                <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
+                <module>../../foundation/org.eclipse.persistence.oracle</module>
+            </modules>
+            <repositories>
+                <repository>
+                    <id>Oracle-local-p2</id>
+                    <layout>p2</layout>
+                    <url>${oracle.p2.url}</url>
+                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>oracle-ext</id>
+            <activation>
+              <property>
+                <name>oracle.ext</name>
+                <value>true</value>
+              </property>
+            </activation>
+            <modules>
+                <module>../../foundation/org.eclipse.persistence.oracle</module>
+            </modules>
+            <repositories>
+                <repository>
+                    <id>Oracle-local-p2</id>
+                    <layout>p2</layout>
+                    <url>${oracle.p2.url}</url>
+                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>oracle-nosql</id>
+            <activation>
+              <property>
+                <name>oracle.nosql</name>
+                <value>true</value>
+              </property>
+            </activation>
+            <modules>
+                <module>../../foundation/org.eclipse.persistence.nosql</module>
+                <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
+            </modules>
+            <repositories>
+                <repository>
+                    <id>Oracle-local-p2</id>
+                    <layout>p2</layout>
+                    <url>${oracle.p2.url}</url>
+                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
+                </repository>
+            </repositories>
         </profile>
     </profiles>
 

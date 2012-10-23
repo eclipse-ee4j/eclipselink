@@ -213,8 +213,8 @@
     <!-- Compiles all components and tests (excluding extensions). -->
     <target name="build-all-but-ext" depends="build, build-util, build-util-test, gen-wls-shared-lib"/>
 
-    <!-- Compiles Oracle component, tests and extensions (excluding utilities). -->
-    <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
+    <!-- Compiles Oracle components, tests and extensions (excluding utilities). -->
+    <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test, build-oracle-nosql-extension-test"/>
 
     <!-- Builds and packages all jars,javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
@@ -229,7 +229,9 @@
         <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
         <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
         <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
+    </target>
 
+    <target name="set-compdeps" depends="check-maven" description="Setup for use of local compdeps rather than hosted, and whether to generate">
         <!-- Determine whether the build could generate/use a local compdeps repo -->
         <!--     To setup generation of local compdeps:                           -->
         <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
@@ -288,7 +290,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
         <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
@@ -297,7 +299,8 @@
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
-             <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-Declipselink.full=true"/>
              <arg value="clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -323,7 +326,7 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
-    <target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
@@ -339,6 +342,7 @@
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
         <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
+        <echo message="    -Declipselink.full=true"/>
         <echo message="    verify"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -346,6 +350,7 @@
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-Declipselink.full=true"/>
              <!-- arg value="-X"/ -->
              <arg value="verify"/>
              <classpath>
@@ -417,23 +422,57 @@
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
-    <target name="build-oracle-extension">
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="build"/>
+    <target name="build-oracle-extension" depends="generate-oracle-p2, generate-local-compdeps, clean-runtime-checkedin">
+        <!-- === Which extensions build is based on ${oracle.target} === -->
+        <!-- oracle.target = oracle.ext:   build oracle extension        -->
+        <!--               = oracle.nosql: build oracle nosql extension  -->
+        <!--               = oracle:       build both                    -->
+        <echo message="Launching Maven build with the following parameters:"/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
+        <echo message="    -DforceContextQualifier=${version.qualifier}"/>
+        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
+        <echo message="    -D${oracle.target}=true"/>
+        <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
+        <echo message="    verify"/>
+        <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
+             <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-D${oracle.target}=true"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+             <!-- arg value="-X"/ -->
+             <arg value="verify"/>
+             <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                   <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+             </classpath>
+        </java>
+        <!-- source jars generated with -sources in target dir - tycho P2 should name properly, but can't use due to dir structure -->
+        <copy todir="${eclipselink.core.plugins}" flatten="true">
+            <fileset dir="target">
+                <include name="**/org.eclipse.persistence.oracle*.jar"/>
+                <include name="**/org.eclipse.persistence.oracle*.jar"/>
+                <exclude name="**/*-sources.jar"/>
+                <exclude name="**/*parent*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${plugins.dir}" flatten="true">
+            <fileset dir="target">
+                <include name="**/org.eclipse.persistence*.jar"/>
+                <exclude name="**/*-sources.jar"/>
+                <exclude name="**/*parent*.jar"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="build-oracle-extension-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
-    </target>
-
-    <!-- Compiles Oracle extensions and tests. -->
-    <target name="build-oracle-nosql-extension">
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"                 target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core}"                   target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"        target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="build"/>
     </target>
 
     <target name="build-oracle-nosql-extension-test">
@@ -654,12 +693,12 @@
                     javax/persistence/Convert.class,
                     javax/persistence/Converter.class,
                     javax/persistence/Converts.class,
-					javax/persistence/ForeignKey,
-					javax/persistence/Index,
+                    javax/persistence/ForeignKey,
+                    javax/persistence/Index,
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class,
-	                javax/persistence/criteria/CommonAbstractCriteria.class
+                    javax/persistence/criteria/CommonAbstractCriteria.class
             "/>
             <fileset
                 dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
@@ -1228,6 +1267,31 @@
     <!-- target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target -->
+
+    <target name="check-oracle-p2" depends="check-maven" description="Setup for use of local oracle p2, and whether to generate">
+        <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
+        <property name="oracle.p2.url"       value="file:/${oracle.p2.dir}"/>
+        <!-- Test to see if local oracle repo should be generated: if not exist   -->
+        <condition property="generate.oracle.p2">
+            <not>
+                <available file="${oracle.p2.dir}" type="dir"/>
+            </not>
+        </condition>
+        <echo message="Oracle Build Settings:"/>
+        <echo message="    oracle.p2.dir: ''"/>
+        <echo message="    oracle.p2.url: ''"/>
+        <echo message="  Generate a local Oracle p2 repo?"/>
+        <echo message="        generate.oracle.p2: '${generate.oracle.p2}' (undefined = false)"/>
+    </target>
+
+    <target name="generate-oracle-p2" if="generate.oracle.p2" depends="check-oracle-p2" description="Build local p2 repository of local compiler dependencies">
+        <!-- a bit redundant, but here as a failsafe. -->
+        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
+        <fail message="Eclipse installation (${eclipse.install.dir}/plugins) not found. Cannot generate P2 repo. Exiting..." unless="eclipse.dir.exist"/>
+        <echo message="Generating local 'Oracle Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.oraclelibs}"  target="build"/>
+    </target>
+
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
