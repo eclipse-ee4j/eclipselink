@@ -33,7 +33,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
         {"50011", "The property or field {0} can not be annotated with XmlValue since it is a subclass of another XML-bound class."},
         {"50012", "The property or field {0} was specified in propOrder but is not a valid property."},
-        {"50013", "The property or field {0} is required to be included in the propOrder element of the XmlType annotation."},
+        {"50013", "The property or field {0} on the class {1} is required to be included in the propOrder element of the XmlType annotation."},
         {"50014", "The property or field {0} with the XmlValue annotation must be of a type that maps to a simple schema type."},
         {"50015", "XmlElementWrapper is only allowed on a collection or array property but [{0}] is not a collection or array property."},
         {"50016", "Property [{0}] has an XmlID annotation but its type is not String."},

@@ -235,9 +235,16 @@ public class JAXBException extends EclipseLinkException {
         exception.setErrorCode(NON_EXISTENT_PROPERTY_IN_PROP_ORDER);
         return exception;
     }
+    
+    public static JAXBException missingPropertyInPropOrder(String fieldName) {        
+        Object[] args = { fieldName, "" };
+        JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MISSING_PROPERTY_IN_PROP_ORDER, args));
+        exception.setErrorCode(MISSING_PROPERTY_IN_PROP_ORDER);
+        return exception;
+    }
 
-    public static JAXBException missingPropertyInPropOrder(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException missingPropertyInPropOrder(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MISSING_PROPERTY_IN_PROP_ORDER, args));
         exception.setErrorCode(MISSING_PROPERTY_IN_PROP_ORDER);
         return exception;

@@ -796,14 +796,12 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> jClasses = getTypeInfoClasses();
         for (JavaClass jClass : jClasses) {
             TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
-            
-           
-            
             // don't need to validate props on a transient class at this point
             if (tInfo.isTransient()) {
                 continue;
             }
-
+            String[] propOrder = tInfo.getPropOrder();
+            boolean hasPropOrder = propOrder.length > 0 && !(propOrder.length == 1 && propOrder[0].equals(XMLConstants.EMPTY_STRING));                               
             // If a property is marked transient, ensure it doesn't exist in the propOrder
             List<String> propOrderList = Arrays.asList(tInfo.getPropOrder());
             ArrayList<Property> propsList = tInfo.getPropertyList();
@@ -812,8 +810,12 @@ public class AnnotationsProcessor {
                 if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
                      throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
                 }
-            }
-            
+                if(hasPropOrder && !p.isAttribute() && !p.isTransient()){
+                    if (!propOrderList.contains(p.getPropertyName())) {
+                        throw JAXBException.missingPropertyInPropOrder(p.getPropertyName(), tInfo.getJavaClassName());
+                    }
+                }
+            }                        
             
             if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
@@ -1564,7 +1566,6 @@ public class AnnotationsProcessor {
             if (!element.defaultValue().equals(ELEMENT_DECL_DEFAULT)) {
                 property.setDefaultValue(element.defaultValue());
             }
-            validateElementIsInPropOrder(info, property.getPropertyName());
         }
     }
 
@@ -2098,7 +2099,6 @@ public class AnnotationsProcessor {
      */
     private void processChoiceProperty(Property choiceProperty, TypeInfo info, JavaClass cls, JavaClass propertyType) {
         String propertyName = choiceProperty.getPropertyName();
-        validateElementIsInPropOrder(info, propertyName);
 
         // validate XmlElementsXmlJoinNodes (if set)
         if (choiceProperty.isSetXmlJoinNodesList()) {
@@ -2269,9 +2269,7 @@ public class AnnotationsProcessor {
      * @return
      */
     private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
-        String propertyName = property.getPropertyName();
-        validateElementIsInPropOrder(info, propertyName);
-
+   
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
@@ -3705,25 +3703,6 @@ public class AnnotationsProcessor {
                 helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
                 helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS) ||
                 helper.isAnnotationPresent(elem, XmlMixed.class);              
-    }
-
-    private void validateElementIsInPropOrder(TypeInfo info, String name) {
-        if (info.isTransient()) {
-            return;
-        }
-        // If a property is marked with XMLElement, XMLElements, XMLElementRef
-        // or XMLElementRefs
-        // and propOrder is not empty then it must be in the proporder list
-        String[] propOrder = info.getPropOrder();
-        if (propOrder.length > 0) {
-            if (propOrder.length == 1 && propOrder[0].equals(EMPTY_STRING)) {
-                return;
-            }
-            List<String> propOrderList = Arrays.asList(info.getPropOrder());
-            if (!propOrderList.contains(name)) {
-                throw JAXBException.missingPropertyInPropOrder(name);
-            }
-        }
     }
 
     private void validatePropOrderForInfo(TypeInfo info) {

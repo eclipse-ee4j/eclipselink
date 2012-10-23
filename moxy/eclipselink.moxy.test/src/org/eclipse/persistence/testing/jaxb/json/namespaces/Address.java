@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.json.namespaces;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"street", "city"})
+@XmlType(propOrder={"id", "street", "city"})
 public class Address {
 	@XmlSchemaType(name="integer")
     private String id;
