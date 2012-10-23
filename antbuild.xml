@@ -377,11 +377,12 @@
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/>
         <!-- build rest of core -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}"       target="repackage"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="build"/>
+        <!-- Will go away with new oracle bundle generation process  -->
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}"       target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="repackage"/>
     </target>
 
     <!--      *** intended for dev use only ***
@@ -453,14 +454,6 @@
              </classpath>
         </java>
         <!-- source jars generated with -sources in target dir - tycho P2 should name properly, but can't use due to dir structure -->
-        <copy todir="${eclipselink.core.plugins}" flatten="true">
-            <fileset dir="target">
-                <include name="**/org.eclipse.persistence.oracle*.jar"/>
-                <include name="**/org.eclipse.persistence.oracle*.jar"/>
-                <exclude name="**/*-sources.jar"/>
-                <exclude name="**/*parent*.jar"/>
-            </fileset>
-        </copy>
         <copy todir="${plugins.dir}" flatten="true">
             <fileset dir="target">
                 <include name="**/org.eclipse.persistence*.jar"/>
