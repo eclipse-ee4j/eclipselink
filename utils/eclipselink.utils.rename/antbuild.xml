@@ -71,9 +71,10 @@
                failonerror="true">
         </javac>
     </target>
-        
+
     <!-- package -->
     <target name="package" description="jar the util">
+        <delete file="./${package-rename.jar}" failonerror="false">
         <jar jarfile="./${package-rename.jar}">
              <manifest>
                 <attribute name="Specification-Title"    value="${rename.util.specification.title}"/>
