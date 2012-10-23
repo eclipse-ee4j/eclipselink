@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement()
-@XmlType(propOrder={"name", "address", "phoneNumbers"})
+@XmlType(propOrder={"name", "address", "phoneNumbers","interfaceWithNoFactoryMethod","interfaceWithNoFactoryMethods"})
 public interface Customer {
 
     String getName();

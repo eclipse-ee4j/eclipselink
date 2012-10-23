@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.norootelement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"street", "city"})
+@XmlType(propOrder={"street", "city", "id"})
 public class Address {
 	
 	private int id;

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.Address;
 
 @XmlRootElement(name="employee")
-@XmlType(name="employee-type", propOrder={"id", "name", "age", "address", "bytes"})
+@XmlType(name="employee-type", propOrder={"id", "name", "age", "address", "bytes", "jobTitle", "departments", "phone"})
 public class Employee extends Person {
 
     public String name;
