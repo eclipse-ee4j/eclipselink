@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.singl
 
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.*;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.Employee;
 import org.w3c.dom.Document;
@@ -82,5 +84,65 @@ public class SingleElementInvalidKeyTestCases extends KeyBasedMappingTestCases {
         root.employee = employee;
         root.addresses = rootAddresses;
         return root;
+    }
+    
+    public void testXMLToObjectFromInputStream() throws Exception{
+        try{
+            super.testXMLToObjectFromInputStream();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
+    }
+    
+    public void testUnmarshallerHandler() throws Exception{
+        try{
+            super.testUnmarshallerHandler();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
+    }
+    
+    public void testXMLToObjectFromNode() throws Exception{
+        try{
+            super.testXMLToObjectFromNode();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
+    }
+    
+    public void testXMLToObjectFromURL() throws Exception{
+        try{
+            super.testXMLToObjectFromURL();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
+    }
+    
+    public void testXMLToObjectFromXMLEventReader() throws Exception{
+        try{
+            super.testXMLToObjectFromXMLEventReader();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
+    }
+    
+    public void testXMLToObjectFromXMLStreamReader() throws Exception{
+        try{
+            super.testXMLToObjectFromXMLStreamReader();
+        }catch (XMLMarshalException e) {
+            assertEquals(XMLMarshalException.MISSING_ID_FOR_IDREF ,e.getErrorCode());
+            return;
+        }
+        fail("An error should have occurred.");
     }
 }
