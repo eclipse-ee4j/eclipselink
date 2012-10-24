@@ -273,7 +273,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         }                        
                     
                         int containerIndex = -1;
-                        for(int i=0; i<fields.size(); i++){
+                        for (int i = 0, size = fields.size(); i < size; i++) {
                             XMLField xmlFld = (XMLField)fields.get(i);
                             mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
                             if(i == 0){
