@@ -13,17 +13,27 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @XmlRootElement
+@XmlType(propOrder = {"name"})
 public class Child {
+    public String name;
     
     @XmlInverseReference(mappedBy="children")
     public Parent parent;
 
     public boolean equals(Object obj) {
         Child child = (Child)obj;
+        if(name == null){
+            if(child.name!=null){
+                return false;
+            }            
+        }else if(!name.equals(child.name)){
+            return false;
+        }
         return this.parent != null && child.parent != null;
     }    
 }
