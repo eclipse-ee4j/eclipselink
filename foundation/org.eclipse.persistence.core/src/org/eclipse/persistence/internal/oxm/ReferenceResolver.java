@@ -37,6 +37,9 @@ import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * This class is leveraged by reference mappings. It plays 3 roles:
@@ -175,7 +178,7 @@ public class ReferenceResolver {
      * @param session typically will be a unit of work
      * @param userSpecifiedResolver a user-provided subclass of IDResolver, may be null 
      */
-    public void resolveReferences(AbstractSession session, IDResolver userSpecifiedResolver) {
+    public void resolveReferences(AbstractSession session, IDResolver userSpecifiedResolver, ErrorHandler handler) {
         for (int x = 0, referencesSize = references.size(); x < referencesSize; x++) {
             Reference reference = (Reference) references.get(x);
             Object referenceSourceObject = reference.getSourceObject();
@@ -196,7 +199,7 @@ public class ReferenceResolver {
                 if(!mapping.isWriteOnly()) {
                     for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
                         CacheId primaryKey = (CacheId) pkIt.next();
-                        value = getValue(session, reference, primaryKey);
+                        value = getValue(session, reference, primaryKey, handler);
                         if (value != null) {
                              cPolicy.addInto(value, container, session);
                         }
@@ -245,7 +248,7 @@ public class ReferenceResolver {
                         throw XMLMarshalException.unmarshalException(e);
                     }
                 } else {
-                    value = getValue(session, reference, primaryKey);
+                    value = getValue(session, reference, primaryKey, handler);
                 }
 
                 XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
@@ -279,7 +282,7 @@ public class ReferenceResolver {
         cache.clear();
     }
 
-    private Object getValue(AbstractSession session, Reference reference, CacheId primaryKey) {
+    private Object getValue(AbstractSession session, Reference reference, CacheId primaryKey, ErrorHandler handler) {
         Class referenceTargetClass = reference.getTargetClass();
         if(null == referenceTargetClass || referenceTargetClass == ClassConstants.OBJECT) {
             for(Object entry : session.getDescriptors().values()) {
@@ -308,6 +311,17 @@ public class ReferenceResolver {
                     }
                 }
             }
+            if(primaryKey.getPrimaryKey()[0] != null){
+                XMLMarshalException e = XMLMarshalException.missingIDForIDRef(Object.class.getName(), primaryKey.getPrimaryKey());            
+                if(handler != null){
+                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), null, e);
+                    try{
+                        handler.warning(saxParseException);
+                    }catch(SAXException saxException){
+                        throw e;
+                    }
+                }
+            }
             return null;
         } else {
             Object value = getValue(referenceTargetClass, primaryKey);
@@ -322,6 +336,17 @@ public class ReferenceResolver {
                         if(null != value) {
                             return value;
                         }
+                    }
+                }
+            }
+            if(value == null && (primaryKey.getPrimaryKey()[0] != null) ){               
+                XMLMarshalException e = XMLMarshalException.missingIDForIDRef(referenceTargetClass.getName(), primaryKey.getPrimaryKey());
+                if(handler != null){
+                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), null, e);
+                    try{
+                        handler.warning(saxParseException);
+                    }catch(SAXException saxException){
+                        throw e;
                     }
                 }
             }

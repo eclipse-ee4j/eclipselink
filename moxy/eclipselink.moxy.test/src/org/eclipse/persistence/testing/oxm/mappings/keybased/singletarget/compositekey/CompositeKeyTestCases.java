@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.compositekey.attributekey.CompositeAttributeKeysTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.compositekey.elementkey.CompositeElementKeysMissingIdTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.compositekey.elementkey.CompositeElementKeysTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.compositekey.mixedkey.CompositeMixedKeysTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.keybased.singletarget.compositekey.nonstringkeytype.CompositeNonStringKeyTypeTestCases;
@@ -26,6 +27,7 @@ public class CompositeKeyTestCases extends TestCase {
         TestSuite suite = new TestSuite("Single target with composite key test suite");
         suite.addTestSuite(CompositeAttributeKeysTestCases.class);
         suite.addTestSuite(CompositeElementKeysTestCases.class);
+        suite.addTestSuite(CompositeElementKeysMissingIdTestCases.class);
         suite.addTestSuite(CompositeMixedKeysTestCases.class);
         suite.addTestSuite(CompositeNonStringKeyTypeTestCases.class);
         suite.addTestSuite(NestedAttributeKeyTestCases.class);

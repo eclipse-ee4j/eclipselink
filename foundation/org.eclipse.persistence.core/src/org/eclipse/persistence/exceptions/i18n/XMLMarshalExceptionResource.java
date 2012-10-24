@@ -61,7 +61,8 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."},
                                            { "25037", "A cycle is detected in the object graph.  This will cause an infinite loop: {0}"},
                                            { "25038", "DOMPlatform is not supported with media type applicaion/json."},        
-                                           { "25039", "An error occured unmarshalling from {0}"}
+                                           { "25039", "An error occured unmarshalling from {0}"},
+                                           { "25040", "An object of type {0} with ID {1} was not found."}
                                            
     };
 

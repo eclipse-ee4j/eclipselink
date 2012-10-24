@@ -841,7 +841,7 @@ public class DOMRecord extends XMLRecord {
      */
     public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
-            referenceResolver.resolveReferences(abstractSession, idResolver);
+            referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }
     }
 

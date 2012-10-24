@@ -56,7 +56,7 @@ public class JAXBBinder extends Binder {
         this.xmlContext = xmlContext;
         this.xmlBinder = this.xmlContext.createBinder();
         this.xmlBinder.getDocumentPreservationPolicy().setNodeOrderingPolicy(new RelativePositionOrderingPolicy());
-        this.xmlBinder.setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
+        this.xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER));
     }
 
     public void marshal(Object obj, Object xmlNode) throws MarshalException {
@@ -204,11 +204,11 @@ public class JAXBBinder extends Binder {
         return this.xmlBinder.getSchema();
     }
 
-    public void setEventHandler(ValidationEventHandler handler) {
-        if (null == handler) {
-            xmlBinder.setErrorHandler(new JAXBErrorHandler(new DefaultValidationEventHandler()));
-        } else {
-            xmlBinder.setErrorHandler(new JAXBErrorHandler(handler));
+    public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
+        if (null == newValidationEventHandler) {            
+            xmlBinder.setErrorHandler(new JAXBErrorHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER));
+        } else {            
+            xmlBinder.setErrorHandler(new JAXBErrorHandler(newValidationEventHandler));
         }
     }
     

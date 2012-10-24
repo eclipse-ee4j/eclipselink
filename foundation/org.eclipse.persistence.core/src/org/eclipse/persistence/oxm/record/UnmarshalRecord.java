@@ -1438,7 +1438,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      */
     public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
-            referenceResolver.resolveReferences(abstractSession, idResolver);
+            referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }
     }
 
