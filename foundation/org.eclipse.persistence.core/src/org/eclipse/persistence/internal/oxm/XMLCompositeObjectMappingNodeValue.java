@@ -180,21 +180,21 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
         if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && objectValue instanceof Node) {
-            if(isSelfFragment){
+            if (isSelfFragment) {
                 NodeList children = ((org.w3c.dom.Element) objectValue).getChildNodes();
-                int childrenLength  = children.getLength();
-                    for(int i =0; i<childrenLength ; i++) {
-                        Node next = children.item(i);
-                        if(next.getNodeType() == Node.ELEMENT_NODE){
-                            marshalRecord.node(next, marshalRecord.getNamespaceResolver());
-                            return true;
-                        }else if(next.getNodeType() == Node.TEXT_NODE){
-                            marshalRecord.characters(((Text)next).getNodeValue());
-                            return true;
-                        }
+                for (int i = 0, childrenLength = children.getLength(); i < childrenLength ; i++) {
+                    Node next = children.item(i);
+                    short nodeType = next.getNodeType();
+                    if (nodeType == Node.ELEMENT_NODE) {
+                        marshalRecord.node(next, marshalRecord.getNamespaceResolver());
+                        return true;
+                    } else if (nodeType == Node.TEXT_NODE) {
+                        marshalRecord.characters(((Text) next).getNodeValue());
+                        return true;
                     }
+                }
                 return false;
-            }else{
+            } else {
                 marshalRecord.node((Node) objectValue, marshalRecord.getNamespaceResolver());
                 return true;
             }

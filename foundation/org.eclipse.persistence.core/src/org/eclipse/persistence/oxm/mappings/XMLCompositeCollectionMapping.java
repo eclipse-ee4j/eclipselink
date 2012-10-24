@@ -303,19 +303,20 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
      */
     public void initialize(AbstractSession session) throws DescriptorException {
         //modified so that reference class on composite mappings is no longer mandatory
-        if ((getReferenceClass() == null) && (getReferenceClassName() != null)) {
-            if(!getReferenceClassName().equals(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS)){
-                setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(getReferenceClassName()));
+        String referenceClassName = getReferenceClassName();
+        if (this.referenceClass == null && referenceClassName != null) {
+            if (!referenceClassName.equals(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS)) {
+                setReferenceClass(session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(referenceClassName));
             }
         }
-        if (getReferenceClass() != null) {
+        if (this.referenceClass != null) {
             super.initialize(session);
         } else {
             //below should be the same as AbstractCompositeCollectionMapping.initialize
-            if (getField() == null) {
+            if (this.field == null) {
                 throw DescriptorException.fieldNameNotSetInMapping(this);
             }
-            setField(getDescriptor().buildField(getField()));
+            setField(getDescriptor().buildField(this.field));
             setFields(collectFields());
             if (hasConverter()) {
                 getConverter().initialize(this, session);
@@ -329,7 +330,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                 cp.setContainerClass(cls);
             }
             if (cp instanceof MapContainerPolicy) {
-                ((MapContainerPolicy) cp).setElementClass(this.getReferenceClass());
+                ((MapContainerPolicy) cp).setElementClass(this.referenceClass);
             }
         }
         if(null != getContainerAccessor()) {
