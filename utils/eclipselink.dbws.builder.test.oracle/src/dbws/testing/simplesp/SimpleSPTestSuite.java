@@ -29,7 +29,6 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -119,6 +118,12 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         "\nBEGIN" +
         "   \nSELECT SAL INTO S FROM SIMPLESP WHERE EMPNO = S;" +
         "\nEND GETSALARYBYID;";
+    static final String CREATE_OUT_IN_INOUT_ARGSSP_PROC =
+        "CREATE PROCEDURE OUTININOUTARGSSP(T OUT VARCHAR, U IN VARCHAR, V IN OUT NUMERIC) is" +
+        "\nBEGIN" +
+            "\nT := CONCAT('barfoo-' , U);" +
+            "\nV := V + 1;" +
+        "\nEND OUTININOUTARGSSP;";
     static final String DROP_SIMPLESP_TABLE =
         "DROP TABLE SIMPLESP";
     static final String DROP_VARCHARSP_PROC =
@@ -133,6 +138,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE GETALL";
     static final String DROP_GETSALARYBYID_PROC =
         "DROP PROCEDURE GETSALARYBYID";
+    static final String DROP_OUT_IN_INOUT_ARGSSP_PROC =
+        "DROP PROCEDURE OUTININOUTARGSSP";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -168,6 +175,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_FINDBYJOB_PROC, ddlDebug);
             runDdl(conn, CREATE_GETALL_PROC, ddlDebug);
             runDdl(conn, CREATE_GETSALARYBYID_PROC, ddlDebug);
+            runDdl(conn, CREATE_OUT_IN_INOUT_ARGSSP_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLESP_TABLE.length; i++) {
@@ -216,6 +224,14 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         builder.addOperation(procOpModel);
         
         procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("OutInInOutArgsTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("OUTININOUTARGSSP");
+        procOpModel.setIsSimpleXMLFormat(true);
+        procOpModel.setIsCollection(true);
+        builder.addOperation(procOpModel);
+
+        procOpModel = new ProcedureOperationModel();
         procOpModel.setName("FindByJobTest");
         procOpModel.setCatalogPattern("TOPLEVEL");
         procOpModel.setProcedurePattern("FindByJob");
@@ -254,6 +270,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_GETALL_PROC, ddlDebug);
             runDdl(conn, DROP_GETSALARYBYID_PROC, ddlDebug);
             runDdl(conn, DROP_SIMPLESP_TABLE, ddlDebug);
+            runDdl(conn, DROP_OUT_IN_INOUT_ARGSSP_PROC, ddlDebug);
         }
     }
 
@@ -542,4 +559,4 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
       public static final String SALARY =
       	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<value>1100</value>";
-  }
+      @Test      public void outInInOutTest() {          Invocation invocation = new Invocation("OutInInOutArgsTest");          invocation.setParameter("U", "this is a test");          invocation.setParameter("V", 665);          Operation op = xrService.getOperation(invocation.getName());          Object result = op.invoke(xrService, invocation);          assertNotNull("result is null", result);          Document doc = xmlPlatform.createDocument();          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();          marshaller.marshal(result, doc);          Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));      }            public static final String MULTIPLE_OUT_XML =          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +          "<simple-xml-format>" +          "<simple-xml>" +          "<V>666</V>" +          "<T>barfoo-this is a test</T>" +          "</simple-xml>" +          "</simple-xml-format>";}

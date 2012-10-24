@@ -371,8 +371,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             parm.setName(argName);
                             parm.setType(xmlType);
                             result.setType(xmlType);
-                            // use of INOUT precludes SimpleXMLFormat
-                            isSimpleXMLFormat = false;
                             if (qh instanceof StoredProcedureQueryHandler) {
                                 ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
