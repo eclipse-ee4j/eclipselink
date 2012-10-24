@@ -834,8 +834,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			if (resolver.mapping != null) {
 				type = calculateMappingType(resolver.mapping);
 			}
-			else {
+			else if (resolver.descriptor != null) {
 				type = resolver.descriptor.getJavaClass();
+			}
+			else {
+				type = Object.class;
 			}
 		}
 		finally {

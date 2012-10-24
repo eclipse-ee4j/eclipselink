@@ -3778,7 +3778,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select b from Buyer b join b.creditLines l where l in :arg");
         List args = new ArrayList();
         args.add(0);
-        args.add(1);
+        query.setParameter("arg", args);
+        query.getResultList();
+        query = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
         query.setParameter("arg", args);
         query.getResultList();
         closeEntityManager(em);
