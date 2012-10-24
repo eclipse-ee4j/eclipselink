@@ -16,6 +16,7 @@ package dbws.testing.oracleobjecttype;
 //javase imports
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,6 +25,11 @@ import java.sql.Types;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 //java eXtension imports
 
@@ -284,6 +290,12 @@ public class OracleObjecttypeTestSuite {
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>address</default-root-element>" +
@@ -339,6 +351,12 @@ public class OracleObjecttypeTestSuite {
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>employee</default-root-element>" +
@@ -458,8 +476,8 @@ public class OracleObjecttypeTestSuite {
         Document orProjectDoc = xmlPlatform.createDocument();
         marshaller.marshal(orProject, orProjectDoc);
         Document orProjectXMLDoc = xmlParser.parse(new StringReader(OBJECTTYPE_OR_PROJECT));
-        assertTrue("OracleObjecttype java-built OR project not same as XML-built OR project",
-            comparer.isNodeEqual(orProjectXMLDoc, orProjectDoc));
+
+        assertTrue("OracleObjecttype java-built OR project not same as XML-built OR project.  Expected:\n" + documentToString(orProjectXMLDoc) + "\nActual:\n" + documentToString(orProjectDoc), comparer.isNodeEqual(orProjectXMLDoc, orProjectDoc));
 
         NamespaceResolver ns = new NamespaceResolver();
         ns.setDefaultNamespaceURI("urn:oracleobjecttype");
@@ -544,8 +562,8 @@ public class OracleObjecttypeTestSuite {
         Document oxProjectDoc = xmlPlatform.createDocument();
         marshaller.marshal(oxProject, oxProjectDoc);
         Document oxProjectXMLDoc = xmlParser.parse(new StringReader(OBJECTTYPE_OX_PROJECT));
-        assertTrue("OracleObjecttype java-built OX project not same as XML-built OX project",
-            comparer.isNodeEqual(oxProjectXMLDoc, oxProjectDoc));
+
+		assertTrue("OracleObjecttype java-built OX project not same as XML-built OX project.  Expected:\n" + documentToString(oxProjectXMLDoc) + "\nActual:\n" + documentToString(oxProjectDoc), comparer.isNodeEqual(oxProjectXMLDoc, oxProjectDoc));
 
         XRServiceFactory factory = new XRServiceFactory() {
             XRServiceFactory init() {
@@ -651,4 +669,25 @@ public class OracleObjecttypeTestSuite {
                "</address>" +
             "</employee>" +
          "</employee-collection>";
+
+
+    /**
+     * Returns the given org.w3c.dom.Document as a String.
+     *
+     */
+    public static String documentToString(Document doc) {
+        DOMSource domSource = new DOMSource(doc);
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("indent", "yes");
+            transformer.transform(domSource, result);
+            return stringWriter.toString();
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return "<empty/>";
+        }
+    }
+
 }

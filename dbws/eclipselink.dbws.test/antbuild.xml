@@ -369,8 +369,5 @@
         <SetupCompileRunTeardown testsuite-name="KeyMappings"/>
         <SetupCompileRunTeardown testsuite-name="Relationships"/>
         <CompileRun testsuite-name="XRDynamicEntity"/>
-        <delete>
-            <fileset dir="." includes="TEST-*xml"/>
-        </delete>
     </target>
 </project>
