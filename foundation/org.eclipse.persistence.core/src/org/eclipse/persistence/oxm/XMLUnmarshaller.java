@@ -270,7 +270,7 @@ public class XMLUnmarshaller implements Cloneable {
     public void resolveReferences(AbstractSession unitOfWork) {
         ReferenceResolver resolver = ReferenceResolver.getInstance(unitOfWork);
         if (resolver != null) {
-            resolver.resolveReferences(unitOfWork, getIDResolver());
+            resolver.resolveReferences(unitOfWork, getIDResolver(), getErrorHandler());			
         }
     }
 

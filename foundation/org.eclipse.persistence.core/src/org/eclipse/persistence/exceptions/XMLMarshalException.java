@@ -61,6 +61,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int OBJECT_CYCLE_DETECTED = 25037;
     public static final int PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE = 25038;
     public static final int UNMARSHAL_FROM_STRING_FAILED = 25039;
+    public static final int MISSING_ID_FOR_IDREF = 25040;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -390,5 +391,19 @@ public class XMLMarshalException extends ValidationException {
         exception.setInternalException(nestedException);
         exception.setErrorCode(PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE);
         return exception;
-    }  
+    } 
+    
+    public static XMLMarshalException missingIDForIDRef(String classname, Object[] primaryKey) {   
+        String id = "";
+        for(int i=0;i<primaryKey.length; i++){
+            id += primaryKey[i];
+            if(i < primaryKey.length -1){
+                id += ", ";
+            }
+        }
+        Object[] args = {classname, id};
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, MISSING_ID_FOR_IDREF, args));        
+        exception.setErrorCode(MISSING_ID_FOR_IDREF);
+        return exception;
+    } 
 }
