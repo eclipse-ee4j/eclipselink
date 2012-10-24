@@ -262,9 +262,6 @@
           todir="./${report.dir}"
         />
       </junitreport>
-      <delete>
-        <fileset dir="." includes="TEST-*xml"/>
-      </delete>
     </sequential>
   </macrodef>
   <macrodef
