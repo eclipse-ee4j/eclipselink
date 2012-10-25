@@ -20,7 +20,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 

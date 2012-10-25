@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:ns0="myns" targetNamespace="myns">
-   <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/XML/1998/xml.xsd"/>
+   <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/XML/2001/xml.xsd"/>
    <xsd:complexType name="testClass">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="foo">

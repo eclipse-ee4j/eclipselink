@@ -29,7 +29,6 @@ public class MissingPropTestCases extends TestCase {
                 throw e.getLinkedException();
             } catch(org.eclipse.persistence.exceptions.JAXBException e2) {
                 // MATCH ON CORRECT ERROR CODE
-                e2.printStackTrace();
                 assertEquals(50013, e2.getErrorCode());
                 return;
 
