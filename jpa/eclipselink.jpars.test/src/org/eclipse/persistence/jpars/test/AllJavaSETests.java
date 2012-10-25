@@ -13,14 +13,14 @@
 package org.eclipse.persistence.jpars.test;
 
 import org.eclipse.persistence.jpars.test.crud.StaticCrudTests;
-import org.eclipse.persistence.jpars.test.server.UnmarshalTest;
+import org.eclipse.persistence.jpars.test.service.MarshalUnmarshalTest;
 import org.eclipse.persistence.jpars.test.service.TestService;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({TestService.class, StaticCrudTests.class, UnmarshalTest.class})
+@SuiteClasses({ TestService.class, StaticCrudTests.class, MarshalUnmarshalTest.class })
 public class AllJavaSETests {
 
 }
