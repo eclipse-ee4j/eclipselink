@@ -77,8 +77,8 @@ if build=true
         <property name="branch"          value="master"/>
 
         <echo message=" "/>
-        <echo message="env.JAVA_HOME   ='${env.JAVA_HOME}'"/>
-        <echo message="git.exec        ='${git.exec}'"/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="git.exec        = '${git.exec}'"/>
         <echo message="hudson.workspace= '${hudson.workspace}'"/>
         <echo message="M2_HOME         = '${M2_HOME}'"/>
         <echo message="branch          = '${branch}'"/>
@@ -99,7 +99,8 @@ if build=true
             </path>
         </pathconvert>
         <!-- oraclelibs.2.base.dir needs to be explicit (not relative) for antcall usage            -->
-        <property name="oraclebuild.2.base.dir"           value="${oraclebuild.build.location}/.."/>
+        <property name="oraclebuild.2.base.dir"           value="${oraclebuild.build.location}"/>
+        <property name="oraclebuild.2.buildsystem.dir"    value="${oraclebuild.build.location}/buildsystem"/>
         <property name="oraclebuild.2.common.plugins.dir" value="${oraclebuild.2.base.dir}/plugins"/>
         <property name="oraclebuild.2.nosql.dir"          value="${oraclebuild.2.base.dir}/foundation/org.eclipse.persistence.nosql"/>
         <property name="oraclebuild.2.oracle.dir"         value="${oraclebuild.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
@@ -136,7 +137,7 @@ if build=true
         <echo message="extensions.depend.dir          = '${extensions.depend.dir}'"/>
 
         <!-- Custom task definitions -->
-        <property name="custom.tasks.lib"               value="${oraclebuild.build.location}/ant_customizations.jar"/>
+        <property name="custom.tasks.lib"               value="${oraclebuild.2.buildsystem.dir}/ant_customizations.jar"/>
         <property name="custom.echo.task.class"         value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <echo message="custom.tasks.lib               ='${custom.tasks.lib}'"/>
