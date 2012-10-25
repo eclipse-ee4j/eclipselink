@@ -63,6 +63,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testSetup"));
         suite.addTest(new EntityManagerJUnitTestCase("testOverriddenCustomizer"));
         suite.addTest(new EntityManagerJUnitTestCase("testAddToUninstantiatedSet"));
+        suite.addTest(new EntityManagerJUnitTestCase("testAddDuplicateToUninstantiatedSet"));
         suite.addTest(new EntityManagerJUnitTestCase("testAssociationWithEmbeddedIdSubclassEntityInJoinedStrategy"));
         suite.addTest(new EntityManagerJUnitTestCase("testGenericCollectionOnSuperclass"));
         suite.addTest(new EntityManagerJUnitTestCase("testLazyListInstantiationEager"));
@@ -308,7 +309,41 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             commitTransaction(em);
         }
     }
-    
+
+     // bug391833 - Duplicate insert on lazy set with attribute change tracking
+    public void testAddDuplicateToUninstantiatedSet(){
+        String string1 = "String1";
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            AAA a = new AAA();
+            Set<String> ds = new HashSet<String>();
+            ds.add(string1);
+            a.setStringSet(ds);
+
+            em.persist(a);
+
+            em.flush();
+            em.clear();
+
+            a = em.find(AAA.class, a.getId());
+            em.refresh(a);
+            a.getStringSet().add(string1);
+
+            em.flush();
+
+            assertTrue("The collection contains too many elements", a.getStringSet().size() == 1);
+
+            java.util.List results = em.createQuery("select s from AAA a join a.stringSet s where a.id = "+a.getId()).getResultList();
+            assertTrue("The Database contains too many elements", results.size() == 1);
+        } finally  {
+            if (this.isTransactionActive(em)) {
+                this.rollbackTransaction(em);
+            }
+            this.closeEntityManager(em);
+        }
+    }
+
     // bug 325035
     public void testLazySetInstantiationLazy(){
         if (!isWeavingEnabled()){

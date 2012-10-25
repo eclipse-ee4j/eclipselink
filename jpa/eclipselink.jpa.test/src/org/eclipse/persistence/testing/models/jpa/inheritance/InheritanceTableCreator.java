@@ -50,6 +50,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildTIRERATINGCOMMENTTable());
         addTableDefinition(buildROCKTIREINFOTable());
         addTableDefinition(buildAAATable());
+        addTableDefinition(buildAAA_STRINGSETTable());
         addTableDefinition(buildBBBTable());
         addTableDefinition(buildCCCTable());
         addTableDefinition(buildDDDTable());
@@ -962,6 +963,34 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         table.addField(fieldSTRINGDATA);
 
         return table;
+    }
+    
+    public static TableDefinition buildAAA_STRINGSETTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("AAA_STRINGSET");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("AAA_ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);//needed to prevent duplicates
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition DESCRIP_field = new FieldDefinition();
+        DESCRIP_field.setName("STRINGSET");
+        DESCRIP_field.setTypeName("VARCHAR");
+        DESCRIP_field.setSize(40);
+        fieldID.setIsPrimaryKey(true);//needed to prevent duplicates
+        DESCRIP_field.setIsPrimaryKey(false);
+        DESCRIP_field.setUnique(false);
+        DESCRIP_field.setIsIdentity(false);
+        table.addField(DESCRIP_field);
+
+        return table;   
     }
 
     public TableDefinition buildBBBTable() {

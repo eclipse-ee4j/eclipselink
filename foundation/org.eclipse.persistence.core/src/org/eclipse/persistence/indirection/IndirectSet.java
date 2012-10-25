@@ -172,7 +172,9 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         } else {
             added = getDelegate().add(element);
         }
-        raiseAddChangeEvent(element);
+        if (added) {
+            raiseAddChangeEvent(element);
+        }
         return added;
     }
 

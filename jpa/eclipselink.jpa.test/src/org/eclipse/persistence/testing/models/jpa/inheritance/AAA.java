@@ -32,6 +32,7 @@ public  class AAA {
     String foo;
     
     Set<DDD> ddds;
+    private Set<String> stringSet;
     
     public AAA() {
         ddds = new HashSet<DDD>();
@@ -70,5 +71,15 @@ public  class AAA {
 
     public void setDdds(Set<DDD> ddds) {
         this.ddds = ddds;
+    }
+
+    @ElementCollection(targetClass=String.class)
+    @CollectionTable(name="AAA_STRINGSET")
+    public Set<String> getStringSet() {
+        return stringSet;
+    }
+
+    public void setStringSet(Set<String> stringSet) {
+        this.stringSet = stringSet;
     }
 }
