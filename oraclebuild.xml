@@ -145,9 +145,9 @@ if build=true
 
     <target name="establish-baseline" if="git.exec" depends="init">
         <!-- Determine starting hash values -->
-        <get_git_hash githashproperty="prebuild.git.hash"   repoprojectdir="."/>
-        <get_git_hash githashproperty="prebuild.ext.hash"   repoprojectdir="./foundation/org.eclipse.persistence.oracle"/>
-        <get_git_hash githashproperty="prebuild.nosql.hash" repoprojectdir="./foundation/org.eclipse.persistence.oracle.nosql"/>
+        <get_git_hash githashproperty="prebuild.git.hash"   repoprojectdir="${oraclebuild.2.base.dir}"/>
+        <get_git_hash githashproperty="prebuild.ext.hash"   repoprojectdir="${oraclebuild.2.oracle.dir}"/>
+        <get_git_hash githashproperty="prebuild.nosql.hash" repoprojectdir="${oraclebuild.2.oracle.nosql.dir}"/>
         <!-- Report results -->
         <say  message="prebuild.git.hash              = '${prebuild.git.hash}'"       if="prebuild.git.hash"/>
         <say  message="prebuild.ext.hash              = '${prebuild.ext.hash}'"       if="prebuild.ext.hash"/>
@@ -225,6 +225,7 @@ if build=true
 
     <target name="build-oracle-extensions" if="oracle.target" depends="report-build-not-required">
         <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
+        <echo message="version.qualifier              = '${version.qualifier}'"/>
         <!-- === Which extensions targeted is based on ${oracle.target} === -->
         <!--   oracle.target = oracle.ext:   build oracle extension         -->
         <!--                 = oracle.nosql: build oracle nosql extension   -->
@@ -238,9 +239,9 @@ if build=true
         <attribute name="githashproperty"/>
         <attribute name="repoprojectdir"/>
         <sequential>
-            <echo message="gitHashProperty = '@{githashproperty}'"/>
-            <echo message="repoProjectDir  = '@{repoprojectdir}'"/>
-            <exec outputproperty="@{git.hash.property}"
+            <!-- echo message="gitHashProperty = '@{githashproperty}'"/>
+            <echo message="repoProjectDir  = '@{repoprojectdir}'"/ -->
+            <exec outputproperty="@{githashproperty}"
                 failonerror="false"
                 failifexecutionfails="false"
                 errorproperty="githash.failed"
@@ -251,8 +252,6 @@ if build=true
                 <arg value="--format=%h"/>
                 <arg line="@{repoprojectdir}"/>
             </exec>
-            <say message="githash.failed     = '${githash.failed}'" if="githash.failed"/>
-            <say message="\@\{gitHashProperty\} = '${@{githashproperty}}'" if="@{githashproperty}"/>
         </sequential>
     </macrodef>
 
