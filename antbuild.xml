@@ -423,7 +423,7 @@
     </target>
 
     <!-- Oracle extensions Targets -->
-    <target name="clean-oracle-extension" depends="check-maven" description="Clean the maven built oracle projects">
+    <target name="clean-oracle-extension" depends="generate-oracle-p2" description="Clean the maven built oracle projects">
         <!-- === Which extensions 'clean' is based on ${oracle.target} === -->
         <!--  oracle.target = oracle.ext:   build oracle extension         -->
         <!--                = oracle.nosql: build oracle nosql extension   -->
@@ -433,6 +433,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
              <arg value="clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
