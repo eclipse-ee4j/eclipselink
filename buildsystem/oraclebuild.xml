@@ -61,7 +61,7 @@ if build=true
         </exec>
     </target>
 
-    <target name="init" depends="get-git-hash">
+    <target name="init">
         <!-- The following variables should be passed from Hudson:
                  env.JAVA_HOME   - JAVA_HOME as defined by Hudson
                  git.exec        - fully qualified path to git executable
@@ -75,12 +75,10 @@ if build=true
         <property name="branch"          value="master"/>
 
         <echo message=" "/>
+        <echo message="env.JAVA_HOME   ='${env.JAVA_HOME}'"/>
         <echo message="git.exec        ='${git.exec}'"/>
-        <echo message="build.deps.dir  = '${build.deps.dir}'"/>
-        <echo message="build.tool.root = '${build.tool.root}'"/>
         <echo message="hudson.workspace= '${hudson.workspace}'"/>
         <echo message="M2_HOME         = '${M2_HOME}'"/>
-        <echo message=" "/>
         <echo message="branch          = '${branch}'"/>
         <echo message=" ---"/>
 
@@ -88,6 +86,9 @@ if build=true
            <format property="oraclebuild.build.date" pattern="yyyyMMdd"/>
            <format property="oraclebuild.build.time" pattern="HHmm"/>
         </tstamp>
+        <echo message="oraclebuild.build.date          = '${oraclebuild.build.date}'"/>
+        <echo message="oraclebuild.build.time          = '${oraclebuild.build.time}'"/>
+        <echo message=" ---"/>
 
         <dirname  property="oraclebuild.build.location_temp" file="${ant.file.oraclebuild}"/>
         <pathconvert targetos="unix" property="oraclebuild.build.location">
@@ -162,6 +163,9 @@ if build=true
             <param name="git.hash.property" value="prebuild.nosql.hash"/>
             <param name="repo.project.dir"  value="${oraclebuild.2.nosql.dir}"/>
         </antcall>
+        <echo message="prebuild.git.hash              = '${prebuild.git.hash}'"/>
+        <echo message="prebuild.ext.hash              = '${prebuild.ext.hash}'"/>
+        <echo message="prebuild.nosql.hash            = '${prebuild.nosql.hash}'"/>
 
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"     versiononly="true"
@@ -169,6 +173,11 @@ if build=true
         <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.nosql.criteria}"  property="prebuild.oracle.nosql.version"   versiononly="true"
         />
+        <say  message="prebuild.oracle.ext.version    = '${prebuild.oracle.ext.version}'"                     if="prebuild.oracle.ext.version"/>
+        <say  message="prebuild.oracle.nosql.version  = '${prebuild.oracle.nosql.version}'"                   if="prebuild.oracle.nosql.version"/>
+        <say  message="prebuild.oracle.ext.version    = '${oracle.ext.prefix}_*.jar' bundle not found."   unless="prebuild.oracle.ext.version"/>
+        <say  message="prebuild.oracle.nosql.version  = '${oracle.nosql.prefix}_*.jar' bundle not found." unless="prebuild.oracle.nosql.version"/>
+        <echo message=" ---"/>
     </target>
 
     <target name="set-build-required" depends="establish-baseline">
@@ -180,6 +189,10 @@ if build=true
         <condition property="nosql.current" value="true" else="..">
             <contains string="${prebuild.oracle.nosql.version}" substring="${prebuild.nosql.hash}"/>
         </condition>
+        <say  message="oracle.current                 = '${oracle.current}'     ('prebuild.oracle.ext.version' contains 'prebuild.ext.hash')"        if="oracle.current"/>
+        <say  message="nosql.current                  = '${nosql.current}'     ('prebuild.oracle.nosql.version' contains 'prebuild.nosql.hash')"     if="nosql.current"/>
+        <say  message="oracle.current                 = undefined ('prebuild.oracle.ext.version' doesn't contain 'prebuild.ext.hash')"           unless="oracle.current"/>
+        <say  message="nosql.current                  = undefined ('prebuild.oracle.nosql.version' doesn't contain 'prebuild.nosql.hash')"       unless="nosql.current"/>
 
         <!-- if Both oracle and nosql need rebuild -->
         <condition property="oracle.target" value="oracle">
@@ -201,9 +214,15 @@ if build=true
                 <not> <isset property="nosql.current"/>  </not>
             </and>
         </condition>
+        <say  message="oracle.target                  = '${oracle.target}'"      if="oracle.target"/>
+        <say  message="oracle.target                  = undefined"           unless="oracle.current"/>
     </target>
 
-    <target name="build-oracle-extensions" if="oracle.target" depends="set-build-required">
+    <target name="report-build-not-required" unless="oracle.target" depends="set-build-required">
+        <echo message="Conditions not met for rebuild. Build target will be bypassed."/>
+    </target>
+
+    <target name="build-oracle-extensions" if="oracle.target" depends="report-build-not-required">
         <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
         <!-- === Which extensions targeted is based on ${oracle.target} === -->
         <!--   oracle.target = oracle.ext:   build oracle extension         -->
