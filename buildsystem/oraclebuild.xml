@@ -220,7 +220,7 @@ if build=true
             </and>
         </condition>
         <say  message="oracle.target                  = '${oracle.target}'"      if="oracle.target"/>
-        <say  message="oracle.target                  = undefined"           unless="oracle.current"/>
+        <say  message="oracle.target                  = undefined"           unless="oracle.target"/>
     </target>
 
     <target name="report-build-not-required" unless="oracle.target" depends="set-build-required">
