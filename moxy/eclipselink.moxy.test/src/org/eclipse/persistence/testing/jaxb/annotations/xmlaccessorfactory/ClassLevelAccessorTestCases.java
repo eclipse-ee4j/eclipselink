@@ -12,6 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.JAXBException;
+
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ClassLevelAccessorTestCases extends JAXBWithJSONTestCases {
@@ -21,16 +27,25 @@ public class ClassLevelAccessorTestCases extends JAXBWithJSONTestCases {
 
     public ClassLevelAccessorTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{CustomerClassOverride.class});
+        setClasses(new Class[] { CustomerClassOverride.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
+    }
+
+    @Override
+    protected Map getProperties() throws JAXBException {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT, true);
+
+        return properties;
     }
 
     public Object getControlObject() {
         CustomerClassOverride cust = new CustomerClassOverride();
         cust.fieldProperty = "fieldPropertyValue";
         cust.setProperty("propertyValue");
-        
+
         return cust;
     }
+
 }

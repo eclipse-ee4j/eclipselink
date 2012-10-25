@@ -136,6 +136,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
 
+    private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
+
     /**
       * For JAXB 2 there is no explicitly defined default validation handler 
       * and the default event handling only terminates the  operation after 
@@ -752,7 +754,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             JaxbClassLoader loader = new JaxbClassLoader(classLoader, classesToBeBound);
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
-            if(properties != null) {
+            boolean enableXmlAccessorFactory = false;
+            if (properties != null) {
                 if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
                     // try looking up the 'old' key
                     defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
@@ -760,6 +763,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
                     // try looking up the 'old' key
                     annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                }
+                Boolean xmlAccessorFactorySupport = (Boolean) properties.get(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT);
+                Boolean xmlAccessorFactorySupportRI = (Boolean) properties.get(RI_XML_ACCESSOR_FACTORY_SUPPORT);
+                if (Boolean.TRUE.equals(xmlAccessorFactorySupport) || Boolean.TRUE.equals(xmlAccessorFactorySupportRI)) {
+                    enableXmlAccessorFactory = true;
                 }
             }
 
@@ -783,7 +791,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(classesToBeBound, jModel);
             try {
-                Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace);
+                Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace, enableXmlAccessorFactory);
                 return createContextState(generator, loader, classesToBeBound, properties);
             } catch (Exception ex) {
                 throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
@@ -882,7 +890,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             Map<String, XmlBindings> xmlBindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
-            if(properties != null) {
+            boolean enableXmlAccessorFactory = false;
+            if (properties != null) {
                 if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
                     // try looking up the 'old' key
                     defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
@@ -890,6 +899,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
                     // try looking up the 'old' key
                     annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                }
+                Boolean xmlAccessorFactorySupport = (Boolean) properties.get(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT);
+                Boolean xmlAccessorFactorySupportRI = (Boolean) properties.get(RI_XML_ACCESSOR_FACTORY_SUPPORT);
+                if (Boolean.TRUE.equals(xmlAccessorFactorySupport) || Boolean.TRUE.equals(xmlAccessorFactorySupportRI)) {
+                    enableXmlAccessorFactory = true;
                 }
             }
             TypeMappingInfo[] typesToBeBound = typeMappingInfo;
@@ -919,7 +933,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
             try {
-                Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace);
+                Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace, enableXmlAccessorFactory);
                 JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);                
                 return contextState;
             } catch (Exception ex) {

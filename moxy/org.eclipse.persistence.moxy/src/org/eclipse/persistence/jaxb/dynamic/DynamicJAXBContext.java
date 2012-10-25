@@ -232,7 +232,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
 
             Metadata oxmMetadata = new OXMMetadata((DynamicClassLoader) classLoader, properties);
 
-            Generator g = new Generator(oxmMetadata.getJavaModelInput(), oxmMetadata.getBindings(), classLoader, null);
+            Generator g = new Generator(oxmMetadata.getJavaModelInput(), oxmMetadata.getBindings(), classLoader, null, false);
 
             Project p = null;
             Project dp = null;
@@ -313,7 +313,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 throw new JAXBException(e);
             }
 
-            Generator g = new Generator(schemaMetadata.getJavaModelInput(), schemaMetadata.getBindings(), classLoader, null);
+            Generator g = new Generator(schemaMetadata.getJavaModelInput(), schemaMetadata.getBindings(), classLoader, null, false);
 
             Project p = null;
             Project dp = null;

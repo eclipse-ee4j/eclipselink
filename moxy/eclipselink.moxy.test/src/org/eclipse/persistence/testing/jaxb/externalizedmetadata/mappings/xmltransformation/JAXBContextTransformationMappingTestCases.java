@@ -113,7 +113,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
             JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
-            Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "");
+            Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {
             exceptionCount++;
@@ -150,7 +150,7 @@ public class JAXBContextTransformationMappingTestCases extends TestCase{
         try {
             Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
             JavaModelInputImpl jModelInput = new JavaModelInputImpl(new Class[]{Employee.class}, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), new Class[]{Employee.class})));
-            Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "");
+            Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
             generator.generateSchema();
         } catch (Exception e) {
             exceptionCount++;

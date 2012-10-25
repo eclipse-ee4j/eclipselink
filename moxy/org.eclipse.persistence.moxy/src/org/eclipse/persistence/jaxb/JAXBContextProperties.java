@@ -154,8 +154,18 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper
      * @see java.lang.annotation.Annotation
      * @see java.lang.reflect.AnnotatedElement
-     * @since 2.4
+     * 
      * @since 2.4, replaces JAXBContextFactory.ANNOTATION_HELPER_KEY
      */
     public static final String ANNOTATION_HELPER = "eclipselink.annotation-helper";
+
+    /**
+     * The name of the boolean property used to enable custom XmlAccessorFactories.
+     * 
+     * @see com.sun.xml.bind.XmlAccessorFactory
+     *
+     * @since 2.4.2
+     */
+    public static final String XML_ACCESSOR_FACTORY_SUPPORT = "eclipselink.xml-accessor-factory.support";
+
 }

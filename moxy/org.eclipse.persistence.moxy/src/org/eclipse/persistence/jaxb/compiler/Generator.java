@@ -92,9 +92,10 @@ public class Generator {
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
      */
-    public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace) {
+    public Generator(JavaModelInput jModelInput, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        annotationsProcessor.setXmlAccessorFactorySupport(enableXmlAccessorFactory);
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
@@ -134,9 +135,10 @@ public class Generator {
      * @param xmlBindings map of XmlBindings keyed on package name
      * @param cLoader
      */    
-    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace) {
+    public Generator(JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] javaClasses, Map<Type, TypeMappingInfo> typeToTypeMappingInfo, Map<String, XmlBindings> xmlBindings, ClassLoader cLoader, String defaultTargetNamespace, boolean enableXmlAccessorFactory) {
         helper = new Helper(jModelInput.getJavaModel());
         annotationsProcessor = new AnnotationsProcessor(helper);
+        annotationsProcessor.setXmlAccessorFactorySupport(enableXmlAccessorFactory);
         annotationsProcessor.setDefaultTargetNamespace(defaultTargetNamespace);
         schemaGenerator = new SchemaGenerator(helper);
         mappingsGenerator = new MappingsGenerator(helper);
