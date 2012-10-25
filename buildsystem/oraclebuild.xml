@@ -48,6 +48,8 @@ if build=true
     <target name="build"                         depends="build-oracle-extensions"/>
 
     <target name="get-git-hash" if="git.exec">
+        <echo message="git.hash.property = '${git.hash.property}'"/>
+        <echo message="repo.project.dir  = '${repo.project.dir}'"/>
         <exec outputproperty="${git.hash.property}"
             failonerror="false"
             failifexecutionfails="false"
@@ -163,9 +165,12 @@ if build=true
             <param name="git.hash.property" value="prebuild.nosql.hash"/>
             <param name="repo.project.dir"  value="${oraclebuild.2.nosql.dir}"/>
         </antcall>
-        <echo message="prebuild.git.hash              = '${prebuild.git.hash}'"/>
-        <echo message="prebuild.ext.hash              = '${prebuild.ext.hash}'"/>
-        <echo message="prebuild.nosql.hash            = '${prebuild.nosql.hash}'"/>
+        <say  message="prebuild.git.hash              = '${prebuild.git.hash}'"       if="prebuild.git.hash"/>
+        <say  message="prebuild.ext.hash              = '${prebuild.ext.hash}'"       if="prebuild.ext.hash"/>
+        <say  message="prebuild.nosql.hash            = '${prebuild.nosql.hash}'"     if="prebuild.nosql.hash"/>
+        <say  message="prebuild.git.hash              = undefined"                unless="prebuild.git.hash"/>
+        <say  message="prebuild.ext.hash              = undefined"                unless="prebuild.ext.hash"/>
+        <say  message="prebuild.nosql.hash            = undefined"                unless="prebuild.nosql.hash"/>
 
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"     versiononly="true"
