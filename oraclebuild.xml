@@ -47,22 +47,6 @@ if build=true
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="build"                         depends="build-oracle-extensions"/>
 
-    <target name="get-git-hash" if="git.exec">
-        <echo message="git.hash.property = '${git.hash.property}'"/>
-        <echo message="repo.project.dir  = '${repo.project.dir}'"/>
-        <exec outputproperty="${git.hash.property}"
-            failonerror="false"
-            failifexecutionfails="false"
-            errorproperty="githash.failed"
-            logError="true"
-            executable="${git.exec}">
-            <arg value="log"/>
-            <arg value="-1"/>
-            <arg value="--format=%h"/>
-            <arg line="${repo.project.dir}"/>
-        </exec>
-    </target>
-
     <target name="init">
         <!-- The following variables should be passed from Hudson:
                  env.JAVA_HOME   - JAVA_HOME as defined by Hudson
@@ -159,20 +143,12 @@ if build=true
         <fail message="Cannot find: ${git.exec}" unless="git.exec.exist"/>
     </target>
 
-    <target name="establish-baseline" depends="init">
+    <target name="establish-baseline" if="git.exec" depends="init">
         <!-- Determine starting hash values -->
-        <antcall target="get-git-hash">
-            <param name="git.hash.property" value="prebuild.git.hash"/>
-            <param name="repo.project.dir"  value="${oraclebuild.2.base.dir}"/>
-        </antcall>
-        <antcall target="get-git-hash">
-            <param name="git.hash.property" value="prebuild.ext.hash"/>
-            <param name="repo.project.dir"  value="${oraclebuild.2.oracle.dir}"/>
-        </antcall>
-        <antcall target="get-git-hash">
-            <param name="git.hash.property" value="prebuild.nosql.hash"/>
-            <param name="repo.project.dir"  value="${oraclebuild.2.oracle.nosql.dir}"/>
-        </antcall>
+        <get_git_hash githashproperty="prebuild.git.hash"   repoprojectdir="."/>
+        <get_git_hash githashproperty="prebuild.ext.hash"   repoprojectdir="./foundation/org.eclipse.persistence.oracle"/>
+        <get_git_hash githashproperty="prebuild.nosql.hash" repoprojectdir="./foundation/org.eclipse.persistence.oracle.nosql"/>
+        <!-- Report results -->
         <say  message="prebuild.git.hash              = '${prebuild.git.hash}'"       if="prebuild.git.hash"/>
         <say  message="prebuild.ext.hash              = '${prebuild.ext.hash}'"       if="prebuild.ext.hash"/>
         <say  message="prebuild.nosql.hash            = '${prebuild.nosql.hash}'"     if="prebuild.nosql.hash"/>
@@ -180,18 +156,21 @@ if build=true
         <say  message="prebuild.ext.hash              = undefined"                unless="prebuild.ext.hash"/>
         <say  message="prebuild.nosql.hash            = undefined"                unless="prebuild.nosql.hash"/>
 
+        <!-- Determine existing bundle versions -->
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"     versiononly="true"
         />
         <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.nosql.criteria}"  property="prebuild.oracle.nosql.version"   versiononly="true"
         />
+        <!-- Report results -->
         <say  message="prebuild.oracle.ext.version    = '${prebuild.oracle.ext.version}'"                     if="prebuild.oracle.ext.version"/>
         <say  message="prebuild.oracle.nosql.version  = '${prebuild.oracle.nosql.version}'"                   if="prebuild.oracle.nosql.version"/>
         <say  message="prebuild.oracle.ext.version    = '${oracle.ext.prefix}_*.jar' bundle not found."   unless="prebuild.oracle.ext.version"/>
         <say  message="prebuild.oracle.nosql.version  = '${oracle.nosql.prefix}_*.jar' bundle not found." unless="prebuild.oracle.nosql.version"/>
         <echo message=" ---"/>
 
+        <!-- Validate we have what we need to proceed -->
         <condition property="missing.hash" value="true">
             <or>
                 <not> <isset property="prebuild.git.hash"/> </not>
@@ -253,5 +232,28 @@ if build=true
         <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension"/>
         <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="build-oracle-extension"/>
     </target>
+
+    <!-- Macro definitions (needed to reduce code redunancy, yet ant calls are both memory intensive, and operate outside current environment -->
+    <macrodef name="get_git_hash">
+        <attribute name="githashproperty"/>
+        <attribute name="repoprojectdir"/>
+        <sequential>
+            <echo message="gitHashProperty = '@{githashproperty}'"/>
+            <echo message="repoProjectDir  = '@{repoprojectdir}'"/>
+            <exec outputproperty="@{git.hash.property}"
+                failonerror="false"
+                failifexecutionfails="false"
+                errorproperty="githash.failed"
+                logError="true"
+                executable="${git.exec}">
+                <arg value="log"/>
+                <arg value="-1"/>
+                <arg value="--format=%h"/>
+                <arg line="@{repoprojectdir}"/>
+            </exec>
+            <say message="githash.failed     = '${githash.failed}'" if="githash.failed"/>
+            <say message="\@\{gitHashProperty\} = '${@{githashproperty}}'" if="@{githashproperty}"/>
+        </sequential>
+    </macrodef>
 
 </project>
