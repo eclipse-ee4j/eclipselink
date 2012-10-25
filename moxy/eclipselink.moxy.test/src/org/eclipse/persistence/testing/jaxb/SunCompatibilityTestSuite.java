@@ -18,6 +18,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.ClassLevelAccessorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.PackageLevelAccessorTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory.XmlAccessorFactorySupportTestCases;
 import org.eclipse.persistence.testing.jaxb.cycle.CycleRecoverableTestCases;
 import org.eclipse.persistence.testing.jaxb.sun.charescape.NonELCharacterEscapeHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.sun.idresolver.NonELIDResolverTestCases;
@@ -28,7 +29,7 @@ public class SunCompatibilityTestSuite extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("Sun Compatability Test Suite");
-        
+
         suite.addTestSuite(CycleRecoverableTestCases.class);
 
         suite.addTestSuite(ClassLevelAccessorTestCases.class);
@@ -37,7 +38,8 @@ public class SunCompatibilityTestSuite extends TestCase {
         suite.addTestSuite(NonELIDResolverTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         suite.addTest(XmlLocationTestSuite.suite());
-        
+        suite.addTestSuite(XmlAccessorFactorySupportTestCases.class);
+
         return suite;
     }
 }

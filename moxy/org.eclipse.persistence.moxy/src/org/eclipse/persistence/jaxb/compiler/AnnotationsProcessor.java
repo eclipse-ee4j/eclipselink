@@ -220,6 +220,7 @@ public class AnnotationsProcessor {
     private JAXBMetadataLogger logger;
 
     private boolean isDefaultNamespaceAllowed;
+    private boolean xmlAccessorFactorySupport;
 
     private boolean hasSwaRef;
     
@@ -621,6 +622,9 @@ public class AnnotationsProcessor {
     }
 
     private void processAccessorFactory(JavaClass javaClass, TypeInfo info) {
+        if (!xmlAccessorFactorySupport) {
+            return;
+        }
 
         Annotation xmlAccessorFactory = helper.getAnnotation(javaClass, CompilerHelper.ACCESSOR_FACTORY_ANNOTATION_CLASS);
         Method valueMethod = null;
@@ -4645,6 +4649,25 @@ public class AnnotationsProcessor {
     
     public List getReferencedByTransformer(){
     	return referencedByTransformer;
+    }
+
+    /**
+     * Indicates whether this AnnotationsProcessor has been configured to enable
+     * processing of XmlAccessorFactory annotations.
+     * 
+     * @see com.sun.xml.bind.XmlAccessorFactory
+     */
+    public boolean isXmlAccessorFactorySupport() {
+        return xmlAccessorFactorySupport;
+    }
+
+    /**
+     * Sets whether this AnnotationsProcessor should process XmlAccessorFactory annotations.
+     * 
+     * @see com.sun.xml.bind.XmlAccessorFactory
+     */
+    public void setXmlAccessorFactorySupport(boolean value) {
+        this.xmlAccessorFactorySupport = value;
     }
 
 }
