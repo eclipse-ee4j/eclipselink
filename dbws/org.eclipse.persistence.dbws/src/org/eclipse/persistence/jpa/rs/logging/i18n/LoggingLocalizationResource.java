@@ -27,15 +27,15 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "exception_marshalling_entity_metadata", "An exception was caught while marshalling the metadata for entity [{0}] in persistence unit [{1}]: [{2}]"},
         { "exception_creating_persistence_context", "An Exception was thrown while creating a JPA persistence context for persistence unit: [{0}]: [{1}]"},
         { "exception_while_updating_attribute", "An Exception was thrown while updating an entity of type [{0}] on persistence unit [{1}]: [{2}]"},
-        { "exception_while_ummarhalling_entity", "An Exception was thrown while unmarshalling an entity of type [{0}] in persitence unit [{1}]: [{2}]"},
+        { "exception_while_unmarhalling_entity", "An Exception was thrown while unmarshalling an entity of type [{0}] in persitence unit [{1}]: [{2}]" },
         { "exception_creating_jaxb_context", "An Exception was thrown while creating a JAXBContext for persistence unit [{0}]: [{1}]"},
-        { "exception_thrown_while_creating_dynamic_entity", "An Exception was thrown creating a dyamic entity of type [{0}]: [{1}]"},
+        { "exception_thrown_while_creating_dynamic_entity", "An Exception was thrown creating a dynamic entity of type [{0}]: [{1}]"},
         { "jpars_could_not_find_entity_type", "Entity type [{0}] could not be found in persistence unit: [{1}]."},
         { "jpars_could_not_entity_for_key", "Entity of type [{0}] and id [{1}] could not be found in persistence unit: [{2}]."},
         { "jpars_could_not_entity_for_attribute", "Attribute [{0}] for entity of type [{1}] and id [{2}] could not be found in persistence unit: [{3}]."},
         { "jpars_could_find_appropriate_mapping_for_update", "Attribute [{0}] for entity of type [{1}] in persistence unit: [{2}] is not the appropriate type for an update or delete."},
         { "jpars_could_not_update_attribute", "Attribute [{0}] for entity of type [{1}] with key [{2}] in persistence unit: [{3}] could not be updated or deleted."},
-        { "jpars_put_not_itempotent", "An Entity of type [{0}] in persistence unit [{1}] is being created with a PUT, but the Entity is not itempotent due to either sequence generation or cascading."},
+        { "jpars_put_not_idempotent", "An Entity of type [{0}] in persistence unit [{1}] is being created with a PUT, but the Entity is not idempotent due to either sequence generation or cascading."},
         { "jpars_could_not_marshal_serializing", "JPARS is serializing an object because it was unable to marshal it."},
         { "jaxb_exception_while_marshalling", "JPARS got a JAXBException while marshalling."},
         { "jpars_could_not_find_descriptor", "JPARS could not find the descriptor for [{0}] while subscribing for event notification."},
@@ -45,9 +45,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jersey.container.cant.load", "Unable to instantiate Jersey ServletContainer."},
         { "jersey.not.available", "No Jersey runtime found on the application classpath"},
         { "jpars_could_marshal_requested_result_to_requested_type", "JPA RS could not marshall object [{0}] to the requested type."},
-        { "jpars_requested_type", "You are requesting types [{0}] from JPA RS."}
+        { "jpars_requested_type", "You are requesting types [{0}] from JPA RS."},
+        { "object_referred_by_link_does_not_exist", "Entity referred by link does not exist, entity type:[{0}], id:[{1}]."}
     };
-    
+
     @Override
     protected Object[][] getContents() {
         // TODO Auto-generated method stub

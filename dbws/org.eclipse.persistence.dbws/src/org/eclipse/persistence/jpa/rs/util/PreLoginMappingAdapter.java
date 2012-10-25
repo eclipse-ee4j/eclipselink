@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.oxm.XMLField;
@@ -225,7 +226,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                     jaxbDescriptor.addMapping(xmlChoiceMapping);
                 }
             } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                throw new JPARSException(e.toString());
             }
         }
     }

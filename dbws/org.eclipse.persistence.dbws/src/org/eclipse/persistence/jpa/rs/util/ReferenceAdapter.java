@@ -20,6 +20,8 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -28,7 +30,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapter<Object, Object> {
     private String baseURI = null;
     private PersistenceContext context = null;
-    
+
     /**
      * Instantiates a new reference adapter.
      */
@@ -61,7 +63,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         if (o == null) {
             return null;
         }
-        
+
         ClassDescriptor descriptor = context.getJAXBDescriptorForClass(o.getClass());
         T t = (T) descriptor.getObjectBuilder().buildNewInstance();
         Link link = new Link();
@@ -132,7 +134,6 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         }
         // It is an error if the object referred by a link in unmarshal doesn't
         // exist, so throw exception
-        throw new RuntimeException("Entity " + entityType + " with id " + id
-                + " does not exist.");
+        throw new JPARSException(LoggingLocalization.buildMessage("object_referred_by_link_does_not_exist", new Object[]{entityType, id}));
     }
 }

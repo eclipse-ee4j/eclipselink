@@ -756,14 +756,9 @@ public class PersistenceContext {
             }
         });
 
-        try {
-            for (XmlAdapter adapter:getAdapters()) {
-                unmarshaller.setAdapter(adapter);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } 
+        for (XmlAdapter adapter:getAdapters()) {
+            unmarshaller.setAdapter(adapter);
+        }
 
         JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
         if (element.getValue() instanceof List<?>){
@@ -842,14 +837,9 @@ public class PersistenceContext {
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         marshaller.setAdapter(new RelationshipLinkAdapter(getBaseURI().toString(), this));
 
-        try {
-            for (XmlAdapter adapter:getAdapters()) {
-                marshaller.setAdapter(adapter);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } 
+        for (XmlAdapter adapter:getAdapters()) {
+            marshaller.setAdapter(adapter);
+        }
 
         if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List){
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
@@ -863,11 +853,10 @@ public class PersistenceContext {
                     marshaller.marshal(o, writer);  
                 }
                 writer.writeEndDocument();
+                postMarshallEntity(object);
             } catch (Exception e){
                 e.printStackTrace();
-                throw new RuntimeException(e);
-            } finally {
-                postMarshallEntity(object);
+                throw new JPARSException(e.toString());
             }
         } else {       
             marshaller.marshal(object, output);
@@ -954,9 +943,12 @@ public class PersistenceContext {
         return false;
     }
 
-    protected List<XmlAdapter> getAdapters() throws Exception {
-        if (adapters == null) {
-            adapters = new ArrayList<XmlAdapter>();
+    protected List<XmlAdapter> getAdapters() throws JPARSException {
+        if (adapters != null) {
+            return adapters;
+        }
+        adapters = new ArrayList<XmlAdapter>();
+        try {
             for (ClassDescriptor desc : this.getJpaSession().getDescriptors().values()) {
                 // avoid embeddables
                 if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
@@ -970,6 +962,9 @@ public class PersistenceContext {
                     adapters.add((XmlAdapter) referenceAdaptorConstructor.newInstance(args));
                 }
             }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            throw new JPARSException(ex.getMessage());
         }
         return adapters;
     }
