@@ -10,7 +10,14 @@
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
 *   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatenated
 *     e.g. 'runpathref'
@@ -21,7 +28,7 @@
 *   - Ant properties are lower case.
 *
 * Contributors:
-*     egwin  - initial API and implementation
+*     egwin - initial API and implementation
 #******************************************************************************/-->
 
 <project name="oraclelibs" default="build" basedir=".">
@@ -50,32 +57,34 @@
                 <pathelement location="${oraclelibs.build.location_temp}"/>
             </path>
         </pathconvert>
-        <property file="${user.home}/build.properties"/>
         <!-- oraclelibs.2.base.dir needs to be explicit (not relative) for antcall usage            -->
         <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
         <property name="oraclelibs.2.base.dir"            value="${oraclelibs.build.location}/../.."/>
         <property name="oraclelibs.2.buildsys.dir"        value="${oraclelibs.2.base.dir}/buildsystem"/>
+
         <echo message="ant.project.name               ='${ant.project.name}'"/>
         <echo message="basedir                        ='${basedir}'"/>
         <echo message="oraclelibs.build.location      ='${oraclelibs.build.location}'"/>
         <echo message="oraclelibs.2.base.dir          ='${oraclelibs.2.base.dir}'"/>
         <echo message="oraclelibs.2.buildsys.dir      ='${oraclelibs.2.buildsys.dir}'"/>
         <echo message=" ---"/>
+
         <condition property="custom.properties.message" value="Loading user defined properties from: '${user.home}/build.properties'"
-                                                     else="No custom properties file at '${user.home}/build.properties'. Continuing build using defaults.">
+                                                         else="No custom properties file at '${user.home}/build.properties'. Continuing build using defaults.">
             <available file="${user.home}/build.properties"/>
         </condition>
         <echo message="${custom.properties.message}"/>
         <property file="${user.home}/build.properties"/>
         <echo message=" "/>
+
         <!-- Sets default for all extensions.depend dir locations to static paths -->
-        <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
+        <property name="oracle.extensions.depend.dir" value="${oraclelibs.2.base.dir}/../extension.oracle.lib.external"/>
         <echo message="oracle.extensions.depend.dir   = '${oracle.extensions.depend.dir}'"/>
         <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
         <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
-        <condition property="extensions.depend.dir" value="${trunk.build.location}/../extension.lib.external"
-                                                    else="${trunk.build.location}">
-            <available file="${trunk.build.location}/../extension.lib.external" type="dir"/>
+        <condition property="extensions.depend.dir"   value="${oraclelibs.2.base.dir}/../extension.lib.external"
+                                                       else="${oraclelibs.build.location}">
+            <available file="${oraclelibs.2.base.dir}/../extension.lib.external" type="dir"/>
         </condition>
         <echo message="extensions.depend.dir          = '${extensions.depend.dir}'"/>
         <property name="ojdbc.jar"     value="ojdbc6.jar"/>

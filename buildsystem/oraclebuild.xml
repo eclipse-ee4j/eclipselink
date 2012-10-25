@@ -1,0 +1,216 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     egwin - initial API and implementation
+#******************************************************************************/-->
+<!---
+For each oracle project
+Find out if current checkin is latest hash
+  find current hash
+  find checked in hash
+  compare hash if != mark for build
+if build=true
+  set build arguments
+  build
+  checkin results
+-->
+
+<project name="oraclebuild" default="build" basedir=".">
+
+    <!-- Default ant target, compiles and translates resources, does not run tests. -->
+    <target name="build"                         depends="build-oracle-extensions"/>
+
+    <target name="get-git-hash" if="git.exec">
+        <exec outputproperty="${git.hash.property}"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="githash.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="log"/>
+            <arg value="-1"/>
+            <arg value="--format=%h"/>
+            <arg value="${repo.project.dir}"/>
+        </exec>
+    </target>
+
+    <target name="init" depends="get-git-hash">
+        <!-- The following variables should be passed from Hudson:
+                 env.JAVA_HOME   - JAVA_HOME as defined by Hudson
+                 git.exec        - fully qualified path to git executable
+                 hudson.workspace- WORKSPACE as defined by the Hudson slave
+                 M2_HOME         - location of Maven3 install (on build server)
+                 branch          - name of Git branch (master, 2.3, 2.4, 2.5, etc)
+
+             However, just in case default values are set:
+        -->
+        <property name="git.exec"        value="/usr/bin/git"/>
+        <property name="branch"          value="master"/>
+
+        <echo message=" "/>
+        <echo message="git.exec        ='${git.exec}'"/>
+        <echo message="build.deps.dir  = '${build.deps.dir}'"/>
+        <echo message="build.tool.root = '${build.tool.root}'"/>
+        <echo message="hudson.workspace= '${hudson.workspace}'"/>
+        <echo message="M2_HOME         = '${M2_HOME}'"/>
+        <echo message=" "/>
+        <echo message="branch          = '${branch}'"/>
+        <echo message=" ---"/>
+
+        <tstamp>
+           <format property="oraclebuild.build.date" pattern="yyyyMMdd"/>
+           <format property="oraclebuild.build.time" pattern="HHmm"/>
+        </tstamp>
+
+        <dirname  property="oraclebuild.build.location_temp" file="${ant.file.oraclebuild}"/>
+        <pathconvert targetos="unix" property="oraclebuild.build.location">
+            <path>
+                <pathelement location="${oraclebuild.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <!-- oraclelibs.2.base.dir needs to be explicit (not relative) for antcall usage            -->
+        <property name="oraclebuild.2.base.dir"           value="${oraclebuild.build.location}/.."/>
+        <property name="oraclebuild.2.common.plugins.dir" value="${oraclebuild.2.base.dir}/plugins"/>
+
+        <echo message="ant.project.name                = '${ant.project.name}'"/>
+        <echo message="basedir                         = '${basedir}'"/>
+        <echo message="oraclebuild.build.location      = '${oraclebuild.build.location}'"/>
+        <echo message="oraclebuild.2.base.dir          = '${oraclebuild.2.base.dir}'"/>
+        <echo message="oraclebuild.2.common.plugins.dir= '${oraclebuild.2.common.plugins.dir}'"/>
+        <echo message=" ---"/>
+
+        <condition property="custom.properties.message" value="Loading user defined properties from: '${user.home}/build.properties'"
+                                                         else="No custom properties file at '${user.home}/build.properties'. Continuing build using defaults.">
+            <available file="${user.home}/build.properties"/>
+        </condition>
+        <echo message="${custom.properties.message}"/>
+        <property file="${user.home}/build.properties"/>
+        <echo message=" "/>
+        <property file="${oraclebuild.2.base.dir}/antbuild.properties"/>
+
+        <!-- Sets default for all extensions.depend dir locations to static paths -->
+        <property name="oracle.extensions.depend.dir" value="${oraclebuild.2.base.dir}/../extension.oracle.lib.external"/>
+        <echo message="oracle.extensions.depend.dir   = '${oracle.extensions.depend.dir}'"/>
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir"   value="${oraclebuild.2.base.dir}/../extension.lib.external"
+                                                       else="${oraclebuild.build.location}">
+            <available file="${oraclebuild.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir          = '${extensions.depend.dir}'"/>
+
+        <!-- Custom task definitions -->
+        <property name="custom.tasks.lib"               value="${oraclebuild.build.location}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class"         value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <echo message="custom.tasks.lib               ='${custom.tasks.lib}'"/>
+        <echo message="custom.echo.task.class         ='${custom.echo.task.class}'"/>
+        <echo message="custom.selectbundle.task.class ='${custom.selectbundle.task.class}'"/>
+        <echo message=" ---"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- Feature Dependency variables -->
+        <property name="oracle.ext.prefix"     value="org.eclipse.persistence.oracle"/>
+        <property name="oracle.ext.criteria"   value="[0.0.1,9.0.0)"/>
+        <property name="oracle.nosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
+        <property name="oracle.nosql.criteria" value="[0.0.1,9.0.0)"/>
+
+        <!-- Verify validity of 'git.exec' value -->
+        <available file="${git.exec}" property="git.exec.exist"/>
+        <fail message="Cannot find: ${git.exec}" unless="git.exec.exist"/>
+    </target>
+
+    <target name="establish-baseline" depends="init">
+        <!-- Determine starting hash values -->
+        <antcall target="get-git-hash">
+            <param name="git.hash.property" value="prebuild.git.hash"/>
+            <param name="repo.project.dir"  value="${oraclebuild.2.base.dir}"/>
+        </antcall>
+        <antcall target="get-git-hash">
+            <param name="git.hash.property" value="prebuild.ext.hash"/>
+            <param name="repo.project.dir"  value="${oraclebuild.2.oracle.dir}"/>
+        </antcall>
+        <antcall target="get-git-hash">
+            <param name="git.hash.property" value="prebuild.nosql.hash"/>
+            <param name="repo.project.dir"  value="${oraclebuild.2.nosql.dir}"/>
+        </antcall>
+
+        <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
+                     criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"     versiononly="true"
+        />
+        <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
+                     criterion="${oracle.nosql.criteria}"  property="prebuild.oracle.nosql.version"   versiononly="true"
+        />
+    </target>
+
+    <target name="set-build-required" depends="establish-baseline">
+        <!-- Determine if Oracle Extension needs rebuild -->
+        <condition property="oracle.current" value="true" else="..">
+            <contains string="${prebuild.oracle.ext.version}" substring="${prebuild.ext.hash}"/>
+        </condition>
+        <!-- Determine if Oracle NoSQL Extension needs rebuild -->
+        <condition property="nosql.current" value="true" else="..">
+            <contains string="${prebuild.oracle.nosql.version}" substring="${prebuild.nosql.hash}"/>
+        </condition>
+
+        <!-- if Both oracle and nosql need rebuild -->
+        <condition property="oracle.target" value="oracle">
+            <and>
+                <not> <isset property="oracle.current"/> </not>
+                <not> <isset property="nosql.current"/>  </not>
+            </and>
+        </condition>
+        <!-- if only oracle needs rebuild -->
+        <condition property="oracle.target" value="oracle.ext">
+            <and>
+                <not> <isset property="oracle.current"/> </not>
+            </and>
+        </condition>
+        <!-- if only nosql needs rebuild -->
+        <condition property="oracle.target" value="oracle.nosql">
+            <and>
+                <not> <isset property="oracle.current"/> </not>
+                <not> <isset property="nosql.current"/>  </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="build-oracle-extensions" if="oracle.target" depends="set-build-required">
+        <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
+        <!-- === Which extensions targeted is based on ${oracle.target} === -->
+        <!--   oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                 = oracle.nosql: build oracle nosql extension   -->
+        <!--                 = oracle:       build both                     -->
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension"/>
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="build-oracle-extension"/>
+    </target>
+
+</project>

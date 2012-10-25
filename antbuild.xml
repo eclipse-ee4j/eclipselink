@@ -145,10 +145,10 @@
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
+    <property name="git.hash"   value="NA"/>
     <condition property="version.qualifier" value="qualifier"
-                                            else="v${build.date}-r${svn.revision}">
-        <equals arg1="${svn.revision}" arg2="NA"/>
+                                             else="v${build.date}-${git.hash}">
+        <equals arg1="${git.hash}" arg2="NA"/>
     </condition>
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
@@ -422,12 +422,36 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
     </target>
 
-    <!-- Compiles Oracle extensions and tests. -->
+    <!-- Oracle extensions Targets -->
+    <target name="clean-oracle-extension" depends="check-maven" description="Clean the maven built oracle projects">
+        <!-- === Which extensions 'clean' is based on ${oracle.target} === -->
+        <!--  oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                = oracle.nosql: build oracle nosql extension   -->
+        <!--                = oracle:       build both                     -->
+        <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-D${oracle.target}=true"/>
+             <arg value="clean"/>
+             <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                   <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+             </classpath>
+        </java>
+        <delete>
+            <fileset dir="${plugins.dir}">
+                <include name="**/org.eclipse.persistence.oracle*.jar"/>
+            </fileset>
+        </delete>
+    </target>
+
     <target name="build-oracle-extension" depends="generate-oracle-p2, generate-local-compdeps, clean-runtime-checkedin">
-        <!-- === Which extensions build is based on ${oracle.target} === -->
-        <!-- oracle.target = oracle.ext:   build oracle extension        -->
-        <!--               = oracle.nosql: build oracle nosql extension  -->
-        <!--               = oracle:       build both                    -->
+        <!-- === Which extensions 'build' is based on ${oracle.target} === -->
+        <!--  oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                = oracle.nosql: build oracle nosql extension   -->
+        <!--                = oracle:       build both                     -->
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
