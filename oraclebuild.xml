@@ -59,7 +59,7 @@ if build=true
             <arg value="log"/>
             <arg value="-1"/>
             <arg value="--format=%h"/>
-            <arg value="${repo.project.dir}"/>
+            <arg line="${repo.project.dir}"/>
         </exec>
     </target>
 
@@ -92,6 +92,7 @@ if build=true
         <echo message="oraclebuild.build.time          = '${oraclebuild.build.time}'"/>
         <echo message=" ---"/>
 
+        <!-- Convert basedir to *nix format to avoid pathing issues with certain commands -->
         <dirname  property="oraclebuild.build.location_temp" file="${ant.file.oraclebuild}"/>
         <pathconvert targetos="unix" property="oraclebuild.build.location">
             <path>
@@ -162,7 +163,7 @@ if build=true
         <!-- Determine starting hash values -->
         <antcall target="get-git-hash">
             <param name="git.hash.property" value="prebuild.git.hash"/>
-            <param name="repo.project.dir"  value=" "/>
+            <param name="repo.project.dir"  value="${oraclebuild.2.base.dir}"/>
         </antcall>
         <antcall target="get-git-hash">
             <param name="git.hash.property" value="prebuild.ext.hash"/>
