@@ -101,12 +101,18 @@ if build=true
         <!-- oraclelibs.2.base.dir needs to be explicit (not relative) for antcall usage            -->
         <property name="oraclebuild.2.base.dir"           value="${oraclebuild.build.location}/.."/>
         <property name="oraclebuild.2.common.plugins.dir" value="${oraclebuild.2.base.dir}/plugins"/>
+        <property name="oraclebuild.2.nosql.dir"          value="${oraclebuild.2.base.dir}/foundation/org.eclipse.persistence.nosql"/>
+        <property name="oraclebuild.2.oracle.dir"         value="${oraclebuild.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
+        <property name="oraclebuild.2.oracle.nosql.dir"   value="${oraclebuild.2.base.dir}/foundation/org.eclipse.persistence.oracle.nosql"/>
 
         <echo message="ant.project.name                = '${ant.project.name}'"/>
         <echo message="basedir                         = '${basedir}'"/>
         <echo message="oraclebuild.build.location      = '${oraclebuild.build.location}'"/>
         <echo message="oraclebuild.2.base.dir          = '${oraclebuild.2.base.dir}'"/>
         <echo message="oraclebuild.2.common.plugins.dir= '${oraclebuild.2.common.plugins.dir}'"/>
+        <echo message="oraclebuild.2.nosql.dir         = '${oraclebuild.2.nosql.dir}'"/>
+        <echo message="oraclebuild.2.oracle.dir        = '${oraclebuild.2.oracle.dir}'"/>
+        <echo message="oraclebuild.2.oracle.nosql.dir  = '${oraclebuild.2.oracle.nosql.dir}'"/>
         <echo message=" ---"/>
 
         <condition property="custom.properties.message" value="Loading user defined properties from: '${user.home}/build.properties'"
@@ -155,7 +161,7 @@ if build=true
         <!-- Determine starting hash values -->
         <antcall target="get-git-hash">
             <param name="git.hash.property" value="prebuild.git.hash"/>
-            <param name="repo.project.dir"  value="${oraclebuild.2.base.dir}"/>
+            <param name="repo.project.dir"  value=" "/>
         </antcall>
         <antcall target="get-git-hash">
             <param name="git.hash.property" value="prebuild.ext.hash"/>
@@ -163,7 +169,7 @@ if build=true
         </antcall>
         <antcall target="get-git-hash">
             <param name="git.hash.property" value="prebuild.nosql.hash"/>
-            <param name="repo.project.dir"  value="${oraclebuild.2.nosql.dir}"/>
+            <param name="repo.project.dir"  value="${oraclebuild.2.oracle.nosql.dir}"/>
         </antcall>
         <say  message="prebuild.git.hash              = '${prebuild.git.hash}'"       if="prebuild.git.hash"/>
         <say  message="prebuild.ext.hash              = '${prebuild.ext.hash}'"       if="prebuild.ext.hash"/>
@@ -183,15 +189,24 @@ if build=true
         <say  message="prebuild.oracle.ext.version    = '${oracle.ext.prefix}_*.jar' bundle not found."   unless="prebuild.oracle.ext.version"/>
         <say  message="prebuild.oracle.nosql.version  = '${oracle.nosql.prefix}_*.jar' bundle not found." unless="prebuild.oracle.nosql.version"/>
         <echo message=" ---"/>
+
+        <condition property="missing.hash" value="true">
+            <or>
+                <not> <isset property="prebuild.git.hash"/> </not>
+                <not> <isset property="prebuild.ext.hash"/> </not>
+                <not> <isset property="prebuild.nosql.hash"/> </not>
+            </or>
+        </condition>
+        <fail message="Cannot determine repository state (one or more hashes undefined). Aborting..." if="missing.hash"/>
     </target>
 
     <target name="set-build-required" depends="establish-baseline">
         <!-- Determine if Oracle Extension needs rebuild -->
-        <condition property="oracle.current" value="true" else="..">
+        <condition property="oracle.current" value="true">
             <contains string="${prebuild.oracle.ext.version}" substring="${prebuild.ext.hash}"/>
         </condition>
         <!-- Determine if Oracle NoSQL Extension needs rebuild -->
-        <condition property="nosql.current" value="true" else="..">
+        <condition property="nosql.current" value="true">
             <contains string="${prebuild.oracle.nosql.version}" substring="${prebuild.nosql.hash}"/>
         </condition>
         <say  message="oracle.current                 = '${oracle.current}'     ('prebuild.oracle.ext.version' contains 'prebuild.ext.hash')"        if="oracle.current"/>
@@ -224,7 +239,7 @@ if build=true
     </target>
 
     <target name="report-build-not-required" unless="oracle.target" depends="set-build-required">
-        <echo message="Conditions not met for rebuild. Build target will be bypassed."/>
+        <echo message="Oracle extensions appear current. Conditions not met for rebuild. Build target will be bypassed."/>
     </target>
 
     <target name="build-oracle-extensions" if="oracle.target" depends="report-build-not-required">
