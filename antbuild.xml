@@ -1307,5 +1307,10 @@
     <target name="test-dbws-builder-srg" description="run the DBWS builder srg tests"  unless="java_is_v5">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="test"/>
     </target>
-
+    <target name="test-dbws-oracle" description="run the DBWS core tests against Oracle"  unless="java_is_v5">
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test.oracle}" target="test"/>
+    </target>
+    <target name="test-dbws-builder-oracle" description="run the DBWS builder tests against Oracle"  unless="java_is_v5">
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test"/>
+    </target>
 </project>

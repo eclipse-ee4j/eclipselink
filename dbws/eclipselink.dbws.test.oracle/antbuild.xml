@@ -185,7 +185,7 @@
   <path id="dbws.test.oracle.compile.path">
     <pathelement path="${junit.lib}"/>
     <fileset
-      dir="${plugins.dir}"
+      dir="${dbws_test_oracle.2.common.plugins.dir}"
       includes="${eclipselink.depend}"
     />
     <pathelement path="../../eclipselink.jar"/>
@@ -195,7 +195,7 @@
     <pathelement location="${jdbc.driver.jar}"/>
     <pathelement path="${junit.lib}"/>
     <fileset
-      dir="${plugins.dir}"
+      dir="${dbws_test_oracle.2.common.plugins.dir}"
       includes="${eclipselink.depend}"
     />
     <pathelement path="../../eclipselink.jar"/>
@@ -232,7 +232,7 @@
           <pathelement location="${jdbc.driver.jar}"/>
         </classpath>
         <fileset
-          dir="${resource.dir}"
+          dir="${etc.dir}"
           >
          <include name="dbsetup_@{testsuite-name}.sql"/>
         </fileset>
@@ -283,24 +283,6 @@
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite"
         />
       </junit>
-      <junitreport
-        todir="./${report.dir}"
-        >
-        <fileset
-          dir="."
-          >
-          <include
-            name="TEST-*TestSuite.xml"
-          />
-        </fileset>
-        <report
-          format="noframes"
-          todir="./${report.dir}"
-        />
-      </junitreport>
-      <delete>
-        <fileset dir="." includes="TEST-*xml"/>
-      </delete>
     </sequential>
   </macrodef>
   <macrodef
@@ -321,7 +303,7 @@
           <pathelement location="${jdbc.driver.jar}"/>
         </classpath>
         <fileset
-          dir="${resource.dir}"
+          dir="${etc.dir}"
           >
          <include name="dbteardown_@{testsuite-name}.sql"/>
         </fileset>
@@ -347,6 +329,30 @@
       <TeardownDatabase
         testsuite-name="${package-name}"
       />
+    </sequential>
+  </macrodef>
+  <macrodef
+    name="Report"
+    >
+    <sequential>
+      <junitreport
+        todir="./${report.dir}"
+        >
+        <fileset
+          dir="."
+          >
+          <include
+            name="TEST-*TestSuite.xml"
+          />
+        </fileset>
+        <report
+          format="noframes"
+          todir="./${report.dir}"
+        />
+      </junitreport>
+      <delete>
+        <fileset dir="." includes="TEST-*xml"/>
+      </delete>
     </sequential>
   </macrodef>
 
@@ -396,5 +402,6 @@
     <SetupRunTeardown testsuite-name="OracleObjecttype"/>
     <SetupRunTeardown testsuite-name="PLSQLcollection"/>
     <SetupRunTeardown testsuite-name="Veearray"/>
+    <Report />
   </target>
 </project>

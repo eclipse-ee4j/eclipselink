@@ -814,7 +814,7 @@ public class AnnotationsProcessor {
                 if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
                      throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
                 }
-                if(hasPropOrder && !p.isAttribute() && !p.isTransient()){
+                if(hasPropOrder && !p.isAttribute() && !p.isTransient() && !p.isInverseReference()){
                     if (!propOrderList.contains(p.getPropertyName())) {
                         throw JAXBException.missingPropertyInPropOrder(p.getPropertyName(), tInfo.getJavaClassName());
                     }
