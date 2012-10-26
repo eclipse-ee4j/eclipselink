@@ -1,0 +1,10 @@
+<customerCollection>
+   <address>
+      <street>123 Ottawa Street</street>
+      <city>Ottawa</city>
+   </address>
+   <address>
+      <street>456 Kanata Street</street>
+      <city>Ottawa</city>
+   </address>
+</customerCollection>

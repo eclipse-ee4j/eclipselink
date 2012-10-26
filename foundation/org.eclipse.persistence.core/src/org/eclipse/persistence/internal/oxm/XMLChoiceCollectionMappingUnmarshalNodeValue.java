@@ -43,6 +43,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private NodeValue choiceElementNodeValue;
     private NodeValue choiceElementMarshalNodeValue;
     private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
+    private XMLMapping nestedMapping;
     private Map<XMLField, NodeValue> fieldToNodeValues;
     private XMLField xmlField;
     private ContainerValue containerNodeValue;
@@ -52,6 +53,14 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
+        this.nestedMapping = mapping.getChoiceElementMappings().get(xmlField);
+        initializeNodeValue();
+    }
+    
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField, XMLMapping nestedMapping) {
+        this.xmlChoiceCollectionMapping = mapping;
+        this.xmlField = xmlField;
+        this.nestedMapping = nestedMapping;
         initializeNodeValue();
     }
     
@@ -67,7 +76,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     }
     
     private void initializeNodeValue() {
-        XMLMapping xmlMapping = xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
+        XMLMapping xmlMapping = this.nestedMapping;
         if(xmlMapping instanceof XMLBinaryDataCollectionMapping) {
             choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;
