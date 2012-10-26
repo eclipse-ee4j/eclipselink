@@ -96,6 +96,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;
     private Map<String, List<XMLField>> classNameToSourceFieldsMappings;
     private Map<XMLField, XMLMapping> choiceElementMappings;
+    private Map<String, XMLMapping> choiceElementMappingsByClassName;
+    private Map<Class, XMLMapping> choiceElementMappingsByClass;
     private Map<XMLField, String> fieldToClassNameMappings;
     private Map<String, XMLField> classNameToFieldMappings;
     private Map<XMLField, Converter> fieldsToConverters;
@@ -121,6 +123,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         classNameToFieldMappings = new HashMap<String, XMLField>();
         choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
         fieldsToConverters = new HashMap<XMLField, Converter>();
+        choiceElementMappingsByClassName = new LinkedHashMap<String, XMLMapping>();
+        choiceElementMappingsByClass = new LinkedHashMap<Class, XMLMapping>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
     }
 
@@ -454,6 +458,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
             this.choiceElementMappings.put(sourceField, xmlMapping);
         }
+        this.choiceElementMappingsByClass.put(theClass, xmlMapping);
     }
 
     private void addChoiceElementMapping(List<XMLField> sourceFields, String theClass, List<XMLField> targetFields) {
@@ -465,6 +470,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
             this.choiceElementMappings.put(sourceField, xmlMapping);
         }
+        this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
     } 
     
     private void addChoiceElementMapping(XMLField sourceField, Class theClass, XMLField targetField) {
@@ -481,6 +487,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         mapping.setAttributeAccessor(temporaryAccessor);
         mapping.addSourceToTargetKeyFieldAssociation(sourceField, targetField);
         this.choiceElementMappings.put(sourceField, mapping);
+        this.choiceElementMappingsByClassName.put(className, mapping);
     }
     
     public void addChoiceElement(XMLField field, String elementTypeName) {
@@ -502,7 +509,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         if (this.converter != null) {
             this.converter.initialize(this, session);
         }
-        Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        mappingsList.addAll(getChoiceElementMappings().values());
+        for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
+            if(!(mappingsList.contains(next))) {
+                mappingsList.add(next);
+            }
+        }        
+        Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
             Converter converter = null;
@@ -630,7 +644,29 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 this.getClassToSourceFieldsMappings().put(elementType,fields);
             }
         }
-                
+        if(!choiceElementMappingsByClassName.isEmpty()) {
+            for(Entry<String, XMLMapping> next:choiceElementMappingsByClassName.entrySet()) {
+                Class elementType = null;
+                String className = next.getKey();
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            elementType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception.getException());
+                        }
+                    } else {
+                        elementType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+                    }
+                } catch (ClassNotFoundException exc) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
+                }
+                if(this.choiceElementMappingsByClass.get(elementType) == null) {
+                    this.choiceElementMappingsByClass.put(elementType, next.getValue());
+                }
+                next.getValue().convertClassNamesToClasses(classLoader);
+            }
+        }
     }
     
     public void addConverter(XMLField field, Converter converter) {
@@ -698,7 +734,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
              xmlMapping.setAttributeElementClass(theClass);             
              xmlMapping.setField(xmlField);             
              xmlMapping.setAttributeAccessor(temporaryAccessor);
-             this.choiceElementMappings.put(xmlField, xmlMapping);                
+             this.choiceElementMappings.put(xmlField, xmlMapping);
+             this.choiceElementMappingsByClassName.put(className, xmlMapping);
          } else {
              if(isBinaryType(className)) {
                  XMLBinaryDataCollectionMapping xmlMapping = new XMLBinaryDataCollectionMapping();
@@ -708,6 +745,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                  xmlMapping.setAttributeElementClass(theClass);
                  this.fieldsToConverters.put(xmlField, xmlMapping.getValueConverter());
                  this.choiceElementMappings.put(xmlField, xmlMapping);
+                 this.choiceElementMappingsByClassName.put(className, xmlMapping);
              } else {
                  XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();  
                  if(!className.equals("java.lang.Object")){
@@ -716,6 +754,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                  xmlMapping.setField(xmlField);
                  xmlMapping.setAttributeAccessor(temporaryAccessor);
                  this.choiceElementMappings.put(xmlField, xmlMapping);
+                 this.choiceElementMappingsByClassName.put(className, xmlMapping);
              }
          }        
     }    
@@ -727,7 +766,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             xmlMapping.setAttributeElementClass(theClass);
             xmlMapping.setField(xmlField);
             xmlMapping.setAttributeAccessor(temporaryAccessor);
-            this.choiceElementMappings.put(xmlField, xmlMapping);                
+            this.choiceElementMappings.put(xmlField, xmlMapping);
+            this.choiceElementMappingsByClass.put(theClass, xmlMapping);
         } else {
             if(isBinaryType(theClass)) {
                 XMLBinaryDataCollectionMapping xmlMapping = new XMLBinaryDataCollectionMapping();
@@ -736,6 +776,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
                 this.fieldsToConverters.put(xmlField, xmlMapping.getValueConverter());
                 this.choiceElementMappings.put(xmlField, xmlMapping);
+                this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             } else {
                 XMLCompositeCollectionMapping xmlMapping = new XMLCompositeCollectionMapping();            
                 if(!theClass.equals(ClassConstants.OBJECT)){
@@ -744,6 +785,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 xmlMapping.setField(xmlField);
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
                 this.choiceElementMappings.put(xmlField, xmlMapping);
+                this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             }
         }        
     }
@@ -761,7 +803,19 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
         //Collection<XMLMapping> allMappings = new ArrayList<XMLMapping>();
-        Iterator<XMLMapping> mappings = getChoiceElementMappings().values().iterator();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        mappingsList.addAll(getChoiceElementMappings().values());
+        for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
+            if(!(mappingsList.contains(next))) {
+                mappingsList.add(next);
+            }
+        } 
+        for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
+            if(!(mappingsList.contains(next))) {
+                mappingsList.add(next);
+            }
+        }
+        Iterator<XMLMapping> mappings = mappingsList.iterator();
         while(mappings.hasNext()){
             DatabaseMapping nextMapping = (DatabaseMapping)mappings.next();
             nextMapping.setAttributeName(this.getAttributeName());         
@@ -911,5 +965,12 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
     }
+    
+    public Map<Class, XMLMapping> getChoiceElementMappingsByClass() {
+        return choiceElementMappingsByClass;
+    }
 
+    public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
+        this.choiceElementMappingsByClass = choiceElementMappingsByClass;
+    }      
 }

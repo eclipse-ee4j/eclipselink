@@ -51,7 +51,6 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -694,24 +693,16 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
             xmlMapping.setAttributeClassification(theClass);      
             xmlMapping.setAttributeAccessor(temporaryAccessor);
             xmlMapping.setField(xmlField);
-            if(this.choiceElementMappings.get(xmlField) == null) {
-                this.choiceElementMappings.put(xmlField, xmlMapping);
-            }
-            if(this.choiceElementMappingsByClass.get(theClass) == null) {
-                this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-            }            
+            this.choiceElementMappings.put(xmlField, xmlMapping);
+            this.choiceElementMappingsByClass.put(theClass, xmlMapping);
         } else {
             if(isBinaryType(theClass)) {
                 XMLBinaryDataMapping xmlMapping = new XMLBinaryDataMapping();
                 xmlMapping.setField(xmlField);
                 xmlMapping.setAttributeClassification(theClass);
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
-                if(this.choiceElementMappings.get(xmlField) == null) {
-                    this.choiceElementMappings.put(xmlField, xmlMapping);
-                }
-                if(this.choiceElementMappingsByClass.get(theClass) == null) {
-                    this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-                }                
+                this.choiceElementMappings.put(xmlField, xmlMapping);
+                this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             } else {
                 XMLCompositeObjectMapping xmlMapping = new XMLCompositeObjectMapping();
                 xmlMapping.setAttributeAccessor(temporaryAccessor);
@@ -719,12 +710,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
                     xmlMapping.setReferenceClass(theClass);
                 }            
                 xmlMapping.setField(xmlField);
-                if(this.choiceElementMappings.get(xmlField) == null) {
-                    this.choiceElementMappings.put(xmlField, xmlMapping);
-                }
-                if(this.choiceElementMappingsByClass.get(theClass) == null) {
-                    this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-                }                
+                this.choiceElementMappings.put(xmlField, xmlMapping);
+                this.choiceElementMappingsByClass.put(theClass, xmlMapping);
             }
         }
     }
@@ -734,12 +721,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         mapping.setReferenceClass(theClass);
         mapping.setAttributeAccessor(temporaryAccessor);
         mapping.addSourceToTargetKeyFieldAssociation(sourceField, targetField);
-        if(this.choiceElementMappings.get(sourceField) == null) {
-            this.choiceElementMappings.put(sourceField, mapping);
-        }
-        if(this.choiceElementMappingsByClass.get(theClass) == null) {
-            this.choiceElementMappingsByClass.put(theClass, mapping);
-        }        
+        this.choiceElementMappings.put(sourceField, mapping);
+        this.choiceElementMappingsByClass.put(theClass, mapping);
     }
     
     private void addChoiceElementMapping(XMLField sourceField, String className, XMLField targetField) {
@@ -747,12 +730,8 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         mapping.setReferenceClassName(className);
         mapping.setAttributeAccessor(temporaryAccessor);
         mapping.addSourceToTargetKeyFieldAssociation(sourceField, targetField);
-        if(this.choiceElementMappings.get(sourceField) == null) {
-            this.choiceElementMappings.put(sourceField, mapping);
-        }
-        if(this.choiceElementMappingsByClassName.get(className) == null) {
-            this.choiceElementMappingsByClassName.put(className, mapping);
-        }        
+        this.choiceElementMappings.put(sourceField, mapping);
+        this.choiceElementMappingsByClassName.put(className, mapping);
     }
     
     private void addChoiceElementMapping(List<XMLField> sourceFields, Class theClass, List<XMLField> targetFields) {
@@ -762,13 +741,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         for(int i = 0; i < sourceFields.size(); i++) {
             XMLField sourceField = sourceFields.get(i);
             xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
-            if(this.choiceElementMappings.get(sourceField) == null) {
-                this.choiceElementMappings.put(sourceField, xmlMapping);
-            }
+            this.choiceElementMappings.put(sourceField, xmlMapping);
         }
-        if(this.choiceElementMappingsByClass.get(theClass) == null) {
-            this.choiceElementMappingsByClass.put(theClass, xmlMapping);
-        }
+        this.choiceElementMappingsByClass.put(theClass, xmlMapping);
     }
     
     private void addChoiceElementMapping(List<XMLField> sourceFields, String theClass, List<XMLField> targetFields) {
@@ -778,13 +753,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
         for(int i = 0; i < sourceFields.size(); i++) {
             XMLField sourceField = sourceFields.get(i);
             xmlMapping.addSourceToTargetKeyFieldAssociation(sourceField, targetFields.get(i));
-            if(this.choiceElementMappings.get(sourceField) == null) {
-                this.choiceElementMappings.put(sourceField, xmlMapping);
-            }
+            this.choiceElementMappings.put(sourceField, xmlMapping);
         }
-        if(this.choiceElementMappingsByClassName.get(theClass) == null) {
-            this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
-        }        
+        this.choiceElementMappingsByClassName.put(theClass, xmlMapping);
     }    
     
     public boolean isWriteOnly() {
