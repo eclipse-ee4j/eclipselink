@@ -620,7 +620,6 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
     public void testXmlEnum() throws Exception {
         // Tests XmlEnum and XmlEnumValue
-        // This test schema contains exactly 6 enum values to test an ASM boundary case
 
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLENUM);
         jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
@@ -635,6 +634,17 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
+    }
+
+    public void testXmlEnumBig() throws Exception {
+        // Tests XmlEnum and XmlEnumValue
+        // This test schema contains >128 enum values to test an ASM boundary case
+
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XMLENUM_BIG);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        Object EST = jaxbContext.getEnumConstant(DEF_PACKAGE + "." + TIME_ZONE, EST_CONSTANT);
+        assertNotNull("Could not find enum constant.", EST);
     }
 
     public void testXmlEnumError() throws Exception {
@@ -940,6 +950,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String XMLELEMENTREF = RESOURCE_DIR + "xmlelementref.xsd";
     private static final String XMLSCHEMATYPE = RESOURCE_DIR + "xmlschematype.xsd";
     private static final String XMLENUM = RESOURCE_DIR + "xmlenum.xsd";
+    private static final String XMLENUM_BIG = RESOURCE_DIR + "xmlenum-big.xsd";
     private static final String XMLELEMENTDECL = RESOURCE_DIR + "xmlelementdecl.xsd";
     private static final String XMLELEMENTCOLLECTION = RESOURCE_DIR + "xmlelement-collection.xsd";
     private static final String JAXBCUSTOM = RESOURCE_DIR + "jaxbcustom.xsd";
@@ -966,6 +977,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String DATA = "Data";
     private static final String COMPANY = "Company";
     private static final String COMPASS_DIRECTION = "CompassDirection";
+    private static final String TIME_ZONE = "Timezone";
     private static final String NORTH_CONSTANT = "NORTH";
+    private static final String EST_CONSTANT = "EST";
 
 }
