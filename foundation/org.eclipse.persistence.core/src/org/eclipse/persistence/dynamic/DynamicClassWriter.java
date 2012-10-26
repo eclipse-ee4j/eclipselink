@@ -17,6 +17,18 @@
 package org.eclipse.persistence.dynamic;
 
 //javase imports
+import java.lang.reflect.Modifier;
+
+//EclipseLink imports
+import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
+import org.eclipse.persistence.exceptions.DynamicException;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Type;
+
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.AASTORE;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_ENUM;
@@ -30,6 +42,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ANEWARRAY;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.BIPUSH;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.CHECKCAST;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.DUP;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.GETSTATIC;
@@ -47,17 +60,6 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
-
-import java.lang.reflect.Modifier;
-
-import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
-import org.eclipse.persistence.exceptions.DynamicException;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * Write the byte codes of a dynamic entity class. The class writer will create
@@ -287,8 +289,10 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
             mv.visitLdcInsn(enumValue);
             if (i <= 5) {
                 mv.visitInsn(ICONST[i]);
-            } else {
+            } else if (i <= 127) {
                 mv.visitIntInsn(BIPUSH, i);
+            } else {
+                mv.visitIntInsn(SIPUSH, i);
             }
             mv.visitMethodInsn(INVOKESPECIAL, internalClassName, "<init>", "(Ljava/lang/String;I)V");
             mv.visitFieldInsn(PUTSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
@@ -297,8 +301,10 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
 
         if (lastCount < 5) {
             mv.visitInsn(ICONST[lastCount + 1]);
-        } else {
+        } else if (lastCount < 127) {
             mv.visitIntInsn(BIPUSH, lastCount + 1);
+        } else {
+            mv.visitIntInsn(SIPUSH, lastCount + 1);
         }
         mv.visitTypeInsn(ANEWARRAY, internalClassName);
 
@@ -307,8 +313,10 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
             mv.visitInsn(DUP);
             if (i <= 5) {
                 mv.visitInsn(ICONST[i]);
-            } else {
+            } else if (i <= 127) {
                 mv.visitIntInsn(BIPUSH, i);
+            } else {
+                mv.visitIntInsn(SIPUSH, i);
             }
             mv.visitFieldInsn(GETSTATIC, internalClassName, enumValue, "L" + internalClassName + ";");
             mv.visitInsn(AASTORE);
