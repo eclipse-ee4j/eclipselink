@@ -20,7 +20,12 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 
+import org.eclipse.persistence.jpa.rs.EntityResource;
+import org.eclipse.persistence.jpa.rs.PersistenceResource;
+import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.EntityNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IOExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IllegalAccessExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IllegalArgumentExceptionMapper;
@@ -45,12 +50,20 @@ import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExcepti
 @ApplicationPath("/persistence/")
 public class JPARSApplication extends Application {
 
-private final Set<Class<?>> classes;
+    private final Set<Class<?>> classes;
 
     public JPARSApplication() {
         HashSet<Class<?>> c = new HashSet<Class<?>>();
-        c.add(Service.class);
+
+        // Resources
+        c.add(PersistenceResource.class);
+        c.add(PersistenceUnitResource.class);
+        c.add(EntityResource.class);
+
+        // Exception Mapping
         c.add(ClassNotFoundExceptionMapper.class);
+        c.add(ConversionExceptionMapper.class);
+        c.add(EntityNotFoundExceptionMapper.class);
         c.add(IllegalAccessExceptionMapper.class);
         c.add(IllegalArgumentExceptionMapper.class);
         c.add(IllegalStateExceptionMapper.class);
@@ -63,9 +76,10 @@ private final Set<Class<?>> classes;
         c.add(NonUniqueResultExceptionExceptionMapper.class);
         c.add(NoResultExceptionMapper.class);
         c.add(NoSuchMethodExceptionMapper.class);
+
         classes = Collections.unmodifiableSet(c);
     }
-    
+
     @Override
     public Set<Class<?>> getClasses() {
         return classes;

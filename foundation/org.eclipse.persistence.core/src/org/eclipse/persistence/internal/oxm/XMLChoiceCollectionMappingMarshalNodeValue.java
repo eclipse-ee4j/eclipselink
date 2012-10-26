@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ import java.util.Iterator;
 public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implements ContainerValue {
     private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<XMLField, NodeValue> fieldToNodeValues;
+    private Map<Class, NodeValue> classToNodeValues;
     private NodeValue choiceElementNodeValue;
     private XMLField xmlField;
     private boolean isMixedNodeValue;
@@ -67,6 +69,23 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
 
     public void setFieldToNodeValues(Map<XMLField, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
+        this.classToNodeValues = new HashMap<Class, NodeValue>();
+        for(XMLField nextField:fieldToNodeValues.keySet()) {
+            Class associatedClass = this.xmlChoiceCollectionMapping.getFieldToClassMappings().get(nextField);
+            this.classToNodeValues.put(associatedClass, fieldToNodeValues.get(nextField));
+        }
+        
+        Collection classes = this.classToNodeValues.keySet();
+        for(Class nextClass:this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().keySet()) {
+            //Create node values for any classes that aren't already processed
+            if(!(classes.contains(nextClass))) {
+                XMLField field = xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
+                NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
+                this.classToNodeValues.put(nextClass, nodeValue);
+                NodeValue nodeValueForField = fieldToNodeValues.get(field);
+                nodeValue.setXPathNode(nodeValueForField.getXPathNode());
+            }
+        }
     }
 
     private void initializeNodeValue() {
@@ -261,6 +280,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	}
     	
     	XMLField associatedField = null;
+    	NodeValue nodeValue = null;
     	if(value instanceof XMLRoot) {
     		XMLRoot rootValue = (XMLRoot)value;
     		String localName = rootValue.getLocalName();
@@ -278,10 +298,14 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
                     }
     		    }
     		}
+    		if(associatedField != null) {
+    		    nodeValue = this.fieldToNodeValues.get(associatedField);
+    		}
     	} else {
             Class theClass = value.getClass();
             while(associatedField == null) {
                 associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                nodeValue = classToNodeValues.get(theClass);
                 if(theClass.getSuperclass() != null) {
                     theClass = theClass.getSuperclass();
                 } else {
@@ -302,10 +326,14 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	    }
     	    if(sourceFields != null) {
     	        associatedField = sourceFields.get(0);
+    	        nodeValue = fieldToNodeValues.get(associatedField);
     	    }
     	}
-    	if(associatedField != null){
-    		return fieldToNodeValues.get(associatedField);
+    	if(nodeValue != null){
+    		return nodeValue;
+    	}
+    	if(associatedField != null) {
+    	    return fieldToNodeValues.get(associatedField);
     	}
     	if (xmlChoiceCollectionMapping.isMixedContent() && value instanceof String){
     		//use this as a placeholder for the nodevalue for mixedcontent

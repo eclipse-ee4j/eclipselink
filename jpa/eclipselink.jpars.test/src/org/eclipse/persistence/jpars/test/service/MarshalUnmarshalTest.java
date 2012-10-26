@@ -1,4 +1,4 @@
-package org.eclipse.persistence.jpars.test.server;
+package org.eclipse.persistence.jpars.test.service;
 
 import static org.junit.Assert.assertTrue;
 
@@ -28,11 +28,12 @@ import org.eclipse.persistence.jpars.test.model.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class UnmarshalTest {
+public class MarshalUnmarshalTest {
 
     private static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
     private static final String DEFAULT_PU = "auction-static";
@@ -150,7 +151,7 @@ public class UnmarshalTest {
      */
     @Test
     public void testMarshal() throws RestCallFailedException,
-            UnsupportedEncodingException, JAXBException {
+    UnsupportedEncodingException, JAXBException {
         StaticBid bid = new StaticBid();
         bid.setId(20);
         bid.setAmount(100.0);
@@ -191,9 +192,9 @@ public class UnmarshalTest {
         bid.setUser(user);
         em.persist(bid);
         em.getTransaction().commit();
-       
+
         marshal(bid);
-       
+
         String xmlMessage = getXMLMessage("bid-UserByRef.xml");
         StaticBid bidUnmarshalled = unmarshal(xmlMessage,
                 StaticBid.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
@@ -204,8 +205,8 @@ public class UnmarshalTest {
 
         dbDelete(bid);
     }
-    
-    
+
+
     @SuppressWarnings("unchecked")
     private static <T> T unmarshal(String msg, String type)
             throws JAXBException {
@@ -224,7 +225,7 @@ public class UnmarshalTest {
                 new ByteArrayInputStream(msg.getBytes()));
         return resultObject;
     }
-    
+
     private static <T> String marshal(Object object)
             throws RestCallFailedException, JAXBException,
             UnsupportedEncodingException {
@@ -246,7 +247,7 @@ public class UnmarshalTest {
                 .getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
         return convertStreamToString(is);
     }
-    
+
     private static String convertStreamToString(InputStream is) {
         try {
             return new java.util.Scanner(is).useDelimiter("\\A").next();

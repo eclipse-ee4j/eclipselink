@@ -332,7 +332,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
                         HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
-                        marshalValue.setFieldToNodeValues(fieldToNodeValues);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
                         if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == firstEntry.getValue())) {
                             unmarshalValue.setIsMixedNodeValue(true);
@@ -355,6 +354,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                                 nodeValue.setIsMixedNodeValue(true);
                             }
                         }
+                        marshalValue.setFieldToNodeValues(fieldToNodeValues);
                         continue;
                     }
                     if (mappingNodeValue.isContainerValue()) {
