@@ -61,6 +61,10 @@ if build=true
         <property name="branch"          value="master"/>
 
         <echo message=" "/>
+        <echo message="os.name         = '${os.name}'"/>
+        <echo message="os.arch         = '${os.arch}'"/>
+        <echo message="os.version      = '${os.version}'"/>
+        <echo message=" ---"/>
         <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
         <echo message="git.exec        = '${git.exec}'"/>
         <echo message="hudson.workspace= '${hudson.workspace}'"/>
@@ -109,6 +113,7 @@ if build=true
         <property file="${user.home}/build.properties"/>
         <echo message=" "/>
         <property file="${oraclebuild.2.base.dir}/antbuild.properties"/>
+        <property name="oraclebuild.target" value="build-oracle-extension"/>
 
         <!-- Sets default for all extensions.depend dir locations to static paths -->
         <property name="oracle.extensions.depend.dir" value="${oraclebuild.2.base.dir}/../extension.oracle.lib.external"/>
@@ -138,6 +143,15 @@ if build=true
         <property name="oracle.nosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oracle.nosql.criteria" value="[0.0.1,9.0.0)"/>
 
+        <condition property="windows.os" value="true">
+            <contains string="${os.name}" substring="Win"/>
+        </condition>
+        <say  message="Windows OS detected. Command-line Git tools will likely not run properly."         if="windows.os"/>
+        <say  message="    To build manually use:"                                                        if="windows.os"/>
+        <say  message="         ant -f antbuild.xml -Doracle.target=&lt;target&gt; ${oraclebuild.target}" if="windows.os"/>
+        <say  message=" "                                                                                 if="windows.os"/>
+        <say  message="Aborting...."                                                                      if="windows.os"/>
+        <fail message="This buildfile should be used with a *nix or OS X operating system."               if="windows.os"/>
         <!-- Verify validity of 'git.exec' value -->
         <available file="${git.exec}" property="git.exec.exist"/>
         <fail message="Cannot find: ${git.exec}" unless="git.exec.exist"/>
@@ -231,7 +245,7 @@ if build=true
         <!--                 = oracle.nosql: build oracle nosql extension   -->
         <!--                 = oracle:       build both                     -->
         <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension"/>
-        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="build-oracle-extension"/>
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="${oraclebuild.target}"/>
     </target>
 
     <!-- Macro definitions (needed to reduce code redunancy, yet ant calls are both memory intensive, and operate outside current environment -->
