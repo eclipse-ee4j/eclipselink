@@ -8,9 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     09/21/2012-2.5 Chris Delahunt 
- *       - 367452: JPA 2.1 Specification support for joins with ON clause
- *     09/26/2012-2.5 Chris Delahunt 
+ *     09/26/2012-2.5 Chris Delahunt
  *       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
  */
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
@@ -21,33 +19,39 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.Case;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.CriteriaBuilder.Case;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa21.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa21.advanced.PhoneNumber;
 
+//see CriteriaQueryTestSuite
+public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
-public class CriteriaQueryTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
 
-    public CriteriaQueryTestSuite() {}
+    public CriteriaQueryMetamodelTestSuite() {}
 
-    public CriteriaQueryTestSuite(String name) {
+    public CriteriaQueryMetamodelTestSuite(String name) {
         super(name);
     }
 
@@ -66,21 +70,18 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("CriteriaQueryTestSuite");
+        suite.setName("CriteriaQueryMetamodelTestSuite");
 
-        suite.addTest(new CriteriaQueryTestSuite("testSetup"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testSetup"));
 
-        suite.addTest(new CriteriaQueryTestSuite("testOnClause"));
-        suite.addTest(new CriteriaQueryTestSuite("testOnClauseWithLeftJoin"));
-        suite.addTest(new CriteriaQueryTestSuite("testOnClauseCompareSQL"));
-        suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaUpdateTest"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdate"));
-        suite.addTest(new CriteriaQueryTestSuite("testComplexConditionCaseInCriteriaUpdate"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateEmbeddedField"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateCompareSQL"));
-        suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelOnClause"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelOnClauseWithLeftJoin"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("simpleMetamodelCriteriaUpdateTest"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelCriteriaUpdate"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelComplexConditionCaseInCriteriaUpdate"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelCriteriaUpdateEmbeddedField"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("simpleMetamodelCriteriaDeleteTest"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelCriteriaDelete"));
 
         return suite;
     }
@@ -98,16 +99,21 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     // Bug 312146
     // Test join on clause
-    public void testOnClause() {
+    public void testMetamodelOnClause() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e join e.address a on a.city = 'Ottawa'");
         List baseResult = query.getResultList();
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address");
-        address.on(qb.equal(address.get("city"), "Ottawa"));
+        
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+        EntityType<Address> entityAddr_ = metamodel.entity(Address.class);
+        
+        Root<Employee> root = cq.from(entityEmp_);
+        Join address = root.join(entityEmp_.getSingularAttribute("address"));
+        address.on(qb.equal(address.get(entityAddr_.getSingularAttribute("city")), "Ottawa"));
         List testResult = em.createQuery(cq).getResultList();
 
         clearCache();
@@ -119,18 +125,22 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
-    public void testOnClauseWithLeftJoin() {
+    public void testMetamodelOnClauseWithLeftJoin() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e left join e.address a on a.city = 'Ottawa' " +
                 "where a.postalCode is not null");
         List baseResult = query.getResultList();
+        
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+        EntityType<Address> entityAddr_ = metamodel.entity(Address.class);
 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("address", JoinType.LEFT);
-        address.on(qb.equal(address.get("city"), "Ottawa"));
-        cq.where(qb.isNotNull(address.get("postalCode")));
+        Root<Employee> root = cq.from(entityEmp_);
+        Join address = root.join(entityEmp_.getSingularAttribute("address"), JoinType.LEFT);
+        address.on(qb.equal(address.get(entityAddr_.getSingularAttribute("city")), "Ottawa"));
+        cq.where(qb.isNotNull(address.get(entityAddr_.getSingularAttribute("postalCode"))));
         List testResult = em.createQuery(cq).getResultList();
 
         clearCache();
@@ -142,40 +152,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
-    /**
-     * This test verifies that the SQL generated for a criteria query with joins and an on clause matches 
-     * the SQL generated for the equivalent JPQL query, to ensure that excess table joins are not occurring that do
-     * not affect the results.  
-     */
-    public void testOnClauseCompareSQL() {
-        EntityManager em = createEntityManager();
-        JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
-        EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("Select e from Employee e left join e.manager m left join m.address a on a.city = 'Ottawa' " +
-                "where a.postalCode is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());
-
-        CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
-        CriteriaQuery<Employee>cq = qb.createQuery(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        Join address = root.join("manager", JoinType.LEFT).join("address", JoinType.LEFT);
-        address.on(qb.equal(address.get("city"), "Ottawa"));
-        cq.where(qb.isNotNull(address.get("postalCode")));
-        EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
-
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());
-
-        closeEntityManager(em);
-
-        if (!testSQL.equals(baseSQL)) {
-            fail("Criteria query using ON clause did not match SQL used for a JPQL query; generated SQL was: \""
-                    +testSQL + "\"  but we expected: \""+baseSQL+"\"");
-        }
-    }
-
     /////UPDATE Criteria tests:
-    public void simpleCriteriaUpdateTest()
+    public void simpleMetamodelCriteriaUpdateTest()
     {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
@@ -185,11 +163,14 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e ").getSingleResult()).intValue();
 
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+
         // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaUpdate<Employee>cq = qb.createCriteriaUpdate(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        cq.set(root.get("firstName"), "CHANGED");
+        Root<Employee> root = cq.from(entityEmp_);
+        cq.set(root.get(entityEmp_.getSingularAttribute("firstName", String.class)), "CHANGED");
 
         beginTransaction(em);
         try {
@@ -197,7 +178,6 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             int updated = q.executeUpdate();
             assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances", 
                     nrOfEmps, updated);
-            //commitTransaction(em);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
@@ -210,7 +190,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             em.close();
         }
     }
-    public void testCriteriaUpdate() {
+    public void testMetamodelCriteriaUpdate() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -219,12 +199,15 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e where e.firstName is not null").getSingleResult()).intValue();
 
-        // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+
+        // test query "UPDATE Employee e SET e.firstName = 'CHANGED' where e.firstName is not null";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaUpdate<Employee>cq = qb.createCriteriaUpdate(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        cq.set(root.get("firstName"), "CHANGED");
-        cq.where(qb.isNotNull(root.get("firstName")));
+        Root<Employee> root = cq.from(entityEmp_);
+        cq.set(root.get(entityEmp_.getSingularAttribute("firstName", String.class)), "CHANGED");
+        cq.where(qb.isNotNull(root.get(entityEmp_.getSingularAttribute("firstName"))));
 
         beginTransaction(em);
         try {
@@ -246,7 +229,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     //test ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
-    public void testComplexConditionCaseInCriteriaUpdate(){
+    public void testMetamodelComplexConditionCaseInCriteriaUpdate(){
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -255,14 +238,17 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         List<Employee> results = null;
 
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaUpdate<Employee> cq = qb.createCriteriaUpdate(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         Case caseExp = qb.selectCase();
-        caseExp.when(qb.equal(root.get("firstName"),  "Bob"), "Jones");
-        caseExp.when(qb.equal(root.get("firstName"),  "Jill"), "Jones");
+        caseExp.when(qb.equal(root.get(entityEmp_.getSingularAttribute("firstName",String.class)),  "Bob"), "Jones");
+        caseExp.when(qb.equal(root.get(entityEmp_.getSingularAttribute("firstName",String.class)),  "Jill"), "Jones");
         caseExp.otherwise("");
-        cq.set(root.get("lastName"), caseExp);
+        cq.set(root.get(entityEmp_.getSingularAttribute("lastName")), caseExp);
 
         beginTransaction(em);
         try {
@@ -285,7 +271,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     }
     
-    public void testCriteriaUpdateEmbeddedField() {
+    public void testMetamodelCriteriaUpdateEmbeddedField() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -295,6 +281,11 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e where e.firstName is not null").getSingleResult()).intValue();
 
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+        javax.persistence.metamodel.EmbeddableType<EmploymentPeriod> embedEmpPeriod_ = 
+                metamodel.embeddable(EmploymentPeriod.class);
+
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(1905, 11, 31, 0, 0, 0);
         java.sql.Date startDate = new java.sql.Date(startCalendar.getTime().getTime());
@@ -302,8 +293,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         //em.createQuery("UPDATE Employee e SET e.period.startDate= :startDate").setParameter("startDate", startDate).executeUpdate();
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaUpdate<Employee> cq = qb.createCriteriaUpdate(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        cq.set(root.get("period").get("startDate"), startDate);
+        Root<Employee> root = cq.from(entityEmp_);
+        cq.set(root.get(entityEmp_.getSingularAttribute("period", EmploymentPeriod.class))
+                .get(embedEmpPeriod_.getSingularAttribute("startDate", java.sql.Date.class)), startDate);
 
         beginTransaction(em);
         try {
@@ -323,43 +315,11 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             em.close();
-        } 
-    }
-
-    public void testCriteriaUpdateCompareSQL() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
-                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
-            return;
-        }
-        EntityManager em = createEntityManager();
-        JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
-        EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("UPDATE Employee e SET e.firstName = 'CHANGED' where e.firstName is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());      
-
-        // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
-        CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
-        CriteriaUpdate<Employee>cq = qb.createCriteriaUpdate(Employee.class);
-        Root<Employee> root = cq.from(Employee.class);
-        cq.set(root.get("firstName"), "CHANGED");
-        cq.where(qb.isNotNull(root.get("firstName")));
-        EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
-
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());
-
-        closeEntityManager(em);
-
-        if (!testSQL.equals(baseSQL)) {
-            fail("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
-                    +testSQL + "\"  but we expected: \""+baseSQL+"\"");
         }
     }
-
-
+    
     /////DELETE Criteria tests:
-    public void simpleCriteriaDeleteTest() {          
+    public void simpleMetamodelCriteriaDeleteTest() {          
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -368,10 +328,13 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone").getSingleResult()).intValue();
 
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
+        
         // test query "Delete PhoneNumber phone";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaDelete<PhoneNumber>cq = qb.createCriteriaDelete(PhoneNumber.class);
-        Root<PhoneNumber> root = cq.from(PhoneNumber.class);
+        Root<PhoneNumber> root = cq.from(entityPhone_);
 
         beginTransaction(em);
         try {
@@ -391,7 +354,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
-    public void testCriteriaDelete() {
+    public void testMetamodelCriteriaDelete() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -400,12 +363,17 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
                 .getSingleResult()).intValue();
+        
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
 
         // test query "Delete Employee e where e.firstName is not null";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
-        Root<PhoneNumber> root = cq.from(PhoneNumber.class);
-        cq.where(qb.isNotNull(root.get("owner").get("firstName")));
+        Root<PhoneNumber> root = cq.from(entityPhone_);
+        cq.where(qb.isNotNull(root.get(entityPhone_.getSingularAttribute("owner", Employee.class))
+                .get(entityEmp_.getSingularAttribute("firstName"))));
         Query testQuery = em.createQuery(cq);
 
         beginTransaction(em);
@@ -423,31 +391,6 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             em.close();
-        }
-    }
-
-    public void testCriteriaDeleteCompareSQL() {          
-        EntityManager em = createEntityManager();
-        JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
-        EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("DELETE FROM PhoneNumber phone where phone.owner.firstName is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());
-
-        // test query "Delete Employee e where e.firstName is not null";
-        CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
-        CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
-        Root<PhoneNumber> root = cq.from(PhoneNumber.class);
-        cq.where(qb.isNotNull(root.get("owner").get("firstName")));
-        EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
-
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());
-
-        closeEntityManager(em);
-
-        if (!testSQL.equals(baseSQL)) {
-            fail("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
-                    +testSQL + "\"  but we expected: \""+baseSQL+"\"");
         }
     }
 }

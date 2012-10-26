@@ -80,11 +80,4 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
     public void setConstructorArgTypes(Class[] constructorArgTypes){
         this.constructorArgTypes = constructorArgTypes;
     }
-    
-    public void findRootAndParameters(AbstractQueryImpl query){
-        for (Selection selection: getCompoundSelectionItems()){
-            ((InternalSelection)selection).findRootAndParameters(query);
-        }
-    }
-
 }

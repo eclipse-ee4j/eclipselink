@@ -66,7 +66,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     protected ManagedType managedType;
     protected Set<Join<X, ?>> joins;
     protected Set<Fetch<X, ?>> fetches;
-    protected boolean isLeaf = true; // used to track dangling joins.
     protected boolean isJoin = false;
     protected boolean isFetch = false;
     protected FromImpl correlatedParent;
@@ -148,7 +147,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }else{
             join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(assoc.getName()), assoc, jt);
         }
-        this.isLeaf = false;
         this.fetches.add(join);
         ((FromImpl)join).isFetch = true;
         return join;
@@ -204,7 +202,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                 fetch = new MapJoinImpl(this, metamodel.managedType(((PluralAttribute) assoc).getBindableJavaType()), this.metamodel, ((PluralAttribute) assoc).getBindableJavaType(), node, (Bindable) assoc);
             }
         }
-        this.isLeaf = false;
         this.fetches.add(fetch);
         ((FromImpl)fetch).isFetch = true;
         return fetch;
@@ -257,7 +254,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * @return path corresponding to the referenced attribute
      */
     public <Y> Path<Y> get(SingularAttribute<? super X, Y> att){
-        this.isLeaf = false;
         if (att.getPersistentAttributeType().equals(PersistentAttributeType.BASIC)){
             return new PathImpl<Y>(this, this.metamodel, att.getBindableJavaType(),this.currentNode.get(att.getName()), att);
         }else{
@@ -280,7 +276,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     public <E, C extends java.util.Collection<E>> Expression<C> get(PluralAttribute<X, C, E> collection){
         
         // This is a special Expression that represents just the collection for member of etc...
-        this.isLeaf = false;
         return new ExpressionImpl<C>(this.metamodel, ClassConstants.Collection_Class ,this.currentNode.anyOf(collection.getName()));
     }
 
@@ -293,7 +288,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      */
     @Override
     public <K, V, M extends java.util.Map<K, V>> Expression<M> get(MapAttribute<X, K, V> map){
-        this.isLeaf = false;
         return new ExpressionImpl<M>(this.metamodel, ClassConstants.Map_Class ,this.currentNode.anyOf(map.getName()));
     }
     
@@ -309,7 +303,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     
     @Override
     public <Y> Path<Y> get(String attName) {
-        this.isLeaf = false;
         Attribute attribute = this.managedType.getAttribute(attName);
         Join join;
         if (attribute.isCollection()) {
@@ -334,7 +327,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                     join = new BasicMapJoinImpl(this, this.metamodel, ((PluralAttribute) attribute).getBindableJavaType(), this.currentNode.anyOf(attribute.getName()), (Bindable) attribute);
                 }
             }
-            ((FromImpl)join).isLeaf = false;
         }else{
             Class clazz = ((SingularAttribute)attribute).getBindableJavaType();
             if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
@@ -364,7 +356,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }else{
             join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, this.currentNode.get(attribute.getName()), attribute, jt);
         }
-        this.isLeaf = false;
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -402,7 +393,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new CollectionJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) collection);
         }
-        this.isLeaf = false;
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -424,7 +414,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new SetJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) set);
         }
-        this.isLeaf = false;
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -446,7 +435,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new ListJoinImpl<X, Y>(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) list);
         }
-        this.isLeaf = false;
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -468,7 +456,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         } else {
             join = new MapJoinImpl(this, metamodel.managedType(clazz), this.metamodel, clazz, node, (Bindable) map);
         }
-        this.isLeaf = false;
         this.joins.add(join);
         ((FromImpl)join).isJoin = true;
         return join;
@@ -479,7 +466,6 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
     public <T, Y> Join<T, Y> join(String attributeName, JoinType jt) {
-        this.isLeaf = false;
         Attribute attribute = this.managedType.getAttribute(attributeName);
         if (attribute.isCollection()) {
             org.eclipse.persistence.expressions.Expression node;
@@ -575,8 +561,8 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
             FromImpl currentJoin = (FromImpl) stack.pop();
             stack.addAll(currentJoin.getJoins());
             if (currentJoin.isJoin) {
-                    query.addJoin(currentJoin);
-                }
+                query.addJoin(currentJoin);
+            }
         }
     }
 
@@ -587,9 +573,9 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         while(!stack.isEmpty()){
             FromImpl currentFetch = (FromImpl) stack.pop();
             stack.addAll(currentFetch.getFetches());
-            if (currentFetch.isFetch) {//currentJoin.isLeaf){
-                    fetches.add(currentFetch.getCurrentNode());
-                }
+            if (currentFetch.isFetch) {
+                fetches.add(currentFetch.getCurrentNode());
+            }
         }
         return fetches;
     }

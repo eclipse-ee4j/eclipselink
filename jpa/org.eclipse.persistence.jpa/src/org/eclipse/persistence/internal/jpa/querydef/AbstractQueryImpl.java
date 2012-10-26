@@ -21,11 +21,9 @@ import java.util.Set;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
@@ -46,112 +44,24 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * @author gyorke
  * @since EclipseLink 1.2
  */
-public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializable{
-    
-    
-    protected Metamodel metamodel;
-    protected Set<Root<?>> roots;
-    protected Expression<Boolean> where; 
+public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T> implements AbstractQuery<T>, Serializable{
+
+
     protected ResultType queryResult;
-    protected CriteriaBuilderImpl queryBuilder;
     protected boolean distinct;
-    protected Class queryType;
     protected Predicate havingClause;
     protected List<Expression<?>> groupBy;
+    protected Set<Root<?>> roots;
 
     protected enum ResultType{
         UNKNOWN, OBJECT_ARRAY, PARTIAL, TUPLE, ENTITY, CONSTRUCTOR, OTHER
     }
-    
+
     public AbstractQueryImpl(Metamodel metamodel, ResultType queryResult, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
+        super(metamodel, queryBuilder, resultType);
         this.roots = new HashSet<Root<?>>();
-        this.metamodel = metamodel;
         this.queryResult = queryResult;
-        this.queryBuilder = queryBuilder;
-        this.queryType = resultType;
-    }
-    
-    /**
-     * Add a query root corresponding to the given entity, forming a Cartesian
-     * product with any existing roots.
-     * 
-     * @param entity
-     *            metamodel entity representing the entity of type X
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(EntityType<X> entity){
-        RootImpl root = new RootImpl<X>(entity, this.metamodel, entity.getBindableJavaType(), new ExpressionBuilder(entity.getBindableJavaType()), entity);
-       integrateRoot(root);
-        return root;
-    }
 
-    /**
-     * Add a query root corresponding to the given entity, forming a Cartesian
-     * product with any existing roots.
-     * 
-     * @param entityClass
-     *            the entity class
-     * @return query root corresponding to the given entity
-     */
-    public <X> Root<X> from(Class<X> entityClass) {
-        EntityType<X> entity = this.metamodel.entity(entityClass);
-        return this.from(entity);
-    }
-
-    /**
-     * Return the result type of the query.
-     * If a result type was specified as an argument to the
-     * createQuery method, that type will be returned.
-     * If the query was created using the createTupleQuery
-     * method, the result type is Tuple.
-     * Otherwise, the result type is Object.
-     * @return result type
-     */
-    public Class<T> getResultType(){
-        return this.queryType;
-    }
-
-    /**
-     * Return the query roots.
-     * 
-     * @return the set of query roots
-     */
-    public Set<Root<?>> getRoots(){
-        return this.roots;
-    }
-
-    /**
-     * Modify the query to restrict the query results according to the specified
-     * boolean expression. Replaces the previously added restriction(s), if any.
-     * 
-     * @param restriction
-     *            a simple or compound boolean expression
-     * @return the modified query
-     */
-    public AbstractQuery<T> where(Expression<Boolean> restriction){
-        findRootAndParameters(restriction);
-        this.where = restriction;
-        return this;
-    }
-
-    /**
-     * Modify the query to restrict the query results according to the
-     * conjunction of the specified restriction predicates. Replaces the
-     * previously added restriction(s), if any. If no restrictions are
-     * specified, any previously added restrictions are simply removed.
-     * 
-     * @param restrictions
-     *            zero or more restriction predicates
-     * @return the modified query
-     */
-    public AbstractQuery<T> where(Predicate... restrictions){
-        if (restrictions == null || restrictions.length == 0){
-            this.where = null;
-        }
-        Predicate predicate = this.queryBuilder.and(restrictions);
-        findRootAndParameters(predicate);
-        this.where = predicate;
-        return this;
     }
 
     /**
@@ -201,7 +111,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
         }else{
             this.havingClause = queryBuilder.isTrue(restriction);
         }
-        
+
         return this;
     }
 
@@ -225,8 +135,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
         }
         return this;
     }
-    
-    public abstract void addParameter(ParameterExpression<?> parameter);
+
     public abstract void addJoin(FromImpl join);
 
     /**
@@ -247,6 +156,14 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
         return this;
     }
 
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
+        if (this.roots.isEmpty()) {
+            return new ExpressionBuilder();
+        } else {
+            return ((RootImpl)this.roots.iterator().next()).getCurrentNode();
+        }
+    }
+
     /**
      * Return a list of the grouping expressions
      * @return the list of grouping expressions
@@ -254,19 +171,7 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
     public List<Expression<?>> getGroupList(){
         return this.groupBy;
     }
-    /**
-     * Return the predicate that corresponds to the where clause restriction(s).
-     * 
-     * @return where clause predicate
-     */
-    public Predicate getRestriction(){
-        if (this.where == null) {
-            return null;
-        }
-        if (((ExpressionImpl)this.where).isPredicate()) return (Predicate)this.where;
-        return this.queryBuilder.isTrue(this.where);
-    }
-    
+
     /**
      * Return the predicate that corresponds to the restriction(s) over the
      * grouping items.
@@ -276,7 +181,22 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
     public Predicate getGroupRestriction(){
         return this.havingClause;
     }
-    
+
+    /**
+     * Return the query roots.
+     * 
+     * @return the set of query roots
+     */
+    public Set<Root<?>> getRoots(){
+        return this.roots;
+    }
+
+    protected void integrateRoot(RootImpl root) {
+        if (!this.roots.contains(root)) {
+            this.roots.add(root);
+        }
+    }
+
     /**
      * Return whether duplicate query results must be eliminated or retained.
      * 
@@ -286,24 +206,9 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
     public boolean isDistinct(){
         return this.distinct;
     }
-    
-    /**
-     * Specify that the query is to be used as a subquery having the specified
-     * return type.
-     * 
-     * @return subquery corresponding to the query
-     */
-    public <U> Subquery<U> subquery(Class<U> type){
-        return new SubQueryImpl<U>(metamodel, type, queryBuilder, this);
-    }
-    
-    /**
-     *  Used to use a root from a different query.
-     */
-    protected abstract void integrateRoot(RootImpl root);
 
-    protected void findRootAndParameters(Expression<?> predicate) {
-        ((InternalSelection) predicate).findRootAndParameters(this);
+    protected void findJoins(FromImpl root) {
+        root.findJoins((AbstractQueryImpl)this);
     }
 
     protected void findRootAndParameters(Selection<?> selection) {
@@ -314,16 +219,59 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
         }
     }
 
-    protected void findJoins(FromImpl root) {
-        root.findJoins(this);
+    /**
+     * Add a query root corresponding to the given entity, forming a Cartesian
+     * product with any existing roots.
+     * 
+     * @param entity
+     *            metamodel entity representing the entity of type X
+     * @return query root corresponding to the given entity
+     */
+    public <X> Root<X> from(EntityType<X> entity) {
+        return this.internalFrom(entity);
     }
-    
-    protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
-        if (this.roots.isEmpty()) {
-            return new ExpressionBuilder();
-        } else {
-            return ((RootImpl)this.roots.iterator().next()).getCurrentNode();
-        }
+
+    /**
+     * Add a query root corresponding to the given entity, forming a Cartesian
+     * product with any existing roots.
+     * 
+     * @param entityClass
+     *            the entity class
+     * @return query root corresponding to the given entity
+     */
+    public <X> Root<X> from(Class<X> entityClass) {
+        return this.internalFrom(entityClass);
+    }
+
+    // override the return type only:
+    /**
+     * Modify the query to restrict the query result according to the specified
+     * boolean expression. Replaces the previously added restriction(s), if any.
+     * This method only overrides the return type of the corresponding
+     * AbstractQuery method.
+     * 
+     * @param restriction
+     *            a simple or compound boolean expression
+     * @return the modified query
+     */
+    public AbstractQuery<T> where(Expression<Boolean> restriction){
+        return (AbstractQuery<T>)super.where(restriction);
+    }
+
+    /**
+     * Modify the query to restrict the query result according to the
+     * conjunction of the specified restriction predicates. Replaces the
+     * previously added restriction(s), if any. If no restrictions are
+     * specified, any previously added restrictions are simply removed. This
+     * method only overrides the return type of the corresponding AbstractQuery
+     * method.
+     * 
+     * @param restrictions
+     *            zero or more restriction predicates
+     * @return the modified query
+     */
+    public AbstractQuery<T> where(Predicate... restrictions) {
+        return (AbstractQuery<T>) super.where(restrictions);
     }
 
 }

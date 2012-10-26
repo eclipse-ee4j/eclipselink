@@ -77,7 +77,7 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
         return false;
     }
 
-    public void findRootAndParameters(AbstractQueryImpl query){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         if (this.expressions != null){
             for (Object exp : this.expressions){
                 ((InternalSelection)exp).findRootAndParameters(query);

@@ -29,6 +29,7 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(NamedStoredProcedureQueryTestSuite.suite());
         fullSuite.addTest(ConverterTestSuite.suite());
         fullSuite.addTest(CriteriaQueryTestSuite.suite());
+        fullSuite.addTest(CriteriaQueryMetamodelTestSuite.suite());
         
         return fullSuite;
     }

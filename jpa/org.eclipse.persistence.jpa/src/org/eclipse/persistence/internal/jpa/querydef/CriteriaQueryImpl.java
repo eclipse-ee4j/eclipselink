@@ -17,24 +17,19 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
-import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -64,15 +59,12 @@ import org.eclipse.persistence.queries.ReportQuery;
 public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements CriteriaQuery<T> {
 
     protected SelectionImpl<?> selection;
-    protected Set<ParameterExpression<?>> parameters;
-
     protected List<Order> orderBy;
 
     protected List<FromImpl> joins;
 
     public CriteriaQueryImpl(Metamodel metamodel, ResultType queryResult, Class result, CriteriaBuilderImpl queryBuilder) {
         super(metamodel, queryResult, queryBuilder, result);
-        this.parameters = new HashSet<ParameterExpression<?>>();
     }
 
     /**
@@ -331,13 +323,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         return this;
     }
 
-    protected void integrateRoot(RootImpl root) {
-        if (!this.roots.contains(root)) {
-            this.roots.add(root);
-        }
-
-    }
-
     /**
      * Specify the ordering expressions that are used to order the query
      * results. Replaces the previous ordering expressions, if any. If no
@@ -373,10 +358,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
     public CriteriaQuery<T> orderBy(List<Order> o) {
         this.orderBy = o;
         return this;
-    }
-
-    public void addParameter(ParameterExpression<?> parameter) {
-        this.parameters.add(parameter);
     }
 
     /**
@@ -444,6 +425,16 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         this.joins.add(from);
     }
 
+    protected DatabaseQuery getDatabaseQuery() {
+        ObjectLevelReadQuery query = null;
+        if (this.selection == null || !this.selection.isCompoundSelection()) {
+            query = createSimpleQuery();
+        } else {
+            query = createCompoundQuery();
+        }
+        return query;
+    }
+
     /**
      * Return the ordering expressions in order of precedence.
      * 
@@ -451,15 +442,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     public List<Order> getOrderList() {
         return this.orderBy;
-    }
-
-    /**
-     * Return the parameters of the query
-     * 
-     * @return the query parameters
-     */
-    public Set<ParameterExpression<?>> getParameters() {
-        return this.parameters;
     }
 
     /**
@@ -692,29 +674,12 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      * Translates from the criteria query to a EclipseLink Database Query.
      */
     public DatabaseQuery translate() {
+        ObjectLevelReadQuery query = (ObjectLevelReadQuery)super.translate();
+
         for (Iterator iterator = this.getRoots().iterator(); iterator.hasNext();) {
             findJoins((FromImpl) iterator.next());
         }
-        ObjectLevelReadQuery query = null;
-        if (this.selection == null || !this.selection.isCompoundSelection()) {
-            query = createSimpleQuery();
-        } else {
-            query = createCompoundQuery();
-        }
 
-        for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(parameter.getName(), parameter.getJavaType());
-        }
-
-        if (this.where != null) {
-            if (((InternalExpression) this.where).isPredicate() && ((InternalSelection) this.where).getCurrentNode() == null) {
-                if (((PredicateImpl) this.where).getOperator() == BooleanOperator.OR) {
-                    query.setSelectionCriteria(new ConstantExpression(1, query.getExpressionBuilder()).equal(0));
-                }
-            } else {
-                query.setSelectionCriteria(((InternalSelection) this.where).getCurrentNode());
-            }
-        }
         if (this.joins != null && !joins.isEmpty()) {
             for (FromImpl join : this.joins) {
                 query.addNonFetchJoinedAttribute(((InternalSelection) join).getCurrentNode());
@@ -725,7 +690,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         } else {
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
             if (query.hasJoining()) {
-            	query.setShouldFilterDuplicates(false);
+                query.setShouldFilterDuplicates(false);
             }
         }
         if (this.orderBy != null && !this.orderBy.isEmpty()) {

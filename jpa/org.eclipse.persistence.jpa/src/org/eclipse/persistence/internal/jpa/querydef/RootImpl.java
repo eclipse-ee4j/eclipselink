@@ -38,12 +38,10 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact) {
         super((Path) null, managedType, metamodel, javaClass, expressionNode, modelArtifact);
-        this.isLeaf = false;
     }
 
     public <T> RootImpl(ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable modelArtifact, FromImpl correlatedParent) {
         super((Path) null, managedType, metamodel, javaClass, expressionNode, modelArtifact, correlatedParent);
-        this.isLeaf = false;
     }
 
     /**
@@ -55,7 +53,7 @@ public class RootImpl<X> extends FromImpl<X, X> implements Root<X> {
         return (EntityType<X>) this.modelArtifact;
     }
 
-    public void findRootAndParameters(AbstractQueryImpl query) {
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query) {
         query.integrateRoot(this);
     }
 

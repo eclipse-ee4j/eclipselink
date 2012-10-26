@@ -2420,13 +2420,23 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        if (targetEntity != null) {
+            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
+            if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+                return new CriteriaDeleteImpl(this.metamodel, this, targetEntity);
+            } 
+        }
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
 
     public <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        if (targetEntity != null) {
+            TypeImpl type = ((MetamodelImpl)this.metamodel).getType(targetEntity);
+            if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
+                return new CriteriaUpdateImpl(this.metamodel, this, targetEntity);
+            } 
+        }
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[] { targetEntity }));
     }
 
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {

@@ -28,7 +28,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         this.name = String.valueOf(position);
     }
 
-    public void findRootAndParameters(AbstractQueryImpl query){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         query.addParameter(this);
     }
 

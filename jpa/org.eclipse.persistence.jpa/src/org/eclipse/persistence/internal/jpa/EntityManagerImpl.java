@@ -55,6 +55,8 @@ import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaUpdateImpl;
+import org.eclipse.persistence.internal.jpa.querydef.CriteriaDeleteImpl;
 import org.eclipse.persistence.internal.jpa.transaction.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.*;
@@ -831,7 +833,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             verifyOpen();
             try {
                 try {
-                getActivePersistenceContext(checkForTransaction(true)).writeChanges();
+                    getActivePersistenceContext(checkForTransaction(true)).writeChanges();
                 } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
                     throw new OptimisticLockException(eclipselinkOLE);
                 }
@@ -2672,7 +2674,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             if (cls.equals(UnitOfWork.class) || cls.equals(UnitOfWorkImpl.class) || cls.equals(RepeatableWriteUnitOfWork.class)) {
                 return (T) this.getUnitOfWork();
-            } else if (cls.equals(JpaEntityManager.class)) {
+            } else if (cls.equals(JpaEntityManager.class) || cls.equals(EntityManagerImpl.class)) {
                 return (T) this;
             } else if (cls.equals(Session.class) || cls.equals(AbstractSession.class)) {            
                 return (T) this.getAbstractSession();
@@ -2767,13 +2769,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
     
     public Query createQuery(CriteriaUpdate updateQuery) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        try{
+            verifyOpen();
+            return new EJBQueryImpl(((CriteriaUpdateImpl)updateQuery).translate(), this);
+        }catch (RuntimeException e){
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     public Query createQuery(CriteriaDelete deleteQuery) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        try{
+            verifyOpen();
+            return new EJBQueryImpl(((CriteriaDeleteImpl)deleteQuery).translate(), this);
+        }catch (RuntimeException e){
+            setRollbackOnly();
+            throw e;
+        }
     }
 
     public boolean isJoinedToTransaction() {

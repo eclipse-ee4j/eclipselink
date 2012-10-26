@@ -168,7 +168,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public boolean isParameter(){
         return false;
     }
-    public void findRootAndParameters(AbstractQueryImpl criteriaQuery){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         //no-op because an expression will have no root
     }
     

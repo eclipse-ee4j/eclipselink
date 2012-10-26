@@ -29,7 +29,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
  */
 public interface InternalSelection{
 
-    public void findRootAndParameters(AbstractQueryImpl criteriaQuery);
+    public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery);
     
     public org.eclipse.persistence.expressions.Expression getCurrentNode();
     

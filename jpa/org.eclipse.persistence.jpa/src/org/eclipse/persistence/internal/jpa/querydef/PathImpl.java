@@ -118,7 +118,7 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>{
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 
-    public void findRootAndParameters(AbstractQueryImpl query){
+    public void findRootAndParameters(CommonAbstractCriteriaImpl query){
         ((PathImpl)this.pathParent).findRootAndParameters(query);
     }
 
