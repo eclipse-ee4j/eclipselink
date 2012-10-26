@@ -1969,13 +1969,13 @@
                     <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
                </classpath>
         </weave>
-        <weave source="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"
+        <!-- weave source="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"
                target="${eclipselink.jpa.test}/woven-${eclipselink.jpa21.model}.jar"
                loglevel="${logging.level}">
                <classpath>
                     <path refid="run.jpa21.classpath"/>
                </classpath>
-        </weave>
+        </weave-->
         <weave source="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"
                target="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.model}.jar"
                loglevel="${logging.level}">
