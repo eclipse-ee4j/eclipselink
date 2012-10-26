@@ -17,6 +17,7 @@ classes/
 run/
 build/
 reports/
+p2repo/
 foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
 /utils/eclipselink.utils.rename/package-rename.jar
 /jpa/eclipselink.jpa.test/jpa-performance.jar
