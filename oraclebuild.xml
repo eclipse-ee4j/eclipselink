@@ -45,7 +45,8 @@ if build=true
 <project name="oraclebuild" default="build" basedir=".">
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
-    <target name="build"                         depends="build-oracle-extensions"/>
+    <target name="build"               depends="clean-oracle, build-oracle, build-nosql"/>
+    <target name="process-control"     depends="build, commit-oracle, commit-nosql, validate-commits"/>
 
     <target name="init">
         <!-- The following variables should be passed from Hudson:
@@ -172,11 +173,12 @@ if build=true
 
         <!-- Determine existing bundle versions -->
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
-                     criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"     versiononly="true"
+                     criterion="${oracle.ext.criteria}"    property="prebuild.oracle.ext.version"  versiononly="true"
         />
         <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.nosql.criteria}"  property="prebuild.oracle.nosql.version"   versiononly="true"
         />
+
         <!-- Report results -->
         <say  message="prebuild.oracle.ext.version    = '${prebuild.oracle.ext.version}'"                     if="prebuild.oracle.ext.version"/>
         <say  message="prebuild.oracle.nosql.version  = '${prebuild.oracle.nosql.version}'"                   if="prebuild.oracle.nosql.version"/>
@@ -196,7 +198,14 @@ if build=true
     </target>
 
     <target name="set-build-required" depends="establish-baseline">
-        <!-- Determine if Oracle Extension needs rebuild -->
+        <!-- This could get increadibly complex: To compile both bundles together, not only do I need to determine if both bundles -->
+        <!-- should be built, but I need to figure out if the qualifiers are the same (based upon the hash of the project itself). -->
+        <!-- This means the potential of three build paths: (compile both together [if same hash], compile one, compile both       -->
+        <!-- [different qualifiers]). So it looks like while compiling together is more efficient with Maven, it would only add    -->
+        <!-- more complexity to this process. Therefore, the variables will be set to call the compile for each bundle if it is    -->
+        <!-- required and use the bundles already determined hash, regardless of whether the hashes match.                         -->
+
+        <!-- Determine if Oracle Extension needs rebuild                                                                           -->
         <condition property="oracle.current" value="true">
             <contains string="${prebuild.oracle.ext.version}" substring="${prebuild.ext.hash}"/>
         </condition>
@@ -209,46 +218,113 @@ if build=true
         <say  message="oracle.current                 = undefined ('prebuild.oracle.ext.version' doesn't contain 'prebuild.ext.hash')"           unless="oracle.current"/>
         <say  message="nosql.current                  = undefined ('prebuild.oracle.nosql.version' doesn't contain 'prebuild.nosql.hash')"       unless="nosql.current"/>
 
-        <!-- if Both oracle and nosql need rebuild -->
-        <condition property="oracle.target" value="oracle">
-            <and>
+        <!-- if either oracle or nosql need rebuild (clean will need to happen in either case)-->
+        <condition property="oracle.clean" value="true">
+            <or>
                 <not> <isset property="oracle.current"/> </not>
                 <not> <isset property="nosql.current"/>  </not>
-            </and>
+            </or>
         </condition>
-        <!-- if only oracle needs rebuild -->
-        <condition property="oracle.target" value="oracle.ext">
-            <and>
-                <not> <isset property="oracle.current"/> </not>
-            </and>
-        </condition>
-        <!-- if only nosql needs rebuild -->
-        <condition property="oracle.target" value="oracle.nosql">
-            <and>
-                <not> <isset property="oracle.current"/> </not>
-                <not> <isset property="nosql.current"/>  </not>
-            </and>
-        </condition>
-        <say  message="oracle.target                  = '${oracle.target}'"      if="oracle.target"/>
-        <say  message="oracle.target                  = undefined"           unless="oracle.target"/>
+        <say  message="oracle.clean                   = '${oracle.clean}'"      if="oracle.clean"/>
+        <say  message="oracle.clean                   = undefined"          unless="oracle.clean"/>
     </target>
 
-    <target name="report-build-not-required" unless="oracle.target" depends="set-build-required">
+    <!-- ================================================================ -->
+    <!--  BUILD TARGETS                                                   -->
+    <!-- ================================================================ -->
+    <target name="report-build-not-required" unless="oracle.clean" depends="set-build-required">
         <echo message="Oracle extensions appear current. Conditions not met for rebuild. Build target will be bypassed."/>
     </target>
 
-    <target name="build-oracle-extensions" if="oracle.target" depends="report-build-not-required">
-        <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
-        <echo message="version.qualifier              = '${version.qualifier}'"/>
+
+    <target name="clean-oracle" if="oracle.clean" depends="report-build-not-required">
         <!-- === Which extensions targeted is based on ${oracle.target} === -->
         <!--   oracle.target = oracle.ext:   build oracle extension         -->
         <!--                 = oracle.nosql: build oracle nosql extension   -->
         <!--                 = oracle:       build both                     -->
-        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension"/>
-        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="${oraclebuild.target}"/>
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension">
+           <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
+           <property name="oracle.target" value="oracle"/>
+        </ant>
+        <!-- What about reverting a deleted bundle that hasn't been rebuilt? -->
     </target>
 
-    <!-- Macro definitions (needed to reduce code redunancy, yet ant calls are both memory intensive, and operate outside current environment -->
+    <target name="build-oracle" unless="oracle.current" >
+        <!-- === Which extensions targeted is based on ${oracle.target} === -->
+        <!--   oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                 = oracle.nosql: build oracle nosql extension   -->
+        <!--                 = oracle:       build both                     -->
+        <build_extension          qualifierhash="prebuild.ext.hash" buildtarget="oracle.ext"/>
+
+        <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
+                     criterion="${oracle.ext.criteria}"    property="postbuild.oracle.ext.version"  versiononly="true"
+        />
+
+        <validate_extension_build prebuildhash="prebuild.ext.hash"   currentversion="${postbuild.oracle.ext.version}"   prebuildversion="${prebuild.oracle.ext.version}"   successproperty="commit.oracle" failureproperty="oracle.build.failed"/>
+    </target>
+
+     <target name="build-nosql" unless="nosql.current" >
+        <!-- === Which extensions targeted is based on ${oracle.target} === -->
+        <!--   oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                 = oracle.nosql: build oracle nosql extension   -->
+        <!--                 = oracle:       build both                     -->
+        <build_extension          qualifierhash="prebuild.nosql.hash"  buildtarget="oracle.nosql"/>
+        <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
+                     criterion="${oracle.nosql.criteria}"  property="postbuild.oracle.nosql.version"   versiononly="true"
+        />
+        <validate_extension_build prebuildhash="prebuild.nosql.hash" currentversion="${postbuild.oracle.nosql.version}" prebuildversion="${prebuild.oracle.nosql.version}" successproperty="commit.nosql" failureproperty="nosql.build.failed"/>
+    </target>
+
+    <!-- ================================================================ -->
+    <!--  COMMIT TARGETS                                                  -->
+    <!-- ================================================================ -->
+    <target name="oracle-failed" if="oracle.build.failed" depends="">
+        <echo message="cannot commit oracle extention, no bundle to commit"/>
+        <!-- revert?? -->
+    </target>
+
+    <target name="commit-oracle" if="commit.oracle" depends="oracle-failed">
+        <echo message="commit-oracle"/>
+        <!-- commit_extension   qualifierhash="" targetprefix="" commithash="commit.oracle.hash"/ -->
+    </target>
+
+    <target name="nosql-failed" if="nosql.build.failed" depends="">
+        <echo message="cannot commit oracle nosql extention, no bundle to commit"/>
+        <!-- revert?? -->
+    </target>
+
+    <target name="commit-nosql" if="commit.nosql" depends="nosql-failed">
+        <echo message="commit-nosql"/>
+        <!-- commit_extension   qualifierhash="" targetprefix="" commithash="commit.oracle.hash"/ -->
+    </target>
+
+   <target name="validate-commits">
+        <!-- If (! oracle.current) and commit.oracle.hash != prebuild.git.hash /was supposed to build post-commit-hash not equal prebuild haash -->
+
+
+        <!-- Determine if Oracle Extension was commited       -->
+        <condition property="oracle.comitted" value="true">
+            <and>
+                <not> <isset property="oracle.current"/> </not>
+                <contains string="${postbuild.oracle.ext.version}" substring="${postbuild.ext.hash}"/>
+            </and>
+        </condition>
+        <!-- Determine if Oracle NoSQL Extension was commited -->
+        <condition property="nosql.comitted" value="true">
+            <and>
+                <not> <isset property="nosql.current"/>  </not>
+                <contains string="${postbuild.oracle.nosql.version}" substring="${postbuild.nosql.hash}"/>
+            </and>
+        </condition>
+    </target>
+
+    <!-- ================================================================ -->
+    <!--  MACRO DEFINITIONS                                               -->
+    <!-- ================================================================ -->
+    <!-- Needed to reduce code redunancy:                                 -->
+    <!--   antcall is both memory intensive, and operate                  -->
+    <!--   outside current environment                                    -->
+    <!-- ================================================================ -->
     <macrodef name="get_git_hash">
         <attribute name="githashproperty"/>
         <attribute name="repoprojectdir"/>
@@ -266,6 +342,49 @@ if build=true
                 <arg value="--format=%h"/>
                 <arg line="@{repoprojectdir}"/>
             </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="build_extension">
+        <attribute name="qualifierhash"/>
+        <attribute name="buildtarget"/>
+        <sequential>
+        <!-- === Which extensions targeted is based on ${oracle.target} === -->
+        <!--   oracle.target = oracle.ext:   build oracle extension         -->
+        <!--                 = oracle.nosql: build oracle nosql extension   -->
+        <!--                 = oracle:       build both                     -->
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension">
+           <property name="version.qualifier" value="v${oraclebuild.build.date}-@{qualifierhash}"/>
+           <property name="oracle.target" value="@{buildtarget}"/>
+        </ant>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="validate_extension_build">
+        <!-- Verify build was successful.                               -->
+        <!-- Compare:                                                   -->
+        <!--    currentversion to prebuilt version (shouldn't match)    -->
+        <!--    prebuildhash should be a substring of current version)  -->
+        <!-- Set:                                                       -->
+        <!--    successproperty to true if above true                   -->
+        <!--    failureproperty is set if above is false                -->
+        <!--          (need separate property to test process flow)     -->
+        <attribute name="prebuildhash"/>
+        <attribute name="currentversion"/>
+        <attribute name="prebuildversion"/>
+        <attribute name="successproperty"/>
+        <attribute name="failureproperty"/>
+        <sequential>
+            <condition property="@{successproperty}" value="true">
+                <and>
+                    <isset property="@{currentversion}"/>
+                    <not> <equals arg1="@{currentversion}" arg2="@{prebuildversion}"/>  </not>
+                    <contains string="@{currentversion}" substring="@{prebuildhash}"/>
+                </and>
+            </condition>
+            <condition property="@{failureproperty}" value="true">
+                <not> <isset property="@{successproperty}"/> </not>
+            </condition>
         </sequential>
     </macrodef>
 
