@@ -27,6 +27,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/30/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -450,6 +452,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT = 7349;
     public static final int EMBEDDABLE_ATTRIBUTE_NAME_FOR_CONVERT_NOT_FOUND = 7350;
     public static final int CONVERTER_CLASS_NOT_FOUND = 7351;
+    public static final int CONVERTER_CLASS_MUST_IMPLEMENT_ATTRIBUTE_CONVERTER_INTERFACE = 7352;
     
     /**
      * INTERNAL:
@@ -2292,6 +2295,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONVERTER_CLASS_NOT_FOUND, args));
         validationException.setErrorCode(CONVERTER_CLASS_NOT_FOUND);
+        return validationException;
+    }
+
+    public static ValidationException converterClassMustImplementAttributeConverterInterface(String converterClass) {
+        Object[] args = { converterClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CONVERTER_CLASS_MUST_IMPLEMENT_ATTRIBUTE_CONVERTER_INTERFACE, args));
+        validationException.setErrorCode(CONVERTER_CLASS_MUST_IMPLEMENT_ATTRIBUTE_CONVERTER_INTERFACE);
         return validationException;
     }
     

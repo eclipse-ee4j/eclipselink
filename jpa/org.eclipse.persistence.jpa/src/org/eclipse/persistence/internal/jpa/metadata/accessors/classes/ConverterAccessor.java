@@ -12,15 +12,22 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/30/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
+import javax.persistence.AttributeConverter;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterClass;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
@@ -45,6 +52,8 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 public class ConverterAccessor extends ORMetadata {
     protected String className;
     protected Boolean autoApply;
+    protected MetadataClass attributeClassification;
+    protected MetadataClass fieldClassification;
     
     /**
      * INTERNAL:
@@ -61,6 +70,8 @@ public class ConverterAccessor extends ORMetadata {
         super(converter, metadataClass, project);
         
         autoApply = (Boolean) converter.getAttributeBooleanDefaultFalse("autoApply");
+        
+        initClassificationClasses(metadataClass);
     }
     
     /**
@@ -97,11 +108,8 @@ public class ConverterAccessor extends ORMetadata {
      * INTERNAL:
      * Return the type this converter will auto apply to.
      */
-    public MetadataClass getAutoApplyConvertType() {
-        // TODO: Should make sure it implements attribute accessor and has generic types.
-        String type = ((MetadataClass) getAccessibleObject()).getGenericType().get(2);
-        
-        return getMetadataClass(type);
+    public MetadataClass getAttributeClassification() {
+        return attributeClassification;
     }
     
     /**
@@ -130,6 +138,33 @@ public class ConverterAccessor extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Do some validation and initialize the attribute converter classficiation
+     * classes.
+     */
+    protected void initClassificationClasses(MetadataClass cls) {
+        if (! cls.extendsInterface(AttributeConverter.class)) {
+            throw ValidationException.converterClassMustImplementAttributeConverterInterface(cls.getName());
+        }
+
+        // By implementing the attribute converter interface, the generic types are confirmed through the compiler.
+        attributeClassification = getMetadataClass(((MetadataClass) getAccessibleObject()).getGenericType().get(2));
+        fieldClassification = getMetadataClass(((MetadataClass) getAccessibleObject()).getGenericType().get(3));
+    }
+    
+    /**
+     * INTERNAL:
+     * Any subclass that cares to do any more initialization (e.g. initialize a
+     * class) should override this method. 
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        initClassificationClasses((MetadataClass) accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
      * Entity level merging details.
      */
     @Override
@@ -148,13 +183,13 @@ public class ConverterAccessor extends ORMetadata {
      */
     public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName) {
         if (mapping.isDirectMapMapping() && isForMapKey) {
-            ((DirectMapMapping) mapping).setKeyConverter(new ConverterClass(getJavaClassName()));
+            ((DirectMapMapping) mapping).setKeyConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
         } else if (mapping.isDirectCollectionMapping()) {
-            ((DirectCollectionMapping) mapping).setValueConverter(new ConverterClass(getJavaClassName()));
+            ((DirectCollectionMapping) mapping).setValueConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
         } else if (mapping.isDirectToFieldMapping()) {
-            ((AbstractDirectMapping) mapping).setConverter(new ConverterClass(getJavaClassName()));
+            ((AbstractDirectMapping) mapping).setConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
         } else if (mapping.isAggregateObjectMapping()) {
-            ((AggregateObjectMapping) mapping).addConverter(new ConverterClass(getJavaClassName(), isForMapKey), attributeName);
+            ((AggregateObjectMapping) mapping).addConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()), attributeName);
         }  else if (mapping.isAggregateCollectionMapping()) {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.

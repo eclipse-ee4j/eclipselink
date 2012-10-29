@@ -87,6 +87,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/30/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1722,7 +1724,7 @@ public class MetadataProject {
         // 3 - Build our global converter and auto-apply lists first
         for (ConverterAccessor converterAccessor : getConverterAccessors().values()) {
             if (converterAccessor.autoApply()) {
-                m_autoApplyConvertAccessors.put(converterAccessor.getAutoApplyConvertType(), converterAccessor);
+                m_autoApplyConvertAccessors.put(converterAccessor.getAttributeClassification(), converterAccessor);
             }
         }
     }

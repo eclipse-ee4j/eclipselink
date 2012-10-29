@@ -77,6 +77,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/30/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -1404,14 +1406,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
             } else if (! mappingAccessor.isBasic()) {
                 throw ValidationException.invalidEmbeddableAttributeForAttributeOverride(embeddableDescriptor.getJavaClass(), attributeName, getJavaClass(), getAttributeName());
             } else {
-                boolean useDelimitedIdentifier = (embeddableDescriptor.getProject() != null) ? embeddableDescriptor.getProject().useDelimitedIdentifier() : false;
-                DatabaseField overrideField = attributeOverride.getColumn().getDatabaseField();
-                if (useDelimitedIdentifier){
-                    overrideField.setUseDelimiters(useDelimitedIdentifier);
-                } else if (embeddableDescriptor.getProject().getShouldForceFieldNamesToUpperCase() && !overrideField.shouldUseDelimiters()) {
-                    overrideField.useUpperCaseForComparisons(true);
-                }
-                addFieldNameTranslation(aggregateObjectMapping, attributeName, overrideField, mappingAccessor);
+                // Get databasefield() takes care of any delimited/uppercasing on the column.
+                addFieldNameTranslation(aggregateObjectMapping, attributeName, attributeOverride.getColumn().getDatabaseField(), mappingAccessor);
             }
         }
     }

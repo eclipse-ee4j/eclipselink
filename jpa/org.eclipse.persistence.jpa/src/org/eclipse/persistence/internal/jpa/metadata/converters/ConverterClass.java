@@ -12,6 +12,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     10/30/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -39,18 +41,11 @@ import javax.persistence.AttributeConverter;
  * @since Eclipselink 2.5
  */
 public class ConverterClass implements Converter {
-    boolean isForMapKey;
-    boolean isForEmbeddedAttribute;
-    String attributeConverterClassName;
-    AttributeConverter attributeConverter;
-    
-    /**
-     * INTERNAL:
-     */
-    public ConverterClass(String attributeConverterClassName) {
-        this.isForEmbeddedAttribute = false;
-        this.attributeConverterClassName = attributeConverterClassName;
-    }
+    protected boolean isForMapKey;
+    protected Class fieldClassification;
+    protected String fieldClassificationName;
+    protected String attributeConverterClassName;
+    protected AttributeConverter attributeConverter;
     
     /**
      * INTERNAL:
@@ -58,9 +53,9 @@ public class ConverterClass implements Converter {
      * mapping attribute. The isForMapKey information will need to be known
      * for proper initialization.
      */
-    public ConverterClass(String attributeConverterClassName, boolean isForMapKey) {
+    public ConverterClass(String attributeConverterClassName, boolean isForMapKey, String fieldClassificationName) {
         this.isForMapKey = isForMapKey;
-        this.isForEmbeddedAttribute = true;
+        this.fieldClassificationName = fieldClassificationName;
         this.attributeConverterClassName = attributeConverterClassName;
     }
     
@@ -86,10 +81,9 @@ public class ConverterClass implements Converter {
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         Class attributeConverterClass = null;
-            
-        try {
-            ClassLoader loader = session.getClass().getClassLoader();
-                
+        ClassLoader loader = session.getClass().getClassLoader();    
+        
+        try {        
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
                     attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, loader));
@@ -109,27 +103,38 @@ public class ConverterClass implements Converter {
             throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
         } 
         
-        if (isForEmbeddedAttribute) {
-            // We must blank out any field classification since it may have been
-            // initialized already (before applying an override converter on an
-            // embedded mapping). The mapping might of had another converter 
-            // that may have initialized the field classification
-            // TODO: should we set the actual type rather than null it out??
-            if (mapping.isDirectToFieldMapping()) {
-                ((DirectToFieldMapping) mapping).setConverter(this);
-                ((DirectToFieldMapping) mapping).setFieldClassification(null);
-                ((DirectToFieldMapping) mapping).setFieldClassificationClassName(null);
-            } else if (mapping.isDirectMapMapping() && isForMapKey) {
-                ((DirectMapMapping) mapping).setKeyConverter(this);
-                ((DirectMapMapping) mapping).setDirectKeyFieldClassification(null);
-                ((DirectMapMapping) mapping).setDirectKeyFieldClassificationName(null);
-            }  else if (mapping.isDirectCollectionMapping()) {
-                ((DirectCollectionMapping) mapping).setValueConverter(this);
-                ((DirectCollectionMapping) mapping).setDirectFieldClassification(null);
-                ((DirectCollectionMapping) mapping).setDirectFieldClassificationName(null);
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    fieldClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(fieldClassificationName, true, loader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(fieldClassificationName, exception.getException());
+                }
             } else {
-                // TODO: what else could it be???
+                fieldClassification = PrivilegedAccessHelper.getClassForName(fieldClassificationName, true, loader);   
             }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+        }
+        
+        // Ensure the mapping has the correct field classification set.
+        if (mapping.isDirectToFieldMapping()) {
+            DirectToFieldMapping m = (DirectToFieldMapping) mapping; 
+            m.setConverter(this);
+            m.setFieldClassification(fieldClassification);
+            m.setFieldClassificationClassName(fieldClassificationName);
+        } else if (mapping.isDirectMapMapping() && isForMapKey) {
+            DirectMapMapping m = (DirectMapMapping) mapping;
+            m.setKeyConverter(this);
+            m.setDirectKeyFieldClassification(fieldClassification);
+            m.setDirectKeyFieldClassificationName(fieldClassificationName);
+        }  else if (mapping.isDirectCollectionMapping()) {
+            DirectCollectionMapping m = (DirectCollectionMapping) mapping;
+            m.setValueConverter(this);
+            m.setDirectFieldClassification(fieldClassification);
+            m.setDirectFieldClassificationName(fieldClassificationName);
+        } else {
+            // TODO: what else could it be???
         }
     }
 

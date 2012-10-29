@@ -878,6 +878,16 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadUsingSysCursor() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Using_Sys_Cursor");
+
+        proc.addOutputArgument("p_recordset", "SYS_REFCURSOR");
+        proc.addStatement("OPEN p_recordset FOR SELECT EMP_ID FROM JPA21_EMPLOYEE ORDER BY EMP_ID");
+        
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureResultSetAndUpdateFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Result_Set_And_Update_Address");
@@ -1419,6 +1429,7 @@ public class EmployeePopulator {
                     schema.replaceObject(buildOraclePackage());
                     schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor());
                     schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor());
+                    schema.replaceObject(buildStoredProcedureReadUsingSysCursor());
                 }
                 
                 if (platform.isMySQL()) {

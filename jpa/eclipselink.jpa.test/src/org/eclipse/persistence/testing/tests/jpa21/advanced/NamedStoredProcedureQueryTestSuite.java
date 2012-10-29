@@ -111,6 +111,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListStoredProcedureQueryWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithUnNamedCursor"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListOnUpdateQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetSingleResultOnUpdateQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListOnDeleteQuery"));
@@ -521,6 +522,31 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertFalse("No addresses were returned", addresses.isEmpty());
                 
                 assertFalse("The query had more results", query.hasMoreResults());
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery using a system cursor. 
+     */
+    public void testStoredProcedureQuerySysCursor() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor");
+                query.registerStoredProcedureParameter("p_recordset", void.class, ParameterMode.REF_CURSOR);
+                
+                List<Employee> employees = query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());                
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
