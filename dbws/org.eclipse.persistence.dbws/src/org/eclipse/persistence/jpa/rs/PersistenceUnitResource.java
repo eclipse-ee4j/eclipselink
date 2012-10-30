@@ -17,7 +17,6 @@ import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -39,51 +38,30 @@ import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{context}/")
+@Path("/{context}/metadata/")
 public class PersistenceUnitResource extends AbstractResource {
 
     @GET
-    @Path("metadata/entity/{descriptorAlias}")
+    @Path("entity/{descriptorAlias}")
     public Response getDescriptorMetadata(@PathParam("context") String persistenceUnit, @PathParam("descriptorAlias") String descriptorAlias, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         return getDescriptorMetadata(persistenceUnit, descriptorAlias, hh, uriInfo.getBaseUri());
     }
 
     @GET
-    @Path("metadata")
     public Response getTypes(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         return getTypes(persistenceUnit, hh, uriInfo.getBaseUri());
     }
 
-    @POST
-    @Path("query/{name}")
-    @Produces({ MediaType.APPLICATION_OCTET_STREAM })
-    public Response namedQueryUpdate(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQueryUpdate(persistenceUnit, name, hh, ui, ui.getBaseUri());
-    }
-
     @GET
-    @Path("metadata/query/")
+    @Path("query")
     public Response getQueriesMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         return getQueriesMetadata(persistenceUnit, hh, uriInfo.getBaseUri());
     }
 
     @GET
-    @Path("singleResultQuery/{name}")
-    @Produces(MediaType.WILDCARD)
-    public Response namedQuerySingleResult(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQuerySingleResult(persistenceUnit, name, hh, ui, ui.getBaseUri());
-    }
-
-    @GET
-    @Path("metadata/query/{queryName}")
+    @Path("query/{queryName}")
     public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         return getQueryMetadata(persistenceUnit, queryName, hh, uriInfo.getBaseUri());
-    }
-
-    @GET
-    @Path("query/{name}")
-    public Response namedQuery(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQuery(persistenceUnit, name, hh, ui, ui.getBaseUri());
     }
 
     @SuppressWarnings("rawtypes")

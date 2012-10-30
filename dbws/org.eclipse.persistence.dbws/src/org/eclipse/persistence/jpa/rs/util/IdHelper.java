@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.server.Server;
 
@@ -123,12 +124,27 @@ public class IdHelper {
                             if ((refObjectDbFieldName != null) && (dbFieldName != null)) {
                                 if (dbFieldName.equals(refObjectDbFieldName)) {
                                     List<DatabaseMapping> refMappings = refDesc.getMappings();
-                                    for (DatabaseMapping refMapping : refMappings) {
-                                        String field = refMapping.getField().getName();
-                                        if ((field != null) && (dbFieldName.equals(field))) {
-                                            Object value = descriptor.getObjectBuilder().getBaseValueForField(dbField, entity);
-                                            Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, app.getJpaSession());
-                                            key.append(realAttributeValue);
+                                    for (DatabaseMapping refMapping : refMappings) {//
+                                        DatabaseField field = refMapping.getField();
+                                        if (field != null) {
+                                            String fieldName = field.getName();
+                                            if (mapping instanceof OneToOneMapping) {
+                                                Map<DatabaseField, DatabaseField> targetToSourceKeyFields = ((OneToOneMapping) mapping).getTargetToSourceKeyFields();
+                                                Map<DatabaseField, DatabaseField> sourceToTargetFields = ((OneToOneMapping) mapping).getTargetToSourceKeyFields();
+                                                if ((targetToSourceKeyFields != null) && (!targetToSourceKeyFields.isEmpty())) {
+                                                    if (targetToSourceKeyFields.containsKey(refObjectDbField)) {
+                                                        if ((sourceToTargetFields != null) && (!sourceToTargetFields.isEmpty())) {
+                                                            if (sourceToTargetFields.containsKey(field)) {
+                                                                if ((fieldName != null) && (dbFieldName.equals(fieldName))) {
+                                                                    Object value = descriptor.getObjectBuilder().getBaseValueForField(dbField, entity);
+                                                                    Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, app.getJpaSession());
+                                                                    key.append(realAttributeValue);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }

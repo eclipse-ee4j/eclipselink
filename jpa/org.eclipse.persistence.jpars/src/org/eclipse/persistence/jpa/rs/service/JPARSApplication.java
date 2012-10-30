@@ -23,6 +23,8 @@ import javax.ws.rs.core.Application;
 import org.eclipse.persistence.jpa.rs.EntityResource;
 import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
+import org.eclipse.persistence.jpa.rs.QueryResource;
+import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.EntityNotFoundExceptionMapper;
@@ -59,6 +61,8 @@ public class JPARSApplication extends Application {
         c.add(PersistenceResource.class);
         c.add(PersistenceUnitResource.class);
         c.add(EntityResource.class);
+        c.add(SingleResultQueryResource.class);
+        c.add(QueryResource.class);
 
         // Exception Mapping
         c.add(ClassNotFoundExceptionMapper.class);

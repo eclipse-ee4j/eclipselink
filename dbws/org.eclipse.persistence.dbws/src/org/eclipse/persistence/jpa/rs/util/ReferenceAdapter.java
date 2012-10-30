@@ -94,6 +94,8 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         if (object instanceof PersistenceWeavedRest) {
             persistenceWeavedRest = (PersistenceWeavedRest) object;
             link = persistenceWeavedRest._persistence_getHref();
+        } else if (object instanceof Link) {
+            link = (Link) object;
         } else {
             return null;
         }
