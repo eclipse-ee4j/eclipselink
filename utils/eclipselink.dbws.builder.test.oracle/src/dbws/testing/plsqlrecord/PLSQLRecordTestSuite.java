@@ -14,6 +14,9 @@ package dbws.testing.plsqlrecord;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -40,6 +43,61 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class PLSQLRecordTestSuite extends DBWSTestSuite {
+    //============================================================
+    static final String CREATE_EMPTYPE_TABLE =
+        "CREATE TABLE EMPTYPEX (" +
+            "\nEMPNO NUMERIC(4) NOT NULL," +
+            "\nENAME VARCHAR(25)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static final String[] POPULATE_EMPTYPE_TABLE = new String[] {
+        "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (69, 'Holly')",
+        "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (70, 'Brooke')",
+        "INSERT INTO EMPTYPEX (EMPNO, ENAME) VALUES (71, 'Patty')"
+    };
+    static final String DROP_EMPTYPE_TABLE =
+        "DROP TABLE EMPTYPEX";
+
+    static final String CREATE_EMPREC_TYPE =
+        "CREATE OR REPLACE TYPE EMP_RECORD_PACKAGE_EmpRec AS OBJECT (" +
+            "emp_id   NUMERIC,\n" +
+            "emp_name VARCHAR(25)\n" +
+        "\n)";
+    static final String DROP_EMPREC_TYPE =
+        "DROP TYPE EMP_RECORD_PACKAGE_EMPREC";
+    
+    static final String CREATE_EMP_RECORD_PACKAGE =
+        "create or replace PACKAGE EMP_RECORD_PACKAGE AS\n" +
+            "type EmpRec is record (" +
+                "emp_id   NUMERIC,\n" +
+                "emp_name VARCHAR(25)\n" +
+            ");\n" +
+            "function get_emp_record (pId in number) return EmpRec;\n" +
+        "END EMP_RECORD_PACKAGE;";
+    static final String DROP_EMP_RECORD_PACKAGE =
+        "DROP PACKAGE EMP_RECORD_PACKAGE";
+
+    static final String CREATE_EMP_RECORD_PACKAGE_BODY =
+        "create or replace PACKAGE BODY EMP_RECORD_PACKAGE AS\n" +
+            "function get_emp_record (pId in number) return EmpRec AS\n" +
+            "myEmp EmpRec;\n" +
+            "l_empno   NUMERIC;\n" +
+            "l_ename VARCHAR(25);\n" +
+            "cursor c_emp is select empno, ename from EMPTYPEX where empno = pId;\n" +
+            "BEGIN\n" +
+                "open c_emp;\n" +
+                "fetch c_emp into l_empno, l_ename;\n" +
+                "close c_emp;\n" +
+                "myEmp.emp_id := l_empno;\n" +
+                "myEmp.emp_name := l_ename;\n" +
+                "return myEmp;\n" +
+             "END get_emp_record;\n" +
+         "END EMP_RECORD_PACKAGE;";
+    static final String DROP_EMP_RECORD_PACKAGE_BODY =
+        "DROP PACKAGE BODY EMP_RECORD_PACKAGE";
+    
+    
+    //============================================================
 
     static final String CREATE_PACKAGE1_MTAB1_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE1_MTAB1 AS TABLE OF NUMBER";
@@ -139,6 +197,21 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_PACKAGE1_MRECORD_TYPE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE1_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE1_BODY, ddlDebug);
+            
+            runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_EMPREC_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
+            
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_EMPTYPE_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_EMPTYPE_TABLE[i]);
+                }
+                stmt.executeBatch();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -183,6 +256,11 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"PACKAGE1\" " +
                   "procedurePattern=\"GETRECWITHTABLE2\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestRecWithPercentTypeField\" " +
+                  "catalogPattern=\"EMP_RECORD_PACKAGE\" " +
+                  "procedurePattern=\"get_emp_record\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -196,6 +274,11 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_PACKAGE1_MRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_PACKAGE1_NRECORD_TYPE, ddlDebug);
             runDdl(conn, DROP_PACKAGE1_MTAB1_TYPE, ddlDebug);
+            
+            runDdl(conn, DROP_EMP_RECORD_PACKAGE_BODY, ddlDebug);
+            runDdl(conn, DROP_EMP_RECORD_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_EMPREC_TYPE, ddlDebug);
+            runDdl(conn, DROP_EMPTYPE_TABLE, ddlDebug);
         }
     }
 
@@ -323,4 +406,24 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(OUTPUTRECORDWITHTABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+
+    @Test
+    public void testRecordWithPercentTypeField() {
+        Invocation invocation = new Invocation("TestRecWithPercentTypeField");
+        invocation.setParameter("pId", 69);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(EMPREC_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String EMPREC_XML =
+      "<EMP_RECORD_PACKAGE_EMPREC xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<emp_id>69</emp_id>" +
+          "<emp_name>Holly</emp_name>" +
+      "</EMP_RECORD_PACKAGE_EMPREC>";
+
 }
