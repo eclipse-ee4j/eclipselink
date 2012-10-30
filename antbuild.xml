@@ -19,9 +19,9 @@
 *       and are used in test results parsing
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatinated
+*   - multi-word macro attributes are concatenated
 *     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatinated
+*   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
@@ -145,10 +145,10 @@
        <format property="build.time" pattern="HHmm"/>
     </tstamp>
     <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
+    <property name="git.hash"   value="NA"/>
     <condition property="version.qualifier" value="qualifier"
-                                            else="v${build.date}-r${svn.revision}">
-        <equals arg1="${svn.revision}" arg2="NA"/>
+                                             else="v${build.date}-${git.hash}">
+        <equals arg1="${git.hash}" arg2="NA"/>
     </condition>
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
@@ -348,9 +348,9 @@
              <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <!-- arg value="-X"/ -->
              <arg value="verify"/>
-           <classpath>
+             <classpath>
                 <fileset dir="${M2_HOME}/boot">
-                    <include name="plexus-classworlds-*.jar"/>
+                   <include name="plexus-classworlds-*.jar"/>
                 </fileset>
              </classpath>
         </java>
@@ -750,6 +750,7 @@
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
+                <include name="${eclipselink.core.base}/eclipselink.extension.oracle.nosql.test/**"/>
                 <include name="${eclipselink.jpa.test}/**"/>
                 <include name="${eclipselink.moxy.test}/**"/>
                 <include name="${eclipselink.sdo.test}/**"/>
@@ -1187,7 +1188,7 @@
             <zipfileset dir="${build.dir}/"               includes="${dbws-util.jar}"             prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}" prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
             <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
@@ -1313,4 +1314,5 @@
     <target name="test-dbws-builder-oracle" description="run the DBWS builder tests against Oracle"  unless="java_is_v5">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test.oracle}" target="test"/>
     </target>
+
 </project>
