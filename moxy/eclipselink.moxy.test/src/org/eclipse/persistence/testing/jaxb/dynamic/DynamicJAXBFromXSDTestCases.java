@@ -960,7 +960,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
     private static final String XMLSCHEMASCHEMA = RESOURCE_DIR + "XMLSchema.xsd";
 
-    private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_4.xsd";
+    private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_5.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";

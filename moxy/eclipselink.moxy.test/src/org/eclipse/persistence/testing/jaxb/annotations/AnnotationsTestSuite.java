@@ -33,6 +33,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTra
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XMLTransformationNoArgCtorXMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationMethodTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.XmlTransformationTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmltransformation.SimpleRootTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -72,6 +73,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XMLTransformationNoArgCtorTestCases.class);
         suite.addTestSuite(XMLTransformationNoArgCtorXMLBindingsTestCases.class);
         suite.addTestSuite(XmlTransformationMethodTestCases.class);
+		suite.addTestSuite(SimpleRootTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty.ContainerPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.required.RequiredAnnotationTestCases.class);
