@@ -813,6 +813,7 @@
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
+                <include name="${eclipselink.core.base}/eclipselink.extension.oracle.nosql.test/**"/>
                 <include name="${eclipselink.jpa.test}/**"/>
                 <include name="${eclipselink.moxy.test}/**"/>
                 <include name="${eclipselink.sdo.test}/**"/>
