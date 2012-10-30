@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
  *
  * Currently support is limited to enlisting a single tx data source
  */
+@Deprecated
 public class TransactionManagerImpl implements TransactionManager, UserTransaction {
     // Not null when a transaction is active
     TransactionImpl tx;

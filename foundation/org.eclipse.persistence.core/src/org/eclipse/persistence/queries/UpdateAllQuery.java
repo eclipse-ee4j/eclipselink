@@ -149,6 +149,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * at the correct time and will ensure the cache setting is set to none at
      * that time.
      */
+    @Override
     public Object executeDatabaseQuery() throws DatabaseException {
         result = getQueryMechanism().updateAll();// fire the SQL to the database
         mergeChangesIntoSharedCache();
@@ -160,6 +161,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * Returns the specific default redirector for this query type.  There are numerous default query redirectors.
      * See ClassDescriptor for their types.
      */
+    @Override
     protected QueryRedirector getDefaultRedirector(){
         return descriptor.getDefaultUpdateObjectQueryRedirector();
     }
@@ -176,6 +178,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * INTERNAL:
      * Return true if this is an update all query.
      */
+    @Override
     public boolean isUpdateAllQuery() {
         return true;
     }
@@ -183,6 +186,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
     /**
      * INTERNAL:
      */
+    @Override
     protected void prepare() throws QueryException {
         super.prepare();// will tell the query mechanism to prepare itself as well.
 
@@ -226,6 +230,7 @@ public class UpdateAllQuery extends ModifyAllQuery {
      * If after this method defaultBuilder is still null,
      * then initializeDefaultBuilder method will generate and cache it.
      */
+    @Override
     protected void initializeQuerySpecificDefaultBuilder() {
         super.initializeQuerySpecificDefaultBuilder();
         if(this.defaultBuilder == null && m_updateClauses != null) {

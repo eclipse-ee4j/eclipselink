@@ -82,7 +82,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      */
     protected boolean discoverUnregisteredNewObjectsWithoutPersist;
     
-    
     public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession, ReferenceMode referenceMode){
         super(parentSession, referenceMode);
         this.shouldTerminateTransaction = true;
@@ -174,12 +173,21 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      public Set<ClassDescriptor> getClassesToBeInvalidated(){
         return classesToBeInvalidated;
     }
-   /** 
-    * INTERNAL:
-    * Get the final UnitOfWorkChangeSet for merge into the shared cache 
-    */
-    public UnitOfWorkChangeSet getCumulativeUOWChangeSet(){
+     
+    /** 
+     * INTERNAL:
+     * Get the final UnitOfWorkChangeSet for merge into the shared cache.
+     */
+    public UnitOfWorkChangeSet getCumulativeUOWChangeSet() {
         return cumulativeUOWChangeSet;
+    }
+     
+    /** 
+     * INTERNAL:
+     * Set the final UnitOfWorkChangeSet for merge into the shared cache.
+     */
+    public void setCumulativeUOWChangeSet(UnitOfWorkChangeSet cumulativeUOWChangeSet) {
+        this.cumulativeUOWChangeSet = cumulativeUOWChangeSet;
     }
 
     /**
@@ -270,14 +278,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
             setUnitOfWorkChangeSet(this.cumulativeUOWChangeSet);
         }
 
-        try {
-            commitTransactionAfterWriteChanges(); // this method will commit the
-                                                  // transaction
-                                                  // and set the transaction
-                                                  // flags appropriately
-        } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
-            throw new javax.persistence.OptimisticLockException(eclipselinkOLE);
-        }
+        commitTransactionAfterWriteChanges(); // this method will commit the
+                                              // transaction
+                                              // and set the transaction
+                                              // flags appropriately
 
         // Merge after commit	
         mergeChangesIntoParent();
@@ -575,13 +579,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         // bug 2612602 create the working copy object.
         Object clone = builder.instantiateWorkingCopyClone(original, this);
         
-        // This is the only difference from my superclass. I am building a new
-        // original to put in the shared cache.
-        Object newOriginal = builder.buildNewInstance();
+        Object newOriginal = original;
             
         // Must put in the detached original to clone to resolve circular refs.
         getNewObjectsOriginalToClone().put(original, clone);
         getNewObjectsCloneToOriginal().put(clone, original);
+        getNewObjectsCloneToMergeOriginal().put(clone, original);
         
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
@@ -589,6 +592,10 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         builder.populateAttributesForClone(original, null, clone, null, this);
         if (!this.discoverUnregisteredNewObjectsWithoutPersist){
             assignSequenceNumber(clone);
+            // JPA by default does not use the merge() object as the original, it creates a new instance to avoid
+            // putting the merge object into the cache.
+            // The native API does use the original, so this flag determine which policy to use.
+            newOriginal = builder.buildNewInstance();
         }
         // Must reregister in both new objects.
         registerNewObjectClone(clone, newOriginal, descriptor);
@@ -622,20 +629,6 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         }
         return null;
     }
-    
-  /**
-   * INTERNAL:
-   * Wraps the org.eclipse.persistence.exceptions.OptimisticLockException in a  
-   * javax.persistence.OptimisticLockException. This conforms to the EJB3 specs
-   * @param commitTransaction 
-   */
-    protected void commitToDatabase(boolean commitTransaction) {
-        try {
-            super.commitToDatabase(commitTransaction);
-        } catch (org.eclipse.persistence.exceptions.OptimisticLockException ole) {
-            throw new javax.persistence.OptimisticLockException(ole);
-        }
-    }
 
     /**
      * INTERNAL:
@@ -643,7 +636,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * The uow shares its parents transactions.
      */
     public void commitTransaction() throws DatabaseException {
-        if (this.shouldTerminateTransaction || getParent().getTransactionMutex().isNested()){
+        if (this.shouldTerminateTransaction || getParent().getTransactionMutex().isNested()) {
             super.commitTransaction();
         }
     }

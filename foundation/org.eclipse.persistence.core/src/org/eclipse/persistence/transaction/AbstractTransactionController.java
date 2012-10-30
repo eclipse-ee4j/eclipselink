@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
@@ -75,6 +76,9 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     /** or the session is a session broker with only one member requiring sequencing callbacks. */
     /** more - the session is a session broker with several members requiring sequencing callbacks. */
     protected int numSessionsRequiringSequencingCallback;
+    
+    /** Allow exception in before/after completion to be wrapped. */
+    protected ExceptionHandler exceptionHandler;
 
     /**
      * INTERNAL:
@@ -83,6 +87,20 @@ public abstract class AbstractTransactionController implements ExternalTransacti
     public AbstractTransactionController() {
         this.unitsOfWork = new ConcurrentHashMap();
         this.activeUnitOfWorkThreadLocal = new ThreadLocal();
+    }
+
+    /**
+     * Return the exception handler used to handle or wrap exceptions thrown in before/after completion.
+     */
+    public ExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    /**
+     * Set an exception handler to handle or wrap exceptions thrown in before/after completion.
+     */
+    public void setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
     }
 
     /**

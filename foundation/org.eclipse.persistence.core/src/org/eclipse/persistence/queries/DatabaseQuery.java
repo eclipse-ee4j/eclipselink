@@ -1874,7 +1874,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     protected Object remoteExecute() {
-        Transporter transporter = ((RemoteSession) getSession()).getRemoteConnection().remoteExecute((DatabaseQuery) this.clone());
+        this.session.startOperationProfile(SessionProfiler.Remote, this, SessionProfiler.ALL);
+        Transporter transporter = ((DistributedSession) this.session).getRemoteConnection().remoteExecute((DatabaseQuery) this.clone());
+        this.session.endOperationProfile(SessionProfiler.Remote, this, SessionProfiler.ALL);
         return extractRemoteResult(transporter);
     }
 

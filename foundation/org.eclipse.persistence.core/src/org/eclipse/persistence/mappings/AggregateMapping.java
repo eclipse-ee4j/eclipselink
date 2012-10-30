@@ -383,7 +383,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         if (attributeValue == null) {
             return;
         }
@@ -396,7 +396,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = getAttributeValueFromObject(object);
         fixAttributeValue(attributeValue, objectDescriptors, processedObjects, query, session);
     }

@@ -239,11 +239,13 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         HashMap originalKeyValues = new HashMap(10);
         HashMap cloneKeyValues = new HashMap(10);
 
-        Map backUpCollection = (Map)oldCollection;
-        Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
-        while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
-            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
-            originalKeyValues.put(entry.getKey(), backUpCollection.get(entry.getKey()));
+        if (oldCollection != null) {
+            Map backUpCollection = (Map)oldCollection;
+            Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
+            while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
+                Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
+                originalKeyValues.put(entry.getKey(), backUpCollection.get(entry.getKey()));
+            }
         }
 
         Map cloneObjectCollection = (Map)newCollection;

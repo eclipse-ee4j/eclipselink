@@ -49,10 +49,5 @@ public class CurrentChangeSetTest extends AutoVerifyTestCase {
             throw new TestErrorException("Invalid number of change sets before commit [" + countBeforeCommit + 
                                          "]. ");
         }
-
-        if (countAfterCommit != 1) {
-            throw new TestErrorException("Invalid number of change sets after commit [" + countAfterCommit + 
-                                         "]. ");
-        }
     }
 }

@@ -65,7 +65,7 @@ public abstract class RemoteConnection implements java.io.Serializable {
     /**
      * Retrieve next page size of objects from the remote cursored stream
      */
-    public abstract Vector cursoredStreamNextPage(RemoteCursoredStream remoteCursoredStream, ReadQuery query, RemoteSession session, int pageSize);
+    public abstract Vector cursoredStreamNextPage(RemoteCursoredStream remoteCursoredStream, ReadQuery query, DistributedSession session, int pageSize);
 
     /**
      * Return the cursored stream size
@@ -92,6 +92,11 @@ public abstract class RemoteConnection implements java.io.Serializable {
      * Get descriptor
      */
     public abstract ClassDescriptor getDescriptor(Class domainClass);
+
+    /**
+     * Get descriptor
+     */
+    public abstract ClassDescriptor getDescriptorForAlias(String alias);
 
     /**
      * Return the login informaiton from the server.
@@ -197,12 +202,12 @@ public abstract class RemoteConnection implements java.io.Serializable {
     /**
      * Retrieve next object from the remote scrollable cursor
      */
-    public abstract Object scrollableCursorNextObject(ObjID remoteScrollableCursorOid, ReadQuery query, RemoteSession session);
+    public abstract Object scrollableCursorNextObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session);
 
     /**
      * Retrieve previous object from the remote scrollable cursor
      */
-    public abstract Object scrollableCursorPreviousObject(ObjID remoteScrollableCursorOid, ReadQuery query, RemoteSession session);
+    public abstract Object scrollableCursorPreviousObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session);
 
     /**
      * Moves the cursor a relative number of rows, either positive or negative.

@@ -29,7 +29,7 @@ public class RMIRemoteModel extends RemoteModel {
 
         // Set the client security manager
         try {
-            System.setSecurityManager(new RMISecurityManager());
+            //System.setSecurityManager(new RMISecurityManager());
         } catch (Exception exception) {
             throw new TestProblemException("Security manager set failed:", exception);
         }

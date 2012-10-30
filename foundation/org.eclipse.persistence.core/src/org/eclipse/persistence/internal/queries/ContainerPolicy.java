@@ -1555,7 +1555,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
             ObjectChangeSet targetSet = ((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target));
             targetSet.setNewKey(sourceSet.getNewKey());
             targetSet.setOldKey(sourceSet.getOldKey());
-            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, parentUOWChangeSet);
+            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, target);
             list.remove(sourceSet);
             list.put(targetSet, targetSet);
             return;

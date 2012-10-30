@@ -126,6 +126,13 @@ public class CORBARemoteSessionControllerDispatcher extends _CORBARemoteSessionC
     }
 
     /**
+     * Extract descriptor from the session
+     */
+    public Transporter getDescriptorForAlias(Transporter alias) {
+        return getController().getDescriptorForAlias(alias);
+    }
+
+    /**
      * Get the default read-only classes
      **/
     public Transporter getDefaultReadOnlyClasses() {

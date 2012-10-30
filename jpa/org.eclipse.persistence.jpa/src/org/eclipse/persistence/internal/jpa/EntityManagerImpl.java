@@ -1398,6 +1398,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
+     * INTERNAL:
+     * Set the underlying database session
+     */
+    public void setAbstractSession(AbstractSession session) {
+        this.databaseSession = session;
+    }
+
+    /**
      * Return the underlying server session, throws ClassCastException if it's not a ServerSession.
      */
     public ServerSession getServerSession() {

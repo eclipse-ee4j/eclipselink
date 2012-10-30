@@ -76,6 +76,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testComplexJPQL"));
         suite.addTest(new MongoTestSuite("testNativeQuery"));
         suite.addTest(new MongoTestSuite("testExternalFactory"));
+        suite.addTest(new MongoTestSuite("testUserPassword"));
         return suite;
     }
     
@@ -226,6 +227,48 @@ public class MongoTestSuite extends JUnitTestCase {
         em.close();
         factory.close();
         mongo.close();
+    }
+    
+    /**
+     * Test user/password connecting.
+     */
+    public void testUserPassword() throws Exception {
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.JDBC_USER, "unknownuser");
+        properties.put(PersistenceUnitProperties.JDBC_PASSWORD, "password");
+        boolean errorCaught = false;
+        try {
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            EntityManager em = factory.createEntityManager();
+            em.close();
+            factory.close();
+        } catch (Exception expected) {
+            if (expected.getMessage().indexOf("authenticate") == -1) {
+                throw expected;
+            }
+            errorCaught = true;
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
+        properties = new HashMap();
+        properties.put(PersistenceUnitProperties.NOSQL_USER, "unknownuser");
+        properties.put(PersistenceUnitProperties.NOSQL_PASSWORD, "password");
+        errorCaught = false;
+        try {
+            EntityManagerFactory factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            EntityManager em = factory.createEntityManager();
+            em.close();
+            factory.close();
+        } catch (Exception expected) {
+            if (expected.getMessage().indexOf("authenticate") == -1) {
+                throw expected;
+            }
+            errorCaught = true;
+        }
+        if (!errorCaught) {
+            fail("authentication should have failed");
+        }
     }
     
     /**

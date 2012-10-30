@@ -97,6 +97,16 @@ public class MongoConnectionSpec extends EISConnectionSpec {
             if (db != null) {
                 spec.setDB(db);
             }
+
+            String user = (String)properties.get("user");
+            Object password = properties.get("password");
+            if (password instanceof String) {
+                password = ((String) password).toCharArray();
+            }
+            if ((user != null) && (user.length() != 0)) {
+                spec.setUser(user);
+                spec.setPassword((char[])password);
+            }
             
             // Allows setting of read preference as a property.
             Object preference = properties.get(READ_PREFERENCE);

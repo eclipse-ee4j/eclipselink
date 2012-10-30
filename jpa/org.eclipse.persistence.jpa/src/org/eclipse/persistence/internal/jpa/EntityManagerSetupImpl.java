@@ -48,6 +48,11 @@ import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLToDatabase;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLsToFiles;
 
+import java.rmi.Naming;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.*;
+import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -78,6 +83,53 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.persistence.ValidationMode;
+
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
+import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
+import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.PropertiesHandler;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.rmi.RMIConnection;
+import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
+import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
+import org.eclipse.persistence.sessions.server.ReadConnectionPool;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
+import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
@@ -87,6 +139,7 @@ import org.eclipse.persistence.config.LoggerType;
 import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
+import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -97,6 +150,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -199,7 +253,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected PersistenceUnitInfo persistenceUnitInfo = null;
     // count a number of open factories that use this object.
     protected int factoryCount = 0;
-    protected DatabaseSessionImpl session = null;
+    protected AbstractSession session = null;
     // true if predeploy called by createContainerEntityManagerFactory; false - createEntityManagerFactory
     protected boolean isInContainerMode = false;
     protected boolean isSessionLoadedFromSessionsXML=false;
@@ -287,7 +341,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         PersistenceUnitProperties.NON_JTA_DATASOURCE,
         PersistenceUnitProperties.JDBC_URL,
         PersistenceUnitProperties.JDBC_USER,
-        PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY
+        PersistenceUnitProperties.NOSQL_CONNECTION_SPEC,
+        PersistenceUnitProperties.NOSQL_CONNECTION_FACTORY,
+        PersistenceUnitProperties.NOSQL_USER,
+        PersistenceUnitProperties.JDBC_CONNECTOR
     };
     
     /*
@@ -428,13 +485,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * is removed from the SessionManager.
      */
     protected void removeSessionFromGlobalSessionManager() {
-        if (session != null){
+        if (this.session != null){
             try {
-                if(session.isConnected()) {
-                    session.logout();
+                if (this.session.isDatabaseSession() && this.session.isConnected()) {
+                    getDatabaseSession().logout();
                 }
             } finally {
-                SessionManager.getManager().getSessions().remove(session.getName(), session);
+                SessionManager.getManager().getSessions().remove(this.session.getName(), this.session);
             }
         }
     }
@@ -462,7 +519,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      *              In JSE case it allows to alter properties in main (as opposed to preMain where preDeploy is called).
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
-    public DatabaseSessionImpl deploy(ClassLoader realClassLoader, Map additionalProperties) {
+    public AbstractSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
         if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED && state != STATE_HALF_DEPLOYED) {
             if (mustBeCompositeMember()) {
                 throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(persistenceUnitInfo.getPersistenceUnitName()));
@@ -587,27 +644,45 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                              * However, this would introduce a DB login when validation is on 
                              * - in opposition to the functionality of the property (to only validate)
                              */
-                            if (state == STATE_HALF_DEPLOYED) {
-                                session.initializeDescriptors();
-                                state = STATE_DEPLOYED;
+                            if (this.session.isDatabaseSession() && (this.state == STATE_HALF_DEPLOYED)) {
+                                getDatabaseSession().initializeDescriptors();
+                                this.state = STATE_DEPLOYED;
                             }
                         } else {
                             try {
-                                if (isSessionLoadedFromSessionsXML) {
-                                    session.login();
-                                } else {
-                                    login(session, deployProperties);
+                                if (this.session.isDatabaseSession() && isSessionLoadedFromSessionsXML) {
+                                    getDatabaseSession().login();
+                                } else if (this.session.isDatabaseSession()) {
+                                    login(getDatabaseSession(), deployProperties);
+                                }
+                                // Make JTA integration throw JPA exceptions.
+                                if (this.session.hasExternalTransactionController()) {
+                                    if (this.session.getExternalTransactionController().getExceptionHandler() == null) {
+                                        this.session.getExternalTransactionController().setExceptionHandler(new ExceptionHandler() {
+                                            
+                                            public Object handleException(RuntimeException exception) {
+                                                if (exception instanceof OptimisticLockException) {
+                                                    throw new OptimisticLockException(exception);
+                                                } else if (exception instanceof EclipseLinkException) {
+                                                    throw new PersistenceException(exception);
+                                                } else {
+                                                    throw exception;
+                                                }
+                                            }
+                                            
+                                        });
+                                    }
                                 }
                                 state = STATE_DEPLOYED;
                             } catch (Throwable loginException) {
                                 if (state == STATE_HALF_DEPLOYED) {
-                                    if (session.isConnected()) {
+                                    if (this.session.isDatabaseSession() && this.session.isConnected()) {
                                         // session is connected, but postConnect has failed.
                                         // Likely this is caused by failure in initializeDescriptors: 
                                         // either descriptor exception or by invalid named jpql query.
                                         // Cannot recover from that - the user has to fix the persistence unit and redeploy it.
                                         try {
-                                            session.logout();
+                                            getDatabaseSession().logout();
                                         } catch (Throwable logoutException) {
                                             // Ignore
                                         }
@@ -849,7 +924,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 } else {
                     // originalServerPlatform is not custom - need a new one.
-                    CustomServerPlatform customServerPlatform = new CustomServerPlatform(session);
+                    CustomServerPlatform customServerPlatform = new CustomServerPlatform(getDatabaseSession());
                     customServerPlatform.setExternalTransactionControllerClass(cls);
                     serverPlatform = customServerPlatform;
                 }
@@ -859,7 +934,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
          }
  
         if (serverPlatform != null){
-            session.setServerPlatform(serverPlatform);
+            getDatabaseSession().setServerPlatform(serverPlatform);
             return true;
         }    
         return false;
@@ -894,6 +969,44 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
 
     /**
+     * Checks for partitioning properties.
+     */  
+    protected void updateRemote(Map m, ClassLoader loader) {
+        String protocol = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.REMOTE_PROTOCOL, m, this.session);
+        if (protocol != null) {
+            RemoteConnection connection = null;
+            if (protocol.equalsIgnoreCase(RemoteProtocol.RMI)) {
+                String url = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.REMOTE_URL, m, this.session);
+                if (url == null) {
+                    throw EntityManagerSetupException.missingProperty(PersistenceUnitProperties.REMOTE_URL);
+                }
+                try {
+                    connection = new RMIConnection(((RMIServerSessionManager)Naming.lookup(url)).createRemoteSessionController());
+                } catch (Exception exception) {
+                    throw EntityManagerSetupException.failedToInstantiateProperty(url, PersistenceUnitProperties.REMOTE_URL, exception);                    
+                }
+            } else {
+                Class cls = findClassForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, loader);                
+                try {
+                    Constructor constructor = cls.getConstructor();
+                    connection = (RemoteConnection)constructor.newInstance();
+                } catch (Exception exception) {
+                    throw EntityManagerSetupException.failedToInstantiateProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, exception);
+                }
+            }
+            RemoteSession remoteSession = (RemoteSession)connection.createRemoteSession();
+            remoteSession.setIsMetadataRemote(false);
+            remoteSession.setProject(this.session.getProject());
+            remoteSession.setProfiler(this.session.getProfiler());
+            remoteSession.setSessionLog(this.session.getSessionLog());
+            remoteSession.setEventManager(this.session.getEventManager());
+            remoteSession.setQueries(this.session.getQueries());
+            remoteSession.setProperties(this.session.getProperties());
+            this.session = remoteSession;
+        }
+    }
+
+    /**
      * Checks for database events listener properties.
      */  
     protected void updateDatabaseEventListener(Map m, ClassLoader loader) {
@@ -910,7 +1023,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             } catch (Exception exception) {
                 throw EntityManagerSetupException.failedToInstantiateProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, exception);
             }
-            this.session.setDatabaseEventListener(listener);
+            getDatabaseSession().setDatabaseEventListener(listener);
         }
     }
     
@@ -991,9 +1104,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String newProfilerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PROFILER, persistenceProperties, session);
 
         if (newProfilerClassName == null) {
-               ((ServerPlatformBase)session.getServerPlatform()).configureProfiler(session);
+            ServerPlatformBase plaftorm = ((ServerPlatformBase)session.getServerPlatform());
+            if (plaftorm != null) {
+                plaftorm.configureProfiler(session);
+            }
         } else {
-
             if (newProfilerClassName.equals(ProfilerType.NoProfiler)) {
                 session.setProfiler(null);
                 return;
@@ -1098,8 +1213,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         return structConverters;
     }
 
-    public DatabaseSessionImpl getSession(){
+    public AbstractSession getSession() {
         return session;
+    }
+
+    public DatabaseSessionImpl getDatabaseSession() {
+        return (DatabaseSessionImpl)session;
     }
     
     /**
@@ -1234,14 +1353,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         serverSession.setReadConnectionPool(pool);
                     }
                 } else if (poolName.equals("sequence")) {
-                    pool = this.session.getSequencingControl().getConnectionPool();
+                    pool = getDatabaseSession().getSequencingControl().getConnectionPool();
                     if (pool == null) {
                         if (this.session.getDatasourceLogin().shouldUseExternalConnectionPooling()) {
                             pool = new ExternalConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);                            
                         } else {
                             pool = new ConnectionPool(poolName, serverSession.getDatasourceLogin(), serverSession);
                         }
-                        this.session.getSequencingControl().setConnectionPool(pool);
+                        getDatabaseSession().getSequencingControl().setConnectionPool(pool);
                     }
                 } else {
                     pool = serverSession.getConnectionPool(poolName);
@@ -2276,6 +2395,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (session == null || session.isConnected()) {
             return;
         }
+        
+        updateRemote(m, loader);
 
         // In deploy ServerPlatform could've changed which will affect the loggers.
         boolean serverPlatformChanged = updateServerPlatform(m, loader);
@@ -3300,7 +3421,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
                 }
-                SchemaManager mgr = new SchemaManager(session);
+                SchemaManager mgr = new SchemaManager(getDatabaseSession());
 
                 if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
                     writeDDLToDatabase(mgr, ddlType);

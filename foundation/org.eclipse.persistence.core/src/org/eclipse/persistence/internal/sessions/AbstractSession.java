@@ -1179,6 +1179,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
+    @Deprecated
     public void deleteAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
         for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
             deleteObject(objectsEnum.nextElement());
@@ -3831,7 +3832,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         getProperties().put(propertyName, propertyValue);
     }
 
-    protected void setQueries(Map<String, List<DatabaseQuery>> queries) {
+    /**
+     * INTERNAL:
+     * Set the named queries.
+     */
+    public void setQueries(Map<String, List<DatabaseQuery>> queries) {
         this.queries = queries;
     }
 

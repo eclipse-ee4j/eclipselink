@@ -113,4 +113,15 @@ public interface ExternalTransactionController {
      * Called by initializeSequencingListeners and by sequencing on disconnect.
      */
     public void clearSequencingListeners();
+
+
+    /**
+     * Return the exception handler used to handle or wrap exceptions thrown in before/after completion.
+     */
+    public ExceptionHandler getExceptionHandler();
+
+    /**
+     * Set an exception handler to handle or wrap exceptions thrown in before/after completion.
+     */
+    public void setExceptionHandler(ExceptionHandler exceptionHandler);
 }

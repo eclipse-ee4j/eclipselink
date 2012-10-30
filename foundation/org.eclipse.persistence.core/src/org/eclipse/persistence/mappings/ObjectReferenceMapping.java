@@ -293,7 +293,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * reference object.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //bug 4147755 getRealAttribute... / setReal...
         Object attributeValue = getRealAttributeValueFromObject(object, session);
         attributeValue = getReferenceDescriptor().getObjectBuilder().unwrapObject(attributeValue, session);

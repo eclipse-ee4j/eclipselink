@@ -162,7 +162,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
         this.setupImpl = new EntityManagerSetupImpl();
         this.setupImpl.predeploy(info, null);
-        this.setupImpl.getSession().addDescriptors(descriptors);
+        this.setupImpl.getDatabaseSession().addDescriptors(descriptors);
     }
 
     /**
@@ -194,7 +194,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                     Map[] splitProperties = EntityManagerFactoryProvider.splitSpecifiedProperties(properties, supportedNonServerSessionProperties);
                     Map serverSessionProperties = splitProperties[1];
                     // the call to setupImpl.deploy() finishes the session creation
-                    DatabaseSessionImpl tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
+                    AbstractSession tempSession = setupImpl.deploy(realLoader, serverSessionProperties);
                     // discard all but non server session properties from server
                     // session properties.
                     Map tempProperties = EntityManagerFactoryProvider.keepSpecifiedProperties(tempSession.getProperties(), supportedNonServerSessionProperties);

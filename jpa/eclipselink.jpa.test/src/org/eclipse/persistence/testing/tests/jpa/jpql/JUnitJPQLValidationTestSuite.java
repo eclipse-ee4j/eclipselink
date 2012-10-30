@@ -16,6 +16,7 @@ import java.io.EOFException;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
@@ -918,56 +919,38 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         fail("javax.persistence.OptimisticLockException must be thrown during commit");
     }
     
-    //this test fakes a JTA transaction
     public void JTAOptimisticLockExceptionTest() 
     {
-        if (isOnServer()) {
-            // Multi-persistece-unit not work on server.
+        if (!isOnServer()) {
+            // Requires JTA, so only runs on the server.
             return;
         }
-        EntityManager firstEm = createEntityManager();        
-        EntityManager secondEm = createAlternateEntityManager();
-        
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";   
-       
-        secondEm.getTransaction().begin();    
-        try{
-            firstEm.getTransaction().begin();        
-            try{
-        
-                Employee firstEmployee = (Employee) firstEm.createQuery(ejbqlString).getSingleResult();                
-                firstEmployee.setLastName("test");      
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            try {
                      
-                Employee secondEmployee = (Employee) secondEm.createQuery(ejbqlString).getSingleResult();       
-                secondEmployee.setLastName("test");
-        
-        
-                firstEm.getTransaction().commit();
-            }catch (RuntimeException ex){
-                if (firstEm.getTransaction().isActive()){
-                    firstEm.getTransaction().rollback();
+                Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();       
+                emp.setLastName("test");
+                em.createQuery("Update Employee set lastName = 'test-bad' WHERE firstName='Bob' ").executeUpdate();
+                commitTransaction(em);
+            } catch (RuntimeException ex) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
                 }
-                firstEm.close();
+                em.close();
+                Throwable lockException = ex;
+                while ((lockException != null) && !(lockException instanceof OptimisticLockException)) {
+                    lockException = lockException.getCause();
+                }
+                if (lockException instanceof OptimisticLockException) {
+                    return;
+                }
                 throw ex;
             }
-        
-            (((EntityManagerImpl)secondEm).getActivePersistenceContext(null)).issueSQLbeforeCompletion();
-            fail("javax.persistence.OptimisticLockException must be thrown during commit");
-        } catch (Exception e){          
-            if (secondEm.getTransaction().isActive()){
-                secondEm.getTransaction().rollback();
-            }
-            secondEm.close();
-            if (isKnownMySQLIssue(e)) {
-                warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
-            } else {         
-                Assert.assertTrue(e instanceof javax.persistence.OptimisticLockException);
-            }
-         } finally {
-            undoEmployeeChanges();
-            if (secondEm.getTransaction().isActive()){
-                secondEm.getTransaction().rollback();
-            }
+            fail("Lock exception should have been thrown");
+        } finally {
+            clearCache();
         }
     }
     

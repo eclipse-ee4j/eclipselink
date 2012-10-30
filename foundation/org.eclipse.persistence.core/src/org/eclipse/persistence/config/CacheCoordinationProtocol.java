@@ -17,7 +17,7 @@ package org.eclipse.persistence.config;
  * 
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.CacheCoordinationProtocol, CacheCoordinationProtocol.RMI);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.COORDINATION_PROTOCOL, CacheCoordinationProtocol.RMI);</code>
  * <p>Property values are case-insensitive.
  * 
  * @see PersistenceUnitProperties#COORDINATION_PROTOCOL

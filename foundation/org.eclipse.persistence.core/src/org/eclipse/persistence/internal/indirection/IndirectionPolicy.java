@@ -79,17 +79,20 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Return true if the refresh should refresh on this mapping or not.
      */
     protected ReadObjectQuery buildCascadeQuery(MergeManager mergeManager) {
-        ReadObjectQuery cascadeQuery = new ReadObjectQuery();
+        ReadObjectQuery query = new ReadObjectQuery();
+        if (this.mapping.getReferenceDescriptor() != null) {
+            query.setReferenceClass(this.mapping.getReferenceDescriptor().getJavaClass());
+        }
         if (mergeManager.shouldCascadeAllParts()) {
-            cascadeQuery.cascadeAllParts();
-            cascadeQuery.refreshIdentityMapResult();
+            query.cascadeAllParts();
+            query.refreshIdentityMapResult();
         }
         if (mergeManager.shouldCascadePrivateParts() && getForeignReferenceMapping().isPrivateOwned()) {
-            cascadeQuery.cascadePrivateParts();
-            cascadeQuery.refreshIdentityMapResult();
+            query.cascadePrivateParts();
+            query.refreshIdentityMapResult();
         }
 
-        return cascadeQuery;
+        return query;
     }
     
     /**
@@ -147,7 +150,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session);
+    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
     /**
      * INTERNAL:

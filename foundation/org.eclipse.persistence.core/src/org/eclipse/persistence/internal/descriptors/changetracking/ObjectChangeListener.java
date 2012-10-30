@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.descriptors.changetracking;
 
 import java.beans.*;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -24,7 +25,7 @@ import java.beans.*;
  * <ul>
  * </ul>
  */
-public class ObjectChangeListener implements PropertyChangeListener {
+public class ObjectChangeListener implements PropertyChangeListener, Serializable {
     // when EclipseLink merges events should be ignored that are not issued by EclipseLink
     // ie when EclipseLink call setters.
     protected boolean ignoreEvents = false;

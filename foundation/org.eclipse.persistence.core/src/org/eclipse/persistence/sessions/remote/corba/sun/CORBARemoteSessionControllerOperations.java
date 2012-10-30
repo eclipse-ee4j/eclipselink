@@ -67,6 +67,8 @@ public interface CORBARemoteSessionControllerOperations {
 
     org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0);
 
+    org.eclipse.persistence.internal.sessions.remote.Transporter getDescriptorForAlias(org.eclipse.persistence.internal.sessions.remote.Transporter arg0);
+
     org.eclipse.persistence.internal.sessions.remote.Transporter getDescriptor(org.eclipse.persistence.internal.sessions.remote.Transporter arg0);
 
     org.eclipse.persistence.internal.sessions.remote.Transporter cursoredStreamSize(org.eclipse.persistence.internal.sessions.remote.Transporter arg0);

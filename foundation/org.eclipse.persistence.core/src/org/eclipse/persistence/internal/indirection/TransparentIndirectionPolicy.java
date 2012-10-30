@@ -263,7 +263,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object container = getMapping().getAttributeValueFromObject(object);
         //There may have been a concurrent modifucation of the collection on the server side
         // and the valueholders would not have been updated so treat it like no indirection

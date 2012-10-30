@@ -97,25 +97,6 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     }
 
     /**
-     * Commit the current transaction, writing any un-flushed changes to the
-     * database. This can only be invoked if {@link #isActive()} returns
-     * <code>true</code>.
-     * 
-     * @throws IllegalStateException
-     *             if isActive() is false.
-     * @throws PersistenceException
-     *             if the commit fails.
-     */
-    public void commit() {
-        try {
-            commitInternal();
-        } catch (org.eclipse.persistence.exceptions.EclipseLinkException tlException) {
-            // put here to avoid EJB3.0 dependencies in TopLink for jdk 1.4
-            throw new javax.persistence.RollbackException(tlException);
-        }
-    }
-
-    /**
      * Open queries within a transaction will be closed on commit or rollback
      * if they haven't already been closed.
      */
@@ -135,7 +116,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * @throws IllegalStateException
      *             if isActive() is false.
      */
-    protected void commitInternal() {
+    public void commit() {
         if (!isActive()) {
             throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
         }
@@ -160,17 +141,20 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
                     throw new RollbackException(ExceptionLocalization.buildMessage("rollback_because_of_rollback_only"));
                 }
             }
-        } catch (RuntimeException ex) {
-            if (this.wrapper.localUOW != null) {
-                this.wrapper.getEntityManager().removeExtendedPersistenceContext();
-                this.wrapper.localUOW.release();
-                this.wrapper.localUOW.getParent().release();
-            }
-            if (!this.rollbackOnly) {
-                throw new RollbackException(ex);
+        } catch (RuntimeException exception) {
+            try {
+                if (this.wrapper.localUOW != null) {
+                    this.wrapper.getEntityManager().removeExtendedPersistenceContext();
+                    this.wrapper.localUOW.release();
+                    this.wrapper.localUOW.getParent().release();
+                }
+            } catch (Exception ignore) {} // Throw first exception.
+            if (exception instanceof RollbackException) {
+                throw exception;
+            } else if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
+                throw new RollbackException(new javax.persistence.OptimisticLockException(exception));
             } else {
-                // it's a RollbackException
-                throw ex;
+                throw new RollbackException(exception);
             }
         } finally {
             this.active = false;

@@ -12,11 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
+import java.rmi.server.ObjID;
 import java.util.*;
 
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
@@ -164,7 +165,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object attributeValue = this.mapping.getAttributeValueFromObject(object);
         //bug 4147755 if it is not a Remote Valueholder then treat as if there was no VH...
         if (attributeValue instanceof RemoteValueHolder){
@@ -215,23 +216,35 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
-        if (session.isRemoteUnitOfWork() && unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder) {
+        if ((unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder)
+                && (((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getRemoteUnitOfWork() != null)) {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolder();
-            if (valueHolder == null){
+            if (valueHolder == null) {
                 // For remote session the original value holder is transient,
                 // so the value must be found in the registry or created.
-                RemoteSessionController controller = ((RemoteUnitOfWork) session).getParentSessionController();
-                Object id = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID();
-                if (id == null) {
+                RemoteUnitOfWork remoteUnitOfWork = (RemoteUnitOfWork)((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getRemoteUnitOfWork();
+                RemoteSessionController controller = remoteUnitOfWork.getParentSessionController();
+                ObjID id = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID();
+                if (id != null) {
+                    // This value holder may be on the server, or the client,
+                    // on the server, the controller should exists, so can lock up in it,
+                    // on the client, the id should be enough to create a new remote value holder.
+                    if (controller != null) {
+                        valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
+                    } else if (session.isRemoteSession()) {
+                        valueHolder = new RemoteValueHolder(id);
+                        ((RemoteValueHolder)valueHolder).setSession(session);
+                    }
+                }
+                if (valueHolder == null) {
                     // Must build a new value holder.
                     Object object = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getSourceObject();
                     AbstractRecord row = this.mapping.getDescriptor().getObjectBuilder().buildRow(object, session, WriteType.UNDEFINED);
                     ReadObjectQuery query = new ReadObjectQuery();
-                    query.setSession(((RemoteUnitOfWork) session).getParent());
+                    query.setSession(session);
                     valueHolder = (ValueHolderInterface) this.mapping.valueFromRow(row, null, query, true);
-                } else {
-                    valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
                 }
+                return valueHolder;
             }
         }
         if (unitOfWorkIndirectionObject instanceof WrappingValueHolder) {
@@ -249,6 +262,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             return unitOfWorkIndirectionObject;
         }
     }
+    
     /**
      * Reset the wrapper used to store the value.
      */

@@ -131,7 +131,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve next page size of objects from the remote cursored stream
      */
-    public Vector cursoredStreamNextPage(RemoteCursoredStream remoteCursoredStream, ReadQuery query, RemoteSession session, int pageSize) {
+    public Vector cursoredStreamNextPage(RemoteCursoredStream remoteCursoredStream, ReadQuery query, DistributedSession session, int pageSize) {
         Transporter transporter = null;
         try {
             transporter = getRemoteSessionController().cursoredStreamNextPage(new Transporter(remoteCursoredStream.getID()), pageSize);
@@ -199,7 +199,7 @@ public class RMIConnection extends RemoteConnection {
             remoteCursoredStream.setPolicy(policy);
 
             if (policy.getQuery().isReadAllQuery() && (!policy.getQuery().isReportQuery())) {// could be DataReadQuery
-                fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), (RemoteSession)session);
+                fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), (DistributedSession)session);
             }
             return remoteCursoredStream;
         } catch (RemoteException exception) {
@@ -234,7 +234,7 @@ public class RMIConnection extends RemoteConnection {
      * Replace the transient attributes of the remote value holders with client-side objects.
      * Being used for the cursored stream only
      */
-    public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, DistributedSession session) {
         RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
         List remoteObjectCollection = stream.getObjectCollection();
         if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
@@ -283,6 +283,22 @@ public class RMIConnection extends RemoteConnection {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Return the table descriptor specified for the alias.
+     */
+    public ClassDescriptor getDescriptorForAlias(String alias) {
+        try {
+            Transporter transporter = getRemoteSessionController().getDescriptorForAlias(new Transporter(alias));
+            if (!transporter.wasOperationSuccessful()) {
+                throw transporter.getException();
+            } else {
+                return (ClassDescriptor)transporter.getObject();
+            }
+        } catch (RemoteException exception) {
+            throw CommunicationException.errorInInvocation(exception);
+        }
+    }
     /**
      * INTERNAL:
      * Return the table descriptor specified for the class.
@@ -620,7 +636,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve next object from the remote scrollable cursor
      */
-    public Object scrollableCursorNextObject(ObjID remoteScrollableCursorOid, ReadQuery query, RemoteSession session) {
+    public Object scrollableCursorNextObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session) {
         Transporter transporter = null;
         try {
             transporter = getRemoteSessionController().scrollableCursorNextObject(new Transporter(remoteScrollableCursorOid));
@@ -651,7 +667,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * Retrieve previous object from the remote scrollable cursor
      */
-    public Object scrollableCursorPreviousObject(ObjID remoteScrollableCursorOid, ReadQuery query, RemoteSession session) {
+    public Object scrollableCursorPreviousObject(ObjID remoteScrollableCursorOid, ReadQuery query, DistributedSession session) {
         Transporter transporter = null;
         try {
             transporter = getRemoteSessionController().scrollableCursorPreviousObject(new Transporter(remoteScrollableCursorOid));

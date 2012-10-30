@@ -32,7 +32,7 @@ import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.internal.sessions.remote.*;
 
 /**
@@ -268,7 +268,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      * An object has been serialized from the server to the client.  Replace the transient attributes of the
      * remote value holders with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //org.eclipse.persistence.internal.helper.Helper.toDo("*** Something tells me this isn't going to work. *** [X]");
     }
 

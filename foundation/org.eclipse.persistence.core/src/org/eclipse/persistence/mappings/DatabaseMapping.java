@@ -520,7 +520,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session);
+    public abstract void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session);
 
     /**
      * INTERNAL:
@@ -529,7 +529,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * the corresponding object(s) from the remote session.
      * The default is to do nothing.
      */
-    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
     }
 
@@ -692,7 +692,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * The default is to simply return the object itself, without worrying about
      * maintaining object identity.
      */
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
 

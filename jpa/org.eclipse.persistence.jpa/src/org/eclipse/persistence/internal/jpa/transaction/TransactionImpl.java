@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
  *
  * Currently support is limited to enlisting only a single tx data source
  */
+@Deprecated
 public class TransactionImpl implements Transaction {
     // Set by client-induced rollback marking
     boolean markedForRollback;

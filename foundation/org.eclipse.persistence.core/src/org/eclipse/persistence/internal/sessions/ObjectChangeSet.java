@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.io.*;
 import java.util.*;
+
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -508,13 +509,20 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         return domainObject;
     }
 
-
     /**
      * INTERNAL:
      * Returns the UnitOfWork Clone that this ChangeSet was built for.
      */
     public Object getUnitOfWorkClone() {
         return this.cloneObject;
+    }
+
+    /**
+     * INTERNAL:
+     * Sets the UnitOfWork Clone that this ChangeSet was built for.
+     */
+    public void setUnitOfWorkClone(Object cloneObject) {
+        this.cloneObject = cloneObject;
     }
 
     /**
@@ -783,6 +791,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         this.isInvalid = stream.readBoolean();
         this.isNew = stream.readBoolean();
         this.isAggregate = stream.readBoolean();
+        this.shouldModifyVersionField = (Boolean)stream.readObject();
+        this.hasVersionChange = stream.readBoolean();
 
         // Only the identity information is sent with a number of cache synchronization types
         // Here we decide what to read.
@@ -1010,6 +1020,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         stream.writeBoolean(this.isInvalid);
         stream.writeBoolean(this.isNew);
         stream.writeBoolean(this.isAggregate);
+        stream.writeObject(this.shouldModifyVersionField);
+        stream.writeBoolean(this.hasVersionChange);
         if (this.shouldBeDeleted || (this.cacheSynchronizationType == ClassDescriptor.DO_NOT_SEND_CHANGES) || (this.cacheSynchronizationType == ClassDescriptor.INVALIDATE_CHANGED_OBJECTS)) {
             writeIdentityInformation(stream);
         } else {
@@ -1036,18 +1048,21 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     public void writeCompleteChangeSet(java.io.ObjectOutputStream stream) throws java.io.IOException {
         if (this.isNew && ((this.changes == null) || this.changes.isEmpty())) {
             AbstractSession unitOfWork = this.unitOfWorkChangeSet.getSession();
-            ClassDescriptor descriptor = getDescriptor();
-            if ((unitOfWork != null) && (descriptor != null)) {
-                FetchGroup fetchGroup = null;
-                if(descriptor.hasFetchGroupManager()) {
-                    fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(this.cloneObject);
-                }
-                List mappings = descriptor.getMappings();
-                int mappingsSize = mappings.size();
-                for (int index = 0; index < mappingsSize; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    if(fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
-                        addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
+            // Full change set is only required for cache coordination, not remote.
+            if (!unitOfWork.isRemoteUnitOfWork()) {
+                ClassDescriptor descriptor = getDescriptor();
+                if ((unitOfWork != null) && (descriptor != null)) {
+                    FetchGroup fetchGroup = null;
+                    if(descriptor.hasFetchGroupManager()) {
+                        fetchGroup = descriptor.getFetchGroupManager().getObjectFetchGroup(this.cloneObject);
+                    }
+                    List mappings = descriptor.getMappings();
+                    int mappingsSize = mappings.size();
+                    for (int index = 0; index < mappingsSize; index++) {
+                        DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                        if(fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
+                            addChange(mapping.compareForChange(this.cloneObject, this.cloneObject, this, unitOfWork));
+                        }
                     }
                 }
             }
@@ -1058,6 +1073,43 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
         stream.writeObject(this.newKey);
     }
 
+    /**
+     * INTERNAL:
+     * Reset the change set's transient variables after serialization.
+     */
+    public void postSerialize(Object clone, UnitOfWorkChangeSet uowChangeSet, AbstractSession session) {
+        this.unitOfWorkChangeSet = uowChangeSet;
+        // Clone is null for recursive aggregate call, (clone will be set from root call,
+        // but descriptor and mapping needs to be set here.
+        if (clone != null) {
+            this.cloneObject = clone;
+            if (this.descriptor == null) {
+                this.descriptor = session.getDescriptor(clone);
+                this.classType = clone.getClass();                                        
+            }
+        }
+        if ((this.attributesToChanges == null) && (this.changes != null)) {
+            for (ChangeRecord change : (List<ChangeRecord>)(List)this.changes) {
+                getAttributesToChanges().put(change.getAttribute(), change);
+            }
+        }
+        // Aggregates should only be cascaded to, as they need the correct descriptor from the mapping.
+        if ((this.changes != null) && (this.descriptor != null) && ((clone == null) || !this.descriptor.isAggregateDescriptor())) {
+            for (ChangeRecord change : (List<ChangeRecord>)(List)this.changes) {
+                DatabaseMapping mapping = this.descriptor.getObjectBuilder().getMappingForAttributeName(change.getAttribute());
+                change.setMapping(mapping);
+                if ((mapping != null) && mapping.isAggregateObjectMapping()) {
+                    AggregateChangeRecord aggregate = (AggregateChangeRecord)change;
+                    ObjectChangeSet aggregateCacheSet = (ObjectChangeSet)aggregate.getChangedObject();
+                    if (aggregateCacheSet != null) {
+                        aggregateCacheSet.setDescriptor(mapping.getReferenceDescriptor());
+                        aggregateCacheSet.postSerialize(null, uowChangeSet, session);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * This set contains the list of attributes that must be calculated at commit time.
      */

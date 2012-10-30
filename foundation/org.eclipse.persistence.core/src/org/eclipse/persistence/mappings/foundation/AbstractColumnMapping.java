@@ -38,7 +38,7 @@ import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <b>Purpose</b>: Maps an attribute or some other property to the corresponding 
@@ -182,7 +182,7 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
      * with client-side objects.
      */
     @Override
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
     }
     
     /**

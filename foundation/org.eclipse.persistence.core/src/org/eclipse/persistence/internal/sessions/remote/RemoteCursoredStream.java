@@ -55,7 +55,7 @@ public class RemoteCursoredStream extends CursoredStream {
             return;
         }
 
-        (((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamClose(getID());
+        (((DistributedSession)getSession()).getRemoteConnection()).cursoredStreamClose(getID());
     }
 
     /**
@@ -63,7 +63,7 @@ public class RemoteCursoredStream extends CursoredStream {
      * Retreive the size of the wrapped cursored stream.
      */
     protected int getCursorSize() {
-        return (((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamSize(getID());
+        return (((DistributedSession)getSession()).getRemoteConnection()).cursoredStreamSize(getID());
     }
 
     /**
@@ -89,7 +89,7 @@ public class RemoteCursoredStream extends CursoredStream {
         if (isClosed()) {
             return null;
         }
-        Vector nextPageObjects = (((RemoteSession)getSession()).getRemoteConnection()).cursoredStreamNextPage(this, getPolicy().getQuery(), (RemoteSession)getSession(), getPageSize());
+        Vector nextPageObjects = (((DistributedSession)getSession()).getRemoteConnection()).cursoredStreamNextPage(this, getPolicy().getQuery(), (DistributedSession)getSession(), getPageSize());
         if ((nextPageObjects == null) || nextPageObjects.isEmpty()) {
             return null;
         }

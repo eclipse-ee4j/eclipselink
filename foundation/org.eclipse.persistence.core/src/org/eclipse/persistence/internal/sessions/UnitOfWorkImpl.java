@@ -103,6 +103,10 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<Object, Object> cloneMapping;
     protected Map<Object, Object> newObjectsCloneToOriginal;
     protected Map<Object, Object> newObjectsOriginalToClone;
+    /**
+     * Stores a map from the clone to the original merged object, as a different instance is used as the original for merges.
+     */
+    protected Map<Object, Object> newObjectsCloneToMergeOriginal;
     protected Map<Object, Object> deletedObjects;
 
     /** This member variable contains a copy of all of the clones for this particular UOW */
@@ -1695,18 +1699,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     public void deepUnregisterObject(Object clone) {
         unregisterObject(clone, DescriptorIterator.CascadeAllParts);
     }
-    
-    /**
-     * PUBLIC:
-     * Delete all of the objects and all of their privately owned parts in the database.
-     * Delete operations are delayed in a unit of work until commit.
-     */
-    public void deleteAllObjects(Vector domainObjects) {
-        // This must be overridden to avoid dispatching to the commit manager.
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            deleteObject(objectsEnum.nextElement());
-        }
-    }
 
     /**
      * INTERNAL:
@@ -2295,7 +2287,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The new objects stores any objects newly created during the unit of work.
      * On commit they will all be inserted into the database.
      */
-    public synchronized Map getNewObjectsCloneToOriginal() {
+    public Map getNewObjectsCloneToOriginal() {
         if (newObjectsCloneToOriginal == null) {
             // 2612538 - the default size of Map (32) is appropriate
             newObjectsCloneToOriginal = new IdentityHashMap();
@@ -2303,6 +2295,17 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         return newObjectsCloneToOriginal;
     }
 
+    /**
+     * INTERNAL:
+     * The stores a map from new object clones to the original object used from merge.
+     */
+    public Map getNewObjectsCloneToMergeOriginal() {
+        if (newObjectsCloneToMergeOriginal == null) {
+            newObjectsCloneToMergeOriginal = new IdentityHashMap();
+        }
+        return newObjectsCloneToMergeOriginal;
+    }
+    
     /**
      * INTERNAL:
      * The returns the list that will hold the new objects from the Parent UnitOfWork
@@ -2352,7 +2355,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * The new objects stores any objects newly created during the unit of work.
      * On commit they will all be inserted into the database.
      */
-    public synchronized Map getNewObjectsOriginalToClone() {
+    public Map getNewObjectsOriginalToClone() {
         if (newObjectsOriginalToClone == null) {
             // 2612538 - the default size of Map (32) is appropriate
             newObjectsOriginalToClone = new IdentityHashMap();
@@ -3252,9 +3255,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     for (ObjectChangeSet changeSetToWrite : objectChangesList.values()) {
                         if (changeSetToWrite.hasChanges()) {
                             Object objectToWrite = changeSetToWrite.getUnitOfWorkClone();
-                            // It would be so much nicer if the change set was keyed by the class instead of class name,
-                            // so this could be done once.  We should key on class, and only convert to keying on name when broadcasting changes.
-                            ClassDescriptor descriptor = getDescriptor(objectToWrite);
+                            ClassDescriptor descriptor = changeSetToWrite.getDescriptor();
                             // PERF: Do not merge into the session cache if set to unit of work isolated.
                             if ((!isNestedUnitOfWork) && descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork() ) {
                                 break;
@@ -3963,7 +3964,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #registerObject(Object)
      */
-    public synchronized Object registerNewContainerBean(Object newObject) {
+    public Object registerNewContainerBean(Object newObject) {
         if (newObject == null) {
             return null;
         }
@@ -4009,7 +4010,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Normally the registerObject method should be used for all registration of new and existing objects.
      * This version of the register method can only be used for new objects.
      */
-    public synchronized Object registerNewContainerBeanForCMP(Object newObject) {
+    public Object registerNewContainerBeanForCMP(Object newObject) {
         if (newObject == null) {
             return null;
         }
@@ -5342,7 +5343,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 getCloneMapping().remove(object);
                 
                 //remove from deleted objects.
-                getDeletedObjects().remove(object);
+                if (hasDeletedObjects()) {
+                    getDeletedObjects().remove(object);
+                }
 
                 // Remove object from the new object cache				
                 // PERF: Avoid initialization of new objects if none.
@@ -5350,6 +5353,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     Object original = getNewObjectsCloneToOriginal().remove(object);
                     if (original != null) {
                         getNewObjectsOriginalToClone().remove(original);
+                    }
+                    // Also need to remove the original merged object.
+                    if (UnitOfWorkImpl.this.newObjectsCloneToMergeOriginal != null) {
+                        original = UnitOfWorkImpl.this.newObjectsCloneToMergeOriginal.remove(object);
+                        if (original != null) {
+                            getNewObjectsOriginalToClone().remove(original);
+                        }
                     }
                 }
             }

@@ -65,7 +65,7 @@ import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * PUBLIC:
@@ -205,7 +205,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     * Replace the transient attributes of the remote value holders
     * with client-side objects.
     */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         throw DescriptorException.invalidMappingOperation(this, "fixObjectReferences");
     }
 

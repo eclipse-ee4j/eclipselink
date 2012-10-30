@@ -135,6 +135,13 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     }
 
     /**
+     * Extract descriptor from the session
+     */
+    public Transporter getDescriptorForAlias(Transporter alias) {
+        return getController().getDescriptorForAlias(alias);
+    }
+
+    /**
      * Get the associated session login.
      */
     public Transporter getLogin() {

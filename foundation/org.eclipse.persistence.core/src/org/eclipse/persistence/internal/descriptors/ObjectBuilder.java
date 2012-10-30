@@ -2793,7 +2793,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // PERF: Only process relationships.
         if (!this.isSimple) {
             List<DatabaseMapping> mappings = this.relationshipMappings;

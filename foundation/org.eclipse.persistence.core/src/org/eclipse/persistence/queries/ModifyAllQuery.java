@@ -82,9 +82,10 @@ public abstract class ModifyAllQuery extends ModifyQuery {
 
     /**
      * PUBLIC:
-     * Return true if this is a modify query.
+     * Return true if this is a modify all query.
      */
-    public boolean isModifyQuery() {
+    @Override
+    public boolean isModifyAllQuery() {
         return true;
     }
 
@@ -107,6 +108,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * Used to give the subclasses opportunity to copy aspects of the cloned query
      * to the original query.  The clones of all the ModifyAllQueries will be added to modifyAllQueries for validation.
      */
+    @Override
     protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
         super.clonedQueryExecutionComplete(query, session);
         
@@ -127,6 +129,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * @exception  OptimisticLockException - an error has occurred using the optimistic lock feature.
      * @return An object, the result of executing the query.
      */
+    @Override
     public Object executeInUnitOfWork(UnitOfWorkImpl unitOfWork, AbstractRecord translationRow) throws DatabaseException, OptimisticLockException {
         if (unitOfWork.isNestedUnitOfWork()) {
             throw ValidationException.nestedUOWNotSupportedForModifyAllQuery();
@@ -181,6 +184,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * Return the name of the reference class of the query.
      * Used by the Mapping Workbench to avoid classpath dependencies
      */
+    @Override
     public String getReferenceClassName() {
         if ((referenceClassName == null) && (referenceClass != null)) {
             referenceClassName = referenceClass.getName();
@@ -192,6 +196,7 @@ public abstract class ModifyAllQuery extends ModifyQuery {
      * PUBLIC:
      * Return the reference class for this query.
      */
+    @Override
     public Class getReferenceClass() {
         return referenceClass;
     }

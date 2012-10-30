@@ -13,13 +13,13 @@
 package org.eclipse.persistence.testing.tests.xdb;
 
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.sessions.remote.rmi.*;
 import org.eclipse.persistence.testing.tests.remote.*;
 import org.eclipse.persistence.testing.framework.*;
 
 public class RemoteSessionTest extends TestCase {
-    RemoteSession remoteSession = null;
+    DistributedSession remoteSession = null;
     RMIConnection connection = null;
 
     public RemoteSessionTest() {
@@ -33,7 +33,7 @@ public class RemoteSessionTest extends TestCase {
         dbSession.login();
         RMIServerManagerController.start(dbSession);
         connection = remote.createConnection();
-        remoteSession = (RemoteSession)connection.createRemoteSession();
+        remoteSession = (DistributedSession)connection.createRemoteSession();
     }
 
     public void reset() {

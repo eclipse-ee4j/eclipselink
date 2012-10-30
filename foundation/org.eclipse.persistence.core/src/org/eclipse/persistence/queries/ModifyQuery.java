@@ -40,6 +40,7 @@ public abstract class ModifyQuery extends DatabaseQuery {
      * PUBLIC:
      * Return if this is a modify query.
      */
+    @Override
     public boolean isModifyQuery() {
         return true;
     }
@@ -60,9 +61,8 @@ public abstract class ModifyQuery extends DatabaseQuery {
      * statement execution to be delayed to allow additional statements to
      * be added.  Setting to true reduces the efficiency of batch writing.  
      * 
-     *  This has no effect if batch writing is not enabled.   
-     */
-     
+     * This has no effect if batch writing is not enabled.   
+     */     
     public void setForceBatchStatementExecution(boolean value) {
         this.forceBatchStatementExecution = value;
     }
@@ -71,8 +71,7 @@ public abstract class ModifyQuery extends DatabaseQuery {
      * PUBLIC:
      * Returns if this query has been set to flush on execution.
      * @see #setForceBatchStatementExecution(boolean)
-     */
-     
+     */     
     public boolean forceBatchStatementExecution() {
         return forceBatchStatementExecution;
     }

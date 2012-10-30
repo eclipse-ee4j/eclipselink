@@ -85,7 +85,7 @@ public class RMIServerManagerController extends UnicastRemoteObject implements R
 
         // Set the security manager
         try {
-            System.setSecurityManager(new RMISecurityManager());
+            //System.setSecurityManager(new RMISecurityManager());
         } catch (Exception exception) {
             System.out.println("Security violation " + exception.toString());
         }

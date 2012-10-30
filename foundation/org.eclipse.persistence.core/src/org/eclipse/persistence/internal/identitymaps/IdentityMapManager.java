@@ -52,7 +52,7 @@ import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
  * @since TOPLink/Java 1.0
  */
 public class IdentityMapManager implements Serializable, Cloneable {
-    protected static final String MONITOR_PREFIX = "Info:CacheSize:";
+    protected static final String MONITOR_PREFIX = SessionProfiler.CacheSize;
 
     /** A table of identity maps with the key being the domain Class. */
     protected Map<Class, IdentityMap> identityMaps;

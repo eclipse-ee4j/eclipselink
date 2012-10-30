@@ -468,6 +468,46 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    public Transporter getDescriptorForAlias(Transporter alias) throws RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA_2_3.portable.InputStream in = null;
+                try {
+                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)_request("getDescriptorForAlias", true);
+                    writeTransporter(alias, out);
+                    in = (org.omg.CORBA_2_3.portable.InputStream)_invoke(out);
+
+                    return readTransporter(in);
+                } catch (ApplicationException ex) {
+                    in = (org.omg.CORBA_2_3.portable.InputStream)ex.getInputStream();
+                    String id = in.read_string();
+                    throw new UnexpectedException(id);
+                } catch (RemarshalException ex) {
+                    return getDescriptorForAlias(alias);
+                } finally {
+                    _releaseReply(in);
+                }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("getDescriptorForAlias", RMIRemoteSessionController.class);
+            if (so == null) {
+                return getDescriptorForAlias(alias);
+            }
+            try {
+                Transporter domainClassCopy = (Transporter)Util.copyObject(alias, _orb());
+                Transporter result = ((RMIRemoteSessionController)so.servant).getDescriptorForAlias(domainClassCopy);
+                return (Transporter)Util.copyObject(result, _orb());
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable)Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
+            }
+        }
+    }
+
     public Transporter getDefaultReadOnlyClasses() throws RemoteException {
         if (!Util.isLocal(this)) {
             try {

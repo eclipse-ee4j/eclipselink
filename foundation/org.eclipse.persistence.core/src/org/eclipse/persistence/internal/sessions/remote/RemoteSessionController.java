@@ -148,10 +148,13 @@ public class RemoteSessionController {
         remoteUnitOfWork.reinitializeForSession(getSession(), this);
 
         Transporter transporter = new Transporter();
-        ;
         try {
             // Committing locally.
-            remoteUnitOfWork.commitRootUnitOfWork();
+            if (remoteUnitOfWork.isFlush()) {
+                remoteUnitOfWork.writeChanges();
+            } else {
+                remoteUnitOfWork.commitRootUnitOfWork();
+            }
             transporter.setObject(remoteUnitOfWork);
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -370,6 +373,23 @@ public class RemoteSessionController {
 
         try {
             ClassDescriptor descriptor = getSession().getDescriptor(theClass);
+            transporter.setObject(descriptor);
+        } catch (RuntimeException exception) {
+            transporter.setException(exception);
+        }
+
+        return transporter;
+    }
+
+    /**
+     * Extract descriptor from the session
+     */
+    public Transporter getDescriptorForAlias(Transporter remoteTransporter) {
+        String alias = (String)remoteTransporter.getObject();
+        Transporter transporter = new Transporter();
+
+        try {
+            ClassDescriptor descriptor = getSession().getDescriptorForAlias(alias);
             transporter.setObject(descriptor);
         } catch (RuntimeException exception) {
             transporter.setException(exception);

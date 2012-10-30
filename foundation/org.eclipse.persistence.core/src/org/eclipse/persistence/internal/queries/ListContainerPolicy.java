@@ -184,7 +184,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
         ObjectChangeSet sourceSet = parentUOWChangeSet.getCloneToObjectChangeSet().get(source);
         if (list.containsKey(sourceSet)){
             ObjectChangeSet targetSet = ((UnitOfWorkChangeSet)unitOfWork.getUnitOfWorkChangeSet()).findOrCreateLocalObjectChangeSet(target, mapping.getReferenceDescriptor(), unitOfWork.isCloneNewObject(target));
-            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, parentUOWChangeSet);
+            parentUOWChangeSet.addObjectChangeSetForIdentity(targetSet, target);
             list.remove(sourceSet);
             list.put(targetSet, targetSet);
             return;

@@ -978,7 +978,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * the corresponding object(s) from the remote session.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         //bug 4147755 getRealAttribute... / setReal
         Object attributeValue = getRealAttributeValueFromObject(object, session);
 
@@ -1037,7 +1037,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return session.getObjectsCorrespondingToAll(object, objectDescriptors, processedObjects, query, this.containerPolicy);
     }
 

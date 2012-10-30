@@ -170,6 +170,14 @@ public Transporter getDescriptor(Transporter theClass)
 {
     return handleByMode();
 }
+/** 
+ * Extract descriptor from the session
+ */
+ 
+public Transporter getDescriptorForAlias(Transporter theClass)
+{
+    return handleByMode();
+}
 /**
  * Get the default read-only classes
  **/

@@ -375,7 +375,7 @@ public class MergeManager {
             org.eclipse.persistence.queries.ObjectLevelReadQuery query = new org.eclipse.persistence.queries.ReadObjectQuery();
             query.setCascadePolicy(this.getCascadePolicy());
             this.session.getIdentityMapAccessorInstance().putInIdentityMap(serverSideDomainObject, primaryKey, objectDescriptor.getWriteLockValue(), objectDescriptor.getReadTime(), descriptor);
-            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), this.objectsAlreadyMerged.get(this.session), query, (RemoteSession)this.session);
+            descriptor.getObjectBuilder().fixObjectReferences(serverSideDomainObject, getObjectDescriptors(), this.objectsAlreadyMerged.get(this.session), query, (DistributedSession)this.session);
             clientSideDomainObject = serverSideDomainObject;
         } else {
             // merge into the clientSideDomainObject from the serverSideDomainObject;
@@ -830,12 +830,7 @@ public class MergeManager {
                     }
                 }
                 if (original instanceof PersistenceEntity) {
-                    Object pk = null;
-                    if (cacheKey == null){
-                        pk = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
-                    }else{
-                        pk = cacheKey.getKey();
-                    }
+                    Object pk = cacheKey.getKey();
                     objectBuilder.updateCachedAttributes((PersistenceEntity) original, cacheKey, pk);
                 }
                 updateCacheKeyProperties(unitOfWork, cacheKey, original, clone, objectChangeSet, descriptor);
@@ -918,7 +913,13 @@ public class MergeManager {
         // The original is used as the backup to merge everything different from it.
         // This makes this type of merge quite different than the normal unit of work merge.
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone);
-        descriptor.getObjectBuilder().mergeIntoObject(original, false, clone, this, this.session);
+        // Toggle change tracking during the merge.
+        descriptor.getObjectChangePolicy().dissableEventProcessing(original);
+        try {
+            descriptor.getObjectBuilder().mergeIntoObject(original, false, clone, this, this.session);
+        } finally {
+            descriptor.getObjectChangePolicy().enableEventProcessing(original);            
+        }
 
         if (((RemoteUnitOfWork)unitOfWork.getParent()).getUnregisteredNewObjectsCache().contains(original)) {
             // Can use a new instance as backup and original.

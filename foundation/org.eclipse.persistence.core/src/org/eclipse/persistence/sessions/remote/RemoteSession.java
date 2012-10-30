@@ -16,12 +16,16 @@ import java.util.*;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.history.AsOfClause;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
 import org.eclipse.persistence.logging.SessionLog;
@@ -74,8 +78,9 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Acquires a special historical session for reading objects as of a past time.
      */
-    public org.eclipse.persistence.sessions.Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause clause) throws org.eclipse.persistence.exceptions.ValidationException {
-        throw org.eclipse.persistence.exceptions.ValidationException.cannotAcquireHistoricalSession();
+    @Override
+    public Session acquireHistoricalSession(AsOfClause clause) throws ValidationException {
+        throw ValidationException.cannotAcquireHistoricalSession();
     }
 
     /**
@@ -86,6 +91,7 @@ public class RemoteSession extends DistributedSession {
      *
      * @see UnitOfWorkImpl
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork() {
         return acquireUnitOfWork(null);
     }
@@ -103,6 +109,7 @@ public class RemoteSession extends DistributedSession {
      * references the clone the clone may be garbage collected.  If the clone
      * has uncommitted changes then those changes will be lost.
      */
+    @Override
     public UnitOfWorkImpl acquireUnitOfWork(ReferenceMode referenceMode) {
         log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work");
         setNumberOfActiveUnitsOfWork(getNumberOfActiveUnitsOfWork() + 1);
@@ -111,8 +118,21 @@ public class RemoteSession extends DistributedSession {
 
     /**
      * PUBLIC:
+     * Return a repeatable write unit of work for this session.
+     * A repeatable write unit of work allows multiple writeChanges (flushes).
+     *
+     * @see RepeatableWriteUnitOfWork
+     */
+    @Override
+    public RepeatableWriteUnitOfWork acquireRepeatableWriteUnitOfWork(ReferenceMode referenceMode) {
+        return new RemoteUnitOfWork(this, referenceMode);
+    }
+
+    /**
+     * PUBLIC:
      * Execute the database query.
      */
+    @Override
     public Object executeQuery(DatabaseQuery query) {
         return query.remoteExecute(this);
     }
@@ -121,13 +141,16 @@ public class RemoteSession extends DistributedSession {
     /**
      * PUBLIC:
      * Return the login.
-     * This must retreive the login information from the server this first time called.
+     * This must retrieve the login information from the server this first time called.
      * This is useful to be able to do things differently depending on the database platform.
      */
+    @Override
     public Login getDatasourceLogin() {
         Login login = super.getDatasourceLogin();
         if ((login == null) && (getRemoteConnection() != null)) {
+            startOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             login = getRemoteConnection().getLogin();
+            endOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             setDatasourceLogin(login);
         }
 
@@ -138,6 +161,7 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
+    @Override
     public Object getObjectCorrespondingTo(Object serverSideDomainObject, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         if (serverSideDomainObject == null) {
             return null;
@@ -212,6 +236,7 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Return the corresponding objects from the remote session for the objects read from the server.
      */
+    @Override
     public Object getObjectsCorrespondingToAll(Object serverSideDomainObjects, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, ContainerPolicy containerPolicy) {
         Object clientSideDomainObjects = containerPolicy.containerInstance(containerPolicy.sizeFor(serverSideDomainObjects));
 
@@ -228,8 +253,11 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * This will instantiate value holder on the server.
      */
+    @Override
     public Object instantiateRemoteValueHolderOnServer(RemoteValueHolder remoteValueHolder) {
+        startOperationProfile(SessionProfiler.RemoteLazy, null, SessionProfiler.ALL);
         Transporter transporter = getRemoteConnection().instantiateRemoteValueHolderOnServer(remoteValueHolder);
+        endOperationProfile(SessionProfiler.RemoteLazy, null, SessionProfiler.ALL);
         return remoteValueHolder.getMapping().getObjectCorrespondingTo(transporter.getObject(), this, transporter.getObjectDescriptors(), new IdentityHashMap(), remoteValueHolder.getQuery());
     }
 
@@ -237,6 +265,7 @@ public class RemoteSession extends DistributedSession {
      * INTERNAL:
      * Return if this session is remote.
      */
+    @Override
     public boolean isRemoteSession() {
         return true;
     }
@@ -244,18 +273,28 @@ public class RemoteSession extends DistributedSession {
     /**
      * INTERNAL:
      * Return the Sequencing object used by the session.
+     * Sequences may be provided locally, or remotely.
      */
+    @Override
     public Sequencing getSequencing() {
-        return sequencing;
+        if (this.isMetadataRemote) {
+            return this.sequencing;
+        } else {
+            return super.getSequencing();
+        }
     }
 
     /**
-    * ADVANCED:
-    * Creates sequencing object for the session.
-    * Typically there is no need for the user to call this method -
-    * it is called from the constructor.
-    */
+     * ADVANCED:
+     * Creates sequencing object for the session.
+     * Sequences may be provided locally, or remotely.
+     */
+    @Override
     public void initializeSequencing() {
-        sequencing = SequencingFactory.createSequencing(this);
+        if (this.isMetadataRemote) {        
+            this.sequencing = SequencingFactory.createSequencing(this);
+        } else {
+            super.initializeSequencing();
+        }
     }
 }

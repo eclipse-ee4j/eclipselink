@@ -181,6 +181,15 @@ public Transporter getDescriptor(Transporter theClass)
 {
     return handleByMode();
 }
+
+/** 
+ * Extract descriptor from the session
+ */
+ 
+public Transporter getDescriptorForAlias(Transporter theClass)
+{
+    return handleByMode();
+}
 /**
  * PUBLIC:
  * Return the ExceptionHandler.Exception handler can catch errors that occur on queries or during database access.

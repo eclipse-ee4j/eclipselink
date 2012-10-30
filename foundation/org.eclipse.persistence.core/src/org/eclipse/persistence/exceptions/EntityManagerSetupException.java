@@ -45,6 +45,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
     public static final int FAILED_TO_INSTANTIATE_PROPERTY = 28028;
     public static final int COMPOSITE_INCOMPATIBLE_WITH_SESSIONS_XML = 28029;
     public static final int COMPOSITE_MEMBER_CANNOT_BE_USED_STANDALONE = 28030;
+    public static final int MISSING_PROPERTY = 28031;
     
     /**
      * INTERNAL:
@@ -140,6 +141,14 @@ public class EntityManagerSetupException extends EclipseLinkException {
 
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, FAILED_TO_INSTANTIATE_SERVER_PLATFORM, args), exception);
         setupException.setErrorCode(FAILED_TO_INSTANTIATE_SERVER_PLATFORM);
+        return setupException;
+    }
+
+    public static EntityManagerSetupException missingProperty(String property) {
+        Object[] args = { property };
+
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, MISSING_PROPERTY, args));
+        setupException.setErrorCode(MISSING_PROPERTY);
         return setupException;
     }
 

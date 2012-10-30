@@ -640,7 +640,7 @@
     <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation,
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3,
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
-    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
+    package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote" description="build EclipseLink jar">
         <jar jarfile="${eclipselink.jpa.test}/${jpatest.framework.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"  includes="org/eclipse/persistence/testing/framework/**/*.class"/>
         </jar>
@@ -862,6 +862,27 @@
         </antcall>
         <jar jarfile="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar">
             <fileset dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.advanced.field.access.model}">
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package-jpa-remote" depends="">
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-remote/META-INF">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-remote" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-remote/">
+            <fileset dir="${eclipselink.jpa.test}/resource/eclipselink-remote" includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships/*"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-remote">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/**"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${build.dir}/eclipselink-remote">
+            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/jpa/fieldaccess/relationships/**"/>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.test}/eclipselink-remote.jar">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}/eclipselink-remote">
             </fileset>
         </jar>
     </target>

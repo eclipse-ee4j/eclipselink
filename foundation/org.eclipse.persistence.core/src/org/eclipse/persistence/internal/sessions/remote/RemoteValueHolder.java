@@ -46,6 +46,10 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
         // This assigns unique id to the remote value holder when it is created.
         this.id = new ObjID();
     }
+    
+    public RemoteValueHolder(ObjID id) {
+        this.id = id;
+    }
 
     /**
      * If the reference object is mapped thru one to one mapping and the object derives its primary key value

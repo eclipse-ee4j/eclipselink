@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * This mapping is used to map a back-pointer.  It represents the "opposite" of one of the
@@ -194,7 +194,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
     @Override
     public void fixObjectReferences(Object object, Map objectDescriptors,
             Map processedObjects, ObjectLevelReadQuery query,
-            RemoteSession session) {
+            DistributedSession session) {
     }
 
     @Override

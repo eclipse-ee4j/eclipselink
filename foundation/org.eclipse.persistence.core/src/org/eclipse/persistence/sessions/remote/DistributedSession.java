@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.sessions.*;
@@ -26,8 +27,10 @@ import org.eclipse.persistence.internal.sessions.*;
 /**
  * <b>Purpose</b>: Super class to all remote client session's.
  */
-public abstract class DistributedSession extends AbstractSession {
+public abstract class DistributedSession extends DatabaseSessionImpl {
     protected transient RemoteConnection remoteConnection;
+    protected boolean hasDefaultReadOnlyClasses;
+    protected boolean isMetadataRemote = true;
 
     /**
      * INTERNAL:
@@ -54,6 +57,7 @@ public abstract class DistributedSession extends AbstractSession {
      *
      * @see UnitOfWorkImpl
      */
+    @Override
     public abstract UnitOfWorkImpl acquireUnitOfWork();
 
     /**
@@ -61,10 +65,13 @@ public abstract class DistributedSession extends AbstractSession {
      * Start a transaction on the server.
      * A unit of work should normally be used instead of transactions for the remote session.
      */
+    @Override
     public void beginTransaction() {
         // Acquire the mutex so session knows it is in a transaction.
         getTransactionMutex().acquire();
+        startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         getRemoteConnection().beginTransaction();
+        endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
     }
 
     /**
@@ -72,8 +79,11 @@ public abstract class DistributedSession extends AbstractSession {
      * Commit a transaction on the server.
      * A unit of work should normally be used instead of transactions for the remote session.
      */
+    @Override
     public void commitTransaction() {
+        startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         getRemoteConnection().commitTransaction();
+        endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         getTransactionMutex().release();
     }
 
@@ -101,6 +111,7 @@ public abstract class DistributedSession extends AbstractSession {
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName) throws DatabaseException {
         return executeQuery(queryName, new Vector(1));
     }
@@ -114,6 +125,7 @@ public abstract class DistributedSession extends AbstractSession {
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass) throws DatabaseException {
         return executeQuery(queryName, domainClass, new Vector(1));
     }
@@ -126,8 +138,11 @@ public abstract class DistributedSession extends AbstractSession {
      *
      * @see DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Class domainClass, Vector argumentValues) throws DatabaseException {
+        startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         Transporter transporter = getRemoteConnection().remoteExecuteNamedQuery(queryName, domainClass, argumentValues);
+        endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         transporter.getQuery().setSession(this);
         return transporter.getQuery().extractRemoteResult(transporter);
     }
@@ -139,6 +154,7 @@ public abstract class DistributedSession extends AbstractSession {
      *
      * @see #addQuery(String, DatabaseQuery)
      */
+    @Override
     public Object executeQuery(String queryName, Vector argumentValues) throws DatabaseException {
         if (containsQuery(queryName)) {
             return super.executeQuery(queryName, argumentValues);
@@ -149,12 +165,14 @@ public abstract class DistributedSession extends AbstractSession {
     /**
      * Execute the database query.
      */
+    @Override
     public abstract Object executeQuery(DatabaseQuery query);
 
     /**
      * INTERNAL:
      * Execute the database query.
      */
+    @Override
     public Object executeQuery(DatabaseQuery query, AbstractRecord row) {
         query.setTranslationRow(row);
         return executeQuery(query);
@@ -167,27 +185,60 @@ public abstract class DistributedSession extends AbstractSession {
      * Remote connection
      * @return A Vector containing the Java Classes that are currently read-only.
      */
+    @Override
     public Vector getDefaultReadOnlyClasses() {
-        // how should we cache the readOnly classes on the client side?
-        // We should check the cache here.
-        Vector readOnlyClasses = getRemoteConnection().getDefaultReadOnlyClasses();
-        return readOnlyClasses;
+        if (this.isMetadataRemote && !this.hasDefaultReadOnlyClasses) {
+            getProject().setDefaultReadOnlyClasses(getRemoteConnection().getDefaultReadOnlyClasses());
+            this.hasDefaultReadOnlyClasses = true;
+        }
+        return super.getDefaultReadOnlyClasses();
     }
 
     /**
      * INTERNAL:
      * Return the table descriptor specified for the class.
      */
+    @Override
     public ClassDescriptor getDescriptor(Class domainClass) {
         ClassDescriptor descriptor = getDescriptors().get(domainClass);
 
         // If the descriptor is null then this means that descriptor must now be read from the server.
         if (descriptor == null) {
+            startOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             descriptor = getRemoteConnection().getDescriptor(domainClass);
+            endOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             if (descriptor == null) {
                 return null;
             }
             getDescriptors().put(domainClass, descriptor);
+            String alias = descriptor.getAlias();
+            if (alias != null) {
+                getProject().addAlias(alias, descriptor);
+            }
+            descriptor.remoteInitialization(this);
+        }
+
+        return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * Return the table descriptor specified for the class.
+     */
+    @Override
+    public ClassDescriptor getDescriptorForAlias(String alias) {
+        ClassDescriptor descriptor = super.getDescriptorForAlias(alias);
+
+        // If the descriptor is null then this means that descriptor must now be read from the server.
+        if (descriptor == null) {
+            startOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
+            descriptor = getRemoteConnection().getDescriptorForAlias(alias);
+            endOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
+            if (descriptor == null) {
+                return null;
+            }
+            getDescriptors().put(descriptor.getJavaClass(), descriptor);            
+            getProject().addAlias(alias, descriptor);
             descriptor.remoteInitialization(this);
         }
 
@@ -234,6 +285,7 @@ public abstract class DistributedSession extends AbstractSession {
      * INTERNAL:
      * Set up the IdentityMapManager.  Overrides the default IdentityMapManager
      */
+    @Override
     public void initializeIdentityMapAccessor() {
         this.identityMapAccessor = new DistributedSessionIdentityMapAccessor(this, new IdentityMapManager(this));
     }
@@ -248,6 +300,7 @@ public abstract class DistributedSession extends AbstractSession {
      * PUBLIC:
      * Return if this session is connected to the server.
      */
+    @Override
     public boolean isConnected() {
         if (getRemoteConnection() == null) {
             return false;
@@ -260,6 +313,7 @@ public abstract class DistributedSession extends AbstractSession {
      * INTERNAL:
      * Return if this session is a distributed session.
      */
+    @Override
     public boolean isDistributedSession() {
         return true;
     }
@@ -268,6 +322,7 @@ public abstract class DistributedSession extends AbstractSession {
      * INTERNAL:
      * Return if this session is a remote session.
      */
+    @Override
     public boolean isRemoteSession() {
         return false;
     }
@@ -285,8 +340,11 @@ public abstract class DistributedSession extends AbstractSession {
      * Rollback a transaction on the server.
      * A unit of work should normally be used instead of transactions for the remote session.
      */
+    @Override
     public void rollbackTransaction() {
+        startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         getRemoteConnection().rollbackTransaction();
+        endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
         getTransactionMutex().release();
     }
 
@@ -302,6 +360,7 @@ public abstract class DistributedSession extends AbstractSession {
      * PUBLIC:
      * Avoid printing the accessor and platform.
      */
+    @Override
     public String toString() {
         return Helper.getShortClassName(getClass()) + "()";
     }
@@ -310,10 +369,29 @@ public abstract class DistributedSession extends AbstractSession {
      * PUBLIC:
      * Logout the session, close the remote connection and release the hold resources
      */
+    @Override
     public void release() {
         //CR3854: logging out of DistributedSession is not releasing remote resources.
         //The remote connection remove() call should  release the resource, like the stateful
         //session been, which the connection holds on.
-        remoteConnection.release();
+        this.remoteConnection.release();
+    }
+
+    /**
+     * ADVANCED:
+     * Return if the descriptors and meta-data should be serialized from the server,
+     * or if they will be provided locally.
+     */
+    public boolean isMetadataRemote() {
+        return isMetadataRemote;
+    }
+
+    /**
+     * ADVANCED:
+     * Set if the descriptors and meta-data should be serialized from the server,
+     * or if they will be provided locally.
+     */
+    public void setIsMetadataRemote(boolean isMetadataRemote) {
+        this.isMetadataRemote = isMetadataRemote;
     }
 }

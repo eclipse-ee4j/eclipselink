@@ -47,6 +47,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
@@ -2464,8 +2465,37 @@ public class PersistenceUnitProperties {
     public static final String COMPOSITE_UNIT_PROPERTIES = "eclipselink.composite-unit.properties";
 
     /**
+     * The <code>"eclipselink.remote.protocol"</code> property
+     * configures remote JPA for a client or server.
+     * This allows JPA to be access over RMI or other protocol from a remote Java client.
+     * <p>
+     * Values:
+     * <ul>
+     * <li>"rmi"
+     * <li>"corba"
+     * <li>a <package.class> name of a subclass implementation of the RemoteConnection abstract class.
+     * </ul>
+     * 
+     * @see RemoteProtocol
+     * @see org.eclipse.persistence.internal.sessions.remote.RemoteConnection
+     * @see RemoteSession
+     */
+    public static final String REMOTE_PROTOCOL = "eclipselink.remote.protocol";
+    
+    /**
+     * The <code>"eclipselink.remote.client.url"</code> property
+     * configures remote JPA for a client.
+     * This allows JPA to be access over RMI or other protocol from a remote Java client.
+     * The URL is the complete URL used to access the RMI server.
+     * 
+     * @see REMOTE_PROTOCOL
+     */
+    public static final String REMOTE_URL = "eclipselink.remote.client.url";
+    
+    /**
+     * The <code>"eclipselink.nosql.connection-spec"</code> property.<br>
      * Allows the connection information for an NoSQL or EIS datasource to be specified.
-     * An NoSQL datasource is a non-relationship datasource such as a legacy database, NoSQL database,
+     * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
      * XML database, transactional and messaging systems, or ERP systems.
      * @see org.eclipse.persistence.eis.EISConnectionSpec
      * @see org.eclipse.persistence.annotations.NoSQL
@@ -2473,14 +2503,16 @@ public class PersistenceUnitProperties {
     public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
     
     /**
+     * The <code>"eclipselink.nosql.connection-factory"</code> property.<br>
      * Allows the JCA ConnectionFactory to be specified for a NoSQL or EIS adapter.
-     * An NoSQL datasource is a non-relationship datasource such as a legacy database, NoSQL database,
+     * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
      * XML database, transactional and messaging systems, or ERP systems.
      * @see javax.resource.cci.ConnectionFactory
      */
     public static final String NOSQL_CONNECTION_FACTORY = "eclipselink.nosql.connection-factory";
     
     /**
+     * The <code>"eclipselink.jdbc.connector"</code> property.<br>
      * Allows a custom connector to be used to define how to connect to the database.
      * This is not required if a DataSource or JDBC DriverManager is used.
      * It can be used to connect to a non standard connection pool,
@@ -2501,6 +2533,24 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.annotations.NoSQL
      */
     public static final String NOSQL_PROPERTY = "eclipselink.nosql.property.";
+    
+    /**
+     * Allows setting of NoSQL user property.
+     * Note that "javax.persistence.jdbc.user" is also supported.
+     * 
+     * @see org.eclipse.persistence.eis.EISConnectionSpec
+     * @see org.eclipse.persistence.annotations.NoSQL
+     */
+    public static final String NOSQL_USER = "eclipselink.nosql.property.user";
+    
+    /**
+     * Allows setting of NoSQL password property.
+     * Note that "javax.persistence.jdbc.password" is also supported.
+     * 
+     * @see org.eclipse.persistence.eis.EISConnectionSpec
+     * @see org.eclipse.persistence.annotations.NoSQL
+     */
+    public static final String NOSQL_PASSWORD = "eclipselink.nosql.property.password";
     
     /**
      * Allows passing of JDBC driver specific connection properties.

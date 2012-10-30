@@ -85,6 +85,11 @@ public interface RMIRemoteSessionController extends Remote {
     public Transporter getDescriptor(Transporter domainClass) throws RemoteException;
 
     /**
+     * To get descriptor from the server side
+     */
+    public Transporter getDescriptorForAlias(Transporter domainClass) throws RemoteException;
+
+    /**
      * To get login from the server side
      */
     public Transporter getLogin() throws RemoteException;

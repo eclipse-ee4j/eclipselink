@@ -1099,7 +1099,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * are primitives, so they do not need to be replaced.
      */
     @Override
-    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixRealObjectReferences(Object object, Map objectInformation, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // do nothing
     }
 
@@ -1234,7 +1234,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * maintaining object identity.
      */
     @Override
-    public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
+    public Object getObjectCorrespondingTo(Object object, DistributedSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
     

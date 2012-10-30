@@ -31,7 +31,7 @@ public interface SessionProfiler {
     public static final String SessionName = "Info:SessionName";
     public static final String LoginTime = "Info:LoginTime";
     public static final String RcmStatus = "Info:CacheCoordinationStatus";
-    public static final String CachedObjects = "Info:CachedObjects";//TODO
+    public static final String CacheSize = "Info:CacheSize";//TODO
     
     public static final String ClientSessionCreated = "Counter:ClientSessionCreates";
     public static final String UowCreated = "Counter:UnitOfWorkCreates";
@@ -68,6 +68,9 @@ public interface SessionProfiler {
     public static final String Transaction = "Timer:Transactions";
     public static final String UowCommit = "Timer:UnitOfWorkCommit";
     public static final String ConnectionPing = "Timer:ConnectionPing";
+    public static final String Remote = "Timer:Remote";
+    public static final String RemoteLazy = "Timer:RemoteLazy";
+    public static final String RemoteMetadata = "Timer:RemoteMetadata";
 
     /**
      * INTERNAL:

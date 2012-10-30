@@ -272,7 +272,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Replace the transient attributes of the remote value holders
      * with client-side objects.
      */
-    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         // Do nothing....
         // The nested collection should de-serialize without need for any further manipulation.
     }

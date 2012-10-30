@@ -30,13 +30,14 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet {
 
     /** This is the collection of ObjectChanges held by this ChangeSet */
-    protected transient Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
+    // *** TODO fix transients *** */
+    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> objectChanges;
 
     // This collection holds the new objects which will have no real identity until inserted.
-    protected transient Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
-    protected transient Map<Object, ObjectChangeSet> cloneToObjectChangeSet;
-    protected transient Map<ObjectChangeSet, Object> objectChangeSetToUOWClone;
-    protected transient Map<ObjectChangeSet, ObjectChangeSet> aggregateChangeSets;
+    protected Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> newObjectChangeSets;
+    protected Map<Object, ObjectChangeSet> cloneToObjectChangeSet;
+    protected Map<ObjectChangeSet, Object> objectChangeSetToUOWClone;
+    protected Map<ObjectChangeSet, ObjectChangeSet> aggregateChangeSets;
     protected Map<ObjectChangeSet, ObjectChangeSet> allChangeSets;
     protected Map<ObjectChangeSet, ObjectChangeSet> deletedObjects;
 
@@ -76,6 +77,15 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public AbstractSession getSession() {
         return session;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the session.
+     * This only exists before serialization.
+     */
+    public void setSession(AbstractSession session) {
+        this.session = session;
     }
     
     /**
@@ -235,6 +245,10 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         }
         ObjectChangeSet localChangeSet = this.findObjectChangeSet(tofind, mergeFromChangeSet);
         if (localChangeSet == null) {//not found locally then replace it with the one from the merging changeset
+            if (tofind.getDescriptor() == null) {
+                tofind.getClassType(this.session);
+                tofind.setDescriptor(this.session.getDescriptor(tofind.getClassType()));
+            }
             localChangeSet = new ObjectChangeSet(tofind.getId(), tofind.getDescriptor(), tofind.getUnitOfWorkClone(), this, tofind.isNew());
             this.addObjectChangeSetForIdentity(localChangeSet, localChangeSet.getUnitOfWorkClone());
         }
@@ -284,11 +298,11 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Get the Aggregate list.  Lazy initializes the map if required.
      */
-    protected Map<ObjectChangeSet, ObjectChangeSet> getAggregateChangeSets() {
-        if (aggregateChangeSets == null) {
-            aggregateChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+    public Map<ObjectChangeSet, ObjectChangeSet> getAggregateChangeSets() {
+        if (this.aggregateChangeSets == null) {
+            this.aggregateChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
         }
-        return aggregateChangeSets;
+        return this.aggregateChangeSets;
     }
 
     /**
@@ -300,7 +314,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
             // 2612538 - the default size of Map (32) is appropriate
             this.allChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
         }
-        return allChangeSets;
+        return this.allChangeSets;
     }
 
     /**
@@ -604,8 +618,8 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * This method is used to set the map for cloneToObject reference.
      */
-    protected void setCloneToObjectChangeSet(Map newCloneToObjectChangeSet) {
-        cloneToObjectChangeSet = newCloneToObjectChangeSet;
+    public void setCloneToObjectChangeSet(Map<Object, ObjectChangeSet> cloneToObjectChangeSet) {
+        this.cloneToObjectChangeSet = cloneToObjectChangeSet;
     }
 
     /**
@@ -619,10 +633,9 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * This method is used to insert a new collection into the UOWChangeSet.
-     * @param newObjectChangeSetToUOWClone Map
      */
-    protected void setObjectChangeSetToUOWClone(Map newObjectChangeSetToUOWClone) {
-        objectChangeSetToUOWClone = newObjectChangeSetToUOWClone;
+    public void setObjectChangeSetToUOWClone(Map<ObjectChangeSet, Object> objectChangeSetToUOWClone) {
+        this.objectChangeSetToUOWClone = objectChangeSetToUOWClone;
     }
 
     /**

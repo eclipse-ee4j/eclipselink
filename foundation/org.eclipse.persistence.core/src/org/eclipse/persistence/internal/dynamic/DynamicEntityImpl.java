@@ -52,6 +52,9 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+
+import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * This abstract class is used to represent an entity which typically is not
@@ -394,7 +397,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
          * @see org.eclipse.persistence.mappings.DatabaseMapping#fixObjectReferences(java.lang.Object, java.util.Map, java.util.Map, org.eclipse.persistence.queries.ObjectLevelReadQuery, org.eclipse.persistence.sessions.remote.RemoteSession)
          */
         public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects,
-            ObjectLevelReadQuery query, RemoteSession session) {   
+            ObjectLevelReadQuery query, DistributedSession session) {   
         }
         
         /* (non-Javadoc)

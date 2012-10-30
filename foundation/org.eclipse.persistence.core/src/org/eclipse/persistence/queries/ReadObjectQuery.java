@@ -544,7 +544,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * Extract the correct query result from the transporter.
      */
     public Object extractRemoteResult(Transporter transporter) {
-        return ((RemoteSession)getSession()).getObjectCorrespondingTo(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this);
+        return ((DistributedSession)getSession()).getObjectCorrespondingTo(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this);
     }
 
     /**
@@ -806,6 +806,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
         Object cacheHit = checkEarlyReturn(getSession(), getTranslationRow());
         if ((cacheHit != null) || shouldCheckCacheOnly()) {
+            if (cacheHit == InvalidObject.instance) {
+                return null;
+            }
             return cacheHit;
         }
 

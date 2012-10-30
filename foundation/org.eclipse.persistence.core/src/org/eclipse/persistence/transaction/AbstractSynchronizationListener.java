@@ -227,9 +227,7 @@ public abstract class AbstractSynchronizationListener {
                 if (!(exception instanceof EclipseLinkException && ((EclipseLinkException)exception).hasBeenLogged())) {
                     uow.logThrowable(SessionLog.WARNING, SessionLog.TRANSACTION, exception);
                 }
-                    
-                // Rethrow it just for fun (app servers tend to ignore them at this stage)
-                throw exception;
+                handleException(exception);
             } finally {
                 session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
             }
@@ -273,6 +271,10 @@ public abstract class AbstractSynchronizationListener {
     public void handleException(RuntimeException exception) {
         // Don't do this just yet, since some may not be able to handle it
         //	getTransactionController().markTransactionForRollback();
+        if (this.controller.getExceptionHandler() != null) {
+            this.controller.getExceptionHandler().handleException(exception);
+            return;
+        }
         throw exception;
     }
 

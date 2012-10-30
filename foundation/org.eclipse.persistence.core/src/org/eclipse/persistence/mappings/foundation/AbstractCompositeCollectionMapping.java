@@ -307,7 +307,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * with client-side objects.
      */
     @Override
-    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, RemoteSession session) {
+    protected void fixAttributeValue(Object attributeValue, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         if (attributeValue == null) {
             return;
         }

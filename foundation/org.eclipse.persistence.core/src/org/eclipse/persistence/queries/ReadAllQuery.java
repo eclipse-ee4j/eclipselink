@@ -528,7 +528,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     @Override
     public Object extractRemoteResult(Transporter transporter) {
-        return ((RemoteSession)getSession()).getObjectsCorrespondingToAll(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this, getContainerPolicy());
+        return ((DistributedSession)getSession()).getObjectsCorrespondingToAll(transporter.getObject(), transporter.getObjectDescriptors(), new IdentityHashMap(), this, getContainerPolicy());
     }
 
     /**

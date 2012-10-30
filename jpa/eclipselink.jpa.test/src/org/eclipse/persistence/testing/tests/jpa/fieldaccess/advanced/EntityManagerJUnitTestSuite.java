@@ -83,6 +83,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedLazy;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -754,8 +755,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testIdentityInsideTransaction() {
-        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
-            getServerSession("fieldaccess").logMessage("Test testIdentityInsideTransaction skipped for this platform, "
+        if (getDatabaseSession().getPlatform().isSymfoware()) {
+            getDatabaseSession().logMessage("Test testIdentityInsideTransaction skipped for this platform, "
             + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
             return;
         }
@@ -775,8 +776,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testIdentityOutsideTransaction() {
-        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
-            getServerSession("fieldaccess").logMessage("Test testIdentityOutsideTransaction skipped for this platform, "
+        if (getDatabaseSession().getPlatform().isSymfoware()) {
+            getDatabaseSession().logMessage("Test testIdentityOutsideTransaction skipped for this platform, "
             + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
             return;
         }
@@ -930,6 +931,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try{
             employee = em.find(Employee.class, employee.getId());
+            em.refresh(employee);
             em.remove(employee);
             commitTransaction(em);
         }catch (RuntimeException ex){
@@ -2135,6 +2137,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try{
             employee = em.find(Employee.class, employee.getId());
+            em.refresh(employee);
             em.remove(employee);
             commitTransaction(em);
         }catch (RuntimeException ex){
@@ -2300,6 +2303,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testPersistenceProperties() {
         // Different properties are used on the server.
         if (isOnServer()) {
+            return;
+        }
+        if (!getDatabaseSession().isServerSession()) {
             return;
         }
         
@@ -2907,7 +2913,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     //test for bug 5170395: GET THE SEQUENCING EXCEPTION WHEN RUNNING FOR THE FIRST TIME ON A CLEAR SCHEMA
     public void testSequenceObjectDefinition() {
         EntityManager em = createEntityManager();
-        ServerSession ss = (ServerSession)getDatabaseSession();
+        AbstractSession ss = getDatabaseSession();
         if(!ss.getLogin().getPlatform().supportsSequenceObjects() || isOnServer()) {
             // platform that supports sequence objects is required for this test
             // this test not work on server since the bug: 262251
@@ -2926,7 +2932,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         }
     }
 
-    protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, ServerSession ss) {
+    protected void internalTestSequenceObjectDefinition(int preallocationSize, int startValue, String seqName, EntityManager em, AbstractSession ss) {
         NativeSequence sequence = new NativeSequence(seqName, preallocationSize, startValue, false);
         sequence.onConnect(ss.getPlatform());
         SequenceObjectDefinition def = new SequenceObjectDefinition(sequence);
@@ -3664,8 +3670,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if ((getServerPlatform() != null) && getServerPlatform().isSpring()) {
             return;
         }
-        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
-            getServerSession("fieldaccess").logMessage("Test testDeleteEmployee skipped for this platform, "
+        if (getDatabaseSession().getPlatform().isSymfoware()) {
+            getDatabaseSession().logMessage("Test testDeleteEmployee skipped for this platform, "
             + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
             return;
         }
@@ -4480,7 +4486,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     
     // gf2074: EM.clear throws NPE (JTA case)
     public void testClearEntityManagerWithoutPersistenceContextSimulateJTA() {
-        ServerSession ss = (ServerSession)getDatabaseSession();
+        AbstractSession ss = getDatabaseSession();
         // in non-JTA case session doesn't have external transaction controller
         boolean hasExternalTransactionController = ss.hasExternalTransactionController();
         if (!hasExternalTransactionController) {
@@ -4773,7 +4779,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      */
     public void testSequencePreallocationUsingCallbackTest() {
         // setup
-        ServerSession ss = (ServerSession)getDatabaseSession();
+        AbstractSession ss = getDatabaseSession();
         // make sure the sequence has both preallocation and callback
         // (the latter means not using sequencing connection pool, 
         // acquiring values before insert and requiring transaction).
@@ -4830,8 +4836,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     // Test for bug fix: 299637 - updateAttributeWithObjectTest with aggregate causes NPE when using field access
-    public void updateAttributeWithObjectTest(){
-        ServerSession session = (ServerSession)getDatabaseSession();
+    public void updateAttributeWithObjectTest() {
+        AbstractSession session = getDatabaseSession();
+        if (session.isRemoteSession()) {
+            return;
+        }
         ClassDescriptor descriptor = session.getDescriptor(Employee.class);
         UpdateListener listener = new UpdateListener();
         descriptor.getEventManager().addListener(listener);
@@ -4871,8 +4880,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
     // Test that deleting an Man works correctly.
     public void testDeleteMan() {
-        if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
-            getServerSession("fieldaccess").logMessage("Test testDeleteMan skipped for this platform, "
+        if (getDatabaseSession().getPlatform().isSymfoware()) {
+            getDatabaseSession().logMessage("Test testDeleteMan skipped for this platform, "
             + "The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified on Symfoware Platform.");
             return;
         }
@@ -4952,16 +4961,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         internalTestChangeRecordKeepOldValue(true);
     }
     public void internalTestChangeRecordKeepOldValue(boolean addSecondStep) {
-        if(isOnServer()) {
+        if (isOnServer()) {
             // the test relies upon keeping attached objects between transactions.
             return;
         }
+        // This test requires the old values in the change set for test validation,
+        // but these are transient for remote sessions.
+        if (getDatabaseSession().isRemoteSession()) {
+            return;
+        }
         
-        ServerSession ss = (ServerSession)getDatabaseSession();
+        AbstractSession session = getDatabaseSession();
         ChangeRecordKeepOldValueListener listener = new ChangeRecordKeepOldValueListener();
-        ss.getEventManager().addListener(listener);
+        session.getEventManager().addListener(listener);
         
-        EntityManager em = createEntityManager();        
+        EntityManager em = createEntityManager();
         try {
             // setup
             // create original object and referenced objects
@@ -5032,7 +5046,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // backup original object and all referenced objects
             CopyGroup copyGroupBackup = new CopyGroup();
             copyGroupBackup.cascadeAllParts();
-            ss.copy(emp, copyGroupBackup);
+            session.copy(emp, copyGroupBackup);
             // emp references (directly or through other objects) all the created objects, therefore all of them are copied.
             Map backupMap = copyGroupBackup.getCopies();
             
@@ -5041,18 +5055,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             while(it.hasNext()) {
                 Map.Entry entry = it.next();
                 Object original = entry.getKey();
-                ClassDescriptor descriptor = ss.getDescriptor(original);
+                ClassDescriptor descriptor = session.getDescriptor(original);
                 if(!descriptor.isAggregateDescriptor()) {
                     Object backup = entry.getValue();
                     if(original == backup) {
                         fail("Test problem: backup failed: original == backup: " + original);
                     }
-                    if(!ss.compareObjects(original, backup)) {
+                    if(!session.compareObjects(original, backup)) {
                         fail("Test problem: backup failed: compareObjects(original, backup) == false: " + original + "; " + backup);
                     }
                 }
             }
             
+            Set deleted = new HashSet();
             // change original object
             beginTransaction(em);
             // DirectToField
@@ -5080,6 +5095,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             emp.removeManagedEmployee(emp1);
             emp1.setManager(null);
             em.remove(emp1);
+            deleted.add(emp1);
             Employee emp1New = new Employee();
             emp1New.setFirstName("TestChangeRecordKeepOldValue");
             emp1New.setLastName("New_1");
@@ -5088,6 +5104,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Collection many to many
             emp.removeProject(proj1);
             em.remove(proj1);
+            deleted.add(proj1);
             Project proj1New = new LargeProject();
             proj1New.setName("New_1");
             emp.addProject(proj1New);
@@ -5102,6 +5119,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             addressNew.setPostalCode("New");
             emp.setAddress(addressNew);
             em.remove(address);
+            deleted.add(address);
             // Map 1 to many
             dep.getEquipment().remove(equipment1.getId());
             Equipment equipment1New = new Equipment();
@@ -5142,6 +5160,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 emp.addManagedEmployee(emp1NewNew);
                 em.remove(emp1New);
                 em.remove(emp2);
+                deleted.add(emp1New);
+                deleted.add(emp2);
                 // Collection many to many
                 emp.setProjects(new ArrayList());
                 Project proj1NewNew = new LargeProject();
@@ -5149,6 +5169,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 emp.addProject(proj1NewNew);
                 em.remove(proj1New);
                 em.remove(proj2);
+                deleted.add(proj1New);
+                deleted.add(proj2);
                 // ObjectReference
                 Address addressNewNew = new Address();
                 addressNewNew.setCountry("New_New");
@@ -5158,14 +5180,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 addressNewNew.setPostalCode("New_New");
                 emp.setAddress(addressNewNew);
                 em.remove(addressNew);
+                deleted.add(addressNew);
                 // Map 1 to many
                 // We are about to override equipment map.
                 // It's a private OneToMany mapping so normally all the 
                 // members would be removed automatically.
-                // However in theis case we have explicitly persisted the the new member added in thhe current transaction
+                // However in this case we have explicitly persisted the the new member added in thhe current transaction
                 // (because Equipment's id is used as its key in the Department.equipment Map)
                 // therefore we have to explicitly em.remove it.
                 em.remove(equipment1New);
+                deleted.add(equipment1New);
                 dep.setEquipment(new HashMap());
                 Equipment equipment1NewNew = new Equipment();
                 equipment1NewNew.setDescription("New_New_1");
@@ -5177,7 +5201,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // backup updated objects 
             CopyGroup copyGroupUpdated = new CopyGroup();
             copyGroupUpdated.cascadeAllParts();
-            ss.copy(emp, copyGroupUpdated);
+            session.copy(emp, copyGroupUpdated);
             // copies of the updated objects will be altered to contain old values.
             // if altering the test, make sure that emp still references (directly or through other objects) all the updated objects, so that all of them are copied.
             Map oldValueMap = copyGroupUpdated.getCopies();
@@ -5186,17 +5210,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             while(itChangeSets.hasNext()) {
                 Map.Entry entry = (Map.Entry)itChangeSets.next();
                 Object object = entry.getKey();
-                ClassDescriptor descriptor = ss.getDescriptor(object);
+                ClassDescriptor descriptor = session.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
-                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                    if(!(deleted.contains(object)) && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges(); 
                         if(changes != null && !changes.isEmpty()) {
                             Object oldValueObject = oldValueMap.get(object);
-                            for(ChangeRecord changeRecord : changeSet.getChanges()) {
-                                Object oldValue = changeRecord.getOldValue();
-                                DatabaseMapping mapping = ((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord).getMapping(); 
-                                mapping.setRealAttributeValueInObject(oldValueObject, oldValue);
+                            if (oldValueObject != null) {
+                                for (ChangeRecord changeRecord : changeSet.getChanges()) {
+                                    Object oldValue = changeRecord.getOldValue();
+                                    DatabaseMapping mapping = ((org.eclipse.persistence.internal.sessions.ChangeRecord)changeRecord).getMapping(); 
+                                    mapping.setRealAttributeValueInObject(oldValueObject, oldValue);
+                                }
                             }
                         }
                     }
@@ -5209,16 +5235,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             while(itChangeSets.hasNext()) {
                 Map.Entry entry = (Map.Entry)itChangeSets.next();
                 Object object = entry.getKey();
-                ClassDescriptor descriptor = ss.getDescriptor(object);
+                ClassDescriptor descriptor = session.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)entry.getValue();
-                    if(!((org.eclipse.persistence.internal.sessions.ObjectChangeSet)changeSet).shouldBeDeleted() && !changeSet.isNew()) {
+                    if(!(deleted.contains(object)) && !changeSet.isNew()) {
                         List<ChangeRecord> changes = changeSet.getChanges(); 
                         if(changes != null && !changes.isEmpty()) {
                             Object oldValueObject = oldValueMap.get(object);
                             Object backupObject = backupMap.get(object);
                             // compare oldValue with backup object
-                            if(!ss.compareObjects(oldValueObject, backupObject)) {
+                            if ((oldValueObject != null) && !session.compareObjects(oldValueObject, backupObject)) {
                                 errorMsgOldValues += '\t' + object.toString() + '\n';
                             }
                         }
@@ -5229,7 +5255,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // set of attached to em objects
             Set updatedObjects = new HashSet();
             for(Object object : oldValueMap.keySet()) {
-                ClassDescriptor descriptor = ss.getDescriptor(object);
+                ClassDescriptor descriptor = session.getDescriptor(object);
                 if(!descriptor.isAggregateDescriptor()) {
                     updatedObjects.add(object);
                 }
@@ -5260,7 +5286,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 Map.Entry entry = (Map.Entry)entryObject;
                 Object object = entry.getKey();
                 Object readBack = entry.getValue();
-                if(!ss.compareObjects(object, readBack)) {
+                if(!session.compareObjects(object, readBack)) {
                     errorMsgDb += '\t' + object.toString() + '\n';
                 }
             }
@@ -5308,7 +5334,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-            ss.getEventManager().removeListener(listener);
+            session.getEventManager().removeListener(listener);
         }
     }
 
@@ -5394,11 +5420,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp2.setFirstName("2");
         emp.addManagedEmployee(emp2);
         
-        ServerSession ss = null;
+        AbstractSession ss = null;
         beginTransaction(em);
         em.persist(emp);
         // in JTA case transaction required to obtain ServerSession through getServersession method.
-        ss = (ServerSession)getDatabaseSession();
+        ss = getDatabaseSession();
         commitTransaction(em);
         
         CopyGroup copyGroup = new CopyGroup();
@@ -5417,7 +5443,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testObjectReferencedInBothEmAndSharedCache_AggregateObjectMapping() {
         EntityManager em = createEntityManager();
         
-        ServerSession ss = null;
+        AbstractSession ss = null;
         // persist a new Employee object
         Employee emp = new Employee();
         emp.setFirstName("A");
@@ -5426,7 +5452,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         em.persist(emp);
         // in JTA case transaction required to obtain ServerSession through getServersession method.
-        ss = (ServerSession)getDatabaseSession();
+        ss = getDatabaseSession();
         commitTransaction(em);
         closeEntityManager(em);
         

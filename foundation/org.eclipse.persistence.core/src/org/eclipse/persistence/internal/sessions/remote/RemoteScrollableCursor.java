@@ -47,7 +47,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public boolean absolute(int rows) throws DatabaseException {
         clearNextAndPrevious();
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorAbsolute(getID(), rows);
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorAbsolute(getID(), rows);
     }
 
     /**
@@ -55,7 +55,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public void afterLast() throws DatabaseException {
         clearNextAndPrevious();
-        ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorAfterLast(getID());
+        ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorAfterLast(getID());
     }
 
     /**
@@ -63,7 +63,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public void beforeFirst() throws DatabaseException {
         clearNextAndPrevious();
-        ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorBeforeFirst(getID());
+        ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorBeforeFirst(getID());
     }
 
     /**
@@ -75,7 +75,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
             return;
         }
 
-        (((RemoteSession)getSession()).getRemoteConnection()).scrollableCursorClose(getID());
+        (((DistributedSession)getSession()).getRemoteConnection()).scrollableCursorClose(getID());
         // Added for bug 2797683.
         this.isClosed = true;
     }
@@ -84,7 +84,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Retrieves the current row index number
      */
     public int currentIndex() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorCurrentIndex(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorCurrentIndex(getID());
     }
 
     /**
@@ -92,7 +92,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public boolean first() throws DatabaseException {
         clearNextAndPrevious();
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorFirst(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorFirst(getID());
     }
 
     /**
@@ -100,7 +100,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Retreive the size of the wrapped cursored stream.
      */
     protected int getCursorSize() {
-        return (((RemoteSession)getSession()).getRemoteConnection()).scrollableCursorSize(getID());
+        return (((DistributedSession)getSession()).getRemoteConnection()).scrollableCursorSize(getID());
     }
 
     /**
@@ -115,14 +115,14 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Indicates whether the cursor is after the last row in the result set.
      */
     public boolean isAfterLast() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorIsAfterLast(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsAfterLast(getID());
     }
 
     /**
      * Indicates whether the cursor is before the first row in the result set.
      */
     public boolean isBeforeFirst() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorIsBeforeFirst(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsBeforeFirst(getID());
     }
 
     /**
@@ -137,14 +137,14 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * Indicates whether the cursor is on the first row of the result set.
      */
     public boolean isFirst() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorIsFirst(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsFirst(getID());
     }
 
     /**
      * Indicates whether the cursor is on the last row of the result set.
      */
     public boolean isLast() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorIsLast(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorIsLast(getID());
     }
 
     /**
@@ -152,7 +152,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public boolean last() throws DatabaseException {
         clearNextAndPrevious();
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorLast(getID());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorLast(getID());
     }
 
     /**
@@ -162,7 +162,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      */
     public boolean relative(int rows) throws DatabaseException {
         clearNextAndPrevious();
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorRelative(getID(), rows);
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorRelative(getID(), rows);
     }
 
     /**
@@ -176,7 +176,7 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * @exception - throws exception if read pass end of stream
      */
     protected Object retrieveNextObject() throws DatabaseException, QueryException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorNextObject(getID(), getPolicy().getQuery(), (RemoteSession)getSession());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorNextObject(getID(), getPolicy().getQuery(), (DistributedSession)getSession());
     }
 
     /**
@@ -186,6 +186,6 @@ public class RemoteScrollableCursor extends ScrollableCursor {
      * for scrollable cursor support.
      */
     protected Object retrievePreviousObject() throws DatabaseException {
-        return ((RemoteSession)getSession()).getRemoteConnection().scrollableCursorPreviousObject(getID(), getPolicy().getQuery(), (RemoteSession)getSession());
+        return ((DistributedSession)getSession()).getRemoteConnection().scrollableCursorPreviousObject(getID(), getPolicy().getQuery(), (DistributedSession)getSession());
     }
 }
