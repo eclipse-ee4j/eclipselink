@@ -73,6 +73,22 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected ConditionalExpressionCompletenessVisitor buildConditionalExpressionCompletenessVisitor() {
+		return new ConditionalExpressionCompletenessVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected FromClauseCollectionHelper buildFromClauseCollectionHelper() {
+		return new FromClauseCollectionHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected FromClauseSelectStatementHelper buildFromClauseSelectStatementHelper() {
 		return new FromClauseSelectStatementHelper();
 	}
@@ -119,14 +135,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 	protected UnionClauseSelectStatementHelper buildUnionClauseSelectStatementHelper() {
 		return new UnionClauseSelectStatementHelper();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected WhereClauseHelper buildWhereClauseHelper() {
-		return new WhereClauseHelper();
 	}
 
 	/**
@@ -339,6 +347,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		super.visit(expression);
 		int position = getPosition(expression) - corrections.peek();
 		int length = 0;
 
@@ -385,6 +394,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(TableVariableDeclaration expression) {
+		super.visit(expression);
 
 		TableExpression tableExpression = expression.getTableExpression();
 		int position = getPosition(expression) - corrections.peek();
@@ -498,6 +508,62 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 * {@inheritDoc}
 		 */
 		public void visit(UnionClause expression) {
+		}
+	}
+
+	protected class ConditionalExpressionCompletenessVisitor extends AbstractContentAssistVisitor.ConditionalExpressionCompletenessVisitor
+	                                                         implements EclipseLinkExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(CastExpression expression) {
+			// Not part of a conditional expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(DatabaseType expression) {
+			// Not part of a conditional expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ExtractExpression expression) {
+			// Not part of a conditional expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(RegexpExpression expression) {
+			complete = expression.hasPatternValue();
+			if (complete) {
+				complete = isComplete(expression.getPatternValue());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableExpression expression) {
+			// Not part of a conditional expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableVariableDeclaration expression) {
+			// Not part of a conditional expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(UnionClause expression) {
+			// Not part of a conditional expression
 		}
 	}
 
@@ -766,17 +832,6 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 */
 		public boolean isClauseExpressionComplete(Expression expression) {
 			return false;
-		}
-	}
-
-	protected class WhereClauseHelper extends AbstractContentAssistVisitor.WhereClauseHelper {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void addAtTheEndOfExpression(WhereClause expression) {
-			super.addAtTheEndOfExpression(expression);
 		}
 	}
 

@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <br>
  * <div nowrap><b>BNF:</b> <code>expression ::= child_item { child_item }*</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -326,7 +326,7 @@ public final class CollectionExpression extends AbstractExpression {
 
 	private void toParsedText(StringBuilder writer, int endIndex, boolean actual) {
 
-		for (int index = 0, count = children.size(); index < count; index++) {
+		for (int index = 0, count = children.size(); index < endIndex; index++) {
 
 			AbstractExpression expression = children.get(index);
 

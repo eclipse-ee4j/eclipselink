@@ -411,10 +411,16 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 
 		String abstractSchemaName = expression.getText();
 
-		// If the abstract schema name exists, then map it to its entity
 		if (ExpressionTools.stringIsNotEmpty(abstractSchemaName)) {
+
 			DeclarationResolver parent = getDeclarationResolver(expression);
-			resolver = new EntityResolver(parent, abstractSchemaName);
+
+			if (queryContext.isSubquery()) {
+				resolver = new SubqueryEntityResolver(parent, queryContext.getCurrentContext(), expression);
+			}
+			else {
+				resolver = new EntityResolver(parent, abstractSchemaName);
+			}
 		}
 		else {
 			resolver = buildNullResolver();

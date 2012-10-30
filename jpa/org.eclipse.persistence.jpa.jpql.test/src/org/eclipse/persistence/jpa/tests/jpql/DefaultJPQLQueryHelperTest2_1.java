@@ -23,10 +23,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class DefaultJPQLQueryHelperTest2_1 extends AbstractJPQLQueryHelperTest {
 

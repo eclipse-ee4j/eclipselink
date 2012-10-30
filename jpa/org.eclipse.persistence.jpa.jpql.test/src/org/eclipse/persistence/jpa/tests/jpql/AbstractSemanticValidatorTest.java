@@ -24,7 +24,6 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -32,7 +31,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -80,6 +79,10 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	 */
 	@Override
 	protected abstract AbstractSemanticValidator buildValidator();
+
+	protected final JPQLQueryContext getQueryContext() {
+		return queryContext;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -262,6 +265,16 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2 }
 		);
+	}
+
+	@Test
+	public final void test_AbstractSchemaName_Invalid_5() throws Exception {
+
+		String jpqlQuery = "update Employee set name = 'JPQL' " +
+		                   "where (select a from address a where a.city = 'Cary') is not null";
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 
 	@Test
@@ -1664,6 +1677,14 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	public final void test_ValidQuery_03() throws Exception {
 
 		String jpqlQuery = "SELECT i FROM Customer i WHERE i.home=:category ORDER BY i.id";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ValidQuery_04() throws Exception {
+
+		String jpqlQuery = "select p from Alias p join p.ids m where key(m)=:language and value(m)=:name";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testHasNoProblems(problems);
 	}

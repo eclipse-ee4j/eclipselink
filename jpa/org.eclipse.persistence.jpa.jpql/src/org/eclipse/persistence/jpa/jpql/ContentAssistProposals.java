@@ -42,21 +42,21 @@ public interface ContentAssistProposals {
 	IterableIterator<IEntity> abstractSchemaTypes();
 
 	/**
-	 * Creates a new JPQL query by inserting the given proposal at the given position. The resulted
-	 * JPQL query and position will be adjusted by converting the escaped characters escaped to
-	 * string values, which means '\r' will have been converted to '\\r.
+	 * Creates a new JPQL query by inserting the given proposal at the given position. The updated
+	 * JPQL query and position will be adjusted by converting some characters into their corresponding
+	 * escaped characters, for instance '\r' will be converted to '\\r.
 	 * <p>
-	 * TODO: TO REWORD: If the proposal is has more than one identifier, for instance, <code>IS NOT
-	 * NULL</code>, then the replacement will go further than just replacing the current word. If the
-	 * cursor is in "IS NOT N|" and the proposal is "IS NOT NULL", then "IS NOT" will not be added
-	 * twice. If the identifier is "IS NULL" and the proposal is "IS NOT NULL", then NOT will be
-	 * inserted between IS and NULL.
+	 * The replacement will also handle compound JPQL identifiers when updating the JPQL query.
+	 * <p>
+	 * Example: If the cursor is within "IS NOT N|" and the proposal is "IS NOT NULL", then "IS NOT"
+	 * will not be added twice. If the word to replace is "IS NULL" and the proposal is "IS NOT NULL",
+	 * then "NOT" will be inserted between "IS" and "NULL".
 	 *
-	 * @param jpqlQuery The JPQL query to insert the given proposal
+	 * @param jpqlQuery The JPQL query to modify with the given proposal
 	 * @param proposal The proposal to insert into the query
 	 * @param position The position of insertion
 	 * @param insert Flag that determines if the partial word following the cursor should be left
-	 * intact or replaced by the proposal
+	 * intact or should be replaced by the proposal
 	 * @return The result of inserting the proposal into the query, including the adjust position, if
 	 * it was required
 	 */
@@ -65,17 +65,17 @@ public interface ContentAssistProposals {
 	/**
 	 * Creates a new JPQL query by inserting the given proposal at the given position.
 	 * <p>
-	 * TODO: TO REWORD: If the proposal is has more than one identifier, for instance, <code>IS NOT
-	 * NULL</code>, then the replacement will go further than just replacing the current word. If the
-	 * cursor is in "IS NOT N|" and the proposal is "IS NOT NULL", then "IS NOT" will not be added
-	 * twice. If the identifier is "IS NULL" and the proposal is "IS NOT NULL", then NOT will be
-	 * inserted between IS and NULL.
+	 * The replacement will also handle compound JPQL identifiers when updating the JPQL query.
+	 * <p>
+	 * Example: If the cursor is within "IS NOT N|" and the proposal is "IS NOT NULL", then "IS NOT"
+	 * will not be added twice. If the word to replace is "IS NULL" and the proposal is "IS NOT NULL",
+	 * then "NOT" will be inserted between "IS" and "NULL".
 	 *
-	 * @param jpqlQuery The JPQL query to insert the given proposal
+	 * @param jpqlQuery The JPQL query to modify with the given proposal
 	 * @param proposal The proposal to insert into the query
 	 * @param position The position of insertion
 	 * @param insert Flag that determines if the partial word following the cursor should be left
-	 * intact or replaced by the proposal
+	 * intact or should be replaced by the proposal
 	 * @return The result of inserting the proposal into the query, including the adjust position, if
 	 * it was required
 	 */

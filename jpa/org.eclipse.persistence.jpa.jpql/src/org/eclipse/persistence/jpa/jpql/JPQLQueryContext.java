@@ -742,6 +742,17 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
+	 * Determines whether this {@link JPQLQueryContext} currently holds the information of a subquery
+	 * or for the top-level query.
+	 *
+	 * @return <code>true</code> if the current context is for a subquery; <code>false</code> for the
+	 * top-level query
+	 */
+	public boolean isSubquery() {
+		return currentContext.parent != null;
+	}
+
+	/**
 	 * Retrieves the "literal" from the given {@link Expression}. The literal to retrieve depends on
 	 * the given {@link LiteralType type}. The literal is basically a string value like an
 	 * identification variable name, an input parameter, a path expression, an abstract schema name,
@@ -838,8 +849,13 @@ public abstract class JPQLQueryContext {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Current JPQL query=");
-		sb.append(currentContext.currentQuery.toParsedText());
+		if (parent != null) {
+			sb.append("Subquery=");
+		}
+		else {
+			sb.append("Top-Level Query=");
+		}
+		sb.append(currentQuery.toParsedText());
 		return sb.toString();
 	}
 

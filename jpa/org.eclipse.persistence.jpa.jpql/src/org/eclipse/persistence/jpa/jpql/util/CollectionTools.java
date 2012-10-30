@@ -27,7 +27,7 @@ import java.util.List;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -79,10 +79,10 @@ public final class CollectionTools {
 	 * @param componentType The type of the array
 	 * @param iterator The {@link Iterator} that will iterate over the collection of items to add
 	 * into the new array in the same order they are returned
-	 * @return A new array filled with the items returned by the given iterator.
+	 * @return A new array filled with the items returned by the given iterator
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] array(Class<T> componentType, Iterator<T> iterator) {
+	public static <T> T[] array(Class<T> componentType, Iterator<? extends T> iterator) {
 
 		if (!iterator.hasNext()) {
 			return (T[]) Array.newInstance(componentType, 0);
@@ -96,6 +96,23 @@ public final class CollectionTools {
 
 		T[] array = (T[]) Array.newInstance(componentType, list.size());
 		return list.toArray(array);
+	}
+
+	/**
+	 * Returns a list corresponding to the specified array. Unlike {@link Arrays#asList(Object[])},
+	 * the list is modifiable and is not backed by the array.
+	 *
+	 * @param array The array to convert into a {@link List}
+	 * @return An instance of a {@link List} containing the elements of the given array
+	 * @param <E>
+	 * @since 2.5
+	 */
+	public static <E> List<E> list(E... array) {
+		List<E> list = new ArrayList<E>(array.length);
+		for (E item : array) {
+			list.add(item);
+		}
+		return list;
 	}
 
 	/**

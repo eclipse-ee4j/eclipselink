@@ -24,7 +24,7 @@ public class DefaultContentAssistTest extends AbstractContentAssistTest {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isJoinFetchIdentifiable() {
+	protected boolean isJoinFetchIdentifiable() {
 		return false;
 	}
 }

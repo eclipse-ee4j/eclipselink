@@ -111,7 +111,6 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -126,7 +125,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractGrammarValidator
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -581,32 +580,34 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		Object managedType = helper.getEntityNamed(abstractSchemaName);
 		boolean valid = true;
 
-		// If a subquery is defined in a WHERE clause of an update query,
-		// then check for a path expression
 		if (managedType == null) {
 
-			// Find the identification variable from the UPDATE range declaration
-			IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
-			String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
+			// If a subquery is defined in a WHERE clause of an update query,
+			// then check for a path expression
+			if (isSubquery(expression)) {
 
-			if (ExpressionTools.stringIsNotEmpty(variableName)) {
+				// Find the identification variable from the UPDATE range declaration
+				IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
+				String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
 
-				Object mapping = helper.resolveMapping(variableName, abstractSchemaName);
-				Object type = helper.getMappingType(mapping);
+				if (ExpressionTools.stringIsNotEmpty(variableName)) {
 
-				// Does not resolve to a valid path
-				if (!helper.isTypeResolvable(type)) {
-					if (isSubquery(expression)) {
+					Object mapping = helper.resolveMapping(variableName, abstractSchemaName);
+					Object type = helper.getMappingType(mapping);
+
+					// Does not resolve to a valid path
+					if (!helper.isTypeResolvable(type)) {
 						addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+						valid = false;
 					}
-					else {
-						addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
+					// Not a relationship mapping
+					else if (!helper.isRelationshipMapping(mapping)) {
+						addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+						valid = false;
 					}
-					valid = false;
 				}
-				// Not a relationship mapping
-				else if (!helper.isRelationshipMapping(mapping)) {
-					addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+				else {
+					addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
 					valid = false;
 				}
 			}
