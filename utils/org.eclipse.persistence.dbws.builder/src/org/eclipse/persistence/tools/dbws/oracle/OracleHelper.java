@@ -681,6 +681,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String name;
             String alias;
             if (dbType.isPLSQLType()) {
+                // set type name to upper case to avoid runtime SQLException
+                dbType.setTypeName(dbType.getTypeName().toUpperCase());
+                
                 String catalogPattern = ((PLSQLType) dbType).getParentType().getPackageName();
                 String targetTypeName;
                 // for types enclosed in a ROWTYPEType, package doesn't apply

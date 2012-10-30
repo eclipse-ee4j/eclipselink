@@ -43,23 +43,23 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
 
     static final String CREATE_PACKAGE2_PACKAGE =
         "CREATE OR REPLACE PACKAGE PACKAGE2 AS" +
-            "\nTYPE TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
+            "\nTYPE tab1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
             "\nTYPE ORECORD IS RECORD (" +
                 "\nO1 VARCHAR2(10)," +
                 "\nO2 DECIMAL(7,2)" +
             "\n);" +
             "\nTYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;" +
             "\nTYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;" +
-            "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1);" +
+            "\nPROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1);" +
             "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);" +
             "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);" +
-            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT TAB1);" +
-            "\nFUNCTION COPYTABLE2(OLDTAB IN TAB1) RETURN TAB1;" +
+            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1);" +
+            "\nFUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1;" +
             "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2;" +
         "\nEND PACKAGE2;";
     static final String CREATE_PACKAGE2_BODY =
         "CREATE OR REPLACE PACKAGE BODY PACKAGE2 AS" +
-            "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1) AS" +
+            "\nPROCEDURE COPYTABLE(OLDTAB IN tab1, NEWTAB OUT tab1) AS" +
             "\nBEGIN" +
                 "\nNEWTAB := OLDTAB;" +
             "\nEND COPYTABLE;" +
@@ -67,7 +67,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             "\nBEGIN" +
                 "\nNEWTAB := OLDTAB;" +
             "\nEND COPYBOOLEANTABLE;" +
-            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT TAB1) AS" +
+            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT tab1) AS" +
             "\nBEGIN" +
                 "\nIF OLDTAB.COUNT > 0 THEN" +
                     "\nFOR I IN OLDTAB.FIRST..OLDTAB.LAST LOOP" +
@@ -83,7 +83,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             "\nBEGIN" +
                 "\nNEWTAB(0) := INREC;" +
             "\nEND SETRECORD;" +
-            "\nFUNCTION COPYTABLE2(OLDTAB IN TAB1) RETURN TAB1 IS NEWTAB TAB1;" +
+            "\nFUNCTION COPYTABLE2(OLDTAB IN tab1) RETURN tab1 IS NEWTAB tab1;" +
             "\nBEGIN" +
                 "\nNEWTAB := OLDTAB;" +
                 "\nRETURN NEWTAB;" +
@@ -95,7 +95,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             "\nEND SETRECORD2;" +
         "\nEND PACKAGE2;";
     static final String CREATE_PACKAGE2_TAB1_TYPE =
-        "CREATE OR REPLACE TYPE PACKAGE2_TAB1 AS TABLE OF VARCHAR2(111)";
+        "CREATE OR REPLACE TYPE PACKAGE2_tab1 AS TABLE OF VARCHAR2(111)";
     static final String CREATE_PACKAGE2_ORECORD_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE2_ORECORD AS OBJECT (" +
             "\nO1 VARCHAR2(10)," +
@@ -108,7 +108,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
     static final String DROP_PACKAGE2_PACKAGE =
         "DROP PACKAGE PACKAGE2";
     static final String DROP_PACKAGE2_TAB1_TYPE =
-        "DROP TYPE PACKAGE2_TAB1";
+        "DROP TYPE PACKAGE2_tab1";
     static final String DROP_PACKAGE2_TAB2_TYPE =
         "DROP TYPE PACKAGE2_TAB2";
     static final String DROP_PACKAGE2_TAB3_TYPE =
@@ -172,7 +172,6 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                   "name=\"CopyTableTest\" " +
                   "catalogPattern=\"PACKAGE2\" " +
                   "procedurePattern=\"COPYTABLE\" " +
-                  "returnType=\"PACKAGE2_TAB1\" " +  // note that returnType is not required
               "/>" +
               "<plsql-procedure " +
                   "name=\"CopyTableTest2\" " +
