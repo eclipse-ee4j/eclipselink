@@ -45,6 +45,8 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
+import org.eclipse.persistence.jpa.rs.QueryResource;
+import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
@@ -278,7 +280,7 @@ public class TestService {
 
     @Test
     public void testNamedQuery(){
-        PersistenceUnitResource resource = new PersistenceUnitResource();
+        QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
@@ -312,7 +314,7 @@ public class TestService {
 
     @Test
     public void testNamedQuerySingleResult(){
-        PersistenceUnitResource resource = new PersistenceUnitResource();
+        SingleResultQueryResource resource = new SingleResultQueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
@@ -444,7 +446,7 @@ public class TestService {
 
     @Test
     public void testWriteQuery(){
-        PersistenceUnitResource resource = new PersistenceUnitResource();
+        QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
 
@@ -608,7 +610,7 @@ public class TestService {
 
     @Test
     public void testStaticReportQuery(){
-        PersistenceUnitResource resource = new PersistenceUnitResource();
+        QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
