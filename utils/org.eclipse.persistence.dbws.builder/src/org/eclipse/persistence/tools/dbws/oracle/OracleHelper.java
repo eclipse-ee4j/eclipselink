@@ -97,6 +97,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
@@ -785,6 +786,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     	} else {
                             buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(nestedType));
                     	}
+                    } else if (fType.getEnclosedType().isTYPEType()) {  // handle %TYPE
+                        TYPEType typeType = (TYPEType) fType.getEnclosedType();
+                        if (typeType.getEnclosedType().isFieldType()) {
+                            // direct mapping
+                            addDirectMappingForFieldType(xdesc, lFieldName, (FieldType)typeType.getEnclosedType());
+                        } else {
+                            // TODO:  handle composites
+                        }
+                    } else {
+                        // TODO: %ROWTYPE?
                     }
                 } else {
                     // direct mapping
@@ -855,6 +866,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     	} else {
                             buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, nestedType.getTypeName().toUpperCase());
                     	}
+                    } else if (fType.getEnclosedType().isTYPEType()) {  // handle %TYPE
+                        TYPEType typeType = (TYPEType) fType.getEnclosedType();
+                        if (typeType.getEnclosedType().isFieldType()) {
+                            // direct mapping
+                            ordtDesc.addDirectMapping(lFieldName, fieldName);
+                        } else {
+                            // TODO:  handle composites
+                        }
+                    } else {
+                        // TODO: %ROWTYPE?
                     }
                 } else {
                     // direct mapping

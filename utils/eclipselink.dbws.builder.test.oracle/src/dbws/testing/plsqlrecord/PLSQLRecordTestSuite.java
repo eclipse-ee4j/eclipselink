@@ -60,7 +60,7 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
 
     static final String CREATE_EMPREC_TYPE =
         "CREATE OR REPLACE TYPE EMP_RECORD_PACKAGE_EmpRec AS OBJECT (" +
-            "emp_id   NUMERIC,\n" +
+            "emp_id   NUMERIC(4),\n" +
             "emp_name VARCHAR(25)\n" +
         "\n)";
     static final String DROP_EMPREC_TYPE =
@@ -69,8 +69,8 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String CREATE_EMP_RECORD_PACKAGE =
         "create or replace PACKAGE EMP_RECORD_PACKAGE AS\n" +
             "type EmpRec is record (" +
-                "emp_id   NUMERIC,\n" +
-                "emp_name VARCHAR(25)\n" +
+                "emp_id   EMPTYPEX.EMPNO%TYPE,\n" +
+                "emp_name EMPTYPEX.ENAME%TYPE\n" +
             ");\n" +
             "function get_emp_record (pId in number) return EmpRec;\n" +
         "END EMP_RECORD_PACKAGE;";
@@ -81,8 +81,8 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
         "create or replace PACKAGE BODY EMP_RECORD_PACKAGE AS\n" +
             "function get_emp_record (pId in number) return EmpRec AS\n" +
             "myEmp EmpRec;\n" +
-            "l_empno   NUMERIC;\n" +
-            "l_ename VARCHAR(25);\n" +
+            "l_empno EMPTYPEX.EMPNO%TYPE;\n" +
+            "l_ename EMPTYPEX.ENAME%TYPE;\n" +
             "cursor c_emp is select empno, ename from EMPTYPEX where empno = pId;\n" +
             "BEGIN\n" +
                 "open c_emp;\n" +
@@ -199,10 +199,6 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_PACKAGE1_BODY, ddlDebug);
             
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
-            runDdl(conn, CREATE_EMPREC_TYPE, ddlDebug);
-            runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
-            runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
-            
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_EMPTYPE_TABLE.length; i++) {
@@ -212,6 +208,9 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+            runDdl(conn, CREATE_EMPREC_TYPE, ddlDebug);
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
