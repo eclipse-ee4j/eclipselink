@@ -329,6 +329,9 @@ public class QueryImpl {
             }
 
         }
+        
+        // Make sure we tag it as a JPA user defined query.
+        databaseQuery.setIsJPAUserDefined(true);
         return this.databaseQuery;
     }
     

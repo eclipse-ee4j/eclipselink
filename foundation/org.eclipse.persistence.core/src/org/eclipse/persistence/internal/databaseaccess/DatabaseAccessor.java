@@ -863,7 +863,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // If we don't expect a result to be returned from a stored procedure (presumably because the 
             // the procedure does only an update) and the row count doesn't equal the update count from the 
             // statement then we are in an illegal state, throw an exception.
-            if (call != null && call.getQuery().isUserDefined() && call.isStoredProcedureCall() && call.isNothingReturned() && rowCount != statement.getUpdateCount()) {
+            if (call != null && call.getQuery().isJPAUserDefined() && call.isStoredProcedureCall() && call.isNothingReturned() && rowCount != statement.getUpdateCount()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
             }
             

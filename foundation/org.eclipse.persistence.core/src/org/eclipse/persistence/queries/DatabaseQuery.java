@@ -173,6 +173,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected boolean isUserDefined;
     
     /**
+     * Internal flag to determine if the query is defined through JPA.
+     */
+    protected boolean isJPAUserDefined;
+    
+    /**
      * Internal flag used to bypass user define queries when executing one for
      * custom sql/query support.
      */
@@ -1685,6 +1690,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL: Return true if this is a JPA user defined query.
+     */
+    public boolean isJPAUserDefined() {
+        return this.isJPAUserDefined;
+    }
+    
+    /**
      * PUBLIC: Return true if this query uses an JPQL query mechanism .
      */
     public boolean isJPQLCallQuery() {
@@ -1793,6 +1805,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.parameterDelimiter = query.parameterDelimiter;
         this.shouldCloneCall = query.shouldCloneCall;
         this.partitioningPolicy = query.partitioningPolicy;
+        this.isJPAUserDefined = query.isJPAUserDefined;
     }
 
     /**
@@ -2133,6 +2146,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * INTERNAL: Set if the query is a JPA custom user defined query.
+     */
+    public void setIsJPAUserDefined(boolean isJPAUserDefined) {
+        this.isJPAUserDefined = isJPAUserDefined;
+    }
+    
     /**
      * INTERNAL: Set if the query is a custom user defined query.
      */
