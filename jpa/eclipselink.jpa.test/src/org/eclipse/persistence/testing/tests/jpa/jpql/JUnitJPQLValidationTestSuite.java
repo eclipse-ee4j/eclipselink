@@ -921,18 +921,14 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     
     public void JTAOptimisticLockExceptionTest() 
     {
-        if (!isOnServer()) {
-            // Requires JTA, so only runs on the server.
-            return;
-        }
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
             try {
                      
                 Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();       
-                emp.setLastName("test");
                 em.createQuery("Update Employee set lastName = 'test-bad' WHERE firstName='Bob' ").executeUpdate();
+                emp.setLastName("test");
                 commitTransaction(em);
             } catch (RuntimeException ex) {
                 if (em.getTransaction().isActive()){
