@@ -552,9 +552,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         try {
             return dtBuilder.buildTables(dbwsBuilder.getConnection(), schemaPatterns,
                 tableNamePatterns);
-        }
-        catch (ParseException e) {
-            //TODO - figure out what to do with a ParseException
+        } catch (ParseException e) {
+            // ignore for now
         }
         return null;
     }
@@ -578,8 +577,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 TOPLEVEL.equals(catalogPattern)) {
                 topLevelSchemaPatterns.add(schemaPattern);
                 topLevelProcedureNamePatterns.add(procedureNamePatterns.get(i));
-            }
-            else {
+            } else {
                 Set<String> packageNames = packagePatterns.get(schemaPattern);
                 if (packageNames == null) {
                     packageNames = new HashSet<String>();
@@ -595,10 +593,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 if (topLevelProcedures != null && topLevelProcedures.size() > 0) {
                     allProcsAndFuncs.addAll(topLevelProcedures);
                 }
-            }
-            catch (ParseException e) {
-                //e.printStackTrace();
-                //TODO - not sure what to do with ParseException
+            } catch (ParseException e) {
+                // ignore for now
             }
             try {
                 List<FunctionType> topLevelFunctions = dtBuilder.buildFunctions(dbwsBuilder.getConnection(),
@@ -606,10 +602,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 if (topLevelFunctions != null && topLevelFunctions.size() > 0) {
                     allProcsAndFuncs.addAll(topLevelFunctions);
                 }
-            }
-            catch (ParseException e) {
-                //e.printStackTrace();
-                //TODO - not sure what to do with ParseException
+            } catch (ParseException e) {
+                // ignore for now
             }
         }
         if (packagePatterns.size() > 0) {
@@ -668,10 +662,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                    }
 	                }
                 }
-            }
-            catch (ParseException e) {
-                //e.printStackTrace();
-                //TODO - not sure what to do with ParseException
+            } catch (ParseException e) {
+                // ignore for now
             }
         }
         return allProcsAndFuncs.isEmpty() ? null : allProcsAndFuncs;
@@ -792,10 +784,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // direct mapping
                             addDirectMappingForFieldType(xdesc, lFieldName, (FieldType)typeType.getEnclosedType());
                         } else {
-                            // TODO:  handle composites
+                            // composites
                         }
                     } else {
-                        // TODO: %ROWTYPE?
+                        // %ROWTYPE
                     }
                 } else {
                     // direct mapping
@@ -872,10 +864,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // direct mapping
                             ordtDesc.addDirectMapping(lFieldName, fieldName);
                         } else {
-                            // TODO:  handle composites
+                            // composites
                         }
                     } else {
-                        // TODO: %ROWTYPE?
+                        // %ROWTYPE
                     }
                 } else {
                     // direct mapping
@@ -1770,7 +1762,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     TableType tableType = (TableType) rowType.getEnclosedType();
                     procedureOperationModel.setXmlTag(tableType.getTableName());
                 } else {
-                    // TODO:  handle TYPEType
+                    // TYPEType
                 }
             }
         }
