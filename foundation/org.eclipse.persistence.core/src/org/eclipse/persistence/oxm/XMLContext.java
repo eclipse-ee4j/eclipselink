@@ -194,7 +194,7 @@ public class XMLContext {
     }
 
     public XMLContext(Collection projects) {
-    	this(projects, Thread.currentThread().getContextClassLoader());
+        this(projects, Thread.currentThread().getContextClassLoader());
     }
     
     public XMLContext(Collection projects, ClassLoader classLoader) {
@@ -378,8 +378,8 @@ public class XMLContext {
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(QName qName) {
-    	XPathQName xpathQName = new XPathQName(qName, true);
-    	return xmlContextState.getDescriptor(xpathQName);
+        XPathQName xpathQName = new XPathQName(qName, true);
+        return xmlContextState.getDescriptor(xpathQName);
     }
 
     /**
@@ -387,7 +387,7 @@ public class XMLContext {
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(XPathQName xpathQName) {
-    	return xmlContextState.getDescriptor(xpathQName);
+        return xmlContextState.getDescriptor(xpathQName);
     }
     
     public void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
@@ -572,50 +572,68 @@ public class XMLContext {
     } 
  
     private <T> T getValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        if(null == object) {
+        if (null == object) {
             return null;
         }
-        String xPath = ""; 
-        XMLField xmlField = new XMLField(); 
-        xmlField.setNamespaceResolver(namespaceResolver); 
-        while(stringTokenizer.hasMoreElements()) {
+        String xPath = "";
+        XMLField xmlField = new XMLField();
+        xmlField.setNamespaceResolver(namespaceResolver);
+        while (stringTokenizer.hasMoreElements()) {
             String nextToken = stringTokenizer.nextToken();
             xmlField.setXPath(xPath + nextToken);
             xmlField.initialize();
-            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
-            if(null == mapping) {
+            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
+            if (null == mapping) {
                 XPathFragment xPathFragment = new XPathFragment(nextToken);
-                if(xPathFragment.getIndexValue() > 0) {
-                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
+                int fragmentIndex = xPathFragment.getIndexValue();
+                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
+                    int index = xmlFieldIndex - 1;
+                    if (index < 0) {
+                        index = fragmentIndex - 1;
+                    }
+                    String strippedXPath = xmlField.getXPath();
+                    while (strippedXPath.contains("[")) {
+                        int open = strippedXPath.lastIndexOf('[');
+                        int closed = strippedXPath.lastIndexOf(']');
+                        strippedXPath = strippedXPath.substring(0, open) + strippedXPath.substring(closed + 1);
+                    }
+                    xmlField.setXPath(strippedXPath);
                     xmlField.initialize();
                     mapping = objectBuilder.getMappingForField(xmlField);
-                    if(null != mapping) {
-                        if(mapping.isCollectionMapping()) {
-                            if(mapping.getContainerPolicy().isListPolicy()) {
-                                Object childObject = ((ListContainerPolicy) mapping.getContainerPolicy()).get(xPathFragment.getIndexValue() - 1, mapping.getAttributeValueFromObject(object), null);
-                                if(stringTokenizer.hasMoreElements()) {
-                                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
-                                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
-                                } else {
-                                    return (T) childObject;
+                    if (null != mapping) {
+                        if (mapping.isCollectionMapping()) {
+                            Object childObject = null;
+                            Object collection = mapping.getAttributeValueFromObject(object);
+                            if (List.class.isAssignableFrom(collection.getClass())) {
+                                List list = (List) collection;
+                                if (index >= list.size()) {
+                                    return null;
                                 }
+                                childObject = list.get(index);
+                            }
+                            if (stringTokenizer.hasMoreElements()) {
+                                ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                                return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
+                            } else {
+                                return (T) childObject;
                             }
                         }
                     }
                 }
             } else {
-                if(stringTokenizer.hasMoreElements()) { 
-                    Object childObject = mapping.getAttributeValueFromObject(object); 
-                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
-                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType); 
-                } else { 
-                    return (T) mapping.getAttributeValueFromObject(object); 
-                } 
-            } 
-            xPath = xPath + nextToken + "/"; 
+                if (stringTokenizer.hasMoreElements()) {
+                    Object childObject = mapping.getAttributeValueFromObject(object);
+                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
+                } else {
+                    return (T) mapping.getAttributeValueFromObject(object);
+                }
+            }
+            xPath = xPath + nextToken + "/";
         }
-        return null; 
-    } 
+        return null;
+    }
 
     /**
      * <p>Set values in the object model based on the corresponding XML document.  The following pairings are equivalent:</p> 
@@ -884,8 +902,8 @@ public class XMLContext {
         }
 
         private void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
-        	XPathQName xpathQName = new XPathQName(qName, true);
-        	addDescriptorByQName(xpathQName, descriptor);
+            XPathQName xpathQName = new XPathQName(qName, true);
+            addDescriptorByQName(xpathQName, descriptor);
         }
         
         private void addDescriptorByQName(XPathQName qName, XMLDescriptor descriptor) {
@@ -1227,13 +1245,13 @@ public class XMLContext {
                             }
                         }
                         if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                        	addDescriptorByQName(descriptorQName, xmlDescriptor);
+                            addDescriptorByQName(descriptorQName, xmlDescriptor);
                         } else {
                             //this means we have a descriptor that is a child in an inheritance hierarchy
                             storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor());
                             XMLDescriptor existingDescriptor = (XMLDescriptor) getDescriptor(descriptorQName);
                             if (existingDescriptor == null) {
-                            	addDescriptorByQName(descriptorQName, xmlDescriptor);
+                                addDescriptorByQName(descriptorQName, xmlDescriptor);
                             }
                         }
                     }

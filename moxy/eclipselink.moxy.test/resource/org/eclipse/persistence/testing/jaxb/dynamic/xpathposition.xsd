@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:complexType name="testBean">
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="sub-bean" nillable="true" type="testBean" />
+            <xsd:element minOccurs="0" name="map">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="entry">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element minOccurs="0" name="key" type="xsd:string" />
+                                    <xsd:element minOccurs="0" name="value" type="xsd:string" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="array" nillable="true" type="xsd:dateTime" />
+            <xsd:element minOccurs="0" name="otherID" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="Test" type="testBean" />
+</xsd:schema>

@@ -916,6 +916,24 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         }
     }
 
+    public void testGetByXPathPosition() throws Exception {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XPATH_POSITION);
+        jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+        InputStream xmlStream = ClassLoader.getSystemResourceAsStream(XPATH_POSITION_XML);
+        JAXBElement<DynamicEntity> jelem = (JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
+        DynamicEntity testBean = jelem.getValue();
+
+        Object o = jaxbContext.getValueByXPath(testBean, "array[1]/text()", null, Object.class);
+        assertNotNull("XPath: 'array[1]/text()' returned null.", o);
+        o = jaxbContext.getValueByXPath(testBean, "array[2]/text()", null, Object.class);
+        assertNull("XPath: 'array[2]/text()' did not return null.", o);
+        o = jaxbContext.getValueByXPath(testBean, "map/entry[1]/value/text()", null, Object.class);
+        assertEquals("foo", o);
+        o = jaxbContext.getValueByXPath(testBean, "sub-bean[1]/map/entry[1]/value/text()", null, Object.class);
+        assertEquals("foo2", o);
+    }
+
     // ====================================================================
 
     private void print(Object o) throws Exception {
@@ -959,12 +977,14 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String BINARY = RESOURCE_DIR + "binary.xsd";
     private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
     private static final String XMLSCHEMASCHEMA = RESOURCE_DIR + "XMLSchema.xsd";
+    private static final String XPATH_POSITION = RESOURCE_DIR + "xpathposition.xsd";
 
     private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_4.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
     private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
+    private static final String XPATH_POSITION_XML = RESOURCE_DIR + "xpathposition.xml";
 
     // Names of types to instantiate
     private static final String PACKAGE = "mynamespace";
