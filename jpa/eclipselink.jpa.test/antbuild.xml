@@ -3072,6 +3072,7 @@
     <target name="server-test-lrg" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
         <antcall target="server-test-advanced-multitenant" inheritRefs="true"/>
+        <antcall target="server-test-beanvalidation" inheritRefs="true"/>
         <antcall target="server-test-cacheable" inheritRefs="true"/>
         <antcall target="server-test-cascadedeletes" inheritRefs="true"/>
         <antcall target="server-test-criteria" inheritRefs="true"/>
@@ -3143,6 +3144,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
+
     <target name="server-test-advanced-multitenant">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
@@ -3153,6 +3155,19 @@
             <param name="TEST_NAME" value="eclipselink-advanced-multitenant-model"/>
             <param name="EAR_NAME" value="eclipselink-advanced-multitenant-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantServerTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-beanvalidation">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="beanvalidation"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/beanvalidation"/>
+            <param name="MODEL_NAME" value="eclipselink-beanvalidation-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/beanvalidation"/>
+            <param name="TEST_NAME" value="eclipselink-beanvalidation-model"/>
+            <param name="EAR_NAME" value="eclipselink-beanvalidation-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>

@@ -26,6 +26,9 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 public class BeanValidationJunitTest extends JUnitTestCase {
 
+    public static final int EMPLOYEE_PK = 1;
+    public static final int PROJECT_PK = 1;
+
     public BeanValidationJunitTest() {
         super();
     }
@@ -53,12 +56,43 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new BeanValidationTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        EntityManager em = createBVEntityManager();
-        BeanValidationPopulator.createEmployeeProject(em);
-        em.close();
+        new BeanValidationTableCreator().replaceTables(JUnitTestCase.getServerSession("beanvalidation"));
+        EntityManager em = createEntityManager();
+        createEmployeeProject(em);
     }
 
+    public void createEmployeeProject(EntityManager em){
+        try {
+            beginTransaction(em);
+            Employee e1 = new Employee(EMPLOYEE_PK, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1), 1000);
+            Project p1 = new Project(PROJECT_PK, "proj");
+            Project p2 = new Project(PROJECT_PK + 1, "proj");
+            em.persist(p1);
+            em.persist(p2);
+
+            Collection<Project> projects = new ArrayList<Project>();
+            projects.add(p1);
+            projects.add(p2);
+            e1.setProjects(projects);
+            e1.setManagedProject(p1);
+
+            em.persist(e1);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    public String getFilledStringOfLength(int length) {
+        char[] stringChars = new char[length];
+        Arrays.fill(stringChars, 'a');
+        return new String(stringChars);
+    }
 
     /**
      * Strategy:
@@ -68,23 +102,26 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 4. Assert - The validation exception is due to invalid value given by us.
      */
     public void testPersistWithInvalidData() {
-        EntityManager em = createBVEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityManager em = createEntityManager();
         boolean gotConstraintViolations = false;
-        String invalidName = BeanValidationPopulator.getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1);
+        String invalidName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1);
         try {
             // Persist an object with invalid value
-            tx.begin();
+            beginTransaction(em);
             Employee e1 = new Employee(100, invalidName, 1000);
             em.persist(e1);
         } catch (ConstraintViolationException e) {
-            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", tx.getRollbackOnly()) ;
-            tx.rollback(); // Actually rollback the transaction
+            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             Set<ConstraintViolation<?>> constraintViolations = e.getConstraintViolations();
             ConstraintViolation constraintViolation = constraintViolations.iterator().next();
             Object invalidaValue = constraintViolation.getInvalidValue();
             assertTrue("Invalid value should be " + invalidName, invalidName.equals(invalidaValue));
             gotConstraintViolations = true;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
         assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
 
@@ -98,20 +135,23 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 4. Assert - The validation exception is due to invalid value given by us.
      */
     public void testEmbeddedWithInvalidData() {
-        EntityManager em = createBVEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityManager em = createEntityManager();
         boolean gotConstraintViolations = false;
         try {
             // Persist an object with invalid value
-            tx.begin();
+            beginTransaction(em);
             Employee e1 = new Employee(100, "name", 1000);
             Address address = new Address("street", "city", "state" /*passing invalid value for state */);
             e1.setAddress(address);
             em.persist(e1);
         } catch (ConstraintViolationException e) {
-            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", tx.getRollbackOnly()) ;
-            tx.rollback();
+            assertTrue("Transaction not marked for roll back when ConstraintViolation is thrown", getRollbackOnly(em)) ;
             gotConstraintViolations = true;
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
         assertTrue("Did not get Constraint Violation while persisting invalid data ", gotConstraintViolations);
     }
@@ -127,49 +167,70 @@ public class BeanValidationJunitTest extends JUnitTestCase {
 
      */
     public void testUpdateWithInvalidData() {
-        EntityManager em = createBVEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityManager em = createEntityManager();
         boolean gotConstraintViolations = false;
-        final String invalidName = BeanValidationPopulator.getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1 );
+        final String invalidName = getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1 );
         try {
             // Update it with invalid value
-            tx.begin();
-            Employee e = em.find(Employee.class, BeanValidationPopulator.EMPLOYEE_PK);
+            beginTransaction(em);
+            Employee e = em.find(Employee.class, EMPLOYEE_PK);
             e.setName(invalidName);
-            tx.commit();
-
-        } catch (PersistenceException e) {
-            assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", tx.isActive());
+            commitTransaction(em);
+          } catch (RuntimeException e) {
+            assertFalse("Transaction not marked for roll back when ConstraintViolation is thrown", isTransactionActive(em));;
             Object cause = e.getCause();
-            assertTrue("The nested cause should be instance of ConstraintViolationException", cause instanceof ConstraintViolationException) ;
-            ConstraintViolationException cve = (ConstraintViolationException)cause;
-            Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
-            ConstraintViolation constraintViolation = constraintViolations.iterator().next();
-            assertTrue("Invalid value should be " + invalidName, invalidName.equals(constraintViolation.getInvalidValue() ) );
-            gotConstraintViolations = true;
+            while(cause != null) {
+                if (cause instanceof ConstraintViolationException){
+                    ConstraintViolationException cve = (ConstraintViolationException)cause;
+                    Set<ConstraintViolation<?>> constraintViolations = cve.getConstraintViolations();
+                    ConstraintViolation constraintViolation = constraintViolations.iterator().next();
+                    assertTrue("Invalid value should be " + invalidName, invalidName.equals(constraintViolation.getInvalidValue() ) );
+                    gotConstraintViolations = true;
+                    break;
+                }else
+                    cause = ((Throwable)cause).getCause();
+            }
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
-
         assertTrue("Did not get Constraint Violation while updating with invalid data ", gotConstraintViolations);
-
     }
 
     public void testRemoveWithInvalidData() {
-        EntityManager em = createBVEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityManager em = createEntityManager();
         boolean removeSuccessfull = false;
         final int EMPLOYEE_PK_TO_REMOVE = 2;
-        tx.begin();
-        Employee e1 = new Employee(EMPLOYEE_PK_TO_REMOVE, BeanValidationPopulator.getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ), 1000);
-        em.persist(e1);
-        tx.commit();
+        
+        try {
+            beginTransaction(em);
+            Employee e1 = new Employee(EMPLOYEE_PK_TO_REMOVE, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ), 1000);
+            em.persist(e1);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw ex;
+        } 
 
-        tx.begin();
-        Employee e = em.find(Employee.class, EMPLOYEE_PK_TO_REMOVE);
-        e.setName(BeanValidationPopulator.getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1 ));
-        em.remove(e);
-        tx.commit();
-        removeSuccessfull = true;
+        try {
+            beginTransaction(em);
+            Employee e = em.find(Employee.class, EMPLOYEE_PK_TO_REMOVE);
+            e.setName(getFilledStringOfLength(Employee.NAME_MAX_SIZSE + 1 ));
+            em.remove(e);
+            commitTransaction(em);
+            removeSuccessfull = true;
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw ex;
+        } 
 
+        closeEntityManager(em);
         assertTrue("Automatic Validation should not be executed for remove", removeSuccessfull);
     }
 
@@ -179,19 +240,26 @@ public class BeanValidationJunitTest extends JUnitTestCase {
      * 2. Assert no lazy relationships are loaded as side effect
      */
     public void testTraversableResolverPreventsLoadingOfLazyRelationships() {
-        EntityManagerFactory emf = createBVEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-
-
         //Empty the cache to make sure that lazy fields of Employee are uninstantiated
-        emf.getCache().evictAll();
+        clearCache();
+        EntityManager em = createEntityManager();
 
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        Employee employee = em.find(Employee.class, BeanValidationPopulator.EMPLOYEE_PK);
-        employee.setName(BeanValidationPopulator.getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 2));
-        tx.commit();
-        org.eclipse.persistence.sessions.Project project = JpaHelper.getServerSession(emf).getProject();
+        Employee employee = null;
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, EMPLOYEE_PK);
+            employee.setName(getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 2));
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            throw ex;
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        org.eclipse.persistence.sessions.Project project = getDatabaseSession().getProject();
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "projects", project) );
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "managedProject", project) );
     }
@@ -215,11 +283,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         return mapping.getIndirectionPolicy().objectIsInstantiatedOrChanged(attributeValue);
     }
 
-    public EntityManager createBVEntityManager() {
-        return JUnitTestCase.createEntityManager("beanvalidation");
-    }
-    
-    public EntityManagerFactory createBVEntityManagerFactory() {
-        return JUnitTestCase.getEntityManagerFactory("beanvalidation");
+    public String getPersistenceUnitName() {
+        return "beanvalidation";
     }
 }
