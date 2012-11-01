@@ -39,6 +39,7 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.persistence.TupleElement;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -193,10 +194,15 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("mapCastTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("oneToOneCastTest"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleQuery"));
-        
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleIndexValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleIndexTypeValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleStringValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleStringTypeValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleTupleValidation"));
+
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -204,26 +210,26 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
         comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
-        
+
         new InheritedTableManager().replaceTables(session);
-        
+
         new InheritanceTableCreator().replaceTables(session);
     }
 
@@ -232,7 +238,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
      */
     public void testParameterEqualsParameter() throws Exception {
         DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform(); 
-        
+
         if (databasePlatform.isSymfoware()) {
             getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
                     + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
@@ -244,7 +250,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
                     + "MaxDB doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 326962)");
             return;
         }
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -252,20 +258,20 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             //"SELECT e FROM Employee e"
             Query query = em.createQuery(qb.createQuery(Employee.class));            
             List<Employee> emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             int numRead = emps.size();
-    
-            
+
+
             //"SELECT e FROM Employee e WHERE :arg1=:arg2");
             CriteriaQuery cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.parameter(Integer.class, "arg1"), qb.parameter(Integer.class, "arg2")));
             query = em.createQuery(cq);
-            
+
             query.setParameter("arg1", 1);
             query.setParameter("arg2", 1);
             emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
         } finally {
@@ -273,9 +279,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }    
     }
-    
-    
-    
+
+
+
     /**
      * Tests 1=1 returns correct result.
      */
@@ -287,22 +293,22 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             //"SELECT e FROM Employee e"
             Query query = em.createQuery(qb.createQuery(Employee.class));            
             List<Employee> emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             int numRead = emps.size();
-    
+
             //"SELECT e FROM Employee e WHERE 1=1");
             CriteriaQuery cq = qb.createQuery(Employee.class);
             cq.where(qb.equal(qb.literal(1), 1));
             emps = em.createQuery(cq).getResultList();
-    
+
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
-            
+
             ExpressionBuilder builder = new ExpressionBuilder();
             query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
             emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
         } finally {
@@ -310,7 +316,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }    
     }
-    
+
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
     //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 
@@ -324,8 +330,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         simpleJoinFetchTest(em);
     }
-    
-    
+
+
     //bug#6130550:  
     // tests that Fetch join works when returning objects that may already have been loaded in the em/uow (without the joined relationships)
     // Builds on simpleJoinFetchTest
@@ -353,7 +359,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         root.fetch("phoneNumbers", JoinType.LEFT);
         List result = em.createQuery(cq).getResultList();
-        
+
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(byteStream);
 
@@ -368,7 +374,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.setShouldReturnWithoutReportQueryResult(true);
         reportQuery.setReferenceClass(Employee.class);
@@ -402,7 +408,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         clearCache();
 
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
@@ -447,7 +453,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             cq.where(qb.equal( qb.abs(root.<Number>get("salary")), expectedResult.getSalary()) );
             List result = em.createQuery(cq).getResultList();
-        
+
             Assert.assertTrue("ABS test failed", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
@@ -499,7 +505,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee expectedResult = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
 
             clearCache();
-  
+
             String partOne, partTwo;
 
             partOne = expectedResult.getFirstName().substring(0, 2);
@@ -528,7 +534,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Employee expectedResult = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
 
             clearCache();
- 
+
             String partOne = expectedResult.getFirstName().substring(0, 2);
             String partTwo = expectedResult.getFirstName().substring(2);
 
@@ -539,7 +545,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             cq.where( qb.equal(root.get("firstName"), qb.concat(qb.parameter(String.class, "partOne"), qb.parameter(String.class, "partTwo"))) );
             Query query = em.createQuery(cq);
             query.setParameter("partOne", partOne).setParameter("partTwo", partTwo);
-        
+
             List result = query.getResultList();
 
             Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
@@ -625,7 +631,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             cq.distinct(true);
             cq.from(Employee.class).join("phoneNumbers");
             List result = em.createQuery(cq).getResultList();
-        
+
             Set testSet = new HashSet();
             for (Iterator iterator = result.iterator(); iterator.hasNext(); ) {
                 Employee emp = (Employee)iterator.next();
@@ -665,7 +671,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             beginTransaction(em);
             try {
                 List result = em.createQuery(cq).getResultList();
-            
+
                 assertTrue("Failed to return null value", result.contains(null));
             } finally {
                 rollbackTransaction(em);
@@ -730,7 +736,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             emp3 = (Employee)(getServerSession().readAllObjects(Employee.class).elementAt(2));
 
             clearCache();
- 
+
             Vector expectedResult = new Vector();
             expectedResult.add(emp1);
             expectedResult.add(emp2);
@@ -911,7 +917,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             Join phone = root.join("phoneNumbers");
             Predicate firstAnd = qb.and( qb.equal(phone.get("areaCode"), empPhoneNumbers.getAreaCode()), 
-                qb.equal(root.get("firstName"), expectedResult.getFirstName()));
+                    qb.equal(root.get("firstName"), expectedResult.getFirstName()));
             cq.where( qb.and(firstAnd, qb.equal(root.get("lastName"), expectedResult.getLastName())) );
             Employee result = em.createQuery(cq).getSingleResult();
 
@@ -963,7 +969,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         }
 
     }
-    
+
     public void simpleInListTest() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -972,7 +978,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             List expectedResultList = new ArrayList();
             expectedResultList.add(expectedResult.getId());
-        
+
             clearCache();
 
             //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
@@ -993,7 +999,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             getServerSession().logMessage("Warning SQL doesnot support LENGTH function");
             return;
         }
-        
+
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1007,7 +1013,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             //casting required, length takes only Expression<String>
             cq.where( qb.equal( qb.length(root.<String>get("firstName")) , expectedResult.getFirstName().length()) );
-        
+
             List result = em.createQuery(cq).getResultList();
 
             Assert.assertTrue("Simple Length Test failed", comparer.compareObjects(result, expectedResult));
@@ -1082,36 +1088,36 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void simpleLikeEscapeTestWithParameter() {
         EntityManager em = createEntityManager();
 
-            Address expectedResult = new Address();
-            expectedResult.setCity("TAIYUAN");
-            expectedResult.setCountry("CHINA");
-            expectedResult.setProvince("SHANXI");
-            expectedResult.setPostalCode("030024");
-            expectedResult.setStreet("234 RUBY _Way");
+        Address expectedResult = new Address();
+        expectedResult.setCity("TAIYUAN");
+        expectedResult.setCountry("CHINA");
+        expectedResult.setProvince("SHANXI");
+        expectedResult.setPostalCode("030024");
+        expectedResult.setStreet("234 RUBY _Way");
 
-            Server serverSession = JUnitTestCase.getServerSession();
-            Session clientSession = serverSession.acquireClientSession();
-            UnitOfWork uow = clientSession.acquireUnitOfWork();
-            uow.registerObject(expectedResult);
-            uow.commit();
+        Server serverSession = JUnitTestCase.getServerSession();
+        Session clientSession = serverSession.acquireClientSession();
+        UnitOfWork uow = clientSession.acquireUnitOfWork();
+        uow.registerObject(expectedResult);
+        uow.commit();
 
-            //test the apostrophe
-            //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE :pattern ESCAPE :esc"
-            CriteriaBuilder qb = em.getCriteriaBuilder();
-            CriteriaQuery<Address> cq = qb.createQuery(Address.class);
-            Root<Address> root = cq.from(Address.class);
-            cq.where( qb.like( root.<String>get("street"), qb.parameter(String.class, "pattern"), qb.parameter(Character.class, "esc")) );
-  
-            String patternString = null;
-            Character escChar = null;
-            // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
-            if (getServerSession().getPlatform().isMySQL()) {
-                patternString = "234 RUBY $_Way";
-                escChar = new Character('$');
-            } else {
-                patternString = "234 RUBY \\_Way";
-                escChar = new Character('\\');
-            }
+        //test the apostrophe
+        //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE :pattern ESCAPE :esc"
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Address> cq = qb.createQuery(Address.class);
+        Root<Address> root = cq.from(Address.class);
+        cq.where( qb.like( root.<String>get("street"), qb.parameter(String.class, "pattern"), qb.parameter(Character.class, "esc")) );
+
+        String patternString = null;
+        Character escChar = null;
+        // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
+        if (getServerSession().getPlatform().isMySQL()) {
+            patternString = "234 RUBY $_Way";
+            escChar = new Character('$');
+        } else {
+            patternString = "234 RUBY \\_Way";
+            escChar = new Character('\\');
+        }
         beginTransaction(em);
         try {
             List result = em.createQuery(cq).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
@@ -1273,7 +1279,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         try {
             List result = em.createQuery(cq).getResultList();
 
-		    Assert.assertTrue("Simple Or followed by And Test failed", comparer.compareObjects(result, expectedResult));
+            Assert.assertTrue("Simple Or followed by And Test failed", comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -1723,7 +1729,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         List result = null;
         beginTransaction(em);
         try {		
-		    result = em.createQuery(cq).getResultList();
+            result = em.createQuery(cq).getResultList();
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -1900,7 +1906,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-		
+
     }
 
     public void simpleIsEmptyTest() {
@@ -1984,7 +1990,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
         Character escapeChar = null;
         //"SELECT OBJECT(address) FROM Address address WHERE address.street LIKE '234 Wandering "
-            //+escapeString+"_Way' ESCAPE "+escapeString
+        //+escapeString+"_Way' ESCAPE "+escapeString
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
         if (getServerSession().getPlatform().isMySQL() || getServerSession().getPlatform().isPostgreSQL()) {
             escapeChar = '$';
@@ -2197,9 +2203,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
                 phoneAnyOf.get("number").equal(employeeBuilder.all(subQuery)));
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
-        
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
+
         clearCache();
 
         //"Select Distinct Object(emp) from Employee emp, IN(emp.phoneNumbers) p WHERE p.number = ALL (Select MIN(pp.number) FROM PhoneNumber pp)";
@@ -2209,7 +2215,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Subquery<Number> sq = cq.subquery(Number.class);
         Root<PhoneNumber> subroot = cq.from(PhoneNumber.class);
         sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
-        
+
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
         cq.where(qb.equal(root.get("number"), qb.all(sq)));
@@ -2249,7 +2255,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Subquery<Number> sq = cq.subquery(Number.class);
         Root<PhoneNumber> subroot = sq.from(PhoneNumber.class);
         sq.select(qb.min(subroot.<Number>get("number")));//number is a string? not sure this will work.
-        
+
         Root<Employee> root = cq.from(Employee.class);
         Join phone = root.join("phoneNumbers");
         cq.where(qb.equal(phone.get("number"), qb.all(sq)));
@@ -2466,7 +2472,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         List expectedResult = getServerSession().readAllObjects(LargeProject.class);
-        
+
         clearCache();
 
         //"SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject"
@@ -2484,7 +2490,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     public void simpleAsOrderByTest(){
         EntityManager em = createEntityManager();
 
@@ -2494,9 +2500,9 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         query.returnSingleAttribute();
         query.dontRetrievePrimaryKeys();
         query.addOrdering(query.getExpressionBuilder().get("firstName").ascending());
-        
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
+
         clearCache();
 
         //"SELECT e.firstName as firstName FROM Employee e ORDER BY firstName"
@@ -2530,13 +2536,13 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
 
             assertTrue("Incorrect number of results returned.", result.size() == 1);
             assertTrue("Incorrect Employee returned", ((Employee)result.get(0)).getFirstName().equals("Bob"));
-        
+
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
         }        
     }
-    
+
     public void simpleCoalesceInSelectTest(){
         EntityManager em = createEntityManager();
         //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
@@ -2562,7 +2568,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }  
     }
-    
+
     public void caseConditionInWhereTest(){
         EntityManager em = createEntityManager();
         //select e from Employee e where case e.firstName when 'Bob' then 'Robert' when 'Rob' then 'Robbie' else 'Not Bob' = 'Bob'
@@ -2586,7 +2592,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         } 
     }
-    
+
     public void caseConditionInSelectTest(){
         EntityManager em = createEntityManager();
         //select coalesce(e.firstName, e.lastName) from Employee e where e.firstName = 'Bob'
@@ -2612,7 +2618,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         } 
     }
-    
+
     public void simpleCaseInWhereTest(){
         if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
         {
@@ -2641,7 +2647,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         } 
     }
-    
+
     public void simpleCaseInSelectTest(){
         if (((Session) JUnitTestCase.getServerSession()).getPlatform().isDerby())
         {
@@ -2672,8 +2678,8 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }			
     }
-    
-    
+
+
     public void largeProjectCastTest() {
         EntityManager em = createEntityManager();
 
@@ -2686,7 +2692,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
         clearCache();
-        
+
         //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
         CriteriaBuilder qb1 = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq1 = qb1.createQuery(Employee.class);
@@ -2703,14 +2709,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-        
+
     }
-    
+
     public void mapCastTest(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-        
+
             BeerConsumer bc1 = new BeerConsumer();
             bc1.setName("George");
             em.persist(bc1);
@@ -2719,7 +2725,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             em.persist(blue);
             bc1.addBlueBeerToConsume(blue);
             blue.setBeerConsumer(bc1);
-            
+
             BeerConsumer bc2 = new BeerConsumer();
             bc2.setName("Scott");
             em.persist(bc2);
@@ -2729,32 +2735,32 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             em.persist(blueLight);
             blueLight.setBeerConsumer(bc2);
             bc2.addBlueBeerToConsume(blueLight);
-    
+
             em.flush();
             em.clear();
             clearCache();
-    
+
             ReadAllQuery query = new ReadAllQuery();
             Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").treat(BlueLight.class).get("discount").equal(10);
             query.setSelectionCriteria(selectionCriteria);
             query.setReferenceClass(BeerConsumer.class);
             query.dontUseDistinct();
-    
+
             Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
             List expectedResult = jpaQuery.getResultList();
-    
+
             clearCache();
             em.clear();
-    
+
             //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
             CriteriaBuilder qb1 = em.getCriteriaBuilder();
             CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
-    
+
             Root<BeerConsumer> root = cq1.from(BeerConsumer.class);
             Join<BeerConsumer, Blue> join = root.join("blueBeersToConsume");
             Path exp = ((Path)join.as(BlueLight.class)).get("discount");
             cq1.where(qb1.equal(exp, new Integer(10)) );
-        
+
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2763,14 +2769,14 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        
+
     }
-    
+
     public void oneToOneCastTest(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-        
+
             Person rudy = new Person();
             rudy.setName("Rudy");
             em.persist(rudy);
@@ -2778,18 +2784,18 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             sportsCar.setMaxSpeed(200);
             em.persist(sportsCar);
             rudy.setCar(sportsCar);
-            
+
             Person theo = new Person();
             theo.setName("Theo");
             em.persist(theo);
             Car car = new Car();
             em.persist(car);
             theo.setCar(car);
-    
+
             em.flush();
             em.clear();
             clearCache();
-            
+
             ReadAllQuery query = new ReadAllQuery();
             Expression selectionCriteria = new ExpressionBuilder().get("car").treat(SportsCar.class).get("maxSpeed").equal(200);
             query.setSelectionCriteria(selectionCriteria);
@@ -2798,18 +2804,18 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             //query.setShouldFilterDuplicates(false);
             Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
             List expectedResult = jpaQuery.getResultList();;
-            
+
             clearCache();
             em.clear();
             //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
             CriteriaBuilder qb1 = em.getCriteriaBuilder();
             CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
-    
+
             Root<Person> root = cq1.from(Person.class);
             Join<Person, Car> join = root.join("car");
             Path exp = ((Path)join.as(SportsCar.class)).get("maxSpeed");
             cq1.where(qb1.equal(exp, new Integer(200)) );
-        
+
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
@@ -2819,16 +2825,16 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
-    
+
     /**
-     * Test a Tuple query with a where claise and a conjunction.
+     * Test a Tuple query with a where clause and a conjunction.
      */
     public void testTupleQuery() {
         EntityManager em = createEntityManager();
-        
+
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
-        
+
         Root<Employee> emp = criteria.from(Employee.class);
         Path exp = emp.get("lastName");
 
@@ -2837,10 +2843,143 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         criteria.groupBy(exp);
 
         TypedQuery<Tuple> query = em.createQuery(criteria);
-        
+
         List<Tuple> list = query.getResultList();
     }
 
+    /**
+     * bug 366104 : Tuple.get(int) validation
+     */
+    public void testTupleIndexValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+
+        Root<Employee> emp = criteria.from(Employee.class);
+        criteria.multiselect(emp.get("lastName"), emp.get("firstName"));
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        List<Tuple> list = query.getResultList();
+
+        Tuple row = list.get(0);
+        try {
+            Object result = row.get(-1);
+            this.fail("IllegalArgumentException not thrown when using index of -1 on a Tuple.  returned: "+result);
+        } catch (IllegalArgumentException iae) {}
+
+        try {
+            Object result = row.get(2);
+            this.fail("IllegalArgumentException expected. Array:"+row.toArray());
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /**
+     * bug 366112: test Tuple.get(int, Class) validation
+     */
+    public void testTupleIndexTypeValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+
+        Root<Employee> emp = criteria.from(Employee.class);
+        criteria.multiselect(emp.get("lastName"), emp.get("firstName"));
+        criteria.where(qb.isNotNull(emp.get("firstName")));//make sure firstName !=null for type checking
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        List<Tuple> list = query.getResultList();
+
+        Tuple row = list.get(0);
+        //verify it doesn't throw an exception in a valid case first:
+        row.get(0, String.class);
+
+        try {
+            Object result = row.get(1, java.sql.Date.class);
+            this.fail("IllegalArgumentException expected using a Date to get a String. Result returned:"+result);
+        } catch (IllegalArgumentException iae) {}
+
+        try {
+            row.get(2, Object.class);
+            this.fail("IllegalArgumentException expected for index=2. Array:"+row.toArray());
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /**
+     * bug 366179 : test Tuple.get(string) validation
+     */
+    public void testTupleStringValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+
+        Root<Employee> emp = criteria.from(Employee.class);
+        criteria.multiselect(emp.get("lastName").alias("lastName"), emp.get("firstName"));
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        List<Tuple> list = query.getResultList();
+        Tuple row = list.get(0);
+
+        //verify it doesn't throw an exception in a valid case first:
+        row.get("lastName");
+        try {
+            Object result = row.get("non-existing-name");
+            this.fail("IllegalArgumentException expected using an invalid value. Result returned:"+result);
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /**
+     * bug 366179 : test Tuple.get(string, Type) validation
+     */
+    public void testTupleStringTypeValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+
+        Root<Employee> emp = criteria.from(Employee.class);
+        criteria.multiselect(emp.get("lastName").alias("lastName"), emp.get("firstName").alias("firstName"));
+        criteria.where(qb.isNotNull(emp.get("firstName")));//make sure firstName !=null for type checking
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        List<Tuple> list = query.getResultList();
+        Tuple row = list.get(0);
+
+        //verify it doesn't throw an exception in a valid case first:
+        row.get("lastName", String.class);
+
+        try {
+            Object result = row.get("firstName", java.sql.Date.class);
+            this.fail("IllegalArgumentException expected using an invalid value. Result returned:"+result);
+        } catch (IllegalArgumentException iae) {}
+    }
+
+    /**
+     * bug 366182 : test Tuple.get(tuple) validation
+     */
+    public void testTupleTupleValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+
+        Root<Employee> emp = criteria.from(Employee.class);
+        Path unusedTupleElement = emp.get("normalHours");
+        Path lastName = emp.get("lastName");
+        criteria.multiselect(lastName, emp.get("firstName"));
+
+        TypedQuery<Tuple> query = em.createQuery(criteria);
+        List<Tuple> list = query.getResultList();
+        Tuple row = list.get(0);
+
+        //verify it doesn't throw an exception in a valid case first:
+        row.get(lastName);
+        try {
+            Object result = row.get(unusedTupleElement);
+            this.fail("IllegalArgumentException expected using an invalid value. Result returned:"+result);
+        } catch (IllegalArgumentException iae) {}
+    }
 }
 
 

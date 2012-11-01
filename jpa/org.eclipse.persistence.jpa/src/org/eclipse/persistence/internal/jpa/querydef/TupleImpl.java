@@ -7,6 +7,7 @@ import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 import javax.persistence.criteria.Selection;
 
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQueryResult;
 
 public class TupleImpl implements Tuple, Serializable{
@@ -22,12 +23,17 @@ public class TupleImpl implements Tuple, Serializable{
      * Get the value of the specified result element.
      * @param resultElement  tuple result element
      * @return value of result element
-     * @throws IllegalArgument exception if result element
+     * @throws IllegalArgumentException if result element
      *         does not correspond to an element in the
      *         query result tuple
      */
     public <X> X get(TupleElement<X> tupleElement){
-        return (X) this.get(this.selections.indexOf(tupleElement));
+        int index = this.selections.indexOf(tupleElement);
+        if (index==-1) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_criteriaapi_no_corresponding_element_in_result", new Object[]{tupleElement}));
+        }
+        return (X) this.get(index);
     }
 
     /**
@@ -35,12 +41,17 @@ public class TupleImpl implements Tuple, Serializable{
      * specified alias has been assigned.
      * @param alias  alias assigned to result element
      * @return type of the result element
-     * @throws IllegalArgument exception if alias
+     * @throws IllegalArgumentException if alias
      *         does not correspond to an element in the
      *         query tuple result or type is incorrect
      */
     public <X> X get(String alias, Class<X> type){
-        return (X) this.get(alias);
+        Object result = this.get(alias);
+        if (type==null || !(result==null || type.isInstance(result))) { 
+            throw new IllegalArgumentException( ExceptionLocalization.buildMessage(
+                    "jpa_criteriaapi_invalid_result_type", new Object[]{alias, type, result}));
+        }
+        return (X) result;
     }
 
     /**
@@ -53,7 +64,14 @@ public class TupleImpl implements Tuple, Serializable{
      *         query result tuple
      */
     public Object get(String alias){
-        return this.rqr.get(alias);
+        //don't use the ReportQueryResult's get(string) since it returns null when the name is invalid
+        int index = this.rqr.getNames().indexOf(alias);
+        if (index == -1) {
+            throw new IllegalArgumentException( ExceptionLocalization.buildMessage(
+                    "jpa_criteriaapi_no_corresponding_element_in_result", new Object[]{alias}));
+        }
+
+        return get(index);
     }
 
     /**
@@ -62,11 +80,16 @@ public class TupleImpl implements Tuple, Serializable{
      * @param i  position in result tuple
      * @param type  type of the result element
      * @return value of the result element
-     * @throws IllegalArgument exception if i exceeds
+     * @throws IllegalArgumentException if i exceeds
      *         length of result tuple or type is incorrect
      */
     public <X> X get(int i, Class<X> type){
-        return (X) this.get(i);
+        Object result = this.get(i);
+        if (type==null || !(result==null || type.isInstance(result))) { 
+            throw new IllegalArgumentException( ExceptionLocalization.buildMessage(
+                    "jpa_criteriaapi_invalid_result_type", new Object[]{i, type, result}));
+        }
+        return (X) result;
     }
     
 
@@ -75,10 +98,14 @@ public class TupleImpl implements Tuple, Serializable{
      * position in the result tuple. The first position is 0.
      * @param i  position in result tuple
      * @return value of the result element
-     * @throws IllegalArgument exception if i exceeds
+     * @throws IllegalArgumentException if i exceeds
      *         length of result list
      */
     public Object get(int i){
+        if (i<0 || (i >= this.rqr.getResults().size()) ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage(
+                    "jpa_criteriaapi_invalid_result_index", new Object[]{i, this.rqr.getResults().size()}));
+        }
         return this.rqr.getByIndex(i);
     }
 

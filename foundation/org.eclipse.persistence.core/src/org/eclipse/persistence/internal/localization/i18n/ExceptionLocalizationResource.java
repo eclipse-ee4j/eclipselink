@@ -193,7 +193,12 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."},
                                            { "jpa21_invalid_call_on_un_executed_query", "The query must be executed before calling this method."},
                                            { "jpa21_invalid_call_with_no_output_parameters", "Invalid call on a query that does not return OUT parameters."},
-                                           { "jpa21_invalid_call_with_no_result_sets_returned", "Invalid call on a query that does not return result sets."}
+                                           { "jpa21_invalid_call_with_no_result_sets_returned", "Invalid call on a query that does not return result sets."},
+                                           //criteria API IllegalArgumentExceptions
+                                           { "jpa_criteriaapi_no_corresponding_element_in_result", "Element {0} does not correspond to an element in the query result."},
+                                           { "jpa_criteriaapi_invalid_result_index", "index {0} invalid for result list of size {1}."},
+                                           { "jpa_criteriaapi_invalid_result_type", "Element {0} type {1} is invalid for result {2}."}
+                                           
                                         };
     /**
      * Return the lookup table.
