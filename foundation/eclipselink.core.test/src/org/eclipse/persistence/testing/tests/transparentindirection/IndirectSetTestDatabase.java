@@ -13,9 +13,13 @@
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.SetOrder;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
 import org.eclipse.persistence.testing.models.transparentindirection.IndirectSetProject;
+import org.eclipse.persistence.testing.models.transparentindirection.SetOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.SetSalesRep;
 
 /**
  * Test the IndirectList with assorted DatabaseSessions and UnitsOfWork.
@@ -38,6 +42,14 @@ public class IndirectSetTestDatabase extends IndirectContainerTestDatabase {
 
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new SetOrder(customerName);
+    }
+
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new SetOrderLine(item, quanity);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new SetSalesRep(name);
     }
 
     /**

@@ -38,6 +38,14 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
         return new Order(customerName);
     }
 
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new OrderLine(item, quanity);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new SalesRep(name);
+    }
+
     /**
      * build the TopLink project
      */
@@ -86,7 +94,7 @@ public class IndirectListTestDatabase extends IndirectContainerTestDatabase {
         assertEquals("Result should have one element", 1, vector.size());
         Order order = (Order) vector.get(0);
 
-        OrderLine line = (OrderLine) ((Collection)order.getLineContainer()).toArray()[0];
+        AbstractOrderLine line = (AbstractOrderLine) ((Collection)order.getLineContainer()).toArray()[0];
         assertEquals("itemName in OrderLine should be null", line.getKey(), null);
     }
 }

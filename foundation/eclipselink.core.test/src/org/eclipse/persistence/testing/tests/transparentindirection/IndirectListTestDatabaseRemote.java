@@ -12,7 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.transparentindirection;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.Order;
+import org.eclipse.persistence.testing.models.transparentindirection.OrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.SalesRep;
 
 public class IndirectListTestDatabaseRemote extends IndirectContainerTestDatabaseRemote {
     public IndirectListTestDatabaseRemote(String name) {
@@ -25,5 +29,13 @@ public class IndirectListTestDatabaseRemote extends IndirectContainerTestDatabas
 
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new Order(customerName);
+    }
+
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new OrderLine(item, quanity);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new SalesRep(name);
     }
 }

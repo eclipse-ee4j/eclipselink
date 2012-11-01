@@ -43,4 +43,12 @@ public class IndirectMapProject extends IndirectContainerProject {
     public Class orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.MappedOrder.class;
     }
+
+    public Class orderLineClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.MappedOrderLine.class;
+    }
+
+    protected Class salesRepClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.MappedSalesRep.class;
+    }
 }

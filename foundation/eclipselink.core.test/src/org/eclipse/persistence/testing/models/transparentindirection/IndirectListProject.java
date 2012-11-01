@@ -43,4 +43,12 @@ public class IndirectListProject extends IndirectContainerProject {
     protected Class orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.Order.class;
     }
+
+    protected Class orderLineClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.OrderLine.class;
+    }
+
+    protected Class salesRepClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class;
+    }
 }

@@ -14,7 +14,11 @@ package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.MappedOrder;
+import org.eclipse.persistence.testing.models.transparentindirection.MappedOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.MappedSalesRep;
 
 /**
  * comment
@@ -35,6 +39,14 @@ public class IndirectMapTestDatabaseRemote extends IndirectContainerTestDatabase
 
     protected AbstractOrder buildTestOrderShell(String customerName) {
         return new MappedOrder(customerName);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new MappedSalesRep(name);
+    }
+
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new MappedOrderLine(item, quanity);
     }
 
     /**

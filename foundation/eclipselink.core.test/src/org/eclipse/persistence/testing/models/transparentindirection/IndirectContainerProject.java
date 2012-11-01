@@ -93,7 +93,7 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
         manytomanymapping.setAttributeName("salesReps");
         manytomanymapping.setIsReadOnly(false);
         manytomanymapping.setUsesIndirection(false);
-        manytomanymapping.setReferenceClass(org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class);
+        manytomanymapping.setReferenceClass(salesRepClass());
         manytomanymapping.setIsPrivateOwned(false);
         this.configureSalesRepContainer(manytomanymapping);// bjv
         manytomanymapping.setRelationTableName("ORDREP");
@@ -106,7 +106,7 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
         manytomanymapping1.setAttributeName("salesReps2");
         manytomanymapping1.setIsReadOnly(false);
         manytomanymapping1.setUsesIndirection(false);
-        manytomanymapping1.setReferenceClass(org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class);
+        manytomanymapping1.setReferenceClass(salesRepClass());
         manytomanymapping1.setIsPrivateOwned(false);
         this.configureSalesRepContainer2(manytomanymapping1);// bjv
         manytomanymapping1.setRelationTableName("ORDREP2");
@@ -119,7 +119,7 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
         onetomanymapping.setAttributeName("lines");
         onetomanymapping.setIsReadOnly(false);
         onetomanymapping.setUsesIndirection(false);
-        onetomanymapping.setReferenceClass(org.eclipse.persistence.testing.models.transparentindirection.OrderLine.class);
+        onetomanymapping.setReferenceClass(orderLineClass());
         onetomanymapping.setIsPrivateOwned(true);
         this.configureLineContainer(onetomanymapping);// bjv
         onetomanymapping.addTargetForeignKeyFieldName("ORDLINE.ORDER_ID", "ORD.ID");
@@ -156,7 +156,7 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
         // SECTION: DESCRIPTOR
-        descriptor.setJavaClass(org.eclipse.persistence.testing.models.transparentindirection.OrderLine.class);
+        descriptor.setJavaClass(orderLineClass());
         Vector vector = new Vector();
         vector.addElement("ORDLINE");
         descriptor.setTableNames(vector);
@@ -215,7 +215,7 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
         RelationalDescriptor descriptor = new RelationalDescriptor();
 
         // SECTION: DESCRIPTOR
-        descriptor.setJavaClass(org.eclipse.persistence.testing.models.transparentindirection.SalesRep.class);
+        descriptor.setJavaClass(salesRepClass());
         Vector vector = new Vector();
         vector.addElement("SALEREP");
         descriptor.setTableNames(vector);
@@ -293,4 +293,8 @@ public abstract class IndirectContainerProject extends GeneratedIndirectContaine
     protected abstract void modifyOrderDescriptor(RelationalDescriptor descriptor);
 
     protected abstract Class orderClass();
+    
+    protected abstract Class orderLineClass();
+    
+    protected abstract Class salesRepClass();
 }

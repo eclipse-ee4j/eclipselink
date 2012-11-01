@@ -41,12 +41,12 @@ public class Order extends AbstractOrder {
         contacts.add(contact);
     }
 
-    public void addLine(OrderLine line) {
+    public void addLine(AbstractOrderLine line) {
         lines.add(line);
         line.order = this;
     }
 
-    public void addSalesRep(SalesRep salesRep) {
+    public void addSalesRep(AbstractSalesRep salesRep) {
         salesReps.add(salesRep);
         salesRep.addOrder(this);
     }
@@ -55,11 +55,11 @@ public class Order extends AbstractOrder {
         return contacts.contains(contactName);
     }
 
-    public boolean containsLine(OrderLine line) {
+    public boolean containsLine(AbstractOrderLine line) {
         return lines.contains(line);
     }
 
-    public boolean containsSalesRep(SalesRep salesRep) {
+    public boolean containsSalesRep(AbstractSalesRep salesRep) {
         return salesReps.contains(salesRep);
     }
 
@@ -117,12 +117,12 @@ public class Order extends AbstractOrder {
         contacts.remove(contact);
     }
 
-    public void removeLine(OrderLine line) {
+    public void removeLine(AbstractOrderLine line) {
         lines.remove(line);
         //	line.order = null;
     }
 
-    public void removeSalesRep(SalesRep salesRep) {
+    public void removeSalesRep(AbstractSalesRep salesRep) {
         salesReps.remove(salesRep);
         salesRep.removeOrder(this);
     }

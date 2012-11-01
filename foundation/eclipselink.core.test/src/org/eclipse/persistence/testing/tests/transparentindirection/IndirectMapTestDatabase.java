@@ -13,11 +13,13 @@
 package org.eclipse.persistence.testing.tests.transparentindirection;
 
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.IndirectMapProject;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
-import org.eclipse.persistence.testing.models.transparentindirection.SalesRep;
+import org.eclipse.persistence.testing.models.transparentindirection.MappedOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.MappedSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.MappedOrder;
-import org.eclipse.persistence.testing.models.transparentindirection.OrderLine;
 
 /**
  * Test the IndirectMap with assorted DatabaseSessions and UnitsOfWork.
@@ -36,6 +38,14 @@ public class IndirectMapTestDatabase extends IndirectContainerTestDatabase {
         return new MappedOrder(customerName);
     }
 
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new MappedOrderLine(item, quanity);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new MappedSalesRep(name);
+    }
+
     /**
      * build the TopLink project
      */
@@ -48,10 +58,10 @@ public class IndirectMapTestDatabase extends IndirectContainerTestDatabase {
         key.id = originalID;
         MappedOrder orderFromDB = (MappedOrder)getSession().readObject(key);
 
-        SalesRep tempSalesRep = (SalesRep)((MappedOrder)this.buildTestOrder1()).salesReps.values().iterator().next();
-        this.assertEquals("Invalid sales rep key/value pair.", tempSalesRep.name, ((SalesRep)orderFromDB.salesReps.get(tempSalesRep.getKey())).name);
+        AbstractSalesRep tempSalesRep = (AbstractSalesRep)((MappedOrder)this.buildTestOrder1()).salesReps.values().iterator().next();
+        this.assertEquals("Invalid sales rep key/value pair.", tempSalesRep.name, ((AbstractSalesRep)orderFromDB.salesReps.get(tempSalesRep.getKey())).name);
 
-        OrderLine tempLine = (OrderLine)((MappedOrder)this.buildTestOrder1()).lines.values().iterator().next();
-        this.assertEquals("Invalid order line key/value pair.", tempLine.itemName, ((OrderLine)orderFromDB.lines.get(tempLine.getKey())).itemName);
+        AbstractOrderLine tempLine = (AbstractOrderLine)((MappedOrder)this.buildTestOrder1()).lines.values().iterator().next();
+        this.assertEquals("Invalid order line key/value pair.", tempLine.itemName, ((AbstractOrderLine)orderFromDB.lines.get(tempLine.getKey())).itemName);
     }
 }

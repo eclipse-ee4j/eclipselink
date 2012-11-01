@@ -42,12 +42,12 @@ public class MappedOrder extends AbstractOrder {
         contacts.add(contact);
     }
 
-    public void addLine(OrderLine line) {
+    public void addLine(AbstractOrderLine line) {
         lines.put(line.getKey(), line);
         line.order = this;
     }
 
-    public void addSalesRep(SalesRep salesRep) {
+    public void addSalesRep(AbstractSalesRep salesRep) {
         salesReps.put(salesRep.getKey(), salesRep);
         salesRep.addOrder(this);
     }
@@ -56,11 +56,11 @@ public class MappedOrder extends AbstractOrder {
         return contacts.contains(contactName);
     }
 
-    public boolean containsLine(OrderLine line) {
+    public boolean containsLine(AbstractOrderLine line) {
         return lines.containsValue(line);
     }
 
-    public boolean containsSalesRep(SalesRep salesRep) {
+    public boolean containsSalesRep(AbstractSalesRep salesRep) {
         return salesReps.containsValue(salesRep);
     }
 
@@ -114,12 +114,12 @@ public class MappedOrder extends AbstractOrder {
         contacts.remove(contact);
     }
 
-    public void removeLine(OrderLine line) {
+    public void removeLine(AbstractOrderLine line) {
         lines.remove(line.getKey());
         //	line.order = null;
     }
 
-    public void removeSalesRep(SalesRep salesRep) {
+    public void removeSalesRep(AbstractSalesRep salesRep) {
         salesReps.remove(salesRep.getKey());
         salesRep.removeOrder(this);
     }

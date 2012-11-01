@@ -12,117 +12,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.util.*;
-import java.io.*;
-
 /**
  * Simple sales rep object. Just a test fixture.
  * @author: Big Country
  */
-public class SalesRep implements Serializable {
-    public int id;
-    public String name;
-    public Vector orders;
-    public Vector orders2;
-
-    /**
-     * TopLink constructor
-     */
+public class SalesRep extends AbstractSalesRep {
     public SalesRep() {
         super();
-        this.initialize();
     }
 
     /**
      * Constructor
      */
     public SalesRep(String name) {
-        this();
-        this.initialize(name);
-    }
-
-    /**
-     *
-     */
-    public void addOrder(AbstractOrder order) {
-        orders.addElement(order);
-    }
-
-    /**
-     *
-     */
-    public void addOrder2(AbstractOrder order) {
-        orders2.addElement(order);
-    }
-
-    /**
-     * normally not needed, but simplifies testing
-     */
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        SalesRep other;
-        if (obj instanceof SalesRep) {
-            other = (SalesRep)obj;
-        } else {
-            return false;
-        }
-
-        if (this.id != other.id) {
-            return false;
-        }
-        if (!this.name.equals(other.name)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     *
-     */
-    public String getKey() {
-        return name;
-    }
-
-    public int hashCode() {
-        return id;
-    }
-
-    /**
-     *
-     */
-    public void initialize() {
-        this.orders = new Vector();
-        this.orders2 = new Vector();
-    }
-
-    /**
-     *
-     */
-    public void initialize(String name) {
-        this.name = name;
-    }
-
-    /**
-     *
-     */
-    public void removeOrder(AbstractOrder order) {
-        orders.removeElement(order);
-    }
-
-    /**
-     *
-     */
-    public void removeOrder2(AbstractOrder order) {
-        orders2.removeElement(order);
-    }
-
-    /**
-     *
-     */
-    public String toString() {
-        return "SalesRep(" + id + ": " + name + ")";
+        super(name);
     }
 }

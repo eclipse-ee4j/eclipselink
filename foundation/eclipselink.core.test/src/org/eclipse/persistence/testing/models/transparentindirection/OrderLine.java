@@ -12,21 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.transparentindirection;
 
-import java.io.*;
 
 /**
  * Simple order line object. Just a test fixture.
  * @author: Big Country
  */
-public class OrderLine implements Serializable, Cloneable {
-    public int id;
-    public AbstractOrder order;
-    public String itemName;
-    public int quantity;
-
-    /**
-     * TopLink constructor
-     */
+public class OrderLine extends AbstractOrderLine {
     public OrderLine() {
         super();
     }
@@ -35,62 +26,13 @@ public class OrderLine implements Serializable, Cloneable {
      * Constructor
      */
     public OrderLine(String itemName) {
-        this.itemName = itemName;
-        this.quantity = 1;
+        super(itemName);
     }
 
     /**
      * Constructor
      */
     public OrderLine(String itemName, int quantity) {
-        this.itemName = itemName;
-        this.quantity = quantity;
-    }
-
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException exception) {
-            throw new InternalError();
-        }
-    }
-
-    /**
-     * normally not needed, but simplifies testing
-     */
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        OrderLine other;
-        if (obj instanceof OrderLine) {
-            other = (OrderLine)obj;
-        } else {
-            return false;
-        }
-
-        if (this.id != other.id) {
-            return false;
-        }
-        if (!this.itemName.equals(other.itemName)) {
-            return false;
-        }
-        if (this.quantity != other.quantity) {
-            return false;
-        }
-        return true;
-    }
-
-    public String getKey() {
-        return itemName;
-    }
-
-    public int hashCode() {
-        return id;
-    }
-
-    public String toString() {
-        return "OrderLine(" + id + ": " + itemName + " - " + quantity + ")" + org.eclipse.persistence.internal.helper.Helper.cr() + "\t" + System.identityHashCode(this);
+        super(itemName, quantity);
     }
 }

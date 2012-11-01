@@ -18,8 +18,10 @@ import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrder;
-import org.eclipse.persistence.testing.models.transparentindirection.SalesRep;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractOrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.AbstractSalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.OrderLine;
+import org.eclipse.persistence.testing.models.transparentindirection.SalesRep;
 import org.eclipse.persistence.testing.models.transparentindirection.Order;
 
 /**
@@ -64,14 +66,14 @@ public class IndirectContainerTestDatabase extends ZTestCase {
     protected AbstractOrder buildTestOrder1() {
         AbstractOrder order = buildTestOrderShell("Tommy 2Tone");
 
-        order.addSalesRep(new SalesRep("Slippery Sam"));
-        order.addSalesRep(new SalesRep("Slippery Sam's Brother"));
-        order.addSalesRep(new SalesRep("Slippery Samantha"));
+        order.addSalesRep(newSalesRep("Slippery Sam"));
+        order.addSalesRep(newSalesRep("Slippery Sam's Brother"));
+        order.addSalesRep(newSalesRep("Slippery Samantha"));
 
-        order.addSalesRep2(new SalesRep("Edgar"));
-        order.addSalesRep2(new SalesRep("Rick"));
-        order.addSalesRep2(new SalesRep("Dan"));
-        order.addSalesRep2(new SalesRep("Johnny"));
+        order.addSalesRep2(newSalesRep("Edgar"));
+        order.addSalesRep2(newSalesRep("Rick"));
+        order.addSalesRep2(newSalesRep("Dan"));
+        order.addSalesRep2(newSalesRep("Johnny"));
 
         order.addContact("Tommy");
         order.addContact("Pato");
@@ -82,9 +84,9 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         order.addContact2("John");
         order.addContact2("Keith");
 
-        order.addLine(new OrderLine("Specials", 1));
-        order.addLine(new OrderLine("General Public", 3));
-        order.addLine(new OrderLine("Madness", 1));
+        order.addLine(newOrderLine("Specials", 1));
+        order.addLine(newOrderLine("General Public", 3));
+        order.addLine(newOrderLine("Madness", 1));
 
         order.setTotal(765);
         order.total2 = 987;
@@ -95,13 +97,13 @@ public class IndirectContainerTestDatabase extends ZTestCase {
     protected AbstractOrder buildTestOrder2() {
         AbstractOrder order = buildTestOrderShell("Ferdinand Fox");
 
-        order.addSalesRep(new SalesRep("Tricky Dick"));
-        order.addSalesRep(new SalesRep("Shady Shakeem"));
+        order.addSalesRep(newSalesRep("Tricky Dick"));
+        order.addSalesRep(newSalesRep("Shady Shakeem"));
 
-        order.addSalesRep2(new SalesRep("John"));
-        order.addSalesRep2(new SalesRep("Paul"));
-        order.addSalesRep2(new SalesRep("George"));
-        order.addSalesRep2(new SalesRep("Ringo"));
+        order.addSalesRep2(newSalesRep("John"));
+        order.addSalesRep2(newSalesRep("Paul"));
+        order.addSalesRep2(newSalesRep("George"));
+        order.addSalesRep2(newSalesRep("Ringo"));
 
         order.addContact("Ferdy");
         order.addContact("Franny");
@@ -111,9 +113,9 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         order.addContact2("Ace");
         order.addContact2("Peter");
 
-        order.addLine(new OrderLine("Squirrel Feeder", 3));
-        order.addLine(new OrderLine("Squirrel Trap", 6));
-        order.addLine(new OrderLine("Squirrel Cookbook", 1));
+        order.addLine(newOrderLine("Squirrel Feeder", 3));
+        order.addLine(newOrderLine("Squirrel Trap", 6));
+        order.addLine(newOrderLine("Squirrel Cookbook", 1));
 
         order.setTotal(1234);
         order.total2 = 7890;
@@ -126,15 +128,15 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 	protected AbstractOrder buildTestOrder3() {
 		AbstractOrder order = buildTestOrderShell("Conform Test");
 
-		order.addSalesRep(new SalesRep("Tom"));
+		order.addSalesRep(newSalesRep("Tom"));
 
-		order.addSalesRep2(new SalesRep("Mark"));
+		order.addSalesRep2(newSalesRep("Mark"));
 
 		order.addContact("Jason");
 
 		order.addContact2("Guy");
 
-		order.addLine(new OrderLine());
+		order.addLine(newOrderLine("", 1));
 
 		order.setTotal(3456);
 		order.total2 = 5678;
@@ -144,8 +146,8 @@ public class IndirectContainerTestDatabase extends ZTestCase {
     /**
  *
  */
-    protected OrderLine buildTestOrderLine1() {
-        return new OrderLine("Spice Girls", 5);
+    protected AbstractOrderLine buildTestOrderLine1() {
+        return newOrderLine("Spice Girls", 5);
     }
 
     /**
@@ -155,18 +157,26 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         return new Order(customerName);
     }
 
-    /**
- *
- */
-    protected SalesRep buildTestSalesRep1() {
-        return new SalesRep("Sales Weasel");
+    protected AbstractOrderLine newOrderLine(String item, int quanity) {
+        return new OrderLine(item, quanity);
+    }
+
+    protected AbstractSalesRep newSalesRep(String name) {
+        return new SalesRep(name);
     }
 
     /**
  *
  */
-    protected SalesRep buildTestSalesRep2() {
-        return new SalesRep("Uncle Ernie");
+    protected AbstractSalesRep buildTestSalesRep1() {
+        return newSalesRep("Sales Weasel");
+    }
+
+    /**
+ *
+ */
+    protected AbstractSalesRep buildTestSalesRep2() {
+        return newSalesRep("Uncle Ernie");
     }
 
     /**
@@ -258,7 +268,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         // re-read the object to get the clone if necessary
         originalOrder = (AbstractOrder)this.getSession().readObject(originalOrder);
 
-        OrderLine orderLine = (OrderLine)((OrderLine)originalOrder.getLineStream().nextElement()).clone();
+        AbstractOrderLine orderLine = (AbstractOrderLine)((AbstractOrderLine)originalOrder.getLineStream().nextElement()).clone();
         orderLine.itemName = "munged";
         this.getBackdoorSession().executeNonSelectingSQL("update ORDLINE set ITEM_NAME = '" + orderLine.itemName + "' where ID = " + orderLine.id);
         AbstractOrder orderFromDB = (AbstractOrder)this.getSession().refreshObject(originalOrder);
@@ -284,7 +294,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder orderFromDB = (AbstractOrder)this.getSession().readObject(key);
 
         this.assertTrue("The order lines should NOT be populated.", !((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
-        OrderLine orderLine = (OrderLine)orderFromDB.getLineStream().nextElement();
+        AbstractOrderLine orderLine = (AbstractOrderLine)orderFromDB.getLineStream().nextElement();
         this.assertTrue("The order lines should be populated.", ((IndirectContainer)orderFromDB.getLineContainer()).isInstantiated());
 
         // there were problems with TransformationMappings, so make sure they work too
@@ -295,7 +305,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 
         this.assertEquals("The total 2 is incorrect.", expected.total2, orderFromDB.total2);
 
-        orderLine = (OrderLine)orderLine.clone();
+        orderLine = (AbstractOrderLine)orderLine.clone();
         orderLine.itemName = "munged";
         this.getBackdoorSession().executeNonSelectingSQL("update ORDLINE set ITEM_NAME = '" + orderLine.itemName + "' where ID = " + orderLine.id);
         orderFromDB = (AbstractOrder)this.getSession().refreshObject(orderFromDB);
@@ -362,7 +372,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        OrderLine orderLine = this.buildTestOrderLine1();
+        AbstractOrderLine orderLine = this.buildTestOrderLine1();
         orderFromDB.addLine(orderLine);
         uow.commit();
 
@@ -383,7 +393,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        SalesRep salesRep = this.buildTestSalesRep1();
+        AbstractSalesRep salesRep = this.buildTestSalesRep1();
         orderFromDB.addSalesRep(salesRep);
         uow.commit();
 
@@ -404,7 +414,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        SalesRep salesRep = this.buildTestSalesRep2();
+        AbstractSalesRep salesRep = this.buildTestSalesRep2();
         orderFromDB.addSalesRep2(salesRep);
         uow.commit();
 
@@ -516,7 +526,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        OrderLine orderLine = (OrderLine)orderFromDB.getLineStream().nextElement();
+        AbstractOrderLine orderLine = (AbstractOrderLine)orderFromDB.getLineStream().nextElement();
         orderFromDB.removeLine(orderLine);
         uow.commit();
 
@@ -537,7 +547,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        SalesRep salesRep = (SalesRep)orderFromDB.getSalesRepStream().nextElement();
+        AbstractSalesRep salesRep = (AbstractSalesRep)orderFromDB.getSalesRepStream().nextElement();
         orderFromDB.removeSalesRep(salesRep);
         uow.commit();
 
@@ -558,7 +568,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
         AbstractOrder key = this.buildOrderShell();
         key.id = originalID;
         AbstractOrder orderFromDB = (AbstractOrder)uow.readObject(key);
-        SalesRep salesRep = (SalesRep)orderFromDB.getSalesRepStream2().nextElement();
+        AbstractSalesRep salesRep = (AbstractSalesRep)orderFromDB.getSalesRepStream2().nextElement();
         orderFromDB.removeSalesRep2(salesRep);
         uow.commit();
 

@@ -42,7 +42,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
-
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL exceptions.
@@ -931,10 +930,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 emp.setLastName("test");
                 commitTransaction(em);
             } catch (RuntimeException ex) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
+                closeEntityManagerAndTransaction(em);
                 Throwable lockException = ex;
                 while ((lockException != null) && !(lockException instanceof OptimisticLockException)) {
                     lockException = lockException.getCause();

@@ -52,11 +52,11 @@ public abstract class AbstractOrder implements Serializable {
         contacts2.addElement(contact);
     }
 
-    public abstract void addLine(OrderLine line);
+    public abstract void addLine(AbstractOrderLine line);
 
-    public abstract void addSalesRep(SalesRep salesRep);
+    public abstract void addSalesRep(AbstractSalesRep salesRep);
 
-    public void addSalesRep2(SalesRep salesRep) {
+    public void addSalesRep2(AbstractSalesRep salesRep) {
         salesReps2.put(salesRep.getKey(), salesRep);
         salesRep.addOrder2(this);
     }
@@ -67,11 +67,11 @@ public abstract class AbstractOrder implements Serializable {
         return contacts2.contains(contactName);
     }
 
-    public abstract boolean containsLine(OrderLine line);
+    public abstract boolean containsLine(AbstractOrderLine line);
 
-    public abstract boolean containsSalesRep(SalesRep salesRep);
+    public abstract boolean containsSalesRep(AbstractSalesRep salesRep);
 
-    public boolean containsSalesRep2(SalesRep salesRep) {
+    public boolean containsSalesRep2(AbstractSalesRep salesRep) {
         return salesReps2.contains(salesRep);
     }
 
@@ -202,11 +202,11 @@ public abstract class AbstractOrder implements Serializable {
         contacts2.removeElement(contact);
     }
 
-    public abstract void removeLine(OrderLine line);
+    public abstract void removeLine(AbstractOrderLine line);
 
-    public abstract void removeSalesRep(SalesRep salesRep);
+    public abstract void removeSalesRep(AbstractSalesRep salesRep);
 
-    public void removeSalesRep2(SalesRep salesRep) {
+    public void removeSalesRep2(AbstractSalesRep salesRep) {
         salesReps2.remove(salesRep.getKey());
         salesRep.removeOrder2(this);
     }

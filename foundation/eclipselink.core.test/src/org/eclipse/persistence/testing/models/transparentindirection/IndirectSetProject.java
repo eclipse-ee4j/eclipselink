@@ -50,4 +50,12 @@ public class IndirectSetProject extends IndirectContainerProject {
     protected Class orderClass() {
         return org.eclipse.persistence.testing.models.transparentindirection.SetOrder.class;
     }
+
+    public Class orderLineClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.SetOrderLine.class;
+    }
+
+    protected Class salesRepClass() {
+        return org.eclipse.persistence.testing.models.transparentindirection.SetSalesRep.class;
+    }
 }
