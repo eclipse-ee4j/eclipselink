@@ -259,8 +259,8 @@ if build=true
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.ext.criteria}"    property="postbuild.oracle.ext.version"  versiononly="true"
         />
-
-        <validate_extension_build prebuildhash="prebuild.ext.hash"   currentversion="${postbuild.oracle.ext.version}"   prebuildversion="${prebuild.oracle.ext.version}"   successproperty="commit.oracle" failureproperty="oracle.build.failed"/>
+                                                                                                                                                      ${prebuild.oracle.ext.version}
+        <validate_extension_build prebuildhashproperty="prebuild.ext.hash"   currentversionproperty="postbuild.oracle.ext.version"   prebuildversion="${prebuild.oracle.ext.version}"   successproperty="commit.oracle" failureproperty="oracle.build.failed"/>
     </target>
 
      <target name="build-nosql" unless="nosql.current" >
@@ -272,7 +272,7 @@ if build=true
         <selectbundle basename="${oracle.nosql.prefix}"   directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.nosql.criteria}"  property="postbuild.oracle.nosql.version"   versiononly="true"
         />
-        <validate_extension_build prebuildhash="prebuild.nosql.hash" currentversion="${postbuild.oracle.nosql.version}" prebuildversion="${prebuild.oracle.nosql.version}" successproperty="commit.nosql" failureproperty="nosql.build.failed"/>
+        <validate_extension_build prebuildhashproperty="prebuild.nosql.hash" currentversionproperty="postbuild.oracle.nosql.version" prebuildversion="${prebuild.oracle.nosql.version}" successproperty="commit.nosql" failureproperty="nosql.build.failed"/>
     </target>
 
     <!-- ================================================================ -->
@@ -353,38 +353,44 @@ if build=true
         <!--   oracle.target = oracle.ext:   build oracle extension         -->
         <!--                 = oracle.nosql: build oracle nosql extension   -->
         <!--                 = oracle:       build both                     -->
-        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension">
-           <property name="version.qualifier" value="v${oraclebuild.build.date}-@{qualifierhash}"/>
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="build-oracle-extension">
+           <property name="version.qualifier" value="v${oraclebuild.build.date}-${@{qualifierhash}}"/>
            <property name="oracle.target" value="@{buildtarget}"/>
         </ant>
         </sequential>
     </macrodef>
 
     <macrodef name="validate_extension_build">
-        <!-- Verify build was successful.                               -->
-        <!-- Compare:                                                   -->
-        <!--    currentversion to prebuilt version (shouldn't match)    -->
-        <!--    prebuildhash should be a substring of current version)  -->
-        <!-- Set:                                                       -->
-        <!--    successproperty to true if above true                   -->
-        <!--    failureproperty is set if above is false                -->
-        <!--          (need separate property to test process flow)     -->
-        <attribute name="prebuildhash"/>
-        <attribute name="currentversion"/>
+        <!-- Verify build was successful.                                             -->
+        <!-- Compare:                                                                 -->
+        <!--    ${currentversionproperty} to prebuildversion (shouldn't match)        -->
+        <!--    ${prebuildhashproperty} should be a substring of currentversion       -->
+        <!-- Set:                                                                     -->
+        <!--    successproperty to true if above true                                 -->
+        <!--    (implies <extension>.current was false & so build was needed)         -->
+        <!--    failureproperty is set if above is false                              -->
+        <!--    (implies build was necessary, but something failed)                   -->
+        <!--    (need separate property for process flow: "task if=" tests existance) -->
+        <attribute name="prebuildhashproperty"/>
+        <attribute name="currentversionproperty"/>
         <attribute name="prebuildversion"/>
         <attribute name="successproperty"/>
         <attribute name="failureproperty"/>
         <sequential>
             <condition property="@{successproperty}" value="true">
                 <and>
-                    <isset property="@{currentversion}"/>
-                    <not> <equals arg1="@{currentversion}" arg2="@{prebuildversion}"/>  </not>
-                    <contains string="@{currentversion}" substring="@{prebuildhash}"/>
+                    <isset property="@{currentversionproperty}"/>
+                    <not> <equals arg1="${@{currentversionproperty}}" arg2="@{prebuildversion}"/>  </not>
+                    <contains string="${@{currentversionproperty}}" substring="${@{prebuildhashproperty}}"/>
                 </and>
             </condition>
             <condition property="@{failureproperty}" value="true">
                 <not> <isset property="@{successproperty}"/> </not>
             </condition>
+            <say message="Bundle was successfully generated:"                                                     if="@{successproperty}"/>
+            <say message="    @{currentversionproperty} ('${@{currentversionproperty}}') != '@{prebuildversion}'" if="@{successproperty}"/>
+            <say message="    and '${@{prebuildhashproperty}}' is a substring of '${@{currentversionproperty}}'"  if="@{successproperty}"/>
+            <say message="Bundle generation failure detected."                                                    if="@{failureproperty}"/>            	           
         </sequential>
     </macrodef>
 
