@@ -34,6 +34,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarCharType;
@@ -96,20 +97,6 @@ public class ShadowDDLGenerator {
     }
     
     protected String getShadowROWTYPETypeName(ROWTYPEType rowTYPEType) {
-    	// TODO: not sure how to sync up a given ROWTYPEType instance with the correct
-    	//       DDL (pkgname_ROWTYPE_SQL0, pkgname_ROWTYPE_SQL1, etc.) in the builder
-    	// TODO: we shouldn't prepend the package name
-    	// TODO: keep the commented out code for now, in case we need to use it
-
-    	/*
-        StringBuilder sb = new StringBuilder(rowTYPEType.getPackageType().getPackageName().toUpperCase());
-        sb.append(ROWTYPE_PREFIX);
-        sb.append(rowTYPETypeCounts.get(rowTYPEType.getTypeName()));
-        return sb.toString();
-        */
-    	
-    	// we should just use the ROWTYPEType's type name, with '%' being 
-    	// replaced with '_' to match what we're doing in the builder
     	return rowTYPEType.getTypeName().replace(PERCENT, UNDERSCORE);
     }
     
@@ -198,20 +185,40 @@ public class ShadowDDLGenerator {
 	                                fieldShadowName = ((PLSQLType)fieldDataType).getParentType().
 	                                    getPackageName() + UNDERSCORE + fieldDataType.
 	                                    getTypeName().toUpperCase();
-	                            }
-	                            else {
+	                            } else if (fieldDataType.isTYPEType()) {
 	                                fieldShadowName = getShadowTypeName(fieldDataType);
-	                            }
-	                            ddlWrapper.ddl += fieldShadowName;
-	                            if (i < len -1) {
-	                                ddlWrapper.ddl += COMMA + NL;
-	                            }
-	                            break;
-	                        }
-	                    }
-	                }
-	            }
-        	}
+	                                TYPEType tType = (TYPEType) fieldDataType;
+	                                if (tType.getEnclosedType().isFieldType()) {
+	                                    FieldType fType = (FieldType) tType.getEnclosedType();
+                                        if (fType.getEnclosedType().isPrecisionType()) {
+                                            PrecisionType pType = (PrecisionType) fType.getEnclosedType();
+                                            long precision = pType.getPrecision();
+                                            if (precision != pType.getDefaultPrecision()) {
+                                                long scale = pType.getScale();
+                                                if (scale != 0) {
+                                                    fieldShadowName = fieldShadowName + LBRACKET + precision + COMMA + scale + RBRACKET;
+                                                } else {
+                                                    fieldShadowName = fieldShadowName + LBRACKET + precision + RBRACKET;
+                                                }
+                                            }
+                                        } else if (fType.getEnclosedType().isSizedType()) {
+                                            SizedType sType = (SizedType) fType.getEnclosedType();
+                                            fieldShadowName = fieldShadowName + LBRACKET + sType.getSize() + RBRACKET;
+                                        }
+                                    }
+                                } else {
+                                    fieldShadowName = getShadowTypeName(fieldDataType);
+                                }
+                                ddlWrapper.ddl += fieldShadowName;
+                                if (i < len -1) {
+                                    ddlWrapper.ddl += COMMA + NL;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         @Override
         public void beginVisit(PLSQLCollectionType collectionType) {
@@ -297,6 +304,7 @@ public class ShadowDDLGenerator {
                  */
             }
         }
+        @Override
         public void endVisit(ROWTYPEType rowTYPEType) {
             rowTYPETypes.pop();
             DDLWrapper ddlWrapper = createDDLs.get(rowTYPEType);
@@ -312,6 +320,7 @@ public class ShadowDDLGenerator {
                 dropDDLs.put(rowTYPEType, ddlWrapper);
             }
         }
+
         protected String getShadowTypeName(DatabaseType dataType ) {
             String shadowTypeName = null;
             if (dataType == ScalarDatabaseTypeEnum.INTEGER_TYPE ||

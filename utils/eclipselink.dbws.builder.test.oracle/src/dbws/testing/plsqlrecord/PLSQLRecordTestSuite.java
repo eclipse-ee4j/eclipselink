@@ -16,6 +16,8 @@ package dbws.testing.plsqlrecord;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.w3c.dom.Document;
 
@@ -39,11 +41,15 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL procedures with simple arguments.
+ * Tests PL/SQL procedures with simple and complex arguments.
  *
  */
 public class PLSQLRecordTestSuite extends DBWSTestSuite {
-    //============================================================
+    static final String MTAB1_TYPE = "TYPE PACKAGE1_MTAB1";
+    static final String NRECORD_TYPE = "TYPE PACKAGE1_NRECORD";
+    static final String MRECORD_TYPE = "TYPE PACKAGE1_MRECORD";
+    static final String EMPREC_TYPE = "TYPE EMP_RECORD_PACKAGE_EMPREC";
+    
     static final String CREATE_EMPTYPE_TABLE =
         "CREATE TABLE EMPTYPEX (" +
             "\nEMPNO NUMERIC(4) NOT NULL," +
@@ -58,14 +64,6 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String DROP_EMPTYPE_TABLE =
         "DROP TABLE EMPTYPEX";
 
-    static final String CREATE_EMPREC_TYPE =
-        "CREATE OR REPLACE TYPE EMP_RECORD_PACKAGE_EmpRec AS OBJECT (" +
-            "emp_id   NUMERIC(4),\n" +
-            "emp_name VARCHAR(25)\n" +
-        "\n)";
-    static final String DROP_EMPREC_TYPE =
-        "DROP TYPE EMP_RECORD_PACKAGE_EMPREC";
-    
     static final String CREATE_EMP_RECORD_PACKAGE =
         "create or replace PACKAGE EMP_RECORD_PACKAGE AS\n" +
             "type EmpRec is record (" +
@@ -96,20 +94,6 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
     static final String DROP_EMP_RECORD_PACKAGE_BODY =
         "DROP PACKAGE BODY EMP_RECORD_PACKAGE";
     
-    
-    //============================================================
-
-    static final String CREATE_PACKAGE1_MTAB1_TYPE =
-        "CREATE OR REPLACE TYPE PACKAGE1_MTAB1 AS TABLE OF NUMBER";
-    static final String CREATE_PACKAGE1_NRECORD_TYPE =
-        "CREATE OR REPLACE TYPE PACKAGE1_NRECORD AS OBJECT (" +
-            "\nN1 VARCHAR2(10)," +
-            "\nN2 DECIMAL(7,2)" +
-        "\n)";
-    static final String CREATE_PACKAGE1_MRECORD_TYPE =
-        "CREATE OR REPLACE TYPE PACKAGE1_MRECORD AS OBJECT (" +
-            "\nM1 PACKAGE1_MTAB1" +
-        "\n)";
     static final String CREATE_PACKAGE1_PACKAGE =
         "CREATE OR REPLACE PACKAGE PACKAGE1 AS" +
             "\nTYPE MTAB1 IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
@@ -156,14 +140,11 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                 "\nRETURN NEWREC;" +
             "\nEND GETRECWITHTABLE2;" +
         "\nEND PACKAGE1;";
-    static final String DROP_PACKAGE1_MTAB1_TYPE =
-        "DROP TYPE PACKAGE1_MTAB1";
-    static final String DROP_PACKAGE1_NRECORD_TYPE =
-        "DROP TYPE PACKAGE1_NRECORD";
+    
     static final String DROP_PACKAGE1_PACKAGE =
         "DROP PACKAGE PACKAGE1";
-    static final String DROP_PACKAGE1_MRECORD_TYPE =
-        "DROP TYPE PACKAGE1_MRECORD";
+    static final String DROP_PACKAGE1_PACKAGE_BODY =
+        "DROP PACKAGE BODY PACKAGE1";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -192,12 +173,8 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
-            runDdl(conn, CREATE_PACKAGE1_MTAB1_TYPE, ddlDebug);
-            runDdl(conn, CREATE_PACKAGE1_NRECORD_TYPE, ddlDebug);
-            runDdl(conn, CREATE_PACKAGE1_MRECORD_TYPE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE1_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE1_BODY, ddlDebug);
-            
             runDdl(conn, CREATE_EMPTYPE_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
@@ -206,9 +183,10 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
                 }
                 stmt.executeBatch();
             } catch (SQLException e) {
-                e.printStackTrace();
+                if (ddlDebug) {
+                    e.printStackTrace();
+                }
             }
-            runDdl(conn, CREATE_EMPREC_TYPE, ddlDebug);
             runDdl(conn, CREATE_EMP_RECORD_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_EMP_RECORD_PACKAGE_BODY, ddlDebug);
         }
@@ -263,21 +241,65 @@ public class PLSQLRecordTestSuite extends DBWSTestSuite {
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
+
+          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types
+          ArrayList<String> ddls = new ArrayList<String>();
+          for (String ddl : builder.getTypeDDL()) {
+              ddls.add(ddl);
+          }
+          // execute the DDLs in order to avoid dependency issues
+          for (int j = 0; j < 4; j++) {
+              switch (j) {
+                case 0:
+                    executeDDLForString(ddls, MTAB1_TYPE);
+                    break;
+                case 1:
+                    executeDDLForString(ddls, NRECORD_TYPE);
+                    break;
+                case 2:
+                    executeDDLForString(ddls, MRECORD_TYPE);
+                    break;
+                default:
+                    executeDDLForString(ddls, EMPREC_TYPE);
+                    break;
+              }
+          }
     }
 
+    /**
+     * Execute the DDL in the provided list containing the given DDL string.
+     * 
+     */
+    protected static void executeDDLForString(List<String> ddls, String ddlString) {
+        for (int i = 0; i < ddls.size(); i++) {
+            String ddl = ddls.get(i);
+            if (ddl.contains(ddlString)) {
+                runDdl(conn, ddl, ddlDebug);
+                break;
+            }
+        }
+    }
+          
     @AfterClass
     public static void tearDown() {
-        String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
-        if ("true".equalsIgnoreCase(ddlDrop)) {
+        if (ddlDrop) {
+            runDdl(conn, DROP_PACKAGE1_PACKAGE_BODY, ddlDebug);
             runDdl(conn, DROP_PACKAGE1_PACKAGE, ddlDebug);
-            runDdl(conn, DROP_PACKAGE1_MRECORD_TYPE, ddlDebug);
-            runDdl(conn, DROP_PACKAGE1_NRECORD_TYPE, ddlDebug);
-            runDdl(conn, DROP_PACKAGE1_MTAB1_TYPE, ddlDebug);
-            
             runDdl(conn, DROP_EMP_RECORD_PACKAGE_BODY, ddlDebug);
             runDdl(conn, DROP_EMP_RECORD_PACKAGE, ddlDebug);
-            runDdl(conn, DROP_EMPREC_TYPE, ddlDebug);
             runDdl(conn, DROP_EMPTYPE_TABLE, ddlDebug);
+
+            // drop shadow type ddl 
+            for (String ddl : builder.getTypeDropDDL()) {
+                // may need to strip off trailing ';'
+                try {
+                    int lastIdx = ddl.lastIndexOf(";");
+                    if (lastIdx == (ddl.length() - 1)) {
+                        ddl = ddl.substring(0, ddl.length() - 1);
+                    }
+                } catch (Exception xxx) {}
+                runDdl(conn, ddl, ddlDebug);
+            }
         }
     }
 
