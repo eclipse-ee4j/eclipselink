@@ -220,14 +220,14 @@ public class Util {
         else if (typeName.equals(DOUBLE_STR)) {
             jdbcType = Types.DOUBLE;
         }
-        else if (typeName.equals(BINARY_STR) ||
-        		 typeName.equals(LONG_STR)) {
+        else if (typeName.equals(BINARY_STR)) {
             jdbcType = Types.BINARY;
         }
         else if (typeName.equals(BLOB_STR)) {
             jdbcType = Types.BLOB;
         }
-        else if (typeName.equals(CLOB_STR)) {
+        else if (typeName.equals(CLOB_STR) ||
+                 typeName.equals(LONG_STR))  {
             jdbcType = Types.CLOB;
         }
         else if (typeName.equals(NCLOB_STR)) {

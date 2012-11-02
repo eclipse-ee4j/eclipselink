@@ -689,8 +689,7 @@ public class TypesTestSuite extends DBWSTestSuite {
     @Test
     public void echoLong() throws ParseException {
         Invocation invocation = new Invocation("echoLong");
-        byte[] testBytes = "This is another test".getBytes();
-        invocation.setParameter("PLONG", testBytes);
+        invocation.setParameter("PLONG", "This is a LONG type test.  A LONG type represents 2GB of character data.");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
@@ -698,17 +697,15 @@ public class TypesTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(((XMLRoot)result).getObject(), doc);
         Document controlDoc = xmlParser.parse(new StringReader(ECHO_LONG_RESULT));
-        assertTrue("control document not same as instance document", comparer.isNodeEqual(
-            controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+
     }
     public static final String ECHO_LONG_RESULT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<simple-xml-format>" +
            "<simple-xml>" +
-              "<result xsi:type=\"xsd:base64Binary\" " +
-                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
-                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                 "564768706379427063794268626D3930614756794948526C6333513D" +
+              "<result>" +
+                 "This is a LONG type test.  A LONG type represents 2GB of character data." +
               "</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
