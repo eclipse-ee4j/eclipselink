@@ -742,6 +742,7 @@ public class SDOProperty implements Property, Serializable {
     
     private DatabaseMapping buildXMLDirectMapping(String mappingUri) {
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setNullValueMarshalled(true);
         mapping.setAttributeName(getName());
         String xpath = getQualifiedXPath(mappingUri, true);
         mapping.setXPath(xpath);
@@ -766,7 +767,13 @@ public class SDOProperty implements Property, Serializable {
       		// elements or attributes
             setIsSetOptionalPolicyOnMapping(mapping, propertyName);
         }
-        mapping.getNullPolicy().setNullRepresentedByEmptyNode(true);
+        if(this.isDefaultSet()) {
+            mapping.setNullValue(getDefault());
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+            
+        } else {
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(true);
+        }
         return mapping;
     }
 
