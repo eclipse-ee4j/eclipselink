@@ -57,6 +57,7 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nFUNCTION ECHO_NUMBER (PNUMBER IN NUMBER) RETURN NUMBER;" +
           "\nFUNCTION ECHO_VARCHAR(PVARCHAR IN VARCHAR) RETURN VARCHAR;" +
           "\nFUNCTION ECHO_VARCHAR2 (PINPUTVARCHAR IN VARCHAR2) RETURN VARCHAR2;" +
+          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2;" +
           "\nFUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR;" +
           "\nFUNCTION ECHO_REAL (PREAL IN REAL) RETURN REAL;" +
           "\nFUNCTION ECHO_FLOAT (PINPUTFLOAT IN FLOAT) RETURN FLOAT;" +
@@ -104,6 +105,10 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nBEGIN" +
             "\nRETURN PINPUTVARCHAR;" +
           "\nEND ECHO_VARCHAR2;" +
+          "\nFUNCTION ECHO_NVARCHAR2 (PNVARCHAR IN NVARCHAR2) RETURN NVARCHAR2 IS" +
+          "\nBEGIN" +
+            "\nRETURN PNVARCHAR;" +
+          "\nEND ECHO_NVARCHAR2;" +
           "\nFUNCTION ECHO_CHAR (PINPUTCHAR IN CHAR) RETURN CHAR IS" +
           "\nBEGIN" +
             "\nRETURN PINPUTCHAR;" +
@@ -252,6 +257,12 @@ public class TypesTestSuite extends DBWSTestSuite {
 	              "procedurePattern=\"ECHO_VARCHAR2\" " +
 	              "isSimpleXMLFormat=\"true\" " +
 	           "/>" +
+               "<procedure " +
+                   "name=\"echoNVarchar2\" " +
+                   "catalogPattern=\"TEST_TYPES\" " +
+                   "procedurePattern=\"ECHO_NVARCHAR2\" " +
+                   "isSimpleXMLFormat=\"true\" " +
+                "/>" +
 	           "<procedure " +
 	              "name=\"echoChar\" " +
 	              "catalogPattern=\"TEST_TYPES\" " +
@@ -499,6 +510,28 @@ public class TypesTestSuite extends DBWSTestSuite {
         "<simple-xml-format>" +
            "<simple-xml>" +
               "<result>this is a varchar2 test</result>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+
+    @Test
+    public void echoNVarchar2() {
+        Invocation invocation = new Invocation("echoNVarchar2");
+        invocation.setParameter("PNVARCHAR", "N'qwerty'");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_NVARCHAR2_RESULT));
+        assertTrue("control document not same as instance document", comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String ECHO_NVARCHAR2_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>N'qwerty'</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 
