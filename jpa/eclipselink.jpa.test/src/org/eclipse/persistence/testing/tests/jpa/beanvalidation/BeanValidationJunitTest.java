@@ -40,15 +40,15 @@ public class BeanValidationJunitTest extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("BeanValidationJunitTest");
-
-        suite.addTest(new BeanValidationJunitTest("testSetup"));
-        suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidData"));
-        suite.addTest(new BeanValidationJunitTest("testEmbeddedWithInvalidData"));
-        suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
-        suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
-        suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
-        suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipdMultipleTimes"));
-
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(new BeanValidationJunitTest("testSetup"));
+            suite.addTest(new BeanValidationJunitTest("testPersistWithInvalidData"));
+            suite.addTest(new BeanValidationJunitTest("testEmbeddedWithInvalidData"));
+            suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
+            suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
+            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
+            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipdMultipleTimes"));
+        }
         return suite;
     }
 
