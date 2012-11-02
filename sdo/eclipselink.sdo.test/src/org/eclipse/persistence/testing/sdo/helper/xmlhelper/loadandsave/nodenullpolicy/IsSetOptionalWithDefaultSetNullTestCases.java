@@ -58,14 +58,12 @@ public class IsSetOptionalWithDefaultSetNullTestCases extends IsSetOptionalWithD
         Object value = doc.getRootObject().get(ID_NAME);
         boolean isSet = doc.getRootObject().isSet(ID_NAME);
         // verify defaults
-        assertNotSame(ID_DEFAULT, value);        
-        assertNull(value);
+        assertEquals(ID_DEFAULT, value);        
         assertTrue(isSet);
 
         value = doc.getRootObject().get(FIRSTNAME_NAME);
         isSet = doc.getRootObject().isSet(FIRSTNAME_NAME);
-        assertNotSame(FIRSTNAME_DEFAULT, value);
-        assertNull(value);
+        assertEquals(FIRSTNAME_DEFAULT, value);
         assertTrue(isSet);
     }
 
