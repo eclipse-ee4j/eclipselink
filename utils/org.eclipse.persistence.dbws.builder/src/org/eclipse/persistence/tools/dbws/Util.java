@@ -32,6 +32,7 @@ import static java.sql.Types.INTEGER;
 import static java.sql.Types.LONGVARCHAR;
 import static java.sql.Types.NUMERIC;
 import static java.sql.Types.REAL;
+import static java.sql.Types.ROWID;
 import static java.sql.Types.SMALLINT;
 import static java.sql.Types.TIME;
 import static java.sql.Types.TIMESTAMP;
@@ -168,6 +169,7 @@ public class Util {
     public static final String OTHER_STR = "OTHER";
     public static final String RAW_STR = "RAW";
     public static final String REAL_STR = "REAL";
+    public static final String ROWID_STR = "ROWID";
     public static final String ROWTYPE_STR = "%ROWTYPE";
     public static final String SMALLINT_STR = "SMALLINT";
     public static final String STRUCT_STR = "STRUCT";
@@ -248,6 +250,9 @@ public class Util {
         else if (typeName.equals(LONGRAW_STR)) {
             jdbcType = Types.LONGVARBINARY;
         }
+        else if (typeName.equals(ROWID_STR)) {
+            jdbcType = Types.VARCHAR;
+        }
         else if (typeName.equals(UROWID_STR)) {
             jdbcType = Types.VARCHAR;
         }
@@ -259,6 +264,9 @@ public class Util {
         }
         else if (typeName.equals(ARRAY_STR)) {
             jdbcType = Types.ARRAY;
+        }
+        else if (typeName.equals(ROWID_STR)) {
+            jdbcType = Types.ROWID;
         }
         else if (typeName.equals(BOOLEAN_STR)  ||
         		 typeName.equals(INTEGER_STR)  ||
@@ -338,6 +346,9 @@ public class Util {
             case Types.STRUCT:
                 typeName = STRUCT_STR;
                 break;
+            case Types.ROWID:
+                typeName = ROWID_STR;
+                break;
         }
         return typeName;
     }
@@ -370,6 +381,7 @@ public class Util {
             case NVARCHAR:
             case CLOB:
             case NCLOB:
+            case ROWID:
                 return STRING_QNAME;
             case BIGINT:
                 return INTEGER_QNAME;

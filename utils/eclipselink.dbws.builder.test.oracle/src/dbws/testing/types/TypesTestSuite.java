@@ -69,6 +69,7 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nFUNCTION ECHO_LONG (PLONG IN LONG) RETURN LONG;" +
           "\nFUNCTION ECHO_LONG_RAW (PLONGRAW IN LONG RAW) RETURN LONG RAW;" +
           "\nFUNCTION ECHO_RAW(PRAW IN RAW) RETURN RAW;" +
+          "\nFUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID;" +
         "\nEND;" ;
 
     static final String CREATE_PACKAGE_BODY_TEST_TYPES =
@@ -153,6 +154,10 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nBEGIN" +
             "\nRETURN PRAW;" +
           "\nEND ECHO_RAW;" +
+          "\nFUNCTION ECHO_ROWID(PROWID IN ROWID) RETURN ROWID IS" +
+          "\nBEGIN" +
+              "\nRETURN PROWID;" +
+          "\nEND ECHO_ROWID;" +
         "\nEND;" ;
 
     static final String DROP_PACKAGE_TEST_TYPES =
@@ -329,6 +334,12 @@ public class TypesTestSuite extends DBWSTestSuite {
 	              "procedurePattern=\"ECHO_RAW\" " +
 	              "isSimpleXMLFormat=\"true\" " +
 	           "/>" +
+               "<procedure " +
+                   "name=\"echoRowId\" " +
+                   "catalogPattern=\"TEST_TYPES\" " +
+                   "procedurePattern=\"ECHO_ROWID\" " +
+                   "isSimpleXMLFormat=\"true\" " +
+                "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -794,6 +805,30 @@ public class TypesTestSuite extends DBWSTestSuite {
                  "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
                  "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
                  "5647687063794270637942355A585167595735766447686C636942305A584E3049513D3D" +
+              "</result>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+    
+    @Test
+    public void echoRowId() throws ParseException {
+        Invocation invocation = new Invocation("echoRowId");
+        invocation.setParameter("PROWID", "'AAADL1AABAAACTEAAE'");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(((XMLRoot)result).getObject(), doc);
+        Document controlDoc = xmlParser.parse(new StringReader(ECHO_ROWID_RESULT));
+        assertTrue("control document not same as instance document", comparer.isNodeEqual(
+            controlDoc, doc));
+    }
+    public static final String ECHO_ROWID_RESULT =
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>" +
+                 "'AAADL1AABAAACTEAAE'" +
               "</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
