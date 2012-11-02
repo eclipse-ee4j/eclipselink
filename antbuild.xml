@@ -311,6 +311,7 @@
                 <include name="**/org.eclipse.persistence*.jar"/>
                 <include name="**/eclipselink*.jar"/>
                 <exclude name="**/org.eclipse.persistence.a*.jar"/>
+                <exclude name="**/org.eclipse.persistence*oracle*.jar"/>
             </fileset>
         </delete>
     </target>
