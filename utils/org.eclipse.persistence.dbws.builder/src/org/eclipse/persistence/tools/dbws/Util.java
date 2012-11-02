@@ -23,6 +23,7 @@ import static java.sql.Types.NCHAR;
 import static java.sql.Types.CHAR;
 import static java.sql.Types.CLOB;
 import static java.sql.Types.NCLOB;
+import static java.sql.Types.NVARCHAR;
 import static java.sql.Types.DATE;
 import static java.sql.Types.DECIMAL;
 import static java.sql.Types.DOUBLE;
@@ -162,6 +163,8 @@ public class Util {
     public static final String NCLOB_STR = "NCLOB";
     public static final String NUMBER_STR = "NUMBER";
     public static final String NUMERIC_STR = "NUMERIC";
+    public static final String NVARCHAR_STR = "NVARCHAR";
+    public static final String NVARCHAR2_STR = "NVARCHAR2";
     public static final String OTHER_STR = "OTHER";
     public static final String RAW_STR = "RAW";
     public static final String REAL_STR = "REAL";
@@ -189,6 +192,12 @@ public class Util {
         }
         else if (typeName.equals(VARCHAR2_STR)) {
             jdbcType = Types.VARCHAR;
+        }
+        else if (typeName.equals(NVARCHAR_STR)) {
+            jdbcType = Types.NVARCHAR;
+        }
+        else if (typeName.equals(NVARCHAR2_STR)) {
+            jdbcType = Types.NVARCHAR;
         }
         else if (typeName.equals(DATE_STR)) {
             jdbcType = Types.DATE;
@@ -271,6 +280,9 @@ public class Util {
                 break;
             case Types.VARCHAR:
                 typeName = VARCHAR_STR;
+                break;
+            case Types.NVARCHAR:
+                typeName = NVARCHAR_STR;
                 break;
             case Types.DECIMAL:
                 typeName = DECIMAL_STR;
@@ -355,6 +367,7 @@ public class Util {
             case NCHAR:
             case LONGVARCHAR:
             case VARCHAR:
+            case NVARCHAR:
             case CLOB:
             case NCLOB:
                 return STRING_QNAME;
