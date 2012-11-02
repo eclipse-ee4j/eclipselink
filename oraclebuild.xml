@@ -259,7 +259,6 @@ if build=true
         <selectbundle basename="${oracle.ext.prefix}"     directory="${oraclebuild.2.common.plugins.dir}"
                      criterion="${oracle.ext.criteria}"    property="postbuild.oracle.ext.version"  versiononly="true"
         />
-                                                                                                                                                      ${prebuild.oracle.ext.version}
         <validate_extension_build prebuildhashproperty="prebuild.ext.hash"   currentversionproperty="postbuild.oracle.ext.version"   prebuildversion="${prebuild.oracle.ext.version}"   successproperty="commit.oracle" failureproperty="oracle.build.failed"/>
     </target>
 
