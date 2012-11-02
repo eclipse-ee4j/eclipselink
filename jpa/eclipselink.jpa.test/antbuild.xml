@@ -1217,7 +1217,7 @@
             <fileset file="${eclipselink.jpa.test}/${jpatest.framework}.jar"/>
             <fileset file="${eclipselink.jpa.test}/*-model.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"/>
-        <fileset file="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
@@ -1335,7 +1335,7 @@
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.plugins}/${eclipselink.oracle.bndl.prefix}.jar"/>
+            <!-- pathelement path="${jpatest.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}.jar"/ -->
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
@@ -2545,8 +2545,8 @@
     <!-- Modify stage/META-INF/persistence.xml to add persistence properties for Metadata Cache -->
     <target name="add-project-cache-properties" if="use.project.cache">
         <echo message="basedir is ${basedir}"/>
-        <replaceregexp file="${eclipselink.jpa.test}/stage/META-INF/persistence.xml" 
-            match='&#60;/properties&#62;' 
+        <replaceregexp file="${eclipselink.jpa.test}/stage/META-INF/persistence.xml"
+            match='&#60;/properties&#62;'
             replace='&#60;property name="eclipselink.project-cache" value="java-serialization"/&#62;&#10;&#60;property name="eclipselink.project-cache.java-serialization.file-location" value="${basedir}&#47;${projectcache.dir}&#47;${EAR_NAME}&#47;MetadataCachingTestProject.file"/&#62;&#10;&#60;/properties&#62;&#10;'
             flags="s"
             byline="true"/>
