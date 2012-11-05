@@ -194,6 +194,10 @@ public class PersistenceProvider extends org.eclipse.persistence.jpa.Persistence
             puClassLoader = propertyClassLoader;
         } else {
             puClassLoader = new CompositeClassLoader(loaders);
+            Object propertyValue = properties.get(PersistenceUnitProperties.CLASSLOADER);
+            if ((propertyValue != null) && (propertyValue instanceof ClassLoader)) {
+                properties.put(PersistenceUnitProperties.CLASSLOADER, propertyValue);
+            }
         }
         
       puClassLoaders.put(persistenceUnitName, puClassLoader);  // cache to avoid reconstruction
