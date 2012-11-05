@@ -242,11 +242,10 @@ public class XPathFragment {
                     index = Integer.valueOf(indexString).intValue();
                     setContainsIndex(true);
                 } catch (NumberFormatException e) {
-                    StringTokenizer st2 = new StringTokenizer(indexString, "=");
-                    if(2 == st2.countTokens()) {
-                        XPathFragment xPathFragment = new XPathFragment(st2.nextToken());
-                        String value = st2.nextToken();
-                        value = value.substring(1, value.length() - 1);
+                    int equalsOffset = indexString.indexOf('=');
+                    if (equalsOffset >= 0) {
+                        XPathFragment xPathFragment = new XPathFragment(indexString.substring(0, equalsOffset));
+                        String value = indexString.substring(equalsOffset + 2, indexString.length() - 1);
                         predicate = new XPathPredicate(xPathFragment, value);
                     } else {
                         setContainsIndex(true);

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.xmlpath">
+    
+    <xml-schema>
+        <xml-ns prefix="atom" namespace-uri="http://www.w3.org/2005/Atom" />
+    </xml-schema>
+ 
+</xml-bindings>

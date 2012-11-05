@@ -82,7 +82,6 @@ public class AnyAttributeMultipleAttributesNSExcludeTestCases extends XMLMapping
     }
 
     public void testLoadFromSAXSource() throws Exception {
-    System.out.println("testLoadFromSAXSource");
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource insource = new InputSource(instream);
         SAXSource theSource = new SAXSource(insource);
