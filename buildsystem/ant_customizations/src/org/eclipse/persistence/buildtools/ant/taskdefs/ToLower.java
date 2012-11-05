@@ -1,3 +1,24 @@
+/*******************************************************************************
+ * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SelectBundle
+ *   basename     (bnd, org.eclipse.equinox) : required
+ *   criterion    OSGi version selection criteria [1.0,2.0) : required
+ *   separator    separator used between basename and version in filename (such as - or _) : defaults to _
+ *   property     propety to set : required
+ *   includepath  boolean flag, if set will include path and filename in "property" : defaults to 'false'
+ *   versiononly  boolean flag, if set will only set full version of bundle in "property" : defaults to 'false'
+ *
+ * Contributors:
+ *     egwin - initial conception and implementation
+ */
+
 package org.eclipse.persistence.buildtools.ant.taskdefs;
 
 import org.apache.tools.ant.BuildException;
