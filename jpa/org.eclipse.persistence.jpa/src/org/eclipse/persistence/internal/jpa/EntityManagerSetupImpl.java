@@ -661,7 +661,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                         this.session.getExternalTransactionController().setExceptionHandler(new ExceptionHandler() {
                                             
                                             public Object handleException(RuntimeException exception) {
-                                                if (exception instanceof OptimisticLockException) {
+                                                if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
                                                     throw new OptimisticLockException(exception);
                                                 } else if (exception instanceof EclipseLinkException) {
                                                     throw new PersistenceException(exception);

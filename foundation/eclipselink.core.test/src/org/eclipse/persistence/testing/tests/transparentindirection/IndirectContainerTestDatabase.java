@@ -136,7 +136,7 @@ public class IndirectContainerTestDatabase extends ZTestCase {
 
 		order.addContact2("Guy");
 
-		order.addLine(newOrderLine("", 1));
+		order.addLine(newOrderLine(null, 1));
 
 		order.setTotal(3456);
 		order.total2 = 5678;
