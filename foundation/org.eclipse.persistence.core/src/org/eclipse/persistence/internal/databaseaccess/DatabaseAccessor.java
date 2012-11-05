@@ -16,6 +16,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -588,7 +590,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
 
             // effectively this means that someone is executing an update type query.
-            if (dbCall.isNothingReturned()) {
+            if (dbCall.isExecuteUpdate()) {
+                dbCall.setExecuteReturnValue(execute(dbCall, statement, session));
+                dbCall.setStatement(statement);
+                return dbCall;
+            } else if (dbCall.isNothingReturned()) {
                 result = executeNoSelect(dbCall, statement, session);
                 if (!isInBatchWritingMode(session)) {
                     this.writeStatementsCount++;
@@ -598,34 +604,28 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
                     getLOBWriter().addCall(dbCall);
                 }
-            } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow())) && ! dbCall.isExecuteUpdate()) {
+            } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow()))) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 if (!isInBatchWritingMode(session)) {
                     this.storedProcedureStatementsCount++;
                 }
             } else {
-                if (dbCall.isExecuteUpdate()) {
-                    dbCall.setExecuteReturnValue(execute(dbCall, statement, session));
-                    dbCall.setStatement(statement);
-                    return dbCall;
-                } else {
-                    resultSet = executeSelect(dbCall, statement, session);
+                resultSet = executeSelect(dbCall, statement, session);
                 
-                    if (!isInBatchWritingMode(session)) {
-                        this.readStatementsCount++;
-                    }
-                    if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
-                        resultSet.absolute(dbCall.getFirstResult());
-                    }
-                    dbCall.matchFieldOrder(resultSet, this, session);
-
-                    if (dbCall.isCursorReturned()) {
-                        dbCall.setStatement(statement);
-                        dbCall.setResult(resultSet);
-                        return dbCall;
-                    }
-                    result = processResultSet(resultSet, dbCall, statement, session);
+                if (!isInBatchWritingMode(session)) {
+                    this.readStatementsCount++;
                 }
+                if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
+                    resultSet.absolute(dbCall.getFirstResult());
+                }
+                dbCall.matchFieldOrder(resultSet, this, session);
+
+                if (dbCall.isCursorReturned()) {
+                    dbCall.setStatement(statement);
+                    dbCall.setResult(resultSet);
+                    return dbCall;
+                }
+                result = processResultSet(resultSet, dbCall, statement, session);
             }
             if (result instanceof ThreadCursoredList) {
                 return result;
@@ -858,13 +858,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 rowCount = statement.executeUpdate(call.getSQLString());
             } else {
                 rowCount = ((PreparedStatement)statement).executeUpdate();
-            }
-
-            // If we don't expect a result to be returned from a stored procedure (presumably because the 
-            // the procedure does only an update) and the row count doesn't equal the update count from the 
-            // statement then we are in an illegal state, throw an exception.
-            if (call != null && call.getQuery().isJPAUserDefined() && call.isStoredProcedureCall() && call.isNothingReturned() && rowCount != statement.getUpdateCount()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute_update"));
             }
             
             if ((!getPlatform().supportsAutoCommit()) && (!this.isInTransaction)) {

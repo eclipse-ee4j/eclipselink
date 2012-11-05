@@ -20,6 +20,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -330,8 +332,6 @@ public class QueryImpl {
 
         }
         
-        // Make sure we tag it as a JPA user defined query.
-        databaseQuery.setIsJPAUserDefined(true);
         return this.databaseQuery;
     }
     

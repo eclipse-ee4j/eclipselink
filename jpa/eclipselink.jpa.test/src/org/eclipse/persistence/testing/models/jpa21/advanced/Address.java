@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -48,95 +50,52 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 @Entity
 @Table(name="JPA21_ADDRESS")
 @NamedStoredProcedureQueries({
-    
+      
     @NamedStoredProcedureQuery(
-        name = "ReadAddressUsingPositionalParameterAndSingleResultSet",
-        resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
-        procedureName = "Read_Address_Result_Set",
-        parameters = @StoredProcedureParameter(mode=IN, type=Integer.class)
+        name = "ReadAllAddressesWithNoResultClass",
+        procedureName = "Read_All_Addresses"
     ),
-        
+         
     @NamedStoredProcedureQuery(
         name = "ReadAddressWithResultClass",
         resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
         procedureName = "Read_Address",
         parameters = {
-            @StoredProcedureParameter(mode=INOUT, name="ADDRESS_ID", type=Integer.class),
-            @StoredProcedureParameter(mode=OUT, name="STREET", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="CITY", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="COUNTRY", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="PROVINCE", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="P_CODE", type=String.class)
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
         }
     ),
-    
+      
     @NamedStoredProcedureQuery(
-        name = "ReadAllAddressesWithNoResultClass",
-        procedureName = "Read_All_Addresses"
-     ),
-        
-    @NamedStoredProcedureQuery(
-        name = "ReadAddressWithPositionalParameters",
-        resultSetMappings = "address-field-result-map-positional",
-        procedureName = "Read_Address",
+        name = "ReadAddressMappedNamedFieldResult",
+        resultSetMappings = "address-field-result-map-named",
+        procedureName = "Read_Address_Mapped_Named",
         parameters = {
-            @StoredProcedureParameter(mode=INOUT, type=Integer.class),
-            @StoredProcedureParameter(mode=OUT, type=String.class),
-            @StoredProcedureParameter(mode=OUT, type=String.class),
-            @StoredProcedureParameter(mode=OUT, type=String.class),
-            @StoredProcedureParameter(mode=OUT, type=String.class),
-            @StoredProcedureParameter(mode=OUT, type=String.class)
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
         }
     ),
-        
+         
     @NamedStoredProcedureQuery(
-        name = "ReadAddressWithResultSetMapping",
-        resultSetMappings = "address-field-result-map",
-        procedureName = "Read_Address_Mapped",
+        name = "ReadAddressMappedNumberedFieldResult",
+        resultSetMappings = "address-field-result-map-numbered",
+        procedureName = "Read_Address_Mapped_Numbered",
         parameters = {
-            @StoredProcedureParameter(mode=INOUT, name="address_id_v", type=Integer.class),
-            @StoredProcedureParameter(mode=OUT, name="street_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="city_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="country_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="province_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="p_code_v", type=String.class)
+            @StoredProcedureParameter(mode=IN, type=Integer.class),
         }
     ),
             
     @NamedStoredProcedureQuery(
-        name = "ReadAddressWithResultSetFieldMapping",
+        name = "ReadAddressMappedNamedColumnResult",
         resultSetMappings = "address-column-result-map",
-        procedureName = "Read_Address_Mapped",
+        procedureName = "Read_Address_Mapped_Named",
         parameters = {
-            @StoredProcedureParameter(mode=INOUT, name="address_id_v", type=Integer.class),
-            @StoredProcedureParameter(mode=OUT, name="street_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="city_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="country_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="province_v", type=String.class),
-            @StoredProcedureParameter(mode=OUT, name="p_code_v", type=String.class)
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
         }
      )
 })
 
 @SqlResultSetMappings({
     @SqlResultSetMapping(
-        name = "address-field-result-map-positional",
-        entities = {
-            @EntityResult(
-                entityClass = Address.class,
-                fields = {
-                    @FieldResult(name="id", column="1"),
-                    @FieldResult(name="street", column="2"),
-                    @FieldResult(name="city", column="3"),
-                    @FieldResult(name="country", column="4"),
-                    @FieldResult(name="province", column="5"),
-                    @FieldResult(name="postalCode", column="6")
-                }
-            )
-        }),
-            
-    @SqlResultSetMapping(
-        name = "address-field-result-map",
+        name = "address-field-result-map-named",
         entities = {
             @EntityResult(
                 entityClass = Address.class,
@@ -147,6 +106,22 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
                     @FieldResult(name="country", column="country_v"),
                     @FieldResult(name="province", column="province_v"),
                     @FieldResult(name="postalCode", column="p_code_v")
+                }
+            )
+        }),
+            
+    @SqlResultSetMapping(
+        name = "address-field-result-map-numbered",
+        entities = {
+            @EntityResult(
+                entityClass = Address.class,
+                fields = {
+                    @FieldResult(name="id", column="1"),
+                    @FieldResult(name="street", column="2"),
+                    @FieldResult(name="city", column="3"),
+                    @FieldResult(name="country", column="4"),
+                    @FieldResult(name="province", column="5"),
+                    @FieldResult(name="postalCode", column="6")
                 }
             )
         }),
@@ -161,13 +136,6 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @ColumnResult(name = "province_v"),
             @ColumnResult(name = "p_code_v")
         }),
-        
-    @SqlResultSetMapping(
-        name = "address-result-set-mapping",
-        entities = {
-            @EntityResult(entityClass=Address.class)
-        }    
-    )
 })
 public class Address implements Serializable {
     private int id;

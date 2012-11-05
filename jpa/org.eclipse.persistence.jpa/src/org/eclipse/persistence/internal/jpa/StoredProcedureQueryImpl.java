@@ -26,6 +26,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -51,6 +53,7 @@ import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -68,8 +71,6 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * is executed.
  */
 public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedureQuery {
-    protected List resultList;
-    
     protected boolean hasMoreResults;
     
     // Call will be returned from an execute. From it you can get the result set.
@@ -261,18 +262,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     public void close() {
-        DatabaseQuery query = executeCall.getQuery();
-        AbstractSession session = query.getSession();
-        
-        try {
-            if (executeStatement != null) {
-                DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
-                accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
+        if (executeCall != null) {
+            DatabaseQuery query = executeCall.getQuery();
+            AbstractSession session = query.getSession();
+           
+            // Release the accessors acquired for the query.
+            for (Accessor accessor : query.getAccessors()) {
+                session.releaseReadConnection(accessor);
             }
-        } catch (SQLException exception) {
-            // Catch the exception and log a message.
-            session.log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_caught_closing_statement", exception);
+        
+            try {
+                if (executeStatement != null) {
+                    DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
+                    accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
+                }
+            } catch (SQLException exception) {
+                // Catch the exception and log a message.
+                session.log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_caught_closing_statement", exception);
+            }
         }
+        
+        executeCall = null;
+        executeStatement = null;
     }
     
     /**
@@ -289,11 +300,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public boolean execute() {
         try {
             entityManager.verifyOpen();
-            setAsSQLReadQuery();
-            propagateResultProperties();
             
             if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute"));
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute"));
             }
         
             getResultSetMappingQuery().setIsExecuteCall(true);
@@ -325,6 +334,39 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             setRollbackOnly();
             throw exception;
         } 
+    }
+    
+    /**
+     * Execute an update or delete statement (from a stored procedure query).
+     * @return the number of entities updated or deleted
+     */
+    public int executeUpdate() {
+        try {
+            // Legacy: we could have a data read query or a read all query, so 
+            // clearly we shouldn't be executing an update on it. As of JPA 2.1 
+            // API we always create a result set mapping query to interact with 
+            // a stored procedure.
+            // Also if the result set mapping query has result set mappings
+            // defined, then it's clearly expecting result sets and we can be
+            // preemptive in throwing an exception.
+            if (! getDatabaseQueryInternal().isResultSetMappingQuery() || getResultSetMappingQuery().hasResultSetMappings()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+            }
+                
+            // If the return value is true indicating a result set then throw an exception.
+            if (execute()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+            } else {
+                return getUpdateCount();
+            }
+        } catch (LockTimeoutException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
+        } finally {
+            close(); // Close the connection once we're done.
+        }
     }
     
     /**
@@ -411,19 +453,21 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     @Override
     public List getResultList() {
         try {
+            // If there is no execute statement, the user has not called
+            // execute and is simply calling getResultList directly on the query.
             if (executeStatement == null) {
-                if (resultList == null) {
-                    if (getDatabaseQuery().isResultSetMappingQuery()) {
-                        getResultSetMappingQuery().setIsExecuteCall(false);
-                    }
-
-                    resultList = super.getResultList();
+                // If it's not a result set mapping query (as of JPA 2.1 we 
+                // always create a result set mapping query to interact with a 
+                // stored procedure) then throw an exception.
+                if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
-            
-                if (resultList.get(0) instanceof List) {
-                    return (List) resultList.remove(0);
+                        
+                // If the return value is true indicating a result set then throw an exception.
+                if (execute()) {
+                    return getResultList();
                 } else {
-                    return resultList;
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list")); 
                 }
             } else {
                 if (hasMoreResults()) {
@@ -460,6 +504,65 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return (ResultSetMappingQuery) executeCall.getQuery();
         } else {
             return (ResultSetMappingQuery) getDatabaseQuery();
+        }
+    }
+    
+    /**
+     * Execute the query and return the single query result.
+     * @return a single result object.
+     */
+    @Override
+    public Object getSingleResult() {
+        try {
+            // If there is no execute statement, the user has not called
+            // execute and is simply calling getSingleResult directly on the query.
+            if (executeStatement == null) {
+                // If it's not a result set mapping query (as of JPA 2.1 we 
+                // always create a result set mapping query to interact with a 
+                // stored procedure) then throw an exception.
+                if (! getDatabaseQueryInternal().isResultSetMappingQuery()) {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_single_result"));
+                }
+                        
+                // If the return value is true indicating a result set then
+                // build and return the single result.
+                if (execute()) {
+                    return getSingleResult();
+                } else {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list")); 
+                }
+            } else {
+                if (hasMoreResults()) {
+                    // Build the result records first.
+                    List result = buildResultRecords(executeStatement.getResultSet());
+                    
+                    // Move the result pointer.
+                    moveResultPointer();
+                    
+                    List results = getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+                    if (results.size() > 1) {
+                        throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
+                    } else if (results.isEmpty()) {
+                        throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
+                    }
+                        
+                    return results.get(0);
+                } else {
+                    return null;
+                }
+            }
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (PersistenceException e) {
+            setRollbackOnly();
+            throw e;
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            setRollbackOnly();
+            throw new PersistenceException(e);
+        } finally {
+            close(); // Close the connection once we're done.
         }
     }
     
@@ -513,11 +616,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public boolean hasMoreResults() {
         entityManager.verifyOpen();
         
-        if (executeStatement != null) {
-            return hasMoreResults;
-        } else {
-            return resultList != null && ! resultList.isEmpty();
-        }
+        return hasMoreResults;
     }
     
     /**
@@ -619,20 +718,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         }
 
         return this;
-    }
-    
-    /**
-     * Internal method to change the wrapped query to a DataModifyQuery. When
-     * a stored procedure query is created, the internal query is a result set
-     * mapping query since it is unknown if the stored procedure will do a 
-     * SELECT or UPDATE. Note that this prevents the original named query from 
-     * ever being prepared.
-     */
-    @Override
-    protected void setAsSQLModifyQuery() {
-        if (! getDatabaseQueryInternal().isResultSetMappingQuery() || ! getResultSetMappingQuery().hasResultSetMappings()) {
-            setAsDataModifyQuery();
-        }
     }
     
     /**

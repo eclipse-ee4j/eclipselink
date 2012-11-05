@@ -23,6 +23,8 @@
  *       - 341940: Add disable/enable allowing native queries 
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -171,11 +173,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * custom sql/query support.
      */
     protected boolean isUserDefined;
-    
-    /**
-     * Internal flag to determine if the query is defined through JPA.
-     */
-    protected boolean isJPAUserDefined;
     
     /**
      * Internal flag used to bypass user define queries when executing one for
@@ -1688,13 +1685,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         Call call = getDatasourceCall();
         return (call != null) && (call instanceof SQLCall);
     }
-
-    /**
-     * INTERNAL: Return true if this is a JPA user defined query.
-     */
-    public boolean isJPAUserDefined() {
-        return this.isJPAUserDefined;
-    }
     
     /**
      * PUBLIC: Return true if this query uses an JPQL query mechanism .
@@ -1805,7 +1795,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         this.parameterDelimiter = query.parameterDelimiter;
         this.shouldCloneCall = query.shouldCloneCall;
         this.partitioningPolicy = query.partitioningPolicy;
-        this.isJPAUserDefined = query.isJPAUserDefined;
     }
 
     /**
@@ -2144,13 +2133,6 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         } else {
             this.isCustomQueryUsed = Boolean.FALSE;
         }
-    }
-
-    /**
-     * INTERNAL: Set if the query is a JPA custom user defined query.
-     */
-    public void setIsJPAUserDefined(boolean isJPAUserDefined) {
-        this.isJPAUserDefined = isJPAUserDefined;
     }
     
     /**

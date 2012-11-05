@@ -15,6 +15,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -91,11 +93,13 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_ejbql_exception", "An exception occurred while creating a query in EntityManager"},
                                            { "cant_refresh_not_managed_object", "Can not refresh not managed object: {0}." },
                                            { "entity_no_longer_exists_in_db", "Entity no longer exists in the database: {0}." },
-                                           { "incorrect_query_for_execute", "You cannot call execute() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_result_list", "You cannot call getResultList() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_result_collection", "You cannot call getResultCollection() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_single_result", "You cannot call getSingleResult() on this query.  It is the incorrect query type." },
-                                           { "incorrect_query_for_execute_update", "You cannot call executeUpdate() on this query.  It is the incorrect query type." },
+                                           { "incorrect_spq_query_for_execute", "You cannot call execute() on this stored procedure query.  It is the incorrect query type." },
+                                           { "incorrect_spq_query_for_execute_update", "You cannot call executeUpdate() on this stored procedure query since it returns a result set and not only an update count." },
+                                           { "incorrect_spq_query_for_get_result_list", "You cannot call getResultList() on this stored procedure query since it does not return a result set." },
+                                           { "incorrect_spq_query_for_get_single_result", "You cannot call getSingleResult() on this stored procedure query since it does not return a result set." },
                                            { "pk_class_not_found", "Unable to load Primary Key Class {0}"},
                                            { "null_pk", "An instance of a null PK has been incorrectly provided for this find operation."},
                                            { "invalid_pk_class", "You have provided an instance of an incorrect PK class for this find operation.  Class expected : {0}, Class received : {1}." },

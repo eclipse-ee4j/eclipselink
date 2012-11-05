@@ -18,6 +18,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/05/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -741,7 +743,7 @@ public class EmployeePopulator {
         smallProjectExample9();
         smallProjectExample10();
     }
-    
+
     public StoredProcedureDefinition buildMySQL2ResultSetProcedure() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Multiple_Result_Sets");
@@ -785,72 +787,53 @@ public class EmployeePopulator {
     public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address");
-        
-        proc.addInOutputArgument("ADDRESS_ID", Integer.class);
-        proc.addOutputArgument("STREET", String.class);
-        proc.addOutputArgument("CITY", String.class);
-        proc.addOutputArgument("COUNTRY", String.class);
-        proc.addOutputArgument("PROVINCE", String.class);
-        proc.addOutputArgument("P_CODE", String.class);
+        proc.addArgument("address_id_v", Integer.class);
         
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @STREET=STREET, @CITY=CITY, @COUNTRY=COUNTRY, @PROVINCE=PROVINCE, @P_CODE=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
+            statement = "SELECT ADDRESS_ID, STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
         } else {
-            statement = "SELECT t0.STREET, t0.CITY, t0.COUNTRY, t0.PROVINCE, t0.P_CODE INTO STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS t0 WHERE (t0.ADDRESS_ID = ADDRESS_ID)";
+            statement = "SELECT ADDRESS_ID, STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
         
         proc.addStatement(statement);
         return proc;
     }
     
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddressByAlias(DatabasePlatform platform) {
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddressMappedNamed(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address_By_Alias");
+        proc.setName("Read_Address_Mapped_Named");
         
-        proc.addArgument("ADDRESS_ID", Integer.class);
+        proc.addArgument("address_id_v", Integer.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT ADDRESS_ID AS 'address_id_v', STREET AS 'street_v', CITY AS 'city_v', COUNTRY AS 'country_v', PROVINCE AS 'province_v', P_CODE AS 'p_code_v' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+        } else {
+            statement = "SELECT ADDRESS_ID AS 'address_id_v', STREET AS 'street_v', CITY AS 'city_v', COUNTRY AS 'country_v', PROVINCE AS 'province_v', P_CODE AS 'p_code_v' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddressMappedNumbered(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address_Mapped_Numbered");
+        
+        proc.addArgument("address_id_v", Integer.class);
         
         String statement = null;
         if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
         } else {
-            statement = "SELECT t0.ADDRESS_ID AS '1', t0.STREET AS '2', t0.CITY AS '3', t0.COUNTRY AS '4', t0.PROVINCE AS '5', t0.P_CODE AS '6' FROM JPA21_ADDRESS t0 WHERE (t0.ADDRESS_ID = ADDRESS_ID)";
+            statement = "SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
         }
         
         proc.addStatement(statement);
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddressMapped(DatabasePlatform platform) {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address_Mapped");
-        
-        proc.addInOutputArgument("address_id_v", Integer.class);
-        proc.addOutputArgument("street_v", String.class);
-        proc.addOutputArgument("city_v", String.class);
-        proc.addOutputArgument("country_v", String.class);
-        proc.addOutputArgument("province_v", String.class);
-        proc.addOutputArgument("p_code_v", String.class);
-        
-        String statement = null;
-        if (platform.isSQLServer() || platform.isSybase()) {
-            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
-        } else {
-            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
-        }
-        
-        proc.addStatement(statement);
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddressResultSet() {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address_Result_Set");        
-        proc.addArgument("address_id_v", Integer.class);
-        proc.addStatement("SELECT a.* FROM JPA21_ADDRESS a WHERE a.address_id = address_id_v");
         return proc;
     }
     
@@ -1416,9 +1399,8 @@ public class EmployeePopulator {
             try {
                 SchemaManager schema = new SchemaManager((DatabaseSession) session);
                 schema.replaceObject(buildStoredProcedureReadFromAddress(platform));
-                schema.replaceObject(buildStoredProcedureReadFromAddressByAlias(platform));
-                schema.replaceObject(buildStoredProcedureReadFromAddressMapped(platform));
-                schema.replaceObject(buildStoredProcedureReadFromAddressResultSet());
+                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNamed(platform));
+                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNumbered(platform));
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadAllAddresses());
