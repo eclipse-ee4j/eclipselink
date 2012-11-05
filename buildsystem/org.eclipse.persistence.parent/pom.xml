@@ -3,7 +3,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <url>http://www.eclipse.org/eclipselink/</url>
     <name>EclipseLink Parent</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
@@ -247,14 +246,6 @@
                             <arch>x86_64</arch>
                         </environment>
                     </environments>
-                    <!-- target>
-                        <artifact>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>${project.artifactId}_${release.version}.!!! issue here -> ${build.qualifier}!!! </classifier>
-                        </artifact>
-                    </target -->
                 </configuration>
             </plugin>
             <!-- Mostly working source bundle   generation -->
@@ -302,20 +293,20 @@
                 </executions>
             </plugin>
         </plugins>
-    <directory>../../target</directory>
-    <sourceDirectory>${src}</sourceDirectory>
-    <scriptSourceDirectory>./scripts</scriptSourceDirectory>
-    <testSourceDirectory>../${testId}/src</testSourceDirectory>
-    <outputDirectory>./target/classes</outputDirectory>
-    <testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
+        <directory>../../target</directory>
+        <sourceDirectory>${src}</sourceDirectory>
+        <scriptSourceDirectory>./scripts</scriptSourceDirectory>
+        <testSourceDirectory>../${testId}/src</testSourceDirectory>
+        <outputDirectory>./target/classes</outputDirectory>
+        <testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
         <resources>
             <resource>
-        <directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
+                <directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
             </resource>
         </resources>
         <testResources>
             <testResource>
-        <directory>../${testId}/resources</directory>
+                <directory>../${testId}/resources</directory>
             </testResource>
         </testResources>
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
