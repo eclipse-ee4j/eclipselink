@@ -1335,7 +1335,6 @@
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-            <!-- pathelement path="${jpatest.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}.jar"/ -->
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
