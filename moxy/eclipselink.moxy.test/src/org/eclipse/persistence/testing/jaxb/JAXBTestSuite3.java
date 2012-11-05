@@ -53,6 +53,7 @@ import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlmixed.XmlMixedTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathToElementWithXmlAttributeTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathWithMultipleEqualsCharactersTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlpath.XmlPathWithXmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlschema.XMLSchemaModelTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder.PropOrderTestCases;
@@ -108,6 +109,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);
+        suite.addTestSuite(XmlPathWithMultipleEqualsCharactersTestCases.class);
         suite.addTestSuite(XmlPathToElementWithXmlAttributeTestCases.class);
         suite.addTestSuite(XmlPathToAttributeTestCases.class);
         suite.addTestSuite(XmlPathWithXmlAttributeTestCases.class);

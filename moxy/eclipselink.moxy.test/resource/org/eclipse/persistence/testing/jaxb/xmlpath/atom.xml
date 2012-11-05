@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<atom:testObject xmlns:atom="http://www.w3.org/2005/Atom" >
+    <atom:entry>
+        <atom:content>
+            <atom:entry type="application/atom+xml;type=entry;apitype=foo">
+                <atom:data>DATA1</atom:data>
+            </atom:entry>
+            <atom:entry type="application/atom+xml;type=entry;apitype=bar">
+                <atom:data>DATA2</atom:data>
+            </atom:entry>
+            <atom:entry type="application/atom+xml;type=entry;apitype=bar">
+                <atom:data>DATA3</atom:data>
+            </atom:entry>
+        </atom:content>
+    </atom:entry>
+</atom:testObject>
