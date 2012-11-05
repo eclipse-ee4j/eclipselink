@@ -137,12 +137,14 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <echo message="jpaapi2.version   = ${jpaapi2.version}"/>
-        <echo message="sdoapi.version    = ${sdoapi.version}"/>
-        <echo message="antlr.version     = ${antlr.version}"/>
-        <echo message="asm.version       = ${asm.version}"/>
-        <echo message="oracleddl.version = ${oracleddl.version}"/>
-        <echo message="hermes.version    = ${hermes.version}"/>
+        <echo message="jpaapi2.version    = ${jpaapi2.version}"/>
+        <echo message="sdoapi.version     = ${sdoapi.version}"/>
+        <echo message="antlr.version      = ${antlr.version}"/>
+        <echo message="asm.version        = ${asm.version}"/>
+        <echo message="oracleddl.version  = ${oracleddl.version}"/>
+        <echo message="oraclebndl.version = ${oraclebndl.version}"/>
+        <echo message="oraclenosql.version= ${oraclenosql.version}"/>
+        <echo message="hermes.version     = ${hermes.version}"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
