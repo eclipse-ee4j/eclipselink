@@ -1316,6 +1316,7 @@ public abstract class BaseDBWSBuilderHelper {
                 objType.setTypeName(typeName);
                 objType.setCompatibleType(compatibleType);
                 objType.setJavaTypeName(getGeneratedJavaClassName(javaTypeName, dbwsBuilder.getProjectName()));
+                objType.setJavaType(getWrapperClass(objType.getJavaTypeName()));
                 Map<String, org.eclipse.persistence.internal.helper.DatabaseType> fields = objType.getFields();
                 ObjectType oType = (ObjectType) dType;
                 for (FieldType field : oType.getFields()) {

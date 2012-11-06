@@ -50,6 +50,50 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
 	static final String PHONE_TYPE_ALIAS = "dbws_phone_type";
 	static final String PHONE_TYPE_CLASSNAME = "objecttypetests.Dbws_phone_type";
 
+	//==============================================================================
+	static final String CREATE_MYTYPE = 
+        "CREATE OR REPLACE TYPE MYTYPE_1 AS OBJECT (" +
+            "\nid INTEGER," +
+            "\nname VARCHAR2(30)" +
+        "\n)";
+    
+	static final String CREATE_MYTYPE_ARRAY = 
+	    "CREATE OR REPLACE TYPE MYTYPE_1_ARRAY AS VARRAY(10) OF MYTYPE_1;";
+
+    static final String CREATE_MYTYPE_PKG = 
+	    "CREATE OR REPLACE PACKAGE USERTYPEINOUT AS" + 
+            "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1);" +
+            "\nPROCEDURE TEST_OUT(P1 OUT MYTYPE_1);" +
+            "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1);" +
+            "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1);" +
+            "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY;" +
+	    "\nEND USERTYPEINOUT;";
+	
+	static final String CREATE_MYTYPE_PKG_BODY = 
+	    "CREATE OR REPLACE PACKAGE BODY USERTYPEINOUT AS" +
+            "\nPROCEDURE TEST_IN_AND_OUT(P1 IN MYTYPE_1, P2 OUT MYTYPE_1) AS" +
+            "\nBEGIN" +
+                "\nP2 := P1;" +
+            "\nEND TEST_IN_AND_OUT; " +
+            "\nPROCEDURE TEST_OUT(P1 OUT MYTYPE_1) AS" +
+            "\nBEGIN" +
+                "\nP1 := MYTYPE_1(66, 'Steve French');" +
+            "\nEND TEST_OUT; " +
+            "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND TEST_IN; " +
+            "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1) AS" +
+            "\nBEGIN" +
+                "\nNULL;" +
+            "\nEND TEST_INOUT; " +
+            "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY AS" +
+            "\nBEGIN" + 
+                "\nRETURN P1;" +
+            "\nEND ECHO_MYTYPE_1_ARRAY;" +
+	    "\nEND USERTYPEINOUT;";
+    //==============================================================================	
+	
     static final String CREATE_PHONE_TYPE =
         "CREATE OR REPLACE TYPE DBWS_PHONE_TYPE AS OBJECT (" +
             "\nHOME VARCHAR2(20)," +
@@ -112,6 +156,14 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE ADD_EMP_TYPE";
     static final String DROP_ADD_EMP_TYPE2_FUNC =
         "DROP FUNCTION ADD_EMP_TYPE2";
+    static final String DROP_TYPE_MYTYPE_1 =
+        "DROP TYPE MYTYPE_1";
+    static final String DROP_TYPE_MYTYPE_1_ARRAY =
+        "DROP TYPE MYTYPE_1_ARRAY";
+    static final String DROP_PACKAGE_USER_TYPE_INOUT =
+        "DROP PACKAGE USERTYPEINOUT";
+    static final String DROP_PACKAGE_BODY_USER_TYPE_INOUT =
+        "DROP PACKAGE BODY USERTYPEINOUT";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -143,6 +195,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GET_EMP_TYPE_BY_ID_2_FUNC, ddlDebug);
             runDdl(conn, CREATE_ADD_EMP_TYPE_PROC, ddlDebug);
             runDdl(conn, CREATE_ADD_EMP_TYPE2_FUNC, ddlDebug);
+            runDdl(conn, CREATE_MYTYPE, ddlDebug);
+            runDdl(conn, CREATE_MYTYPE_ARRAY, ddlDebug);
+            runDdl(conn, CREATE_MYTYPE_PKG, ddlDebug);
+            runDdl(conn, CREATE_MYTYPE_PKG_BODY, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_EMP_TYPE_TABLE.length; i++) {
@@ -202,6 +258,31 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                   "isAdvancedJDBC=\"true\" " +
                   "returnType=\"dbws_emp_typeType\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestIn\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"TEST_IN\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestOut\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"TEST_OUT\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestInAndOut\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"TEST_IN_AND_OUT\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestInOut\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"TEST_INOUT\" " +
+              "/>" +/*
+              "<plsql-procedure " +
+                  "name=\"TestEchoArray\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"ECHO_MYTYPE_1_ARRAY\" " +
+              "/>" +*/
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -217,6 +298,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_GET_EMP_TYPE_BY_ID_PROC, ddlDebug);
             runDdl(conn, DROP_EMP_TYPE, ddlDebug);
             runDdl(conn, DROP_PHONE_TYPE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_BODY_USER_TYPE_INOUT, ddlDebug);
+            runDdl(conn, DROP_PACKAGE_USER_TYPE_INOUT, ddlDebug);
+            runDdl(conn, DROP_TYPE_MYTYPE_1_ARRAY, ddlDebug);
+            runDdl(conn, DROP_TYPE_MYTYPE_1, ddlDebug);
         }
     }
 
@@ -327,4 +412,96 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     	assertNotNull("No OX descriptor found for alias [" + PHONE_TYPE_ALIAS + "]", phoneOXDesc);
     	assertEquals("Expected class name [" + PHONE_TYPE_CLASSNAME + "] but was [" + phoneOXDesc.getJavaClassName() + "]", phoneOXDesc.getJavaClassName(), PHONE_TYPE_CLASSNAME);
     }
+    
+    @Test
+    public void inTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Invocation invocation = new Invocation("TestIn");
+        invocation.setParameter("P1", pType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(RETURN_VALUE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String RETURN_VALUE_XML =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<value>1</value>";
+
+    @Test
+    public void outTypeTest() {
+        Invocation invocation = new Invocation("TestOut");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    @Test
+    public void inAndOutTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Invocation invocation = new Invocation("TestInAndOut");
+        invocation.setParameter("P1", pType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    @Test
+    public void inOutTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Invocation invocation = new Invocation("TestInOut");
+        invocation.setParameter("P1", pType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String MYTYPE_XML =
+        REGULAR_XML_HEADER +
+        "<mytype_1Type xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<id>66</id>" +
+            "<name>Steve French</name>" +
+        "</mytype_1Type>";
+    
+    //@Test
+    public void arrayEchoTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Invocation invocation = new Invocation("TestEchoArray");
+        invocation.setParameter("P1", pType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String MYTYPE_ARRAY_XML =
+        REGULAR_XML_HEADER +
+        "<mytype_1_arrayType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<item>" +
+                "<id>66</id>" +
+                "<name>Steve French</name>" +
+            "</item>" +
+        "</mytype_1_arrayType>";
 }
