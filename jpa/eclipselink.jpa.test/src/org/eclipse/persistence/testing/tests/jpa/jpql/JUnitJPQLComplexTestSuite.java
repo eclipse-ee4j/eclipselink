@@ -3810,6 +3810,24 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         closeEntityManager(em);
     }
+    
+    // Bug 393470
+    // Test a group by clause that does not contain any functions in the select clause
+    public void testGroupByWithoutFunction() {
+        EntityManager em = createEntityManager();
+        
+        Query query = em.createQuery("Select e from Employee e group by e");
+        List results = query.getResultList();
+        assertNotNull("Results should be non-null", results);
+        assertTrue("Results should not be empty", results.size() != 0);
+        
+        String sql = query.unwrap(DatabaseQuery.class).getSQLString();
+        if (sql.toUpperCase().indexOf("GROUP BY") != -1) {
+            fail("GROUP BY not included in generated SQL: " + sql);
+        }
+        
+        closeEntityManager(em);
+    }
 
     // Bug 300625
     // Test subselect does not join table twice.
