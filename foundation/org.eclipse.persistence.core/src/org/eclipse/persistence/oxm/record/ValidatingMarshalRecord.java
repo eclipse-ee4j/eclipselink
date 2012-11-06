@@ -201,9 +201,9 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     }
 
     @Override
-    public void node(Node node, NamespaceResolver resolver) {
-        validatingRecord.node(node, resolver);
-        marshalRecord.node(node, resolver);
+    public void node(Node node, NamespaceResolver resolver, String uri, String name) {
+        validatingRecord.node(node, resolver, uri, name);
+        marshalRecord.node(node, resolver, uri, name);
     }
 
     @Override

@@ -63,7 +63,9 @@ import org.eclipse.persistence.platform.xml.XMLTransformer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXNotSupportedException;
@@ -155,10 +157,10 @@ public class XMLMarshaller implements Cloneable {
             xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
             
             domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
-            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, streamWriterClass}, true);
+            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, streamWriterClass}, true);
             
             domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
-            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {ClassConstants.NODE, eventWriterClass}, true);
+            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, eventWriterClass}, true);
             
         } catch (Exception ex) {
             // Do nothing
@@ -460,16 +462,26 @@ public class XMLMarshaller implements Cloneable {
             } else {
                 if (result.getClass().equals(staxResultClass)) {
                     try {
+                        String namespace = null;
+                        String localName = null;
+                        if(isXMLRoot){
+                            XMLRoot xmlRootObject = (XMLRoot)object;
+                            if(xmlRootObject.getObject() != null && xmlRootObject.getObject() instanceof Node){
+                                namespace = ((XMLRoot)object).getNamespaceURI();
+                                localName = ((XMLRoot)object).getLocalName();
+                            }
+                        }
+                        
                         Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
                         if (xmlStreamWriter != null) {
                             Object domtostax = PrivilegedAccessHelper.newInstanceFromClass(domToStreamWriterClass);
-                            PrivilegedAccessHelper.invokeMethod(writeToStreamMethod, domtostax, new Object[]{document, xmlStreamWriter});
+                            PrivilegedAccessHelper.invokeMethod(writeToStreamMethod, domtostax, new Object[]{document,namespace, localName,xmlStreamWriter});
                             return;
                         } else {
                             Object xmlEventWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetEventWriterMethod, result);
                             if(xmlEventWriter != null) {
                                 Object domToEventWriter = PrivilegedAccessHelper.newInstanceFromClass(domToEventWriterClass);
-                                PrivilegedAccessHelper.invokeMethod(writeToEventWriterMethod, domToEventWriter, new Object[]{document, xmlEventWriter});
+                                PrivilegedAccessHelper.invokeMethod(writeToEventWriterMethod, domToEventWriter, new Object[]{document, namespace, localName, xmlEventWriter});
                                 return;
                             }
                         }
@@ -563,17 +575,25 @@ public class XMLMarshaller implements Cloneable {
                 } else {
                     try {
                         Node xmlDocument = null;
+                        String rootUri = null;
+                        String rootLocalName = null;
                         if(isXMLRoot && session == null) {
                             xmlDocument = (Node)((XMLRoot)object).getObject();
+                            rootUri = ((XMLRoot)object).getNamespaceURI();
+                            rootLocalName = ((XMLRoot)object).getLocalName();
                         } else {
                             xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
                         }
                         record.setSession(session);
                         if (isFragment()) {
-                            record.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+                            if(xmlDescriptor == null){
+                                record.node(xmlDocument, null, rootUri, rootLocalName );
+                            }else{
+                                record.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootUri, rootLocalName );
+                            }
                         } else {
                             record.startDocument(encoding, version);
-                            record.node(xmlDocument, record.getNamespaceResolver());
+                            record.node(xmlDocument, record.getNamespaceResolver(), rootUri, rootLocalName);
                             record.endDocument();
                         }
                     } catch (XMLPlatformException e) {
@@ -639,8 +659,11 @@ public class XMLMarshaller implements Cloneable {
         }
         writerRecord.setMarshaller(this);
 
-        
+        String rootName = null;
+        String rootNamespace = null;
         if(isXMLRoot){
+            rootName = ((XMLRoot)object).getLocalName();
+            rootNamespace = ((XMLRoot)object).getNamespaceURI();
         	if(session == null || xmlDescriptor == null){
 	            try{
 	                session = xmlContext.getSession(((XMLRoot)object).getObject());
@@ -700,10 +723,15 @@ public class XMLMarshaller implements Cloneable {
                 }
                 writerRecord.setSession(session);
                 if (isFragment()) {
-                    writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver());
+                    if(xmlDescriptor == null){
+                        writerRecord.node(xmlDocument, null,  rootNamespace, rootName);    
+                    }else{
+                        writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootNamespace, rootName);
+                    }
+                    
                 } else {
                     writerRecord.startDocument(encoding, version);
-                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver());
+                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver(), rootNamespace, rootName);
                     writerRecord.endDocument();
                 }
             } catch (XMLPlatformException e) {
@@ -772,9 +800,13 @@ public class XMLMarshaller implements Cloneable {
 
         try {
             Node xmlDocument = null; 
+            String name = null;
+            String namespace= null;
             if(session == null) {
                 //indicated we're marshalling a node
                 xmlDocument = (Node)((XMLRoot)object).getObject();
+                namespace = ((XMLRoot)object).getNamespaceURI();
+                name = ((XMLRoot)object).getLocalName();
             } else {
                 xmlDocument = objectToXML(object, xmlDescriptor, isXMLRoot);
             }
@@ -786,7 +818,7 @@ public class XMLMarshaller implements Cloneable {
             } else {
                 reader.setContentHandler(contentHandler);
             }
-            reader.parse(xmlDocument);
+            reader.parse(xmlDocument, namespace, name);
         } catch (XMLPlatformException e) {
             throw XMLMarshalException.marshalException(e);
         } catch (org.xml.sax.SAXNotRecognizedException e) {
@@ -877,25 +909,26 @@ public class XMLMarshaller implements Cloneable {
             } else {
                 doc = objectToXMLNode(object, node, session, xmlDescriptor, isXMLRoot);
             }
-            DOMResult result = new DOMResult(node);
-            if (isXMLRoot) {
-                String oldEncoding = transformer.getEncoding();
-                String oldVersion = transformer.getVersion();
-                if (((XMLRoot) object).getEncoding() != null) {
-                    transformer.setEncoding(((XMLRoot) object).getEncoding());
-                }
-                if (((XMLRoot) object).getXMLVersion() != null) {
-                    transformer.setVersion(((XMLRoot) object).getXMLVersion());
-                }
-                transformer.transform(doc, result);
-                if(oldEncoding != null){
-                    transformer.setEncoding(oldEncoding);
-                }
-                if(oldVersion !=null){
-                    transformer.setVersion(oldVersion);
-                }
+            
+             if (isXMLRoot) {
+                 XMLRoot xmlRootObject = (XMLRoot)object;                 
+                 if(node.getNodeType() == Node.DOCUMENT_NODE){        
+                     transformChildren(doc, ((Document)node),((Document)node),xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName() );
+                 }else{
+                     transformChildren(doc, node.getOwnerDocument(), node, xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName());
+                 }
             } else {
-                transformer.transform(doc, result);
+                if(doc.getNodeType() == Node.DOCUMENT_NODE){
+                    doc = ((Document)doc).getDocumentElement();
+                }
+                
+                if(node.getNodeType() == Node.DOCUMENT_NODE){
+                    Node imported = ((Document)node).importNode(doc, true);
+                    node.appendChild(imported);
+                }else{
+                    Node imported = node.getOwnerDocument().importNode(doc, true);
+                    node.appendChild(imported);
+                }
             }
         } catch (Exception exception) {
             if (exception instanceof XMLMarshalException) {
@@ -905,6 +938,87 @@ public class XMLMarshaller implements Cloneable {
             }
         }
     }
+    
+    private void transformChildren(Node sourceNode, Document targetDoc, Node targetNode,  String namespace, String name){
+        Element sourceElement = null;
+        String xmlRootQualifiedName = name;
+        if(sourceNode.getNodeType() == Node.DOCUMENT_NODE){
+            sourceElement = ((Document)sourceNode).getDocumentElement();
+        }else if(sourceNode.getNodeType() == Node.ELEMENT_NODE){
+            sourceElement = (Element)sourceNode;
+        }
+        
+        NamespaceResolver sourceNR = new NamespaceResolver();
+        sourceNR.setDOM(sourceElement);
+        
+        NamespaceResolver targetNR = new NamespaceResolver();
+        targetNR.setDOM(targetDoc.getDocumentElement());
+               
+        String prefix = getPrefix(namespace, sourceNR, sourceElement);
+        if(prefix != null && prefix.length() >0){
+            xmlRootQualifiedName = prefix + ':' + name;            
+        }
+        
+        Element newElement = targetDoc.createElementNS(namespace, xmlRootQualifiedName);
+        if(prefix != null && prefix.length() >0 && targetNR.resolveNamespaceURI(namespace) == null){
+            newElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ':' + prefix, namespace);
+        }
+        targetNode.appendChild(newElement);
+
+        copyAttributes(sourceElement.getAttributes(),sourceElement, newElement, sourceNR, targetNR);
+
+        NodeList children = sourceElement.getChildNodes();
+        if(children != null){
+            int childrenSize= children.getLength();
+            for(int i =0; i<childrenSize; i++){
+                Node nextChild = children.item(i);                
+                Node imported = targetDoc.importNode(nextChild, true);
+                newElement.appendChild(imported);
+            }
+        }
+     
+                
+     
+    }
+    private String getPrefix(String namespace, NamespaceResolver sourceNR, Element sourceElement){
+        if(namespace == null){
+            return null;
+        }
+        String prefix = sourceNR.resolveNamespaceURI(namespace);
+        if(prefix == null){     
+            String defaultNamespace = sourceElement.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+            if(defaultNamespace == null){
+                prefix = sourceNR.generatePrefix();    
+            }else if(defaultNamespace != namespace){
+                prefix = sourceNR.generatePrefix();
+            }else{
+                prefix = XMLConstants.EMPTY_STRING;
+            }
+            
+        }
+        return prefix;
+    }
+        
+    private void copyAttributes(NamedNodeMap attrs, Element sourceElement, Element newElement, NamespaceResolver sourceNR, NamespaceResolver targetNR){
+        for (int i=0; i<attrs.getLength(); i++) {
+            Attr nextAttr = (Attr) attrs.item(i);
+            String name = nextAttr.getLocalName();
+            String uri = nextAttr.getNamespaceURI();
+            if(!XMLConstants.XMLNS.equals(name)){
+                String prefix = getPrefix(uri, sourceNR, sourceElement);               
+                if(prefix != null && prefix.length() > 0){
+                    name = prefix + ':' +name;
+                    //if this is a newly generated prefix it needs to be written out
+                    if(targetNR.resolveNamespaceURI(uri) == null){                       
+                        newElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ':' + prefix, uri);
+                    }
+                }
+                
+            }
+            newElement.setAttributeNS(uri, name, nextAttr.getValue());
+        }
+    }
+    
 
     /**
      * Convert the given object to XML and update the given marshal record with
@@ -1001,7 +1115,7 @@ public class XMLMarshaller implements Cloneable {
         }
         if(isXMLRoot) {
             if(root.getObject() instanceof Node) {
-                marshalRecord.node((Node)root.getObject(), new NamespaceResolver());
+                marshalRecord.node((Node)root.getObject(), new NamespaceResolver(), root.getNamespaceURI(), root.getLocalName());
                 marshalRecord.endDocument();
                 return;
             }

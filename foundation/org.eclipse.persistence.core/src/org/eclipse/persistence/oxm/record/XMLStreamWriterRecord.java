@@ -198,12 +198,12 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
-    public void node(Node node, NamespaceResolver resolver) {
+    public void node(Node node, NamespaceResolver resolver,String uri, String name) {
         try {
             if(node.getNodeType() == Node.DOCUMENT_NODE) {
                 node = ((Document)node).getDocumentElement();
             }
-            getDomToXMLStreamWriter().writeToStream(node, this.xmlStreamWriter);
+            getDomToXMLStreamWriter().writeToStream(node, uri, name , this.xmlStreamWriter);
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);
         }

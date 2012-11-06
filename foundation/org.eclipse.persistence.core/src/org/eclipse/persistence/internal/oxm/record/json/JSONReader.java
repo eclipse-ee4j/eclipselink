@@ -232,14 +232,18 @@ public class JSONReader extends XMLReaderAdapter {
                 }
                 String uri = XMLConstants.EMPTY_STRING;
  
-                if(namespaceAware && namespaces != null){                    
-                	int nsIndex = localName.indexOf(namespaceSeparator);
+                if(namespaceAware && namespaces != null && localName.length() >1){                    
+                	int nsIndex = localName.indexOf(namespaceSeparator, 1);
                 	String prefix = XMLConstants.EMPTY_STRING;
                 	if(nsIndex > -1){
                 		prefix = localName.substring(0, nsIndex);
                 		localName = localName.substring(nsIndex + 1);
                 	}
                 	uri = namespaces.resolveNamespacePrefix(prefix);
+                	if(uri == null){
+                	    localName = qualifiedName;
+                	    uri = namespaces.getDefaultNamespaceURI();
+                	}
                 	if(localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)){
             			break;
             		}  

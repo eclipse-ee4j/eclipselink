@@ -18,6 +18,7 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -27,7 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-public class DomToXMLEventWriter {
+public class DomToXMLEventWriter{
     private XMLEventFactory xmlEventFactory;
     
     public DomToXMLEventWriter() {
@@ -37,8 +38,8 @@ public class DomToXMLEventWriter {
     public DomToXMLEventWriter(XMLEventFactory xmlEventFactory) {
         this.xmlEventFactory = xmlEventFactory;
     }
-    
-    public void writeToEventWriter(Node dom, XMLEventWriter xew) throws XMLStreamException {
+     
+    public void writeToEventWriter(Node dom, String uri, String name, XMLEventWriter xew) throws XMLStreamException {
         Node currentNode = dom;
         if(dom.getNodeType() == Node.DOCUMENT_NODE) {
             Document doc = (Document)dom;
@@ -46,7 +47,7 @@ public class DomToXMLEventWriter {
             currentNode = doc.getDocumentElement();
         }
         if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            writeElement((Element)currentNode, xew);
+            writeElement((Element)currentNode, uri, name, xew);
         } else if(currentNode.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr)currentNode;
             if(attribute.getPrefix() != null && attribute.getPrefix().equals(XMLConstants.XMLNS)) {
@@ -65,26 +66,54 @@ public class DomToXMLEventWriter {
             xew.add(xmlEventFactory.createEndDocument());
         }
     }
-    
-    private void writeElement(Element elem, XMLEventWriter xew) throws XMLStreamException {
-        if(elem.getPrefix() != null && elem.getPrefix().length() > 0) {
-            String namespaceURI = xew.getNamespaceContext().getNamespaceURI(elem.getPrefix());
-            xew.add(xmlEventFactory.createStartElement(elem.getPrefix(), elem.getNamespaceURI(), elem.getLocalName()));
-            if(!(elem.getNamespaceURI().equals(namespaceURI))) {
-                xew.add(xmlEventFactory.createNamespace(elem.getPrefix(), elem.getNamespaceURI()));
+    private void writeElement(Element elem, String newNamespace, String newName, XMLEventWriter xew) throws XMLStreamException {
+        String prefix = null;
+        String namespace = null;
+        String localName = null;
+        String nodeName = null;
+        if(newName != null){
+            namespace = newNamespace;
+            localName = newName;
+            nodeName = newName;
+            if(newNamespace != null && newNamespace.length() > 0) {
+                NamespaceResolver tempNR = new NamespaceResolver();
+                tempNR.setDOM(elem);                
+                prefix = tempNR.resolveNamespaceURI(namespace);
+                
+                if(prefix == null || prefix.length() == 0){
+                    String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+                    if(defaultNamespace == null){
+                        prefix = tempNR.generatePrefix();    
+                    }else if(defaultNamespace != namespace){
+                        prefix = tempNR.generatePrefix();
+                    }else{
+                        prefix = XMLConstants.EMPTY_STRING;
+                    }      
+                }    
             }
-        } else {
-            String localName = elem.getLocalName();
-            String name = elem.getNodeName();
-            if(elem.getNamespaceURI() == null || elem.getNamespaceURI().length() == 0) {
+        }else{
+            prefix = elem.getPrefix();         
+            namespace = elem.getNamespaceURI();   
+            localName = elem.getLocalName();
+            nodeName = elem.getNodeName();
+        }
+                
+        if(prefix != null && prefix.length() > 0) {
+            String namespaceURI = xew.getNamespaceContext().getNamespaceURI(prefix);
+            xew.add(xmlEventFactory.createStartElement(prefix, namespace, localName));
+            if(!(namespace.equals(namespaceURI))) {
+                xew.add(xmlEventFactory.createNamespace(prefix, namespace));
+            }
+        } else {            
+            if(namespace == null || namespace.length() == 0) {
                 String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
-                xew.add(xmlEventFactory.createStartElement("", "", elem.getNodeName()));
+                xew.add(xmlEventFactory.createStartElement("", "", nodeName));
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xew.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
                 }
             } else {
-                xew.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, elem.getNamespaceURI(), elem.getLocalName()));
+                xew.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, namespace, localName));
             }
         }
         NodeList childNodes = elem.getChildNodes();
@@ -102,7 +131,7 @@ public class DomToXMLEventWriter {
                         xew.add(xmlEventFactory.createNamespace(next.getLocalName(), next.getValue()));
                     }
                 } else {
-                    nonNamespaceDeclAttrs.add(attribute);
+                    nonNamespaceDeclAttrs.add(attribute);                  
                 }
             }
         }
@@ -122,7 +151,7 @@ public class DomToXMLEventWriter {
             } else if(next.getNodeType() == Node.COMMENT_NODE) {
                 xew.add(xmlEventFactory.createComment(next.getNodeValue()));
             } else if(next.getNodeType() == Node.ELEMENT_NODE) {
-                writeElement((Element)next, xew);
+                writeElement((Element)next, null, null, xew);
             }
         }
         if(elem.getPrefix() != null && elem.getPrefix().length() > 0) {
@@ -133,4 +162,6 @@ public class DomToXMLEventWriter {
             xew.add(xmlEventFactory.createEndElement("", "", elem.getNodeName()));
         }
     }
+        
+        
 }

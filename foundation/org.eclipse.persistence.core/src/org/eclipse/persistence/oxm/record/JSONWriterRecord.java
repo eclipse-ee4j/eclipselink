@@ -679,7 +679,7 @@ public class JSONWriterRecord extends MarshalRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
-    public void node(Node node, NamespaceResolver namespaceResolver) {
+    public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
@@ -708,7 +708,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
-                xfragReader.parse(node);
+                xfragReader.parse(node, uri, name);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
             }
@@ -733,6 +733,7 @@ public class JSONWriterRecord extends MarshalRecord {
             	XPathFragment xPathFragment = new XPathFragment(localName);
             	xPathFragment.setNamespaceURI(namespaceURI);
             	openStartElement(xPathFragment, namespaceResolver);
+            	handleAttributes(atts);
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {

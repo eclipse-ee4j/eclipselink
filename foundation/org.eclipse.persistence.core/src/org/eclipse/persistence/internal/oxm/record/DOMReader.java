@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -73,7 +74,7 @@ public class DOMReader extends XMLReaderAdapter {
         }
     }
 
-    public void parse (Node node) throws SAXException {
+    public void parse (Node node, String newURI, String newName) throws SAXException {
         if(null == contentHandler) {
             return;
         }
@@ -86,8 +87,15 @@ public class DOMReader extends XMLReaderAdapter {
         processParentNamespaces(rootNode);
         startDocument();
         setupLocator(rootNode.getOwnerDocument());
-        reportElementEvents(rootNode);
+              
+        reportElementEvents(rootNode, newURI, newName);
+        
+        
         endDocument();
+    }
+    
+    public void parse (Node node) throws SAXException {
+        parse(node, null, null);
     }
 
     /**
@@ -125,26 +133,65 @@ public class DOMReader extends XMLReaderAdapter {
             }
         }
     }
-
     protected void reportElementEvents(Element elem) throws SAXException {
+        reportElementEvents(elem, null, null);
+    }
+    protected void reportElementEvents(Element elem, String newUri, String newName) throws SAXException {
         this.currentNode = elem;
         IndexedAttributeList attributes = buildAttributeList(elem);
-        // Handle null local name
-        String qname;
-        String lname = elem.getLocalName();
-        if (lname == null) {
-            // If local name is null, use the node name
-            lname = elem.getNodeName();
-            qname = lname;
-            handlePrefixedAttribute(elem);
+        String namespaceUri = null;
+        String qname = null;
+        String lname = null;
+
+        if(newName == null){
+            // Handle null local name           
+            lname = elem.getLocalName();
+            if (lname == null) {
+                // If local name is null, use the node name
+                lname = elem.getNodeName();
+                qname = lname;
+                handlePrefixedAttribute(elem);
+            } else {
+                qname = getQName(elem);
+            }
+            namespaceUri = elem.getNamespaceURI();
+            if(namespaceUri == null) {
+                namespaceUri = "";
+            }
         } else {
-            qname = getQName(elem);
+            namespaceUri = newUri;
+            lname = newName;            
+            qname = newName;
+            if(namespaceUri != null && isNamespaceAware()){
+                NamespaceResolver tmpNR = new NamespaceResolver();
+                tmpNR.setDOM(elem);
+
+                 String prefix = tmpNR.resolveNamespaceURI(namespaceUri);
+                 if(prefix == null || prefix.length() == 0){
+                     String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+            
+                     if(defaultNamespace == null){
+                         prefix = tmpNR.generatePrefix();    
+                         contentHandler.startPrefixMapping(prefix, namespaceUri);
+                     }else if(defaultNamespace != namespaceUri){
+                         prefix = tmpNR.generatePrefix();
+                         contentHandler.startPrefixMapping(prefix, namespaceUri);
+                     }else{
+                         prefix = XMLConstants.EMPTY_STRING;
+                     }      
+                 }                 
+                 
+                 if(prefix != null && prefix.length() >0){
+                    qname = prefix + XMLConstants.COLON + qname;      
+                 }
+            }
+           
         }
-        String namespaceUri = elem.getNamespaceURI();
-        if(namespaceUri == null) {
-            namespaceUri = "";
-        }
+        
+      
+        
         contentHandler.startElement(namespaceUri, lname, qname, attributes);
+       
         handleChildNodes(elem.getChildNodes());
         contentHandler.endElement(namespaceUri, lname, qname);
         endPrefixMappings(elem);
