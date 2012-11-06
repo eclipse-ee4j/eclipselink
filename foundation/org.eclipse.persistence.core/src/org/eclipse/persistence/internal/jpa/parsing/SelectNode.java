@@ -126,6 +126,12 @@ public class SelectNode extends QueryNode {
             // Query's base variable is not a range variable.
             return false;
         }
+
+        // Bug 393470
+        // Use ReportQuery for GROUP BY / HAVING clauses in ANTLR
+        if (getParseTree().hasGroupBy() || getParseTree().hasHaving()) {
+            return false;
+        }
         
         // Use ReadAllQuery if the variable of the SELECT clause expression is
         // the base variable
