@@ -329,7 +329,7 @@ public class ContentHandlerRecord extends MarshalRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
-    public void node(Node node, NamespaceResolver namespaceResolver) {
+    public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
@@ -364,7 +364,7 @@ public class ContentHandlerRecord extends MarshalRecord {
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(contentHandler);
                 try {
-                    xfragReader.parse(node);
+                    xfragReader.parse(node, uri, name);
                 } catch (SAXException sex) {
                     throw XMLMarshalException.marshalException(sex);
                 }

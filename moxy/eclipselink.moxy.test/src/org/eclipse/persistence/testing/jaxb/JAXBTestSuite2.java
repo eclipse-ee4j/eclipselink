@@ -28,6 +28,11 @@ import org.eclipse.persistence.testing.jaxb.inheritance.simple.XmlValueInheritan
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.ElementTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.TextNodeTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory.DocumentTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory.ElementEmptyTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory.ElementFragmentTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory.ElementNoNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbelement.dom.nofactory.ElementSameNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nil.JAXBElementNilTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementBase64TestCases;
@@ -87,6 +92,12 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBElementSimpleTestCases.class);
         suite.addTestSuite(JAXBElementNestedTestCases.class);
         suite.addTestSuite(JAXBElementComplexTestCases.class);
+        suite.addTestSuite(ElementTestCases.class);
+        suite.addTestSuite(ElementEmptyTestCases.class);
+        suite.addTestSuite(ElementNoNamespaceTestCases.class);
+        suite.addTestSuite(ElementSameNamespaceTestCases.class);
+        suite.addTestSuite(ElementFragmentTestCases.class);
+        suite.addTestSuite(DocumentTestCases.class);
         suite.addTestSuite(JAXBElementNilTestCases.class);
         suite.addTestSuite(JAXBElementBase64TestCases.class);
         suite.addTestSuite(JAXBElementDataHandlerTestCases.class);

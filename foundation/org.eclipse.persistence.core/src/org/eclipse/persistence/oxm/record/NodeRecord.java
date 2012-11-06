@@ -176,7 +176,7 @@ public class NodeRecord extends MarshalRecord {
      */
     public void endDocument() {}
 
-    public void node(Node node, NamespaceResolver namespaceResolver) {
+    public void node(Node node, NamespaceResolver namespaceResolver, String uri, String name) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
@@ -201,7 +201,7 @@ public class NodeRecord extends MarshalRecord {
             XMLFragmentReader xfRdr = new XMLFragmentReader(namespaceResolver);
             xfRdr.setContentHandler(mrcHdlr);
             try {
-                xfRdr.parse(node);
+                xfRdr.parse(node, uri, name);
             } catch (SAXException sex) {
                 // Do nothing.
             }

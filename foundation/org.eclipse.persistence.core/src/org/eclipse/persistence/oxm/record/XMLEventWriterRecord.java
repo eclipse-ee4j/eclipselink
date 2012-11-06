@@ -257,7 +257,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
     }
 
-    public void node(Node node, NamespaceResolver resolver) {
+    public void node(Node node, NamespaceResolver resolver, String uri, String name) {
         if(isStartElementOpen) {
             openAndCloseStartElement();
             isStartElementOpen = false;
@@ -266,7 +266,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             if(node.getNodeType() == Node.DOCUMENT_NODE) {
                 node = ((Document)node).getDocumentElement();
             }
-            domToXMLEventWriter.writeToEventWriter(node, xmlEventWriter);
+            domToXMLEventWriter.writeToEventWriter(node, uri, name, xmlEventWriter);
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);
         }

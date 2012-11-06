@@ -170,7 +170,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
-    public void node(Node node, NamespaceResolver namespaceResolver) {
+    public void node(Node node, NamespaceResolver namespaceResolver, String newNamespace, String newName) {
         if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attr = (Attr) node;
             String resolverPfx = null;
@@ -196,7 +196,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(handler);
                 xfragReader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, handler);
-                xfragReader.parse(node);
+                xfragReader.parse(node, newNamespace, newName);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
             }

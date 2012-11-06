@@ -1,0 +1,1 @@
+<ns0:mynewname xmlns:ns0="namespace1" xmlns:ns2="namespace2" ns0:attr1="val1" ns0:attr3="val3" ns2:attr2="val2"><ns0:firstChild><ns0:nestedChild/></ns0:firstChild><ns0:secondChild/></ns0:mynewname>

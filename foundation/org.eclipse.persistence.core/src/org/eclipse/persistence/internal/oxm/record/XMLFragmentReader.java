@@ -50,14 +50,13 @@ public class XMLFragmentReader extends DOMReader {
         tmpresolverMap = new HashMap<Element, NamespaceResolver>();
     }
     
-    public void parse (Node node) throws SAXException {
+    public void parse (Node node, String uri, String name) throws SAXException {
         if (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
         	handleChildNodes(node.getChildNodes());
         } else {
-        	super.parse(node);
+        	super.parse(node, uri, name);
         }
     }
-
     protected void reportElementEvents(Element elem) throws SAXException {
         super.reportElementEvents(elem);
         // Clean up any temporary namespace resolvers created while processing this element

@@ -421,7 +421,19 @@ public abstract class MarshalRecord extends XMLRecord {
      * @param namespaceResolver The NamespaceResolver can be used to resolve the
      * namespace URI/prefix of the node
      */
-    public abstract void node(Node node, NamespaceResolver resolver);
+     public void node(Node node, NamespaceResolver resolver ){
+        node(node, resolver, null, null);
+     }
+
+     /**
+      * Receive notification of a node.
+      * @param node The Node to be added to the document
+      * @param namespaceResolver The NamespaceResolver can be used to resolve the
+      * @param name replacement root name for the node
+      * @param rootUri replacement root namespace for the node
+      * namespace URI/prefix of the node
+      */
+    public abstract void node(Node node, NamespaceResolver resolver, String qualifiedName, String rootUri);
 
     /**
      * INTERNAL:

@@ -14,9 +14,11 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -26,9 +28,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
-public class DomToXMLStreamWriter {
+public class DomToXMLStreamWriter{
 
-    public void writeToStream(Node dom, XMLStreamWriter xsw) throws XMLStreamException {
+    public void writeToStream(Node dom, String newUri, String newName, XMLStreamWriter xsw) throws XMLStreamException {
         Node currentNode = dom;
         if(dom.getNodeType() == Node.DOCUMENT_NODE) {
             Document doc = (Document)dom;
@@ -36,7 +38,7 @@ public class DomToXMLStreamWriter {
             currentNode = doc.getDocumentElement();
         }
         if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-            writeElement((Element)currentNode, xsw);
+            writeElement((Element)currentNode, newUri, newName, xsw);
         } else if(currentNode.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr)currentNode;
             if(attribute.getPrefix() != null && attribute.getPrefix().equals(XMLConstants.XMLNS)) {
@@ -57,25 +59,56 @@ public class DomToXMLStreamWriter {
 
     }
 
-    private void writeElement(Element elem, XMLStreamWriter xsw) throws XMLStreamException {
-        if(elem.getPrefix() != null && elem.getPrefix().length() > 0) {
-            String namespaceURI = xsw.getNamespaceContext().getNamespaceURI(elem.getPrefix());
-            xsw.writeStartElement(elem.getPrefix(), elem.getLocalName(), elem.getNamespaceURI());
-            if(!(elem.getNamespaceURI().equals(namespaceURI))) {
-                xsw.writeNamespace(elem.getPrefix(), elem.getNamespaceURI());
+    private void writeElement(Element elem, String newNamespace, String newName, XMLStreamWriter xsw) throws XMLStreamException {
+        String prefix = null;
+        String namespace = null;
+        String localName = null;
+        String nodeName = null;
+        if(newName != null){
+            namespace = newNamespace;
+            localName = newName;
+            nodeName = newName;
+            if(newNamespace != null && newNamespace.length() > 0) {
+                NamespaceResolver tempNR = new NamespaceResolver();
+                tempNR.setDOM(elem);
+                
+                prefix = tempNR.resolveNamespaceURI(namespace);
+                
+                if(prefix == null || prefix.length() == 0){
+                    String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+                    if(defaultNamespace == null){
+                        prefix = tempNR.generatePrefix();    
+                    }else if(defaultNamespace != namespace){
+                        prefix = tempNR.generatePrefix();
+                    }else{
+                        prefix = XMLConstants.EMPTY_STRING;
+                    }                    
+                }         
+               
             }
+        }else{
+            prefix = elem.getPrefix();         
+            namespace = elem.getNamespaceURI();   
+            localName = elem.getLocalName();
+            nodeName = elem.getNodeName();
+        }
+             
+        if(prefix != null && prefix.length() > 0) {
+           String namespaceURI = xsw.getNamespaceContext().getNamespaceURI(prefix);
+            xsw.writeStartElement(prefix, localName, namespace);
+            if(!(namespace.equals(namespaceURI))) {
+                xsw.writeNamespace(prefix, namespace);
+           }
         } else {
-            String localName = elem.getLocalName();
-            String name = elem.getNodeName();
-            if(elem.getNamespaceURI() == null || elem.getNamespaceURI().length() == 0) {
-                xsw.writeStartElement(elem.getNodeName());
+            if(namespace == null || namespace.length() == 0) {
+                xsw.writeStartElement(nodeName);                
                 String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
                     xsw.writeDefaultNamespace(XMLConstants.EMPTY_STRING);
                 }
             } else {
-                xsw.writeStartElement(XMLConstants.EMPTY_STRING, elem.getLocalName(), elem.getNamespaceURI());
+                xsw.writeStartElement(XMLConstants.EMPTY_STRING, localName, namespace);
             }
         }
         NodeList childNodes = elem.getChildNodes();
@@ -117,9 +150,20 @@ public class DomToXMLStreamWriter {
             } else if(next.getNodeType() == Node.COMMENT_NODE) {
                 xsw.writeComment(next.getNodeValue());
             } else if(next.getNodeType() == Node.ELEMENT_NODE) {
-                writeElement((Element)next, xsw);
+                writeElement((Element)next,null, null, xsw);
             }
         }
         xsw.writeEndElement();
+    }
+    
+    protected String getPrefix (NamespaceContext nc, Element elem, String uri){
+        NamespaceResolver tempResovler = new NamespaceResolver();
+        tempResovler.setDOM(elem);
+        
+        String prefix = tempResovler.resolveNamespaceURI(uri);
+        if(prefix == null || prefix.length() == 0){
+            prefix = tempResovler.generatePrefix();
+        }
+        return prefix;
     }
 }
