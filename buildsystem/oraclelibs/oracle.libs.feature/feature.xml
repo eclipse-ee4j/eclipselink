@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="oracle.libs"
+      label="Compdeps"
+      version="@VERSION@.@QUALIFIER@"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <plugin
+         id="oracle.libs"
+         download-size="0"
+         install-size="0"
+         version="@ORACLE_LIBS_VERSION@"
+         unpack="false"/>
+
+</feature>

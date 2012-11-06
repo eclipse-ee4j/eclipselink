@@ -37,7 +37,14 @@
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
 *
 *********************************************************************************-->
-
+<!-- Build Assumptions:
+*         running from a "view"
+*            Needs:
+*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
+*               build.properties
+*               ./buildsystem/ant_customizations.jar
+*
+*********************************************************************************-->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
@@ -80,24 +87,30 @@
     </target>
 
     <target name="discover-static-built-info" depends="discover-init">
-        <property name="jpaapi2.prefix"     value="javax.persistence"/>
-        <property name="jpaapi2.criteria"   value="[2.0.0,2.1.0)"/>
-        <property name="jpaapi2.name"       value="Javax Persistence"/>
-        <property name="sdoapi.prefix"      value="commonj.sdo"/>
-        <property name="sdoapi.criteria"    value="[2.1.1,2.2.0)"/>
-        <property name="sdoapi.name"        value="SDO API"/>
-        <property name="antlr.prefix"       value="org.eclipse.persistence.antlr"/>
-        <property name="antlr.criteria"     value="[3.0.0,4.0.0)"/>
-        <property name="antlr.name"         value="EclipseLink ANTLR"/>
-        <property name="asm.prefix"         value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria"       value="[3.0.0,4.0.0)"/>
-        <property name="asm.name"           value="EclipseLink ASM"/>
-        <property name="oracleddl.prefix"   value="org.eclipse.persistence.oracleddlparser"/>
-        <property name="oracleddl.criteria" value="[1.0.0,9.0.0)"/>
-        <property name="oracleddl.name"     value="EclipseLink OracleDDL Parser"/>
-        <property name="hermes.prefix"      value="org.eclipse.persistence.jpa.jpql"/>
-        <property name="hermes.criteria"    value="[1.0.0,9.0.0)"/>
-        <property name="hermes.name"        value="EclipseLink Hermes JPQL Parser"/>
+        <property name="jpaapi2.prefix"       value="javax.persistence"/>
+        <property name="jpaapi2.criteria"     value="[2.0.0,2.1.0)"/>
+        <property name="jpaapi2.name"         value="Javax Persistence"/>
+        <property name="sdoapi.prefix"        value="commonj.sdo"/>
+        <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
+        <property name="sdoapi.name"          value="SDO API"/>
+        <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
+        <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
+        <property name="antlr.name"           value="EclipseLink ANTLR"/>
+        <property name="asm.prefix"           value="org.eclipse.persistence.asm"/>
+        <property name="asm.criteria"         value="[3.0.0,4.0.0)"/>
+        <property name="asm.name"             value="EclipseLink ASM"/>
+        <property name="oracleddl.prefix"     value="org.eclipse.persistence.oracleddlparser"/>
+        <property name="oracleddl.criteria"   value="[1.0.0,9.0.0)"/>
+        <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
+        <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
+        <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
+        <property name="oraclbndl.name"       value="EclipseLink Oracle Extensions"/>
+        <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
+        <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
+        <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>
+        <property name="hermes.prefix"        value="org.eclipse.persistence.jpa.jpql"/>
+        <property name="hermes.criteria"      value="[1.0.0,9.0.0)"/>
+        <property name="hermes.name"          value="EclipseLink Hermes JPQL Parser"/>
 
         <selectbundle basename="${jpaapi2.prefix}"  directory="${maven.2.jpa.plugins.dir}"
                      criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
@@ -114,16 +127,24 @@
         <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
                      criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
         />
+        <selectbundle basename="${oraclebndl.prefix}"  directory="${maven.2.common.plugins.dir}"
+                     criterion="${oraclebndl.criteria}" property="oraclebndl.version" versiononly="true"
+        />
+        <selectbundle basename="${oraclenosql.prefix}"  directory="${maven.2.common.plugins.dir}"
+                     criterion="${oraclenosql.criteria}" property="oraclenosql.version" versiononly="true"
+        />
         <selectbundle basename="${hermes.prefix}"  directory="${maven.2.common.plugins.dir}"
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <echo message="jpaapi2.version   = ${jpaapi2.version}"/>
-        <echo message="sdoapi.version    = ${sdoapi.version}"/>
-        <echo message="antlr.version     = ${antlr.version}"/>
-        <echo message="asm.version       = ${asm.version}"/>
-        <echo message="oracleddl.version = ${oracleddl.version}"/>
-        <echo message="hermes.version    = ${hermes.version}"/>
+        <echo message="jpaapi2.version    = ${jpaapi2.version}"/>
+        <echo message="sdoapi.version     = ${sdoapi.version}"/>
+        <echo message="antlr.version      = ${antlr.version}"/>
+        <echo message="asm.version        = ${asm.version}"/>
+        <echo message="oracleddl.version  = ${oracleddl.version}"/>
+        <echo message="oraclebndl.version = ${oraclebndl.version}"/>
+        <echo message="oraclenosql.version= ${oraclenosql.version}"/>
+        <echo message="hermes.version     = ${hermes.version}"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -313,22 +334,22 @@
             <param name="dependencies" value="${core.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.oracle"/>
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="${oraclebndl.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}_${version.string}.jar"/>
-            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink Oracle Extensions"/>
-            <param name="dependencies" value="${oracle.dependencies}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}_${oraclebndl.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.source_${oraclebndl.version}.jar"/>
+            <param name="artifactName"    value="${oraclebndl.name}"/>
+            <param name="dependencies"    value="${oracle.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.oracle.nosql"/>
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.oracle.nosql"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql_${version.string}.jar"/>
-            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink Oracle NoSQL database Extensions"/>
-            <param name="dependencies" value="${nosql.dependencies}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}_${oraclenosql.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}.source_${oraclenosql.version}.jar"/>
+            <param name="artifactName"    value="${oraclenosql.name}"/>
+            <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
