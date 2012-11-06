@@ -158,7 +158,6 @@ import org.eclipse.persistence.testing.oxm.OXTestCase;
          xmlContext.setValueByXPath(customer, "contact-info/phone-number[2]", null, newPN2);
          assertSame(pn1, customer.getPhoneNumbers().get(0));
          assertSame(newPN2, customer.getPhoneNumbers().get(1));
-         assertSame(pn2, customer.getPhoneNumbers().get(2));
      }
 
      public void testGetViaPositionInListXPath() {
