@@ -123,6 +123,7 @@ import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
 import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
+import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
@@ -1206,7 +1207,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     	// check for PL/SQL cursor arg
         boolean hasCursor = hasPLSQLCursorArg(getArgumentListForProcedureType(procType));
-        hasPLSQLArgs = hasPLSQLArgs || hasCursor;
+        hasPLSQLArgs = hasPLSQLArgs || hasCursor || (hasComplexArgs(getArgumentListForProcedureType(procType)) && opModel.isPLSQLProcedureOperation());
+        
     	if (hasPLSQLArgs) {
             if (procType.isFunctionType()) {
                 org.eclipse.persistence.internal.helper.DatabaseType dType = buildDatabaseTypeFromMetadataType(returnArg, procType.getCatalogName());
@@ -1337,10 +1339,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
             } else if (direction == OUT) {
             	if (hasPLSQLArgs) {
-            	    if(arg.isPLSQLCursorType()) {
+            	    if (arg.isPLSQLCursorType()) {
             	        ((PLSQLStoredProcedureCall)call).useNamedCursorOutputAsResultSet(arg.getArgumentName(), databaseType);
             	    } else {
-                        Class wrapperClass = getWrapperClass(databaseType);
+            	        Class wrapperClass = getWrapperClass(databaseType);
                         if (wrapperClass != null) {
                             ((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
                         }
@@ -1365,6 +1367,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             	}
             } else {  // INOUT
             	if (hasPLSQLArgs) {
+                    Class wrapperClass = getWrapperClass(databaseType);
+                    if (wrapperClass != null) {
+                        ((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
+                    }
             		((PLSQLStoredProcedureCall)call).addNamedInOutputArgument(arg.getArgumentName(), databaseType);
 	            	// check for non-associative collection
 	            	if (argType.isPLSQLCollectionType() && !((PLSQLCollectionType)argType).isIndexed()) {
@@ -1373,7 +1379,18 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                 } else {
                     dq.addArgument(arg.getArgumentName());
-                    call.addNamedInOutputArgument(arg.getArgumentName());
+                    if (argType.isComposite()) {
+                        Class wrapperClass = getWrapperClass(javaTypeName);
+
+                        if (argType.isVArrayType() || argType.isObjectTableType()) {
+                            call.addNamedInOutputArgument(arg.getArgumentName(), arg.getArgumentName(), arg.getArgumentName(), Types.ARRAY, argType.getTypeName(), wrapperClass, buildFieldForNestedType(argType));
+                        } else {
+                            // assumes ObjectType
+                            call.addNamedInOutputArgument(arg.getArgumentName(), arg.getArgumentName(), arg.getArgumentName(), Types.STRUCT, argType.getTypeName());
+                        }
+                    } else {
+                        call.addNamedInOutputArgument(arg.getArgumentName());
+                    }
                 }
             }
             if (hasPLSQLArgs && (direction == IN || direction == INOUT)) {
