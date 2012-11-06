@@ -679,23 +679,42 @@ public class XMLContext {
             xmlField.setXPath(xPath + nextToken); 
             xmlField.initialize();
             DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
-            if(null == mapping) {
+            if (null == mapping) {
                 XPathFragment xPathFragment = new XPathFragment(nextToken);
-                if(xPathFragment.getIndexValue() > 0) {
-                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
+                int fragmentIndex = xPathFragment.getIndexValue();
+                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
+                    int index = xmlFieldIndex - 1;
+                    if (index < 0) {
+                        index = fragmentIndex - 1;
+                    }
+                    String strippedXPath = xmlField.getXPath();
+                    while (strippedXPath.contains("[")) {
+                        int open = strippedXPath.lastIndexOf('[');
+                        int closed = strippedXPath.lastIndexOf(']');
+                        strippedXPath = strippedXPath.substring(0, open) + strippedXPath.substring(closed + 1);
+                    }
+                    xmlField.setXPath(strippedXPath);
                     xmlField.initialize();
                     mapping = objectBuilder.getMappingForField(xmlField);
-                    if(null != mapping) {
-                        if(mapping.isCollectionMapping()) {
-                            if(mapping.getContainerPolicy().isListPolicy()) {
-                                if(stringTokenizer.hasMoreElements()) {
-                                    Object childObject = ((ListContainerPolicy) mapping.getContainerPolicy()).get(xPathFragment.getIndexValue() - 1, mapping.getAttributeValueFromObject(object), null);
+                    if (null != mapping) {
+                        if (mapping.isCollectionMapping()) {
+                            Object childObject = null;
+                            Object collection = mapping.getAttributeValueFromObject(object);
+                            if (List.class.isAssignableFrom(collection.getClass())) {
+                                List list = (List) collection;
+                                if (index >= list.size()) {
+                                    return;
+                                }
+                                childObject = list.get(index);
+
+                                if (stringTokenizer.hasMoreElements()) {
                                     ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
                                     setValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, value);
                                     return;
                                 } else {
-                                    List list = (List) mapping.getAttributeValueFromObject(object);
-                                    list.add(xPathFragment.getIndexValue() - 1, value);
+                                    list.set(index, value);
+                                    mapping.setAttributeValueInObject(object, list);
                                     return;
                                 }
                             }
