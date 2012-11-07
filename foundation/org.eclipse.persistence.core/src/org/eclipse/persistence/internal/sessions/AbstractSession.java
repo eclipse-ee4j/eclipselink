@@ -17,8 +17,10 @@
  *       - 356197: Add new VPD type to MultitenantType 
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     14/05/2012-2.4 Guy Pelletier  
+ *     05/14/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -177,8 +179,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** PERF: cache descriptors from project. */
     transient protected Map<Class, ClassDescriptor> descriptors;
     
-    /** PERF: cache table per tenant descriptors */
+    /** PERF: cache table per tenant descriptors needing to be initialized per EM */
     transient protected List<ClassDescriptor> tablePerTenantDescriptors;
+    
+    /** PERF: cache table per tenant queries needing to be initialized per EM */
+    transient protected List<DatabaseQuery> tablePerTenantQueries;
 
     // bug 3078039: move EJBQL alias > descriptor map from Session to Project (MWN)
 
@@ -489,23 +494,21 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public void addAlias(String alias, ClassDescriptor descriptor) {
         project.addAlias(alias, descriptor);
     }
-
-    /**
-     * PUBLIC:
-     * Add the query to the session queries with the given name.
-     * This allows for common queries to be pre-defined, reused and executed by name.
-     */
-    public void addQuery(String name, DatabaseQuery query) {
-        query.setName(name);
-        addQuery(query);
-    }
-
+    
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
      */
     public void addJPAQuery(DatabaseQuery query) {
-        getJPAQueries().add(query);
+        getProject().addJPAQuery(query);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all pre-defined not yet parsed EJBQL multitenant queries.
+     */
+    public void addJPATablePerTenantQuery(DatabaseQuery query) {
+        getProject().addJPATablePerTenantQuery(query);
     }
     
     /**
@@ -539,6 +542,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
     
     /**
+     * PUBLIC:
+     * Add the query to the session queries with the given name.
+     * This allows for common queries to be pre-defined, reused and executed by name.
+     */
+    public void addQuery(String name, DatabaseQuery query) {
+        query.setName(name);
+        addQuery(query);
+    }
+    
+    /**
      * INTERNAL:
      * Add a metamodel class to model class reference.
      */
@@ -556,6 +569,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     protected void addTablePerTenantDescriptor(ClassDescriptor descriptor) {
         getTablePerTenantDescriptors().add(descriptor);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a query that queries a table per tenant entity
+     */
+    protected void addTablePerTenantQuery(DatabaseQuery query) {
+        getTablePerTenantQueries().add(query);
     }
     
     /**
@@ -1304,6 +1325,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             }
 
             getCommitManager().initializeCommitOrder();
+            
+            // If we have table per tenant queries, initialize and add them now
+            // once all the descriptors have been initialized.
+            if (hasTablePerTenantQueries()) {
+                for (DatabaseQuery query : getTablePerTenantQueries()) {
+                    processJPAQuery(query);
+                }
+            }
         }
     }
     
@@ -2224,11 +2253,8 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         if ((descriptor != null) && (descriptor.getJavaClass() == theClass)) {
             return descriptor;
         }
-        if (this.descriptors != null) {
-            descriptor = this.descriptors.get(theClass);
-        } else {
-            descriptor = this.project.getDescriptors().get(theClass);
-        }
+        
+        descriptor = getDescriptors().get(theClass);
 
         if (descriptor == null) {
             if (hasBroker()) {
@@ -2292,7 +2318,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return the descriptor for  the alias
      */
     public ClassDescriptor getDescriptorForAlias(String alias) {
-        return this.project.getDescriptorForAlias(alias);
+        // If we have a descriptors list return our sessions descriptor and
+        // not that of the project since we may be dealing with a multitenant
+        // descriptor which will have been initialized locally on the session.
+        // The project descriptor will be not initialized.
+        ClassDescriptor desc = project.getDescriptorForAlias(alias);
+        if (desc != null && this.descriptors != null) {
+            return this.descriptors.get(desc.getJavaClass());
+        } else {
+            return desc;
+        }
     }
     
     /**
@@ -2300,30 +2335,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all registered descriptors.
      */
     public Map<Class, ClassDescriptor> getDescriptors() {
-        return this.project.getDescriptors();
-    }
-
-    /**
-     * ADVANCED:
-     * Return all pre-defined not yet parsed JPQL queries.
-     */
-    public List<DatabaseQuery> getJPAQueries() {
-        return getProject().getJPAQueries();
-    }
-
-    /**
-     * INTERNAL:
-     * Process the JPA named queries into EclipseLink Session queries.
-     */
-    protected void processJPAQueries() {
-        if (!jpaQueriesProcessed) {
-            for (DatabaseQuery jpaQuery : getProject().getJPAQueries()) {
-                jpaQuery.checkPrepare(this, null);
-                DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
-                databaseQuery = (databaseQuery==null)? jpaQuery: databaseQuery;
-                addQuery(databaseQuery);
-            }
-            jpaQueriesProcessed = true;
+        if (this.descriptors != null) {
+            return this.descriptors;
+        } else {
+            return this.project.getDescriptors();
         }
     }
 
@@ -2417,6 +2432,22 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
 
         return integrityChecker;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return all pre-defined not yet parsed JPQL queries.
+     */
+    public List<DatabaseQuery> getJPAQueries() {
+        return getProject().getJPAQueries();
+    }
+    
+    /**
+     * ADVANCED:
+     * Return all pre-defined not yet parsed JPQL queries.
+     */
+    public List<DatabaseQuery> getJPATablePerTenantQueries() {
+        return getProject().getJPATablePerTenantQueries();
     }
     
     /**
@@ -2700,6 +2731,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public boolean hasTablePerTenantDescriptors() {
         return (tablePerTenantDescriptors != null && ! tablePerTenantDescriptors.isEmpty());
     }
+    
+    /**
+     * INTERNAL:
+     * Return a list of table per tenant multitenant queries.
+     */
+    public boolean hasTablePerTenantQueries() {
+        return (tablePerTenantQueries != null && ! tablePerTenantQueries.isEmpty());
+    }
 
     /**
      * ADVANCED:
@@ -2884,6 +2923,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
         
         return tablePerTenantDescriptors;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return list of table per tenant multitenant descriptors.
+     */
+    public List<DatabaseQuery> getTablePerTenantQueries() {
+        if (tablePerTenantQueries == null) {
+            tablePerTenantQueries = new ArrayList<DatabaseQuery>();
+        }
+        
+        return tablePerTenantQueries;
     }
     
     /**
@@ -4063,6 +4114,58 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         ((Command)command).executeWithSession(this);
     }
 
+    /**
+     * INTERNAL:
+     * Process the JPA named queries into EclipseLink Session queries. This 
+     * method is called after descriptor initialization.
+     */
+    protected void processJPAQueries() {
+        if (! jpaQueriesProcessed) {
+            // Process the JPA queries that do not query table per tenant entities.
+            for (DatabaseQuery jpaQuery : getJPAQueries()) {
+                processJPAQuery(jpaQuery);
+            }
+            
+            // Process the JPA queries that query table per tenant entities. At
+            // the EMF level, these queries will be initialized and added right
+            // away. At the EM level we must defer their initialization to each
+            // individual client session.
+            for (DatabaseQuery jpaQuery : getJPATablePerTenantQueries()) {
+                boolean processQuery = true;
+                
+                for (ClassDescriptor descriptor : jpaQuery.getDescriptors()) {
+                    // If the descriptor is not fully initialized then we can
+                    // not initialize the query and must isolate it to be 
+                    // initialized and stored per client session (EM).
+                    if (! descriptor.isFullyInitialized()) {
+                        processQuery = false;
+                        break;
+                    }
+                }
+                
+                if (processQuery) {
+                    processJPAQuery(jpaQuery);
+                } else {
+                    addTablePerTenantQuery(jpaQuery);
+                }
+            }
+            
+            jpaQueriesProcessed = true;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the JPA named query into an EclipseLink Session query. This 
+     * method is called after descriptor initialization.
+     */
+    protected void processJPAQuery(DatabaseQuery jpaQuery) {
+        jpaQuery.checkPrepare(this, null);
+        DatabaseQuery databaseQuery = (DatabaseQuery) jpaQuery.getProperty("databasequery");
+        databaseQuery = (databaseQuery == null)? jpaQuery : databaseQuery;
+        addQuery(databaseQuery);
+    }
+    
     /**
      * PUBLIC:
      * Return the CommandManager that allows this session to act as a

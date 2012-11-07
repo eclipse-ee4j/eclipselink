@@ -31,6 +31,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -1205,6 +1207,21 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public Session getActiveSession() {
         return getActivePersistenceContext(checkForTransaction(false));
+    }
+    
+    /**
+     * This method returns the current session to the requestor. The current
+     * session will be a the active UnitOfWork within a transaction and will be
+     * a 'scrap' UnitOfWork outside of a transaction. The caller is concerned
+     * about the results then the getSession() or getUnitOfWork() API should be
+     * called.
+     */
+    public AbstractSession getActiveSessionIfExists() {
+        if (hasActivePersistenceContext()) {
+            return (AbstractSession) getActiveSession();
+        } else {
+            return getAbstractSession();
+        }
     }
 
     /**

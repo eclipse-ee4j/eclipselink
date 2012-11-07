@@ -15,10 +15,10 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
-
-import java.util.Map;
 
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -120,11 +120,9 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         
         // Process the procedure name.
         call.setProcedureName(getProcedureName());
-                
-        // Process the query hints.
-        Map<String, Object> hints = processQueryHints(session);
-
-        JPAQuery query = new JPAQuery(getName(), call, hints);
+        
+        // Create a JPA query to store internally on the session.
+        JPAQuery query = new JPAQuery(getName(), call, processQueryHints(session));
 
         // Process the result class.
         if (!getResultClass().isVoid()) {
@@ -133,7 +131,7 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
             query.addResultSetMapping(getResultSetMapping());
         }
         
-        session.addJPAQuery(query);
+        addJPAQuery(query, session);
     }
 
     /**

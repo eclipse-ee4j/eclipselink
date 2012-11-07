@@ -9,8 +9,13 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     05/28/2008-1.0M8 Andrei Ilitchev 
+ *        - 224964: Provide support for Proxy Authentication through JPA.
+ *        Added a new constructor that takes Properties. 
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.server;
 
@@ -49,11 +54,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @see org.eclipse.persistence.sessions.Session
  * @see org.eclipse.persistence.sessions.UnitOfWork
  */
-/*
- *  05/28/2008-1.0M8 Andrei Ilitchev 
- *        - 224964: Provide support for Proxy Authentication through JPA.
- *        Added a new constructor that takes Properties. 
- */
 public class ClientSession extends AbstractSession {
     protected ServerSession parent;
     protected ConnectionPolicy connectionPolicy;
@@ -72,8 +72,8 @@ public class ClientSession extends AbstractSession {
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super();
         // If we have table per tenant descriptors let's clone the project so
-        // that we can have a separate jpql parse cache for each tenant. 
-        if (! parent.getTablePerTenantDescriptors().isEmpty()) {
+        // that we can have a separate jpql parse cache for each tenant.
+        if (parent.hasTablePerTenantDescriptors()) {
             this.project = parent.getProject().clone();
             this.project.setJPQLParseCacheMaxSize(parent.getProject().getJPQLParseCache().getMaxSize());
         } else {
@@ -110,6 +110,13 @@ public class ClientSession extends AbstractSession {
             this.eventManager.postAcquireClientSession();
         }
         
+        // Copy down the table per tenant queries from the parent. These queries
+        // must be cloned per client session.
+        if (parent.hasTablePerTenantQueries()) {
+            for (DatabaseQuery query : parent.getTablePerTenantQueries()) {
+                addTablePerTenantQuery((DatabaseQuery) query.clone());
+            }
+        }
         // If we have table per tenant descriptors, they will need to be
         // cloned as we will be changing the descriptors per tenant.
         if (parent.hasTablePerTenantDescriptors()) {
@@ -794,7 +801,7 @@ public class ClientSession extends AbstractSession {
         writer.write(")");
         return writer.toString();
     }
-
+    
     /**
      * INTERNAL:
      * Return the manager that allows this processor to receive or propagate commands from/to TopLink cluster

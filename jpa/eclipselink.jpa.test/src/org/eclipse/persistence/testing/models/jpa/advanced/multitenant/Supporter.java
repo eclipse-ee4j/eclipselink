@@ -10,6 +10,8 @@
  * Contributors:
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -24,6 +26,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.NamedQueries;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Multitenant;
@@ -33,6 +37,11 @@ import org.eclipse.persistence.annotations.TenantTableDiscriminator;
 @Table(name="JPA_SUPPORTER")
 @Multitenant(TABLE_PER_TENANT)
 @TenantTableDiscriminator(type=PREFIX)
+@NamedQueries({
+    @NamedQuery(
+        name = "Supporter.findAll",
+        query = "SELECT a FROM Supporter a ORDER BY a.id DESC")
+})
 public class Supporter {
     @Id
     @GeneratedValue
@@ -72,5 +81,9 @@ public class Supporter {
     
     public void setSupportedCandidates(List<Candidate> supportedCandidates) {
         this.supportedCandidates = supportedCandidates;
+    }
+    
+    public String toString() {
+        return "Supporter (" + getName() + ") [" + getId() + "]";
     }
 }

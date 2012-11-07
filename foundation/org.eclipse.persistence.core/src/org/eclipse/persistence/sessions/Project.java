@@ -31,6 +31,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -117,6 +119,9 @@ public class Project implements Serializable, Cloneable {
 
     /** List of queries from JPA that need special processing before execution. */
     protected List<DatabaseQuery> jpaQueries;
+    
+    /** List of queries from JPA that may special processing and handling before execution. */ 
+    protected List<DatabaseQuery> jpaTablePerTenantQueries;
 
     /** Flag that allows native queries or not */
     protected boolean allowNativeSQLQueries = true;
@@ -213,7 +218,7 @@ public class Project implements Serializable, Cloneable {
     public void setDefaultTemporalMutable(boolean defaultTemporalMutable) {
         this.defaultTemporalMutable = defaultTemporalMutable;
     }
-
+    
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed JPQL queries.
@@ -223,7 +228,22 @@ public class Project implements Serializable, Cloneable {
         if (jpaQueries == null) {
             jpaQueries = new ArrayList();
         }
+        
         return jpaQueries;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all pre-defined not yet parsed JPQL queries to table per tenant
+     * entities.
+     */
+    public List<DatabaseQuery> getJPATablePerTenantQueries() {
+        // PERF: lazy init, not normally required.
+        if (jpaTablePerTenantQueries == null) {
+            jpaTablePerTenantQueries = new ArrayList();
+        }
+        
+        return jpaTablePerTenantQueries;
     }
 
     /**
@@ -1304,13 +1324,21 @@ public class Project implements Serializable, Cloneable {
         
         return this.mappedSuperclassDescriptors.containsKey(className);
     }
-
+    
     /**
      * INTERNAL:
      * Return all pre-defined not yet parsed EJBQL queries.
      */
     public void addJPAQuery(DatabaseQuery query) {
         getJPAQueries().add(query);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return all pre-defined not yet parsed EJBQL queries to table per tenant entities.
+     */
+    public void addJPATablePerTenantQuery(DatabaseQuery query) {
+        getJPATablePerTenantQueries().add(query);
     }
 
     /**

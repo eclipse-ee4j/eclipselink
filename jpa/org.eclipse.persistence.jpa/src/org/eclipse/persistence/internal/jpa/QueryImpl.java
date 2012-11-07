@@ -22,6 +22,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     11/05/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -317,14 +319,17 @@ public class QueryImpl {
      */
     public DatabaseQuery getDatabaseQueryInternal() {
         if ((this.queryName != null) && (this.databaseQuery == null)) {
-            // need error checking and appropriate exception for non-existing
-            // query
-            this.databaseQuery = this.entityManager.getAbstractSession().getQuery(this.queryName);
+            // Always ask for the query from the active session. Table per 
+            // tenant multitenant entity queries may be isolated per EM meaning 
+            // those queries will not have been initialized (and made available) 
+            // from their parent session.
+            this.databaseQuery = this.entityManager.getActiveSessionIfExists().getQuery(this.queryName);
+            // need error checking and appropriate exception for non-existing query
             if (this.databaseQuery != null) {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
-                    this.databaseQuery.checkPrepare(this.entityManager.getAbstractSession(), new DatabaseRecord());
+                    this.databaseQuery.checkPrepare(this.entityManager.getActiveSessionIfExists(), new DatabaseRecord());
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));

@@ -16,6 +16,8 @@
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -95,7 +97,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getAbstractSession());
+                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, entityManager.getActiveSessionIfExists());
             }
         }
     }

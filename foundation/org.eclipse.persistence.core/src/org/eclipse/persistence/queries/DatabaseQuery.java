@@ -25,6 +25,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     11/05/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -105,6 +107,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /** The descriptor cached on the prepare for object level queries. */
     protected transient ClassDescriptor descriptor;
 
+    /** The list of descriptors this query deals with. Set via JPA processing for table per tenant queries */
+    protected List<ClassDescriptor> descriptors;
+    
     /**
      * The query mechanism determines the mechanism on how the database will be
      * accessed.
@@ -1063,6 +1068,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         return descriptor;
     }
 
+    /**
+     * INTERNAL:
+     * This is here only for JPA queries and currently only populated for JPA
+     * queries. JPAQuery is a jpa class and currently not part of the core.
+     */
+    public List<ClassDescriptor> getDescriptors() {
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * TopLink_sessionName_domainClass.  Cached in properties

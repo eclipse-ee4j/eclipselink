@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -24,9 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.QueryHintsHandler;
+import org.eclipse.persistence.internal.jpa.jpql.JPQLQueryHelper;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -50,8 +54,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class NamedQueryMetadata extends ORMetadata {
-    private String m_lockMode;
     private List<QueryHintMetadata> m_hints = new ArrayList<QueryHintMetadata>();
+    
+    private String m_lockMode;
     private String m_name;
     private String m_query;
     
@@ -85,6 +90,33 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     protected NamedQueryMetadata(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the query the session. Table per tenant queries should not be added
+     * to the regular query list as these queries may need to be initialized
+     * per EM.
+     */
+    protected void addJPAQuery(JPAQuery query, AbstractSession session) {
+        if (query.isJPQLQuery()) {
+            List<ClassDescriptor> descriptors = new JPQLQueryHelper().getClassDescriptors(query.getJPQLString(), session);
+            
+            for (ClassDescriptor descriptor : descriptors) {
+                // If we find one descriptor that has table per tenant multitenancy, 
+                // then add it to the multitenant query list. These queries may
+                // need to be initialized per EM rather than straight up at the
+                // EMF level.
+                if (descriptor.hasMultitenantPolicy() && descriptor.getMultitenantPolicy().isTablePerMultitenantPolicy()) {
+                    // Store the descriptors so we don't have to parse them again.
+                    query.setDescriptors(descriptors);
+                    session.addJPATablePerTenantQuery(query);
+                    return;
+                }
+            }
+        } 
+        
+        session.addJPAQuery(query);
     }
     
     /**
@@ -155,8 +187,7 @@ public class NamedQueryMetadata extends ORMetadata {
      */
     public void process(AbstractSession session) {
         try {
-            Map<String, Object> hints = processQueryHints(session);
-            session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));
+            addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), processQueryHints(session)), session);
         } catch (Exception exception) {
             throw ValidationException.errorProcessingNamedQuery(getClass(), getName(), exception);
         }
@@ -168,11 +199,13 @@ public class NamedQueryMetadata extends ORMetadata {
     protected Map<String, Object> processQueryHints(AbstractSession session) {
         Map<String, Object> hints = new HashMap<String, Object>();
         
-        for (QueryHintMetadata hint : this.m_hints) {
-            QueryHintsHandler.verify(hint.getName(), hint.getValue(), this.m_name, session);
+        for (QueryHintMetadata hint : getHints()) {
+            QueryHintsHandler.verify(hint.getName(), hint.getValue(), getName(), session);
             Object value = hints.get(hint.getName());
+            
             if (value != null) {
                 Object[] values = null;
+            
                 if (value instanceof Object[]) {
                     List list = new ArrayList(Arrays.asList((Object[])value));
                     list.add(hint.getValue());
@@ -182,6 +215,7 @@ public class NamedQueryMetadata extends ORMetadata {
                     values[0] = value;
                     values[1] = hint.getValue();
                 }
+                
                 hints.put(hint.getName(), values);
             } else {
                 hints.put(hint.getName(), hint.getValue());

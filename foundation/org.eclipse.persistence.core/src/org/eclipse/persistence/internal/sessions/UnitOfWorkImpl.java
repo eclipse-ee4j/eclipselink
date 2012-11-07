@@ -28,6 +28,8 @@
  *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -339,7 +341,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Order updates by id
         this.shouldOrderUpdates = true;
         
+        // Copy down the table per tenant information.
         this.tablePerTenantDescriptors = parent.tablePerTenantDescriptors;
+        this.tablePerTenantQueries = parent.tablePerTenantQueries;
     }
 
     /**

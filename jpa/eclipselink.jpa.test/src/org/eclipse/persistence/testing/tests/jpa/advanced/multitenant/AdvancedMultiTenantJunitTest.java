@@ -32,6 +32,8 @@
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  *     01/06/2011-2.3 Guy Pelletier 
  *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
+ *     08/11/2012-2.5 Guy Pelletier  
+ *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -150,8 +152,11 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedMultiTenantJunitTest("testMultitenantPrimaryKeyWithIdClass"));
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantA"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantAQueries"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantB"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantBQueries"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantC"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantCQueries"));
         
         return suite;
     }
@@ -181,12 +186,16 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             candidateA.setSalary(9999999);
             
             Supporter supporter1 = new Supporter();
-            supporter1.setName("Supporter1");
+            supporter1.setName("Supporter1a");
             candidateA.addSupporter(supporter1);
             
             Supporter supporter2 = new Supporter();
-            supporter2.setName("Supporter2");
+            supporter2.setName("Supporter2a");
             candidateA.addSupporter(supporter2);
+            
+            Supporter supporter3 = new Supporter();
+            supporter3.setName("Supporter3a");
+            candidateA.addSupporter(supporter3);
             
             Party party = new Party();
             party.setName("Conservatives");
@@ -199,8 +208,9 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             // Persist our objects.
             em.persist(party);
             em.persist(candidateA);
-            em.persist(supporter2);
             em.persist(supporter1);
+            em.persist(supporter2);
+            em.persist(supporter3);
             em.persist(riding);
             
             Mason mason = new Mason();
@@ -223,6 +233,32 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             supporter1Id = supporter1.getId();
             supporter2Id = supporter2.getId();
             masonId = mason.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testTablePerTenantAQueries() {
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "A");
+            
+            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
+            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            
+            assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.size() == 3);
+            assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.size() == 3);
             
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -296,6 +332,32 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
     }
     
+    public void testTablePerTenantBQueries() {
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "B");
+            
+            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
+            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            
+            assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.isEmpty());
+            assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.isEmpty());
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
     public void testTablePerTenantC() {
         // Tenant is set in the persistence.xml file.
         EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_C_PU);
@@ -312,11 +374,11 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             candidate.setSalary(9999999);
             
             Supporter supporter1 = new Supporter();
-            supporter1.setName("Supporter1");
+            supporter1.setName("Supporter1c");
             candidate.addSupporter(supporter1);
             
             Supporter supporter2 = new Supporter();
-            supporter2.setName("Supporter2");
+            supporter2.setName("Supporter2c");
             candidate.addSupporter(supporter2);
             
             Party party = new Party();
@@ -354,6 +416,30 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             supporter1Id = supporter1.getId();
             supporter2Id = supporter2.getId();
             masonId = mason.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testTablePerTenantCQueries() {
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_C_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            List resultsFromNamedQuery = em.createNamedQuery("Supporter.findAll").getResultList();
+            List resultsFromDynamicQuery = em.createQuery("SELECT s FROM Supporter s ORDER BY s.id DESC").getResultList();
+            
+            assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.size() == 2);
+            assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.size() == 2);
             
             commitTransaction(em);
         } catch (RuntimeException e) {
