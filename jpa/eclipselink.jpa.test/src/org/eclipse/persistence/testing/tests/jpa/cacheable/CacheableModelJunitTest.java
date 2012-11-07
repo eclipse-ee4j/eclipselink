@@ -259,6 +259,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedManyToMany"));
             suite.addTest(new CacheableModelJunitTest("testUpdateProtectedElementCollection"));
             suite.addTest(new CacheableModelJunitTest("testIsolationBeforeEarlyTxBegin"));
+            suite.addTest(new CacheableModelJunitTest("testForeignKeyUpdateInNonCachedOnMergeNewObject"));
             
             // Bug 340074
             suite.addTest(new CacheableModelJunitTest("testFindWithLegacyFindProperties"));
@@ -1735,6 +1736,42 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             closeEM(em);
         }
 
+    }
+    
+    // Bug392542 - Test Foreign Key update of detached while merging new object with 
+    // reference to a detatched object with cascade merge.
+    public void testForeignKeyUpdateInNonCachedOnMergeNewObject(){
+        // create entity and details, persist them
+        EntityManager em = createDSEntityManager();
+        beginTransaction(em);
+        try{
+            CacheableFalseDetailWithBackPointer detail = new CacheableFalseDetailWithBackPointer();
+            detail.setDescription("test");
+            detail = em.merge(detail);
+            em.flush();
+            
+            em.clear();
+            
+            CacheableFalseEntity entity = new CacheableFalseEntity();
+            List<CacheableFalseDetailWithBackPointer> details = new ArrayList<CacheableFalseDetailWithBackPointer>();
+            details.add(detail);
+            entity.setDetailsBackPointer(details);
+            detail.setEntity(entity);
+            entity = em.merge(entity);
+            em.flush();
+            
+            em.clear();
+
+            // Verify Foreign Key Update.
+            CacheableFalseDetailWithBackPointer falseDetail = em.find(detail.getClass(), detail.getId());            
+            
+            assertTrue("Foreign Key is not updated in detail.", falseDetail.getEntity() != null);
+            assertTrue("Foreign Key updated, but doesn't match.", falseDetail.getEntity().getId() == entity.getId());
+        } finally {
+            rollbackTransaction(em);
+            closeEM(em);
+            
+        }
     }
     
      // Bug 347190

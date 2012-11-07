@@ -568,7 +568,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * This is a JPA override to traditional EclipseLink behavior.
      */
     @Override
-    protected Object cloneAndRegisterNewObject(Object original) {
+    protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
         if (isNestedUnitOfWork() && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
@@ -588,8 +588,12 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
-
-        builder.populateAttributesForClone(original, null, clone, null, this);
+        
+        if (isShallowClone) {
+            builder.copyInto(original, clone, true);
+        } else {
+            builder.populateAttributesForClone(original, null, clone, null, this);
+        }
         if (!this.discoverUnregisteredNewObjectsWithoutPersist){
             assignSequenceNumber(clone);
             // JPA by default does not use the merge() object as the original, it creates a new instance to avoid
