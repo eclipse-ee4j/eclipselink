@@ -282,12 +282,12 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                   "name=\"TestInOut\" " +
                   "catalogPattern=\"USERTYPEINOUT\" " +
                   "procedurePattern=\"TEST_INOUT\" " +
-              "/>" +/*
+              "/>" +
               "<plsql-procedure " +
                   "name=\"TestEchoArray\" " +
                   "catalogPattern=\"USERTYPEINOUT\" " +
                   "procedurePattern=\"ECHO_MYTYPE_1_ARRAY\" " +
-              "/>" +*/
+              "/>" +
               "<plsql-procedure " +
                   "name=\"TestMultiInAndOut\" " +
                   "catalogPattern=\"USERTYPEINOUT\" " +
@@ -491,10 +491,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             "<name>Steve French</name>" +
         "</mytype_1Type>";
     
-    //@Test
+    @Test
     public void arrayEchoTest() {
         XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
-        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_ARRAY_XML));
         Invocation invocation = new Invocation("TestEchoArray");
         invocation.setParameter("P1", pType);
         Operation op = xrService.getOperation(invocation.getName());
@@ -503,12 +503,12 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE_ARRAY_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static String MYTYPE_ARRAY_XML =
         REGULAR_XML_HEADER +
-        "<mytype_1_arrayType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<mytype_1_arrayType xmlns=\"urn:ObjectTypeTests\">" +
             "<item>" +
                 "<id>66</id>" +
                 "<name>Steve French</name>" +
