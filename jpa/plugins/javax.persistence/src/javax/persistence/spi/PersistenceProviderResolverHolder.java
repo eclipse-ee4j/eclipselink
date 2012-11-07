@@ -19,12 +19,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -79,15 +82,31 @@ public class PersistenceProviderResolverHolder {
     private static class DefaultPersistenceProviderResolver implements PersistenceProviderResolver {
 
         /**
-         * Cached list of available providers cached by ClassLoader to ensure
-         * there is not potential for provider visibility issues. A weak map is
-         * used
+         * Cached list of available providers cached by CacheKey to ensure
+         * there is not potential for provider visibility issues. 
          */
-        private volatile WeakHashMap<ClassLoader, List<PersistenceProvider>> providers = new WeakHashMap<ClassLoader, List<PersistenceProvider>>();
+        private volatile HashMap<CacheKey, PersistenceProviderReference> providers = new HashMap<CacheKey, PersistenceProviderReference>();
+        
+        /**
+         * Queue for reference objects referring to class loaders or persistence providers.
+         */
+        private static final ReferenceQueue referenceQueue = new ReferenceQueue();
 
         public List<PersistenceProvider> getPersistenceProviders() {
+            // Before we do the real loading work, see whether we need to
+            // do some cleanup: If references to class loaders or
+            // persistence providers have been nulled out, remove all related
+            // information from the cache.
+            processQueue();
+            
             ClassLoader loader = getContextClassLoader();
-            List<PersistenceProvider> loadedProviders = this.providers.get(loader);
+            CacheKey cacheKey = new CacheKey(loader);
+            PersistenceProviderReference providersReferent = this.providers.get(cacheKey);
+            List<PersistenceProvider> loadedProviders = null;
+            
+            if (providersReferent != null) {
+                loadedProviders = providersReferent.get();
+            }
 
             if (loadedProviders == null) {
                 Collection<ProviderName> providerNames = getProviderNames(loader);
@@ -116,11 +135,23 @@ public class PersistenceProviderResolverHolder {
                         log(Level.WARNING, name.toString());
                     }
                 }
+                
+                providersReferent = new PersistenceProviderReference(loadedProviders, referenceQueue, cacheKey);
 
-                this.providers.put(loader, loadedProviders);
+                this.providers.put(cacheKey, providersReferent);
             }
 
             return loadedProviders;
+        }
+        
+        /**
+         * Remove garbage collected cache keys & providers.
+         */
+        private void processQueue() {
+            CacheKeyReference ref;
+            while ((ref = (CacheKeyReference) referenceQueue.poll()) != null) {
+                providers.remove(ref.getCacheKey());
+            }            
         }
 
         /**
@@ -245,6 +276,133 @@ public class PersistenceProviderResolverHolder {
 
             public String toString() {
                 return getName() + " - " + getSource();
+            }
+        }
+        
+        /**
+         * The common interface to get a CacheKey implemented by
+         * LoaderReference and PersistenceProviderReference.
+         */
+        private interface CacheKeyReference {
+            public CacheKey getCacheKey();
+        }        
+        
+        /**
+          * Key used for cached persistence providers. The key checks
+          * the class loader to determine if the persistence providers
+          * is a match to the requested one. The loader may be null.
+          */
+        private class CacheKey implements Cloneable {
+            
+            /* Weak Reference to ClassLoader */
+            private LoaderReference loaderRef;
+            
+            /* Cached Hashcode */
+            private int hashCodeCache;
+
+            CacheKey(ClassLoader loader) {
+                if (loader == null) {
+                    this.loaderRef = null;
+                } else {
+                    loaderRef = new LoaderReference(loader, referenceQueue, this);
+                }
+                calculateHashCode();
+            }
+
+            ClassLoader getLoader() {
+                return (loaderRef != null) ? loaderRef.get() : null;
+            }
+
+            public boolean equals(Object other) {
+                if (this == other) {
+                    return true;
+                }
+                try {
+                    final CacheKey otherEntry = (CacheKey) other;
+                    // quick check to see if they are not equal
+                    if (hashCodeCache != otherEntry.hashCodeCache) {
+                        return false;
+                    }
+                    // are refs (both non-null) or (both null)?
+                    if (loaderRef == null) {
+                        return otherEntry.loaderRef == null;
+                    }
+                    ClassLoader loader = loaderRef.get();
+                    return (otherEntry.loaderRef != null)
+                    // with a null reference we can no longer find
+                    // out which class loader was referenced; so
+                    // treat it as unequal
+                    && (loader != null) && (loader == otherEntry.loaderRef.get());
+                } catch (NullPointerException e) {
+                } catch (ClassCastException e) {
+                }
+
+                return false;
+            }
+
+            public int hashCode() {
+                return hashCodeCache;
+            }
+
+            private void calculateHashCode() {
+                ClassLoader loader = getLoader();
+                if (loader != null) {
+                    hashCodeCache = loader.hashCode();
+                }
+            }
+
+            public Object clone() {
+                try {
+                    CacheKey clone = (CacheKey) super.clone();
+                    if (loaderRef != null) {
+                        clone.loaderRef = new LoaderReference(loaderRef.get(), referenceQueue, clone);
+                    }
+                    return clone;
+                } catch (CloneNotSupportedException e) {
+                    // this should never happen
+                    throw new InternalError();
+                }
+            }
+
+            public String toString() {
+                return "CacheKey[" + getLoader() + ")]";
+            }
+        }
+       
+       /**
+         * References to class loaders are weak references, so that they can be
+         * garbage collected when nobody else is using them. The DefaultPersistenceProviderResolver 
+         * class has no reason to keep class loaders alive.
+         */
+        private class LoaderReference extends WeakReference<ClassLoader> 
+                implements CacheKeyReference {
+            private CacheKey cacheKey;
+
+            LoaderReference(ClassLoader referent, ReferenceQueue q, CacheKey key) {
+                super(referent, q);
+                cacheKey = key;
+            }
+
+            public CacheKey getCacheKey() {
+                return cacheKey;
+            }
+        }
+
+        /**
+         * References to persistence provider are soft references so that they can be garbage
+         * collected when they have no hard references.
+         */
+        private class PersistenceProviderReference extends SoftReference<List<PersistenceProvider>>
+                implements CacheKeyReference {
+            private CacheKey cacheKey;
+
+            PersistenceProviderReference(List<PersistenceProvider> referent, ReferenceQueue q, CacheKey key) {
+                super(referent, q);
+                cacheKey = key;
+            }
+
+            public CacheKey getCacheKey() {
+                return cacheKey;
             }
         }
     }
