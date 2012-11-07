@@ -58,7 +58,14 @@ public class Address {
         } catch (ClassCastException cce) {
             return false;
         }
-        return city.equals(add.city) && street.equals(add.street);
+        if((city == null && add.city != null) || (city != null && !city.equals(add.city))){
+            return false;
+        }
+        
+        if((street == null && add.street != null) || (street != null && !street.equals(add.street))){
+            return false;
+        }
+        return true;
     }
 
 }
