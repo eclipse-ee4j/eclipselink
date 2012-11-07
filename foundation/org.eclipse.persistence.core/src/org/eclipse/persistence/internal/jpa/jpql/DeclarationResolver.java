@@ -47,11 +47,10 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 
 /**
- * This visitor visits the declaration clause of the query and creates the list of {@link Declaration}
- * objects. Those objects will then be used to query information of that declaration clause, a
- * {@link Declaration} is mapped to its identification variable for fast retrieval.
+ * This visitor visits the declaration clause of the JPQL query and creates the list of
+ * {@link Declaration Declarations}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -96,8 +95,7 @@ final class DeclarationResolver {
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
-	 * @param parent The parent {@link DeclarationResolver} which represents the superquery's
-	 * declaration
+	 * @param parent The parent {@link DeclarationResolver} which represents the superquery's declaration
 	 */
 	DeclarationResolver(JPQLQueryContext queryContext, DeclarationResolver parent) {
 		super();
@@ -236,6 +234,16 @@ final class DeclarationResolver {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Returns the parent of this {@link DeclarationResolver}.
+	 *
+	 * @return The parent of this {@link DeclarationResolver} if this is used for a subquery or
+	 * <code>null</code> if this is used for the top-level query
+	 */
+	DeclarationResolver getParent() {
+		return parent;
 	}
 
 	/**

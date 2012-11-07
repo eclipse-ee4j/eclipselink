@@ -13,8 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.jpql.ConstructorQueryMappings;
 import org.eclipse.persistence.internal.jpa.jpql.JPQLQueryHelper;
@@ -41,10 +46,16 @@ public class JUnitJPQLQueryHelperTestSuite extends JUnitTestCase {
 	}
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.setName("JUnitJPQLQueryHelperTestSuite");
-		suite.addTest(new JUnitJPQLQueryHelperTestSuite("test_getConstructorQueryMappings_01"));
-		suite.addTest(new JUnitJPQLQueryHelperTestSuite("test_getConstructorQueryMappings_02"));
+
+		TestSuite suite = new TestSuite(JUnitJPQLQueryHelperTestSuite.class.getSimpleName());
+
+		for (Method method : JUnitJPQLQueryHelperTestSuite.class.getMethods()) {
+			String name = method.getName();
+			if (name.startsWith("test_")) {
+				suite.addTest(new JUnitJPQLQueryHelperTestSuite(name));
+			}
+		}
+
 		return suite;
 	}
 
@@ -63,6 +74,108 @@ public class JUnitJPQLQueryHelperTestSuite extends JUnitTestCase {
 	public void tearDown() {
 		super.tearDown();
 		clearCache();
+	}
+
+	public void test_getClassDescriptors_01() {
+
+		String jpqlQuery = "SELECT e FROM Employee e";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_02() {
+
+		String jpqlQuery = "SELECT e FROM Employee e, Address a";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Address");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_03() {
+
+		String jpqlQuery = "SELECT e FROM Employee e JOIN e.projects p JOIN e.phoneNumbers pn";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Project");
+		entityNames.add("PhoneNumber");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_04() {
+
+		String jpqlQuery = "SELECT e FROM Employee e, IN(e.dealers) d";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Dealer");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_05() {
+
+		String jpqlQuery = "SELECT e FROM Employee e, IN(e.dealers) d WHERE e.name = (SELECT a.version FROM e.address a)";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Dealer");
+		entityNames.add("Address");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_06() {
+
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'JPQL'";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_07() {
+
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'JPQL' WHERE NOT EXIST (SELECT e FROM Project p)";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Project");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_08() {
+
+		String jpqlQuery = "DELETE FROM Employee e WHERE e.name = 'JPQL'";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
+	}
+
+	public void test_getClassDescriptors_09() {
+
+		String jpqlQuery = "DELETE FROM Employee e "+
+		                   "WHERE     (SELECT e.id FROM Project p) > 2 " +
+		                   "      AND " +
+		                   "          NOT EXIST (SELECT b FROM Buyer b)";
+
+		Collection<String> entityNames = new ArrayList<String>();
+		entityNames.add("Employee");
+		entityNames.add("Project");
+		entityNames.add("Buyer");
+
+		testGetClassDescriptors(jpqlQuery, entityNames);
 	}
 
 	public void test_getConstructorQueryMappings_01() {
@@ -130,6 +243,22 @@ public class JUnitJPQLQueryHelperTestSuite extends JUnitTestCase {
 				}
 			}
 		}
+	}
+
+	private void testGetClassDescriptors(String jpqlQuery, Collection<String> entityNames) {
+
+		JPQLQueryHelper helper = new JPQLQueryHelper();
+
+		List<ClassDescriptor> descriptors = helper.getClassDescriptors(jpqlQuery, getDatabaseSession());
+		assertNotNull("The list of ClassDescriptors cannot be null", descriptors);
+		assertEquals(entityNames.size(), descriptors.size());
+
+		for (ClassDescriptor descriptor : descriptors) {
+			String alias = descriptor.getAlias();
+			assertTrue(alias + " is not expected", entityNames.remove(alias));
+		}
+
+		assertTrue(entityNames + " are expected", entityNames.isEmpty());
 	}
 
 	private static final class MyConstructorClass {
