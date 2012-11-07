@@ -28,6 +28,7 @@ import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritance
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnUnmarshalOnlyTestCases;
+import org.eclipse.persistence.testing.jaxb.json.namespaces.SeparatorInNameTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootFalseWithXMLRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootTrueWithXMLRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTestCases;
@@ -58,6 +59,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(NamespaceInheritanceTestCases.class);
           suite.addTestSuite(NamespaceInheritanceSeparatorTestCases.class);
           suite.addTestSuite(NamespaceInheritanceSeparatorContextTestCases.class);
+          suite.addTestSuite(SeparatorInNameTestCases.class);
           suite.addTestSuite(IncludeRootFalseWithXMLRootElementTestCases.class);
           suite.addTestSuite(IncludeRootTrueWithXMLRootElementTestCases.class);
           suite.addTestSuite(XMLValuePropTestCases.class);

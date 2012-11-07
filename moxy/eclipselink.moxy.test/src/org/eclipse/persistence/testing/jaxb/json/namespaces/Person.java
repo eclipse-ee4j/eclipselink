@@ -36,6 +36,24 @@ public class Person {
 	@XmlPath(value="ns3:contact/ns1:address")
     private Address address;
 	    
+	@XmlElement(namespace="namespace1")
+	public String a;
+	
+	@XmlElement(namespace="namespace1")
+    public String aa;
+	
+	@XmlElement(namespace="namespace1")
+    public String aaa;
+	
+	@XmlElement(namespace="namespace1")
+    public Address aaaa;
+	
+	@XmlElement(namespace="namespace1")
+    public List<Address> aaaaa;
+	
+	@XmlAttribute(namespace="namespace1")
+    public String theattribute;
+	
     public Person(){
        
     }
@@ -111,7 +129,28 @@ public class Person {
         		return false;
         	}
         }
-
+        
+        if((theattribute == null && person.theattribute != null) || (theattribute != null && !theattribute.equals(person.theattribute))){
+            return false;
+        }
+               
+        if((a == null && person.a != null) || (a != null && !a.equals(person.a))){
+            return false;
+        }
+            
+        if((aa == null && person.aa != null) || (aa != null && !aa.equals(person.aa))){
+            return false;
+        }
+        
+        if((aaa == null && person.aaa != null) || (aaa != null && !aaa.equals(person.aaa))){
+            return false;
+        }
+        if((aaaa == null && person.aaaa != null) || (aaaa != null && !aaaa.equals(person.aaaa))){
+            return false;
+        }
+        if((aaaaa == null && person.aaaaa != null) || (aaaaa != null && !aaaaa.equals(person.aaaaa))){
+            return false;
+        }
         return getId()== person.getId() && firstName.equals(person.firstName) && lastName.equals(person.lastName);
     }
 }

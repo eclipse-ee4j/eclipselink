@@ -1,0 +1,13 @@
+{"ns0aperson":{
+   "@ns2aid":10,
+   "@theattribute":"attributeValue",
+   "firstName":"Jill",
+   "middleNames":["Jane", "Janice"],
+   "ns2alastName":"MacDonald",
+   "a":"aValue",
+   "aa":"aaValue",
+   "aaa":"aaaValue",
+   "aaaa":{},
+   "aaaaa":[{}]
+ }
+}

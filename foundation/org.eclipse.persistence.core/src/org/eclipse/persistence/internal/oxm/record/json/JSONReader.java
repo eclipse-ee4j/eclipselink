@@ -232,21 +232,25 @@ public class JSONReader extends XMLReaderAdapter {
                 }
                 String uri = XMLConstants.EMPTY_STRING;
  
-                if(namespaceAware && namespaces != null && localName.length() >1){                    
-                	int nsIndex = localName.indexOf(namespaceSeparator, 1);
-                	String prefix = XMLConstants.EMPTY_STRING;
-                	if(nsIndex > -1){
-                		prefix = localName.substring(0, nsIndex);
-                		localName = localName.substring(nsIndex + 1);
-                	}
-                	uri = namespaces.resolveNamespacePrefix(prefix);
-                	if(uri == null){
-                	    localName = qualifiedName;
-                	    uri = namespaces.getDefaultNamespaceURI();
-                	}
-                	if(localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)){
-            			break;
-            		}  
+                if(namespaceAware && namespaces != null){
+                    if(localName.length() > 2){                        
+                        int nsIndex = localName.indexOf(namespaceSeparator, 1);
+                        String prefix = XMLConstants.EMPTY_STRING;
+                        if(nsIndex > -1){
+                            prefix = localName.substring(0, nsIndex);                            
+                        }
+                        uri = namespaces.resolveNamespacePrefix(prefix);
+                        if(uri == null){                            
+                            uri = namespaces.getDefaultNamespaceURI();
+                        }else{
+                            localName = localName.substring(nsIndex + 1);
+                        }
+                        if(localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)){
+                            break;
+                        }   
+                    }else{
+                        uri = namespaces.getDefaultNamespaceURI();
+                    }
                 }
                 
                 if(contentHandler instanceof XMLRootRecord || contentHandler instanceof DeferredContentHandler){
@@ -304,14 +308,22 @@ public class JSONReader extends XMLReaderAdapter {
             }
             
             String uri = XMLConstants.EMPTY_STRING;
-            if(namespaceAware && namespaces != null){
-            	int nsIndex = parentLocalName.indexOf(namespaceSeparator);
-            	if(nsIndex > -1){
-            		String prefix = parentLocalName.substring(0, nsIndex);
-            		parentLocalName = parentLocalName.substring(nsIndex + 1);
-            		uri = namespaces.resolveNamespacePrefix(prefix);                		
-            	}
-            }           
+            if(namespaceAware && namespaces != null){                
+                if(parentLocalName.length() > 2){
+                	int nsIndex = parentLocalName.indexOf(namespaceSeparator, 1);
+                	if(nsIndex > -1){
+                		String prefix = parentLocalName.substring(0, nsIndex);
+                		uri = namespaces.resolveNamespacePrefix(prefix);                		
+                	}
+                	if(uri == null){
+                        uri = namespaces.getDefaultNamespaceURI();
+                    }else{
+                        parentLocalName = parentLocalName.substring(nsIndex + 1);
+                    }
+                }else{
+                    uri = namespaces.getDefaultNamespaceURI();
+                }  
+            }         
                              
         	boolean isTextValue = isTextValue(parentLocalName);           
             int size = tree.getChildCount();
@@ -574,13 +586,21 @@ public class JSONReader extends XMLReaderAdapter {
 
                         String uri = XMLConstants.EMPTY_STRING;                        
                         if(namespaceAware && namespaces != null){
-                            String prefix = XMLConstants.EMPTY_STRING;
-                            int nsIndex = attributeLocalName.indexOf(namespaceSeparator);
-                            if(nsIndex > -1){
-                                prefix = attributeLocalName.substring(0, nsIndex);
-                                attributeLocalName = attributeLocalName.substring(nsIndex + 1);
+                            if(attributeLocalName.length() > 2){
+                                String prefix = XMLConstants.EMPTY_STRING;
+                                int nsIndex = attributeLocalName.indexOf(namespaceSeparator, 1);
+                                if(nsIndex > -1){
+                                    prefix = attributeLocalName.substring(0, nsIndex);                                    
+                                }
+                                uri = namespaces.resolveNamespacePrefix(prefix);
+                                if(uri == null){
+                                    uri = namespaces.getDefaultNamespaceURI();
+                                }else{
+                                    attributeLocalName = attributeLocalName.substring(nsIndex + 1);
+                                }
+                            }else{
+                                uri = namespaces.getDefaultNamespaceURI();
                             }
-                            uri = namespaces.resolveNamespacePrefix(prefix);
                         }
 
                         Tree childValueTree = childTree.getChild(1);
