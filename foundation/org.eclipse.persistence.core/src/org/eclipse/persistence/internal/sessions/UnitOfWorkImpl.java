@@ -884,7 +884,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      *
      * @see #registerObject(Object)
      */
-    protected Object cloneAndRegisterNewObject(Object original) {
+    protected Object cloneAndRegisterNewObject(Object original, boolean isShallowClone) {
         ClassDescriptor descriptor = getDescriptor(original);
         //Nested unit of work is not supported for attribute change tracking
         if (this.isNestedUnitOfWork && (descriptor.getObjectChangePolicy() instanceof AttributeChangeTrackingPolicy)) {
@@ -901,7 +901,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
-        builder.populateAttributesForClone(original, null, clone, null, this);
+        if (isShallowClone) {
+            builder.copyInto(original, clone, true);
+        } else {
+            builder.populateAttributesForClone(original, null, clone, null, this);
+        }
         // Must reregister in both new objects.
         registerNewObjectClone(clone, original, descriptor);
 
@@ -2883,7 +2887,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This does not perform wrapping or unwrapping.
      * This is used for internal registration in the merge manager.
      */
-    public Object internalRegisterObject(Object object, ClassDescriptor descriptor) {
+    public Object internalRegisterObject(Object object, ClassDescriptor descriptor, boolean isShallowClone) {
         if (object == null) {
             return null;
         }
@@ -2913,7 +2917,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (registeredObject == null) {
                 // This means that the object is not in the parent im, so was created under this unit of work.
                 // This means that it must be new.
-                registeredObject = cloneAndRegisterNewObject(object);
+                registeredObject = cloneAndRegisterNewObject(object, isShallowClone);
                 if (mergeManagerForActiveMerge != null) {
                     mergeManagerForActiveMerge.getMergedNewObjects().put(registeredObject, registeredObject);
                 }
@@ -4017,7 +4021,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         startOperationProfile(SessionProfiler.Register);
 
-        Object clone = cloneAndRegisterNewObject(newObject);
+        Object clone = cloneAndRegisterNewObject(newObject, false);
 
         endOperationProfile(SessionProfiler.Register);
 
@@ -4373,7 +4377,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         try {
             startOperationProfile(SessionProfiler.Register);
 
-            registeredObject = internalRegisterObject(object, descriptor);
+            registeredObject = internalRegisterObject(object, descriptor, false);
 
         } finally {
             endOperationProfile(SessionProfiler.Register);

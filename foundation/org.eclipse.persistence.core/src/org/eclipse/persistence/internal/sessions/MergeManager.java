@@ -223,7 +223,7 @@ public class MergeManager {
             // Target is clone from uow.
             //make sure we use the register for merge
             //bug 3584343
-            return registerObjectForMergeCloneIntoWorkingCopy(source);
+            return registerObjectForMergeCloneIntoWorkingCopy(source, false);
         } else if (shouldRefreshRemoteObject()) {
             // Target is in session's cache.
             Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(source, this.session);
@@ -542,10 +542,10 @@ public class MergeManager {
                 registeredObject = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
             }
             if (registeredObject == null){
-                return unitOfWork.internalRegisterObject(rmiClone, descriptor);
+                return unitOfWork.internalRegisterObject(rmiClone, descriptor, false);
             }
         }else{
-            registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone);
+            registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone, shouldForceCascade());
         }
 
         if (registeredObject == rmiClone && !shouldForceCascade()) {
@@ -1029,7 +1029,7 @@ public class MergeManager {
      * When merging from a clone when the cache cannot be guaranteed the object must be first read if it is existing
      * and not in the cache. Otherwise no changes will be detected as the original state is missing.
      */
-    protected Object registerObjectForMergeCloneIntoWorkingCopy(Object clone) {
+    protected Object registerObjectForMergeCloneIntoWorkingCopy(Object clone, boolean shouldForceCascade) {
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, unitOfWork, true);
@@ -1058,7 +1058,7 @@ public class MergeManager {
         // Optimize cache option to avoid executing the does exist query.
         if (existQuery.shouldCheckCacheForDoesExist()) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
-            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);            
+            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor, false);            
             if (unitOfWork.hasNewObjects() && unitOfWork.getNewObjectsOriginalToClone().containsKey(clone)) {
                 this.mergedNewObjects.put(registeredObject, registeredObject);
             }            
@@ -1072,7 +1072,7 @@ public class MergeManager {
         }
         if (doesExist == Boolean.FALSE) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
-            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor);//should use cloneAndRegisterNewObject to avoid the exist check
+            Object registeredObject = unitOfWork.internalRegisterObject(clone, descriptor, shouldForceCascade);//should use cloneAndRegisterNewObject to avoid the exist check
             this.mergedNewObjects.put(registeredObject, registeredObject);
             return registeredObject;
         }
@@ -1082,7 +1082,7 @@ public class MergeManager {
         if (object == null) {
             checkNewObjectLockVersion(clone, primaryKey, descriptor, unitOfWork);
             //bug6180972: avoid internal register's existence check and be sure to put the new object in the mergedNewObjects collection
-            object =  unitOfWork.cloneAndRegisterNewObject(clone);
+            object =  unitOfWork.cloneAndRegisterNewObject(clone, shouldForceCascade);
             this.mergedNewObjects.put(object, object);
         }
         return object;
