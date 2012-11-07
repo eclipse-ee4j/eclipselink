@@ -67,6 +67,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             "\nPROCEDURE TEST_IN(P1 IN MYTYPE_1);" +
             "\nPROCEDURE TEST_INOUT(P1 IN OUT MYTYPE_1);" +
             "\nFUNCTION ECHO_MYTYPE_1_ARRAY(P1 MYTYPE_1_ARRAY) RETURN MYTYPE_1_ARRAY;" +
+            "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1);" +
 	    "\nEND USERTYPEINOUT;";
 	
 	static final String CREATE_MYTYPE_PKG_BODY = 
@@ -91,6 +92,10 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
             "\nBEGIN" + 
                 "\nRETURN P1;" +
             "\nEND ECHO_MYTYPE_1_ARRAY;" +
+            "\nPROCEDURE TEST_MULTI_IN_AND_OUT(P1 IN MYTYPE_1, P2 IN VARCHAR2, P3 IN INTEGER, P4 OUT MYTYPE_1) AS" +
+            "\nBEGIN" +
+                "\nP4 := MYTYPE_1(P1.id + P3, concat(P1.name, P2));" +
+            "\nEND TEST_MULTI_IN_AND_OUT; " +
 	    "\nEND USERTYPEINOUT;";
     //==============================================================================	
 	
@@ -283,6 +288,11 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"USERTYPEINOUT\" " +
                   "procedurePattern=\"ECHO_MYTYPE_1_ARRAY\" " +
               "/>" +*/
+              "<plsql-procedure " +
+                  "name=\"TestMultiInAndOut\" " +
+                  "catalogPattern=\"USERTYPEINOUT\" " +
+                  "procedurePattern=\"TEST_MULTI_IN_AND_OUT\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -504,4 +514,28 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
                 "<name>Steve French</name>" +
             "</item>" +
         "</mytype_1_arrayType>";
+
+    @Test
+    public void multiInAndOutTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object pType = unmarshaller.unmarshal(new StringReader(MYTYPE_XML));
+        Invocation invocation = new Invocation("TestMultiInAndOut");
+        invocation.setParameter("P1", pType);
+        invocation.setParameter("P2", " the Cougar!");
+        invocation.setParameter("P3", 3);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MYTYPE2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String MYTYPE2_XML =
+        REGULAR_XML_HEADER +
+        "<mytype_1Type xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<id>69</id>" +
+            "<name>Steve French the Cougar!</name>" +
+        "</mytype_1Type>";
 }
