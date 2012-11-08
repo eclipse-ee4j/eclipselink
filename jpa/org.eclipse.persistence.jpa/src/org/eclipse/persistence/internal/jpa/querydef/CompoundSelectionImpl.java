@@ -19,6 +19,8 @@ import java.util.List;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.Selection;
 
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+
 /**
  * <p>
  * <b>Purpose</b>: Contains the implementation of the Selection interface of the JPA
@@ -39,9 +41,18 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     protected ArrayList<Selection<?>> subSelections;
 
     public CompoundSelectionImpl(Class javaType, Selection[] subSelections) {
+        this(javaType, subSelections, false);
+    }
+
+    public CompoundSelectionImpl(Class javaType, Selection[] subSelections, boolean validate) {
         super(javaType, null);
         this.subSelections = new ArrayList();
         for (Selection sel : subSelections){
+            if (validate) {
+                if (((SelectionImpl)sel).isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_illegal_tuple_or_array_value", new Object[] { sel }));
+                }
+            }
             this.subSelections.add(sel);
         }
     }

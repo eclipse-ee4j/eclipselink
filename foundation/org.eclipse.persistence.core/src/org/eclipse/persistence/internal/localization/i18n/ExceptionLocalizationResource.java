@@ -201,7 +201,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            //criteria API IllegalArgumentExceptions
                                            { "jpa_criteriaapi_no_corresponding_element_in_result", "Element {0} does not correspond to an element in the query result."},
                                            { "jpa_criteriaapi_invalid_result_index", "index {0} invalid for result list of size {1}."},
-                                           { "jpa_criteriaapi_invalid_result_type", "Element {0} type {1} is invalid for result {2}."}
+                                           { "jpa_criteriaapi_invalid_result_type", "Element {0} type {1} is invalid for result {2}."},
+                                           { "jpa_criteriaapi_null_literal_value", "Null value passed into CriteriaBuilder.literal().  Please use nullLiteral(Class<T> resultClass) instead."},
+                                           { "jpa_criteriaapi_illegal_tuple_or_array_value", "Illegal tuple or array-valued selection item found. Argument found: {0}"}
                                            
                                         };
     /**

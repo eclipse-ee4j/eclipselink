@@ -39,7 +39,7 @@ public class ConstructorSelectionImpl extends CompoundSelectionImpl {
     protected Class[] constructorArgTypes;
     
     public ConstructorSelectionImpl(Class javaType, Selection[] subSelections) {
-        super(javaType, subSelections);
+        super(javaType, subSelections, true);//need to validate selection items
     }
 
     public ConstructorReportItem translate(){

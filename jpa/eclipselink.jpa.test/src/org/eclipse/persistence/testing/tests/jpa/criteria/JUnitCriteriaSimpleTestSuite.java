@@ -48,6 +48,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.CriteriaBuilder.Case;
 import javax.persistence.criteria.CriteriaBuilder.Coalesce;
@@ -87,6 +88,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 /**
@@ -199,6 +201,10 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleStringValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleStringTypeValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testTupleTupleValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderTupleValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderArrayValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderConstructValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testLiteralValidation"));
 
         return suite;
     }
@@ -2676,7 +2682,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }			
+        }
     }
 
 
@@ -2953,6 +2959,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Object result = row.get("firstName", java.sql.Date.class);
             this.fail("IllegalArgumentException expected using an invalid value. Result returned:"+result);
         } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
     }
 
     /**
@@ -2979,6 +2986,116 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Object result = row.get(unusedTupleElement);
             this.fail("IllegalArgumentException expected using an invalid value. Result returned:"+result);
         } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
+    }
+
+    //366199 - CriteriaBuilder.tuple(Selection) does not throw IllegalArgumentException
+    public void testCriteriaBuilderTupleValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cquery = qb.createTupleQuery();
+
+        Root<Employee> emp = cquery.from(Employee.class);
+        Selection[] s = {emp.get("id"), emp.get("lastName"), emp.get("firstName")};
+        Selection item = qb.tuple(s);
+        cquery.select(item);
+
+        TypedQuery<Tuple> query = em.createQuery(cquery);
+        //verify they work and can be used:
+        List<Tuple> list = query.getResultList();
+        Tuple row = list.get(0);
+        try {
+            //verify tuple throws an exception when passed a tuple
+            Object unexpectedResult = qb.tuple(item);
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+        
+        try {
+            //verify array throws an exception when passed a tuple
+            Object unexpectedResult = qb.array(item);
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.array(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
+    }
+    
+    //366206 - CriteriaBuilder.array(Selection)
+    public void testCriteriaBuilderArrayValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cquery = qb.createQuery(Object[].class);
+
+        Root<Employee> emp = cquery.from(Employee.class);
+        Selection[] s = {emp.get("id"), emp.get("lastName"), emp.get("firstName")};
+        Selection item = qb.array(s);
+        cquery.select(item);
+
+        TypedQuery<Object[]> query = em.createQuery(cquery);
+        //verify they work and can be used:
+        List<Object[]> list = query.getResultList();
+        Object[] row = list.get(0);
+        try {
+            //verify tuple throws an exception when passed an array
+            Object unexpectedResult = qb.tuple(item);
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+        
+        try {
+            //verify array throws an exception when passed an array
+            Object unexpectedResult = qb.array(item);
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.array(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
+    }
+
+    //366248 - CriteriaBuilder.construct(Class, Selection)
+    public void testCriteriaBuilderConstructValidation()
+    {
+        EntityManager em = createEntityManager();
+        Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
+        EmployeeDetail expectedResult = new EmployeeDetail(emp.getFirstName(), emp.getLastName());
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<EmployeeDetail> cquery = qb.createQuery(EmployeeDetail.class);
+
+        Root<Employee> root = cquery.from(Employee.class);
+        Selection[] s = {root.get("firstName"), root.get("lastName")};
+        Selection item = qb.construct(EmployeeDetail.class, s);
+        cquery.select(item);
+        cquery.where(qb.equal(root.get("id"), emp.getId()));
+
+        TypedQuery<EmployeeDetail> query = em.createQuery(cquery);
+        //verify the query works:
+        List<EmployeeDetail> list = query.getResultList();
+        EmployeeDetail result = list.get(0);
+        assertEquals("Constructor criteria query Failed", expectedResult, result);
+
+        try {
+            //verify construct throws an exception when passed an array
+            Object unexpectedResult = qb.construct(EmployeeDetail.class, qb.array(s));
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+
+        try {
+            //verify construct throws an exception when passed a tuple
+            Object unexpectedResult = qb.construct(EmployeeDetail.class, qb.tuple(s));
+            this.fail("IllegalArgumentException expected using an invalid value to CriteriaBuilder.tuple(). Result returned:"+unexpectedResult);
+        } catch (IllegalArgumentException iae) {}
+
+        closeEntityManager(em);
+    }
+
+    //366100 - cbuilder.literal(null)
+    public void testLiteralValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        try {
+            Object result = qb.literal(null);
+            this.fail("IllegalArgumentException expected calling literal(null). Result returned:"+result);
+        } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
     }
 }
 
