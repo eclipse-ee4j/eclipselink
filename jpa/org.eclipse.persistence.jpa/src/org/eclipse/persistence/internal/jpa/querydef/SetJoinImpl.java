@@ -61,12 +61,10 @@ public class SetJoinImpl<Z, X>  extends JoinImpl<Z, X> implements SetJoin<Z, X>{
     }
     
     public SetJoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (SetJoinImpl<Z, X>)super.on(restriction);
     }
 
     public SetJoinImpl<Z, X> on(Predicate... restrictions) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (SetJoinImpl<Z, X>)super.on(restrictions);
     }
 }

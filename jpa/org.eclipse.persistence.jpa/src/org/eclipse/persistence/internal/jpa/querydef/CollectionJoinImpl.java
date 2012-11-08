@@ -62,18 +62,10 @@ public class CollectionJoinImpl<Z, X>  extends JoinImpl<Z, X> implements Collect
     }
     
     public CollectionJoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (CollectionJoinImpl<Z, X>)super.on(restriction);
     }
 
     public CollectionJoinImpl<Z, X> on(Predicate... restrictions) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (CollectionJoinImpl<Z, X>)super.on(restrictions);
     }
-
-    public Predicate getOn() {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
 }

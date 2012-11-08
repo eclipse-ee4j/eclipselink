@@ -75,6 +75,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryMetamodelTestSuite("testSetup"));
 
         suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelOnClause"));
+        suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelOnClauseOverCollection"));
         suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelOnClauseWithLeftJoin"));
         suite.addTest(new CriteriaQueryMetamodelTestSuite("simpleMetamodelCriteriaUpdateTest"));
         suite.addTest(new CriteriaQueryMetamodelTestSuite("testMetamodelCriteriaUpdate"));
@@ -97,7 +98,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         clearCache();
     }
 
-    // Bug 312146
+    // Bug 367452
     // Test join on clause
     public void testMetamodelOnClause() {
         EntityManager em = createEntityManager();
@@ -114,6 +115,31 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(entityEmp_);
         Join address = root.join(entityEmp_.getSingularAttribute("address"));
         address.on(qb.equal(address.get(entityAddr_.getSingularAttribute("city")), "Ottawa"));
+        List testResult = em.createQuery(cq).getResultList();
+
+        clearCache();
+        closeEntityManager(em);
+
+        if (baseResult.size() != testResult.size()) {
+            fail("Criteria query using ON clause did not match JPQL results; "
+                    +baseResult.size()+" were expected, while criteria query returned "+testResult.size());
+        }
+    }
+
+    public void testMetamodelOnClauseOverCollection() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join e.phoneNumbers p on p.areaCode = '613'");
+        List baseResult = query.getResultList();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Metamodel metamodel = em.getMetamodel();
+        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+        EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
+        
+        Root<Employee> root = cq.from(entityEmp_);
+        Join phoneNumber = root.join(entityEmp_.getCollection("phoneNumbers"));
+        phoneNumber.on(qb.equal(phoneNumber.get(entityPhone_.getSingularAttribute("areaCode")), "613"));
         List testResult = em.createQuery(cq).getResultList();
 
         clearCache();

@@ -71,6 +71,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("testSetup"));
 
         suite.addTest(new CriteriaQueryTestSuite("testOnClause"));
+        suite.addTest(new CriteriaQueryTestSuite("testOnClauseOverCollection"));
         suite.addTest(new CriteriaQueryTestSuite("testOnClauseWithLeftJoin"));
         suite.addTest(new CriteriaQueryTestSuite("testOnClauseCompareSQL"));
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaUpdateTest"));
@@ -96,7 +97,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         clearCache();
     }
 
-    // Bug 312146
+    // Bug 367452
     // Test join on clause
     public void testOnClause() {
         EntityManager em = createEntityManager();
@@ -108,6 +109,27 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         Root<Employee> root = cq.from(Employee.class);
         Join address = root.join("address");
         address.on(qb.equal(address.get("city"), "Ottawa"));
+        List testResult = em.createQuery(cq).getResultList();
+
+        clearCache();
+        closeEntityManager(em);
+
+        if (baseResult.size() != testResult.size()) {
+            fail("Criteria query using ON clause did not match JPQL results; "
+                    +baseResult.size()+" were expected, while criteria query returned "+testResult.size());
+        }
+    }
+
+    public void testOnClauseOverCollection() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e join e.phoneNumbers p on p.areaCode = '613'");
+        List baseResult = query.getResultList();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        Join phoneNumber = root.join("phoneNumbers");
+        phoneNumber.on(qb.equal(phoneNumber.get("areaCode"), "613"));
         List testResult = em.createQuery(cq).getResultList();
 
         clearCache();

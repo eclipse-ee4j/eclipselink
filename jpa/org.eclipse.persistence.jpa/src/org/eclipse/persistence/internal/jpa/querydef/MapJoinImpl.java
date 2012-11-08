@@ -95,12 +95,10 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     }
     
     public MapJoinImpl<Z, K, V> on(Expression<Boolean> restriction) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (MapJoinImpl<Z, K, V>)super.on(restriction);
     }
 
     public MapJoinImpl<Z, K, V> on(Predicate... restrictions) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (MapJoinImpl<Z, K, V>)super.on(restrictions);
     }
 }

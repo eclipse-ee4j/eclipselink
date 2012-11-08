@@ -67,13 +67,11 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
     }
     
     public ListJoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (ListJoinImpl<Z, X>)super.on(restriction);
     }
 
     public ListJoinImpl<Z, X> on(Predicate... restrictions) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        return (ListJoinImpl<Z, X>)super.on(restrictions);
     }
 
 }
