@@ -1356,8 +1356,15 @@ public abstract class RuntimeServices {
          Object[] rows = tdata.values().toArray();
          Object[][] data = new Object[rows.length][];
 
-         for (int i=0; i<rows.length; i++) {
-             data[i] = ((CompositeData) rows[i]).getAll(names);
+         for (int i = 0; i < rows.length; i++) {
+             CompositeData cdata = ((CompositeData) rows[i]);
+             Object[] returnRow = new Object[names.length];
+             for (int j = 0; j < names.length; j++) {
+                 String name = names[j];
+                 Object value = cdata.get(name);
+                 returnRow[j] = name + " : " + String.valueOf(value);
+             }
+             data[i] = returnRow;
          }
          return data;
      }
@@ -1518,32 +1525,36 @@ public abstract class RuntimeServices {
       */
      private HashMap buildLowlevelDetailsFor(String mappedClassName) {
          Class mappedClass = (Class)getSession().getDatasourcePlatform().getConversionManager().convertObject(mappedClassName, ClassConstants.CLASS);
-         IdentityMap identityMap = getSession().getIdentityMapAccessorInstance().getIdentityMap(mappedClass);
          ClassDescriptor descriptor = getSession().getProject().getDescriptor(mappedClass);
 
-         String cacheType = getCacheTypeFor(identityMap.getClass());
-         String configuredSize = "" + identityMap.getMaxSize();
+         String cacheType = "";
+         String configuredSize = "";
          String currentSize = "";
-
-         //show the current size, including subclasses 
-         currentSize = "" + identityMap.getSize(mappedClass, true);
-
          String parentClassName = "";
+         
+         // Aggregate descriptors do not have an IdentityMap
+         if (!descriptor.isAggregateDescriptor()) {
+             IdentityMap identityMap = getSession().getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+             cacheType = getCacheTypeFor(identityMap.getClass());
+             configuredSize = String.valueOf(identityMap.getMaxSize());
+             //show the current size, including subclasses 
+             currentSize = String.valueOf(identityMap.getSize(mappedClass, true));
+         }
 
-         boolean isChildDescriptor = descriptor.isChildDescriptor();
-
-         HashMap details = new HashMap();
-
-         details.put("Class Name", mappedClassName);
-         details.put("Cache Type", (isChildDescriptor ? "" : cacheType));
-         details.put("Configured Size", (isChildDescriptor ? "" : configuredSize));
-         details.put("Current Size", currentSize);
          //If I have a parent class name, get it. Otherwise, leave blank
          if (descriptor.hasInheritance()) {
              if (descriptor.getInheritancePolicy().getParentDescriptor() != null) {
                  parentClassName = descriptor.getInheritancePolicy().getParentClassName();
              }
          }
+
+         boolean isChildDescriptor = descriptor.isChildDescriptor();
+
+         HashMap details = new HashMap(5);
+         details.put("Class Name", mappedClassName);
+         details.put("Cache Type", (isChildDescriptor ? "" : cacheType));
+         details.put("Configured Size", (isChildDescriptor ? "" : configuredSize));
+         details.put("Current Size", currentSize);
          details.put("Parent Class Name", parentClassName);
 
          return details;
