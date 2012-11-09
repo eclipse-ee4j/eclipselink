@@ -814,11 +814,14 @@ public class AnnotationsProcessor {
                 if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
                      throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
                 }
+                /*  Bug fix for bug 372276 temporarily removed
+                 *  Once re-fixed also remove validateElementIsInPropOrder and calls to that
+                 *  also readd test JAXBTestSuite3 org.eclipse.persistence.testing.jaxb.xmltype.proporder.MissingPropTestCases.class
                 if(hasPropOrder && !p.isAttribute() && !p.isTransient() && !p.isInverseReference()){
                     if (!propOrderList.contains(p.getPropertyName())) {
                         throw JAXBException.missingPropertyInPropOrder(p.getPropertyName(), tInfo.getJavaClassName());
                     }
-                }
+                }*/
             }                        
             
             if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
@@ -1570,6 +1573,7 @@ public class AnnotationsProcessor {
             if (!element.defaultValue().equals(ELEMENT_DECL_DEFAULT)) {
                 property.setDefaultValue(element.defaultValue());
             }
+            validateElementIsInPropOrder(info, property.getPropertyName());
         }
     }
 
@@ -2103,6 +2107,7 @@ public class AnnotationsProcessor {
      */
     private void processChoiceProperty(Property choiceProperty, TypeInfo info, JavaClass cls, JavaClass propertyType) {
         String propertyName = choiceProperty.getPropertyName();
+        validateElementIsInPropOrder(info, propertyName);
 
         // validate XmlElementsXmlJoinNodes (if set)
         if (choiceProperty.isSetXmlJoinNodesList()) {
@@ -2273,7 +2278,9 @@ public class AnnotationsProcessor {
      * @return
      */
     private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
-   
+        String propertyName = property.getPropertyName();
+        validateElementIsInPropOrder(info, propertyName);
+
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
@@ -3722,6 +3729,24 @@ public class AnnotationsProcessor {
                 helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
                 helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
                 
+    }
+    private void validateElementIsInPropOrder(TypeInfo info, String name) {
+        if (info.isTransient()) {
+            return;
+        }
+        // If a property is marked with XMLElement, XMLElements, XMLElementRef
+        // or XMLElementRefs
+        // and propOrder is not empty then it must be in the proporder list
+        String[] propOrder = info.getPropOrder();
+        if (propOrder.length > 0) {
+            if (propOrder.length == 1 && propOrder[0].equals(EMPTY_STRING)) {
+                return;
+            }
+            List<String> propOrderList = Arrays.asList(info.getPropOrder());
+            if (!propOrderList.contains(name)) {
+                throw JAXBException.missingPropertyInPropOrder(name);
+            }
+        }
     }
 
     private void validatePropOrderForInfo(TypeInfo info) {
