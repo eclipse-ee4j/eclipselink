@@ -35,9 +35,9 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
 public class XMLBinaryDataHelper {
@@ -72,7 +72,7 @@ public class XMLBinaryDataHelper {
         MULTIPART = javax.mail.internet.MimeMultipart.class;
     }
 
-    public Object convertObject(Object obj, Class classification, AbstractSession session) {
+    public Object convertObject(Object obj, Class classification, CoreAbstractSession session) {
         if (classification == DATA_HANDLER) {
             return convertObjectToDataHandler(obj, session);
         } else if (classification == IMAGE) {
@@ -106,9 +106,9 @@ public class XMLBinaryDataHelper {
             return getBytesFromSource((Source) attributeValue, marshaller, mimeType);
         } else if (attributeValue instanceof MimeMultipart) {
             return getBytesFromMultipart((MimeMultipart) attributeValue, marshaller);
-        } else if (attributeValue.getClass() == ClassConstants.APBYTE) {
+        } else if (attributeValue.getClass() == CoreClassConstants.APBYTE) {
             return new EncodedData((byte[]) attributeValue, mimeType);
-        } else if (attributeValue.getClass() == ClassConstants.ABYTE) {
+        } else if (attributeValue.getClass() == CoreClassConstants.ABYTE) {
             return getBytesFromByteObjectArray((Byte[]) attributeValue, mimeType);
         }
 
@@ -275,21 +275,21 @@ public class XMLBinaryDataHelper {
         return null;
     }
 
-    public String stringFromDataHandler(DataHandler source, QName schemaTypeQName, AbstractSession session) {
+    public String stringFromDataHandler(DataHandler source, QName schemaTypeQName, CoreAbstractSession session) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             source.writeTo(output);
             return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(output.toByteArray(), String.class, schemaTypeQName);
         } catch (Exception ex) {
-            throw ConversionException.couldNotBeConverted(source, ClassConstants.STRING, ex);
+            throw ConversionException.couldNotBeConverted(source, CoreClassConstants.STRING, ex);
         }
     }
 
-    public String stringFromDataHandler(Object source, QName schemaTypeQName, AbstractSession session) {
+    public String stringFromDataHandler(Object source, QName schemaTypeQName, CoreAbstractSession session) {
         return stringFromDataHandler((DataHandler) source, schemaTypeQName, session);
     }
 
-    public String stringFromImage(Image image, QName schemaTypeQName, AbstractSession session) {
+    public String stringFromImage(Image image, QName schemaTypeQName, CoreAbstractSession session) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             String mimeType = null;
@@ -312,17 +312,17 @@ public class XMLBinaryDataHelper {
         }
     }
 
-    public String stringFromSource(Source source, QName schemaTypeQName, AbstractSession session) {
+    public String stringFromSource(Source source, QName schemaTypeQName, CoreAbstractSession session) {
         DataHandler handler = new DataHandler(source, "text/xml");
         return stringFromDataHandler(handler, schemaTypeQName, session);
     }
 
-    public String stringFromMultipart(MimeMultipart multipart, QName schemaTypeQName, AbstractSession session) {
+    public String stringFromMultipart(MimeMultipart multipart, QName schemaTypeQName, CoreAbstractSession session) {
         DataHandler handler = new DataHandler(multipart, multipart.getContentType());
         return stringFromDataHandler(handler, schemaTypeQName, session);
     }
 
-    public DataHandler convertObjectToDataHandler(Object sourceObject, AbstractSession session) {
+    public DataHandler convertObjectToDataHandler(Object sourceObject, CoreAbstractSession session) {
         DataHandler handler = null;
         if (sourceObject instanceof DataHandler) {
             return (DataHandler) sourceObject;
@@ -331,7 +331,7 @@ public class XMLBinaryDataHelper {
             handler = new DataHandler(new ByteArrayDataSource(bytes, "application/octet-stream"));
 
         } else if (sourceObject instanceof Byte[]) {
-            byte[] bytes = (byte[]) session.getDatasourcePlatform().getConversionManager().convertObject(sourceObject, ClassConstants.APBYTE);
+            byte[] bytes = (byte[]) session.getDatasourcePlatform().getConversionManager().convertObject(sourceObject, CoreClassConstants.APBYTE);
             handler = new DataHandler(new ByteArrayDataSource(bytes, "application/octet-stream"));
         }
         if (sourceObject instanceof String) {
@@ -355,7 +355,7 @@ public class XMLBinaryDataHelper {
         if (obj instanceof Source) {
             return obj;
         }
-        if(obj.getClass() == ClassConstants.STRING) {
+        if(obj.getClass() == CoreClassConstants.STRING) {
             return new StreamSource(new StringReader((String)obj));
         }        
         if (obj instanceof DataHandler) {

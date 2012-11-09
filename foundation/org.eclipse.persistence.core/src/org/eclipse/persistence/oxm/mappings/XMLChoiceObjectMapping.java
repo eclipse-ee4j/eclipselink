@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -46,9 +47,12 @@ import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +87,7 @@ import javax.xml.namespace.QName;
  * 
  */
 
-public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping {
+public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping, XMLConverterMapping<Session> {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<String, XMLField> classNameToFieldMappings;
@@ -203,13 +207,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     */
     public Object getFieldValue(Object object, AbstractSession session, XMLRecord record) {
         Object attributeValue = super.getAttributeValueFromObject(object);
-        if (null != converter) {
-            if (converter instanceof XMLConverter) {
-                attributeValue = ((XMLConverter)getConverter()).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
-            } else {
-                attributeValue = getConverter().convertObjectValueToDataValue(attributeValue, session);
-            }
-        }
+        attributeValue = convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
         return attributeValue;
     }
 
@@ -844,5 +842,35 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
         this.choiceElementMappingsByClass = choiceElementMappingsByClass;
     }    
-    
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                return converter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+            } else {
+                return converter.convertDataValueToObjectValue(fieldValue, session);
+            }
+        }
+        return fieldValue;
+    }
+
 }

@@ -40,6 +40,7 @@ import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -71,7 +72,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class ObjectBuilder implements Cloneable, Serializable {
+public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSession> implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     /** Mappings keyed by attribute name. */
     protected Map<String, DatabaseMapping> mappingsByAttribute;
@@ -2552,6 +2553,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Extract primary key attribute values from the domainObject.
      */
+    @Override
     public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session) {
         return extractPrimaryKeyFromObject(domainObject, session, false);
     }

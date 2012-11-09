@@ -20,10 +20,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -53,8 +54,8 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return xPathFragment.getNextFragment() == null;
     }
     
-    public void setNullValue(Object object, Session session) {
-        Object value = xmlFragmentMapping.getObjectValue(null, session);
+    public void setNullValue(Object object, CoreSession session) {
+        Object value = xmlFragmentMapping.getObjectValue(null, (Session) session);
         xmlFragmentMapping.setAttributeValueInObject(object, value);
     }
 
@@ -62,11 +63,11 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return true;
     }
     
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());   
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlFragmentMapping.isReadOnly()) {
             return false;
         }
@@ -75,7 +76,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     }
 
     @Override
-    public boolean marshalSelfAttributes(XPathFragment pathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshalSelfAttributes(XPathFragment pathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         Node node = (Node) xmlFragmentMapping.getAttributeValueFromObject(object);
         NamedNodeMap attributes = node.getAttributes();
         if(null != attributes) {
@@ -106,7 +107,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object attributeValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object attributeValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         marshalRecord.openStartGroupingElements(namespaceResolver);
         if (!(attributeValue instanceof Node)) {
             return false;

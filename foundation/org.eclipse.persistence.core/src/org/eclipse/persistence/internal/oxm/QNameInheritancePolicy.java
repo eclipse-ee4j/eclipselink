@@ -22,8 +22,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -131,7 +131,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 setClassIndicatorField(getDescriptor().buildField(getClassIndicatorField()));
                 // Determine and set the class indicator classification.
                 if (shouldUseClassNameAsIndicator()) {
-                    getClassIndicatorField().setType(ClassConstants.STRING);
+                    getClassIndicatorField().setType(CoreClassConstants.STRING);
                 } else if (!getClassIndicatorMapping().isEmpty()) {
                     Class type = null;
                     Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
@@ -295,7 +295,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             return;
         }
 
-        DatabaseField field = getClassIndicatorField();
+        CoreField field = getClassIndicatorField();
         Object value = getClassIndicatorValue();
         
         if(usesXsiType){        

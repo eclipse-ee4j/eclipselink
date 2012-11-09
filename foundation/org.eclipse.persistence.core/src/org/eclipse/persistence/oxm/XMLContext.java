@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
-import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;

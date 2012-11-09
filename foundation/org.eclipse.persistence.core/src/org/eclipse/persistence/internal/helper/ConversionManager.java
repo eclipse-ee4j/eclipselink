@@ -21,6 +21,7 @@ import java.security.PrivilegedActionException;
 import java.sql.*;
 
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
@@ -36,7 +37,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader
  * <li> Execute the appropriate conversion routine.
  *    </ul>
  */
-public class ConversionManager implements Serializable, Cloneable {
+public class ConversionManager extends CoreConversionManager implements Serializable, Cloneable {
     protected Map defaultNullValues;
 
     /**
@@ -80,6 +81,7 @@ public class ConversionManager implements Serializable, Cloneable {
      * @exception - ConversionException, all exceptions will be thrown as this type.
      * @return - the newly converted object
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
         if (sourceObject == null) {
             // Check for default null conversion.

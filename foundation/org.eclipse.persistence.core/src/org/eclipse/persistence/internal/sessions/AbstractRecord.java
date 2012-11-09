@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.io.*;
 import java.util.*;
+
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.Record;
@@ -30,7 +32,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  * </ul>
  * @see DatabaseField
  */
-public abstract class AbstractRecord implements Record, Cloneable, Serializable, Map {
+public abstract class AbstractRecord extends CoreAbstractRecord implements Record, Cloneable, Serializable, Map {
 
     /** Use vector to store the fields/values for optimal performance.*/
     protected Vector fields;

@@ -20,12 +20,14 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -48,7 +50,6 @@ import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
@@ -320,7 +321,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         Object containerInstance = containerInstances[c.getIndex()];
 
         if (containerInstance == null) {
-        	DatabaseMapping mapping = c.getMapping();
+            CoreMapping mapping = c.getMapping();
             //don't attempt to do a get on a readOnly property.        	
             if(c.getReuseContainer() && !(mapping.isReadOnly())) {
             	containerInstance = mapping.getAttributeValueFromObject(currentObject);                
@@ -1005,7 +1006,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                     } else {
                         if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                            DatabaseMapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                            CoreMapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
                             if(mapping.isAbstractDirectMapping()) {
                                 Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
                                 if(!(XMLConstants.EMPTY_STRING.equals(nullValue))) {
@@ -1346,6 +1347,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         this.unmarshalContext.setAttributeValue(this, value, mapping);
     }
 
+    public void setAttributeValue(Object value, CoreMapping mapping) {
+        this.unmarshalContext.setAttributeValue(this, value, mapping);
+    }
+
     public void addAttributeValue(ContainerValue containerValue, Object value) {
         this.unmarshalContext.addAttributeValue(this, containerValue, value);
     }
@@ -1436,7 +1441,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      * references.
      * @since EclipseLink 2.5.0
      */
-    public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
+    public void resolveReferences(CoreAbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
             referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }

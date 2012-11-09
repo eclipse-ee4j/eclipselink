@@ -32,6 +32,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.queries.CoreMappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -86,7 +87,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author tware
  *
  */
-public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
+public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements CoreMappedKeyMapContainerPolicy<AbstractSession> {
     
     protected MapKeyMapping keyMapping;
 

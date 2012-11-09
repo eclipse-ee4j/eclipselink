@@ -18,6 +18,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -42,6 +44,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -67,11 +70,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return null == xPathFragment;
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlAnyCollectionMapping.isReadOnly()) {
             return false;
         }
-        ContainerPolicy cp = xmlAnyCollectionMapping.getContainerPolicy();
+        CoreContainerPolicy cp = xmlAnyCollectionMapping.getContainerPolicy();
         Object collection = xmlAnyCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlAnyCollectionMapping.getWrapperNullPolicy();
@@ -101,10 +104,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             while(cp.hasNext(iterator)) {        	    
         	    
                 Object nextValue = cp.next(iterator, session);
-        	    
-                if(xmlAnyCollectionMapping.getConverter() != null) {
-        	    	nextValue = xmlAnyCollectionMapping.getConverter().convertObjectValueToDataValue(nextValue, session, marshalRecord.getMarshaller());
-                }
+                nextValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(nextValue, (Session) session, marshalRecord.getMarshaller());
                 XPathFragment frag = getXPathFragmentForValue(nextValue, marshalRecord,marshalRecord.getMarshaller() );
                 if(frag != null){    
                 	if(frag == SIMPLE_FRAGMENT){
@@ -148,9 +148,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 	        marshalRecord.startCollection();
 	        while (cp.hasNext(iterator)) {
 	            objectValue = cp.next(iterator, session);
-	            if(xmlAnyCollectionMapping.getConverter() != null) {
-	                objectValue = xmlAnyCollectionMapping.getConverter().convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
-	            }
+	            objectValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(objectValue, (AbstractSession) session, marshalRecord.getMarshaller());
 	            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
 	        }
 	        marshalRecord.endCollection();
@@ -197,7 +195,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     		return frag;
     	 }
     	 
-    	 AbstractSession childSession = null;
+    	 CoreAbstractSession childSession = null;
     	 try {
     		 childSession= marshaller.getXMLContext().getSession(value);
          } catch (XMLMarshalException e) {               
@@ -264,9 +262,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             // OBJECT VALUE
             if (!xmlAnyCollectionMapping.usesXMLRoot()) {
                 Object objectValue = childRecord.getCurrentObject();
-                if(xmlAnyCollectionMapping.getConverter() != null) {
-                    objectValue = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                }
+                objectValue = xmlAnyCollectionMapping.convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                 unmarshalRecord.addAttributeValue(this, objectValue);
             } else {
                 Object childObject = childRecord.getCurrentObject();
@@ -277,9 +273,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
                     childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.isNamespaceAware(), unmarshalRecord.getUnmarshaller());
-                    if(xmlAnyCollectionMapping.getConverter() != null) {
-                        childObject = xmlAnyCollectionMapping.getConverter().convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                    }
+                    childObject = xmlAnyCollectionMapping.convertDataValueToObjectValue(childObject, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
                     unmarshalRecord.addAttributeValue(this, childObject);
                 }
             }
@@ -287,16 +281,16 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         } else {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             if(xmlAnyCollectionMapping.isMixedContent() && unmarshalRecord.getTextWrapperFragment() != null && unmarshalRecord.getTextWrapperFragment().equals(xPathFragment)){
-            	endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping.getConverter(), xPathFragment, null);
+            	endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping, xPathFragment, null);
             	return;
             }
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyCollectionMapping.getKeepAsElementPolicy();
             if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
-                setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getConverter(), unmarshalRecord, true, null);
+                setOrAddAttributeValueForKeepAsElement(builder, xmlAnyCollectionMapping, xmlAnyCollectionMapping, unmarshalRecord, true, null);
             } else {
                 //TEXT VALUE
                 if(xmlAnyCollectionMapping.isMixedContent()) {
-                    endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping.getConverter(), xPathFragment, null);
+                    endElementProcessText(unmarshalRecord, xmlAnyCollectionMapping, xPathFragment, null);
                 } else {
                     unmarshalRecord.resetStringBuffer();
                 }
@@ -357,7 +351,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return generatedNamespace;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (null == value) {
             return false;
         }
@@ -368,7 +362,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
         XMLDescriptor descriptor;
         TreeObjectBuilder objectBuilder;
-        AbstractSession childSession;
+        CoreAbstractSession childSession;
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         XPathFragment rootFragment;
 
@@ -450,7 +444,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         return true;
     }
 
-    private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver) {
+    private void marshalSimpleValue(XPathFragment xmlRootFragment, MarshalRecord marshalRecord, Object originalValue, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
     	 QName qname = null;
         if (xmlRootFragment != null) {
             qname = ((XMLRoot) originalValue).getSchemaType();

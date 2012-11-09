@@ -15,21 +15,21 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 
 /**
@@ -61,12 +61,12 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
      * Override the method in XPathNode such that the marshaller can be set on the
      * marshalRecord - this is required for XMLConverter usage.
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlCompositeDirectCollectionMapping.isReadOnly()) {
             return false;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
+        CoreContainerPolicy cp = getContainerPolicy();
         Object collection = xmlCompositeDirectCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlCompositeDirectCollectionMapping.getWrapperNullPolicy();
@@ -101,16 +101,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             }
 
-            Converter valueConverter = xmlCompositeDirectCollectionMapping.getValueConverter();
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
-                if (null != valueConverter) {
-                    if (valueConverter instanceof XMLConverter) {
-                        objectValue = ((XMLConverter) valueConverter).convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
-                    } else {
-                        objectValue = valueConverter.convertObjectValueToDataValue(objectValue, session);
-                    }
-                }
+                objectValue = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshalRecord.getMarshaller());
                 schemaType = xmlField.getSchemaTypeForValue(objectValue, session);
 
                 newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
@@ -246,16 +239,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }
 
-        Converter valueConverter = xmlCompositeDirectCollectionMapping.getValueConverter();
-        if (null != valueConverter) {
-            if (valueConverter instanceof XMLConverter) {
-                value = ((XMLConverter) valueConverter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            } else {
-                value = valueConverter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
-            }
-        }
+        value = xmlCompositeDirectCollectionMapping.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
 
-        if (value != null && value.getClass() == ClassConstants.STRING) {
+        if (value != null && value.getClass() == CoreClassConstants.STRING) {
             if (xmlCompositeDirectCollectionMapping.isCollapsingStringValues()) {
                 value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
             } else if (xmlCompositeDirectCollectionMapping.isNormalizingStringValues()) {
@@ -273,7 +259,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         xmlCompositeDirectCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlCompositeDirectCollectionMapping.getContainerPolicy();
     }
 
@@ -281,15 +267,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Converter valueConverter = xmlCompositeDirectCollectionMapping.getValueConverter();
-        if (null != valueConverter) {
-            if (valueConverter instanceof XMLConverter) {
-                value = ((XMLConverter) valueConverter).convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
-            } else {
-                value = valueConverter.convertObjectValueToDataValue(value, session);
-            }
-        }
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        value = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(value, (Session) session, marshalRecord.getMarshaller());
 
         if (null != value) {
             XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();

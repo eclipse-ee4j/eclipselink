@@ -14,7 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -27,7 +27,7 @@ public abstract class MappingNodeValue extends NodeValue {
     /**
      * Return the mapping associated with this node value. 
      */
-    public abstract DatabaseMapping getMapping();
+    public abstract CoreMapping getMapping();
     
     public boolean isMappingNodeValue() {
         return true;

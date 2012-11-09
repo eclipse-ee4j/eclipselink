@@ -50,6 +50,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.history.*;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.*;
@@ -106,7 +107,7 @@ import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
  *    </ul>
  * @see DatabaseSessionImpl
  */
-public abstract class AbstractSession implements org.eclipse.persistence.sessions.Session, CommandProcessor, java.io.Serializable, java.lang.Cloneable {
+public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform> implements org.eclipse.persistence.sessions.Session, CommandProcessor, java.io.Serializable, java.lang.Cloneable {
     /** ExceptionHandler handles database exceptions. */
     transient protected ExceptionHandler exceptionHandler;
 
@@ -2338,6 +2339,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * ADVANCED:
      * Return all registered descriptors.
      */
+    @Override
     public Map<Class, ClassDescriptor> getDescriptors() {
         return this.project.getDescriptors();
     }
@@ -2655,6 +2657,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getDatasourcePlatform() {
         // PERF: Cache the platform.
         if (platform == null) {
@@ -2679,6 +2682,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * for specified class.
      * The platform is used for database specific behavior.
      */
+    @Override
     public Platform getPlatform(Class domainClass) {
         // PERF: Cache the platform.
         if (platform == null) {

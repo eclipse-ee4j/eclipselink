@@ -26,6 +26,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -566,7 +567,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         isXMLDescriptor = null;
     }
     
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (marshalRecord.hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
             return null;
         }
@@ -630,7 +631,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    public void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, AbstractSession session) {
+    public void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, CoreAbstractSession session) {
        if (extraNamespaces == null){
          return;
        }

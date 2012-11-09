@@ -13,6 +13,8 @@
 package org.eclipse.persistence.mappings;
 
 import java.io.*;
+
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 
@@ -25,7 +27,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  *    @author James
  *    @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public abstract class AttributeAccessor implements Cloneable, Serializable {
+public abstract class AttributeAccessor implements CoreAttributeAccessor, Cloneable, Serializable {
 
     /** Stores the name of the attribute */
     protected String attributeName;
@@ -138,10 +140,12 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
     /**
      * Return the attribute value from the object.
      */
+    @Override
     public abstract Object getAttributeValueFromObject(Object object) throws DescriptorException;
 
     /**
      * Set the attribute value into the object.
      */
+    @Override
     public abstract void setAttributeValueInObject(Object object, Object value) throws DescriptorException;
 }

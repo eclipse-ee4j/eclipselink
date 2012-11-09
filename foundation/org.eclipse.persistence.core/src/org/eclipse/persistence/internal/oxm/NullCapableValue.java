@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.core.sessions.CoreSession;
 
 /**
  * INTERNAL:
@@ -28,5 +28,5 @@ public interface NullCapableValue {
 	 * @param object
 	 * @param session
 	 */
-    public void setNullValue(Object object, Session session);
+    public void setNullValue(Object object, CoreSession session);
 }

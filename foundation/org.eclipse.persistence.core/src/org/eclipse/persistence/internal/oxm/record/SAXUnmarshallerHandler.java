@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -64,7 +65,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private Object object;
     private XMLDescriptor descriptor;
     private XMLUnmarshaller unmarshaller;
-    private AbstractSession session;
+    private CoreAbstractSession session;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
     private SAXDocumentBuilder documentBuilder;
@@ -265,7 +266,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 unmarshalRecord.setXMLReader(this.getXMLReader());
                 unmarshalRecord.setAttributes(atts);
                 
-                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
+                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, (AbstractSession) session);
                 
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the default root element
@@ -290,9 +291,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         throw DescriptorException.missingClassIndicatorField(unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
-                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
+                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
             } else {
-                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord(session);
+                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             }
             this.descriptor = xmlDescriptor;

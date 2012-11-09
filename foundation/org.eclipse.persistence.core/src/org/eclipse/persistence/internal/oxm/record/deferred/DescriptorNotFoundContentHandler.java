@@ -13,8 +13,8 @@
 
 package org.eclipse.persistence.internal.oxm.record.deferred;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.SAXException;
 
@@ -23,9 +23,9 @@ import org.xml.sax.SAXException;
  * can't be found unless it's a simple element which will be processed by the mapping.
  */
 public class DescriptorNotFoundContentHandler extends DeferredContentHandler {
-    private DatabaseMapping mapping;
+    private CoreMapping mapping;
     
-    public DescriptorNotFoundContentHandler(UnmarshalRecord parentRecord,DatabaseMapping mapping) {
+    public DescriptorNotFoundContentHandler(UnmarshalRecord parentRecord,CoreMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;     
     }

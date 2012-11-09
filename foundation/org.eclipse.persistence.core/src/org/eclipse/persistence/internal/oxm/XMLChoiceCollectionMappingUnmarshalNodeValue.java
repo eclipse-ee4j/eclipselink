@@ -15,9 +15,10 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
@@ -29,7 +30,6 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 import org.xml.sax.Attributes;
 
@@ -105,7 +105,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
 
         if(null != xmlChoiceCollectionMapping.getConverter()) {
             UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
-            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceCollectionMapping.getConverter()));
+            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceCollectionMapping));
             this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord, collection);
             unmarshalRecord.setUnmarshalContext(unmarshalContext);            
         } else {
@@ -130,7 +130,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         xmlChoiceCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlChoiceCollectionMapping.getContainerPolicy();
     }
 
@@ -138,12 +138,12 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return true;
     }  
     
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         //empty impl in the unmarshal node value
         return false;
     }
     
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         //dummy impl in the unmarshal node value
         return false;
     }

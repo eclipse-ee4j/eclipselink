@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -46,7 +47,9 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -55,6 +58,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -160,7 +164,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XMLMapping, ContainerMapping, XMLContainerMapping {
+public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XMLMapping, ContainerMapping, XMLContainerMapping, XMLConverterMapping<Session> {
     private XMLField field;
     private ContainerPolicy containerPolicy;
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
@@ -355,9 +359,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
                 if ((next.getNodeType() == Node.TEXT_NODE) && this.isMixedContent()) {
                     if (next.getNodeValue().trim().length() > 0) {
                         objectValue = next.getNodeValue();
-                        if(getConverter() != null) {
-                            objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                        }
+                        objectValue = convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                         cp.addInto(objectValue, container, session);
                     }
                 } else if (next.getNodeType() == Node.ELEMENT_NODE) {
@@ -462,9 +464,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
         if(null != iter) {
             while (cp.hasNext(iter) && (childNodeCount < childNodes.size())) {
                 Object element = cp.next(iter, session);
-                if(this.getConverter() != null) {
-                    element = getConverter().convertObjectValueToDataValue(element, session, record.getMarshaller());
-                }
+                element = convertObjectValueToDataValue(element, session, record.getMarshaller());
                 Object originalObject = element;
                 Node nextChild = null;
                 while (childNodeCount < childNodes.size()) {
@@ -855,6 +855,28 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements XM
 
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (null != valueConverter) {
+            return valueConverter.convertObjectValueToDataValue(value, session, marshaller);
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (null != valueConverter) {
+            return valueConverter.convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+        }
+        return fieldValue;
     }
 
 }

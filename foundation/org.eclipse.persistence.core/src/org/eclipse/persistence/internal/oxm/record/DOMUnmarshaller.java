@@ -25,7 +25,8 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -455,8 +456,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	        // this case, we need to use the conversion manager to convert the 
 	        // node's value to the primitive wrapper class, then create, 
 	        // populate and return an XMLRoot
-	        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
-	        	    ||ClassConstants.DURATION.isAssignableFrom(referenceClass)){
+	        if (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
+	        	    ||CoreClassConstants.DURATION.isAssignableFrom(referenceClass)){
 	            // we're assuming that since we're unmarshalling to a primitive
 	            // wrapper, the root element has a single text node
 	            Object nodeVal;
@@ -486,7 +487,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	
 	        // for XMLObjectReferenceMappings we need a non-shared cache, so
 	        // try and get a Unit Of Work from the XMLContext
-	        AbstractSession readSession = xmlContext.getReadSession(referenceClass);
+	        CoreAbstractSession readSession = xmlContext.getReadSession(referenceClass);
 	
 	        XMLDescriptor descriptor = (XMLDescriptor) readSession.getDescriptor(referenceClass);
 	        if (descriptor == null) {
@@ -496,12 +497,12 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	        Object object = null;
 	        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
 	            xmlRow.setUnmarshaller(xmlUnmarshaller);
-	            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy(readSession));
+	            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy((AbstractSession) readSession));
 	            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
 	
 	            ReadObjectQuery query = new ReadObjectQuery();
 	            query.setReferenceClass(referenceClass);
-	            query.setSession(readSession);
+	            query.setSession((AbstractSession) readSession);
 	            object = objectBuilder.buildObject(query, xmlRow, null);
 	
 	            // resolve mapping references

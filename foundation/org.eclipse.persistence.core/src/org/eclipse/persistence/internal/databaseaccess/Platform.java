@@ -16,6 +16,7 @@ import java.io.*;
 import java.util.Map;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -30,7 +31,7 @@ import org.eclipse.persistence.sequencing.Sequence;
  *
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public interface Platform extends Serializable, Cloneable {
+public interface Platform extends CorePlatform<ConversionManager>, Serializable, Cloneable {
     public Object clone();
     
     /**
@@ -51,6 +52,7 @@ public interface Platform extends Serializable, Cloneable {
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
+    @Override
     public ConversionManager getConversionManager();
 
     /**

@@ -12,19 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -146,7 +146,7 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    	            Object object, Session session, NamespaceResolver namespaceResolver) {
+    	            Object object, CoreSession session, NamespaceResolver namespaceResolver) {
         // Handle attributes - XSI_NIL, ABSENT_NODE have the same behavior
         if (xPathFragment.isAttribute()) {
             // Write out an empty attribute
@@ -188,7 +188,7 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any nodes to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-    	      Object object, Session session, NamespaceResolver namespaceResolver) {    
+    	      Object object, CoreSession session, NamespaceResolver namespaceResolver) {    
     	if (marshalNullRepresentation == XMLNullRepresentationType.ABSENT_NODE){
     		return false;
     	}
@@ -217,7 +217,7 @@ public abstract class AbstractNullPolicy {
      * @param field
      * @return true if this method caused any objects to be marshaled, else false.
      */
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
+    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, CoreAbstractSession session) {
         if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             record.put(field, XMLRecord.NIL);
             return true;

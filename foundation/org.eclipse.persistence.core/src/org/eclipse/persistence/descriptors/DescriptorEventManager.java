@@ -19,6 +19,7 @@ import java.util.*;
 import java.io.*;
 
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -46,7 +47,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  * @see ClassDescriptor
  */
-public class DescriptorEventManager implements Cloneable, Serializable {
+public class DescriptorEventManager extends CoreDescriptorEventManager implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     protected Vector eventSelectors;
     protected transient Vector eventMethods;

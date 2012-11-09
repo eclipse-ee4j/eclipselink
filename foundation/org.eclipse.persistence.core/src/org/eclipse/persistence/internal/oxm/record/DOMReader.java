@@ -17,9 +17,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -331,7 +331,7 @@ public class DOMReader extends XMLReaderAdapter {
         docPresPolicy.addObjectToCache(object, currentNode, selfRecordMapping);
     }
 
-    public Object getCurrentObject(AbstractSession session, XMLMapping selfRecordMapping) {
+    public Object getCurrentObject(CoreAbstractSession session, XMLMapping selfRecordMapping) {
         //if session == null then this is a marshal of a non-root
         //if docPres policy is null, then we never unmarshalled anything, and can
         //safely return null;

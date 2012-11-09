@@ -19,6 +19,7 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.security.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -51,7 +52,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * It might be reasonable to rework this into a number of different classes that implement
  * an interface...
  */
-public class InstantiationPolicy implements Cloneable, Serializable {
+public class InstantiationPolicy extends CoreInstantiationPolicy implements Cloneable, Serializable {
 
     /**
      * The method invoked on either the descriptor class (in which case it is static) or
@@ -97,6 +98,7 @@ public class InstantiationPolicy implements Cloneable, Serializable {
     /**
      * Build and return a new instance, using the appropriate mechanism.
      */
+    @Override
     public Object buildNewInstance() throws DescriptorException {
         // PERF: Just check method-name.
         if (this.methodName == null) {

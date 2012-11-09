@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -258,6 +259,14 @@ public class XMLMarshalException extends ValidationException {
         return exception;
     }
 
+    public static XMLMarshalException noDescriptorFound(CoreMapping mapping) {
+        Object[] args = { mapping.getAttributeName() };
+
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_DESCRIPTOR_FOUND, args));
+        exception.setErrorCode(NO_DESCRIPTOR_FOUND);
+        return exception;
+    }
+
     public static XMLMarshalException noDescriptorFound(DatabaseMapping mapping) {
         Object[] args = { mapping.getAttributeName() };
 
@@ -300,6 +309,14 @@ public class XMLMarshalException extends ValidationException {
         return exception;
     }
     
+    public static XMLMarshalException unknownXsiTypeValue(String xsiType, CoreMapping mapping) {
+        Object[] args = {xsiType, mapping};
+        
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNKNOWN_XSI_TYPE, args));
+        exception.setErrorCode(UNKNOWN_XSI_TYPE);
+        return exception;
+    }
+
     public static XMLMarshalException unknownXsiTypeValue(String xsiType, DatabaseMapping mapping) {
         Object[] args = {xsiType, mapping};
         

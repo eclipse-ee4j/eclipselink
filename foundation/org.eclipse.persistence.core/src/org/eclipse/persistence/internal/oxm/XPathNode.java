@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -313,7 +314,7 @@ public class XPathNode {
         return xPathNode;
     }
 
-    public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
+    public boolean marshal(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
         if ((null == marshalNodeValue) || isMarshalOnlyNodeValue) {
             marshalRecord.addGroupingElement(this);
 
@@ -351,7 +352,7 @@ public class XPathNode {
         }
     }
 
-    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, AbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {    
+    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {    
         if (null == anXPathFragment) {
             return false;
         }
@@ -389,7 +390,7 @@ public class XPathNode {
      * @param marshaller
      * @return
      */
-    public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         if (marshalNodeValue == null) {
             return false;
         }

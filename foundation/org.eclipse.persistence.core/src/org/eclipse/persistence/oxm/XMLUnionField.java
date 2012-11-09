@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -149,7 +149,8 @@ public class XMLUnionField extends XMLField {
         return true;
     }
 
-    public QName getSchemaTypeForValue(Object value, AbstractSession session) {
+    @Override
+    public QName getSchemaTypeForValue(Object value, CoreAbstractSession session) {
         if(leafElementType != null){
             return leafElementType;
         }else if (isTypedTextField()) {
@@ -158,7 +159,7 @@ public class XMLUnionField extends XMLField {
         return getSingleValueToWriteForUnion(value, session);       
     }
     
-    protected QName getSingleValueToWriteForUnion(Object value, AbstractSession session) {
+    protected QName getSingleValueToWriteForUnion(Object value, CoreAbstractSession session) {
         ArrayList schemaTypes = getSchemaTypes();
         QName schemaType = null;
         for (int i = 0, schemaTypesSize = schemaTypes.size(); i < schemaTypesSize; i++) {

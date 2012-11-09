@@ -14,26 +14,22 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
-
-
 public class XMLInlineBinaryHandler extends UnmarshalRecord {
     NodeValue nodeValue;
-    DatabaseMapping mapping;
+    CoreMapping mapping;
     boolean isCollection = false;
-    Converter converter;
+    XMLConverterMapping converter;
     UnmarshalRecord parent;
     CharSequence characters;
     
-    public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, DatabaseMapping mapping, Converter converter, boolean isCollection) {
+    public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, CoreMapping mapping, XMLConverterMapping converter, boolean isCollection) {
         super(null);
         this.nodeValue = nodeValue;
         this.isCollection = isCollection;
@@ -110,13 +106,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
                value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
            }
        }
-       if (converter != null) {
-           if (converter instanceof XMLConverter) {
-               value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
-           } else {
-               value = converter.convertDataValueToObjectValue(value, parent.getSession());
-           }
-       }       
+        value = converter.convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
        if(isCollection) {
            parent.addAttributeValue((ContainerValue)nodeValue, value);
        } else {

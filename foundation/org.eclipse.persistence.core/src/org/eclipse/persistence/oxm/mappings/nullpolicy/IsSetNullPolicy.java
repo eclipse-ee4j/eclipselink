@@ -14,6 +14,8 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
 import java.lang.reflect.Method;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.NillableNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -22,13 +24,11 @@ import org.eclipse.persistence.internal.oxm.OptionalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * PUBLIC:
@@ -99,8 +99,9 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         setMarshalNullRepresentation(aMarshalNullRepresentation);
     }
 
+    @Override
     public boolean directMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-            Object object, Session session, NamespaceResolver namespaceResolver) {
+            Object object, CoreSession session, NamespaceResolver namespaceResolver) {
         // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional) 
         if (!isSet(object)) {
             return false;
@@ -117,8 +118,9 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
     
 
+    @Override
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
-            Object object, Session session, NamespaceResolver namespaceResolver) {
+            Object object, CoreSession session, NamespaceResolver namespaceResolver) {
         // Do nothing when the value is not set or we are marshaling as ABSENT_NODE (optional)    	
         if (!isSet(object)) {
             return false;
@@ -127,7 +129,8 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         }
     }
 
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
+    @Override
+    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, CoreAbstractSession session) {
         if (!isSet(object)) {
             return false;
         } else {

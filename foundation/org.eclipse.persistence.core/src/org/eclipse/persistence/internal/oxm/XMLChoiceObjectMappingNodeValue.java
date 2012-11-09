@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
@@ -32,7 +34,6 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;
@@ -95,27 +96,27 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         this.nullCapableNodeValue = nodeValue;
     }
     
-    public void setNullValue(Object object, Session session) {
+    public void setNullValue(Object object, CoreSession session) {
         xmlChoiceMapping.setAttributeValueInObject(object, null);
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(xmlChoiceMapping.isReadOnly()) {
             return false;
         }
-        Object value = xmlChoiceMapping.getFieldValue(object, session, marshalRecord);
+        Object value = xmlChoiceMapping.getFieldValue(object, (AbstractSession) session, marshalRecord);
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Class valueClass = null;
         if (value instanceof XMLRoot) {
             XMLRoot root = (XMLRoot)value;
-            for(DatabaseField next:this.xmlChoiceMapping.getFields()) {
+            for(CoreField next:this.xmlChoiceMapping.getFields()) {
                 XPathFragment fragment = ((XMLField)next).getXPathFragment();
                 while(fragment != null && !fragment.nameIsText) {
                     if(fragment.getNextFragment() == null || fragment.getHasText()) {
@@ -179,7 +180,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
         if(null != xmlChoiceMapping.getConverter()) {
             UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
-            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceMapping.getConverter()));
+            unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceMapping));
             this.choiceElementNodeValue.endElement(xPathFragment, unmarshalRecord);
             unmarshalRecord.setUnmarshalContext(unmarshalContext);
         } else {

@@ -18,7 +18,7 @@ import java.io.Writer;
 import java.lang.reflect.Method;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 
@@ -33,7 +33,7 @@ public class CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
 
     private final static String ESCAPE_METHOD_NAME = "escape";
     private final static Class[] PARAMS = new Class[] {
-        ClassConstants.APCHAR, ClassConstants.PINT, ClassConstants.PINT, ClassConstants.PBOOLEAN, Writer.class };
+        CoreClassConstants.APCHAR, CoreClassConstants.PINT, CoreClassConstants.PINT, CoreClassConstants.PBOOLEAN, Writer.class };
 
     private Object handler;
     private Method escapeMethod;

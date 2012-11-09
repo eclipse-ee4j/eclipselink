@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.SDOException;
-import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -27,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -133,7 +135,7 @@ public class JAXBValueStore implements ValueStore {
         if(declaredProperty.getType().isChangeSummaryType()) {
             return dataObject.getChangeSummary();
         }
-        DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
         if (declaredProperty.isMany()) {
             JAXBListWrapper listWrapper = listWrappers.get(declaredProperty);
@@ -163,7 +165,7 @@ public class JAXBValueStore implements ValueStore {
             return;
         }
 
-        DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
 
         Object newValue = value;
         Object oldValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
@@ -175,8 +177,8 @@ public class JAXBValueStore implements ValueStore {
                 if (directMapping.hasConverter()) {
                     newValue = directMapping.getConverter().convertDataValueToObjectValue(newValue, session);
                 } else {
-                    DatabaseField field = mapping.getField();
-                    newValue = session.getDatasourcePlatform().getConversionManager().convertObject(newValue, descriptor.getObjectBuilder().getFieldClassification(field));
+                    CoreField field = mapping.getField();
+                    newValue = session.getDatasourcePlatform().getConversionManager().convertObject(newValue, descriptor.getObjectBuilder().getFieldClassification((XMLField) field));
                 }
             }
             mapping.setAttributeValueInObject(entity, newValue);
@@ -215,7 +217,7 @@ public class JAXBValueStore implements ValueStore {
         if(declaredProperty.getType().isChangeSummaryType()) {
             return true;
         }
-        DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         if (declaredProperty.isMany()) {
             Collection collection = (Collection) mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
             if (null == collection) {
@@ -233,7 +235,7 @@ public class JAXBValueStore implements ValueStore {
      */
     public void unsetDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
-        DatabaseMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         if (declaredProperty.isMany()) {
             ContainerMapping containerMapping = (ContainerMapping) mapping;
             ContainerPolicy containerPolicy = containerMapping.getContainerPolicy();
@@ -301,8 +303,8 @@ public class JAXBValueStore implements ValueStore {
 
         for(SDOProperty sdoProperty : (List<SDOProperty>) dataObject.getType().getProperties()) {
             if(!sdoProperty.getType().isChangeSummaryType()) {
-                DatabaseMapping mapping = getJAXBMappingForProperty(sdoProperty);
-                AttributeAccessor attributeAccessor = mapping.getAttributeAccessor();
+                CoreMapping mapping = getJAXBMappingForProperty(sdoProperty);
+                CoreAttributeAccessor attributeAccessor = mapping.getAttributeAccessor();
                 Object attributeValue = attributeAccessor.getAttributeValueFromObject(originalEntity);
                 if(mapping.isCollectionMapping()) {
                     Object containerCopy = null;
@@ -312,7 +314,7 @@ public class JAXBValueStore implements ValueStore {
                         containerCopy = sdoChangeSummary.getOriginalElements().get(list);
                     }
                     if(null == containerCopy) {
-                        ContainerPolicy containerPolicy = mapping.getContainerPolicy();
+                        CoreContainerPolicy containerPolicy = mapping.getContainerPolicy();
                         containerCopy = containerPolicy.containerInstance();
                         if(null != attributeValue) {
                             Object attributeValueIterator = containerPolicy.iteratorFor(attributeValue);
@@ -334,7 +336,7 @@ public class JAXBValueStore implements ValueStore {
      * Return the JAXB mapping for the SDO property.  They are matched
      * on their XML schema representation. 
      */
-    DatabaseMapping getJAXBMappingForProperty(SDOProperty sdoProperty) {
+    CoreMapping getJAXBMappingForProperty(SDOProperty sdoProperty) {
         DatabaseMapping sdoMapping = sdoProperty.getXmlMapping();
         XMLField field;
         if (sdoMapping instanceof XMLObjectReferenceMapping) {

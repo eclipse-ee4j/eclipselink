@@ -12,9 +12,9 @@
  ******************************************************************************/  
  package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
@@ -49,7 +49,7 @@ public interface UnmarshalContext {
      * @param value
      * @param mapping
      */
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, DatabaseMapping mapping);
+    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, CoreMapping mapping);
 
     /**
      * When a collection mapping is processed the UnmarshalContext is responsible for

@@ -12,10 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
@@ -31,7 +31,7 @@ public interface ContainerValue {
 
     public void setContainerInstance(Object object, Object containerInstance);
     
-    public ContainerPolicy getContainerPolicy();
+    public CoreContainerPolicy getContainerPolicy();
     
     /**
      * Marshal only one of the values from the collection. 
@@ -43,9 +43,9 @@ public interface ContainerValue {
      * @param namespaceResolver
      * @param marshalContext
      */
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 
-    public DatabaseMapping getMapping();    
+    public CoreMapping getMapping();    
 
     /**
      * Return true if the original container on the object should be used if 

@@ -15,9 +15,10 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.List;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -51,7 +52,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         return getContainerPolicy().containerInstance();
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlCollectionReferenceMapping.getContainerPolicy();
     }
 
@@ -69,7 +70,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
     }
 
     @Override
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlCollectionReferenceMapping.isReadOnly()) {
             return false;
         }
@@ -78,7 +79,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         if (null == collection) {
             return false;
         }
-        ContainerPolicy cp = getContainerPolicy();
+        CoreContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
@@ -104,7 +105,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
     }
 
     @Override
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {
@@ -150,15 +151,15 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         }        
 
         @Override
-        public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+        public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
             return marshalSingleValue(xPathFragment, marshalRecord, null, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
 
         @Override
-        public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
+        public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, (AbstractSession) session);
             if (fieldValue == null) {
                 if(null != value) {
                     XMLField f2 = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);

@@ -26,6 +26,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 
+import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -54,7 +55,7 @@ import org.eclipse.persistence.sessions.remote.*;
  * When this customized inheritance model is used an only-instances and with-all-subclasses
  * filter expression may be required for concrete and branch querying.
  */
-public class InheritancePolicy implements Serializable, Cloneable {
+public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, AbstractSession, ClassDescriptor, DatabaseField> implements Serializable, Cloneable {
     protected Class parentClass;
     protected String parentClassName;
     protected ClassDescriptor parentDescriptor;
@@ -335,6 +336,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
+    @Override
     public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         if (hasClassExtractor()) {
             return getClassExtractor().extractClassFromRow(rowFromDatabase, session);
@@ -506,6 +508,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * subclasses.
      * Required for bug 3019934.
      */
+    @Override
     public List<ClassDescriptor> getAllChildDescriptors() {
         // Guess the number of child descriptors...
         List<ClassDescriptor> allChildDescriptors = new ArrayList(this.getAllChildClassIndicators().size());
@@ -681,6 +684,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Returns field that the class type indicator is store when using inheritance.
      */
+    @Override
     public DatabaseField getClassIndicatorField() {
         return classIndicatorField;
     }
@@ -702,6 +706,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Return the association of indicators and classes using specified ConversionManager
      */
+    @Override
     public Map getClassIndicatorMapping() {
         if (classIndicatorMapping == null) {
             classIndicatorMapping = new HashMap(10);
@@ -755,6 +760,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Returns the descriptor which the policy belongs to.
      */
+    @Override
     public ClassDescriptor getDescriptor() {
         return descriptor;
     }
@@ -1565,6 +1571,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * To set the class indicator field.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
+    @Override
     public void setClassIndicatorField(DatabaseField classIndicatorField) {
         this.classIndicatorField = classIndicatorField;
     }
@@ -1587,6 +1594,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Set the association of indicators and classes.
      * This may be desired to be used by clients in strange inheritance models.
      */
+    @Override
     public void setClassIndicatorMapping(Map classIndicatorMapping) {
         this.classIndicatorMapping = classIndicatorMapping;
     }
@@ -1603,6 +1611,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * INTERNAL:
      * Set the descriptor.
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }

@@ -16,9 +16,10 @@ import javax.xml.namespace.QName;
 
 import org.xml.sax.Attributes;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -151,7 +152,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         xmlCollectionReferenceMapping.setAttributeValueInObject(object, containerInstance);
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlCollectionReferenceMapping.getContainerPolicy();
     }
 
@@ -161,11 +162,11 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * (in the XMLCollectionReferenceMapping's source-target key field association list)
      * are retrieved and written out. 
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if(this.xmlCollectionReferenceMapping.isReadOnly()) {
             return false;
         }
-        ContainerPolicy cp = xmlCollectionReferenceMapping.getContainerPolicy();
+        CoreContainerPolicy cp = xmlCollectionReferenceMapping.getContainerPolicy();
         Object collection = xmlCollectionReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (collection == null) {
             return false;
@@ -186,7 +187,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             QName schemaType;
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
-                Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, session);
+                Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, (AbstractSession) session);
                 if (fieldValue == null) {
                     if(null != objectValue) {
                         XMLField fkField = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
@@ -241,7 +242,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlCollectionReferenceMapping.usesSingleNode()) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             if (xPathFragment.isAttribute()) {                
@@ -253,7 +254,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             }
         } else {
             QName schemaType;
-            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
+            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, (AbstractSession) session);
             if (fieldValue == null) {
                 return false;
             }

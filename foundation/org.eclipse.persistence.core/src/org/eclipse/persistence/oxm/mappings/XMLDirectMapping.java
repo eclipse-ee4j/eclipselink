@@ -16,12 +16,15 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -29,6 +32,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p>XML Direct Mappings map a Java attribute directly to XML attribute or text node.
@@ -183,7 +187,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, XMLNillableMapping {
+public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, XMLNillableMapping, XMLConverterMapping<Session> {
    
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;
@@ -281,11 +285,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
         // Allow for user defined conversion to the object value.       
         if (converter != null) {
-            if (converter instanceof XMLConverter) {
-                attributeValue = ((XMLConverter)converter).convertDataValueToObjectValue(attributeValue, session, record.getUnmarshaller());
-            } else {
-                attributeValue = converter.convertDataValueToObjectValue(attributeValue, session);
-            }
+            attributeValue = convertDataValueToObjectValue(attributeValue, session, record.getUnmarshaller());
         } else {
             // PERF: Avoid conversion check when not required.
             if ((attributeValue == null) || (attributeValue.getClass() != this.attributeObjectClassification)) {
@@ -319,13 +319,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
 
         // Allow for user defined conversion to the object value.       
-        if (converter != null) {
-            if (converter instanceof XMLConverter) {
-                fieldValue = ((XMLConverter)converter).convertObjectValueToDataValue(fieldValue, session, record.getMarshaller());
-            } else {
-                fieldValue = converter.convertObjectValueToDataValue(fieldValue, session);
-            }
-        }
+        fieldValue = convertObjectValueToDataValue(fieldValue, session, record.getMarshaller());
    
         if (fieldValue != null) {
         	 Class fieldClassification = getFieldClassification(field);
@@ -497,6 +491,36 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      */
     public void setNullValueMarshalled(boolean value) {
         this.isNullValueMarshalled = value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                return converter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+            } else {
+                return converter.convertDataValueToObjectValue(fieldValue, session);
+            }
+        }
+        return fieldValue;
     }
 
 }

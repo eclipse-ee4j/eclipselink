@@ -12,10 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
@@ -25,9 +23,9 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 public class ChoiceUnmarshalContext implements UnmarshalContext {
 
     private UnmarshalContext unmarshalContext;
-    private Converter converter;
+    private XMLConverterMapping converter;
 
-    public ChoiceUnmarshalContext(UnmarshalContext unmarshalContext, Converter converter) {
+    public ChoiceUnmarshalContext(UnmarshalContext unmarshalContext, XMLConverterMapping converter) {
         this.unmarshalContext = unmarshalContext;
         this.converter = converter;
     }
@@ -52,7 +50,7 @@ public class ChoiceUnmarshalContext implements UnmarshalContext {
         unmarshalContext.reference(reference);
     }
 
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, DatabaseMapping mapping) {
+    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, CoreMapping mapping) {
         unmarshalContext.setAttributeValue(unmarshalRecord, getValue(value, unmarshalRecord), mapping);
     }
 
@@ -65,10 +63,7 @@ public class ChoiceUnmarshalContext implements UnmarshalContext {
     }
 
     private Object getValue(Object value, UnmarshalRecord unmarshalRecord) {
-        if(converter instanceof XMLConverter) {
-            return ((XMLConverter) converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller()); 
-        }
-        return converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
+        return converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller()); 
     }
 
 }

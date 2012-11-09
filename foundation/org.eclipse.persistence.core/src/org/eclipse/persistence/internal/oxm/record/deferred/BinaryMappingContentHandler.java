@@ -13,11 +13,11 @@
 package org.eclipse.persistence.internal.oxm.record.deferred;
 
 import org.xml.sax.SAXException;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLBinaryAttachmentHandler;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLInlineBinaryHandler;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -31,9 +31,9 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * </ul>
  */
 public class BinaryMappingContentHandler extends DeferredContentHandler {
-    private DatabaseMapping mapping;
+    private CoreMapping mapping;
     private NodeValue nodeValue;
-    private Converter converter;
+    private XMLConverterMapping converter;
     private boolean isCollection;
     private UnmarshalRecord workingUnmarshalRecord;
     private boolean finished;          
@@ -41,7 +41,7 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
-        this.converter = mapping.getConverter();
+        this.converter = mapping;
         this.nodeValue = nodeValue;
         this.isCollection = false;
         this.finished = false;
@@ -50,7 +50,7 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
     public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataCollectionMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
-        this.converter = mapping.getValueConverter();
+        this.converter = mapping;
         this.nodeValue = nodeValue;
         this.isCollection = true;
     }

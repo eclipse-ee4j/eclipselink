@@ -41,6 +41,7 @@ import java.io.*;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -64,7 +65,7 @@ import org.eclipse.persistence.sessions.server.*;
  *
  * @see DatabaseLogin
  */
-public class Project implements Serializable, Cloneable {
+public class Project extends CoreProject implements Serializable, Cloneable {
     protected String name;
     protected Login datasourceLogin;
     protected Map<Class, ClassDescriptor> descriptors;

@@ -36,7 +36,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLConversionException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.TimeZoneHolder;
@@ -153,9 +153,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
         if (sourceObject == null) {//Let the parent handle default null values
             return super.convertObject(sourceObject, javaClass);
-        } else if (javaClass == null || javaClass == ClassConstants.OBJECT || sourceObject.getClass() == javaClass) {
+        } else if (javaClass == null || javaClass == CoreClassConstants.OBJECT || sourceObject.getClass() == javaClass) {
             return sourceObject;
-        } else if (javaClass == ClassConstants.STRING) {
+        } else if (javaClass == CoreClassConstants.STRING) {
            if(sourceObject instanceof List){
         	   return convertListToString(sourceObject);
            }else{           
@@ -163,29 +163,29 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
            }
         } else if ((javaClass == XMLConstants.QNAME_CLASS) && (sourceObject != null)) {
             return convertObjectToQName(sourceObject);
-        } else if ((javaClass == ClassConstants.List_Class) && (sourceObject instanceof String)) {
+        } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
             return convertStringToList(sourceObject);
-        } else if ((javaClass == ClassConstants.CALENDAR)) {
+        } else if ((javaClass == CoreClassConstants.CALENDAR)) {
             return convertObjectToCalendar(sourceObject);
-        } else if ((javaClass == ClassConstants.UTILDATE)) {
+        } else if ((javaClass == CoreClassConstants.UTILDATE)) {
             return convertObjectToUtilDate(sourceObject, XMLConstants.DATE_TIME_QNAME);
-        } else if ((javaClass == ClassConstants.SQLDATE)) {
+        } else if ((javaClass == CoreClassConstants.SQLDATE)) {
             return convertObjectToSQLDate(sourceObject, XMLConstants.DATE_QNAME);
-        } else if ((javaClass == ClassConstants.TIME)) {
+        } else if ((javaClass == CoreClassConstants.TIME)) {
             return convertObjectToSQLTime(sourceObject, XMLConstants.TIME_QNAME);
-        } else if ((javaClass == ClassConstants.TIMESTAMP)) {
+        } else if ((javaClass == CoreClassConstants.TIMESTAMP)) {
             return convertObjectToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
         } else if ((javaClass == java.net.URI.class)) {
             return convertObjectToURI(sourceObject);
-        } else if ((javaClass == ClassConstants.XML_GREGORIAN_CALENDAR)) {
+        } else if ((javaClass == CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
             return convertObjectToXMLGregorianCalendar(sourceObject);
-        } else if ((javaClass == ClassConstants.DURATION)) {
+        } else if ((javaClass == CoreClassConstants.DURATION)) {
             return convertObjectToDuration(sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
             } catch (ConversionException ex) {
-                if (sourceObject.getClass() == ClassConstants.STRING) {
+                if (sourceObject.getClass() == CoreClassConstants.STRING) {
                     return super.convertObject(((String) sourceObject).trim(), javaClass);
                 }
                 throw ex;
@@ -209,25 +209,25 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
         if (sourceObject == null) {
             return super.convertObject(sourceObject, javaClass);
-        } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT)) {
+        } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == CoreClassConstants.OBJECT)) {
             return sourceObject;
-        } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
+        } else if ((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR)) {
             return convertObjectToCalendar(sourceObject, schemaTypeQName);
-        } else if (javaClass == ClassConstants.ABYTE) {
+        } else if (javaClass == CoreClassConstants.ABYTE) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.HEX_BINARY)) {
                 return super.convertObjectToByteObjectArray(sourceObject);
             } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
                 return convertSchemaBase64ToByteObjectArray(sourceObject);
             }
-        } else if (javaClass == ClassConstants.APBYTE) {
+        } else if (javaClass == CoreClassConstants.APBYTE) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.HEX_BINARY)) {
                 return super.convertObjectToByteArray(sourceObject);
             } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
                 return convertSchemaBase64ToByteArray(sourceObject);
             }
-        } else if ((javaClass == ClassConstants.List_Class) && (sourceObject instanceof String)) {
+        } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
             return convertStringToList(sourceObject);
-        } else if ((javaClass == ClassConstants.STRING) && (sourceObject instanceof List)) {
+        } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
             return convertListToString(sourceObject);
         } else if (sourceObject instanceof byte[]) {
             if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
@@ -239,29 +239,29 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
             }
             return buildHexStringFromObjectBytes((Byte[]) sourceObject);
-        } else if ((javaClass == ClassConstants.UTILDATE)) {
+        } else if ((javaClass == CoreClassConstants.UTILDATE)) {
             return convertObjectToUtilDate(sourceObject, schemaTypeQName);
-        } else if (javaClass == ClassConstants.SQLDATE) {
+        } else if (javaClass == CoreClassConstants.SQLDATE) {
             return convertObjectToSQLDate(sourceObject, schemaTypeQName);
-        } else if (javaClass == ClassConstants.TIME) {
+        } else if (javaClass == CoreClassConstants.TIME) {
             return convertObjectToSQLTime(sourceObject, schemaTypeQName);
-        } else if (javaClass == ClassConstants.TIMESTAMP) {
+        } else if (javaClass ==  CoreClassConstants.TIMESTAMP) {
             return convertObjectToTimestamp(sourceObject, schemaTypeQName);
         } else if ((javaClass == XMLConstants.QNAME_CLASS) && (sourceObject != null)) {
             return convertObjectToQName(sourceObject);
-        } else if (javaClass == ClassConstants.STRING) {
+        } else if (javaClass == CoreClassConstants.STRING) {
             return convertObjectToString(sourceObject, schemaTypeQName);
         } else if ((javaClass == java.net.URI.class)) {
             return convertObjectToURI(sourceObject);
-        } else if ((javaClass == ClassConstants.XML_GREGORIAN_CALENDAR)) {
+        } else if ((javaClass == CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
             return convertObjectToXMLGregorianCalendar(sourceObject, schemaTypeQName);
-        } else if ((javaClass == ClassConstants.DURATION)) {
+        } else if ((javaClass == CoreClassConstants.DURATION)) {
             return convertObjectToDuration(sourceObject);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
             } catch (ConversionException ex) {
-                if (sourceObject.getClass() == ClassConstants.STRING) {
+                if (sourceObject.getClass() == CoreClassConstants.STRING) {
                     return super.convertObject(((String) sourceObject).trim(), javaClass);
                 }
                 throw ex;
@@ -285,7 +285,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof String) {
             return convertStringToXMLGregorianCalendar((String) sourceObject, schemaTypeQName);
         }
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.XML_GREGORIAN_CALENDAR);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     }
 
     /**
@@ -301,7 +301,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof String) {
             return convertStringToXMLGregorianCalendar((String) sourceObject);
         }
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.XML_GREGORIAN_CALENDAR);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.XML_GREGORIAN_CALENDAR);
     }
 
     /**
@@ -316,7 +316,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof String) {
             return convertStringToDuration((String) sourceObject);
         }
-        throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.DURATION);
+        throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.DURATION);
     }
 
     /**
@@ -656,7 +656,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
            try {
                return new BigDecimal(sourceString);
            } catch (NumberFormatException exception) {
-               throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGDECIMAL, exception);
+               throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.BIGDECIMAL, exception);
            }
        }
        return super.convertObjectToBigDecimal(sourceObject);
@@ -1875,28 +1875,28 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         HashMap XMLTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
-        XMLTypes.put(XMLConstants.BASE_64_BINARY_QNAME, ClassConstants.APBYTE);
-        XMLTypes.put(XMLConstants.BOOLEAN_QNAME, ClassConstants.PBOOLEAN);
-        XMLTypes.put(XMLConstants.BYTE_QNAME, ClassConstants.PBYTE);
-        XMLTypes.put(XMLConstants.DATE_QNAME, ClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.DATE_TIME_QNAME, ClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.DECIMAL_QNAME, ClassConstants.BIGDECIMAL);
-        XMLTypes.put(XMLConstants.DOUBLE_QNAME, ClassConstants.PDOUBLE);
-        XMLTypes.put(XMLConstants.FLOAT_QNAME, ClassConstants.PFLOAT);
-        XMLTypes.put(XMLConstants.HEX_BINARY_QNAME, ClassConstants.APBYTE);
-        XMLTypes.put(XMLConstants.INT_QNAME, ClassConstants.PINT);
-        XMLTypes.put(XMLConstants.INTEGER_QNAME, ClassConstants.BIGINTEGER);
-        XMLTypes.put(XMLConstants.LONG_QNAME, ClassConstants.PLONG);
+        XMLTypes.put(XMLConstants.BASE_64_BINARY_QNAME, CoreClassConstants.APBYTE);
+        XMLTypes.put(XMLConstants.BOOLEAN_QNAME, CoreClassConstants.PBOOLEAN);
+        XMLTypes.put(XMLConstants.BYTE_QNAME, CoreClassConstants.PBYTE);
+        XMLTypes.put(XMLConstants.DATE_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(XMLConstants.DATE_TIME_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(XMLConstants.DECIMAL_QNAME, CoreClassConstants.BIGDECIMAL);
+        XMLTypes.put(XMLConstants.DOUBLE_QNAME, CoreClassConstants.PDOUBLE);
+        XMLTypes.put(XMLConstants.FLOAT_QNAME, CoreClassConstants.PFLOAT);
+        XMLTypes.put(XMLConstants.HEX_BINARY_QNAME, CoreClassConstants.APBYTE);
+        XMLTypes.put(XMLConstants.INT_QNAME, CoreClassConstants.PINT);
+        XMLTypes.put(XMLConstants.INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
+        XMLTypes.put(XMLConstants.LONG_QNAME, CoreClassConstants.PLONG);
         XMLTypes.put(XMLConstants.QNAME_QNAME, XMLConstants.QNAME_CLASS);
-        XMLTypes.put(XMLConstants.SHORT_QNAME, ClassConstants.PSHORT);
-        XMLTypes.put(XMLConstants.STRING_QNAME, ClassConstants.STRING);
-        XMLTypes.put(XMLConstants.TIME_QNAME, ClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.UNSIGNED_BYTE_QNAME, ClassConstants.PSHORT);
-        XMLTypes.put(XMLConstants.UNSIGNED_INT_QNAME, ClassConstants.PLONG);
-        XMLTypes.put(XMLConstants.UNSIGNED_SHORT_QNAME, ClassConstants.PINT);
-        XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, ClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NAME_QNAME, ClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NCNAME_QNAME, ClassConstants.STRING);
+        XMLTypes.put(XMLConstants.SHORT_QNAME, CoreClassConstants.PSHORT);
+        XMLTypes.put(XMLConstants.STRING_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(XMLConstants.TIME_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(XMLConstants.UNSIGNED_BYTE_QNAME, CoreClassConstants.PSHORT);
+        XMLTypes.put(XMLConstants.UNSIGNED_INT_QNAME, CoreClassConstants.PLONG);
+        XMLTypes.put(XMLConstants.UNSIGNED_SHORT_QNAME, CoreClassConstants.PINT);
+        XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(XMLConstants.NAME_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(XMLConstants.NCNAME_QNAME, CoreClassConstants.STRING);
 
         return XMLTypes;
     }
@@ -1908,38 +1908,38 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         HashMap javaTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
-        javaTypes.put(ClassConstants.APBYTE, XMLConstants.HEX_BINARY_QNAME);
-        javaTypes.put(ClassConstants.BIGDECIMAL, XMLConstants.DECIMAL_QNAME);
-        javaTypes.put(ClassConstants.BIGINTEGER, XMLConstants.INTEGER_QNAME);
-        javaTypes.put(ClassConstants.PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(ClassConstants.PBYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(ClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(ClassConstants.PDOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(ClassConstants.PFLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(ClassConstants.PINT, XMLConstants.INT_QNAME);
-        javaTypes.put(ClassConstants.PLONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(ClassConstants.PSHORT, XMLConstants.SHORT_QNAME);
+        javaTypes.put(CoreClassConstants.APBYTE, XMLConstants.HEX_BINARY_QNAME);
+        javaTypes.put(CoreClassConstants.BIGDECIMAL, XMLConstants.DECIMAL_QNAME);
+        javaTypes.put(CoreClassConstants.BIGINTEGER, XMLConstants.INTEGER_QNAME);
+        javaTypes.put(CoreClassConstants.PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
+        javaTypes.put(CoreClassConstants.PBYTE, XMLConstants.BYTE_QNAME);
+        javaTypes.put(CoreClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.PDOUBLE, XMLConstants.DOUBLE_QNAME);
+        javaTypes.put(CoreClassConstants.PFLOAT, XMLConstants.FLOAT_QNAME);
+        javaTypes.put(CoreClassConstants.PINT, XMLConstants.INT_QNAME);
+        javaTypes.put(CoreClassConstants.PLONG, XMLConstants.LONG_QNAME);
+        javaTypes.put(CoreClassConstants.PSHORT, XMLConstants.SHORT_QNAME);
         javaTypes.put(XMLConstants.QNAME_CLASS, XMLConstants.QNAME_QNAME);
-        javaTypes.put(ClassConstants.STRING, XMLConstants.STRING_QNAME);
+        javaTypes.put(CoreClassConstants.STRING, XMLConstants.STRING_QNAME);
 
         //other pairs
-        javaTypes.put(ClassConstants.ABYTE, XMLConstants.HEX_BINARY_QNAME);
-        javaTypes.put(ClassConstants.BOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(ClassConstants.BYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(ClassConstants.GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(ClassConstants.DOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(ClassConstants.FLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(ClassConstants.INTEGER, XMLConstants.INT_QNAME);
-        javaTypes.put(ClassConstants.LONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(ClassConstants.SHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(ClassConstants.UTILDATE, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.ABYTE, XMLConstants.HEX_BINARY_QNAME);
+        javaTypes.put(CoreClassConstants.BOOLEAN, XMLConstants.BOOLEAN_QNAME);
+        javaTypes.put(CoreClassConstants.BYTE, XMLConstants.BYTE_QNAME);
+        javaTypes.put(CoreClassConstants.GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.DOUBLE, XMLConstants.DOUBLE_QNAME);
+        javaTypes.put(CoreClassConstants.FLOAT, XMLConstants.FLOAT_QNAME);
+        javaTypes.put(CoreClassConstants.INTEGER, XMLConstants.INT_QNAME);
+        javaTypes.put(CoreClassConstants.LONG, XMLConstants.LONG_QNAME);
+        javaTypes.put(CoreClassConstants.SHORT, XMLConstants.SHORT_QNAME);
+        javaTypes.put(CoreClassConstants.UTILDATE, XMLConstants.DATE_TIME_QNAME);
 
-        javaTypes.put(ClassConstants.CHAR, XMLConstants.UNSIGNED_INT_QNAME);
-        javaTypes.put(ClassConstants.PCHAR, XMLConstants.UNSIGNED_INT_QNAME);
-        javaTypes.put(ClassConstants.DURATION, XMLConstants.DURATION_QNAME);
+        javaTypes.put(CoreClassConstants.CHAR, XMLConstants.UNSIGNED_INT_QNAME);
+        javaTypes.put(CoreClassConstants.PCHAR, XMLConstants.UNSIGNED_INT_QNAME);
+        javaTypes.put(CoreClassConstants.DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(XMLConstants.UUID, XMLConstants.STRING_QNAME);
         javaTypes.put(XMLConstants.URI, XMLConstants.STRING_QNAME);
-        javaTypes.put(ClassConstants.URL_Class, XMLConstants.ANY_URI_QNAME);
+        javaTypes.put(CoreClassConstants.URL_Class, XMLConstants.ANY_URI_QNAME);
 
         return javaTypes;
     }

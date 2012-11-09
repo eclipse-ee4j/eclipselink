@@ -18,6 +18,7 @@ import java.security.PrivilegedActionException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -63,7 +64,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @author James Sutherland
  * @since TOPLink/Java 1.2
  */
-public abstract class ContainerPolicy implements Cloneable, Serializable {
+public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSession>, Cloneable, Serializable {
     private static final long serialVersionUID = 6971791021041582975L;
 
     /**
@@ -380,6 +381,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Remove all the elements from the specified container.
      * Valid only for certain subclasses.
      */
+    @Override
     public void clear(Object container) {
         throw QueryException.methodNotValid(this, "clear(Object container)");
     }
@@ -683,6 +685,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This is used to check contains in a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
+    @Override
     public boolean contains(Object element, Object container, AbstractSession session) {
         if (hasElementDescriptor() && getElementDescriptor().hasWrapperPolicy()) {
             // The wrapper for the object must be removed.
@@ -943,10 +946,12 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Return whether the container is empty.
      */
+    @Override
     public boolean isEmpty(Object container) {
         return sizeFor(container) == 0;
     }
 
+    @Override
     public boolean isListPolicy() {
         return false;
     }
@@ -1175,6 +1180,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
      * @see MapContainerPolicy.unwrapIteratorResult(Object object)
      */
+    @Override
     public Object nextEntry(Object iterator){
         return next(iterator);
     }
@@ -1421,6 +1427,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * This is used to remove from a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
+    @Override
     public boolean removeFrom(Object element, Object container, AbstractSession session) {
         return removeFrom(null, element, container, session);
     }
@@ -1521,6 +1528,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * INTERNAL:
      * Return the size of container.
      */
+    @Override
     public int sizeFor(Object container) {
         throw QueryException.methodNotValid(this, "sizeFor(Object container)");
     }
@@ -1636,6 +1644,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * Added for bug 2766379, must implement a version of vectorFor that
      * handles wrapped objects.
      */
+    @Override
     public Vector vectorFor(Object container, AbstractSession session) {
         Vector result = new Vector(sizeFor(container));
 
