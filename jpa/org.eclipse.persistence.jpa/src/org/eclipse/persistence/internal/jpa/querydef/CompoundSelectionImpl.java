@@ -39,6 +39,8 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 public class CompoundSelectionImpl extends SelectionImpl implements CompoundSelection{
     
     protected ArrayList<Selection<?>> subSelections;
+    //bug 366386 - track items using duplicate alias names
+    protected ArrayList<String> duplicateAliasNames;
 
     public CompoundSelectionImpl(Class javaType, Selection[] subSelections) {
         this(javaType, subSelections, false);
@@ -47,10 +49,23 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     public CompoundSelectionImpl(Class javaType, Selection[] subSelections, boolean validate) {
         super(javaType, null);
         this.subSelections = new ArrayList();
-        for (Selection sel : subSelections){
+        //used to validate that an alias is only used once
+        java.util.Map tempMap = new java.util.TreeMap();
+        for (Selection sel : subSelections) {
             if (validate) {
                 if (((SelectionImpl)sel).isCompoundSelection() && !((SelectionImpl)sel).isConstructor()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_illegal_tuple_or_array_value", new Object[] { sel }));
+                }
+            }
+            String alias = sel.getAlias();
+            if (alias != null) {
+                if (tempMap.containsKey(alias)) {
+                    if (duplicateAliasNames == null) {
+                        duplicateAliasNames=new ArrayList<String>();
+                    }
+                    duplicateAliasNames.add(alias);
+                } else {
+                    tempMap.put(alias, sel);
                 }
             }
             this.subSelections.add(sel);
@@ -74,7 +89,15 @@ public class CompoundSelectionImpl extends SelectionImpl implements CompoundSele
     public List<Selection<?>> getCompoundSelectionItems(){
         return (List<Selection<?>>)this.subSelections;
     }
-    
+
+    /**
+     * Returns the collection used to store any duplicate alias names found within this CompoundSelection Item
+     * @return list of alias Strings.  
+     */
+    protected List<String> getDuplicateAliasNames() {
+        return this.duplicateAliasNames;
+    }
+
     public void findRootAndParameters(CommonAbstractCriteriaImpl criteriaQuery){
         for (Selection selection: getCompoundSelectionItems()){
             ((InternalSelection)selection).findRootAndParameters(criteriaQuery);

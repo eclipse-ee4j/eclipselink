@@ -205,6 +205,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderArrayValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testCriteriaBuilderConstructValidation"));
         suite.addTest(new JUnitCriteriaSimpleTestSuite("testLiteralValidation"));
+        suite.addTest(new JUnitCriteriaSimpleTestSuite("testCompoundSelectionAliasValidation"));
 
         return suite;
     }
@@ -3095,6 +3096,29 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
             Object result = qb.literal(null);
             this.fail("IllegalArgumentException expected calling literal(null). Result returned:"+result);
         } catch (IllegalArgumentException iae) {}
+        closeEntityManager(em);
+    }
+
+    //366386 - IllegalArgumentException for duplicated aliases 
+    public void testCompoundSelectionAliasValidation() {
+        EntityManager em = createEntityManager();
+
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
+        Root<Employee> emp = criteria.from(Employee.class);  
+        Selection[] s = {emp.get("lastName").alias("duplicateAlias"), emp.get("firstName").alias("duplicateAlias")};
+
+        try {
+            criteria.multiselect(s);
+            this.fail("IllegalArgumentException expected using multiselect on items using duplicate aliases");
+        } catch (IllegalArgumentException iae) {}
+
+        Selection tupleItem = qb.tuple(s);
+        try {
+            criteria.select(tupleItem);
+            this.fail("IllegalArgumentException expected on select using a Tuple with items using duplicate aliases");
+        } catch (IllegalArgumentException iae) {}
+
         closeEntityManager(em);
     }
 }

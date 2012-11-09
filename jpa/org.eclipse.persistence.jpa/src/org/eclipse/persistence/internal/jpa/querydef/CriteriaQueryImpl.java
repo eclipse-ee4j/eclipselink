@@ -80,6 +80,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         findRootAndParameters(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
+            //bug 366386: validate that aliases are not reused
+            if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused", 
+                        new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
+            }
             if (selection.getJavaType().equals(Tuple.class)) {
                 this.queryResult = ResultType.TUPLE;
                 this.queryType = Tuple.class;
@@ -176,6 +181,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         } else { // unknown
             this.selection = new CompoundSelectionImpl(this.queryType, selections);
+        }
+        //bug 366386: validate that aliases are not reused
+        if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_criteriaapi_alias_reused", 
+                    new Object[] { ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() }));
         }
         return this;
     }
