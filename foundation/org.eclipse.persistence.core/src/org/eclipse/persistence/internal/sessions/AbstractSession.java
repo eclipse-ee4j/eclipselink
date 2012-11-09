@@ -2254,7 +2254,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             return descriptor;
         }
         
-        descriptor = getDescriptors().get(theClass);
+        if (this.descriptors != null) {
+            descriptor = this.descriptors.get(theClass);
+        } else {
+            descriptor = this.project.getDescriptors().get(theClass);
+        }
 
         if (descriptor == null) {
             if (hasBroker()) {
@@ -2335,11 +2339,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all registered descriptors.
      */
     public Map<Class, ClassDescriptor> getDescriptors() {
-        if (this.descriptors != null) {
-            return this.descriptors;
-        } else {
-            return this.project.getDescriptors();
-        }
+        return this.project.getDescriptors();
     }
 
     /**
