@@ -227,4 +227,51 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 		}
         fail("The expected JAXBException was not thrown.");
     }
+    
+    /**
+     * Tests declaration of a non-existent class via eclipselink-oxm.xml
+     * 
+     * Negative test.
+     */
+    public void testInvalidLocation() {
+        String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
+              
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(iStream));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        try {
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
+        } catch (JAXBException e) {
+            return;
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
+    
+    /**
+     * Tests declaration of a non-existent class via eclipselink-oxm.xml
+     * 
+     * Negative test.
+     */
+    public void testInvalidLocation2() {
+        String metadataFile = PATH + "eclipselink_doesnt_exist-oxm.xml";
+              
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put(CONTEXT_PATH, new StreamSource(metadataFile));
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
+
+        try {
+            JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
+        } catch (JAXBException e) {
+            return;
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        fail("The expected JAXBException was not thrown.");
+    }
 }
