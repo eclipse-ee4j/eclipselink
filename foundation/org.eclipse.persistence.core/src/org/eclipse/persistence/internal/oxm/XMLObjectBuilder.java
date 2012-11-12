@@ -40,6 +40,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -773,7 +774,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
      */
     public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField,
-        Object originalObject, Object obj, boolean wasXMLRoot, boolean addToNamespaceResolver) {
+        Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
 
@@ -791,7 +792,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
                     if (writeTypeAttribute) {
-                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, isRootElement);
                         return true;
                     }
                     return false;
@@ -840,18 +841,17 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     }
                 }
                 if (writeTypeAttribute && xmlRef != null) {
-                    writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, addToNamespaceResolver);
-
+                    writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, isRootElement);
                     return true;
                 }
             }
             return false;
         } else {
-            return addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, referenceDescriptor, xmlField, addToNamespaceResolver);
+            return addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, referenceDescriptor, xmlField, isRootElement);
         }
     }
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver) {
+    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
         if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
             xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
             return true;
@@ -868,13 +868,13 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         return false;
                     }
                     if (referenceDescriptor == null) {
-                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, isRootElement);
                         return true;
                     }
                 } else if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext() != null && xmlRef.isGlobalDefinition()) {
                     QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
                     if (!ctxQName.equals(leafType)) {
-                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, xmlRef, isRootElement);
                         return true;
                     }
                 }
@@ -910,6 +910,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     classIndicatorUri = xmlDescriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                 }
                 if(leafType == null 
+                        || isRootElement && record.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON && !record.getMarshaller().isIncludeRoot() 
                         || !(leafType.getLocalPart().equals(classIndicatorLocal))
                         || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && leafType.getNamespaceURI().length() >0))
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))
@@ -917,7 +918,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     if (inheritancePolicy.hasClassExtractor()) {
                         inheritancePolicy.addClassIndicatorFieldToRow(record);
                     } else {
-                        writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorUri, classIndicatorLocal,classIndicatorPrefix, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorUri, classIndicatorLocal,classIndicatorPrefix, isRootElement);
                     }
                     return true;
                 }
