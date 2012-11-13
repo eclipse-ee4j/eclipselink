@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Test>
+   <array>2012-10-24T15:02:03.592</array>
+   <array xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   <array>2012-10-24T15:02:03.592</array>
+   <map>
+      <entry>
+         <value>foo</value>
+      </entry>
+      <entry>
+         <key>key</key>
+         <value>bar</value>
+      </entry>
+   </map>
+   <sub-bean>
+       <array>2012-11-24T15:02:03.592</array>
+       <array xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+       <array>2012-11-24T15:02:03.592</array>
+       <map>
+          <entry>
+             <value>foo2</value>
+          </entry>
+          <entry>
+             <key>key2</key>
+             <value>bar2</value>
+          </entry>
+       </map>
+   </sub-bean>
+   <sub-bean>
+       <array>2012-12-24T15:02:03.592</array>
+       <array xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+       <array>2012-12-24T15:02:03.592</array>
+       <map>
+          <entry>
+             <value>foo3</value>
+          </entry>
+          <entry>
+             <key>key3</key>
+             <value>bar3</value>
+          </entry>
+       </map>
+   </sub-bean>
+</Test>
