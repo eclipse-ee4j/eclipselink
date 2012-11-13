@@ -1,0 +1,6 @@
+blah({
+   "simple" : {
+      "id" : "1111",
+      "name" : "theName"
+   }
+});
