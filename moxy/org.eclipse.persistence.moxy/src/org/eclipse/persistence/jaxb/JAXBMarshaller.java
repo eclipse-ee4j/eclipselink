@@ -43,6 +43,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
+import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -488,7 +489,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return createXMLRootFromJAXBElement((JAXBElement) obj);
         } else if(obj != null && obj.getClass().isEnum()) {
         	return wrapEnumeration(obj, obj.getClass());
-        } 
+        } else if (obj instanceof JSONWithPadding){
+        	Object nestedObject = ((JSONWithPadding)obj).getObject();
+        	if(nestedObject != null){
+	        	Object newNestedObject = modifyObjectIfNeeded(nestedObject);
+	        	if(nestedObject != newNestedObject){
+	        		return new JSONWithPadding(newNestedObject,((JSONWithPadding)obj).getCallbackName());
+	        	}
+        	}             
+        }
     	return obj;
     }
 

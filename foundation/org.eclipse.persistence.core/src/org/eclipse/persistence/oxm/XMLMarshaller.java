@@ -523,6 +523,9 @@ public class XMLMarshaller implements Cloneable {
     }
     
     private void marshal(Object object, OutputStream outputStream, AbstractSession session, XMLDescriptor xmlDescriptor) throws XMLMarshalException {
+    	 if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){            	
+         	object = ((JSONWithPadding)object).getObject();            	
+         }
         if ((object == null) || (outputStream == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -631,6 +634,15 @@ public class XMLMarshaller implements Cloneable {
         boolean isXMLRoot = false;
         String version = DEFAULT_XML_VERSION;
         String encoding = getEncoding();
+        String callbackName = null;
+        if(object instanceof JSONWithPadding){
+		    callbackName = ((JSONWithPadding)object).getCallbackName();
+        	object = ((JSONWithPadding)object).getObject();
+        	if(object == null){
+        		throw XMLMarshalException.nullArgumentException();
+        	}
+        }
+        
         if (object instanceof XMLRoot) {
             isXMLRoot = true;
             XMLRoot xroot = (XMLRoot) object;
@@ -638,20 +650,19 @@ public class XMLMarshaller implements Cloneable {
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
 
+        
         MarshalRecord writerRecord;
         writer = new BufferedWriter(writer);
         if (isFormattedOutput()) {
-            if(MediaType.APPLICATION_JSON == mediaType) {
-                writerRecord = new JSONFormattedWriterRecord();
-                ((JSONFormattedWriterRecord) writerRecord).setWriter(writer);
+            if(MediaType.APPLICATION_JSON == mediaType) {                          
+                writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
             } else {
                 writerRecord = new FormattedWriterRecord();
                 ((FormattedWriterRecord) writerRecord).setWriter(writer);
             }
         } else {
             if(MediaType.APPLICATION_JSON == mediaType) {
-                writerRecord = new JSONWriterRecord();
-                ((JSONWriterRecord) writerRecord).setWriter(writer);
+                writerRecord = new JSONWriterRecord(writer, callbackName);                
             } else {
                 writerRecord = new WriterRecord();
                 ((WriterRecord) writerRecord).setWriter(writer);
@@ -764,6 +775,10 @@ public class XMLMarshaller implements Cloneable {
      * @throws XMLMarshalException if an error occurred during marshalling
      */
     public void marshal(Object object, ContentHandler contentHandler, LexicalHandler lexicalHandler) throws XMLMarshalException {
+        if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
+        	object = ((JSONWithPadding)object).getObject();
+        }
+        
         if ((object == null) || (contentHandler == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -838,12 +853,15 @@ public class XMLMarshaller implements Cloneable {
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     public void marshal(Object object, Node node) throws XMLMarshalException {
-        if ((object == null) || (node == null)) {
+    	if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
+        	object = ((JSONWithPadding)object).getObject();
+        }
+    	if ((object == null) || (node == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        try {
+        try {           
             boolean isXMLRoot = (object instanceof XMLRoot);
-                                   
+                 
             AbstractSession session = null;
             XMLDescriptor xmlDescriptor = null;
             if(isXMLRoot){
@@ -1026,7 +1044,14 @@ public class XMLMarshaller implements Cloneable {
      * @param object the object to marshal
      * @param marshalRecord the marshalRecord to marshal the object to
      */
-    public void marshal(Object object, MarshalRecord marshalRecord) {
+    public void marshal(Object object, MarshalRecord marshalRecord) {        
+        if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
+        	object = ((JSONWithPadding)object).getObject();
+        }
+        if ((object == null) || (marshalRecord == null)) {
+            throw XMLMarshalException.nullArgumentException();
+        }
+        
         boolean isXMLRoot = (object instanceof XMLRoot);
         
         AbstractSession session = null;

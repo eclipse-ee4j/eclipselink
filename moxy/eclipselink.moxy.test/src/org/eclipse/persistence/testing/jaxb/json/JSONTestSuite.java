@@ -34,6 +34,7 @@ import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootTrueWi
 import org.eclipse.persistence.testing.jaxb.json.norootelement.InheritanceNoRootTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
+import org.eclipse.persistence.testing.jaxb.json.padding.JSONWithPaddingTestCases;
 import org.eclipse.persistence.testing.jaxb.json.rootlevellist.RootLevelListTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
@@ -71,6 +72,8 @@ public class JSONTestSuite extends TestSuite {
           suite.addTest(RootLevelListTestCases.suite());
           suite.addTestSuite(EmptyNullMarshalUnmarshalTestCases.class);
           suite.addTestSuite(InheritanceNoRootTestCases.class);
+          suite.addTest(JSONWithPaddingTestCases.suite());
+
           return suite;
 	}
 }
