@@ -214,7 +214,8 @@
     <target name="build-all-but-ext" depends="build, build-util, build-util-test, gen-wls-shared-lib"/>
 
     <!-- Compiles Oracle components, tests and extensions (excluding utilities). -->
-    <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test, build-oracle-nosql-extension-test"/>
+    <target name="build-oracle"      depends="build-oracle-test"/> <!-- added for backward compatibility -->
+    <target name="build-oracle-test" depends="build-oracle-extension-test, build-oracle-nosql-extension-test"/>
 
     <!-- Builds and packages all jars,javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
