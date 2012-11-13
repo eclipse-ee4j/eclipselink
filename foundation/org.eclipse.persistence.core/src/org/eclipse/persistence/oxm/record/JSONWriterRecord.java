@@ -76,12 +76,27 @@ public class JSONWriterRecord extends MarshalRecord {
     protected CharsetEncoder encoder;
     protected String space;
     protected CharacterEscapeHandler characterEscapeHandler;
+    protected String callbackName;
 
     public JSONWriterRecord(){
         super();
         space = XMLConstants.EMPTY_STRING;
     }
+    
+    public JSONWriterRecord(Writer writer){
+    	this();
+    	setWriter(writer);
+    }
+    
+    public JSONWriterRecord(Writer writer, String callbackName){
+    	this(writer);
+    	setCallbackName(callbackName);    	 
+    }
 
+    public void setCallbackName(String callbackName){
+    	this.callbackName = callbackName;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -159,21 +174,38 @@ public class JSONWriterRecord extends MarshalRecord {
                      writer.write(",");
                      writer.write(space);
                  }
+             }else if(callbackName != null){
+            	 startCallback();              
              }
              levels.push(new Level(true, false));
+             
              writer.write('{');
          } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * @throws IOException 
+     */
+    protected void startCallback() throws IOException{
+       if(callbackName != null){
+          writer.write(callbackName);
+          writer.write('(');
+       }
     }
 
     /**
      * INTERNAL:
      */
     public void endDocument() {
-        try {            
-            closeComplex();
-            levels.pop();
+        try {
+        	closeComplex();
+        	if(levels.size() ==1 ){
+        		endCallback();
+        	}            
+            levels.pop();           
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -321,6 +353,7 @@ public class JSONWriterRecord extends MarshalRecord {
     public void startCollection() {
         if(levels.isEmpty()) {
             try {
+            	startCallback();
                 writer.write('[');
                 levels.push(new Level(true, false));
             } catch(IOException e) {
@@ -336,11 +369,19 @@ public class JSONWriterRecord extends MarshalRecord {
     	endCollection();
     }
 
+    protected void endCallback() throws IOException{
+    	if(callbackName != null){
+     	   writer.write(')');
+     	   writer.write(';');
+        }
+    }
+    
     @Override
     public void endCollection() {
         try {
             if(levels.size() == 1) {
                 writer.write(']');
+                endCallback();
             } else {
                 Level position = levels.peek();
                 if(position != null && position.isCollection() && !position.isEmptyCollection()) {
