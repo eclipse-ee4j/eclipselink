@@ -36,7 +36,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      */
     public int getColumnCount() {
         if (resultSet.getRows().isEmpty()) {
-            return 0;
+            return 1;
         }
         return ((DatabaseRecord)resultSet.getRows().get(0)).getFields().size();
     }
