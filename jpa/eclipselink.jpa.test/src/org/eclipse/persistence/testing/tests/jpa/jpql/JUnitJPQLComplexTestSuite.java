@@ -3748,8 +3748,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
 
-    // Bug 331124
-    // Test that join to elemenet collections work.
+    // Bug 331124, GLASSFISH-19316
+    // Test that join to element collections work.
     public void testElementCollection() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select b from Buyer b join b.creditLines l where l > 0");
@@ -3777,6 +3777,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
         query.setParameter("arg", args);
+        query.getResultList();
+        query = em.createQuery("select c from Buyer c join c.creditLines cc where key(cc) = :attrKey and value(cc) = :attrValue");
+        query.setParameter("attrKey",   "test");
+        query.setParameter("attrValue", 0);
         query.getResultList();
         closeEntityManager(em);
     }
@@ -3810,22 +3814,22 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         closeEntityManager(em);
     }
-    
+
     // Bug 393470
     // Test a group by clause that does not contain any functions in the select clause
     public void testGroupByWithoutFunction() {
         EntityManager em = createEntityManager();
-        
+
         Query query = em.createQuery("Select e from Employee e group by e");
         List results = query.getResultList();
         assertNotNull("Results should be non-null", results);
         assertTrue("Results should not be empty", results.size() != 0);
-        
+
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         if (sql.toUpperCase().indexOf("GROUP BY") != -1) {
             fail("GROUP BY not included in generated SQL: " + sql);
         }
-        
+
         closeEntityManager(em);
     }
 

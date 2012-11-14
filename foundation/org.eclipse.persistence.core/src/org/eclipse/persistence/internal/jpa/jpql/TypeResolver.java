@@ -136,6 +136,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -1432,10 +1433,18 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	@Override
 	public void visit(ValueExpression expression) {
+
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
 		Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
 		DatabaseMapping mapping = declaration.getMapping();
-		type = mapping.getReferenceDescriptor().getJavaClass();
+
+		if (mapping.isDirectMapMapping()) {
+			DirectMapMapping mapMapping = (DirectMapMapping) mapping;
+			type = mapMapping.getValueClass();
+		}
+		else {
+			type = calculateMappingType(declaration.getMapping());
+		}
 	}
 
 	/**
