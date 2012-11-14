@@ -369,13 +369,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public boolean hasActualTypeArguments() {
-        if (jType instanceof ParameterizedType) {
-            ParameterizedType pType = (ParameterizedType) jType;
-            if (pType.getActualTypeArguments() != null && pType.getActualTypeArguments().length > 0) {
-                return true;
-            }
-        }
-        return false;
+        return getActualTypeArguments().size() > 0;        
     }
     
     public JavaField getJavaField(Field field) {

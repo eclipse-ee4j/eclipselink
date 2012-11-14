@@ -17,7 +17,9 @@ import static org.eclipse.persistence.jaxb.compiler.XMLProcessor.DEFAULT;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -165,9 +167,9 @@ public class Helper {
         JavaClass jClass = null;
         if (result == null) { return null; }
         
-        if (result.hasActualTypeArguments()) {
-            ArrayList typeArgs =  (ArrayList) result.getActualTypeArguments();
-            jClass = (JavaClass) typeArgs.get(0);
+        Collection args = result.getActualTypeArguments();
+        if (args.size() >0) {            
+            jClass = (JavaClass) args.iterator().next();
         }
         return jClass;
     }
@@ -349,24 +351,30 @@ public class Helper {
         if (!(classA.getQualifiedName().equals(classB.getQualifiedName()))) {
             return false;
         }
-        if (classA.getActualTypeArguments() != null) {
-            if (classB.getActualTypeArguments() == null) {
+        
+        Collection classAargs = classA.getActualTypeArguments();
+        Collection classBargs = classB.getActualTypeArguments();
+        if (classAargs != null) {
+            if (classBargs == null) {
                 return false;
             }
-            if (classA.getActualTypeArguments().size() != classB.getActualTypeArguments().size()) {
+            if (classAargs.size() != classBargs.size()) {
                 return false;
             }
 
-            for (int i = 0; i < classA.getActualTypeArguments().size(); i++) {
-                JavaClass nestedClassA = (JavaClass) classA.getActualTypeArguments().toArray()[i];
-                JavaClass nestedClassB = (JavaClass) classB.getActualTypeArguments().toArray()[i];
+            Iterator classAargsIter = classAargs.iterator();
+            Iterator classBargsIter = classBargs.iterator();
+            
+            while(classAargsIter.hasNext()){
+                JavaClass nestedClassA = (JavaClass) classAargsIter.next();
+                JavaClass nestedClassB = (JavaClass) classBargsIter.next();
                 if (!areClassesEqual(nestedClassA, nestedClassB)) {
                     return false;
                 }
             }
             return true;
         }
-        if (classB.getActualTypeArguments() == null) {
+        if (classBargs == null) {
             return true;
         }
         return false;

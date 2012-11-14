@@ -2079,8 +2079,9 @@ public class MappingsGenerator {
                 }catch (Exception e) {}
             }
         } else if (isCollectionType(collectionType)){
-        	if (collectionType.hasActualTypeArguments()){
-        		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
+            Collection args = collectionType.getActualTypeArguments();
+        	if (args.size() >0){
+        		JavaClass itemType = (JavaClass)args.iterator().next();
         		try {
         			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
         			if(declaredClass != String.class){

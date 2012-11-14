@@ -307,18 +307,13 @@ public class Property implements Cloneable {
         }
     	String clsName= cls.getRawName();
         if(isCollectionType(cls)){
-        	if(cls.hasActualTypeArguments()){
-        		ArrayList typeArgs =  (ArrayList) cls.getActualTypeArguments();
-        		if(typeArgs.size() > 0) {
-        		    genericType = (JavaClass) typeArgs.get(0);
-        		} else {
-        		    genericType = helper.getJavaClass(Object.class);
-        		}
-        	}else{
-        		genericType = helper.getJavaClass(Object.class);
-        	}
-            type = cls;  
-                	
+            Collection typeArgs =  cls.getActualTypeArguments();
+        	if(typeArgs.size() > 0){
+      		    genericType = (JavaClass) typeArgs.iterator().next();
+        	} else {
+       		    genericType = helper.getJavaClass(Object.class);
+        	}        	
+            type = cls;                  
         }else if(cls.isArray()  && !clsName.equals("byte[]") ){
         	type = cls;
         	genericType = cls.getComponentType();

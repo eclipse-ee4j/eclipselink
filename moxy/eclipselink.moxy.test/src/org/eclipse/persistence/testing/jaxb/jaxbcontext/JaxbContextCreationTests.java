@@ -10,6 +10,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.*;
@@ -22,11 +23,12 @@ import org.eclipse.persistence.exceptions.SessionLoaderException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.testing.oxm.classloader.JARClassLoader;
 import org.w3c.dom.Document;
 
 public class JaxbContextCreationTests extends junit.framework.TestCase {
-
+       
     public String getName() {
         return "JAXB Context Creation Tests: " + super.getName();
     }
@@ -176,6 +178,15 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
 
     public void testCreateContextXmlAnyAttributeSubTypeMap() throws Exception {
         JAXBContextFactory.createContext(new Class[]{XmlAnyAttributeSubTypeMapModel.class}, null);
+    }
+    
+    public void testJavaClassImplWildcard() throws Exception{
+        ParameterizedType pType = (ParameterizedType) WildCardTest.class.getField("testField").getGenericType();
+        JavaClassImpl javaClass = new JavaClassImpl(pType, java.util.List.class, null);
+        boolean hasArgs = javaClass.hasActualTypeArguments();
+        Collection getArgs = javaClass.getActualTypeArguments();
+        assertFalse(hasArgs);
+        assertTrue(getArgs.size()== 0);
     }
 
 }
