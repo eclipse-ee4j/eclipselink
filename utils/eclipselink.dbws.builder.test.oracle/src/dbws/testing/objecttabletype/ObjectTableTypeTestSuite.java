@@ -15,6 +15,9 @@ package dbws.testing.objecttabletype;
 
 //javase imports
 import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -148,6 +151,95 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     static final String DROP_PERSONTYPE =
         "DROP TYPE DBWS_PERSONTYPE";
 
+    // ======================================================================
+    static final String CREATE_EMP_TABLE =
+        "CREATE TABLE DBWS_EMP (" +
+            "\nEMPNO VARCHAR2(10) NOT NULL," +
+            "\nENAME VARCHAR2(35)," +
+            "\nSAL NUMBER(6,0)," +
+            "\nPRIMARY KEY (EMPNO)" +
+        "\n)";
+    static final String[] POPULATE_EMP_TABLE = new String[] {
+        "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('1', 'THEIF', 99000)",
+        "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('2', 'BULLY', 0)",
+        "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('3', 'CON', 4255)",
+        "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('4', 'CON', 4000)",
+        "INSERT INTO DBWS_EMP (EMPNO, ENAME, SAL) VALUES ('5', 'COP', 25000)",
+    };
+    static final String CREATE_TJOBS =
+        "create or replace TYPE T_JOBS AS OBJECT (" +
+            "JOB_ID       VARCHAR2(10)," +
+            "JOB_TITLE    VARCHAR2(35)," +
+            "MAX_SALARY   NUMBER(6,0)," +
+
+            "CONSTRUCTOR FUNCTION T_JOBS(JOB_ID VARCHAR2, JOB_TITLE VARCHAR2, MAX_SALARY NUMBER) " +
+                "RETURN SELF AS RESULT" +
+        ");";
+    static final String CREATE_TJOBS_BODY =
+        "CREATE OR REPLACE TYPE BODY T_JOBS AS " +
+            "CONSTRUCTOR FUNCTION T_JOBS(JOB_ID VARCHAR2, JOB_TITLE VARCHAR2, MAX_SALARY NUMBER) " +
+                "RETURN SELF AS RESULT IS " + 
+            
+            "BEGIN " +
+                "SELF.JOB_ID := JOB_ID;" +
+                "SELF.JOB_TITLE := JOB_TITLE;" +
+                "SELF.MAX_SALARY := MAX_SALARY;" +
+                "RETURN;" +
+             "END;" +
+         "END;";
+    static final String CREATE_TJOBS_TABLE =
+        "create or replace TYPE COL_JOBS AS TABLE OF T_JOBS;";
+    static final String CREATE_TEST_CUSTOM_TYPE_RECORD_PKG =
+        "create or replace PACKAGE TEST_CUSTOM_TYPE_RECORD as " +
+            "\nFUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS;" +
+            "\nFUNCTION GET_JOBS RETURN COL_JOBS;" +
+        "\nend;";
+    static final String CREATE_TEST_CUSTOM_TYPE_RECORD_PKG_BODY =
+        "create or replace PACKAGE BODY TEST_CUSTOM_TYPE_RECORD as " +
+            "\nFUNCTION GET_JOB(p_job_id IN VARCHAR2) RETURN T_JOBS IS " +
+            "\nresult       T_JOBS;" +
+            "\nl_JOB_ID     VARCHAR2(10);" +
+            "\nl_JOB_TITLE  VARCHAR2(35);" +
+            "\nl_MAX_SALARY NUMBER(6,0);" +
+            "\nBEGIN" +
+                "\nSELECT EMPNO, ENAME, SAL INTO l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY FROM  DBWS_EMP WHERE EMPNO = p_job_id;" + 
+                "\nresult := T_JOBS(l_JOB_ID, l_JOB_TITLE, l_MAX_SALARY);" +
+                "\nRETURN result;" +
+            "\nEND;" +
+
+            "\nfunction GET_JOBS return COL_JOBS is " +
+            "\nCURSOR cur IS select EMPNO, ENAME, SAL from DBWS_EMP;" +
+            "\ncol_result COL_JOBS;" +
+            "\nt_result       T_JOBS;" +
+            "\nl_JOB_ID       VARCHAR2(10);" +
+            "\nl_JOB_TITLE    VARCHAR2(35);" +
+            "\nl_MAX_SALARY   NUMBER(6,0);" +
+            "\nbegin" +
+                "\ncol_result := COL_JOBS(NULL);" +
+                "\ncol_result.DELETE;" +
+                "\nfor rec in cur LOOP" +
+                    "\nt_result := T_JOBS(rec.EMPNO, rec.ENAME, rec.SAL);" +
+                    "\ncol_result.EXTEND(1);" +
+                    "\ncol_result(col_result.COUNT) := t_result;" +
+                "\nend loop;" +
+                "\nreturn col_result;" +
+            "\nend;" +
+        "\nend;";
+    
+    static final String DROP_TEST_CUSTOM_TYPE_RECORD_PKG_BODY =
+        "DROP PACKAGE BODY TEST_CUSTOM_TYPE_RECORD";
+    static final String DROP_TEST_CUSTOM_TYPE_RECORD_PKG =
+        "DROP PACKAGE TEST_CUSTOM_TYPE_RECORD";
+    static final String DROP_TJOBS_TABLE =
+        "DROP TYPE COL_JOBS";
+    static final String DROP_TJOBS_BODY =
+        "DROP TYPE BODY T_JOBS";
+    static final String DROP_TJOBS =
+        "DROP TYPE T_JOBS";
+    static final String DROP_EMP_TABLE =
+        "DROP TABLE DBWS_EMP";
+    // ======================================================================
+        
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -185,6 +277,23 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GET_PERSONTYPE2_FUNC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE_PROC, ddlDebug);
             runDdl(conn, CREATE_ADD_PERSONTYPE_TO_TABLE2_FUNC, ddlDebug);
+            
+            runDdl(conn, CREATE_EMP_TABLE, ddlDebug);
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_EMP_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_EMP_TABLE[i]);
+                }
+                stmt.executeBatch();
+            } catch (SQLException e) { 
+                //e.printStackTrace();
+            }
+            runDdl(conn, CREATE_TJOBS, ddlDebug);
+            runDdl(conn, CREATE_TJOBS_BODY, ddlDebug);
+            runDdl(conn, CREATE_TJOBS_TABLE, ddlDebug);
+            runDdl(conn, CREATE_TEST_CUSTOM_TYPE_RECORD_PKG, ddlDebug);
+            runDdl(conn, CREATE_TEST_CUSTOM_TYPE_RECORD_PKG_BODY, ddlDebug);
+            
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -239,6 +348,16 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 	              "isAdvancedJDBC=\"true\" " +
 	              "returnType=\"dbws_grouptypeType\" " +
 	          "/>" +
+              "<plsql-procedure " +
+                  "name=\"GetJobTest\" " +
+                  "catalogPattern=\"TEST_CUSTOM_TYPE_RECORD\" " +
+                  "procedurePattern=\"GET_JOB\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"GetJobsTest\" " +
+                  "catalogPattern=\"TEST_CUSTOM_TYPE_RECORD\" " +
+                  "procedurePattern=\"GET_JOBS\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -257,6 +376,13 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_MYEMPOBJECT, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE_TABLE, ddlDebug);
             runDdl(conn, DROP_PERSONTYPE, ddlDebug);
+            
+            runDdl(conn, DROP_TEST_CUSTOM_TYPE_RECORD_PKG_BODY, ddlDebug);
+            runDdl(conn, DROP_TEST_CUSTOM_TYPE_RECORD_PKG, ddlDebug);
+            runDdl(conn, DROP_TJOBS_TABLE, ddlDebug);
+            runDdl(conn, DROP_TJOBS_BODY, ddlDebug);
+            runDdl(conn, DROP_TJOBS, ddlDebug);
+            runDdl(conn, DROP_EMP_TABLE, ddlDebug);
         }
     }
 
@@ -531,4 +657,66 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 	            "</item>" +
 		    "</etable>" +
 	    "</dbws_grouptypeType>";
+
+    @Test
+    public void getJobTest() {
+        Invocation invocation = new Invocation("GetJobTest");
+        invocation.setParameter("p_job_id", "3");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TJOBS_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String TJOBS_XML =
+        REGULAR_XML_HEADER +
+        "<t_jobsType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<job_id>3</job_id>" +
+            "<job_title>CON</job_title>" +
+            "<max_salary>4255</max_salary>" +
+        "</t_jobsType>";
+    @Test
+    public void getJobsTest() {
+        Invocation invocation = new Invocation("GetJobsTest");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(COLJOBS_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String COLJOBS_XML =
+        REGULAR_XML_HEADER +
+        "<col_jobsType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<item>" +
+           "<job_id>1</job_id>" +
+           "<job_title>THEIF</job_title>" +
+           "<max_salary>99000</max_salary>" +
+        "</item>" +
+        "<item>" +
+           "<job_id>2</job_id>" +
+           "<job_title>BULLY</job_title>" +
+           "<max_salary>0</max_salary>" +
+        "</item>" +
+        "<item>" +
+           "<job_id>3</job_id>" +
+           "<job_title>CON</job_title>" +
+           "<max_salary>4255</max_salary>" +
+        "</item>" +
+        "<item>" +
+           "<job_id>4</job_id>" +
+           "<job_title>CON</job_title>" +
+           "<max_salary>4000</max_salary>" +
+        "</item>" +
+        "<item>" +
+           "<job_id>5</job_id>" +
+           "<job_title>COP</job_title>" +
+           "<max_salary>25000</max_salary>" +
+        "</item>" +
+     "</col_jobsType>";
 }
