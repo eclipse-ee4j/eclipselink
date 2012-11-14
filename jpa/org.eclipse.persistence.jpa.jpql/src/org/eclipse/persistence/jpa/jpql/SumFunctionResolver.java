@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} is responsible to calculate the type based on the type of the state field.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,14 +32,6 @@ public class SumFunctionResolver extends Resolver {
 	 */
 	public SumFunctionResolver(Resolver parent) {
 		super(parent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		getParent().accept(visitor);
 	}
 
 	/**

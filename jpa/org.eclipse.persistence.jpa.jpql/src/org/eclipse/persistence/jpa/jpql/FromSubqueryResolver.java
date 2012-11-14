@@ -16,13 +16,32 @@ package org.eclipse.persistence.jpa.jpql;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
+import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
@@ -86,13 +105,6 @@ public class FromSubqueryResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 		return getManagedType().getType();
 	}
@@ -114,6 +126,12 @@ public class FromSubqueryResolver extends Resolver {
 			managedType = new VirtualManagedType();
 		}
 		return managedType;
+	}
+
+	private enum MappingType {
+		PROPERTY,
+		RELATIONSHIP,
+		UNKNOWN
 	}
 
 	/**
@@ -190,15 +208,21 @@ public class FromSubqueryResolver extends Resolver {
 	 */
 	protected class VirtualMapping implements IMapping {
 
+		private MappingType mappingType;
 		private String name;
 		private IManagedType parent;
 		private Resolver resolver;
 
-		protected VirtualMapping(IManagedType parent, String name, Resolver resolver) {
+		protected VirtualMapping(IManagedType parent,
+		                         String name,
+		                         Resolver resolver,
+		                         MappingType mappingType) {
+
 			super();
-			this.name     = name;
-			this.parent   = parent;
-			this.resolver = resolver;
+			this.name        = name;
+			this.parent      = parent;
+			this.resolver    = resolver;
+			this.mappingType = mappingType;
 		}
 
 		/**
@@ -265,7 +289,7 @@ public class FromSubqueryResolver extends Resolver {
 		 */
 		public boolean isProperty() {
 			IMapping mapping = resolver.getMapping();
-			return (mapping != null) ? mapping.isProperty() : false;
+			return (mapping != null) ? mapping.isProperty() : (mappingType == MappingType.PROPERTY);
 		}
 
 		/**
@@ -273,7 +297,7 @@ public class FromSubqueryResolver extends Resolver {
 		 */
 		public boolean isRelationship() {
 			IMapping mapping = resolver.getMapping();
-			return (mapping != null) ? mapping.isRelationship() : false;
+			return (mapping != null) ? mapping.isRelationship() : (mappingType == MappingType.RELATIONSHIP);
 		}
 
 		/**
@@ -282,6 +306,14 @@ public class FromSubqueryResolver extends Resolver {
 		public boolean isTransient() {
 			IMapping mapping = resolver.getMapping();
 			return (mapping != null) ? mapping.isTransient() : false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			return name;
 		}
 	}
 
@@ -298,16 +330,56 @@ public class FromSubqueryResolver extends Resolver {
 		private Map<String, IMapping> mappings;
 
 		/**
+		 *
+		 */
+		private MappingType mappingType;
+
+		/**
 		 * The virtual {@link IManagedType}.
 		 */
 		protected IManagedType parent;
 
-		protected IMapping buildMapping(String name, Resolver resolver) {
-			return new VirtualMapping(parent, name, resolver);
+		/**
+		 * Creates a new <code>VirtualMappingBuilder</code>.
+		 */
+		public VirtualMappingBuilder() {
+			super();
+			mappingType = MappingType.UNKNOWN;
 		}
 
-		protected String literal(Expression expression, LiteralType literalType) {
-			return queryContext.literal(expression, literalType);
+		/**
+		 * Creates
+		 *
+		 * @param name
+		 * @param resolver
+		 * @return
+		 */
+		protected IMapping buildMapping(String name, Resolver resolver) {
+			return new VirtualMapping(parent, name, resolver, mappingType);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbsExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AdditionExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AvgFunction expression) {
+			mappingType = MappingType.PROPERTY;
 		}
 
 		/**
@@ -322,12 +394,91 @@ public class FromSubqueryResolver extends Resolver {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(ConcatExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CountFunction expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(DivisionExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IndexExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LengthExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LocateExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LowerExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(MaxFunction expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(MinFunction expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(ResultVariable expression) {
 
-			String name = literal(expression, RESULT_VARIABLE);
+			String name = queryContext.literal(expression, RESULT_VARIABLE);
 
 			if (ExpressionTools.stringIsNotEmpty(name)) {
-				Resolver resolver = queryContext.getResolver(expression.getSelectExpression());
+
+				// Visit the select expression in order to get a mapping type that could
+				// help determine the mapping type
+				Expression selectExpression = expression.getSelectExpression();
+				selectExpression.accept(this);
+
+				// Retrieve the select expression's Resolver and wrap it with a virtual mapping
+				Resolver resolver = queryContext.getResolver(selectExpression);
 				mappings.put(name, buildMapping(name, resolver));
 			}
 		}
@@ -352,16 +503,75 @@ public class FromSubqueryResolver extends Resolver {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(SizeExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SqrtExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(StateFieldPathExpression expression) {
 
 			if (!expression.startsWithDot()) {
-				String name = literal(expression, PATH_EXPRESSION_LAST_PATH);
+				String name = queryContext.literal(expression, PATH_EXPRESSION_LAST_PATH);
 
 				if (ExpressionTools.stringIsNotEmpty(name)) {
+
+					mappingType = MappingType.UNKNOWN;
+
 					Resolver resolver = queryContext.getResolver(expression);
 					mappings.put(name, buildMapping(name, resolver));
 				}
 			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubstringExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubtractionExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SumFunction expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TrimExpression expression) {
+			mappingType = MappingType.PROPERTY;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UpperExpression expression) {
+			mappingType = MappingType.PROPERTY;
 		}
 	}
 }

@@ -16,11 +16,13 @@ package org.eclipse.persistence.internal.jpa.jpql;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.ITypeHelper;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration;
 import org.eclipse.persistence.jpa.jpql.SemanticValidatorHelper;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
@@ -31,14 +33,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
- * The EclipseLink implementation of {@link SemanticValidatorHelper} that accesses directly the
- * EclipseLink objects without going through Hermes SPI, which is done to increase performance.
+ * The EclipseLink implementation of {@link SemanticValidatorHelper}, which directly accesses
+ * EclipseLink objects without using Hermes SPI.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
-public final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelper {
+final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelper {
 
 	/**
 	 * The context used to query information about the JPQL query.
@@ -77,6 +79,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
 
 		JPQLQueryContext currentContext = queryContext.getCurrentContext();
@@ -92,11 +95,13 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 
 		DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
 
+		// Collect the identification variables from the declarations
 		for (Declaration declaration : declarationResolver.getDeclarations()) {
 			IdentificationVariable identificationVariable = declaration.identificationVariable;
 			addIdentificationVariable(identificationVariable, identificationVariables);
 		}
 
+		// Collect the result variables
 		for (IdentificationVariable identificationVariable : declarationResolver.getResultVariables()) {
 			addIdentificationVariable(identificationVariable, identificationVariables);
 		}
@@ -105,6 +110,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
 		collectLocalDeclarationIdentificationVariables(queryContext, identificationVariables);
 	}
@@ -112,6 +118,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void disposeSubqueryContext() {
 		queryContext.disposeSubqueryContext();
 	}
@@ -119,9 +126,10 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String[] entityNames() {
 
-		List<String> names = new ArrayList<String>();
+		List<String> names = new LinkedList<String>();
 
 		for (ClassDescriptor descriptor : queryContext.getSession().getDescriptors().values()) {
 			if (!descriptor.isAggregateDescriptor()) {
@@ -139,6 +147,24 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public List<JPQLQueryDeclaration> getAllDeclarations() {
+
+		List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+		JPQLQueryContext context = queryContext.getCurrentContext();
+
+		while (context != null) {
+			declarations.addAll(context.getDeclarationResolverImp().getDeclarations());
+			context = context.getActualParent();
+		}
+
+		return declarations;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public Object[] getConstructors(Object type) {
 		return (type != null) ? ((Class<?>) type).getDeclaredConstructors() : ExpressionTools.EMPTY_ARRAY;
 	}
@@ -146,6 +172,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List getDeclarations() {
 		return queryContext.getDeclarations();
@@ -154,6 +181,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ClassDescriptor getEmbeddable(Object type) {
 
 		ClassDescriptor descriptor = queryContext.getDescriptor((Class<?>) type);
@@ -168,6 +196,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ClassDescriptor getEntityNamed(String entityName) {
 		return queryContext.getDescriptor(entityName);
 	}
@@ -175,6 +204,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public String[] getEnumConstants(Object type) {
 
@@ -191,6 +221,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JPQLGrammar getGrammar() {
 		return queryContext.getGrammar();
 	}
@@ -198,6 +229,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getManagedType(Expression expression) {
 		return queryContext.resolveDescriptor(expression);
 	}
@@ -205,13 +237,14 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
-	public Object getMappingNamed(Object entity, String path) {
+	@Override
+	public Object getMappingNamed(Object entity, String name) {
 
 		ClassDescriptor descriptor = (ClassDescriptor) entity;
-		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
+		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
 
 		if (mapping == null) {
-			mapping = descriptor.getQueryKeyNamed(path);
+			mapping = descriptor.getQueryKeyNamed(name);
 		}
 
 		return mapping;
@@ -220,6 +253,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Class<?> getMappingType(Object mapping) {
 
 		if (mapping == null) {
@@ -239,6 +273,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Type[] getMethodParameterTypeDeclarations(Object constructor) {
 		return ((Constructor<?>) constructor).getGenericParameterTypes();
 	}
@@ -246,6 +281,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Class<?> getType(Expression expression) {
 		return queryContext.getType(expression);
 	}
@@ -253,6 +289,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getType(Object typeDeclaration) {
 		// Not used
 		return null;
@@ -261,6 +298,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Class<?> getType(String className) {
 		return queryContext.getType(className);
 	}
@@ -268,6 +306,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getTypeDeclaration(Expression expression) {
 		// Not used
 		return null;
@@ -276,6 +315,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ITypeHelper getTypeHelper() {
 		// Not used
 		return null;
@@ -284,6 +324,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getTypeName(Object type) {
 		return ((Class<?>) type).getName();
 	}
@@ -291,6 +332,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isAssignableTo(Object type1, Object type2) {
 		return ((Class<?>) type2).isAssignableFrom((Class<?>) type1) ;
 	}
@@ -298,6 +340,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isCollectionIdentificationVariable(String variableName) {
 		return queryContext.isCollectionIdentificationVariable(variableName);
 	}
@@ -305,6 +348,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isCollectionMapping(Object mapping) {
 
 		if (mapping == null) {
@@ -324,6 +368,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isEnumType(Object type) {
 		return (type != null) && ((Class<?>) type).isEnum();
 	}
@@ -331,9 +376,10 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
 
-		Declaration declaration = queryContext.getDeclaration(expression.getVariableName());
+		Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
 
 		if (declaration == null) {
 			return false;
@@ -353,6 +399,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isManagedTypeResolvable(Object managedType) {
 		return managedType != null;
 	}
@@ -360,6 +407,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isPropertyMapping(Object mapping) {
 
 		if (mapping == null) {
@@ -379,6 +427,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isRelationshipMapping(Object mapping) {
 
 		if (mapping == null) {
@@ -400,6 +449,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isResultVariable(String variableName) {
 		return queryContext.isResultVariable(variableName);
 	}
@@ -407,6 +457,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isTransient(Object mapping) {
 		return mapping == null;
 	}
@@ -414,6 +465,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isTypeDeclarationAssignableTo(Object typeDeclaration1, Object typeDeclaration2) {
 		// Not used
 		return false;
@@ -422,6 +474,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isTypeResolvable(Object type) {
 		return type != null;
 	}
@@ -429,14 +482,27 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
-		Declaration declaration = queryContext.getDeclaration(expression.getIdentificationVariable().toActualText());
-		return (declaration == null) || !declaration.isSubquery() && !declaration.isTable();
+
+		// Find the declaration associated with the identification variable
+		Declaration declaration = queryContext.findDeclaration(expression.getIdentificationVariable().toActualText());
+
+		if (declaration == null) {
+			return true;
+		}
+
+		JPQLQueryDeclaration.Type type = declaration.getType();
+
+		// A path composed from a table name or a subquery is not validated
+		return type != JPQLQueryDeclaration.Type.TABLE &&
+		       type != JPQLQueryDeclaration.Type.SUBQUERY;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void newSubqueryContext(SimpleSelectStatement expression) {
 		queryContext.newSubQueryContext(expression, null);
 	}
@@ -444,6 +510,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object resolveMapping(Expression expression) {
 		return queryContext.resolveMappingObject(expression);
 	}
@@ -451,22 +518,29 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
-	public Object resolveMapping(String variableName, String path) {
+	@Override
+	public Object resolveMapping(String variableName, String name) {
 
 		// Find the declaration associated with the identification variable
 		Declaration declaration = queryContext.findDeclaration(variableName);
-		if (declaration == null) return null;
 
-		// Retrieve the resolved ClassDescriptor
+		if (declaration == null) {
+			return null;
+		}
+
+		// Retrieve the associated descriptor
 		ClassDescriptor descriptor = declaration.getDescriptor();
-		if (descriptor == null) return null;
 
-		// First retrieve the mapping
-		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
+		if (descriptor == null) {
+			return null;
+		}
 
-		// No mapping was found, look for a QueryKey
+		// Now, retrieve the mapping
+		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
+
+		// No mapping was found, look for a query key
 		if (mapping == null) {
-			mapping = descriptor.getQueryKeyNamed(path);
+			mapping = descriptor.getQueryKeyNamed(name);
 		}
 
 		return mapping;

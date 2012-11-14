@@ -18,14 +18,18 @@ import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTools;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -45,7 +49,23 @@ public final class AllJPQLQueryHelperTests {
 	}
 
 	@SuiteClasses({
-		DefaultJPQLQueryHelperTest.class,
+		DefaultDeclarationTest.class
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class AllDefaultDeclarationTest {
+
+		private AllDefaultDeclarationTest() {
+			super();
+		}
+
+		@JPQLGrammarTestHelper
+		static JPQLGrammar[] buildGrammars() {
+			return JPQLGrammarTools.allJPQLGrammars();
+		}
+	}
+
+	@SuiteClasses({
+		DefaultJPQLQueryHelperTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllDefaultJPQLQueryHelperTests {
@@ -115,7 +135,23 @@ public final class AllJPQLQueryHelperTests {
 	}
 
 	@SuiteClasses({
-		EclipseLinkJPQLQueryHelperTest.class,
+		EclipseLinkDeclarationTest.class
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class AllEclipseLinkDeclarationTest {
+
+		private AllEclipseLinkDeclarationTest() {
+			super();
+		}
+
+		@JPQLGrammarTestHelper
+		static JPQLGrammar[] buildGrammars() {
+			return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_4);
+		}
+	}
+
+	@SuiteClasses({
+		EclipseLinkJPQLQueryHelperTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllEclipseLinkJPQLQueryHelperTests {

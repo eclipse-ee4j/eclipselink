@@ -45,7 +45,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  *     type is not further defined.
  * </ul>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -75,13 +75,6 @@ public class NumericResolver extends Resolver {
 	 */
 	public NumericResolver(Resolver parent, Resolver resolver) {
 		this(parent, Collections.singleton(resolver));
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
 	}
 
 	/**

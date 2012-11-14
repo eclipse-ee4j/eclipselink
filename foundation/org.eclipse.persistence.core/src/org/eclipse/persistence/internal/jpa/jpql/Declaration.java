@@ -13,19 +13,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
+import java.util.Collections;
+import java.util.List;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * A <code>Declaration</code> is the corresponding representation of a single declaration defined in
  * the <code><b>FROM</b></code> clause of a query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,8 +55,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	private ClassDescriptor descriptor;
 
 	/**
-	 * The identification variable used to declare an abstract schema name or a collection-valued
-	 * path expression.
+	 * The {@link IdentificationVariable} used to declare a "root" object.
 	 */
 	IdentificationVariable identificationVariable;
 
@@ -103,6 +105,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Expression getBaseExpression() {
 		return baseExpression;
 	}
@@ -110,6 +113,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Expression getDeclarationExpression() {
 		return declarationExpression;
 	}
@@ -124,6 +128,14 @@ abstract class Declaration implements JPQLQueryDeclaration {
 			descriptor = resolveDescriptor();
 		}
 		return descriptor;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Join> getJoins() {
+		return Collections.emptyList();
 	}
 
 	/**
@@ -163,6 +175,7 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final String getVariableName() {
 		if (identificationVariable == null) {
 			return ExpressionTools.EMPTY_STRING;
@@ -171,20 +184,10 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	}
 
 	/**
-	 * Determines whether this {@link Declaration} represents a subquery.
-	 *
-	 * @return <code>true</code> if the "root" object is a subquery; <code>false</code> otherwise
+	 * {@inheritDoc}
 	 */
-	boolean isSubquery() {
-		return false;
-	}
-
-	/**
-	 * Determines whether this {@link Declaration} maps directly to a database table.
-	 *
-	 * @return <code>true</code> if the "root" object is a database table; <code>false</code> otherwise
-	 */
-	boolean isTable() {
+	@Override
+	public boolean hasJoins() {
 		return false;
 	}
 

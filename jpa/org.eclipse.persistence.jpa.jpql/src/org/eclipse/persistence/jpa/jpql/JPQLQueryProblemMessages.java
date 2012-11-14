@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -104,10 +104,6 @@ public interface JPQLQueryProblemMessages {
 	String CollectionMemberExpression_MissingEntityExpression = "COLLECTION_MEMBER_EXPRESSION_MISSING_ENTITY_EXPRESSION";
 	String CollectionValuedPathExpression_NotCollectionType = "COLLECTION_VALUED_PATH_EXPRESSION_NOT_COLLECTION_TYPE";
 	String CollectionValuedPathExpression_NotResolvable = "COLLECTION_VALUED_PATH_EXPRESSION_NOT_RESOLVABLE";
-	String ColumnExpression_InvalidExpression = "COLUMN_EXPRESSION_INVALID_EXPRESSION";
-	String ColumnExpression_MissingColumn = "COLUMN_EXPRESSION_MISSING_COLUMN";
-	String ColumnExpression_MissingLeftParenthesis = "COLUMN_EXPRESSION_MISSING_LEFT_PARENTHESIS";
-	String ColumnExpression_MissingRightParenthesis = "COLUMN_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String ComparisonExpression_AssociationField = "COMPARISON_EXPRESSION_ASSOCIATION_FIELD";
 	String ComparisonExpression_BasicField = "COMPARISON_EXPRESSION_BASIC_FIELD";
 	String ComparisonExpression_IdentificationVariable = "COMPARISON_EXPRESSION_IDENTIFICATION_VARIABLE";
@@ -176,6 +172,7 @@ public interface JPQLQueryProblemMessages {
 	String FunctionExpression_MissingOneExpression = "FUNCTION_EXPRESSION_MISSING_ONE_EXPRESSION";
 	String FunctionExpression_MissingRightParenthesis = "FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String FunctionExpression_MoreThanOneExpression = "FUNCTION_EXPRESSION_MORE_THAN_ONE_EXPRESSION";
+	String FunctionExpression_UnknownColumn = "FUNCTION_EXPRESSION_UNKNOWN_COLUMN";
 	String GroupByClause_GroupByItemEndsWithComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA";
 	String GroupByClause_GroupByItemIsMissingComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA";
 	String GroupByClause_GroupByItemMissing = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_MISSING";
@@ -327,6 +324,7 @@ public interface JPQLQueryProblemMessages {
 	String StateFieldPathExpression_InvalidEnumConstant = "STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT";
 	String StateFieldPathExpression_NoMapping = "STATE_FIELD_PATH_EXPRESSION_NO_MAPPING";
 	String StateFieldPathExpression_NotResolvable = "STATE_FIELD_PATH_EXPRESSION_NOT_RESOLVABLE";
+	String StateFieldPathExpression_UnknownColumn = "STATE_FIELD_PATH_EXPRESSION_UNKNOWN_COLUMN";
 	String StringLiteral_MissingClosingQuote = "STRING_LITERAL_MISSING_CLOSING_QUOTE";
 	String SubExpression_MissingExpression = "SUB_EXPRESSION_MISSING_EXPRESSION";
 	String SubExpression_MissingRightParenthesis = "SUB_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
@@ -351,6 +349,7 @@ public interface JPQLQueryProblemMessages {
 	String SumFunction_MissingRightParenthesis = "SUM_FUNCTION_MISSING_RIGHT_PARENTHESIS";
 	String SumFunction_WrongType = "SUM_FUNCTION_WRONG_TYPE";
 	String TableExpression_InvalidExpression = "TABLE_EXPRESSION_INVALID_EXPRESSION";
+	String TableExpression_InvalidTableName = "TABLE_EXPRESSION_INVALID_TABLE_NAME";
 	String TableExpression_MissingExpression = "TABLE_EXPRESSION_MISSING_EXPRESSION";
 	String TableExpression_MissingLeftParenthesis = "TABLE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String TableExpression_MissingRightParenthesis = "TABLE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";

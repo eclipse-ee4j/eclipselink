@@ -30,18 +30,27 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTest {
+public final class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new DefaultJPQLQueryContext(jpqlGrammar);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return false;

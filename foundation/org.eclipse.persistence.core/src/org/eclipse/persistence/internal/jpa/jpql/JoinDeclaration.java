@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collections;
-import java.util.List;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -23,7 +21,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 /**
  * A <code>JoinDeclaration</code> represents a single <code><b>JOIN</b></code> expression.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -58,36 +56,9 @@ final class JoinDeclaration extends Declaration {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Join> getJoins() {
-		return Collections.emptyList();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasJoins() {
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isCollection() {
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isDerived() {
-		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isRange() {
-		return false;
+	@Override
+	public Type getType() {
+		return Type.UNKNOWN;
 	}
 
 	/**

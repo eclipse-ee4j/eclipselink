@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} is responsible to resolve the type of an identification variable.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,14 +43,6 @@ public class IdentificationVariableResolver extends Resolver {
 	public IdentificationVariableResolver(Resolver parent, String variableName) {
 		super(parent);
 		this.variableName = variableName;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**

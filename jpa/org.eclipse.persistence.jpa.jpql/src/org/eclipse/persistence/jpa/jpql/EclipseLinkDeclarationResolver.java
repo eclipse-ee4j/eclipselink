@@ -58,7 +58,10 @@ public class EclipseLinkDeclarationResolver extends DeclarationResolver {
 
 			// The parent query is using a subquery in the FROM clause
 			if (buildingDeclaration) {
-				currentDeclaration.rootPath = ExpressionTools.EMPTY_STRING;
+				currentDeclaration = new SubqueryDeclaration();
+				currentDeclaration.rootPath       = ExpressionTools.EMPTY_STRING;
+				currentDeclaration.baseExpression = expression;
+				addDeclaration(currentDeclaration);
 			}
 			// Simply traversing the tree to create the declarations
 			else {
@@ -79,20 +82,19 @@ public class EclipseLinkDeclarationResolver extends DeclarationResolver {
 		 */
 		public void visit(TableVariableDeclaration expression) {
 
-			Declaration declaration = new Declaration();
-			declaration.declarationExpression  = expression;
-			declaration.baseExpression         = expression.getTableExpression();
-			declaration.rootPath               = declaration.baseExpression.toParsedText();
+			currentDeclaration = new TableDeclaration();
+			currentDeclaration.declarationExpression  = expression;
+			currentDeclaration.baseExpression         = expression.getTableExpression();
+			currentDeclaration.rootPath               = expression.getTableExpression().getExpression().toParsedText();
 
 			Expression identificationVariable = expression.getIdentificationVariable();
 			String variableName = visitDeclaration(expression, identificationVariable);
 
-			if (variableName.length() > 0) {
-				declaration.identificationVariable = (IdentificationVariable) identificationVariable;
+			if (variableName != ExpressionTools.EMPTY_STRING) {
+				currentDeclaration.identificationVariable = (IdentificationVariable) identificationVariable;
 			}
 
-			declaration.lockData();
-			addDeclaration(declaration);
+			addDeclaration(currentDeclaration);
 		}
 	}
 }

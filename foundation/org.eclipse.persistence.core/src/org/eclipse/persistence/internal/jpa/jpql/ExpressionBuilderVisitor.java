@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.expressions.DateConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
@@ -1052,17 +1053,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	@Override
 	public void visit(FunctionExpression expression) {
 
-		List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
-
 		String identifier   = expression.getIdentifier();
 		String functionName = expression.getUnquotedFunctionName();
 
-		boolean sqlFunction      = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL;
-		boolean columnFunction   = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.COLUMN;
-		boolean operatorFunction = identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.OPERATOR;
-
 		// COLUMN
-		if (columnFunction) {
+		if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.COLUMN) {
 
 			// Create the expression for the single child
 			expression.getExpression().accept(this);
@@ -1072,12 +1067,14 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 		else {
 
+			List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
+
 			// No arguments
 			if (expressions.isEmpty()) {
 				queryExpression = queryContext.getBaseExpression();
 
 				// OPERATOR
-				if (sqlFunction) {
+				if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {
 					queryExpression = queryExpression.literal(functionName);
 				}
 				// FUNC/FUNCTION
@@ -1099,11 +1096,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				queryExpression = queryExpressions.remove(0);
 
 				// SQL
-				if (sqlFunction) {
+				if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.SQL) {
 					queryExpression = queryExpression.sql(functionName, queryExpressions);
 				}
 				// OPERATOR
-				else if (operatorFunction) {
+				else if (identifier == org.eclipse.persistence.jpa.jpql.parser.Expression.OPERATOR) {
 					queryExpression = queryExpression.operator(functionName, queryExpressions);
 				}
 				// FUNC/FUNCTION
@@ -1209,7 +1206,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 					}
 
 					// Retrieve the Entity type
-					if (declaration.isRange()) {
+					if (declaration.getType() == Type.RANGE) {
 						type[0] = declaration.getDescriptor().getJavaClass();
 					}
 				}
@@ -1674,23 +1671,32 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
 		Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
 
-		// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
-		// this will support two cases automatically, the "root" object is
-		// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
-		// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
-		//    that cannot be visited
-		if (declaration.isRange()) {
-			type[0] = declaration.getDescriptor().getJavaClass();
-			queryExpression = new ExpressionBuilder(type[0]);
-		}
-		// The FROM subquery needs to be created differently than a regular subquery
-		else if (declaration.isSubquery()) {
-			type[0] = null;
-			queryExpression = declaration.getQueryExpression();
-		}
-		// This should be a derived path (CollectionValuedPathExpression) or a subquery
-		else {
-			expression.getRootObject().accept(this);
+		switch (declaration.getType()) {
+
+			// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
+			// this will support two cases automatically, the "root" object is
+			// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
+			// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
+			//    that cannot be visited
+			case RANGE:
+			case CLASS_NAME: {
+				type[0] = declaration.getDescriptor().getJavaClass();
+				queryExpression = new ExpressionBuilder(type[0]);
+				break;
+			}
+
+			// The FROM subquery needs to be created differently than a regular subquery
+			case SUBQUERY: {
+				type[0] = null;
+				queryExpression = declaration.getQueryExpression();
+				break;
+			}
+
+			// This should be a derived path (CollectionValuedPathExpression) or a subquery
+			default: {
+				expression.getRootObject().accept(this);
+				break;
+			}
 		}
 	}
 
@@ -2597,7 +2603,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 			// The path expression is composed with an identification
 			// variable that is mapped to a subquery as the "root" object
-			if ((declaration != null) && declaration.isSubquery()) {
+			if ((declaration != null) && (declaration.getType() == Type.SUBQUERY)) {
 				resolveVirtualPath(expression);
 				return;
 			}
@@ -2612,7 +2618,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			}
 
 			// The path expression is mapping to a database table
-			if ((declaration != null) && declaration.isTable()) {
+			if ((declaration != null) && (declaration.getType() == Type.TABLE)) {
 				resolveColumn(expression);
 				return;
 			}

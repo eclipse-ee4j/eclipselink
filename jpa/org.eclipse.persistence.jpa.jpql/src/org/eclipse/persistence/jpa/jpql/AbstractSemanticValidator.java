@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.CollectionValuedPathExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.StateFieldPathExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
@@ -54,6 +55,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
@@ -361,10 +363,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			if (index != variableNameIndex) {
 
 				// Check to make sure the Declaration is a known type
-				if (declaration.isRange()   ||
-				    declaration.isDerived() ||
-				    declaration.isCollection()) {
-
+				if (declaration.getType() != Type.UNKNOWN) {
 					String nextVariableName = declaration.getVariableName();
 
 					if (variableName.equalsIgnoreCase(nextVariableName)) {
@@ -536,32 +535,37 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			}
 
 			// Check the JOIN expressions in the identification variable declaration
-			if (declaration.isRange() && declaration.hasJoins()) {
+			if (declaration.hasJoins()) {
 				validateJoinsIdentificationVariable(expression, declarations, declaration, index);
 			}
 			// Check the collection member declaration or derived path expression
-			else if (declaration.isDerived() ||
-			         declaration.isCollection()) {
+			else {
 
-				// Retrieve the identification variable from the path expression
-				String variableName = literal(
-					declaration.getBaseExpression(),
-					LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
-				);
+				Type type = declaration.getType();
 
-				if (ExpressionTools.stringIsNotEmpty(variableName) &&
-				    isIdentificationVariableDeclaredAfter(variableName, index, -1, declarations)) {
+				if (type == Type.DERIVED ||
+				    type == Type.COLLECTION) {
 
-					int startPosition = position(declaration.getDeclarationExpression()) - variableName.length();
-					int endPosition   = startPosition + variableName.length();
-
-					addProblem(
-						expression,
-						startPosition,
-						endPosition,
-						AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
-						variableName
+					// Retrieve the identification variable from the path expression
+					String variableName = literal(
+						declaration.getBaseExpression(),
+						LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
 					);
+
+					if (ExpressionTools.stringIsNotEmpty(variableName) &&
+					    isIdentificationVariableDeclaredAfter(variableName, index, -1, declarations)) {
+
+						int startPosition = position(declaration.getDeclarationExpression()) - variableName.length();
+						int endPosition   = startPosition + variableName.length();
+
+						addProblem(
+							expression,
+							startPosition,
+							endPosition,
+							AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+							variableName
+						);
+					}
 				}
 			}
 		}
@@ -1277,6 +1281,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected void validateFromClause(FromClause expression) {
 		validateAbstractFromClause(expression, topLevelFirstDeclarationVisitor());
+	}
+
+	/**
+	 * Validates the given {@link FunctionExpression}.
+	 *
+	 * @param expression The {@link FunctionExpression} to validate
+	 */
+	protected void validateFunctionExpression(FunctionExpression expression) {
 	}
 
 	/**
@@ -2067,95 +2079,103 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
 	                                                   PathType pathType) {
 
-		// Special case for EclipseLink, path expression formed with the identification variable
-		// mapped to a subquery or database table cannot be resolved, thus cannot be validated
-		if (!helper.isValidatingPathExpressionAllowed(expression)) {
-			return true;
-		}
-
 		boolean valid = true;
-		expression.getIdentificationVariable().accept(this);
 
-		// A single_valued_object_field is designated by the name of an association field in a
-		// one-to-one or many-to-one relationship or a field of embeddable class type
-		if (expression.hasIdentificationVariable() &&
-		   !expression.endsWithDot()) {
+		if (expression.hasIdentificationVariable()) {
+			expression.getIdentificationVariable().accept(this);
 
-			Object mapping = helper.resolveMapping(expression);
+			// A single_valued_object_field is designated by the name of an association field in a
+			// one-to-one or many-to-one relationship or a field of embeddable class type
+			if (!expression.endsWithDot()) {
 
-			// Validate the mapping
-			if (mapping != null) {
+				Object mapping = helper.resolveMapping(expression);
 
-				// It is syntactically illegal to compose a path expression from a path expression
-				// that evaluates to a collection
-				if (helper.isCollectionMapping(mapping)) {
-					if (pathType != PathType.ANY_FIELD_INCLUDING_COLLECTION) {
-						addProblem(expression, StateFieldPathExpression_CollectionType, expression.toActualText());
-						valid = false;
-					}
-				}
-				// A transient mapping is not allowed
-				else if (helper.isTransient(mapping)) {
-					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
-					valid = false;
-				}
-				// Only a basic field is allowed
-				else if ((pathType == PathType.BASIC_FIELD_ONLY) &&
-				         !helper.isPropertyMapping(mapping)) {
+				// Validate the mapping
+				if (mapping != null) {
 
-					addProblem(expression, StateFieldPathExpression_AssociationField, expression.toActualText());
-					valid = false;
-				}
-				// Only an association field is allowed
-				else if ((pathType == PathType.ASSOCIATION_FIELD_ONLY) &&
-				         helper.isPropertyMapping(mapping)) {
-
-					addProblem(expression, StateFieldPathExpression_BasicField, expression.toActualText());
-					valid = false;
-				}
-			}
-			else {
-
-				Object type = helper.getType(expression.toParsedText(0, expression.pathSize() - 1));
-
-				// An enum constant could have been parsed as a state field path expression
-				if (helper.isEnumType(type)) {
-
-					// Search for the enum constant
-					String enumConstant = expression.getPath(expression.pathSize() - 1);
-					boolean found = false;
-
-					for (String constant : helper.getEnumConstants(type)) {
-						if (constant.equals(enumConstant)) {
-							found = true;
-							break;
+					// It is syntactically illegal to compose a path expression from a path expression
+					// that evaluates to a collection
+					if (helper.isCollectionMapping(mapping)) {
+						if (pathType != PathType.ANY_FIELD_INCLUDING_COLLECTION) {
+							addProblem(expression, StateFieldPathExpression_CollectionType, expression.toActualText());
+							valid = false;
 						}
 					}
-
-					if (!found) {
-						int startIndex = position(expression) + helper.getTypeName(type).length() + 1;
-						int endIndex   = startIndex + enumConstant.length();
-						addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
+					// A transient mapping is not allowed
+					else if (helper.isTransient(mapping)) {
+						addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
 						valid = false;
 					}
+					// Only a basic field is allowed
+					else if ((pathType == PathType.BASIC_FIELD_ONLY) &&
+					         !helper.isPropertyMapping(mapping)) {
 
-					// Remove the used identification variable since it's is the first
-					// package name of the fully qualified enum constant
-					usedIdentificationVariables.remove(expression.getIdentificationVariable());
+						addProblem(expression, StateFieldPathExpression_AssociationField, expression.toActualText());
+						valid = false;
+					}
+					// Only an association field is allowed
+					else if ((pathType == PathType.ASSOCIATION_FIELD_ONLY) &&
+					         helper.isPropertyMapping(mapping)) {
+
+						addProblem(expression, StateFieldPathExpression_BasicField, expression.toActualText());
+						valid = false;
+					}
 				}
+				// Attempts to resolve something that does not represent a mapping
 				else {
 
-					type = helper.getType(expression);
+					Object type = helper.getType(expression.toParsedText(0, expression.pathSize() - 1));
 
-					// Does not resolve to a valid path
-					if (!helper.isTypeResolvable(type)) {
-						addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
-						valid = false;
+					// An enum constant could have been parsed as a state field path expression
+					if (helper.isEnumType(type)) {
+
+						// Search for the enum constant
+						String enumConstant = expression.getPath(expression.pathSize() - 1);
+						boolean found = false;
+
+						for (String constant : helper.getEnumConstants(type)) {
+							if (constant.equals(enumConstant)) {
+								found = true;
+								break;
+							}
+						}
+
+						if (!found) {
+							int startIndex = position(expression) + helper.getTypeName(type).length() + 1;
+							int endIndex   = startIndex + enumConstant.length();
+							addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
+							valid = false;
+						}
+
+						// Remove the used identification variable since it is the first
+						// package name of the fully qualified enum constant
+						usedIdentificationVariables.remove(expression.getIdentificationVariable());
 					}
-					// No mapping can be found for that path
 					else {
-						addProblem(expression, StateFieldPathExpression_NoMapping, expression.toActualText());
-						valid = false;
+
+						// Special case for EclipseLink, path expression formed with the identification variable
+						// mapped to a subquery or database table cannot be resolved, thus cannot be validated
+						Boolean status = validateThirdPartyStateFieldPathExpression(expression);
+
+						// Third path extension validated the path expression
+						if (status != null) {
+							valid = status;
+						}
+						// Third path extension did not validate the path expression, continue validating it
+						else {
+							type = helper.getType(expression);
+
+							// Does not resolve to a valid path
+							if (!helper.isTypeResolvable(type)) {
+								addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
+								valid = false;
+							}
+							// No mapping can be found for that path
+							else {
+								addProblem(expression, StateFieldPathExpression_NoMapping, expression.toActualText());
+								valid = false;
+							}
+						}
 					}
 				}
 			}
@@ -2245,6 +2265,19 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected boolean validateSumFunction(SumFunction expression) {
 		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the given {@link StateFieldPathExpression}, which means the path does not represent
+	 * a mapping, or an enum constant.
+	 *
+	 * @param expression The {@link StateFieldPathExpression} the validate
+	 * @return <code>Boolean.TRUE</code> or <code>Boolean.FALSE</code> if the given {@link
+	 * StateFieldPathExpression} was validated by this method; <code>null</code> if it could not be
+	 * validated (as being valid or invalid)
+	 */
+	protected Boolean validateThirdPartyStateFieldPathExpression(StateFieldPathExpression expression) {
+		return null;
 	}
 
 	/**
@@ -2665,6 +2698,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@Override
 	public final void visit(FromClause expression) {
 		validateFromClause(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void visit(FunctionExpression expression) {
+		validateFunctionExpression(expression);
 	}
 
 	/**

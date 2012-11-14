@@ -78,13 +78,6 @@ public abstract class Resolver {
 	}
 
 	/**
-	 * Visits this {@link Resolver} by the given {@link ResolverVisitor visitor}.
-	 *
-	 * @param visitor The {@link ResolverVisitor visitor} to visit this object
-	 */
-	public abstract void accept(ResolverVisitor visitor);
-
-	/**
 	 * Caches the given {@link Resolver}.
 	 *
 	 * @param variableName The key used to cache the given {@link Resolver}

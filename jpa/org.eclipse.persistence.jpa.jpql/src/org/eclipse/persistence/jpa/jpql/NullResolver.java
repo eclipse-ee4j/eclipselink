@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * A "null" implementation of a {@link Resolver}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,13 +32,6 @@ public class NullResolver extends Resolver {
 	 */
 	public NullResolver(Resolver parent) {
 		super(parent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
 	}
 
 	/**

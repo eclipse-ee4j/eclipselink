@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} resolves a path and casts it as another entity type.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -40,14 +40,6 @@ public class TreatResolver extends Resolver {
 	public TreatResolver(Resolver parent, String entityTypeName) {
 		super(parent);
 		this.entityTypeName = entityTypeName;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**

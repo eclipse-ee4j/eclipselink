@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * <p>
  * It is possible the state field path expression is actually an enum type, which will be
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -37,14 +37,6 @@ public class StateFieldResolver extends AbstractPathResolver {
 	 */
 	public StateFieldResolver(Resolver parent, String path) {
 		super(parent, path);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**

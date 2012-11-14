@@ -142,7 +142,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The list of valid proposals regrouped by categories
 	 */
 	public ContentAssistProposals buildContentAssistProposals(int position) {
-		return buildContentAssistProposals(position, ContentAssistProposalsHelper.NULL_HELPER);
+		return buildContentAssistProposals(position, ContentAssistExtension.NULL_HELPER);
 	}
 
 	/**
@@ -153,13 +153,13 @@ public abstract class AbstractJPQLQueryHelper {
 	 *
 	 * @param position The position within the query for which a list of possible choices are created
 	 * for completing the query
-	 * @param helper The helper can be used to provide additional information that is outside the
+	 * @param helper This helper can be used to provide additional information that is outside the
 	 * scope of simply providing JPA metadata information, such as table names, column names, class names
 	 * @return The list of valid proposals regrouped by categories
 	 * @since 2.5
 	 */
 	public ContentAssistProposals buildContentAssistProposals(int position,
-	                                                          ContentAssistProposalsHelper helper) {
+	                                                          ContentAssistExtension helper) {
 
 		// Create a map of the positions within the parsed tree
 		QueryPosition queryPosition = getJPQLExpression().buildPosition(

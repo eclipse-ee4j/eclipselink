@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
@@ -217,8 +218,7 @@ final class DeclarationResolver {
 	 * Returns the parsed representation of a <b>JOIN FETCH</b> that were defined in the same
 	 * declaration than the given range identification variable name.
 	 *
-	 * @param variableName The name of the identification variable that should be used to define an
-	 * abstract schema name
+	 * @param variableName The name of the identification variable that should be used to define an entity
 	 * @return The <b>JOIN FETCH</b> expressions used in the same declaration or an empty collection
 	 * if none was defined
 	 */
@@ -226,7 +226,7 @@ final class DeclarationResolver {
 
 		Declaration declaration = getDeclaration(variableName);
 
-		if ((declaration != null) && declaration.isRange()) {
+		if ((declaration != null) && (declaration.getType() == Type.RANGE)) {
 			RangeDeclaration rangeDeclaration = (RangeDeclaration) declaration;
 			if (rangeDeclaration.hasJoins()) {
 				return rangeDeclaration.getJoinFetches();
@@ -282,47 +282,65 @@ final class DeclarationResolver {
 	}
 
 	/**
-	 * Determines whether the given identification variable is defining a <b>JOIN</b> or <code>IN</code>
-	 * expressions for a collection-valued field.
+	 * Determines whether the given identification variable is defining a <b>JOIN</b> expression or
+	 * in a <code>IN</code> expressions for a collection-valued field. If the search didn't find the
+	 * identification in this resolver, then it will traverse the parent hierarchy.
 	 *
 	 * @param variableName The identification variable to check for what it maps
 	 * @return <code>true</code> if the given identification variable maps a collection-valued field
-	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> if it's not
-	 * defined or it's mapping an abstract schema name
+	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> otherwise
 	 */
 	boolean isCollectionIdentificationVariable(String variableName) {
+
 		boolean result = isCollectionIdentificationVariableImp(variableName);
+
 		if (!result && (parent != null)) {
 			result = parent.isCollectionIdentificationVariableImp(variableName);
 		}
+
 		return result;
 	}
 
+	/**
+	 * Determines whether the given identification variable is defining a <b>JOIN</b> expression or
+	 * in a <code>IN</code> expressions for a collection-valued field. The search does not traverse
+	 * the parent hierarchy.
+	 *
+	 * @param variableName The identification variable to check for what it maps
+	 * @return <code>true</code> if the given identification variable maps a collection-valued field
+	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> otherwise
+	 */
 	boolean isCollectionIdentificationVariableImp(String variableName) {
 
 		for (Declaration declaration : declarations) {
 
-			// Check for a collection member declaration
-			if (!declaration.isRange() &&
-			     declaration.getVariableName().equalsIgnoreCase(variableName)) {
+			switch (declaration.getType()) {
 
-				return true;
-			}
-			else if (declaration.isRange()) {
+				case COLLECTION: {
+					if (declaration.getVariableName().equalsIgnoreCase(variableName)) {
+						return true;
+					}
+					return false;
+				}
 
-				RangeDeclaration rangeDeclaration = (RangeDeclaration) declaration;
+				case RANGE:
+				case DERIVED: {
 
-				// Check the JOIN expressions
-				for (Join join : rangeDeclaration.getJoins()) {
+					AbstractRangeDeclaration rangeDeclaration = (AbstractRangeDeclaration) declaration;
 
-					String joinVariableName = queryContext.literal(
-						join.getIdentificationVariable(),
-						LiteralType.IDENTIFICATION_VARIABLE
-					);
+					// Check the JOIN expressions
+					for (Join join : rangeDeclaration.getJoins()) {
 
-					if (joinVariableName.equalsIgnoreCase(variableName)) {
-						Declaration joinDeclaration = queryContext.getDeclaration(joinVariableName);
-						return joinDeclaration.getMapping().isCollectionMapping();
+						String joinVariableName = queryContext.literal(
+							join.getIdentificationVariable(),
+							LiteralType.IDENTIFICATION_VARIABLE
+						);
+
+						if (joinVariableName.equalsIgnoreCase(variableName)) {
+							// Make sure the JOIN expression maps a collection mapping
+							Declaration joinDeclaration = queryContext.getDeclaration(joinVariableName);
+							return joinDeclaration.getMapping().isCollectionMapping();
+						}
 					}
 				}
 			}
@@ -350,7 +368,7 @@ final class DeclarationResolver {
 
 	private boolean isRangeIdentificationVariableImp(String variableName) {
 		Declaration declaration = getDeclaration(variableName);
-		return (declaration != null) && declaration.isRange();
+		return (declaration != null) && declaration.getType().isRange();
 	}
 
 	/**
@@ -476,7 +494,8 @@ final class DeclarationResolver {
 		public void visit(CollectionMemberDeclaration expression) {
 
 			Declaration declaration = new CollectionDeclaration(queryContext);
-			declaration.baseExpression = expression.getCollectionValuedPathExpression();
+			declaration.baseExpression        = expression.getCollectionValuedPathExpression();
+			declaration.rootPath              = declaration.baseExpression.toActualText();
 			declaration.declarationExpression = expression;
 			declarations.add(declaration);
 
@@ -551,20 +570,6 @@ final class DeclarationResolver {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(TableVariableDeclaration expression) {
-
-			TableDeclaration declaration = new TableDeclaration(queryContext);
-			declaration.declarationExpression  = expression;
-			declaration.baseExpression         = expression.getTableExpression();
-			declaration.rootPath               = declaration.baseExpression.toParsedText();
-			declaration.identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-			declarations.add(declaration);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
 		public void visit(IdentificationVariableDeclaration expression) {
 
 			try {
@@ -623,7 +628,7 @@ final class DeclarationResolver {
 			declarations.add(currentDeclaration);
 
 			// This range variable declaration is the first defined,
-			// it is then the base Declaration
+			// it is then the base declaration
 			if (baseDeclaration == null) {
 				baseDeclaration = currentDeclaration;
 			}
@@ -676,6 +681,20 @@ final class DeclarationResolver {
 		@Override
 		public void visit(SubExpression expression) {
 			expression.getExpression().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TableVariableDeclaration expression) {
+
+			TableDeclaration declaration = new TableDeclaration(queryContext);
+			declaration.declarationExpression  = expression;
+			declaration.baseExpression         = expression.getTableExpression();
+			declaration.rootPath               = declaration.baseExpression.toParsedText();
+			declaration.identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
+			declarations.add(declaration);
 		}
 
 		/**

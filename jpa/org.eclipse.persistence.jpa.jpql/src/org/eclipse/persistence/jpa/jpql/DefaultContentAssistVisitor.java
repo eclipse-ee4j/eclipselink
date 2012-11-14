@@ -13,6 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+
 /**
  * This visitor traverses the JPQL parsed tree and gathers the possible proposals at a given position.
  * <p>
@@ -47,7 +61,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -67,7 +81,125 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
+		return new AcceptableTypeVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return false;
+	}
+
+	protected class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbsExpression expression) {
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ArithmeticFactor expression) {
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AvgFunction expression) {
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ConcatExpression expression) {
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LengthExpression expression) {
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LocateExpression expression) {
+			// TODO: Handle the position
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LowerExpression expression) {
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ModExpression expression) {
+			// In theory we would only allow Long and Integer
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SqrtExpression expression) {
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubstringExpression expression) {
+			// TODO: Handle the position
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SumFunction expression) {
+			type = getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TrimExpression expression) {
+			type = getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UpperExpression expression) {
+			type = getType(CharSequence.class);
+		}
 	}
 }

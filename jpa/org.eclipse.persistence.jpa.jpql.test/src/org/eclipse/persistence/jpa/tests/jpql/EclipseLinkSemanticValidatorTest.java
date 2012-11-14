@@ -16,36 +16,45 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
-import org.junit.Test;
 
 /**
  * The unit-test class used for testing a JPQL query semantically when the JPA version is 1.0 and 2.0
  * and EclipseLink is the persistence provider. The EclipseLink version supported is 2.0, 2.1, 2.2
  * and 2.3.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
-public class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
+public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
 	}
 
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper());
+	protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
+		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected AbstractSemanticValidator buildValidator() {
+		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper(), buildSemanticExtension());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return true;
-	}
-
-	@Test
-	public final void test_Something() throws Exception {
 	}
 }
