@@ -13,7 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.ContentAssistProposalsHelper;
+import org.eclipse.persistence.jpa.jpql.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.DefaultContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ResultQuery;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
@@ -178,7 +178,7 @@ public final class DefaultContentAssistProposalsTest {
 	private DefaultContentAssistProposals buildProposals() {
 		return new DefaultContentAssistProposals(
 			DefaultJPQLGrammar.instance(),
-			ContentAssistProposalsHelper.NULL_HELPER
+			ContentAssistExtension.NULL_HELPER
 		);
 	}
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
@@ -30,18 +31,31 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidatorTest {
+public final class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
 	}
 
-	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper());
+	protected EclipseLinkSemanticValidatorExtension buildSemanticExtension() {
+		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected AbstractSemanticValidator buildValidator() {
+		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper(), buildSemanticExtension());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return true;

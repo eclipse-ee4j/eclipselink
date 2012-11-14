@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
@@ -21,14 +23,17 @@ import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
@@ -59,13 +64,40 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
                                           implements EclipseLinkExpressionVisitor {
 
 	/**
+	 * The following extension can be used to give access to non-JPA metadata artifacts, such as
+	 * database tables and columns.
+	 */
+	private EclipseLinkSemanticValidatorExtension extension;
+
+	/**
+	 *
+	 */
+	private TableExpressionVisitor tableExpressionVisitor;
+
+	/**
 	 * Creates a new <code>EclipseLinkSemanticValidator</code>.
 	 *
 	 * @param queryContext The context used to query information about the JPQL query
 	 * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @deprecated Use {@link EclipseLinkSemanticValidator#EclipseLinkSemanticValidator(JPQLQueryContext, EclipseLinkSemanticValidatorExtension)}
 	 */
+	@Deprecated
 	public EclipseLinkSemanticValidator(JPQLQueryContext queryContext) {
-		super(new GenericSemanticValidatorHelper(queryContext));
+		this(new GenericSemanticValidatorHelper(queryContext), EclipseLinkSemanticValidatorExtension.NULL_EXTENSION);
+	}
+
+	/**
+	 * Creates a new <code>EclipseLinkSemanticValidator</code>.
+	 *
+	 * @param queryContext The context used to query information about the JPQL query
+	 * @param extension The following extension can be used to give access to non-JPA metadata
+	 * artifacts, such as database tables and columns
+	 * @exception NullPointerException The given {@link JPQLQueryContext} cannot be <code>null</code>
+	 */
+	public EclipseLinkSemanticValidator(JPQLQueryContext queryContext,
+	                                    EclipseLinkSemanticValidatorExtension extension) {
+
+		this(new GenericSemanticValidatorHelper(queryContext), extension);
 	}
 
 	/**
@@ -73,10 +105,15 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 *
 	 * @param helper The given helper allows this validator to access the JPA artifacts without using
 	 * Hermes SPI
+	 * @param extension The following extension can be used to give access to non-JPA metadata
+	 * artifacts, such as database tables and columns
 	 * @exception NullPointerException The given {@link SemanticValidatorHelper} cannot be <code>null</code>
 	 */
-	public EclipseLinkSemanticValidator(SemanticValidatorHelper helper) {
+	public EclipseLinkSemanticValidator(SemanticValidatorHelper helper,
+	                                    EclipseLinkSemanticValidatorExtension extension) {
+
 		super(helper);
+		this.extension = extension;
 	}
 
 	/**
@@ -95,6 +132,10 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		return new EclipseLinkGrammarValidator.EclipseLinkOwningClauseVisitor();
 	}
 
+	protected TableExpressionVisitor buildTableExpressionVisitor() {
+		return new TableExpressionVisitor();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -103,12 +144,112 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		return new TopLevelFirstDeclarationVisitor();
 	}
 
+	protected JPQLQueryDeclaration getDeclaration(String variableName) {
+
+		for (JPQLQueryDeclaration declaration : helper.getAllDeclarations()) {
+
+			if (declaration.getVariableName().equalsIgnoreCase(variableName)) {
+				return declaration;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the extension that gives access to non-JPA metadata artifacts, such as database tables
+	 * and columns.
+	 *
+	 * @return An extension giving access to non-JPA metadata artifacts or {@link
+	 * EclipseLinkSemanticValidatorExtension#NULL_EXTENSION} if no extension was provided
+	 */
+	protected EclipseLinkSemanticValidatorExtension getExtension() {
+		return extension;
+	}
+
+	protected TableExpressionVisitor getTableExpressionVisitor() {
+		if (tableExpressionVisitor == null) {
+			tableExpressionVisitor = buildTableExpressionVisitor();
+		}
+		return tableExpressionVisitor;
+	}
+
+	protected boolean isTableExpression(Expression expression) {
+		TableExpressionVisitor visitor = getTableExpressionVisitor();
+		try {
+			visitor.expression = expression;
+			expression.accept(visitor);
+			return visitor.valid;
+		}
+		finally {
+			visitor.valid = false;
+			visitor.expression = null;
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected PathType selectClausePathExpressionPathType() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateFunctionExpression(FunctionExpression expression) {
+		super.validateFunctionExpression(expression);
+
+		// No need to validate if no extension was provided
+		// Validate the column name
+		if (extension != EclipseLinkSemanticValidatorExtension.NULL_EXTENSION &&
+		   (expression.getIdentifier() == Expression.COLUMN) &&
+		    expression.hasExpression()) {
+
+			String columnName = expression.getUnquotedFunctionName();
+			String variableName = literal(expression.getExpression(), LiteralType.IDENTIFICATION_VARIABLE);
+
+			if (ExpressionTools.stringIsNotEmpty(variableName) &&
+			    ExpressionTools.stringIsNotEmpty(columnName)) {
+
+				// Retrieve the declaration associated with the identification variable
+				JPQLQueryDeclaration declaration = getDeclaration(variableName);
+
+				// Only a range variable declaration can be used
+				if (declaration.getType().isRange()) {
+					String entityName = literal(declaration.getBaseExpression(), LiteralType.ABSTRACT_SCHEMA_NAME);
+
+					if (entityName != ExpressionTools.EMPTY_STRING) {
+
+						// Retrieve the primary table of the entity
+						String tableName = extension.getEntityTable(entityName);
+
+						// The column is not on the primary table
+						if (ExpressionTools.stringIsNotEmpty(tableName) &&
+						    !extension.columnExists(tableName, expression.getUnquotedFunctionName())) {
+
+							int startPosition = position(expression) +
+							                    Expression.COLUMN.length() +
+							                    (expression.hasLeftParenthesis() ? 1 : 0);
+
+							int endPosition = startPosition +
+							                  expression.getFunctionName().length();
+
+							addProblem(
+								expression,
+								startPosition,
+								endPosition,
+								FunctionExpression_UnknownColumn,
+								columnName,
+								tableName
+							);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -139,13 +280,85 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	protected Boolean validateThirdPartyStateFieldPathExpression(StateFieldPathExpression expression) {
+
+		Boolean valid = null;
+
+		// Retrieve the identification variable
+		String variableName = literal(expression.getIdentificationVariable(), LiteralType.IDENTIFICATION_VARIABLE);
+
+		if (variableName != ExpressionTools.EMPTY_STRING) {
+
+			// Now find the associated declaration
+			JPQLQueryDeclaration declaration = getDeclaration(variableName);
+
+			if (declaration != null) {
+
+				// The path expression is composed with an identification variable mapping a subquery
+				if (declaration.getType() == Type.SUBQUERY) {
+					valid = Boolean.TRUE;
+				}
+				else {
+					Expression baseExpression = declaration.getBaseExpression();
+
+					// If the base expression is a TableExpression, then we can
+					// continue to resolve the table and column names
+					if ((baseExpression != null) && isTableExpression(baseExpression)) {
+
+						// No need to validate if no extension was provided,
+						// but mark valid to true so it's not validated otherwise
+						if (extension == EclipseLinkSemanticValidatorExtension.NULL_EXTENSION) {
+							valid = Boolean.TRUE;
+						}
+						else {
+							valid = Boolean.FALSE;
+
+							// Retrieve the table name
+							String tableName = literal(baseExpression, LiteralType.STRING_LITERAL);
+
+							if (tableName != ExpressionTools.EMPTY_STRING) {
+								tableName = ExpressionTools.unquote(tableName);
+
+								// If the table name can be resolved, then validate the column name
+								if ((tableName != null) && extension.tableExists(tableName)) {
+									String columnName = expression.getPath(1);
+
+									// The column cannot be found on the table
+									if (!extension.columnExists(tableName, columnName)) {
+										addProblem(
+											expression,
+											StateFieldPathExpression_UnknownColumn,
+											columnName,
+											tableName
+										);
+									}
+									else {
+										valid = Boolean.TRUE;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return valid;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(AsOfClause expression) {
+		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(CastExpression expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -153,6 +366,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(ConnectByClause expression) {
+		super.visit(expression);
 		// TODO: 2.5
 	}
 
@@ -160,6 +374,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -167,6 +382,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -174,6 +390,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(HierarchicalQueryClause expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -181,6 +398,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(OrderSiblingsByClause expression) {
+		super.visit(expression);
 		// TODO
 	}
 
@@ -188,6 +406,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -195,6 +414,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(StartWithClause expression) {
+		super.visit(expression);
 		// TODO: 2.5
 	}
 
@@ -202,13 +422,28 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(TableExpression expression) {
-		// Nothing to validate semantically
+		super.visit(expression);
+
+		// No need to validate if no extension was defined
+		if (extension != EclipseLinkSemanticValidatorExtension.NULL_EXTENSION) {
+			Expression tableNameExpression = expression.getExpression();
+			String tableName = literal(tableNameExpression, LiteralType.STRING_LITERAL);
+
+			if (tableName != ExpressionTools.EMPTY_STRING) {
+				tableName = ExpressionTools.unquote(tableName);
+
+				if ((tableName.length() > 0) && !extension.tableExists(tableName)) {
+					addProblem(tableNameExpression, JPQLQueryProblemMessages.TableExpression_InvalidTableName);
+				}
+			}
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(TableVariableDeclaration expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
 	}
 
@@ -216,7 +451,29 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(UnionClause expression) {
+		super.visit(expression);
 		// Nothing to validate semantically
+	}
+
+	protected class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
+
+		/**
+		 * The {@link Expression} being visited.
+		 */
+		protected Expression expression;
+
+		/**
+		 * <code>true</code> if the {@link Expression} being visited is a {@link TableExpression}.
+		 */
+		protected boolean valid;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TableExpression expression) {
+			valid = (this.expression == expression);
+		}
 	}
 
 	protected class TopLevelFirstDeclarationVisitor extends AbstractSemanticValidator.TopLevelFirstDeclarationVisitor {

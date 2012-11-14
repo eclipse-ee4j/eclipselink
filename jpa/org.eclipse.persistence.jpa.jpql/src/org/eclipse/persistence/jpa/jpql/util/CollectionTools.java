@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.jpql.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -130,13 +129,17 @@ public final class CollectionTools {
 	 * Returns a list corresponding to the specified array. Unlike {@link Arrays#asList(Object[])},
 	 * the list is modifiable and is not backed by the array.
 	 *
-	 * @param array
+	 * @param array The array to convert into a {@link List}
+	 * @return An instance of a {@link List} containing the elements of the given array
 	 * @param <E>
-	 * @return
 	 * @since 2.5
 	 */
-	public static <E> ArrayList<E> list(E... array) {
-		return new ArrayList<E>(Arrays.asList(array));
+	public static <E> List<E> list(E... array) {
+		List<E> list = new ArrayList<E>(array.length);
+		for (E item : array) {
+			list.add(item);
+		}
+		return list;
 	}
 
 	/**

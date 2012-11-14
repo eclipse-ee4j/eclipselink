@@ -100,6 +100,7 @@ public final class AllSemanticValidatorTests {
 	 */
 	@SuiteClasses({
 		EclipseLinkSemanticValidatorTest2_4.class,
+		EclipseLinkSemanticValidatorExtensionTest2_4.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllEclipseLinkSemanticValidatorTest2_4 {

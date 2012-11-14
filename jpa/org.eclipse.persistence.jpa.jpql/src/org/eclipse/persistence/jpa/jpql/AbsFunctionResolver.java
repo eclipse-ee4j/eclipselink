@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * The <b>ABS</b> function takes a numeric argument and returns a number (integer, float, or double)
  * of the same type as the argument to the function.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -36,13 +36,6 @@ public class AbsFunctionResolver extends Resolver {
 	 */
 	public AbsFunctionResolver(Resolver parent) {
 		super(parent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
 	}
 
 	/**

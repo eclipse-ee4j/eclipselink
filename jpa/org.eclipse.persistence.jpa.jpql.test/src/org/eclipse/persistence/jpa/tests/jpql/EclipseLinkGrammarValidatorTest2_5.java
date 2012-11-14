@@ -31,7 +31,7 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class EclipseLinkGrammarValidatorTest2_5 extends AbstractGrammarValidatorTest {
+public final class EclipseLinkGrammarValidatorTest2_5 extends AbstractGrammarValidatorTest {
 
 	/**
 	 * {@inheritDoc}

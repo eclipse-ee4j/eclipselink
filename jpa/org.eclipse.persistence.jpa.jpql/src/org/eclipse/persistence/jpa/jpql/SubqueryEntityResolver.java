@@ -90,14 +90,6 @@ public class SubqueryEntityResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visitor(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 		IManagedType entity = getManagedType();
 		return (entity != null) ? entity.getType() : getTypeHelper().objectType();

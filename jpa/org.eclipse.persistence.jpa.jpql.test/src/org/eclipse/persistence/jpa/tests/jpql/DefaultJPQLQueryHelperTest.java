@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.tests.jpql;
 
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
-
 import static org.junit.Assert.*;
 
 /**
@@ -28,7 +27,7 @@ import static org.junit.Assert.*;
  */
 @UniqueSignature
 @SuppressWarnings("nls")
-public class DefaultJPQLQueryHelperTest extends AbstractJPQLQueryHelperTest {
+public final class DefaultJPQLQueryHelperTest extends AbstractJPQLQueryHelperTest {
 
 	protected IEntity entity(String entityName) throws Exception {
 		IEntity entity = getPersistenceUnit().getEntityNamed(entityName);

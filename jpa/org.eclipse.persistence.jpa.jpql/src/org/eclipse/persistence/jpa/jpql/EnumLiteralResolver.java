@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} retrieves the type for an enum constant.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -48,14 +48,6 @@ public class EnumLiteralResolver extends Resolver {
 		super(parent);
 		this.type        = type;
 		this.enumLiteral = enumLiteral;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**

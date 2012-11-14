@@ -21,7 +21,6 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -35,7 +34,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidatorTest {
+public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidatorTest {
 
 	private JPQLQueryStringFormatter buildStringFormatter_1() {
 		return new JPQLQueryStringFormatter() {

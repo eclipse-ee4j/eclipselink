@@ -152,78 +152,78 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	@JPQLGrammarTestHelper
 	private JPQLGrammar jpqlGrammar;
 
-	protected static AbsExpressionTester abs(ExpressionTester expression) {
+	public static AbsExpressionTester abs(ExpressionTester expression) {
 		return new AbsExpressionTester(expression);
 	}
 
-	protected static AbstractSchemaNameTester abstractSchemaName(String abstractSchemaName) {
+	public static AbstractSchemaNameTester abstractSchemaName(String abstractSchemaName) {
 		return new AbstractSchemaNameTester(abstractSchemaName);
 	}
 
-	protected static AdditionExpressionTester add(ExpressionTester leftExpression,
+	public static AdditionExpressionTester add(ExpressionTester leftExpression,
 	                                              ExpressionTester rightExpression) {
 
 		return new AdditionExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static AllOrAnyExpressionTester all(ExpressionTester subquery) {
+	public static AllOrAnyExpressionTester all(ExpressionTester subquery) {
 		return new AllOrAnyExpressionTester(ALL, subquery);
 	}
 
-	protected static AndExpressionTester and(ExpressionTester leftExpression,
+	public static AndExpressionTester and(ExpressionTester leftExpression,
 	                                         ExpressionTester rightExpression) {
 
 		return new AndExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static AllOrAnyExpressionTester any(ExpressionTester subquery) {
+	public static AllOrAnyExpressionTester any(ExpressionTester subquery) {
 		return new AllOrAnyExpressionTester(ANY, subquery);
 	}
 
-	protected static AllOrAnyExpressionTester anyExpression(ExpressionTester subquery) {
+	public static AllOrAnyExpressionTester anyExpression(ExpressionTester subquery) {
 		return new AllOrAnyExpressionTester(ANY, subquery);
 	}
 
-	protected static AsOfClauseTester asOf(ExpressionTester expression) {
+	public static AsOfClauseTester asOf(ExpressionTester expression) {
 		return new AsOfClauseTester(null, expression);
 	}
 
-	protected static AsOfClauseTester asOfScn(ExpressionTester expression) {
+	public static AsOfClauseTester asOfScn(ExpressionTester expression) {
 		return new AsOfClauseTester(SCN, expression);
 	}
 
-	protected static AsOfClauseTester asOfScn(int changeNumber) {
+	public static AsOfClauseTester asOfScn(int changeNumber) {
 		return asOfScn(numeric(changeNumber));
 	}
 
-	protected static AsOfClauseTester asOfTimestamp(ExpressionTester expression) {
+	public static AsOfClauseTester asOfTimestamp(ExpressionTester expression) {
 		return new AsOfClauseTester(TIMESTAMP, expression);
 	}
 
-	protected static AvgFunctionTester avg(ExpressionTester expression) {
+	public static AvgFunctionTester avg(ExpressionTester expression) {
 		return new AvgFunctionTester(expression, false);
 	}
 
-	protected static AvgFunctionTester avg(String statefieldPathExpression) {
+	public static AvgFunctionTester avg(String statefieldPathExpression) {
 		return avg(path(statefieldPathExpression));
 	}
 
-	protected static AvgFunctionTester avgDistinct(String statefieldPathExpression) {
+	public static AvgFunctionTester avgDistinct(String statefieldPathExpression) {
 		return new AvgFunctionTester(path(statefieldPathExpression), true);
 	}
 
-	protected static BadExpressionTester bad(ExpressionTester expression) {
+	public static BadExpressionTester bad(ExpressionTester expression) {
 		return new BadExpressionTester(expression);
 	}
 
-	protected static BetweenExpressionTester between(ExpressionTester expression,
+	public static BetweenExpressionTester between(ExpressionTester expression,
 	                                                 ExpressionTester lowerBoundExpression,
 	                                                 ExpressionTester upperBoundExpression) {
 
 		return new BetweenExpressionTester(expression, false, lowerBoundExpression, upperBoundExpression);
 	}
 
-	protected static CaseExpressionTester case_(ExpressionTester... whenClauses) {
+	public static CaseExpressionTester case_(ExpressionTester... whenClauses) {
 
 		ExpressionTester[] copy = new ExpressionTester[whenClauses.length - 1];
 		System.arraycopy(whenClauses, 0, copy, 0, whenClauses.length - 1);
@@ -235,7 +235,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CaseExpressionTester case_(ExpressionTester caseOperand,
+	public static CaseExpressionTester case_(ExpressionTester caseOperand,
 	                                            ExpressionTester[] whenClauses,
 	                                            ExpressionTester elseExpression) {
 
@@ -246,7 +246,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CaseExpressionTester case_(ExpressionTester[] whenClauses,
+	public static CaseExpressionTester case_(ExpressionTester[] whenClauses,
 	                                            ExpressionTester elseExpression) {
 
 		return case_(nullExpression(), whenClauses, elseExpression);
@@ -259,24 +259,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new CastExpressionTester(expression, hasAs, databaseType);
 	}
 
-	protected static CastExpressionTester cast(ExpressionTester expression,
+	public static CastExpressionTester cast(ExpressionTester expression,
 	                                           ExpressionTester databaseType) {
 
 		return cast(expression, false, databaseType);
 	}
 
-	protected static CastExpressionTester cast(ExpressionTester expression, String databaseType) {
+	public static CastExpressionTester cast(ExpressionTester expression, String databaseType) {
 		return cast(expression, databaseType, -1, -1);
 	}
 
-	protected static CastExpressionTester cast(ExpressionTester expression,
+	public static CastExpressionTester cast(ExpressionTester expression,
 	                                           String databaseType,
 	                                           int size) {
 
 		return cast(expression, databaseType, size, -1);
 	}
 
-	protected static CastExpressionTester cast(ExpressionTester expression,
+	public static CastExpressionTester cast(ExpressionTester expression,
 	                                           String databaseType,
 	                                           int size,
 	                                           int precision) {
@@ -288,22 +288,22 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CastExpressionTester cast(String pathExpression, ExpressionTester databaseType) {
+	public static CastExpressionTester cast(String pathExpression, ExpressionTester databaseType) {
 		return cast(path(pathExpression), databaseType);
 	}
 
-	protected static CastExpressionTester cast(String pathExpression, String databaseType) {
+	public static CastExpressionTester cast(String pathExpression, String databaseType) {
 		return cast(path(pathExpression), databaseType);
 	}
 
-	protected static CastExpressionTester cast(String pathExpression,
+	public static CastExpressionTester cast(String pathExpression,
 	                                           String databaseType,
 	                                           int size) {
 
 		return cast(path(pathExpression), databaseType, size, -1);
 	}
 
-	protected static CastExpressionTester cast(String pathExpression,
+	public static CastExpressionTester cast(String pathExpression,
 	                                           String databaseType,
 	                                           int size,
 	                                           int precision) {
@@ -311,24 +311,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return cast(path(pathExpression), databaseType, size, precision);
 	}
 
-	protected static CastExpressionTester castAs(ExpressionTester expression,
+	public static CastExpressionTester castAs(ExpressionTester expression,
 	                                             ExpressionTester databaseType) {
 
 		return cast(expression, true, databaseType);
 	}
 
-	protected static CastExpressionTester castAs(ExpressionTester expression, String databaseType) {
+	public static CastExpressionTester castAs(ExpressionTester expression, String databaseType) {
 		return castAs(expression, databaseType, -1, -1);
 	}
 
-	protected static CastExpressionTester castAs(ExpressionTester pathExpression,
+	public static CastExpressionTester castAs(ExpressionTester pathExpression,
 	                                             String databaseType,
 	                                             int size) {
 
 		return castAs(pathExpression, databaseType, size, -1);
 	}
 
-	protected static CastExpressionTester castAs(ExpressionTester expression,
+	public static CastExpressionTester castAs(ExpressionTester expression,
 	                                             String databaseType,
 	                                             int size,
 	                                             int precision) {
@@ -340,24 +340,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CastExpressionTester castAs(String pathExpression, ExpressionTester databaseType) {
+	public static CastExpressionTester castAs(String pathExpression, ExpressionTester databaseType) {
 		return castAs(path(pathExpression), databaseType);
 	}
 
-	protected static CastExpressionTester castAs(String pathExpression,
+	public static CastExpressionTester castAs(String pathExpression,
 	                                             String databaseType) {
 
 		return castAs(path(pathExpression), databaseType, -1);
 	}
 
-	protected static CastExpressionTester castAs(String pathExpression,
+	public static CastExpressionTester castAs(String pathExpression,
 	                                             String databaseType,
 	                                             int size) {
 
 		return castAs(path(pathExpression), databaseType, size);
 	}
 
-	protected static CastExpressionTester castAs(String pathExpression,
+	public static CastExpressionTester castAs(String pathExpression,
 	                                             String databaseType,
 	                                             int size,
 	                                             int precision) {
@@ -365,15 +365,15 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return castAs(path(pathExpression), databaseType, size, precision);
 	}
 
-	protected static CoalesceExpressionTester coalesce(ExpressionTester expression) {
+	public static CoalesceExpressionTester coalesce(ExpressionTester expression) {
 		return new CoalesceExpressionTester(expression);
 	}
 
-	protected static CoalesceExpressionTester coalesce(ExpressionTester... expressions) {
+	public static CoalesceExpressionTester coalesce(ExpressionTester... expressions) {
 		return new CoalesceExpressionTester(collection(expressions));
 	}
 
-	protected static CollectionExpressionTester collection(ExpressionTester... expressions) {
+	public static CollectionExpressionTester collection(ExpressionTester... expressions) {
 
 		Boolean[] spaces = new Boolean[expressions.length];
 		Boolean[] commas = new Boolean[expressions.length];
@@ -387,14 +387,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return collection(expressions, commas, spaces);
 	}
 
-	protected static CollectionExpressionTester collection(ExpressionTester[] expressions,
+	public static CollectionExpressionTester collection(ExpressionTester[] expressions,
 	                                                       Boolean[] commas,
 	                                                       Boolean[] spaces) {
 
 		return new CollectionExpressionTester(expressions, commas, spaces);
 	}
 
-	protected static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
+	public static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
 	                                                                     boolean startsWithDot,
 	                                                                     String collectionPath) {
 
@@ -404,13 +404,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
+	public static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
 	                                                                     String collectionPath) {
 
 		return collectionPath(identificationVariable, true, collectionPath);
 	}
 
-	protected static CollectionValuedPathExpressionTester collectionPath(String collectionPath) {
+	public static CollectionValuedPathExpressionTester collectionPath(String collectionPath) {
 
 		int dotIndex = collectionPath.indexOf('.');
 
@@ -430,50 +430,50 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new ComparisonExpressionTester(comparator, leftExpression, rightExpression);
 	}
 
-	protected static ConcatExpressionTester concat(ExpressionTester... expressions) {
+	public static ConcatExpressionTester concat(ExpressionTester... expressions) {
 		if (expressions.length > 1) {
 			return new ConcatExpressionTester(collection(expressions));
 		}
 		return new ConcatExpressionTester(expressions[0]);
 	}
 
-	protected static ConnectByClauseTester connectBy(ExpressionTester expression) {
+	public static ConnectByClauseTester connectBy(ExpressionTester expression) {
 		return new ConnectByClauseTester(expression);
 	}
 
-	protected static CountFunctionTester count(ExpressionTester statefieldPathExpression) {
+	public static CountFunctionTester count(ExpressionTester statefieldPathExpression) {
 		return new CountFunctionTester(statefieldPathExpression, false);
 	}
 
-	protected static CountFunctionTester count(String statefieldPathExpression) {
+	public static CountFunctionTester count(String statefieldPathExpression) {
 		return count(path(statefieldPathExpression));
 	}
 
-	protected static CountFunctionTester countDistinct(ExpressionTester statefieldPathExpression) {
+	public static CountFunctionTester countDistinct(ExpressionTester statefieldPathExpression) {
 		return new CountFunctionTester(statefieldPathExpression, true);
 	}
 
-	protected static DateTimeTester CURRENT_DATE() {
+	public static DateTimeTester CURRENT_DATE() {
 		return new DateTimeTester(CURRENT_DATE);
 	}
 
-	protected static DateTimeTester CURRENT_TIME() {
+	public static DateTimeTester CURRENT_TIME() {
 		return new DateTimeTester(CURRENT_TIME);
 	}
 
-	protected static DateTimeTester CURRENT_TIMESTAMP() {
+	public static DateTimeTester CURRENT_TIMESTAMP() {
 		return new DateTimeTester(CURRENT_TIMESTAMP);
 	}
 
-	protected static DatabaseTypeTester databaseType(String databaseType) {
+	public static DatabaseTypeTester databaseType(String databaseType) {
 		return databaseType(databaseType, -1);
 	}
 
-	protected static DatabaseTypeTester databaseType(String databaseType, int length) {
+	public static DatabaseTypeTester databaseType(String databaseType, int length) {
 		return databaseType(databaseType, length, -1);
 	}
 
-	protected static DatabaseTypeTester databaseType(String databaseType, int size, int precision) {
+	public static DatabaseTypeTester databaseType(String databaseType, int size, int precision) {
 
 		DatabaseTypeTester expression = new DatabaseTypeTester(
 			databaseType,
@@ -489,103 +489,103 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return expression;
 	}
 
-	protected static DateTimeTester dateTime(String jdbcEscapeFormat) {
+	public static DateTimeTester dateTime(String jdbcEscapeFormat) {
 		return new DateTimeTester(jdbcEscapeFormat);
 	}
 
-	protected static DeleteClauseTester delete(ExpressionTester rangeVariableDeclaration) {
+	public static DeleteClauseTester delete(ExpressionTester rangeVariableDeclaration) {
 		return new DeleteClauseTester(rangeVariableDeclaration);
 	}
 
-	protected static DeleteClauseTester delete(String abstractSchemaName,
+	public static DeleteClauseTester delete(String abstractSchemaName,
 	                                           String identificationVariable) {
 
 		return delete(rangeVariableDeclaration(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteClauseTester deleteAs(ExpressionTester abstractSchemaName,
+	public static DeleteClauseTester deleteAs(ExpressionTester abstractSchemaName,
 	                                             ExpressionTester identificationVariable) {
 
 		return delete(rangeVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteClauseTester deleteAs(String abstractSchemaName,
+	public static DeleteClauseTester deleteAs(String abstractSchemaName,
 	                                             String identificationVariable) {
 
 		return delete(rangeVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteStatementTester deleteStatement(ExpressionTester deleteClause) {
+	public static DeleteStatementTester deleteStatement(ExpressionTester deleteClause) {
 		return deleteStatement(deleteClause, nullExpression());
 	}
 
-	protected static DeleteStatementTester deleteStatement(ExpressionTester deleteClause,
+	public static DeleteStatementTester deleteStatement(ExpressionTester deleteClause,
 	                                                       ExpressionTester whereClause) {
 
 		return new DeleteStatementTester(deleteClause, whereClause);
 	}
 
-	protected static DeleteStatementTester deleteStatement(String abstractSchemaName,
+	public static DeleteStatementTester deleteStatement(String abstractSchemaName,
 	                                                       String identificationVariable) {
 
 		return deleteStatement(delete(abstractSchemaName, identificationVariable));
 	}
 
-	protected static DeleteStatementTester deleteStatement(String abstractSchemaName,
+	public static DeleteStatementTester deleteStatement(String abstractSchemaName,
 	                                                       String identificationVariable,
 	                                                       ExpressionTester whereClause) {
 
 		return deleteStatement(delete(abstractSchemaName, identificationVariable), whereClause);
 	}
 
-	protected static ComparisonExpressionTester different(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester different(ExpressionTester leftExpression,
 	                                                      ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.DIFFERENT, rightExpression);
 	}
 
-	protected static DivisionExpressionTester division(ExpressionTester leftExpression,
+	public static DivisionExpressionTester division(ExpressionTester leftExpression,
 	                                                   ExpressionTester rightExpression) {
 
 		return new DivisionExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static EntityTypeLiteralTester entity(String entity) {
+	public static EntityTypeLiteralTester entity(String entity) {
 		return new EntityTypeLiteralTester(entity);
 	}
 
-	protected static EntryExpressionTester entry(ExpressionTester identificationVariable) {
+	public static EntryExpressionTester entry(ExpressionTester identificationVariable) {
 		return new EntryExpressionTester(identificationVariable);
 	}
 
-	protected static EntryExpressionTester entry(String identificationVariable) {
+	public static EntryExpressionTester entry(String identificationVariable) {
 		return entry(variable(identificationVariable));
 	}
 
-	protected static ComparisonExpressionTester equal(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester equal(ExpressionTester leftExpression,
 	                                                  ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.EQUAL, rightExpression);
 	}
 
-	protected static UnionClauseTester except(ExpressionTester subquery) {
+	public static UnionClauseTester except(ExpressionTester subquery) {
 		return union(EXCEPT, false, subquery);
 	}
 
-	protected static UnionClauseTester except(ExpressionTester selectClause,
+	public static UnionClauseTester except(ExpressionTester selectClause,
 	                                          ExpressionTester fromClause) {
 
 		return except(subquery(selectClause, fromClause));
 	}
 
-	protected static UnionClauseTester except(ExpressionTester selectClause,
+	public static UnionClauseTester except(ExpressionTester selectClause,
 	                                          ExpressionTester fromClause,
 		                                       ExpressionTester whereClause) {
 
 		return except(subquery(selectClause, fromClause, whereClause));
 	}
 
-	protected static UnionClauseTester except(ExpressionTester selectClause,
+	public static UnionClauseTester except(ExpressionTester selectClause,
 	                                          ExpressionTester fromClause,
 		                                       ExpressionTester whereClause,
 		                                       ExpressionTester groupByClause,
@@ -594,24 +594,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return except(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
-	protected static UnionClauseTester exceptAll(ExpressionTester subquery) {
+	public static UnionClauseTester exceptAll(ExpressionTester subquery) {
 		return union(EXCEPT, true, subquery);
 	}
 
-	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	public static UnionClauseTester exceptAll(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause) {
 
 		return exceptAll(subquery(selectClause, fromClause));
 	}
 
-	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	public static UnionClauseTester exceptAll(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause,
 	 	                                          ExpressionTester whereClause) {
 
 		return exceptAll(subquery(selectClause, fromClause, whereClause));
 	}
 
-	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	public static UnionClauseTester exceptAll(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause,
 	 	                                          ExpressionTester whereClause,
 	 	                                          ExpressionTester groupByClause,
@@ -620,44 +620,44 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return exceptAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
-	protected static ExistsExpressionTester exists(ExpressionTester subquery) {
+	public static ExistsExpressionTester exists(ExpressionTester subquery) {
 		return new ExistsExpressionTester(subquery, false);
 	}
 
-	protected static ExtractExpressionTester extract(String part, ExpressionTester expression) {
+	public static ExtractExpressionTester extract(String part, ExpressionTester expression) {
 		return new ExtractExpressionTester(part, false, expression);
 	}
 
-	protected static ExtractExpressionTester extractFrom(String part, ExpressionTester expression) {
+	public static ExtractExpressionTester extractFrom(String part, ExpressionTester expression) {
 		return new ExtractExpressionTester(part, true, expression);
 	}
 
-	protected static KeywordExpressionTester FALSE() {
+	public static KeywordExpressionTester FALSE() {
 		return new KeywordExpressionTester(FALSE);
 	}
 
-	protected static FromClauseTester from(ExpressionTester declaration) {
+	public static FromClauseTester from(ExpressionTester declaration) {
 		return new FromClauseTester(declaration, nullExpression(), nullExpression());
 	}
 
-	protected static FromClauseTester from(ExpressionTester... declarations) {
+	public static FromClauseTester from(ExpressionTester... declarations) {
 		return new FromClauseTester(collection(declarations), nullExpression(), nullExpression());
 	}
 
-	protected static FromClauseTester from(ExpressionTester declarations,
+	public static FromClauseTester from(ExpressionTester declarations,
 	                                       HierarchicalQueryClauseTester hierarchicalQueryClause,
 	                                       AsOfClauseTester asOfClause) {
 
 		return new FromClauseTester(declarations, hierarchicalQueryClause, asOfClause);
 	}
 
-	protected static FromClauseTester from(ExpressionTester[] declarations,
+	public static FromClauseTester from(ExpressionTester[] declarations,
 	                                       AsOfClauseTester asOfClause) {
 
 		return from(collection(declarations), nullExpression(), asOfClause);
 	}
 
-	protected static FromClauseTester from(ExpressionTester[] declarations,
+	public static FromClauseTester from(ExpressionTester[] declarations,
 	                                       ExpressionTester hierarchicalQueryClause,
 	                                       ExpressionTester asOfClause) {
 
@@ -667,7 +667,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	/**
 	 * Example: from("Employee", "e", "Product", "p")
 	 */
-	protected static FromClauseTester from(String... declarations) {
+	public static FromClauseTester from(String... declarations) {
 
 		ExpressionTester[] identificationVariableDeclarations = new ExpressionTester[declarations.length / 2];
 
@@ -684,11 +684,11 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	/**
 	 * Example: from("Employee", "e")
 	 */
-	protected static FromClauseTester from(String abstractSchemaName, String identificationVariable) {
+	public static FromClauseTester from(String abstractSchemaName, String identificationVariable) {
 		return from(fromEntity(abstractSchemaName, identificationVariable));
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       AsOfClauseTester asOfClause) {
 
@@ -699,7 +699,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       ConnectByClauseTester connectByClause) {
 
@@ -710,7 +710,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       ConnectByClauseTester connectByClause,
 	                                       OrderSiblingsByClauseTester orderSiblingsByClause) {
@@ -722,7 +722,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       ExpressionTester... joins) {
 
@@ -731,14 +731,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       ExpressionTester joins) {
 
 		return from(fromEntity(abstractSchemaName, identificationVariable, joins));
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       ExpressionTester joins,
 	                                       AsOfClauseTester asOfClause) {
@@ -750,7 +750,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       HierarchicalQueryClauseTester hierarchicalQueryClause) {
 
@@ -761,7 +761,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       OrderSiblingsByClauseTester orderSiblingsByClause) {
 
@@ -772,7 +772,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       StartWithClauseTester startWithClause) {
 
@@ -783,7 +783,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       StartWithClauseTester startWithClause,
 	                                       ConnectByClauseTester connectByClause) {
@@ -795,7 +795,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester from(String abstractSchemaName,
+	public static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
 	                                       StartWithClauseTester startWithClause,
 	                                       ConnectByClauseTester connectByClause,
@@ -808,14 +808,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FromClauseTester fromAs(String abstractSchemaName, String identificationVariable) {
+	public static FromClauseTester fromAs(String abstractSchemaName, String identificationVariable) {
 		return from(identificationVariableDeclarationAs(abstractSchemaName, identificationVariable));
 	}
 
 	/**
 	 * Example: from("e.employees", "e")
 	 */
-	protected static IdentificationVariableDeclarationTester fromCollection(String collectionPath,
+	public static IdentificationVariableDeclarationTester fromCollection(String collectionPath,
 	                                                                        String identificationVariable) {
 
 		return identificationVariableDeclaration(
@@ -827,47 +827,47 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
 	                                                                    String identificationVariable) {
 
 		return identificationVariableDeclaration(abstractSchemaName, identificationVariable);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
 	                                                                    String identificationVariable,
 	                                                                    ExpressionTester... joins) {
 
 		return identificationVariableDeclaration(abstractSchemaName, identificationVariable, joins);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntity(String abstractSchemaName,
 	                                                                    String identificationVariable,
 	                                                                    ExpressionTester join) {
 
 		return identificationVariableDeclaration(abstractSchemaName, identificationVariable, join);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
 	                                                                      String identificationVariable) {
 
 		return identificationVariableDeclarationAs(abstractSchemaName, identificationVariable);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
 	                                                                      String identificationVariable,
 	                                                                      ExpressionTester... joins) {
 
 		return identificationVariableDeclarationAs(abstractSchemaName, identificationVariable, joins);
 	}
 
-	protected static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester fromEntityAs(String abstractSchemaName,
 	                                                                      String identificationVariable,
 	                                                                      ExpressionTester join) {
 
 		return identificationVariableDeclarationAs(abstractSchemaName, identificationVariable, join);
 	}
 
-	protected static CollectionMemberDeclarationTester fromIn(ExpressionTester collectionPath,
+	public static CollectionMemberDeclarationTester fromIn(ExpressionTester collectionPath,
 	                                                          ExpressionTester identificationVariable) {
 
 		return new CollectionMemberDeclarationTester(
@@ -877,13 +877,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionMemberDeclarationTester fromIn(String collectionPath,
+	public static CollectionMemberDeclarationTester fromIn(String collectionPath,
 	                                                          String identificationVariable) {
 
 		return fromIn(collectionPath(collectionPath), variable(identificationVariable));
 	}
 
-	protected static CollectionMemberDeclarationTester fromInAs(ExpressionTester collectionPath,
+	public static CollectionMemberDeclarationTester fromInAs(ExpressionTester collectionPath,
 	                                                            ExpressionTester identificationVariable) {
 
 		return new CollectionMemberDeclarationTester(
@@ -893,7 +893,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionMemberDeclarationTester fromInAs(String collectionPath,
+	public static CollectionMemberDeclarationTester fromInAs(String collectionPath,
 	                                                            String identificationVariable) {
 
 		return fromInAs(
@@ -902,85 +902,93 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static FunctionExpressionTester function(String identifier,
+	public static FunctionExpressionTester function(String identifier,
 	                                                   String functionName) {
 
 		return new FunctionExpressionTester(identifier, functionName, nullExpression());
 	}
 
-	protected static FunctionExpressionTester function(String identifier,
+	public static FunctionExpressionTester function(String identifier,
 	                                                   String functionName,
 	                                                   ExpressionTester... funcItems) {
 
 		return new FunctionExpressionTester(identifier, functionName, collection(funcItems));
 	}
 
-	protected static FunctionExpressionTester function(String identifier,
+	public static FunctionExpressionTester function(String identifier,
 	                                                   String functionName,
 	                                                   ExpressionTester funcItem) {
 
 		return new FunctionExpressionTester(identifier, functionName, funcItem);
 	}
 
-	protected static ComparisonExpressionTester greaterThan(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester greaterThan(ExpressionTester leftExpression,
 	                                                        ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.GREATER_THAN, rightExpression);
 	}
 
-	protected static ComparisonExpressionTester greaterThanOrEqual(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester greaterThanOrEqual(ExpressionTester leftExpression,
 	                                                               ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.GREATER_THAN_OR_EQUAL, rightExpression);
 	}
 
-	protected static GroupByClauseTester groupBy(ExpressionTester groupByItem) {
+	public static GroupByClauseTester groupBy(ExpressionTester groupByItem) {
 		return new GroupByClauseTester(groupByItem);
 	}
 
-	protected static GroupByClauseTester groupBy(ExpressionTester... groupByItems) {
+	public static GroupByClauseTester groupBy(ExpressionTester... groupByItems) {
 		return new GroupByClauseTester(collection(groupByItems));
 	}
 
-	protected static HavingClauseTester having(ExpressionTester havingItem) {
+	public static HavingClauseTester having(ExpressionTester havingItem) {
 		return new HavingClauseTester(havingItem);
 	}
 
-	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester connectByClause) {
+	public static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester connectByClause) {
 		return hierarchicalQueryClause(nullExpression(), connectByClause, nullExpression());
 	}
 
-	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
+	public static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
 	                                                                       ExpressionTester connectByClause) {
 
 		return hierarchicalQueryClause(startWithClause, connectByClause, nullExpression());
 	}
 
-	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
-	                                                                       ExpressionTester connectByClause,
-	                                                                       ExpressionTester orderSiblingsByClause) {
+	public static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
+	                                                                    ExpressionTester connectByClause,
+	                                                                    ExpressionTester orderSiblingsByClause) {
 
 		return new HierarchicalQueryClauseTester(startWithClause, connectByClause, orderSiblingsByClause);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration) {
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration) {
 		return new IdentificationVariableDeclarationTester(rangeVariableDeclaration, nullExpression());
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration,
-	                                                                                           ExpressionTester... joins) {
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration,
+	                                                                                        ExpressionTester... joins) {
+
+		if (joins.length == 0) {
+			return new IdentificationVariableDeclarationTester(rangeVariableDeclaration, nullExpression());
+		}
+
+		if (joins.length == 1) {
+			return new IdentificationVariableDeclarationTester(rangeVariableDeclaration, joins[0]);
+		}
 
 		return new IdentificationVariableDeclarationTester(rangeVariableDeclaration, collection(joins));
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration,
-	                                                                                           ExpressionTester joins) {
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration,
+	                                                                                        ExpressionTester joins) {
 
 		return new IdentificationVariableDeclarationTester(rangeVariableDeclaration, joins);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
-	                                                                                           String identificationVariable) {
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
+	                                                                                        String identificationVariable) {
 
 		return identificationVariableDeclaration(
 			rangeVariableDeclaration(abstractSchemaName, identificationVariable),
@@ -988,9 +996,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
-	                                                                                           String identificationVariable,
-	                                                                                           ExpressionTester... joins) {
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
+	                                                                                        String identificationVariable,
+	                                                                                        ExpressionTester... joins) {
 
 		return new IdentificationVariableDeclarationTester(
 			rangeVariableDeclaration(abstractSchemaName, identificationVariable),
@@ -998,7 +1006,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester identificationVariableDeclaration(String abstractSchemaName,
 	                                                                                           String identificationVariable,
 	                                                                                           ExpressionTester join) {
 
@@ -1008,7 +1016,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
 	                                                                                             String identificationVariable) {
 
 		return new IdentificationVariableDeclarationTester(
@@ -1017,7 +1025,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
 	                                                                                             String identificationVariable,
 	                                                                                             ExpressionTester join) {
 
@@ -1027,7 +1035,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
+	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
 	                                                                                             String identificationVariable,
 	                                                                                             ExpressionTester... joins) {
 
@@ -1037,19 +1045,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static InExpressionTester in(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
 	                                       ExpressionTester... inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, false, collection(inItems));
 	}
 
-	protected static InExpressionTester in(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
 	                                       ExpressionTester inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, false, inItems);
 	}
 
-	protected static InExpressionTester in(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
 	                                       String inputParameter) {
 
 		InExpressionTester in = in(stateFieldPathExpression, inputParameter(inputParameter));
@@ -1059,31 +1067,31 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return in;
 	}
 
-	protected static InExpressionTester in(String stateFieldPathExpression,
+	public static InExpressionTester in(String stateFieldPathExpression,
 	                                       ExpressionTester... inItems) {
 
 		return in(path(stateFieldPathExpression), inItems);
 	}
 
-	protected static InExpressionTester in(String stateFieldPathExpression,
+	public static InExpressionTester in(String stateFieldPathExpression,
 	                                       ExpressionTester inItem) {
 
 		return in(path(stateFieldPathExpression), inItem);
 	}
 
-	protected static InExpressionTester in(String pathExpression, String inputParameter) {
+	public static InExpressionTester in(String pathExpression, String inputParameter) {
 		return in(path(pathExpression), inputParameter);
 	}
 
-	protected static IndexExpressionTester index(ExpressionTester identificationVariable) {
+	public static IndexExpressionTester index(ExpressionTester identificationVariable) {
 		return new IndexExpressionTester(identificationVariable);
 	}
 
-	protected static IndexExpressionTester index(String identificationVariable) {
+	public static IndexExpressionTester index(String identificationVariable) {
 		return index(variable(identificationVariable));
 	}
 
-	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	public static JoinTester innerJoin(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable) {
 
 		return innerJoin(
@@ -1093,7 +1101,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	public static JoinTester innerJoin(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1106,7 +1114,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	public static JoinTester innerJoin(ExpressionTester collectionPath,
 	                                      String identificationVariable) {
 
 		return innerJoin(
@@ -1116,7 +1124,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoin(ExpressionTester collectionPath,
+	public static JoinTester innerJoin(ExpressionTester collectionPath,
 	                                      String identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1127,7 +1135,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoin(String collectionPath,
+	public static JoinTester innerJoin(String collectionPath,
 	                                      String identificationVariable) {
 
 		return innerJoin(
@@ -1137,7 +1145,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoin(String collectionPath,
+	public static JoinTester innerJoin(String collectionPath,
 	                                      String identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1148,7 +1156,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable) {
 
 		return innerJoinAs(
@@ -1158,7 +1166,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1171,7 +1179,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinAs(ExpressionTester collectionPath,
 	                                        String identificationVariable) {
 
 		return innerJoinAs(
@@ -1181,7 +1189,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinAs(ExpressionTester collectionPath,
 	                                        String identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1192,7 +1200,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(String collectionPath,
+	public static JoinTester innerJoinAs(String collectionPath,
 	                                        String identificationVariable) {
 
 		return innerJoinAs(
@@ -1202,7 +1210,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinAs(String collectionPath,
+	public static JoinTester innerJoinAs(String collectionPath,
 	                                        String identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1213,14 +1221,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath) {
+	public static JoinTester innerJoinFetch(ExpressionTester collectionPath) {
 		return innerJoinFetch(
 			collectionPath,
 			nullExpression()
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetch(ExpressionTester collectionPath,
 	                                           ExpressionTester identificationVariable) {
 
 		return innerJoinFetch(
@@ -1230,7 +1238,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetch(ExpressionTester collectionPath,
 	                                           ExpressionTester identificationVariable,
 	                                           ExpressionTester joinCondition) {
 
@@ -1243,7 +1251,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetch(ExpressionTester collectionPath,
 	                                           String identificationVariable) {
 
 		return innerJoinFetch(
@@ -1253,7 +1261,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetch(ExpressionTester collectionPath,
 	                                           String identificationVariable,
 	                                           ExpressionTester joinCondition) {
 
@@ -1264,13 +1272,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(String collectionPath) {
+	public static JoinTester innerJoinFetch(String collectionPath) {
 		return innerJoinFetch(
 			collectionPath(collectionPath)
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(String collectionPath,
+	public static JoinTester innerJoinFetch(String collectionPath,
 	                                           String identificationVariable) {
 
 		return innerJoinFetch(
@@ -1280,7 +1288,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetch(String collectionPath,
+	public static JoinTester innerJoinFetch(String collectionPath,
 	                                           String identificationVariable,
 	                                           ExpressionTester joinCondition) {
 
@@ -1291,7 +1299,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath) {
+	public static JoinTester innerJoinFetchAs(ExpressionTester collectionPath) {
 		return innerJoinFetchAs(
 			collectionPath,
 			nullExpression(),
@@ -1299,7 +1307,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
 	                                             ExpressionTester identificationVariable) {
 
 		return innerJoinFetchAs(
@@ -1309,7 +1317,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
 	                                             ExpressionTester identificationVariable,
 	                                             ExpressionTester joinCondition) {
 
@@ -1322,7 +1330,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
 	                                             String identificationVariable) {
 
 		return innerJoinFetchAs(
@@ -1332,7 +1340,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester innerJoinFetchAs(ExpressionTester collectionPath,
 	                                             String identificationVariable,
 	                                             ExpressionTester joinCondition) {
 
@@ -1343,13 +1351,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(String collectionPath) {
+	public static JoinTester innerJoinFetchAs(String collectionPath) {
 		return innerJoinFetchAs(
 			collectionPath(collectionPath)
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(String collectionPath,
+	public static JoinTester innerJoinFetchAs(String collectionPath,
 	                                             String identificationVariable) {
 
 		return innerJoinFetchAs(
@@ -1359,7 +1367,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester innerJoinFetchAs(String collectionPath,
+	public static JoinTester innerJoinFetchAs(String collectionPath,
 	                                             String identificationVariable,
 	                                             ExpressionTester joinCondition) {
 
@@ -1370,28 +1378,28 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static InputParameterTester inputParameter(String inputParameter) {
+	public static InputParameterTester inputParameter(String inputParameter) {
 		return new InputParameterTester(inputParameter);
 	}
 
-	protected static UnionClauseTester intersect(ExpressionTester subquery) {
+	public static UnionClauseTester intersect(ExpressionTester subquery) {
 		return union(INTERSECT, false, subquery);
 	}
 
-	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	public static UnionClauseTester intersect(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause) {
 
 		return intersect(subquery(selectClause, fromClause));
 	}
 
-	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	public static UnionClauseTester intersect(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause,
 	 	                                          ExpressionTester whereClause) {
 
 		return intersect(subquery(selectClause, fromClause, whereClause));
 	}
 
-	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	public static UnionClauseTester intersect(ExpressionTester selectClause,
 	                                             ExpressionTester fromClause,
 	 	                                          ExpressionTester whereClause,
 	 	                                          ExpressionTester groupByClause,
@@ -1400,24 +1408,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return intersect(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
-	protected static UnionClauseTester intersectAll(ExpressionTester subquery) {
+	public static UnionClauseTester intersectAll(ExpressionTester subquery) {
 		return union(INTERSECT, true, subquery);
 	}
 
-	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	public static UnionClauseTester intersectAll(ExpressionTester selectClause,
 	                                                ExpressionTester fromClause) {
 
 		return intersectAll(subquery(selectClause, fromClause));
 	}
 
-	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	public static UnionClauseTester intersectAll(ExpressionTester selectClause,
 	                                                ExpressionTester fromClause,
 	    	                                          ExpressionTester whereClause) {
 
 		return intersectAll(subquery(selectClause, fromClause, whereClause));
 	}
 
-	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	public static UnionClauseTester intersectAll(ExpressionTester selectClause,
 	                                                ExpressionTester fromClause,
 	    	                                          ExpressionTester whereClause,
 	    	                                          ExpressionTester groupByClause,
@@ -1426,31 +1434,31 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return intersectAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
-	protected static EmptyCollectionComparisonExpressionTester isEmpty(ExpressionTester collectionPath) {
+	public static EmptyCollectionComparisonExpressionTester isEmpty(ExpressionTester collectionPath) {
 		return new EmptyCollectionComparisonExpressionTester(collectionPath, false);
 	}
 
-	protected static EmptyCollectionComparisonExpressionTester isEmpty(String collectionPath) {
+	public static EmptyCollectionComparisonExpressionTester isEmpty(String collectionPath) {
 		return isEmpty(collectionPath(collectionPath));
 	}
 
-	protected static EmptyCollectionComparisonExpressionTester isNotEmpty(ExpressionTester collectionPath) {
+	public static EmptyCollectionComparisonExpressionTester isNotEmpty(ExpressionTester collectionPath) {
 		return new EmptyCollectionComparisonExpressionTester(collectionPath, true);
 	}
 
-	protected static EmptyCollectionComparisonExpressionTester isNotEmpty(String collectionPath) {
+	public static EmptyCollectionComparisonExpressionTester isNotEmpty(String collectionPath) {
 		return isNotEmpty(collectionPath(collectionPath));
 	}
 
-	protected static NullComparisonExpressionTester isNotNull(ExpressionTester expression) {
+	public static NullComparisonExpressionTester isNotNull(ExpressionTester expression) {
 		return new NullComparisonExpressionTester(expression, true);
 	}
 
-	protected static NullComparisonExpressionTester isNull(ExpressionTester expression) {
+	public static NullComparisonExpressionTester isNull(ExpressionTester expression) {
 		return new NullComparisonExpressionTester(expression, false);
 	}
 
-	protected static JoinTester join(ExpressionTester collectionPath,
+	public static JoinTester join(ExpressionTester collectionPath,
 	                                 ExpressionTester identificationVariable) {
 
 		return join(
@@ -1460,7 +1468,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester join(ExpressionTester collectionPath,
+	public static JoinTester join(ExpressionTester collectionPath,
 	                                 ExpressionTester identificationVariable,
 	                                 ExpressionTester joinCondition) {
 
@@ -1473,7 +1481,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester join(ExpressionTester collectionPath,
+	public static JoinTester join(ExpressionTester collectionPath,
 	                                 String identificationVariable) {
 
 		return join(
@@ -1483,7 +1491,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester join(ExpressionTester collectionPath,
+	public static JoinTester join(ExpressionTester collectionPath,
 	                                 String identificationVariable,
 	                                 ExpressionTester joinCondition) {
 
@@ -1509,7 +1517,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester join(String collectionPath,
+	public static JoinTester join(String collectionPath,
 	                                 String identificationVariable) {
 
 		return join(
@@ -1519,7 +1527,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester join(String collectionPath,
+	public static JoinTester join(String collectionPath,
 	                                 String identificationVariable,
 	                                 ExpressionTester joinCondition) {
 
@@ -1530,7 +1538,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	public static JoinTester joinAs(ExpressionTester collectionPath,
 	                                   ExpressionTester identificationVariable) {
 
 		return joinAs(
@@ -1540,7 +1548,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	public static JoinTester joinAs(ExpressionTester collectionPath,
 	                                   ExpressionTester identificationVariable,
 	                                   ExpressionTester joinCondition) {
 
@@ -1553,7 +1561,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	public static JoinTester joinAs(ExpressionTester collectionPath,
 	                                   String identificationVariable) {
 
 		return joinAs(
@@ -1563,7 +1571,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(ExpressionTester collectionPath,
+	public static JoinTester joinAs(ExpressionTester collectionPath,
 	                                   String identificationVariable,
 	                                   ExpressionTester joinCondition) {
 
@@ -1574,7 +1582,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(String collectionPath,
+	public static JoinTester joinAs(String collectionPath,
 	                                   String identificationVariable) {
 
 		return joinAs(
@@ -1584,7 +1592,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAs(String collectionPath,
+	public static JoinTester joinAs(String collectionPath,
 	                                   String identificationVariable,
 	                                   ExpressionTester joinCondition) {
 
@@ -1595,21 +1603,21 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinAsTreat(String collectionPath,
+	public static JoinTester joinAsTreat(String collectionPath,
 	                                        String entityTypeLiteral,
 	                                        String variable) {
 
 		return joinAs(treat(collectionPath, entityTypeLiteral), variable);
 	}
 
-	protected static JoinTester joinAsTreatAs(String collectionPath,
+	public static JoinTester joinAsTreatAs(String collectionPath,
 	                                          String entityTypeLiteral,
 	                                          String variable) {
 
 		return joinAs(treatAs(collectionPath, entityTypeLiteral), variable);
 	}
 
-	protected static JoinTester joinFetch(ExpressionTester collectionPath) {
+	public static JoinTester joinFetch(ExpressionTester collectionPath) {
 		JoinTester join = joinFetch(
 			collectionPath,
 			nullExpression()
@@ -1618,7 +1626,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return join;
 	}
 
-	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	public static JoinTester joinFetch(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable) {
 
 		return joinFetch(
@@ -1628,7 +1636,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	public static JoinTester joinFetch(ExpressionTester collectionPath,
 	                                      ExpressionTester identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1641,7 +1649,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	public static JoinTester joinFetch(ExpressionTester collectionPath,
 	                                      String identificationVariable) {
 
 		return joinFetch(
@@ -1651,7 +1659,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetch(ExpressionTester collectionPath,
+	public static JoinTester joinFetch(ExpressionTester collectionPath,
 	                                      String identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1662,13 +1670,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetch(String collectionPath) {
+	public static JoinTester joinFetch(String collectionPath) {
 		return joinFetch(
 			collectionPath(collectionPath)
 		);
 	}
 
-	protected static JoinTester joinFetch(String collectionPath,
+	public static JoinTester joinFetch(String collectionPath,
 	                                      String identificationVariable) {
 
 		return joinFetch(
@@ -1677,7 +1685,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetch(String collectionPath,
+	public static JoinTester joinFetch(String collectionPath,
 	                                      String identificationVariable,
 	                                      ExpressionTester joinCondition) {
 
@@ -1688,7 +1696,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester joinFetchAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable) {
 
 		return joinFetchAs(
@@ -1698,7 +1706,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester joinFetchAs(ExpressionTester collectionPath,
 	                                        ExpressionTester identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1711,7 +1719,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester joinFetchAs(ExpressionTester collectionPath,
 	                                        String identificationVariable) {
 
 		return joinFetchAs(
@@ -1721,7 +1729,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester joinFetchAs(ExpressionTester collectionPath,
 	                                        String identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1732,7 +1740,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(String collectionPath,
+	public static JoinTester joinFetchAs(String collectionPath,
 	                                        String identificationVariable) {
 
 		return joinFetchAs(
@@ -1742,7 +1750,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinFetchAs(String collectionPath,
+	public static JoinTester joinFetchAs(String collectionPath,
 	                                        String identificationVariable,
 	                                        ExpressionTester joinCondition) {
 
@@ -1753,31 +1761,31 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester joinTreat(String collectionPath,
+	public static JoinTester joinTreat(String collectionPath,
 	                                      String entityTypeLiteral,
 	                                      String variable) {
 
 		return join(treat(collectionPath, entityTypeLiteral), variable);
 	}
 
-	protected static JoinTester joinTreatAs(String collectionPath,
+	public static JoinTester joinTreatAs(String collectionPath,
 	                                        String entityTypeLiteral,
 	                                        String variable) {
 
 		return join(treatAs(collectionPath, entityTypeLiteral), variable);
 	}
 
-	protected static JPQLExpressionTester jpqlExpression(ExpressionTester queryStatement) {
+	public static JPQLExpressionTester jpqlExpression(ExpressionTester queryStatement) {
 		return jpqlExpression(queryStatement, nullExpression());
 	}
 
-	protected static JPQLExpressionTester jpqlExpression(ExpressionTester queryStatement,
+	public static JPQLExpressionTester jpqlExpression(ExpressionTester queryStatement,
 	                                                     ExpressionTester unknownExpression) {
 
 		return new JPQLExpressionTester(queryStatement, unknownExpression);
 	}
 
-	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	public static JoinTester leftJoin(ExpressionTester collectionPath,
 	                                     ExpressionTester identificationVariable) {
 
 		return leftJoin(
@@ -1787,7 +1795,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	public static JoinTester leftJoin(ExpressionTester collectionPath,
 	                                     ExpressionTester identificationVariable,
 	                                     ExpressionTester joinCondition) {
 
@@ -1800,7 +1808,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	public static JoinTester leftJoin(ExpressionTester collectionPath,
 	                                     String identificationVariable) {
 
 		return leftJoin(
@@ -1810,7 +1818,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoin(ExpressionTester collectionPath,
+	public static JoinTester leftJoin(ExpressionTester collectionPath,
 	                                     String identificationVariable,
 	                                     ExpressionTester joinCondition) {
 
@@ -1821,7 +1829,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoin(String collectionPath,
+	public static JoinTester leftJoin(String collectionPath,
 	                                     String identificationVariable) {
 
 		return leftJoin(
@@ -1831,7 +1839,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoin(String collectionPath,
+	public static JoinTester leftJoin(String collectionPath,
 	                                     String identificationVariable,
 	                                     ExpressionTester joinCondition) {
 
@@ -1842,7 +1850,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinAs(ExpressionTester collectionPath,
 	                                       ExpressionTester identificationVariable) {
 
 		return leftJoinAs(
@@ -1852,7 +1860,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinAs(ExpressionTester collectionPath,
 	                                       ExpressionTester identificationVariable,
 	                                       ExpressionTester joinCondition) {
 
@@ -1865,7 +1873,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinAs(ExpressionTester collectionPath,
 	                                       String identificationVariable) {
 
 		return leftJoinAs(
@@ -1875,7 +1883,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinAs(ExpressionTester collectionPath,
 	                                       String identificationVariable,
 	                                       ExpressionTester joinCondition) {
 
@@ -1886,7 +1894,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(String collectionPath,
+	public static JoinTester leftJoinAs(String collectionPath,
 	                                       String identificationVariable) {
 
 		return leftJoinAs(
@@ -1896,7 +1904,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinAs(String collectionPath,
+	public static JoinTester leftJoinAs(String collectionPath,
 	                                       String identificationVariable,
 	                                       ExpressionTester joinCondition) {
 
@@ -1907,7 +1915,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath) {
+	public static JoinTester leftJoinFetch(ExpressionTester collectionPath) {
 		JoinTester join = leftJoinFetch(
 			collectionPath,
 			nullExpression()
@@ -1916,7 +1924,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return join;
 	}
 
-	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetch(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable) {
 
 		return leftJoinFetch(
@@ -1926,7 +1934,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetch(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -1939,7 +1947,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetch(ExpressionTester collectionPath,
 	                                          String identificationVariable) {
 
 		return leftJoinFetch(
@@ -1949,7 +1957,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetch(ExpressionTester collectionPath,
 	                                          String identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -1960,13 +1968,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(String collectionPath) {
+	public static JoinTester leftJoinFetch(String collectionPath) {
 		return leftJoinFetch(
 			collectionPath(collectionPath)
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(String collectionPath,
+	public static JoinTester leftJoinFetch(String collectionPath,
 	                                          String identificationVariable) {
 
 		return leftJoinFetch(
@@ -1975,7 +1983,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetch(String collectionPath,
+	public static JoinTester leftJoinFetch(String collectionPath,
 	                                          String identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -1986,7 +1994,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable) {
 
 		return leftJoinFetchAs(
@@ -1996,7 +2004,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable,
 	                                            ExpressionTester joinCondition) {
 
@@ -2009,7 +2017,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
 	                                            String identificationVariable) {
 
 		return leftJoinFetchAs(
@@ -2019,7 +2027,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftJoinFetchAs(ExpressionTester collectionPath,
 	                                            String identificationVariable,
 	                                            ExpressionTester joinCondition) {
 
@@ -2030,7 +2038,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(String collectionPath,
+	public static JoinTester leftJoinFetchAs(String collectionPath,
 	                                            String identificationVariable) {
 
 		return leftJoinFetchAs(
@@ -2040,7 +2048,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftJoinFetchAs(String collectionPath,
+	public static JoinTester leftJoinFetchAs(String collectionPath,
 	                                            String identificationVariable,
 	                                            ExpressionTester joinCondition) {
 
@@ -2051,7 +2059,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoin(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable) {
 
 		return leftOuterJoin(
@@ -2061,7 +2069,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoin(ExpressionTester collectionPath,
 	                                          ExpressionTester identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -2074,7 +2082,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoin(ExpressionTester collectionPath,
 	                                          String identificationVariable) {
 
 		return leftOuterJoin(
@@ -2084,7 +2092,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoin(ExpressionTester collectionPath,
 	                                          String identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -2095,7 +2103,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(String collectionPath,
+	public static JoinTester leftOuterJoin(String collectionPath,
 	                                          String identificationVariable) {
 
 		return leftOuterJoin(
@@ -2105,7 +2113,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoin(String collectionPath,
+	public static JoinTester leftOuterJoin(String collectionPath,
 	                                          String identificationVariable,
 	                                          ExpressionTester joinCondition) {
 
@@ -2116,7 +2124,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable) {
 
 		return leftOuterJoinAs(
@@ -2126,7 +2134,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinAs(ExpressionTester collectionPath,
 	                                            ExpressionTester identificationVariable,
 	                                            ExpressionTester joinCondition) {
 
@@ -2139,7 +2147,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinAs(String collectionPath,
+	public static JoinTester leftOuterJoinAs(String collectionPath,
 	                                            String identificationVariable) {
 
 		return leftOuterJoinAs(
@@ -2149,7 +2157,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinAs(String collectionPath,
+	public static JoinTester leftOuterJoinAs(String collectionPath,
 	                                            String identificationVariable,
 	                                            ExpressionTester joinCondition) {
 
@@ -2160,7 +2168,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath) {
+	public static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath) {
 		JoinTester join = leftOuterJoinFetch(
 			collectionPath,
 			nullExpression()
@@ -2169,7 +2177,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return join;
 	}
 
-	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
 	                                               ExpressionTester identificationVariable) {
 
 		return leftOuterJoinFetch(
@@ -2179,7 +2187,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
 	                                               ExpressionTester identificationVariable,
 	                                               ExpressionTester joinCondition) {
 
@@ -2192,7 +2200,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
 	                                               String identificationVariable) {
 
 		return leftOuterJoinFetch(
@@ -2202,7 +2210,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetch(ExpressionTester collectionPath,
 	                                               String identificationVariable,
 	                                               ExpressionTester joinCondition) {
 
@@ -2213,13 +2221,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(String collectionPath) {
+	public static JoinTester leftOuterJoinFetch(String collectionPath) {
 		return leftOuterJoinFetch(
 			collectionPath(collectionPath)
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(String collectionPath,
+	public static JoinTester leftOuterJoinFetch(String collectionPath,
 	                                               String identificationVariable) {
 
 		return leftOuterJoinFetch(
@@ -2229,7 +2237,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetch(String collectionPath,
+	public static JoinTester leftOuterJoinFetch(String collectionPath,
 	                                               String identificationVariable,
 	                                               ExpressionTester joinCondition) {
 
@@ -2240,14 +2248,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath) {
+	public static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath) {
 		return leftOuterJoinFetchAs(
 			collectionPath,
 			nullExpression()
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
 	                                                 ExpressionTester identificationVariable) {
 
 		return leftOuterJoinFetchAs(
@@ -2257,7 +2265,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
 	                                                 ExpressionTester identificationVariable,
 	                                                 ExpressionTester joinCondition) {
 
@@ -2270,7 +2278,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
 	                                                 String identificationVariable) {
 
 		return leftOuterJoinFetchAs(
@@ -2280,7 +2288,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(ExpressionTester collectionPath,
 	                                                 String identificationVariable,
 	                                                 ExpressionTester joinCondition) {
 
@@ -2291,7 +2299,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(String collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(String collectionPath,
 	                                                 String identificationVariable) {
 
 		return leftOuterJoinFetchAs(
@@ -2301,7 +2309,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static JoinTester leftOuterJoinFetchAs(String collectionPath,
+	public static JoinTester leftOuterJoinFetchAs(String collectionPath,
 	                                                 String identificationVariable,
 	                                                 ExpressionTester joinCondition) {
 
@@ -2312,72 +2320,72 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static LengthExpressionTester length(ExpressionTester stringPrimary) {
+	public static LengthExpressionTester length(ExpressionTester stringPrimary) {
 		return new LengthExpressionTester(stringPrimary);
 	}
 
-	protected static LikeExpressionTester like(ExpressionTester stringExpression,
+	public static LikeExpressionTester like(ExpressionTester stringExpression,
 	                                           ExpressionTester patternValue) {
 
 		return like(stringExpression, patternValue, nullExpression());
 	}
 
-	protected static LikeExpressionTester like(ExpressionTester stringExpression,
+	public static LikeExpressionTester like(ExpressionTester stringExpression,
 	                                           ExpressionTester patternValue,
 	                                           char escapeCharacter) {
 
 		return like(stringExpression, patternValue, string(quote(escapeCharacter)));
 	}
 
-	protected static LikeExpressionTester like(ExpressionTester stringExpression,
+	public static LikeExpressionTester like(ExpressionTester stringExpression,
 	                                           ExpressionTester patternValue,
 	                                           ExpressionTester escapeCharacter) {
 
 		return new LikeExpressionTester(stringExpression, false, patternValue, escapeCharacter);
 	}
 
-	protected static LocateExpressionTester locate(ExpressionTester firstExpression,
+	public static LocateExpressionTester locate(ExpressionTester firstExpression,
 	                                               ExpressionTester secondExpression) {
 
 		return locate(firstExpression, secondExpression, nullExpression());
 	}
 
-	protected static LocateExpressionTester locate(ExpressionTester firstExpression,
+	public static LocateExpressionTester locate(ExpressionTester firstExpression,
 	                                               ExpressionTester secondExpression,
 	                                               ExpressionTester thirdExpression) {
 
 		return new LocateExpressionTester(firstExpression, secondExpression, thirdExpression);
 	}
 
-	protected static LowerExpressionTester lower(ExpressionTester stringPrimary) {
+	public static LowerExpressionTester lower(ExpressionTester stringPrimary) {
 		return new LowerExpressionTester(stringPrimary);
 	}
 
-	protected static ComparisonExpressionTester lowerThan(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester lowerThan(ExpressionTester leftExpression,
 	                                                      ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.LOWER_THAN, rightExpression);
 	}
 
-	protected static ComparisonExpressionTester lowerThanOrEqual(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester lowerThanOrEqual(ExpressionTester leftExpression,
 	                                                             ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.LOWER_THAN_OR_EQUAL, rightExpression);
 	}
 
-	protected static MaxFunctionTester max(ExpressionTester expression) {
+	public static MaxFunctionTester max(ExpressionTester expression) {
 		return new MaxFunctionTester(expression, false);
 	}
 
-	protected static MaxFunctionTester max(String statefieldPathExpression) {
+	public static MaxFunctionTester max(String statefieldPathExpression) {
 		return max(path(statefieldPathExpression));
 	}
 
-	protected static ExpressionTester maxDistinct(String statefieldPathExpression) {
+	public static ExpressionTester maxDistinct(String statefieldPathExpression) {
 		return new MaxFunctionTester(path(statefieldPathExpression), true);
 	}
 
-	protected static CollectionMemberExpressionTester member(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester member(ExpressionTester entityExpression,
 	                                                         ExpressionTester collectionPath) {
 
 		return new CollectionMemberExpressionTester(
@@ -2388,19 +2396,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionMemberExpressionTester member(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester member(ExpressionTester entityExpression,
 	                                                         String collectionPath) {
 
 		return member(entityExpression, collectionPath(collectionPath));
 	}
 
-	protected static CollectionMemberExpressionTester member(String identificationVariable,
+	public static CollectionMemberExpressionTester member(String identificationVariable,
 	                                                         String collectionPath) {
 
 		return member(variable(identificationVariable), collectionPath);
 	}
 
-	protected static CollectionMemberExpressionTester memberOf(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester memberOf(ExpressionTester entityExpression,
 	                                                           ExpressionTester collectionPath) {
 
 		return new CollectionMemberExpressionTester(
@@ -2411,63 +2419,63 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionMemberExpressionTester memberOf(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester memberOf(ExpressionTester entityExpression,
 	                                                           String collectionPath) {
 
 		return memberOf(entityExpression, collectionPath(collectionPath));
 	}
 
-	protected static CollectionMemberExpressionTester memberOf(String identificationVariable,
+	public static CollectionMemberExpressionTester memberOf(String identificationVariable,
 	                                                           String collectionPath) {
 
 		return memberOf( variable(identificationVariable), collectionPath);
 	}
 
-	protected static MinFunctionTester min(ExpressionTester expression) {
+	public static MinFunctionTester min(ExpressionTester expression) {
 		return new MinFunctionTester(expression, false);
 	}
 
-	protected static MinFunctionTester min(String statefieldPathExpression) {
+	public static MinFunctionTester min(String statefieldPathExpression) {
 		return min(path(statefieldPathExpression));
 	}
 
-	protected static MinFunctionTester minDistinct(String statefieldPathExpression) {
+	public static MinFunctionTester minDistinct(String statefieldPathExpression) {
 		return new MinFunctionTester(path(statefieldPathExpression), true);
 	}
 
-	protected static ArithmeticFactorTester minus(ExpressionTester expression) {
+	public static ArithmeticFactorTester minus(ExpressionTester expression) {
 		return new ArithmeticFactorTester(MINUS, expression);
 	}
 
-	protected static ModExpressionTester mod(ExpressionTester simpleArithmeticExpression1,
+	public static ModExpressionTester mod(ExpressionTester simpleArithmeticExpression1,
 	                                         ExpressionTester simpleArithmeticExpression2) {
 
 		return new ModExpressionTester(simpleArithmeticExpression1, simpleArithmeticExpression2);
 	}
 
-	protected static MultiplicationExpressionTester multiplication(ExpressionTester leftExpression,
+	public static MultiplicationExpressionTester multiplication(ExpressionTester leftExpression,
 	                                                               ExpressionTester rightExpression) {
 
 		return new MultiplicationExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static ConstructorExpressionTester new_(String className,
+	public static ConstructorExpressionTester new_(String className,
 	                                                  ExpressionTester constructorItem) {
 
 		return new ConstructorExpressionTester(className, constructorItem);
 	}
 
-	protected static ConstructorExpressionTester new_(String className,
+	public static ConstructorExpressionTester new_(String className,
 	                                                  ExpressionTester... constructorItems) {
 
 		return new ConstructorExpressionTester(className, collection(constructorItems));
 	}
 
-	protected static NotExpressionTester not(ExpressionTester expression) {
+	public static NotExpressionTester not(ExpressionTester expression) {
 		return new NotExpressionTester(expression);
 	}
 
-	protected static BetweenExpressionTester notBetween(ExpressionTester expression,
+	public static BetweenExpressionTester notBetween(ExpressionTester expression,
 	                                                    ExpressionTester lowerBoundExpression,
 	                                                    ExpressionTester upperBoundExpression) {
 
@@ -2479,29 +2487,29 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static ComparisonExpressionTester notEqual(ExpressionTester leftExpression,
+	public static ComparisonExpressionTester notEqual(ExpressionTester leftExpression,
 	                                                     ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.NOT_EQUAL, rightExpression);
 	}
 
-	protected static ExistsExpressionTester notExists(ExpressionTester subquery) {
+	public static ExistsExpressionTester notExists(ExpressionTester subquery) {
 		return new ExistsExpressionTester(subquery, true);
 	}
 
-	protected static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
 	                                          ExpressionTester inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, true, inItems);
 	}
 
-	protected static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
 	                                          ExpressionTester... inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, true, collection(inItems));
 	}
 
-	protected static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
+	public static InExpressionTester notIn(ExpressionTester stateFieldPathExpression,
 	                                          String inputParameter) {
 
 		InExpressionTester in = notIn(stateFieldPathExpression, inputParameter(inputParameter));
@@ -2511,36 +2519,36 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return in;
 	}
 
-	protected static InExpressionTester notIn(String stateFieldPathExpression,
+	public static InExpressionTester notIn(String stateFieldPathExpression,
 	                                          ExpressionTester... inItems) {
 
 		return notIn(path(stateFieldPathExpression), collection(inItems));
 	}
 
-	protected static InExpressionTester notIn(String stateFieldPathExpression,
+	public static InExpressionTester notIn(String stateFieldPathExpression,
 	                                          ExpressionTester inItem) {
 
 		return notIn(path(stateFieldPathExpression), inItem);
 	}
 
-	protected static InExpressionTester notIn(String pathExpression, String singleInputParameter) {
+	public static InExpressionTester notIn(String pathExpression, String singleInputParameter) {
 		return notIn(path(pathExpression), singleInputParameter);
 	}
 
-	protected static LikeExpressionTester notLike(ExpressionTester stringExpression,
+	public static LikeExpressionTester notLike(ExpressionTester stringExpression,
 	                                              ExpressionTester patternValue) {
 
 		return notLike(stringExpression, patternValue, nullExpression());
 	}
 
-	protected static LikeExpressionTester notLike(ExpressionTester stringExpression,
+	public static LikeExpressionTester notLike(ExpressionTester stringExpression,
 	                                              ExpressionTester patternValue,
 	                                              ExpressionTester escapeCharacter) {
 
 		return new LikeExpressionTester(stringExpression, true, patternValue, escapeCharacter);
 	}
 
-	protected static CollectionMemberExpressionTester notMember(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester notMember(ExpressionTester entityExpression,
 	                                                            ExpressionTester collectionPath) {
 
 		return new CollectionMemberExpressionTester(
@@ -2551,19 +2559,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static CollectionMemberExpressionTester notMember(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester notMember(ExpressionTester entityExpression,
 	                                                            String collectionPath) {
 
 		return notMember(entityExpression, collectionPath);
 	}
 
-	protected static CollectionMemberExpressionTester notMember(String identificationVariable,
+	public static CollectionMemberExpressionTester notMember(String identificationVariable,
 	                                                            String collectionPath) {
 
 		return notMember(variable(identificationVariable), collectionPath);
 	}
 
-	protected static CollectionMemberExpressionTester notMemberOf(ExpressionTester entityExpression,
+	public static CollectionMemberExpressionTester notMemberOf(ExpressionTester entityExpression,
 	                                                              ExpressionTester collectionPath) {
 
 		return new CollectionMemberExpressionTester(
@@ -2574,71 +2582,71 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static ExpressionTester NULL() {
+	public static ExpressionTester NULL() {
 		return new KeywordExpressionTester(NULL);
 	}
 
-	protected static ExpressionTester nullExpression() {
+	public static ExpressionTester nullExpression() {
 		return new NullExpressionTester();
 	}
 
-	protected static NullIfExpressionTester nullIf(ExpressionTester expression1,
+	public static NullIfExpressionTester nullIf(ExpressionTester expression1,
 	                                               ExpressionTester expression2) {
 
 		return new NullIfExpressionTester(expression1, expression2);
 	}
 
-	protected static NumericLiteralTester numeric(double number) {
+	public static NumericLiteralTester numeric(double number) {
 		return numeric(String.valueOf(number));
 	}
 
-	protected static NumericLiteralTester numeric(float number) {
+	public static NumericLiteralTester numeric(float number) {
 		return numeric(String.valueOf(number));
 	}
 
-	protected static NumericLiteralTester numeric(int number) {
+	public static NumericLiteralTester numeric(int number) {
 		return numeric(String.valueOf(number));
 	}
 
-	protected static NumericLiteralTester numeric(long number) {
+	public static NumericLiteralTester numeric(long number) {
 		return numeric(String.valueOf(number));
 	}
 
-	protected static NumericLiteralTester numeric(String value) {
+	public static NumericLiteralTester numeric(String value) {
 		return new NumericLiteralTester(value);
 	}
 
-	protected static ObjectExpressionTester object(ExpressionTester identificationVariable) {
+	public static ObjectExpressionTester object(ExpressionTester identificationVariable) {
 		return new ObjectExpressionTester(identificationVariable);
 	}
 
-	protected static ObjectExpressionTester object(String identificationVariable) {
+	public static ObjectExpressionTester object(String identificationVariable) {
 		return object(variable(identificationVariable));
 	}
 
-	protected static OnClauseTester on(ExpressionTester conditionalExpression) {
+	public static OnClauseTester on(ExpressionTester conditionalExpression) {
 		return new OnClauseTester(conditionalExpression);
 	}
 
-	protected static OrExpressionTester or(ExpressionTester leftExpression,
+	public static OrExpressionTester or(ExpressionTester leftExpression,
 	                                       ExpressionTester rightExpression) {
 
 		return new OrExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static OrderByClauseTester orderBy(ExpressionTester orderByItem) {
+	public static OrderByClauseTester orderBy(ExpressionTester orderByItem) {
 		return new OrderByClauseTester(orderByItem);
 	}
 
-	protected static OrderByClauseTester orderBy(ExpressionTester... orderByItems) {
+	public static OrderByClauseTester orderBy(ExpressionTester... orderByItems) {
 		return new OrderByClauseTester(collection(orderByItems));
 	}
 
-	protected static OrderByClauseTester orderBy(String stateFieldPathExpression) {
+	public static OrderByClauseTester orderBy(String stateFieldPathExpression) {
 		return new OrderByClauseTester(orderByItem(stateFieldPathExpression));
 	}
 
-	protected static OrderByItemTester orderByItem(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItem(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.DEFAULT);
 	}
 
@@ -2649,79 +2657,79 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new OrderByItemTester(orderByItem, ordering, nullOrdering);
 	}
 
-	protected static OrderByItemTester orderByItem(String stateFieldPathExpression) {
+	public static OrderByItemTester orderByItem(String stateFieldPathExpression) {
 		return orderByItem(path(stateFieldPathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemAsc(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemAsc(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.DEFAULT);
 	}
 
-	protected static OrderByItemTester orderByItemAsc(String stateFieldPathExpression) {
+	public static OrderByItemTester orderByItemAsc(String stateFieldPathExpression) {
 		return orderByItemAsc(path(stateFieldPathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemAscNullsFirst(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemAscNullsFirst(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.NULLS_FIRST);
 	}
 
-	protected static OrderByItemTester orderByItemAscNullsFirst(String pathExpression) {
+	public static OrderByItemTester orderByItemAscNullsFirst(String pathExpression) {
 		return orderByItemAscNullsFirst(path(pathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemAscNullsLast(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemAscNullsLast(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.NULLS_LAST);
 	}
 
-	protected static OrderByItemTester orderByItemAscNullsLast(String stateFieldPathExpression) {
+	public static OrderByItemTester orderByItemAscNullsLast(String stateFieldPathExpression) {
 		return orderByItemAscNullsLast(path(stateFieldPathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemDesc(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemDesc(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.DEFAULT);
 	}
 
-	protected static OrderByItemTester orderByItemDesc(String stateFieldPathExpression) {
+	public static OrderByItemTester orderByItemDesc(String stateFieldPathExpression) {
 		return orderByItemDesc(path(stateFieldPathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemDescNullsFirst(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemDescNullsFirst(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.NULLS_FIRST);
 	}
 
-	protected static OrderByItemTester orderByItemDescNullsFirst(String pathExpression) {
+	public static OrderByItemTester orderByItemDescNullsFirst(String pathExpression) {
 		return orderByItemDescNullsFirst(path(pathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemDescNullsLast(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemDescNullsLast(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.NULLS_LAST);
 	}
 
-	protected static OrderByItemTester orderByItemDescNullsLast(String pathExpression) {
+	public static OrderByItemTester orderByItemDescNullsLast(String pathExpression) {
 		return orderByItemAscNullsLast(path(pathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemNullsFirst(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemNullsFirst(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.NULLS_FIRST);
 	}
 
-	protected static OrderByItemTester orderByItemNullsFirst(String pathExpression) {
+	public static OrderByItemTester orderByItemNullsFirst(String pathExpression) {
 		return orderByItemNullsFirst(path(pathExpression));
 	}
 
-	protected static OrderByItemTester orderByItemNullsLast(ExpressionTester orderByItem) {
+	public static OrderByItemTester orderByItemNullsLast(ExpressionTester orderByItem) {
 		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.NULLS_LAST);
 	}
 
-	protected static OrderByItemTester orderByItemNullsLast(String pathExpression) {
+	public static OrderByItemTester orderByItemNullsLast(String pathExpression) {
 		return orderByItemNullsLast(path(pathExpression));
 	}
 
-	protected static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester expression) {
+	public static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester expression) {
 		return new OrderSiblingsByClauseTester(expression);
 	}
 
-	protected static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester... expressions) {
+	public static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester... expressions) {
 		return new OrderSiblingsByClauseTester(collection(expressions));
 	}
 
@@ -2735,13 +2743,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
+	public static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
 	                                                     String pathExpression) {
 
 		return path(identificationVariable, false, pathExpression);
 	}
 
-	protected static StateFieldPathExpressionTester path(String pathExpression) {
+	public static StateFieldPathExpressionTester path(String pathExpression) {
 
 		int dotIndex = pathExpression.indexOf('.');
 
@@ -2754,12 +2762,16 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return path(variable(variable), false, path);
 	}
 
-	protected static ArithmeticFactorTester plus(ExpressionTester expression) {
+	public static ArithmeticFactorTester plus(ExpressionTester expression) {
 		return new ArithmeticFactorTester(PLUS, expression);
 	}
 
-	protected static String quote(char character) {
+	public static String quote(char character) {
 		return new StringBuilder(3).append("'").append(character).append("'").toString();
+	}
+
+	public static RangeVariableDeclarationTester rangeVariableDeclaration(ExpressionTester abstractSchemaName) {
+		return rangeVariableDeclaration(abstractSchemaName, nullExpression());
 	}
 
 	private static RangeVariableDeclarationTester rangeVariableDeclaration(ExpressionTester abstractSchemaName,
@@ -2769,13 +2781,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new RangeVariableDeclarationTester(abstractSchemaName, hasAs, identificationVariable);
 	}
 
-	protected static RangeVariableDeclarationTester rangeVariableDeclaration(ExpressionTester abstractSchemaName,
-	                                                                         ExpressionTester identificationVariable) {
+	public static RangeVariableDeclarationTester rangeVariableDeclaration(ExpressionTester abstractSchemaName,
+	                                                                      ExpressionTester identificationVariable) {
 
 		return rangeVariableDeclaration(abstractSchemaName, false, identificationVariable);
 	}
 
-	protected static RangeVariableDeclarationTester rangeVariableDeclaration(String abstractSchemaName) {
+	public static RangeVariableDeclarationTester rangeVariableDeclaration(ExpressionTester abstractSchemaName,
+	                                                                      String identificationVariable) {
+
+		return rangeVariableDeclaration(abstractSchemaName, variable(identificationVariable));
+	}
+
+	public static RangeVariableDeclarationTester rangeVariableDeclaration(String abstractSchemaName) {
 		return rangeVariableDeclaration(
 			abstractSchemaName(abstractSchemaName),
 			false,
@@ -2783,8 +2801,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static RangeVariableDeclarationTester rangeVariableDeclaration(String abstractSchemaName,
-	                                                                         String identificationVariable) {
+	public static RangeVariableDeclarationTester rangeVariableDeclaration(String abstractSchemaName,
+	                                                                      String identificationVariable) {
 
 		return rangeVariableDeclaration(
 			abstractSchemaName(abstractSchemaName),
@@ -2793,14 +2811,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static RangeVariableDeclarationTester rangeVariableDeclarationAs(ExpressionTester abstractSchemaName,
-	                                                                           ExpressionTester identificationVariable) {
+	public static RangeVariableDeclarationTester rangeVariableDeclarationAs(ExpressionTester abstractSchemaName,
+	                                                                        ExpressionTester identificationVariable) {
 
 		return rangeVariableDeclaration(abstractSchemaName, true, identificationVariable);
 	}
 
-	protected static RangeVariableDeclarationTester rangeVariableDeclarationAs(String abstractSchemaName,
-	                                                                           String identificationVariable) {
+	public static RangeVariableDeclarationTester rangeVariableDeclarationAs(String abstractSchemaName,
+	                                                                        String identificationVariable) {
 
 		return rangeVariableDeclarationAs(
 			abstractSchemaName(abstractSchemaName),
@@ -2808,14 +2826,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static RegexpExpressionTester regexp(ExpressionTester stringExpression,
-	                                               ExpressionTester patternValue) {
+	public static RegexpExpressionTester regexp(ExpressionTester stringExpression,
+	                                            ExpressionTester patternValue) {
 
 		return new RegexpExpressionTester(stringExpression, patternValue);
 	}
 
-	protected static RegexpExpressionTester regexp(ExpressionTester stringExpression,
-	                                               String patternValue) {
+	public static RegexpExpressionTester regexp(ExpressionTester stringExpression,
+	                                            String patternValue) {
 
 		return regexp(stringExpression, string(patternValue));
 	}
@@ -2827,35 +2845,35 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new ResultVariableTester(selectExpression, hasAs, resultVariable);
 	}
 
-	protected static ResultVariableTester resultVariable(ExpressionTester selectExpression,
-	                                                     ExpressionTester resultVariable) {
+	public static ResultVariableTester resultVariable(ExpressionTester selectExpression,
+	                                                  ExpressionTester resultVariable) {
 
 		return resultVariable(selectExpression, false, resultVariable);
 	}
 
-	protected static ResultVariableTester resultVariable(ExpressionTester selectExpression,
-	                                                     String resultVariable) {
+	public static ResultVariableTester resultVariable(ExpressionTester selectExpression,
+	                                                  String resultVariable) {
 
 		return resultVariable(selectExpression, false, variable(resultVariable));
 	}
 
-	protected static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
-	                                                       ExpressionTester resultVariable) {
+	public static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
+	                                                    ExpressionTester resultVariable) {
 
 		return resultVariable(selectExpression, true, resultVariable);
 	}
 
-	protected static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
-	                                                       String resultVariable) {
+	public static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
+	                                                    String resultVariable) {
 
 		return resultVariableAs(selectExpression, variable(resultVariable));
 	}
 
-	protected static SelectClauseTester select(ExpressionTester selectExpression) {
+	public static SelectClauseTester select(ExpressionTester selectExpression) {
 		return select(selectExpression, false);
 	}
 
-	protected static SelectClauseTester select(ExpressionTester... selectExpressions) {
+	public static SelectClauseTester select(ExpressionTester... selectExpressions) {
 		return new SelectClauseTester(collection(selectExpressions), false);
 	}
 
@@ -2863,15 +2881,15 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new SelectClauseTester(selectExpression, hasDistinct);
 	}
 
-	protected static SelectClauseTester selectDistinct(ExpressionTester... selectExpressions) {
+	public static SelectClauseTester selectDistinct(ExpressionTester... selectExpressions) {
 		return new SelectClauseTester(collection(selectExpressions), true);
 	}
 
-	protected static SelectClauseTester selectDistinct(ExpressionTester selectExpression) {
+	public static SelectClauseTester selectDistinct(ExpressionTester selectExpression) {
 		return new SelectClauseTester(selectExpression, true);
 	}
 
-	protected static SelectClauseTester selectDisting(ExpressionTester selectExpression) {
+	public static SelectClauseTester selectDisting(ExpressionTester selectExpression) {
 		return select(selectExpression, true);
 	}
 
@@ -2913,7 +2931,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(FromClauseTester fromClause) {
+	public static SelectStatementTester selectStatement(FromClauseTester fromClause) {
 
 		return selectStatement(
 			nullExpression(),
@@ -2926,8 +2944,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause) {
+	public static SelectStatementTester selectStatement(FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause) {
 
 		return selectStatement(
 			nullExpression(),
@@ -2940,7 +2958,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause) {
 
 		return selectStatement(
 			selectClause,
@@ -2953,8 +2971,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause) {
 
 		return selectStatement(
 			selectClause,
@@ -2967,9 +2985,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       CollectionExpressionTester unionClauses) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    CollectionExpressionTester unionClauses) {
 
 		return selectStatement(
 			selectClause,
@@ -2982,9 +3000,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       GroupByClauseTester groupByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    GroupByClauseTester groupByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -2997,10 +3015,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       HavingClauseTester havingClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    HavingClauseTester havingClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3013,11 +3031,11 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       HavingClauseTester havingClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    HavingClauseTester havingClause,
+	                                                    OrderByClauseTester orderByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3030,10 +3048,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    OrderByClauseTester orderByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3046,9 +3064,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       HavingClauseTester havingClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    HavingClauseTester havingClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3061,9 +3079,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    OrderByClauseTester orderByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3076,9 +3094,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       UnionClauseTester unionClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    UnionClauseTester unionClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3091,9 +3109,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3106,62 +3124,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       GroupByClauseTester groupByClause) {
-
-		return selectStatement(
-			selectClause,
-			fromClause,
-			whereClause,
-			groupByClause,
-			nullExpression(),
-			nullExpression(),
-			nullExpression()
-		);
-	}
-
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       HavingClauseTester havingClause) {
-
-		return selectStatement(
-			selectClause,
-			fromClause,
-			whereClause,
-			groupByClause,
-			havingClause,
-			nullExpression(),
-			nullExpression()
-		);
-	}
-
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       HavingClauseTester havingClause,
-	                                                       OrderByClauseTester orderByClause) {
-
-		return selectStatement(
-			selectClause,
-			fromClause,
-			whereClause,
-			groupByClause,
-			havingClause,
-			orderByClause,
-			nullExpression()
-		);
-	}
-
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       GroupByClauseTester groupByClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    GroupByClauseTester groupByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3169,15 +3135,67 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			whereClause,
 			groupByClause,
 			nullExpression(),
+			nullExpression(),
+			nullExpression()
+		);
+	}
+
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    HavingClauseTester havingClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			havingClause,
+			nullExpression(),
+			nullExpression()
+		);
+	}
+
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    HavingClauseTester havingClause,
+	                                                    OrderByClauseTester orderByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			havingClause,
 			orderByClause,
 			nullExpression()
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       HavingClauseTester havingClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    GroupByClauseTester groupByClause,
+	                                                    OrderByClauseTester orderByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			nullExpression(),
+			orderByClause,
+			nullExpression()
+		);
+	}
+
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    HavingClauseTester havingClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3190,11 +3208,11 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       HavingClauseTester havingClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    HavingClauseTester havingClause,
+	                                                    OrderByClauseTester orderByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3207,10 +3225,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       OrderByClauseTester orderByClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    OrderByClauseTester orderByClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3223,10 +3241,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       UnionClauseTester unionClause) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    UnionClauseTester unionClause) {
 
 		return selectStatement(
 			selectClause,
@@ -3239,10 +3257,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SelectStatementTester selectStatement(SelectClauseTester selectClause,
-	                                                       FromClauseTester fromClause,
-	                                                       WhereClauseTester whereClause,
-	                                                       UnionClauseTester... unionClauses) {
+	public static SelectStatementTester selectStatement(SelectClauseTester selectClause,
+	                                                    FromClauseTester fromClause,
+	                                                    WhereClauseTester whereClause,
+	                                                    UnionClauseTester... unionClauses) {
 
 		return selectStatement(
 			selectClause,
@@ -3255,13 +3273,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateItemTester set(ExpressionTester stateFieldPathExpression,
-	                                      ExpressionTester newValue) {
+	public static UpdateItemTester set(ExpressionTester stateFieldPathExpression,
+	                                   ExpressionTester newValue) {
 
 		return new UpdateItemTester(stateFieldPathExpression, newValue);
 	}
 
-	protected static UpdateItemTester set(String pathExpression, ExpressionTester newValue) {
+	public static UpdateItemTester set(String pathExpression, ExpressionTester newValue) {
 
 		if (pathExpression.startsWith("{")) {
 
@@ -3280,19 +3298,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return set(path(pathExpression), newValue);
 	}
 
-	protected static SizeExpressionTester size(ExpressionTester collectionPath) {
+	public static SizeExpressionTester size(ExpressionTester collectionPath) {
 		return new SizeExpressionTester(collectionPath);
 	}
 
-	protected static SizeExpressionTester size(String collectionPath) {
+	public static SizeExpressionTester size(String collectionPath) {
 		return size(collectionPath(collectionPath));
 	}
 
-	protected static AllOrAnyExpressionTester some(ExpressionTester subquery) {
+	public static AllOrAnyExpressionTester some(ExpressionTester subquery) {
 		return new AllOrAnyExpressionTester(SOME, subquery);
 	}
 
-	protected static CollectionExpressionTester spacedCollection(ExpressionTester... expressions) {
+	public static CollectionExpressionTester spacedCollection(ExpressionTester... expressions) {
 
 		Boolean[] spaces = new Boolean[expressions.length];
 		Boolean[] commas = new Boolean[expressions.length];
@@ -3305,63 +3323,63 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return collection(expressions, commas, spaces);
 	}
 
-	protected static SqrtExpressionTester sqrt(ExpressionTester simpleArithmeticExpression) {
+	public static SqrtExpressionTester sqrt(ExpressionTester simpleArithmeticExpression) {
 		return new SqrtExpressionTester(simpleArithmeticExpression);
 	}
 
-	protected static StartWithClauseTester startWith(ExpressionTester expression) {
+	public static StartWithClauseTester startWith(ExpressionTester expression) {
 		return new StartWithClauseTester(expression);
 	}
 
-	protected static StringLiteralTester string(char literal) {
+	public static StringLiteralTester string(char literal) {
 		return new StringLiteralTester(quote(literal));
 	}
 
-	protected static StringLiteralTester string(String literal) {
+	public static StringLiteralTester string(String literal) {
 		return new StringLiteralTester(literal);
 	}
 
-	protected static SubExpressionTester sub(ExpressionTester expression) {
+	public static SubExpressionTester sub(ExpressionTester expression) {
 		return new SubExpressionTester(expression);
 	}
 
-	protected static SimpleFromClauseTester subFrom(ExpressionTester declaration) {
+	public static SimpleFromClauseTester subFrom(ExpressionTester declaration) {
 		return new SimpleFromClauseTester(declaration, nullExpression(), nullExpression());
 	}
 
-	protected static SimpleFromClauseTester subFrom(ExpressionTester... declarations) {
+	public static SimpleFromClauseTester subFrom(ExpressionTester... declarations) {
 		return new SimpleFromClauseTester(collection(declarations), nullExpression(), nullExpression());
 	}
 
-	protected static SimpleFromClauseTester subFrom(ExpressionTester declarations,
-	                                                HierarchicalQueryClauseTester hierarchicalQueryClause,
-	                                                AsOfClauseTester asOfClause) {
+	public static SimpleFromClauseTester subFrom(ExpressionTester declarations,
+	                                             HierarchicalQueryClauseTester hierarchicalQueryClause,
+	                                             AsOfClauseTester asOfClause) {
 
 		return new SimpleFromClauseTester(declarations, hierarchicalQueryClause, asOfClause);
 	}
 
-	protected static SimpleFromClauseTester subFrom(ExpressionTester[] declarations,
-	                                                AsOfClauseTester asOfClause) {
+	public static SimpleFromClauseTester subFrom(ExpressionTester[] declarations,
+	                                             AsOfClauseTester asOfClause) {
 
 		return subFrom(collection(declarations), nullExpression(), asOfClause);
 	}
 
-	protected static SimpleFromClauseTester subFrom(ExpressionTester[] declarations,
-	                                                ExpressionTester hierarchicalQueryClause,
-	                                                ExpressionTester asOfClause) {
+	public static SimpleFromClauseTester subFrom(ExpressionTester[] declarations,
+	                                             ExpressionTester hierarchicalQueryClause,
+	                                             ExpressionTester asOfClause) {
 
 		return subFrom(collection(declarations), hierarchicalQueryClause, asOfClause);
 	}
 
-	protected static SimpleFromClauseTester subFrom(String abstractSchemaName,
-	                                                String identificationVariable) {
+	public static SimpleFromClauseTester subFrom(String abstractSchemaName,
+	                                             String identificationVariable) {
 
 		return subFrom(identificationVariableDeclaration(abstractSchemaName, identificationVariable));
 	}
 
-	protected static SimpleFromClauseTester subFrom(String abstractSchemaName,
-	                                                String identificationVariable,
-	                                                ExpressionTester... joins) {
+	public static SimpleFromClauseTester subFrom(String abstractSchemaName,
+	                                             String identificationVariable,
+	                                             ExpressionTester... joins) {
 
 		return subFrom(identificationVariableDeclaration(
 			abstractSchemaName,
@@ -3370,9 +3388,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		));
 	}
 
-	protected static SimpleFromClauseTester subFrom(String abstractSchemaName,
-	                                                String identificationVariable,
-	                                                ExpressionTester joins) {
+	public static SimpleFromClauseTester subFrom(String abstractSchemaName,
+	                                             String identificationVariable,
+	                                             ExpressionTester joins) {
 
 		return subFrom(identificationVariableDeclaration(
 			abstractSchemaName,
@@ -3381,7 +3399,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		));
 	}
 
-	protected static CollectionMemberDeclarationTester subFromIn(ExpressionTester collectionPath) {
+	public static CollectionMemberDeclarationTester subFromIn(ExpressionTester collectionPath) {
 
 		CollectionMemberDeclarationTester in = new CollectionMemberDeclarationTester(
 			collectionPath,
@@ -3397,37 +3415,37 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return in;
 	}
 
-	protected static CollectionMemberDeclarationTester subFromIn(String collectionPath) {
+	public static CollectionMemberDeclarationTester subFromIn(String collectionPath) {
 		return subFromIn(collectionPath(collectionPath));
 	}
 
-	protected static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
-	                                                      ExpressionTester fromClause) {
+	public static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
+	                                                   ExpressionTester fromClause) {
 
 		return subquery(selectClause, fromClause, nullExpression());
 	}
 
-	protected static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
-	                                                      ExpressionTester fromClause,
-	                                                      ExpressionTester whereClause) {
+	public static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
+	                                                   ExpressionTester fromClause,
+	                                                   ExpressionTester whereClause) {
 
 		return subSelectStatement(selectClause, fromClause, whereClause);
 	}
 
-	protected static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
-	                                                      ExpressionTester fromClause,
-	                                                      ExpressionTester whereClause,
-	                                                      ExpressionTester groupByClause,
-	                                                      ExpressionTester havingClause) {
+	public static SimpleSelectStatementTester subquery(ExpressionTester selectClause,
+	                                                   ExpressionTester fromClause,
+	                                                   ExpressionTester whereClause,
+	                                                   ExpressionTester groupByClause,
+	                                                   ExpressionTester havingClause) {
 
 		return subSelectStatement(selectClause, fromClause, whereClause, groupByClause, havingClause);
 	}
 
-	protected static SimpleSelectClauseTester subSelect(ExpressionTester selectExpression) {
+	public static SimpleSelectClauseTester subSelect(ExpressionTester selectExpression) {
 		return subSelect(selectExpression, false);
 	}
 
-	protected static SimpleSelectClauseTester subSelect(ExpressionTester... selectExpressions) {
+	public static SimpleSelectClauseTester subSelect(ExpressionTester... selectExpressions) {
 		return new SimpleSelectClauseTester(collection(selectExpressions), false);
 	}
 
@@ -3437,16 +3455,16 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new SimpleSelectClauseTester(selectExpression, hasDistinct);
 	}
 
-	protected static SimpleSelectClauseTester subSelectDistinct(ExpressionTester selectExpression) {
+	public static SimpleSelectClauseTester subSelectDistinct(ExpressionTester selectExpression) {
 		return subSelect(selectExpression, true);
 	}
 
-	protected static SimpleSelectClauseTester subSelectDistinct(ExpressionTester... selectExpressions) {
+	public static SimpleSelectClauseTester subSelectDistinct(ExpressionTester... selectExpressions) {
 		return new SimpleSelectClauseTester(collection(selectExpressions), true);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause) {
 
 		return subSelectStatement(
 			selectClause,
@@ -3457,9 +3475,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause,
-	                                                                ExpressionTester whereClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause,
+	                                                             ExpressionTester whereClause) {
 
 		return subSelectStatement(
 			selectClause,
@@ -3470,11 +3488,11 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause,
-	                                                                ExpressionTester whereClause,
-	                                                                ExpressionTester groupByClause,
-	                                                                ExpressionTester havingClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause,
+	                                                             ExpressionTester whereClause,
+	                                                             ExpressionTester groupByClause,
+	                                                             ExpressionTester havingClause) {
 
 		return new SimpleSelectStatementTester(
 			selectClause,
@@ -3485,9 +3503,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause,
-	                                                                GroupByClauseTester groupByClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause,
+	                                                             GroupByClauseTester groupByClause) {
 
 		return subSelectStatement(
 			selectClause,
@@ -3498,9 +3516,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause,
-	                                                                HavingClauseTester havingClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause,
+	                                                             HavingClauseTester havingClause) {
 
 		return subSelectStatement(
 			selectClause,
@@ -3511,9 +3529,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
-	                                                                ExpressionTester fromClause,
-	                                                                OrderByClauseTester orderByClause) {
+	public static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                             ExpressionTester fromClause,
+	                                                             OrderByClauseTester orderByClause) {
 
 		return subSelectStatement(
 			selectClause,
@@ -3524,125 +3542,130 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static SubstringExpressionTester substring(ExpressionTester firstExpression,
-	                                                     ExpressionTester secondExpression) {
+	public static SubstringExpressionTester substring(ExpressionTester firstExpression,
+	                                                  ExpressionTester secondExpression) {
 
 		return substring(firstExpression, secondExpression, nullExpression());
 	}
 
-	protected static SubstringExpressionTester substring(ExpressionTester firstExpression,
-	                                                     ExpressionTester secondExpression,
-	                                                     ExpressionTester thirdExpression) {
+	public static SubstringExpressionTester substring(ExpressionTester firstExpression,
+	                                                  ExpressionTester secondExpression,
+	                                                  ExpressionTester thirdExpression) {
 
 		return new SubstringExpressionTester(firstExpression, secondExpression, thirdExpression);
 	}
 
-	protected static SubtractionExpressionTester subtract(ExpressionTester leftExpression,
-	                                                      ExpressionTester rightExpression) {
+	public static SubtractionExpressionTester subtract(ExpressionTester leftExpression,
+	                                                   ExpressionTester rightExpression) {
 
 		return new SubtractionExpressionTester(leftExpression, rightExpression);
 	}
 
-	protected static SumFunctionTester sum(ExpressionTester expression) {
+	public static SumFunctionTester sum(ExpressionTester expression) {
 		return new SumFunctionTester(expression, false);
 	}
 
-	protected static SumFunctionTester sum(String statefieldPathExpression) {
+	public static SumFunctionTester sum(String statefieldPathExpression) {
 		return sum(path(statefieldPathExpression));
 	}
 
-	protected static SumFunctionTester sumDistinct(String statefieldPathExpression) {
+	public static SumFunctionTester sumDistinct(String statefieldPathExpression) {
 		return new SumFunctionTester(path(statefieldPathExpression), true);
 	}
 
-	protected static TableExpressionTester table(ExpressionTester tableName) {
+	public static TableExpressionTester table(ExpressionTester tableName) {
 		return new TableExpressionTester(tableName);
 	}
 
-	protected static TableExpressionTester table(String tableName) {
+	public static TableExpressionTester table(String tableName) {
 		return table(string(tableName));
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclaration(String tableName,
-	                                                                         String variable) {
+	public static TableVariableDeclarationTester tableVariableDeclaration(String tableName) {
+		return tableVariableDeclaration(table(tableName), nullExpression());
+	}
+
+	public static TableVariableDeclarationTester tableVariableDeclaration(String tableName,
+	                                                                      String variable) {
+
 
 		return tableVariableDeclaration(table(tableName), variable(variable));
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
-	                                                                         ExpressionTester variable) {
+	public static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
+	                                                                      ExpressionTester variable) {
 
 		return new TableVariableDeclarationTester(tableName, false, variable);
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
-	                                                                         String variable) {
+	public static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
+	                                                                      String variable) {
 
 		return tableVariableDeclaration(tableName, variable(variable));
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclarationAs(String tableName,
-	                                                                           String variable) {
+	public static TableVariableDeclarationTester tableVariableDeclarationAs(String tableName,
+	                                                                        String variable) {
 
 		return tableVariableDeclarationAs(table(tableName), variable(variable));
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
-	                                                                           ExpressionTester variable) {
+	public static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
+	                                                                        ExpressionTester variable) {
 
 		return new TableVariableDeclarationTester(tableName, true, variable);
 	}
 
-	protected static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
-	                                                                           String variable) {
+	public static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
+	                                                                        String variable) {
 
 		return tableVariableDeclarationAs(tableName, variable(variable));
 	}
 
-	protected static TreatExpressionTester treat(ExpressionTester pathExpression,
-	                                             ExpressionTester entityTypeName) {
+	public static TreatExpressionTester treat(ExpressionTester pathExpression,
+	                                          ExpressionTester entityTypeName) {
 
 		return new TreatExpressionTester(pathExpression, false, entityTypeName);
 	}
 
-	protected static TreatExpressionTester treat(ExpressionTester pathExpression,
-	                                             String entityTypeName) {
+	public static TreatExpressionTester treat(ExpressionTester pathExpression,
+	                                          String entityTypeName) {
 
 		return treat(pathExpression, entity(entityTypeName));
 	}
 
-	protected static TreatExpressionTester treat(String pathExpression,
-	                                             String entityTypeName) {
+	public static TreatExpressionTester treat(String pathExpression,
+	                                          String entityTypeName) {
 
 		return treat(collectionPath(pathExpression), entity(entityTypeName));
 	}
 
-	protected static TreatExpressionTester treatAs(ExpressionTester pathExpression,
-	                                               ExpressionTester entityTypeName) {
+	public static TreatExpressionTester treatAs(ExpressionTester pathExpression,
+	                                            ExpressionTester entityTypeName) {
 
 		return new TreatExpressionTester(pathExpression, true, entityTypeName);
 	}
 
-	protected static TreatExpressionTester treatAs(ExpressionTester pathExpression,
-	                                               String entityTypeName) {
+	public static TreatExpressionTester treatAs(ExpressionTester pathExpression,
+	                                            String entityTypeName) {
 
 		return treatAs(pathExpression, entity(entityTypeName));
 	}
 
-	protected static TreatExpressionTester treatAs(String pathExpression, String entityTypeName) {
+	public static TreatExpressionTester treatAs(String pathExpression, String entityTypeName) {
 		return treatAs(collectionPath(pathExpression), entity(entityTypeName));
 	}
 
-	protected static TrimExpressionTester trim(char trimCharacter, ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trim(char trimCharacter, ExpressionTester stringPrimary) {
 		return trim(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trim(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trim(ExpressionTester stringPrimary) {
 		return trim(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trim(ExpressionTester trimCharacter,
-	                                           ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trim(ExpressionTester trimCharacter,
+	                                        ExpressionTester stringPrimary) {
 
 		return trim(Specification.DEFAULT, trimCharacter, false, stringPrimary);
 	}
@@ -3655,181 +3678,181 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new TrimExpressionTester(specification, stringPrimary, trimCharacter, hasFrom);
 	}
 
-	protected static TrimExpressionTester trimBoth(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimBoth(ExpressionTester stringPrimary) {
 		return trim(Specification.BOTH, nullExpression(), false, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimBothFrom(char trimCharacter,
-	                                                   ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimBothFrom(char trimCharacter,
+	                                                ExpressionTester stringPrimary) {
 
 		return trimBothFrom(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimBothFrom(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimBothFrom(ExpressionTester stringPrimary) {
 		return trimBothFrom(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimBothFrom(ExpressionTester trimCharacter,
-	                                                   ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimBothFrom(ExpressionTester trimCharacter,
+	                                                ExpressionTester stringPrimary) {
 
 		return trim(Specification.BOTH, trimCharacter, true, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimFrom(char trimCharacter, ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimFrom(char trimCharacter, ExpressionTester stringPrimary) {
 		return trimFrom(string(trimCharacter), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimFrom(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimFrom(ExpressionTester stringPrimary) {
 		return trimFrom(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimFrom(ExpressionTester trimCharacter,
-	                                               ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimFrom(ExpressionTester trimCharacter,
+	                                            ExpressionTester stringPrimary) {
 
 		return trim(Specification.DEFAULT, trimCharacter, true, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeading(char trimCharacter,
-	                                                  ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeading(char trimCharacter,
+	                                               ExpressionTester stringPrimary) {
 
 		return trimLeading(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeading(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeading(ExpressionTester stringPrimary) {
 		return trimLeading(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeading(ExpressionTester trimCharacter,
-	                                                  ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeading(ExpressionTester trimCharacter,
+	                                               ExpressionTester stringPrimary) {
 
 		return trim(Specification.LEADING, trimCharacter, false, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeadingFrom(char trimCharacter,
-	                                                      ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeadingFrom(char trimCharacter,
+	                                                   ExpressionTester stringPrimary) {
 
 		return trimLeadingFrom(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeadingFrom(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeadingFrom(ExpressionTester stringPrimary) {
 		return trimLeadingFrom(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimLeadingFrom(ExpressionTester trimCharacter,
-	                                                      ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimLeadingFrom(ExpressionTester trimCharacter,
+	                                                   ExpressionTester stringPrimary) {
 
 		return trim(Specification.LEADING, trimCharacter, true, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailing(char trimCharacter,
-	                                                   ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailing(char trimCharacter,
+	                                                ExpressionTester stringPrimary) {
 
 		return trimTrailing(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailing(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailing(ExpressionTester stringPrimary) {
 		return trimTrailing(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailing(ExpressionTester trimCharacter,
-	                                                   ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailing(ExpressionTester trimCharacter,
+	                                                ExpressionTester stringPrimary) {
 
 		return trim(Specification.TRAILING, trimCharacter, false, stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailingFrom(char trimCharacter,
-	                                                       ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailingFrom(char trimCharacter,
+	                                                    ExpressionTester stringPrimary) {
 
 		return trimTrailingFrom(string(quote(trimCharacter)), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailingFrom(ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailingFrom(ExpressionTester stringPrimary) {
 		return trimTrailingFrom(nullExpression(), stringPrimary);
 	}
 
-	protected static TrimExpressionTester trimTrailingFrom(ExpressionTester trimCharacter,
-	                                                       ExpressionTester stringPrimary) {
+	public static TrimExpressionTester trimTrailingFrom(ExpressionTester trimCharacter,
+	                                                    ExpressionTester stringPrimary) {
 
 		return trim(Specification.TRAILING, trimCharacter, true, stringPrimary);
 	}
 
-	protected static ExpressionTester TRUE() {
+	public static ExpressionTester TRUE() {
 		return new KeywordExpressionTester(TRUE);
 	}
 
-	protected static TypeExpressionTester type(ExpressionTester identificationVariable) {
+	public static TypeExpressionTester type(ExpressionTester identificationVariable) {
 		return new TypeExpressionTester(identificationVariable);
 	}
 
-	protected static TypeExpressionTester type(String identificationVariable) {
+	public static TypeExpressionTester type(String identificationVariable) {
 		return type(variable(identificationVariable));
 	}
 
-	protected static UnionClauseTester union(ExpressionTester subquery) {
+	public static UnionClauseTester union(ExpressionTester subquery) {
 		return union(UNION, false, subquery);
 	}
 
-	protected static UnionClauseTester union(ExpressionTester selectClause,
+	public static UnionClauseTester union(ExpressionTester selectClause,
 	                                         ExpressionTester fromClause) {
 
 		return union(subquery(selectClause, fromClause));
 	}
 
-	protected static UnionClauseTester union(ExpressionTester selectClause,
-	                                         ExpressionTester fromClause,
-	                                         ExpressionTester whereClause) {
+	public static UnionClauseTester union(ExpressionTester selectClause,
+	                                      ExpressionTester fromClause,
+	                                      ExpressionTester whereClause) {
 
 		return union(subquery(selectClause, fromClause, whereClause));
 	}
 
-	protected static UnionClauseTester union(ExpressionTester selectClause,
+	public static UnionClauseTester union(ExpressionTester selectClause,
+	                                      ExpressionTester fromClause,
+	                                      ExpressionTester whereClause,
+	                                      ExpressionTester groupByClause,
+	                                      ExpressionTester havingClause) {
+
+		return union(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
+	}
+
+	public static UnionClauseTester union(String identifier,
+	                                      boolean hasAll,
+	                                      ExpressionTester subquery) {
+
+		return new UnionClauseTester(identifier, hasAll, subquery);
+	}
+
+	public static UnionClauseTester unionAll(ExpressionTester subquery) {
+		return union(UNION, true, subquery);
+	}
+
+	public static UnionClauseTester unionAll(ExpressionTester selectClause,
+	                                         ExpressionTester fromClause) {
+
+		return unionAll(subquery(selectClause, fromClause));
+	}
+
+	public static UnionClauseTester unionAll(ExpressionTester selectClause,
+	                                         ExpressionTester fromClause,
+	                                         ExpressionTester whereClause) {
+
+		return unionAll(subquery(selectClause, fromClause, whereClause));
+	}
+
+	public static UnionClauseTester unionAll(ExpressionTester selectClause,
 	                                         ExpressionTester fromClause,
 	                                         ExpressionTester whereClause,
 	                                         ExpressionTester groupByClause,
 	                                         ExpressionTester havingClause) {
 
-		return union(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
-	}
-
-	protected static UnionClauseTester union(String identifier,
-	                                         boolean hasAll,
-	                                         ExpressionTester subquery) {
-
-		return new UnionClauseTester(identifier, hasAll, subquery);
-	}
-
-	protected static UnionClauseTester unionAll(ExpressionTester subquery) {
-		return union(UNION, true, subquery);
-	}
-
-	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
-	                                            ExpressionTester fromClause) {
-
-		return unionAll(subquery(selectClause, fromClause));
-	}
-
-	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
-	                                            ExpressionTester fromClause,
-		                                         ExpressionTester whereClause) {
-
-		return unionAll(subquery(selectClause, fromClause, whereClause));
-	}
-
-	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
-	                                            ExpressionTester fromClause,
-		                                         ExpressionTester whereClause,
-		                                         ExpressionTester groupByClause,
-		                                         ExpressionTester havingClause) {
-
 		return unionAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
-	protected static UnknownExpressionTester unknown(String unknown) {
+	public static UnknownExpressionTester unknown(String unknown) {
 		return new UnknownExpressionTester(unknown);
 	}
 
-	protected static UpdateClauseTester update(ExpressionTester rangeVariableDeclaration,
-	                                           ExpressionTester updateItem) {
+	public static UpdateClauseTester update(ExpressionTester rangeVariableDeclaration,
+	                                        ExpressionTester updateItem) {
 
 		return new UpdateClauseTester(
 			rangeVariableDeclaration,
@@ -3837,8 +3860,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester update(ExpressionTester rangeVariableDeclaration,
-	                                           ExpressionTester... updateItems) {
+	public static UpdateClauseTester update(ExpressionTester rangeVariableDeclaration,
+	                                        ExpressionTester... updateItems) {
 
 		return new UpdateClauseTester(
 			rangeVariableDeclaration,
@@ -3846,8 +3869,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester update(String abstractSchemaName,
-	                                           ExpressionTester updateItem) {
+	public static UpdateClauseTester update(String abstractSchemaName,
+	                                        ExpressionTester updateItem) {
 
 		UpdateClauseTester updateClause = update(
 			rangeVariableDeclaration(
@@ -3860,8 +3883,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return updateClause;
 	}
 
-	protected static UpdateClauseTester update(String abstractSchemaName,
-	                                           ExpressionTester... updateItems) {
+	public static UpdateClauseTester update(String abstractSchemaName,
+	                                        ExpressionTester... updateItems) {
 
 		UpdateClauseTester updateClause = update(
 			rangeVariableDeclaration(
@@ -3874,9 +3897,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return updateClause;
 	}
 
-	protected static UpdateClauseTester update(String abstractSchemaName,
-	                                           String identificationVariable,
-	                                           ExpressionTester updateItem) {
+	public static UpdateClauseTester update(String abstractSchemaName,
+	                                        String identificationVariable,
+	                                        ExpressionTester updateItem) {
 
 		return new UpdateClauseTester(
 			rangeVariableDeclaration(abstractSchemaName, identificationVariable),
@@ -3884,9 +3907,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester update(String abstractSchemaName,
-	                                           String identificationVariable,
-	                                           ExpressionTester... updateItems) {
+	public static UpdateClauseTester update(String abstractSchemaName,
+	                                        String identificationVariable,
+	                                        ExpressionTester... updateItems) {
 
 		return new UpdateClauseTester(
 			rangeVariableDeclaration(abstractSchemaName, identificationVariable),
@@ -3894,8 +3917,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester updateAs(String abstractSchemaName,
-	                                             ExpressionTester updateItem) {
+	public static UpdateClauseTester updateAs(String abstractSchemaName,
+	                                          ExpressionTester updateItem) {
 
 		return update(
 			rangeVariableDeclarationAs(
@@ -3905,8 +3928,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester updateAs(String abstractSchemaName,
-	                                             String identificationVariable) {
+	public static UpdateClauseTester updateAs(String abstractSchemaName,
+	                                          String identificationVariable) {
 
 		return update(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -3914,9 +3937,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester updateAs(String abstractSchemaName,
-	                                             String identificationVariable,
-	                                             ExpressionTester updateItem) {
+	public static UpdateClauseTester updateAs(String abstractSchemaName,
+	                                          String identificationVariable,
+	                                          ExpressionTester updateItem) {
 
 		return update(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -3924,9 +3947,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateClauseTester updateAs(String abstractSchemaName,
-	                                             String identificationVariable,
-	                                             ExpressionTester... updateItems) {
+	public static UpdateClauseTester updateAs(String abstractSchemaName,
+	                                          String identificationVariable,
+	                                          ExpressionTester... updateItems) {
 
 		return update(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -3934,36 +3957,40 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
-	protected static UpdateStatementTester updateStatement(ExpressionTester updateClause) {
+	public static UpdateStatementTester updateStatement(ExpressionTester updateClause) {
 		return updateStatement(updateClause, nullExpression());
 	}
 
-	protected static UpdateStatementTester updateStatement(ExpressionTester updateClause,
-	                                                       ExpressionTester whereClause) {
+	public static UpdateStatementTester updateStatement(ExpressionTester updateClause,
+	                                                    ExpressionTester whereClause) {
 
 		return new UpdateStatementTester(updateClause, whereClause);
 	}
 
-	protected static UpperExpressionTester upper(ExpressionTester stringPrimary) {
+	public static UpperExpressionTester upper(ExpressionTester stringPrimary) {
 		return new UpperExpressionTester(stringPrimary);
 	}
 
-	protected static IdentificationVariableTester variable(String identificationVariable) {
+	public static IdentificationVariableTester variable(String identificationVariable) {
+
 		if (identificationVariable.startsWith("{")) {
 			return virtualVariable(identificationVariable);
 		}
+
 		return new IdentificationVariableTester(identificationVariable, false, nullExpression());
 	}
 
-	protected static IdentificationVariableTester virtualVariable(String identificationVariable) {
+	public static IdentificationVariableTester virtualVariable(String identificationVariable) {
+
 		if (identificationVariable.startsWith("{")) {
 			identificationVariable = identificationVariable.substring(1, identificationVariable.length() - 1);
 		}
+
 		return new IdentificationVariableTester(identificationVariable, true, nullExpression());
 	}
 
-	protected static IdentificationVariableTester virtualVariable(String identificationVariable,
-	                                                              String pathExpression) {
+	public static IdentificationVariableTester virtualVariable(String identificationVariable,
+	                                                           String pathExpression) {
 
 		StateFieldPathExpressionTester path = path(
 			virtualVariable(identificationVariable),
@@ -3973,13 +4000,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new IdentificationVariableTester(pathExpression, true, path);
 	}
 
-	protected static WhenClauseTester when(ExpressionTester conditionalExpression,
-	                                       ExpressionTester thenExpression) {
+	public static WhenClauseTester when(ExpressionTester conditionalExpression,
+	                                    ExpressionTester thenExpression) {
 
 		return new WhenClauseTester(conditionalExpression, thenExpression);
 	}
 
-	protected static WhereClauseTester where(ExpressionTester conditionalExpression) {
+	public static WhereClauseTester where(ExpressionTester conditionalExpression) {
 		return new WhereClauseTester(conditionalExpression);
 	}
 
@@ -4387,7 +4414,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		testQuery(jpqlQuery, expressionTester, jpqlQueryBNFId, formatter, false);
 	}
 
-	protected static final class AbsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class AbsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected AbsExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -4404,7 +4431,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractConditionalClauseTester extends AbstractExpressionTester {
+	public static abstract class AbstractConditionalClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester conditionalExpression;
 		public boolean hasSpaceAfterIdentifier;
@@ -4443,7 +4470,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractDoubleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
+	public static abstract class AbstractDoubleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
 
 		private ExpressionTester firstExpression;
 		public boolean hasComma;
@@ -4495,7 +4522,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractEncapsulatedExpressionTester extends AbstractExpressionTester {
+	public static abstract class AbstractEncapsulatedExpressionTester extends AbstractExpressionTester {
 
 		public boolean hasLeftParenthesis;
 		public boolean hasRightParenthesis;
@@ -4545,7 +4572,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	/**
 	 * The abstract definition of an {@link ExpressionTester}.
 	 */
-	protected static abstract class AbstractExpressionTester implements ExpressionTester {
+	public static abstract class AbstractExpressionTester implements ExpressionTester {
 
 		public final AdditionExpressionTester add(ExpressionTester expression) {
 			return JPQLParserTest.add(this, expression);
@@ -4707,7 +4734,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractFromClauseTester extends AbstractExpressionTester {
+	public static abstract class AbstractFromClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester asOfClause;
 		private ExpressionTester declaration;
@@ -4765,7 +4792,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractOrderByClauseTester extends AbstractExpressionTester {
+	public static abstract class AbstractOrderByClauseTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterIdentifier;
 		private ExpressionTester orderByItems;
@@ -4801,7 +4828,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractPathExpressionTester extends AbstractExpressionTester {
+	public static abstract class AbstractPathExpressionTester extends AbstractExpressionTester {
 
 		private boolean endsWithDot;
 		private ExpressionTester identificationVariable;
@@ -4846,7 +4873,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractRangeExpressionTester extends AbstractExpressionTester {
+	public static abstract class AbstractRangeExpressionTester extends AbstractExpressionTester {
 
 		public boolean hasAnd;
 		public boolean hasBetween;
@@ -4901,7 +4928,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class AbstractSchemaNameTester extends AbstractExpressionTester {
+	public static final class AbstractSchemaNameTester extends AbstractExpressionTester {
 
 		private String abstractSchemaName;
 
@@ -4923,7 +4950,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractSelectClauseTester extends AbstractExpressionTester {
+	public static abstract class AbstractSelectClauseTester extends AbstractExpressionTester {
 
 		private boolean hasDistinct;
 		public boolean hasSpaceAfterDistinct;
@@ -4970,7 +4997,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractSelectStatementTester extends AbstractExpressionTester {
+	public static abstract class AbstractSelectStatementTester extends AbstractExpressionTester {
 
 		private ExpressionTester fromClause;
 		private ExpressionTester groupByClause;
@@ -5062,7 +5089,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractSingleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
+	public static abstract class AbstractSingleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
 
 		private ExpressionTester expression;
 
@@ -5093,7 +5120,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AbstractTripleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
+	public static abstract class AbstractTripleEncapsulatedExpressionTester extends AbstractEncapsulatedExpressionTester {
 
 		private ExpressionTester firstExpression;
 		public boolean hasFirstComma;
@@ -5171,7 +5198,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class AdditionExpressionTester extends CompoundExpressionTester {
+	public static final class AdditionExpressionTester extends CompoundExpressionTester {
 
 		protected AdditionExpressionTester(ExpressionTester leftExpression,
 		                                   ExpressionTester rightExpression) {
@@ -5190,7 +5217,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class AggregateFunctionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static abstract class AggregateFunctionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		public boolean hasDistinct;
 		public boolean hasSpaceAfterDistinct;
@@ -5216,7 +5243,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class AllOrAnyExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class AllOrAnyExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private String identifier;
 
@@ -5236,7 +5263,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class AndExpressionTester extends LogicalExpressionTester {
+	public static final class AndExpressionTester extends LogicalExpressionTester {
 
 		protected AndExpressionTester(ExpressionTester leftExpression,
 		                              ExpressionTester rightExpression) {
@@ -5255,7 +5282,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ArithmeticFactorTester extends AbstractExpressionTester {
+	public static final class ArithmeticFactorTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
 		private String sign;
@@ -5331,7 +5358,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class AvgFunctionTester extends AggregateFunctionTester {
+	public static final class AvgFunctionTester extends AggregateFunctionTester {
 
 		protected AvgFunctionTester(ExpressionTester expression, boolean hasDistinct) {
 			super(expression, hasDistinct);
@@ -5348,7 +5375,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class BadExpressionTester extends AbstractExpressionTester {
+	public static final class BadExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
 
@@ -5372,7 +5399,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class BetweenExpressionTester extends AbstractRangeExpressionTester {
+	public static final class BetweenExpressionTester extends AbstractRangeExpressionTester {
 
 		private ExpressionTester expression;
 		private boolean hasNot;
@@ -5424,7 +5451,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CaseExpressionTester extends AbstractExpressionTester {
+	public static final class CaseExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester caseOperand;
 		private ExpressionTester elseExpression;
@@ -5507,7 +5534,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CastExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class CastExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private ExpressionTester databaseType;
 		private boolean hasAs;
@@ -5556,7 +5583,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CoalesceExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class CoalesceExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected CoalesceExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -5573,7 +5600,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CollectionExpressionTester extends AbstractExpressionTester {
+	public static final class CollectionExpressionTester extends AbstractExpressionTester {
 
 		public Boolean[] commas;
 		private ExpressionTester[] expressionTesters;
@@ -5643,7 +5670,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CollectionMemberDeclarationTester extends AbstractExpressionTester {
+	public static final class CollectionMemberDeclarationTester extends AbstractExpressionTester {
 
 		private ExpressionTester collectionValuedPath;
 		public boolean hasAs;
@@ -5714,7 +5741,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CollectionMemberExpressionTester extends AbstractExpressionTester {
+	public static final class CollectionMemberExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester collectionPath;
 		private ExpressionTester entityExpression;
@@ -5781,7 +5808,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CollectionValuedPathExpressionTester extends AbstractPathExpressionTester {
+	public static final class CollectionValuedPathExpressionTester extends AbstractPathExpressionTester {
 
 		protected CollectionValuedPathExpressionTester(ExpressionTester identificationVariable,
 		                                               String value) {
@@ -5796,7 +5823,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ComparisonExpressionTester extends AbstractExpressionTester {
+	public static final class ComparisonExpressionTester extends AbstractExpressionTester {
 
 		private String comparator;
 		public boolean hasSpaceAfterIdentifier;
@@ -5843,7 +5870,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class CompoundExpressionTester extends AbstractExpressionTester {
+	public static abstract class CompoundExpressionTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterIdentifier;
 		private ExpressionTester leftExpression;
@@ -5898,7 +5925,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ConcatExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class ConcatExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected ConcatExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -5915,7 +5942,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ConnectByClauseTester extends AbstractExpressionTester {
+	public static final class ConnectByClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
 		public boolean hasSpaceAfterConnectBy;
@@ -5949,7 +5976,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ConstructorExpressionTester extends AbstractExpressionTester {
+	public static final class ConstructorExpressionTester extends AbstractExpressionTester {
 
 		private String className;
 		private ExpressionTester constructorItems;
@@ -5998,7 +6025,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class CountFunctionTester extends AggregateFunctionTester {
+	public static final class CountFunctionTester extends AggregateFunctionTester {
 
 		protected CountFunctionTester(ExpressionTester expression, boolean hasDistinct) {
 			super(expression, hasDistinct);
@@ -6015,7 +6042,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class DatabaseTypeTester extends AbstractDoubleEncapsulatedExpressionTester {
+	public static final class DatabaseTypeTester extends AbstractDoubleEncapsulatedExpressionTester {
 
 		private String databaseType;
 
@@ -6038,7 +6065,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class DateTimeTester extends AbstractExpressionTester {
+	public static final class DateTimeTester extends AbstractExpressionTester {
 
 		private String dateTime;
 
@@ -6063,7 +6090,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	/**
 	 * Tester for {@link DeleteClause}.
 	 */
-	protected static final class DeleteClauseTester extends AbstractExpressionTester {
+	public static final class DeleteClauseTester extends AbstractExpressionTester {
 
 		public boolean hasFrom;
 		public boolean hasSpaceAfterDelete;
@@ -6110,7 +6137,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class DeleteStatementTester extends AbstractExpressionTester {
+	public static final class DeleteStatementTester extends AbstractExpressionTester {
 
 		private ExpressionTester deleteClause;
 		public boolean hasSpaceAfterDeleteClause;
@@ -6148,7 +6175,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class DivisionExpressionTester extends CompoundExpressionTester {
+	public static final class DivisionExpressionTester extends CompoundExpressionTester {
 
 		protected DivisionExpressionTester(ExpressionTester leftExpression,
 		                                   ExpressionTester rightExpression) {
@@ -6167,7 +6194,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class EmptyCollectionComparisonExpressionTester extends AbstractExpressionTester {
+	public static final class EmptyCollectionComparisonExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester collectionPath;
 		private boolean hasNot;
@@ -6214,7 +6241,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class EntityTypeLiteralTester extends AbstractExpressionTester {
+	public static final class EntityTypeLiteralTester extends AbstractExpressionTester {
 
 		private String entityType;
 
@@ -6236,7 +6263,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class EntryExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class EntryExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected EntryExpressionTester(ExpressionTester identificationVariable) {
 			super(identificationVariable);
@@ -6253,7 +6280,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ExistsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class ExistsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private boolean hasNot;
 
@@ -6287,7 +6314,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	 * of the query. This interface also adds helper method for easily creating a parsed tree
 	 * representation of the actual query parsed tree.
 	 */
-	protected static interface ExpressionTester {
+	public static interface ExpressionTester {
 
 		AdditionExpressionTester add(ExpressionTester expression);
 		AndExpressionTester and(ExpressionTester expression);
@@ -6335,7 +6362,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		void test(Expression expression);
 	}
 
-	protected static final class ExtractExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class ExtractExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private boolean hasFrom;
 		public boolean hasSpaceAfterFrom;
@@ -6397,7 +6424,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class FromClauseTester extends AbstractFromClauseTester {
+	public static final class FromClauseTester extends AbstractFromClauseTester {
 
 		protected FromClauseTester(ExpressionTester declarations,
 		                           ExpressionTester hierarchicalQueryClause,
@@ -6413,7 +6440,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class FunctionExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class FunctionExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private String functionName;
 		public boolean hasComma;
@@ -6475,7 +6502,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class GroupByClauseTester extends AbstractExpressionTester {
+	public static final class GroupByClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester groupByItems;
 		public boolean hasSpaceAfterGroupBy;
@@ -6510,7 +6537,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class HavingClauseTester extends AbstractConditionalClauseTester {
+	public static final class HavingClauseTester extends AbstractConditionalClauseTester {
 
 		protected HavingClauseTester(ExpressionTester conditionalExpression) {
 			super(conditionalExpression);
@@ -6527,7 +6554,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class HierarchicalQueryClauseTester extends AbstractExpressionTester {
+	public static final class HierarchicalQueryClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester connectByClause;
 		public boolean hasSpaceAfterConnectByClause;
@@ -6578,7 +6605,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class IdentificationVariableDeclarationTester extends AbstractExpressionTester {
+	public static final class IdentificationVariableDeclarationTester extends AbstractExpressionTester {
 
 		public boolean hasSpace;
 		private ExpressionTester joins;
@@ -6619,7 +6646,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class IdentificationVariableTester extends AbstractExpressionTester {
+	public static final class IdentificationVariableTester extends AbstractExpressionTester {
 
 		private String identificationVariable;
 		private boolean virtual;
@@ -6661,7 +6688,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class IndexExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class IndexExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected IndexExpressionTester(ExpressionTester identificationVariable) {
 			super(identificationVariable);
@@ -6678,7 +6705,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class InExpressionTester extends AbstractExpressionTester {
+	public static final class InExpressionTester extends AbstractExpressionTester {
 
 		public boolean hasLeftParenthesis;
 		private boolean hasNot;
@@ -6737,7 +6764,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class InputParameterTester extends AbstractExpressionTester {
+	public static final class InputParameterTester extends AbstractExpressionTester {
 
 		private String inputParameter;
 
@@ -6761,7 +6788,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class JoinTester extends AbstractExpressionTester {
+	public static final class JoinTester extends AbstractExpressionTester {
 
 		private boolean hasAs;
 		public boolean hasSpaceAfterAs;
@@ -6837,7 +6864,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class JPQLExpressionTester extends AbstractExpressionTester {
+	public static final class JPQLExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester queryStatement;
 		private ExpressionTester unknownExpression;
@@ -6871,7 +6898,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class KeywordExpressionTester extends AbstractExpressionTester {
+	public static final class KeywordExpressionTester extends AbstractExpressionTester {
 
 		private String keyword;
 
@@ -6893,7 +6920,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class LengthExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class LengthExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected LengthExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -6910,7 +6937,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class LikeExpressionTester extends AbstractExpressionTester {
+	public static final class LikeExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester escapeCharacter;
 		public boolean hasEscape;
@@ -6981,7 +7008,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class LocateExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
+	public static final class LocateExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
 
 		protected LocateExpressionTester(ExpressionTester firstExpression,
 		                                 ExpressionTester secondExpression,
@@ -7001,7 +7028,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static abstract class LogicalExpressionTester extends CompoundExpressionTester {
+	public static abstract class LogicalExpressionTester extends CompoundExpressionTester {
 
 		protected LogicalExpressionTester(ExpressionTester leftExpression,
 		                                  ExpressionTester rightExpression) {
@@ -7016,7 +7043,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class LowerExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class LowerExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected LowerExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -7033,7 +7060,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class MaxFunctionTester extends AggregateFunctionTester {
+	public static final class MaxFunctionTester extends AggregateFunctionTester {
 
 		protected MaxFunctionTester(ExpressionTester expression, boolean hasDistinct) {
 			super(expression, hasDistinct);
@@ -7050,7 +7077,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class MinFunctionTester extends AggregateFunctionTester {
+	public static final class MinFunctionTester extends AggregateFunctionTester {
 
 		protected MinFunctionTester(ExpressionTester expression, boolean hasDistinct) {
 			super(expression, hasDistinct);
@@ -7067,7 +7094,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ModExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+	public static final class ModExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
 
 		protected ModExpressionTester(ExpressionTester firstExpression, ExpressionTester secondExpression) {
 			super(firstExpression, secondExpression);
@@ -7084,7 +7111,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class MultiplicationExpressionTester extends CompoundExpressionTester {
+	public static final class MultiplicationExpressionTester extends CompoundExpressionTester {
 
 		protected MultiplicationExpressionTester(ExpressionTester leftExpression,
 		                                         ExpressionTester rightExpression) {
@@ -7103,7 +7130,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class NotExpressionTester extends AbstractExpressionTester {
+	public static final class NotExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
 		public boolean hasSpaceAfterNot;
@@ -7137,7 +7164,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class NullComparisonExpressionTester extends AbstractExpressionTester {
+	public static final class NullComparisonExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
 		private boolean hasNot;
@@ -7171,7 +7198,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class NullExpressionTester extends AbstractExpressionTester {
+	public static final class NullExpressionTester extends AbstractExpressionTester {
 
 		@Override
 		public boolean isNull() {
@@ -7188,7 +7215,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class NullIfExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
+	public static final class NullIfExpressionTester extends AbstractDoubleEncapsulatedExpressionTester {
 
 		protected NullIfExpressionTester(ExpressionTester firstExpression,
 		                                 ExpressionTester secondExpression) {
@@ -7207,7 +7234,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class NumericLiteralTester extends AbstractExpressionTester {
+	public static final class NumericLiteralTester extends AbstractExpressionTester {
 
 		private String number;
 
@@ -7228,7 +7255,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ObjectExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class ObjectExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected ObjectExpressionTester(ExpressionTester identificationVariable) {
 			super(identificationVariable);
@@ -7245,7 +7272,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OnClauseTester extends AbstractConditionalClauseTester {
+	public static final class OnClauseTester extends AbstractConditionalClauseTester {
 
 		protected OnClauseTester(ExpressionTester conditionalExpression) {
 			super(conditionalExpression);
@@ -7262,7 +7289,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OrderByClauseTester extends AbstractOrderByClauseTester {
+	public static final class OrderByClauseTester extends AbstractOrderByClauseTester {
 
 		protected OrderByClauseTester(ExpressionTester orderByItems) {
 			super(orderByItems);
@@ -7280,7 +7307,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OrderByItemTester extends AbstractExpressionTester {
+	public static final class OrderByItemTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterNulls;
 		private NullOrdering nullOrdering;
@@ -7350,7 +7377,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OrderSiblingsByClauseTester extends AbstractOrderByClauseTester {
+	public static final class OrderSiblingsByClauseTester extends AbstractOrderByClauseTester {
 
 		protected OrderSiblingsByClauseTester(ExpressionTester orderByItems) {
 			super(orderByItems);
@@ -7368,7 +7395,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OrExpressionTester extends LogicalExpressionTester {
+	public static final class OrExpressionTester extends LogicalExpressionTester {
 
 		protected OrExpressionTester(ExpressionTester leftExpression,
 		                             ExpressionTester rightExpression) {
@@ -7387,7 +7414,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class RangeVariableDeclarationTester extends AbstractExpressionTester {
+	public static final class RangeVariableDeclarationTester extends AbstractExpressionTester {
 
 		private ExpressionTester abstractSchemaName;
 		private boolean hasAs;
@@ -7403,8 +7430,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			this.hasAs                           = hasAs;
 			this.abstractSchemaName              = abstractSchemaName;
 			this.identificationVariable          = identificationVariable;
-			this.hasSpaceAfterAbstractSchemaName = true;
+			this.hasSpaceAfterAbstractSchemaName = hasAs || !identificationVariable.isNull();
 			this.hasSpaceAfterAs                 = hasAs;
+
+			if (identificationVariable instanceof IdentificationVariableTester &&
+			    identificationVariable.isNull()) {
+
+				this.hasSpaceAfterAbstractSchemaName = true;
+			}
 		}
 
 		public void test(Expression expression) {
@@ -7439,7 +7472,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class RegexpExpressionTester extends AbstractExpressionTester {
+	public static final class RegexpExpressionTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterIdentifier;
 		private ExpressionTester patternValue;
@@ -7484,7 +7517,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class ResultVariableTester extends AbstractExpressionTester {
+	public static final class ResultVariableTester extends AbstractExpressionTester {
 
 		private boolean hasAs;
 		public boolean hasSpaceAfterAs;
@@ -7535,7 +7568,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SelectClauseTester extends AbstractSelectClauseTester {
+	public static final class SelectClauseTester extends AbstractSelectClauseTester {
 
 		protected SelectClauseTester(ExpressionTester selectExpressions, boolean hasDistinct) {
 			super(selectExpressions, hasDistinct);
@@ -7548,7 +7581,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SelectStatementTester extends AbstractSelectStatementTester {
+	public static final class SelectStatementTester extends AbstractSelectStatementTester {
 
 		public boolean hasSpaceBeforeOrderByClause;
 		public boolean hasSpaceBeforeUnionClauses;
@@ -7615,7 +7648,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SimpleFromClauseTester extends AbstractFromClauseTester {
+	public static final class SimpleFromClauseTester extends AbstractFromClauseTester {
 
 		protected SimpleFromClauseTester(ExpressionTester declaration,
 				                           ExpressionTester hierarchicalQueryClause,
@@ -7631,7 +7664,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SimpleSelectClauseTester extends AbstractSelectClauseTester {
+	public static final class SimpleSelectClauseTester extends AbstractSelectClauseTester {
 
 		protected SimpleSelectClauseTester(ExpressionTester selectExpressions, boolean hasDistinct) {
 			super(selectExpressions, hasDistinct);
@@ -7644,7 +7677,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SimpleSelectStatementTester extends AbstractSelectStatementTester {
+	public static final class SimpleSelectStatementTester extends AbstractSelectStatementTester {
 
 		protected SimpleSelectStatementTester(ExpressionTester selectClause,
 		                                      ExpressionTester fromClause,
@@ -7661,7 +7694,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SizeExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class SizeExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected SizeExpressionTester(ExpressionTester collectionPath) {
 			super(collectionPath);
@@ -7678,7 +7711,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SqrtExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class SqrtExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected SqrtExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -7695,7 +7728,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class StartWithClauseTester extends AbstractConditionalClauseTester {
+	public static final class StartWithClauseTester extends AbstractConditionalClauseTester {
 
 		protected StartWithClauseTester(ExpressionTester expression) {
 			super(expression);
@@ -7712,7 +7745,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class StateFieldPathExpressionTester extends AbstractPathExpressionTester {
+	public static final class StateFieldPathExpressionTester extends AbstractPathExpressionTester {
 
 		protected StateFieldPathExpressionTester(ExpressionTester identificationVariable,
                                                String value) {
@@ -7727,7 +7760,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class StringLiteralTester extends AbstractExpressionTester {
+	public static final class StringLiteralTester extends AbstractExpressionTester {
 
 		private boolean hasCloseQuote;
 		private String literal;
@@ -7757,7 +7790,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SubExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class SubExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected SubExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -7774,7 +7807,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SubstringExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
+	public static final class SubstringExpressionTester extends AbstractTripleEncapsulatedExpressionTester {
 
 		protected SubstringExpressionTester(ExpressionTester firstExpression,
 		                                    ExpressionTester firstArithmeticExpression,
@@ -7794,7 +7827,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SubtractionExpressionTester extends CompoundExpressionTester {
+	public static final class SubtractionExpressionTester extends CompoundExpressionTester {
 
 		protected SubtractionExpressionTester(ExpressionTester leftExpression,
 		                                      ExpressionTester rightExpression) {
@@ -7813,7 +7846,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class SumFunctionTester extends AggregateFunctionTester {
+	public static final class SumFunctionTester extends AggregateFunctionTester {
 
 		protected SumFunctionTester(ExpressionTester expression, boolean hasDistinct) {
 			super(expression, hasDistinct);
@@ -7830,7 +7863,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class TableExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class TableExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected TableExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -7847,7 +7880,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class TableVariableDeclarationTester extends AbstractExpressionTester {
+	public static final class TableVariableDeclarationTester extends AbstractExpressionTester {
 
 
 		private boolean hasAs;
@@ -7899,7 +7932,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class TreatExpressionTester extends AbstractEncapsulatedExpressionTester {
+	public static final class TreatExpressionTester extends AbstractEncapsulatedExpressionTester {
 
 		private ExpressionTester collectionValuedPathExpression;
 		private ExpressionTester entityTypeName;
@@ -7949,7 +7982,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class TrimExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class TrimExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private boolean hasFrom;
 		public boolean hasSpaceAfterFrom;
@@ -8019,7 +8052,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class TypeExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class TypeExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected TypeExpressionTester(ExpressionTester identificationVariable) {
 			super(identificationVariable);
@@ -8036,7 +8069,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UnionClauseTester extends AbstractExpressionTester {
+	public static final class UnionClauseTester extends AbstractExpressionTester {
 
 		private boolean hasAll;
 		public boolean hasSpaceAfterAll;
@@ -8085,7 +8118,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UnknownExpressionTester extends AbstractExpressionTester {
+	public static final class UnknownExpressionTester extends AbstractExpressionTester {
 
 		private final String unknownText;
 
@@ -8107,7 +8140,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UpdateClauseTester extends AbstractExpressionTester {
+	public static final class UpdateClauseTester extends AbstractExpressionTester {
 
 		public boolean hasSet;
 		public boolean hasSpaceAfterRangeVariableDeclaration;
@@ -8125,7 +8158,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			this.hasSpaceAfterUpdate                   = true;
 			this.updateItems                           = updateItems;
 			this.rangeVariableDeclaration              = rangeVariableDeclaration;
-			this.hasSpaceAfterRangeVariableDeclaration = true;
+			this.hasSpaceAfterRangeVariableDeclaration = !rangeVariableDeclaration.isNull();
 		}
 
 		public void test(Expression expression) {
@@ -8166,7 +8199,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UpdateItemTester extends AbstractExpressionTester {
+	public static final class UpdateItemTester extends AbstractExpressionTester {
 
 		public boolean hasEqualSign;
 		public boolean hasSpaceAfterEqualSign;
@@ -8218,7 +8251,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UpdateStatementTester extends AbstractExpressionTester {
+	public static final class UpdateStatementTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterUpdateClause;
 		private ExpressionTester updateClause;
@@ -8257,7 +8290,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class UpperExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+	public static final class UpperExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected UpperExpressionTester(ExpressionTester expression) {
 			super(expression);
@@ -8274,7 +8307,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class WhenClauseTester extends AbstractExpressionTester {
+	public static final class WhenClauseTester extends AbstractExpressionTester {
 
 		public boolean hasSpaceAfterThen;
 		public boolean hasSpaceAfterWhen;
@@ -8331,7 +8364,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class WhereClauseTester extends AbstractConditionalClauseTester {
+	public static final class WhereClauseTester extends AbstractConditionalClauseTester {
 
 		protected WhereClauseTester(ExpressionTester conditionalExpression) {
 			super(conditionalExpression);

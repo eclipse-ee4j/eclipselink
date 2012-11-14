@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -333,8 +334,10 @@ public final class HermesParser implements JPAQueryBuilder {
 			}
 
 			// Validate the JPQL query semantically (contextually)
-			EclipseLinkSemanticValidatorHelper helper = new EclipseLinkSemanticValidatorHelper(queryContext);
-			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(helper);
+			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(
+				new EclipseLinkSemanticValidatorHelper(queryContext),
+				EclipseLinkSemanticValidatorExtension.NULL_EXTENSION
+			);
 			semantic.setProblems(problems);
 			expression.accept(semantic);
 

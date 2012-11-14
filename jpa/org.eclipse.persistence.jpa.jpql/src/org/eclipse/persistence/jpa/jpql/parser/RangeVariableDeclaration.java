@@ -294,7 +294,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 			return parse(wordParser, IdentificationVariableBNF.ID, tolerant);
 		}
 
-		AbstractExpression expression = new IdentificationVariable(this, wordParser.word());
+		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.GeneralIdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
@@ -146,6 +147,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> functions(Iterable<String> identifiers) {
 		return filter(identifiers, IdentifierRole.FUNCTION);
+	}
+
+	public Iterable<String> generalIdentificationVariableFunctions() {
+		return functions(generalIdentificationVariableIdentifiers());
+	}
+
+	public Iterable<String> generalIdentificationVariableIdentifiers() {
+		return getIdentifiers(GeneralIdentificationVariableBNF.ID);
 	}
 
 	public ExpressionFactory getExpressionFactory(String expressionFactoryId) {

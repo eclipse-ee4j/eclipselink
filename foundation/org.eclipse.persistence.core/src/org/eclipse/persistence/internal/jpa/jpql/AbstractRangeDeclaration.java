@@ -26,17 +26,17 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
  * @see DerivedDeclaration
  * @see RangeDeclaration
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 abstract class AbstractRangeDeclaration extends Declaration {
 
 	/**
-	 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the
-	 * range variable declaration.
+	 * The list of <b>JOIN</b> expressions that are declared in the same declaration than the range
+	 * variable declaration represented by this declaration.
 	 */
-	List<Join> joins;
+	protected List<Join> joins;
 
 	/**
 	 * Creates a new <code>AbstractRangeDeclaration</code>.
@@ -49,9 +49,9 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	}
 
 	/**
-	 * Adds the given {@link Join} with its identification variable, which can be <code>null</code>.
+	 * Adds the given {@link Join}.
 	 *
-	 * @param join The {@link Join} that was found in the list of joins
+	 * @param join The {@link Join} that is declared in the range variable declaration
 	 */
 	void addJoin(Join join) {
 		if (joins == null) {
@@ -77,29 +77,21 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	}
 
 	/**
-	 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
-	 * ordered they were parsed.
-	 *
-	 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was present
+	 * {@inheritDoc}
 	 */
+	@Override
 	public List<Join> getJoins() {
-		return (joins == null) ? Collections.<Join>emptyList() : joins;
-	}
-
-	/**
-	 * Determines whether the declaration contains <b>JOIN</b> expressions.
-	 *
-	 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed; otherwise
-	 * <code>false</code>
-	 */
-	public boolean hasJoins() {
-		return joins != null;
+		if (joins == null) {
+			return Collections.emptyList();
+		}
+		return joins;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public final boolean isCollection() {
-		return false;
+	@Override
+	public boolean hasJoins() {
+		return joins != null;
 	}
 }

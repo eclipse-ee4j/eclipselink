@@ -44,14 +44,6 @@ public class KeyResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 
 		ITypeDeclaration typeDeclaration = getTypeDeclaration();

@@ -16,10 +16,11 @@ package org.eclipse.persistence.jpa.jpql;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.jpa.jpql.DeclarationResolver.Declaration;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
@@ -39,12 +40,14 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
+
+	private IdentificationVariableVisitor identificationVariableVisitor;
 
 	/**
 	 * The context used to query information about the JPQL query.
@@ -68,8 +71,8 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		this.queryContext = queryContext;
 	}
 
-	private void addIdentificationVariable(IdentificationVariable identificationVariable,
-	                                       Map<String, List<IdentificationVariable>> identificationVariables) {
+	protected void addIdentificationVariable(IdentificationVariable identificationVariable,
+	                                         Map<String, List<IdentificationVariable>> identificationVariables) {
 
 		String variableName = (identificationVariable != null) ? identificationVariable.getVariableName() : null;
 
@@ -87,6 +90,10 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		}
 	}
 
+	protected IdentificationVariableVisitor buildIdentificationVariableVisitor() {
+		return new IdentificationVariableVisitor();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -100,8 +107,8 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		}
 	}
 
-	private void collectLocalDeclarationIdentificationVariables(JPQLQueryContext queryContext,
-	                                                            Map<String, List<IdentificationVariable>> identificationVariables) {
+	protected void collectLocalDeclarationIdentificationVariables(JPQLQueryContext queryContext,
+	                                                              Map<String, List<IdentificationVariable>> identificationVariables) {
 
 		DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
 
@@ -112,7 +119,8 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 			addIdentificationVariable(identificationVariable, identificationVariables);
 
 			// Register the identification variable from the JOIN expressions
-			for (IdentificationVariable joinIdentificationVariable : declaration.joins.values()) {
+			for (Join join : declaration.getJoins()) {
+				IdentificationVariable joinIdentificationVariable = getIdentificationVariable(join.getIdentificationVariable());
 				addIdentificationVariable(joinIdentificationVariable, identificationVariables);
 			}
 		}
@@ -150,6 +158,22 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		}
 
 		return names.toArray(new String[names.size()]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<JPQLQueryDeclaration> getAllDeclarations() {
+
+		List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+		JPQLQueryContext context = queryContext.getCurrentContext();
+
+		while (context != null) {
+			declarations.addAll(context.getDeclarationResolverImp().getDeclarations());
+			context = context.getParent();
+		}
+
+		return declarations;
 	}
 
 	/**
@@ -195,6 +219,24 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		return queryContext.getGrammar();
 	}
 
+	protected IdentificationVariable getIdentificationVariable(Expression expression) {
+		IdentificationVariableVisitor visitor = getIdentificationVariableVisitor();
+		expression.accept(visitor);
+		try {
+			return visitor.identificationVariable;
+		}
+		finally {
+			visitor.identificationVariable = null;
+		}
+	}
+
+	protected IdentificationVariableVisitor getIdentificationVariableVisitor() {
+		if (identificationVariableVisitor == null) {
+			identificationVariableVisitor = buildIdentificationVariableVisitor();
+		}
+		return identificationVariableVisitor;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -221,6 +263,15 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	 */
 	public ITypeDeclaration[] getMethodParameterTypeDeclarations(Object constructor) {
 		return ((IConstructor) constructor).getParameterTypes();
+	}
+
+	/**
+	 * Returns the context used to query information about the JPQL query.
+	 *
+	 * @return The context used to query information about the JPQL query
+	 */
+	public JPQLQueryContext getQueryContext() {
+		return queryContext;
 	}
 
 	/**
@@ -371,6 +422,7 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
 		return true;
 	}
@@ -403,5 +455,21 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 		}
 
 		return resolver.getMapping();
+	}
+
+	protected static class IdentificationVariableVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 *
+		 */
+		protected IdentificationVariable identificationVariable;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+			identificationVariable = expression;
+		}
 	}
 }

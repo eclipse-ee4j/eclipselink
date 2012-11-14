@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  *
  * @see KeyResolver
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -38,14 +38,6 @@ public class ValueResolver extends Resolver {
 	 */
 	public ValueResolver(Resolver parent) {
 		super(parent);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
 	}
 
 	/**

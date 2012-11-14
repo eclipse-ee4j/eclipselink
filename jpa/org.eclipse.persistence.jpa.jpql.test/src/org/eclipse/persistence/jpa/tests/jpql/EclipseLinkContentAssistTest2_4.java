@@ -17,9 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -31,8 +29,11 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
+public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssistTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void addClauseIdentifiers(String afterIdentifier,
 	                                    String beforeIdentifier,
@@ -53,7 +54,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isJoinFetchIdentifiable() {
+	protected boolean isJoinFetchIdentifiable() {
 		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(getGrammar().getProviderVersion());
 		return currentVersion.isNewerThanOrEqual(EclipseLinkJPQLGrammar2_4.VERSION);
 	}
@@ -825,7 +826,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_RegexpExpression_02() {
+	public void test_RegexpExpression_01() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
 		int position = jpqlQuery.length();
@@ -833,9 +834,17 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_RegexpExpression_03() {
+	public void test_RegexpExpression_02() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name R";
+		int position = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, position, REGEXP);
+	}
+
+	@Test
+	public void test_RegexpExpression_03() {
+
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name RE";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
@@ -843,7 +852,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	public void test_RegexpExpression_04() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name RE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REG";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
@@ -851,7 +860,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	public void test_RegexpExpression_05() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REG";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGE";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
@@ -859,7 +868,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	public void test_RegexpExpression_06() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEX";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
@@ -867,7 +876,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	public void test_RegexpExpression_07() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEX";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
@@ -875,23 +884,13 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	public void test_RegexpExpression_08() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, REGEXP);
-	}
-
-	@Test
-	@Ignore
-	public void test_RegexpExpression_09() {
-
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name R";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
 		testHasTheseProposals(jpqlQuery, position, REGEXP);
 	}
 
 	@Test
-	@Ignore
-	public void test_RegexpExpression_10() {
+	public void test_RegexpExpression_09() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name RE";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
@@ -899,8 +898,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	@Ignore
-	public void test_RegexpExpression_11() {
+	public void test_RegexpExpression_10() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REG";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
@@ -908,8 +906,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	@Ignore
-	public void test_RegexpExpression_12() {
+	public void test_RegexpExpression_11() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGE";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
@@ -917,8 +914,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	@Ignore
-	public void test_RegexpExpression_13() {
+	public void test_RegexpExpression_14() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEX";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
@@ -926,7 +922,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_RegexpExpression_14() {
+	public void test_RegexpExpression_15() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP";
 		int position = "SELECT e FROM Employee e WHERE e.name ".length();
@@ -934,7 +930,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_RegexpExpression_15() {
+	public void test_RegexpExpression_16() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP ";
 		int position = "SELECT e FROM Employee e WHERE e.name REGEXP ".length();
@@ -947,7 +943,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_RegexpExpression_16() {
+	public void test_RegexpExpression_17() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name REGEXP e";
 		int position = "SELECT e FROM Employee e WHERE e.name REGEXP e".length();
@@ -957,6 +953,22 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 		addAll(proposals, filter(bnfAccessor.patternValueFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_SubqueryInFrom_PathtExpression_01() {
+
+		String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
+		int position = "Select avg(e3.".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, "c", "name");
+	}
+
+	@Test
+	public void test_SubqueryInFrom_PathtExpression_02() {
+
+		String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
+		int position = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, "c", "name");
 	}
 
 	@Test

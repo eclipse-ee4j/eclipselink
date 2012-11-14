@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.util.XmlEscapeCharacterConverter;
 import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -46,25 +46,47 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 public final class DefaultContentAssistProposals implements ContentAssistProposals {
 
 	/**
-	 * The set of possible abstract schema types.
-	 */
-	private Set<IEntity> abstractSchemaTypes;
-
-	/**
-	 * The prefix that is used to filter the list TODO.
+	 * The prefix that is used to filter the list of class names.
 	 *
 	 * @since 2.5
 	 */
 	private String classNamePrefix;
 
 	/**
-	 * The helper can be used to provide additional information that is outside the scope of simply
-	 * providing JPA metadata information, such as table names, column names, class names or {@link
-	 * ContentAssistProposalsHelper#NULL_HELPER} if none can be provided.
+	 * The class type helps to filter the various types of classes, i.e. anonymous, member, interface
+	 * are never allowed.
 	 *
 	 * @since 2.5
 	 */
-	private ContentAssistProposalsHelper helper;
+	private ClassType classType;
+
+	/**
+	 * TODO
+	 *
+	 * @since 2.5
+	 */
+	private String columnNamePrefix;
+
+	/**
+	 * The set of possible abstract schema types.
+	 */
+	private Set<IEntity> entities;
+
+	/**
+	 * TODO
+	 *
+	 * @since 2.5
+	 */
+	private Map<IType, DefaultEnumProposals> enumProposals;
+
+	/**
+	 * This extension can be used to provide additional support to JPQL content assist that is
+	 * outside the scope of providing proposals related to JPA metadata. It adds support for
+	 * providing suggestions related to class names, enum constants, table names, column names.
+	 *
+	 * @since 2.5
+	 */
+	private ContentAssistExtension extension;
 
 	/**
 	 * The set of possible identification variables.
@@ -93,11 +115,15 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	private Map<String, IEntity> rangeIdentificationVariables;
 
 	/**
+	 * TODO
+	 *
 	 * @since 2.5
 	 */
 	private String tableName;
 
 	/**
+	 * TODO
+	 *
 	 * @since 2.5
 	 */
 	private String tableNamePrefix;
@@ -116,13 +142,14 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * Creates a new <code>DefaultContentAssistProposals</code>.
 	 *
 	 * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
-	 * @param helper The helper can be used to provide additional information that is outside the
-	 * scope of simply providing JPA metadata information, such as table names, column names, class
-	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
+	 * @param extension This extension can be used to provide additional support to JPQL content
+	 * assist that is outside the scope of providing proposals related to JPA metadata. It adds
+	 * support for providing suggestions related to class names, enum constants, table names, column
+	 * names
 	 */
-	public DefaultContentAssistProposals(JPQLGrammar jpqlGrammar, ContentAssistProposalsHelper helper) {
+	public DefaultContentAssistProposals(JPQLGrammar jpqlGrammar, ContentAssistExtension extension) {
 		super();
-		initialize(jpqlGrammar, helper);
+		initialize(jpqlGrammar, extension);
 	}
 
 	private static Map<String, String> buildLonguestIdentifiers() {
@@ -187,7 +214,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * {@inheritDoc}
 	 */
 	public Iterable<IEntity> abstractSchemaTypes() {
-		return new SnapshotCloneIterable<IEntity>(abstractSchemaTypes);
+		return new SnapshotCloneIterable<IEntity>(entities);
 	}
 
 	/**
@@ -196,7 +223,27 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * @param abstractSchemaType The abstract schema type that is a valid proposal
 	 */
 	public void addAbstractSchemaType(IEntity abstractSchemaType) {
-		abstractSchemaTypes.add(abstractSchemaType);
+		entities.add(abstractSchemaType);
+	}
+
+	/**
+	 * Adds the constants of the given enum constant as a valid proposal.
+	 *
+	 * @param enumType The {@link IType} of the enum type
+	 * @param enumConstant The enum constant to be added as a valid proposal
+	 *
+	 * @since 2.5
+	 */
+	public void addEnumConstant(IType enumType, String enumConstant) {
+
+		DefaultEnumProposals proposal = enumProposals.get(enumType);
+
+		if (proposal == null) {
+			proposal = new DefaultEnumProposals(enumType);
+			enumProposals.put(enumType, proposal);
+		}
+
+		proposal.constants.add(enumConstant);
 	}
 
 	/**
@@ -274,7 +321,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * the partial word following the position of the cursor
 	 * @return The start and end positions
 	 */
-	private int[] buildPositions(WordParser wordParser, String proposal, boolean insert) {
+	public int[] buildPositions(WordParser wordParser, String proposal, boolean insert) {
 
 		int index;
 		String wordsToReplace = null;
@@ -306,13 +353,13 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 			// Always try to find the start position using the longest JPQL identifier
 			// if the proposal has more than one word
 			wordsToReplace = longuestIdentifier(proposal);
-			index = startPositionImp(wordParser, wordsToReplace);
+			index = startPosition(wordParser, wordsToReplace);
 
 			// Now check with the other possibilities
 			if ((index == -1) && ORDERED_IDENTIFIERS.containsKey(wordsToReplace)) {
 				for (String identifier : ORDERED_IDENTIFIERS.get(wordsToReplace)) {
 					wordsToReplace = identifier;
-					index = startPositionImp(wordParser, wordsToReplace);
+					index = startPosition(wordParser, wordsToReplace);
 					if (index > -1) {
 						break;
 					}
@@ -331,7 +378,14 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 			// and startPosition accordingly
 			String partialWord = wordParser.partialWord();
 			String entireWord = wordParser.entireWord();
-			int dotIndex = partialWord.lastIndexOf(".");
+			int dotIndex = -1;
+
+			if (isMappingName(proposal)  ||
+			    isEnumConstant(proposal) ||
+			    isColumnName(proposal)) {
+
+				dotIndex = partialWord.lastIndexOf(".");
+			}
 
 			if (dotIndex > 0) {
 				wordsToReplace = entireWord.substring(dotIndex + 1);
@@ -444,14 +498,27 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> classNames() {
-		return helper.classNames(classNamePrefix);
+		if (classNamePrefix == null) {
+			return Collections.emptyList();
+		}
+		return extension.classNames(classNamePrefix, classType);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> columnNames() {
-		return helper.columnNames(tableName);
+		if (tableName == null) {
+			return Collections.emptyList();
+		}
+		return extension.columnNames(tableName, columnNamePrefix);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterable<EnumProposals> enumConstant() {
+		return new SnapshotCloneIterable<EnumProposals>(enumProposals.values());
 	}
 
 	/**
@@ -459,6 +526,36 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 */
 	public IEntity getAbstractSchemaType(String identificationVariable) {
 		return rangeIdentificationVariables.get(identificationVariable);
+	}
+
+	/**
+	 * Returns the prefix that will be used to filter the list of possible class names.
+	 *
+	 * @return The prefix that is used to filter the list of class names or <code>null</code> if it
+	 * was not set for the cursor position within the JPQL query
+	 * @since 2.5
+	 */
+	public String getClassNamePrefix() {
+		return classNamePrefix;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ClassType getClassType() {
+		return classType;
+	}
+
+	/**
+	 * Returns the prefix that will be used by {@link ContentAssistExtension} to filter the column
+	 * names if the table name is not <code>null</code>.
+	 *
+	 * @return The prefix that is used to filter the list of columns names, which is <code>null</code>
+	 * if it has not been set along with the table name
+	 * @since 2.5
+	 */
+	public String getColumnNamePrefix() {
+		return columnNamePrefix;
 	}
 
 	/**
@@ -479,13 +576,40 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	}
 
 	/**
+	 * Returns the table name that will be used by {@link ContentAssistExtension} to retrieve the
+	 * column names.
+	 *
+	 * @return The name of the table for which its column names should be retrieve as possible proposals
+	 * @since 2.5
+	 */
+	public String getTableName() {
+		return tableName;
+	}
+
+	/**
+	 * Returns the prefix that will be used to filter the list of possible table names.
+	 *
+	 * @return The prefix that is used to filter the list of table names or <code>null</code> if it
+	 * was not set for the cursor position within the JPQL query
+	 * @since 2.5
+	 */
+	public String getTableNamePrefix() {
+		return tableNamePrefix;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean hasProposals() {
-		return !mappings.isEmpty()            ||
-		       !identifiers.isEmpty()         ||
-		       !abstractSchemaTypes.isEmpty() ||
-		       !identificationVariables.isEmpty();
+		return !mappings.isEmpty()                ||
+		       !entities.isEmpty()                ||
+		       !identifiers.isEmpty()             ||
+		       !enumProposals.isEmpty()           ||
+		       !identificationVariables.isEmpty() ||
+		        classNames().iterator().hasNext() ||
+		        tableNames().iterator().hasNext() ||
+		       columnNames().iterator().hasNext() ||
+		       !rangeIdentificationVariables.isEmpty();
 	}
 
 	/**
@@ -505,18 +629,86 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		return new SnapshotCloneIterable<String>(identifiers);
 	}
 
-	private void initialize(JPQLGrammar jpqlGrammar, ContentAssistProposalsHelper helper) {
+	protected void initialize(JPQLGrammar jpqlGrammar, ContentAssistExtension extension) {
 
-		this.helper                       = helper;
+		this.extension                    = extension;
 		this.jpqlGrammar                  = jpqlGrammar;
 		this.mappings                     = new HashSet<IMapping>();
 		this.identifiers                  = new HashSet<String>();
-		this.abstractSchemaTypes          = new HashSet<IEntity>();
+		this.entities                     = new HashSet<IEntity>();
 		this.identificationVariables      = new HashSet<String>();
 		this.rangeIdentificationVariables = new HashMap<String, IEntity>();
+		this.enumProposals                = new HashMap<IType, DefaultEnumProposals>();
 	}
 
-	private String longuestIdentifier(String proposal) {
+
+	/**
+	 * Determines whether the given proposal is a column name (which should be unqualified).
+	 *
+	 * @param proposal The proposal that is being inserted into the JPQL query
+	 * @return <code>true</code> if the given proposal is a column name; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public boolean isColumnName(String proposal) {
+
+		for (String columName : columnNames()) {
+			if (columName.equals(proposal)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines whether the given proposal is an enum constant name (which should be unqualified).
+	 *
+	 * @param proposal The proposal that is being inserted into the JPQL query
+	 * @return <code>true</code> if the given proposal is a unqualified enum constant name;
+	 * <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public boolean isEnumConstant(String proposal) {
+
+		for (EnumProposals enumProposal : enumProposals.values()) {
+			for (String enumConstant : enumProposal.enumConstants()) {
+				if (enumConstant.equals(proposal)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines whether the given proposal is a mapping name.
+	 *
+	 * @param proposal The proposal that is being inserted into the JPQL query
+	 * @return <code>true</code> if the given proposal is a mapping name; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public boolean isMappingName(String proposal) {
+
+		for (IMapping mapping : mappings) {
+			if (mapping.getName().equals(proposal)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the longest possible JPQL identifier that is related to the given proposal if the
+	 * proposal is a JPQL identifier and contains multiple words. For instance, the longest form of
+	 * <code>JOIN</code> or <code>JOIN FETCH</code> is <code>LEFT OUTER JOIN FETCH</code>.
+	 *
+	 * @param proposal The proposal to retrieve its longest form if one is associated with it
+	 * @return Either the given proposal if it's not a JPQL identifier or it does not have a longer
+	 * form or the longest version of the JPQL identifier
+	 */
+	public String longuestIdentifier(String proposal) {
 		return LONGUEST_IDENTIFIERS.containsKey(proposal) ? LONGUEST_IDENTIFIERS.get(proposal) : proposal;
 	}
 
@@ -528,81 +720,48 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	}
 
 	/**
-	 * This is only used by the unit-tests, it removes the given proposal from one of the collection
-	 * of possible proposals.
+	 * Adds the given prefix that will be used to filter the list of possible class names.
 	 *
-	 * @param proposal The proposal to remove
-	 * @return <code>true</code> the given proposal was removed from one of the collections;
-	 * <code>false</code> if it could not be found, thus not removed
+	 * @param tableNamePrefix The prefix that is used to filter the list of class names
+	 * @param type Determines how to filter the various types of classes
+	 * @since 2.5
 	 */
-	public boolean remove(String proposal) {
-
-		boolean removed = identifiers.remove(proposal)             ||
-		                  identificationVariables.remove(proposal) ||
-		                  rangeIdentificationVariables.remove(proposal) != null;
-
-		if (!removed) {
-			for (Iterator<IMapping> iter = mappings.iterator(); iter.hasNext(); ) {
-				IMapping mapping = iter.next();
-				if (mapping.getName().equals(proposal)) {
-					iter.remove();
-					removed = true;
-					break;
-				}
-			}
-		}
-
-		if (!removed) {
-			for (Iterator<IEntity> iter = abstractSchemaTypes.iterator(); iter.hasNext(); ) {
-				IEntity entity = iter.next();
-				if (entity.getName().equals(proposal)) {
-					iter.remove();
-					removed = true;
-					break;
-				}
-			}
-		}
-
-		return removed;
+	public void setClassNamePrefix(String prefix, ClassType classType) {
+		this.classNamePrefix = prefix;
+		this.classType = classType;
 	}
 
 	/**
-	 * Adds the given prefix that will be used to filter the list of TODO.
+	 * Sets the table name and a prefix that will be used to filter the names of the table's columns.
 	 *
-	 * @param tableNamePrefix The prefix that is used to filter the list of TODO
+	 * @param tableName The name of the table for which its column names should be retrieve as
+	 * possible proposals
+	 * @param prefix The prefix that is used to filter the list of columns names, which is never
+	 * <code>null</code> but can be an empty string
 	 * @since 2.5
 	 */
-	public void setClassNamePrefix(String tableNamePrefix) {
-		this.tableNamePrefix = tableNamePrefix;
-	}
-
-	/**
-	 * Sets
-	 *
-	 * @param tableName
-	 * @since 2.5
-	 */
-	public void setTableName(String tableName) {
+	public void setTableName(String tableName, String prefix) {
 		this.tableName = tableName;
+		this.columnNamePrefix = prefix;
 	}
 
 	/**
-	 * Adds
+	 * Adds the given prefix that will be used to filter the list of possible columns names.
 	 *
-	 * @param tableNamePrefix
+	 * @param tableNamePrefix The prefix that is used to filter the list of columns names
 	 * @since 2.5
 	 */
 	public void setTableNamePrefix(String tableNamePrefix) {
 		this.tableNamePrefix = tableNamePrefix;
 	}
 
-	private int startPositionImp(WordParser wordParser, String proposal) {
+	public int startPosition(WordParser wordParser, String proposal) {
 
 		int index = wordParser.position();
 		int maxMoveLength = proposal.length();
 
 		while (index >= 0 && maxMoveLength > 0) {
-			if (wordParser.startsWith(proposal, index)) {
+			if (wordParser.startsWithIgnoreCase(proposal, index)) {
 				return index;
 			}
 			index--;
@@ -616,7 +775,10 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> tableNames() {
-		return helper.tableNames(tableNamePrefix);
+		if (tableNamePrefix == null) {
+			return Collections.emptyList();
+		}
+		return extension.tableNames(tableNamePrefix);
 	}
 
 	/**
@@ -627,39 +789,101 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 
 		StringBuilder sb = new StringBuilder();
 
+		// JPQL identifiers
 		if (!identifiers.isEmpty()) {
 			sb.append(identifiers);
 		}
 
-		if (!abstractSchemaTypes.isEmpty()) {
+		// Entity names
+		if (!entities.isEmpty()) {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
-
-			sb.append(abstractSchemaTypes);
+			sb.append(entities);
 		}
 
+		// Identification variables
 		if (!identificationVariables.isEmpty()) {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
-
 			sb.append(identificationVariables);
 		}
 
+		// Mappings
 		if (!mappings.isEmpty()) {
 			if (sb.length() > 0) {
 				sb.append(", ");
 			}
-
 			sb.append(mappings);
 		}
 
+		// Class names
+		for (String className : classNames()) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(className);
+		}
+
+		// Table names
+		for (String tableName : tableNames()) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(tableName);
+		}
+
+		// Column names
+		for (String columnName : columnNames()) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(columnName);
+		}
+
+		// Enum constant names
+		for (EnumProposals enumProposals : enumConstant()) {
+			for (String enumConstant : enumProposals.enumConstants()) {
+				if (sb.length() > 0) {
+					sb.append(", ");
+				}
+				sb.append(enumConstant);
+			}
+		}
+
+		// No proposals
 		if (sb.length() == 0) {
 			sb.append("<No Default Proposals>");
 		}
 
 		return sb.toString();
+	}
+
+	private class DefaultEnumProposals implements EnumProposals {
+
+		private Set<String> constants;
+		private IType enumType;
+
+		DefaultEnumProposals(IType enumType) {
+			super();
+			this.enumType  = enumType;
+			this.constants = new HashSet<String>();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Iterable<String> enumConstants() {
+			return new SnapshotCloneIterable<String>(constants);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public IType enumType() {
+			return enumType;
+		}
 	}
 
 	/**

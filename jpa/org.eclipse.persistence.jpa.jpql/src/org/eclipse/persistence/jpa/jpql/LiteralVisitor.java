@@ -16,12 +16,14 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
@@ -38,7 +40,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -89,6 +91,23 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 	public void visit(AbstractSchemaName expression) {
 		if (type == LiteralType.ABSTRACT_SCHEMA_NAME) {
 			literal = expression.getText();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(CollectionMemberDeclaration expression) {
+
+		if (type == LiteralType.PATH_EXPRESSION_ALL_PATH ||
+		    type == LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE ||
+		    type == LiteralType.PATH_EXPRESSION_LAST_PATH) {
+
+			expression.getCollectionValuedPathExpression().accept(this);
+		}
+		else if (type == LiteralType.IDENTIFICATION_VARIABLE) {
+			expression.getIdentificationVariable().accept(this);
 		}
 	}
 
@@ -154,6 +173,19 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 		}
 		else {
 			expression.getJoinAssociationPath().accept(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(RangeVariableDeclaration expression) {
+		if (type == LiteralType.ABSTRACT_SCHEMA_NAME) {
+			expression.getRootObject().accept(this);
+		}
+		else if (type == LiteralType.IDENTIFICATION_VARIABLE) {
+			expression.getIdentificationVariable().accept(this);
 		}
 	}
 

@@ -21,9 +21,137 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import org.eclipse.persistence.jpa.jpql.AbstractValidator.JPQLQueryBNFValidator;
-import org.eclipse.persistence.jpa.jpql.DeclarationResolver.Declaration;
-import org.eclipse.persistence.jpa.jpql.parser.*;
+import org.eclipse.persistence.jpa.jpql.ContentAssistProposals.ClassType;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
+import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractConditionalClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractOrderByClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseChildrenVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractTripleEncapsulatedExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
+import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
+import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
+import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CaseOperandBNF;
+import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
+import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
+import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.InExpressionItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
+import org.eclipse.persistence.jpa.jpql.parser.InternalBetweenExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalFromClauseBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalJoinBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalWhenClauseBNF;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
+import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
+import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
+import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
+import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NewValueBNF;
+import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.QueryPosition;
+import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
+import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.StringPrimaryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
+import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
+import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
@@ -37,7 +165,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.util.filter.AndFilter;
 import org.eclipse.persistence.jpa.jpql.util.filter.Filter;
-
+import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -53,18 +181,13 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
+@SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
 public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVisitor {
 
 	/**
 	 * This visitor determines whether the visited {@link Expression} is the {@link CollectionExpression}.
 	 */
 	private CollectionExpressionVisitor collectionExpressionVisitor;
-
-	/**
-	 * The context used to query information about the JPQL query.
-	 */
-	protected final JPQLQueryContext queryContext;
 
 	/**
 	 * This is used to change the position of the cursor in order to add possible proposals
@@ -97,6 +220,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * The set of possible proposals gathered based on the position in the query.
 	 */
 	protected DefaultContentAssistProposals proposals;
+
+	/**
+	 * The context used to query information about the JPQL query.
+	 */
+	protected final JPQLQueryContext queryContext;
 
 	/**
 	 * Contains the position of the cursor within the parsed {@link Expression}.
@@ -137,6 +265,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		Assert.isNotNull(context, "The JPQLQueryContext cannot be null");
 		this.queryContext = context;
 		initialize();
+	}
+
+	protected AbstractConditionalClauseHelper abstractConditionalClauseHelper() {
+		AbstractConditionalClauseHelper helper = getHelper(AbstractConditionalClauseHelper.class);
+		if (helper == null) {
+			helper = buildAbstractConditionalClauseHelper();
+			registerHelper(AbstractConditionalClauseHelper.class, helper);
+		}
+		return helper;
 	}
 
 	/**
@@ -238,6 +375,25 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 */
 	protected void addAllCompounds(String queryBNFId) {
 		addAllCompounds(getQueryBNF(queryBNFId));
+	}
+
+	/**
+	 * Adds the constants of the given enum type as valid proposals if the beginning starts with the
+	 * given word.
+	 *
+	 * @param enumType The {@link IType} of the enum type
+	 * @param word The word is used to filter the enum constants, which can be <code>null</code> or
+	 * an empty string
+	 *
+	 * @since 2.5
+	 */
+	protected void addAllEnumConstants(IType enumType, String word) {
+
+		for (String enumConstant : enumType.getEnumConstants()) {
+			if (ExpressionTools.startWithIgnoreCase(enumConstant, word)) {
+				addEnumConstant(enumType, enumConstant);
+			}
+		}
 	}
 
 	protected void addAllExpressionFactoryIdentifiers(ExpressionFactory expressionFactory) {
@@ -405,6 +561,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	/**
+	 * Adds the constants of the given enum constant as a valid proposal.
+	 *
+	 * @param enumType The {@link IType} of the enum type
+	 * @param enumConstant The enum constant to be added as a valid proposal
+	 *
+	 * @since 2.5
+	 */
+	protected void addEnumConstant(IType enumType, String enumConstant) {
+		proposals.addEnumConstant(enumType, enumConstant);
+	}
+
+	/**
 	 * Adds the given JPQL identifier as a valid proposal if its role is {@link IdentifierRole#FUNCTION}
 	 * and the beginning starts with the current word.
 	 *
@@ -445,6 +613,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @param expression The {@link Expression} where the content assist was invoked, which helps to
 	 * determine how to stop adding identification variable
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected void addIdentificationVariables(IdentificationVariableType type, Expression expression) {
 
 		// Result variable
@@ -467,15 +636,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 					// Add the entire list of identification variables (range and collection)
 					case ALL: {
 
-						if (declaration.rangeDeclaration) {
+						if (declaration.getType() == Type.RANGE) {
 							addRangeIdentificationVariable(declaration.getVariableName());
 						}
 						else {
 							addIdentificationVariable(declaration.getVariableName());
 						}
 
-						for (String joinIdentificationVariable : declaration.getJoinIdentificationVariables()) {
-							addIdentificationVariable(joinIdentificationVariable);
+						for (Join join : declaration.getJoins()) {
+							String variableName = queryContext.literal(
+								join.getIdentificationVariable(),
+								LiteralType.IDENTIFICATION_VARIABLE
+							);
+							addIdentificationVariable(variableName);
 						}
 
 						break;
@@ -484,12 +657,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 					// Add only the collection identification variables
 					case COLLECTION: {
 
-						if (!declaration.rangeDeclaration) {
-							addIdentificationVariable(declaration.getVariableName());
+						addIdentificationVariable(declaration.getVariableName());
 
-							for (String joinIdentificationVariable : declaration.getJoinIdentificationVariables()) {
-								addIdentificationVariable(joinIdentificationVariable);
-							}
+						for (Join join : declaration.getJoins()) {
+							String variableName = queryContext.literal(
+								join.getIdentificationVariable(),
+								LiteralType.IDENTIFICATION_VARIABLE
+							);
+							addIdentificationVariable(variableName);
 						}
 
 						break;
@@ -506,19 +681,26 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 							break;
 						}
 
-						if (declaration.rangeDeclaration) {
+						if (declaration.getType() == Type.RANGE) {
 							addRangeIdentificationVariable(declaration.getVariableName());
 						}
-						else if (!shouldStop) {
+						else {
 							addIdentificationVariable(declaration.getVariableName());
 						}
 
-						for (Map.Entry<Join, String> join : declaration.getJoinEntries()) {
-							if (join.getKey().isAncestor(expression)) {
+						for (Join join : declaration.getJoins()) {
+
+							if (join.isAncestor(expression)) {
 								stop = true;
 								break;
 							}
-							addIdentificationVariable(join.getValue());
+
+							String variableName = queryContext.literal(
+								join.getIdentificationVariable(),
+								LiteralType.IDENTIFICATION_VARIABLE
+							);
+
+							addIdentificationVariable(variableName);
 						}
 
 						break;
@@ -535,16 +717,24 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 							break;
 						}
 
-						if (!shouldStop && !declaration.rangeDeclaration) {
+						if (!shouldStop && (declaration.getType() == Type.COLLECTION)) {
 							addIdentificationVariable(declaration.getVariableName());
 						}
 						else {
-							for (Map.Entry<Join, String> join : declaration.getJoinEntries()) {
-								if (join.getKey().isAncestor(expression)) {
+
+							for (Join join : declaration.getJoins()) {
+
+								if (join.isAncestor(expression)) {
 									stop = true;
 									break;
 								}
-								addIdentificationVariable(join.getValue());
+
+								String variableName = queryContext.literal(
+									join.getIdentificationVariable(),
+									LiteralType.IDENTIFICATION_VARIABLE
+								);
+
+								addIdentificationVariable(variableName);
 							}
 						}
 
@@ -823,9 +1013,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		return isValid(expression, ConditionalExpressionBNF.ID);
 	}
 
-	protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
-		return new AcceptableTypeVisitor();
+	protected AbstractConditionalClauseHelper buildAbstractConditionalClauseHelper() {
+		return new AbstractConditionalClauseHelper();
 	}
+
+	protected abstract AcceptableTypeVisitor buildAcceptableTypeVisitor();
 
 	protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
 		return new AppendableExpressionVisitor();
@@ -868,6 +1060,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		return new DoubleEncapsulatedCollectionHelper();
 	}
 
+	protected EnumVisitor buildEnumVisitor() {
+		return new EnumVisitor();
+	}
+
 	protected FilteringMappingCollector buildFilteringMappingCollector(AbstractPathExpression expression,
 	                                                                   Resolver resolver,
 	                                                                   Filter<IMapping> filter,
@@ -898,10 +1094,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 	protected GroupByClauseSelectStatementHelper buildGroupByClauseSelectStatementHelper() {
 		return new GroupByClauseSelectStatementHelper();
-	}
-
-	protected HavingClauseHelper buildHavingClauseHelper() {
-		return new HavingClauseHelper();
 	}
 
 	protected HavingClauseSelectStatementHelper buildHavingClauseSelectStatementHelper() {
@@ -1014,7 +1206,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The proposals that are valid choices for the given position
 	 */
 	public ContentAssistProposals buildProposals(int position) {
-		return buildProposals(position, ContentAssistProposalsHelper.NULL_HELPER);
+		return buildProposals(position, ContentAssistExtension.NULL_HELPER);
 	}
 
 	/**
@@ -1022,13 +1214,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * gather the list of proposals based on the given caret position.
 	 *
 	 * @param position The position of the cursor within the JPQL query
-	 * @param helper The helper can be used to provide additional information that is outside the
-	 * scope of simply providing JPA metadata information, such as table names, column names, class
-	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
+	 * @param extension This extension can be used to provide additional support to JPQL content
+	 * assist that is outside the scope of providing proposals related to JPA metadata. It adds
+	 * support for providing suggestions related to class names, enum constants, table names, column
+	 * names
 	 * @return The proposals that are valid choices for the given position
 	 * @since 2.5
 	 */
-	public ContentAssistProposals buildProposals(int position, ContentAssistProposalsHelper helper) {
+	public ContentAssistProposals buildProposals(int position, ContentAssistExtension extension) {
 
 		JPQLExpression jpqlExpression = getJPQLExpression();
 
@@ -1037,7 +1230,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			position
 		);
 
-		prepare(queryPosition, helper);
+		prepare(queryPosition, extension);
 		jpqlExpression.accept(this);
 		return proposals;
 	}
@@ -1098,10 +1291,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		return new VisitParentVisitor();
 	}
 
-	protected WhereClauseHelper buildWhereClauseHelper() {
-		return new WhereClauseHelper();
-	}
-
 	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
 		return new WhereClauseSelectStatementHelper();
 	}
@@ -1153,7 +1342,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			}
 		}
 
-		int position = getPosition(expression);
+		int position = getPosition(expression) - corrections.peek() - virtualSpaces.peek();
 
 		if (position > -1) {
 			for (int index = 0, count = expression.childrenSize(); index < count; index++) {
@@ -1176,7 +1365,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			}
 		}
 
-		if (position == 0 && (expression.endsWithComma() || expression.endsWithSpace())) {
+		if ((position == 0) && (expression.endsWithComma() || expression.endsWithSpace())) {
 			return expression.childrenSize();
 		}
 
@@ -1360,6 +1549,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		return getProvider().getEntityNamed(entityName);
 	}
 
+	protected EnumVisitor getEnumVisitor() {
+		EnumVisitor helper = (EnumVisitor) helpers.get(EnumVisitor.class);
+		if (helper == null) {
+			helper = buildEnumVisitor();
+			helpers.put(EnumVisitor.class, helper);
+		}
+		return helper;
+	}
+
 	/**
 	 * Retrieves the registered {@link ExpressionFactory} that was registered for the given unique identifier.
 	 *
@@ -1440,15 +1638,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		if (helper == null) {
 			helper = buildGroupByClauseSelectStatementHelper();
 			registerHelper(GroupByClauseSelectStatementHelper.class, helper);
-		}
-		return helper;
-	}
-
-	protected ClauseHelper<HavingClause> getHavingClauseHelper() {
-		HavingClauseHelper helper = getHelper(HavingClauseHelper.class);
-		if (helper == null) {
-			helper = buildHavingClauseHelper();
-			registerHelper(HavingClauseHelper.class, helper);
 		}
 		return helper;
 	}
@@ -1980,6 +2169,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+	protected boolean isEnumAllowed(AbstractPathExpression expression) {
+		EnumVisitor visitor = getEnumVisitor();
+		try {
+			visitor.pathExpression = expression;
+			expression.accept(visitor);
+			return visitor.valid;
+		}
+		finally {
+			visitor.valid = false;
+			visitor.pathExpression = null;
+		}
+	}
+
 	/**
 	 * Determines whether the given JPQL identifier is a function, an example would be <b>AVG</b>.
 	 *
@@ -2247,14 +2449,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * gather the list of proposals based on the caret position.
 	 *
 	 * @param queryPosition Contains the position of the cursor within the parsed {@link Expression}
-	 * @param helper The helper can be used to provide additional information that is outside the
-	 * scope of simply providing JPA metadata information, such as table names, column names, class
-	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
+	 * @param extension This extension can be used to provide additional support to JPQL content
+	 * assist that is outside the scope of providing proposals related to JPA metadata. It adds
+	 * support for providing suggestions related to class names, enum constants, table names, column
+	 * names
 	 */
-	public void prepare(QueryPosition queryPosition, ContentAssistProposalsHelper helper) {
+	public void prepare(QueryPosition queryPosition, ContentAssistExtension extension) {
 
 		this.queryPosition = queryPosition;
-		this.proposals     = new DefaultContentAssistProposals(getGrammar(), helper);
+		this.proposals     = new DefaultContentAssistProposals(getGrammar(), extension);
 
 		wordParser = new WordParser(queryContext.getJPQLExpression().toActualText());
 		wordParser.setPosition(queryPosition.getPosition());
@@ -2531,10 +2734,23 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 */
 	@Override
 	public void visit(CollectionExpression expression) {
-		// Adjust the index within the collection
-		positionInCollections.add(findExpressionPosition(expression));
-		super.visit(expression);
-		positionInCollections.pop();
+
+		if (!isLocked(expression)) {
+
+			// Adjust the index within the collection
+			positionInCollections.add(findExpressionPosition(expression));
+			super.visit(expression);
+
+			int position = positionInCollections.peek();
+			lockedExpressions.add(expression);
+
+			if ((position + 1 == expression.childrenSize()) && (virtualSpaces.peek() != 0)) {
+				expression.accept(position, this);
+			}
+
+			positionInCollections.pop();
+			lockedExpressions.pop();
+		}
 	}
 
 	/**
@@ -2636,6 +2852,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 */
 	@Override
 	public void visit(CollectionValuedPathExpression expression) {
+		super.visit(expression);
 		visitPathExpression(expression);
 	}
 
@@ -2701,7 +2918,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			// Right after "NEW " or within the fully qualified class name
 			if ((position >= length) && (position <= length + classNameLength)) {
-				proposals.setClassNamePrefix(className.substring(position - length));
+				proposals.setClassNamePrefix(className.substring(0, position - length), ClassType.INSTANTIABLE);
 			}
 			// After "("
 			else if (expression.hasLeftParenthesis()) {
@@ -2877,7 +3094,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	public void visit(HavingClause expression) {
 		if (!isLocked(expression)) {
 			super.visit(expression);
-			visitClause(expression, HAVING, expression.hasSpaceAfterIdentifier(), getHavingClauseHelper());
+			visitClause(expression, HAVING, expression.hasSpaceAfterIdentifier(), abstractConditionalClauseHelper());
 			visitCompoundableExpression(expression);
 		}
 	}
@@ -3351,6 +3568,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(OnClause expression) {
+		if (!isLocked(expression)) {
+			super.visit(expression);
+			visitClause(expression, ON, expression.hasSpaceAfterIdentifier(), abstractConditionalClauseHelper());
+			visitCompoundableExpression(expression);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(OrderByClause expression) {
 		if (!isLocked(expression)) {
 			super.visit(expression);
@@ -3776,7 +4005,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		int position = queryPosition.getPosition();
 		String word = this.word;
-		this.word = wordParser.substring(position - expression.getLength(), position);
+		this.word = wordParser.substring(position - expression.getLength() - virtualSpaces.peek(), position);
 
 		// Special cases
 		addIdentifier(IS_EMPTY,     position);
@@ -4010,7 +4239,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	public void visit(WhereClause expression) {
 		if (!isLocked(expression)) {
 			super.visit(expression);
-			visitClause(expression, WHERE, expression.hasSpaceAfterIdentifier(), whereClauseHelper());
+			visitClause(expression, WHERE, expression.hasSpaceAfterIdentifier(), abstractConditionalClauseHelper());
 			visitCompoundableExpression(expression);
 		}
 	}
@@ -4251,8 +4480,15 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		length += helper.length();
 
+		// If the cursor is between the first and second children, then adds compound identifiers
+		// between a CollectionExpression is not a valid conditional expression
+		if (helper.isBetweenCollectionChildren()) {
+			if (helper.isCompoundable()) {
+				addAllCompounds(ConditionalExpressionBNF.ID);
+			}
+		}
 		// At the end of an expression
-		if (position == length) {
+		else if (position == length) {
 			if (helper.isCompoundable()) {
 				addAllCompounds(ConditionalExpressionBNF.ID);
 			}
@@ -4375,6 +4611,47 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+	protected void visitEnumConstant(AbstractPathExpression expression) {
+
+		int position = getPosition(expression);
+		String text = expression.toActualText();
+		int lastDotIndex = text.lastIndexOf(DOT);
+
+		// Check to see if an enum constant can be used at the expression's location
+		if (isEnumAllowed(expression)) {
+			boolean enumConstant = false;
+
+			// The position is after the last dot, check for enum constants
+			if (position > lastDotIndex) {
+
+				// Retrieve the enum type if the path up to the last dot is a fully qualified enum type
+				String enumType = expression.toParsedText().substring(0, lastDotIndex);
+				IType type = getTypeRepository().getType(enumType);
+
+				// The path expression before the last dot is an enum type
+				if (type.isResolvable() && type.isEnum()) {
+					enumConstant = true;
+
+					// Now retrieve the portion of the enum constant based on the cursor position
+					String word = text.substring(lastDotIndex + 1, position);
+
+					// Add the enum constants and filter them based on what's already proposed
+					addAllEnumConstants(type, word);
+				}
+			}
+
+			// Enum type
+			if (!enumConstant) {
+
+				// Now retrieve the portion of the enum constant based on the cursor position
+				text = text.substring(0, position);
+
+				// Set the possible starting of a fully qualified enum type
+				proposals.setClassNamePrefix(text, ClassType.ENUM);
+			}
+		}
+	}
+
 	protected void visitLogicalExpression(LogicalExpression expression, String identifier) {
 
 		int position = getPosition(expression) - corrections.peek();
@@ -4413,27 +4690,42 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		int position = getPosition(expression);
 		String text = expression.toActualText();
-		int dotIndex = text.indexOf(AbstractExpression.DOT);
+		int dotIndex = text.indexOf(DOT);
 
 		if (position > -1) {
-			if ((dotIndex > -1) && (position > dotIndex)) {
-				// Retrieve the filter based on the location of the state field path, for instance, in a
-				// JOIN or IN expression, the filter has to filter out the property and accept the fields
-				// of collection type
-				visitPathExpression(expression, buildMappingFilter(expression));
-			}
-			else {
-				String variableName = queryContext.literal(
-					expression.getIdentificationVariable(),
-					LiteralType.IDENTIFICATION_VARIABLE
-				);
 
-				// Don't do anything if the identification variable is either KEY() or VALUE()
-				if (ExpressionTools.stringIsNotEmpty(variableName)) {
-					corrections.add(getPosition(expression));
-					visit(expression);
-					corrections.pop();
+			String variableName = queryContext.literal(
+				expression.getIdentificationVariable(),
+				LiteralType.IDENTIFICATION_VARIABLE
+			);
+
+			boolean variable = ExpressionTools.stringIsNotEmpty(variableName);
+
+			// The position if after the identification variable
+			if ((dotIndex > -1) && (position > dotIndex)) {
+
+				// Retrieve the filter based on the location of the state field path, for instance, in
+				// a JOIN or IN expression, the filter has to filter out the property and accept the
+				// fields of collection type
+				visitPathExpression(expression, buildMappingFilter(expression));
+
+				// Don't do anything if the first path is not an identification variable,
+				// which means it's either KEY() or VALUE()
+				if (variable) {
+
+					// Attempts to resolve a possible fully qualified enum constant
+					visitEnumConstant(expression);
+
+					// Attempts to resolve third party option
+					visitThirdPartyPathExpression(expression, variableName);
 				}
+			}
+			// The position is within the identification variable but don't do anything if the
+			// identification variable is either KEY() or VALUE()
+			else if (variable) {
+				corrections.add(getPosition(expression));
+				visit(expression);
+				corrections.pop();
 			}
 		}
 	}
@@ -4703,6 +4995,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+	protected void visitThirdPartyPathExpression(AbstractPathExpression expression,
+	                                             String variableName) {
+	}
+
 	protected void visitUpdateStatement(UpdateStatement expression) {
 
 		lockedExpressions.add(expression);
@@ -4778,15 +5074,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected ClauseHelper<WhereClause> whereClauseHelper() {
-		WhereClauseHelper helper = getHelper(WhereClauseHelper.class);
-		if (helper == null) {
-			helper = buildWhereClauseHelper();
-			registerHelper(WhereClauseHelper.class, helper);
-		}
-		return helper;
-	}
-
 	protected WhereClauseSelectStatementHelper whereClauseSelectStatementHelper() {
 		WhereClauseSelectStatementHelper helper = getHelper(WhereClauseSelectStatementHelper.class);
 		if (helper == null) {
@@ -4794,6 +5081,49 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			registerHelper(WhereClauseSelectStatementHelper.class, helper);
 		}
 		return helper;
+	}
+
+	protected class AbstractConditionalClauseHelper implements ClauseHelper<AbstractConditionalClause> {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void addAtTheEndOfExpression(AbstractConditionalClause expression) {
+
+			Expression conditional = expression.getConditionalExpression();
+
+			if (areLogicSymbolsAppendable(conditional)) {
+				addAllLogicIdentifiers();
+			}
+
+			if (areArithmeticSymbolsAppendable(conditional)) {
+				addAllArithmeticIdentifiers();
+			}
+
+			if (areComparisonSymbolsAppendable(conditional)) {
+				addAllComparisonIdentifiers();
+			}
+
+			if (isCompoundable(conditional)) {
+				addAllCompounds(ConditionalExpressionBNF.ID);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void addProposals(AbstractConditionalClause expression) {
+			addAllIdentificationVariables();
+			addAllFunctions(ConditionalExpressionBNF.ID);
+			addClause(SELECT);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Expression getClauseExpression(AbstractConditionalClause expression) {
+			return expression.getConditionalExpression();
+		}
 	}
 
 	protected abstract class AbstractFromClauseSelectStatementHelper<T extends AbstractSelectStatement>
@@ -5167,36 +5497,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * This visitor retrieves the permitted type from the path expression's parent. For instance,
 	 * <b>SUM<b></b> or <b>AVG</b> only accepts state fields that have a numeric type.
 	 */
-	protected class AcceptableTypeVisitor extends AbstractExpressionVisitor {
+	protected abstract class AcceptableTypeVisitor extends AbstractExpressionVisitor {
 
 		/**
 		 * The type that is retrieved based on the expression, it determines what is acceptable.
 		 */
-		IType type;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbsExpression expression) {
-			type = getType(Number.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ArithmeticFactor expression) {
-			type = getType(Number.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AvgFunction expression) {
-			type = getType(Number.class);
-		}
+		protected IType type;
 
 		/**
 		 * {@inheritDoc}
@@ -5210,91 +5516,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void visit(ConcatExpression expression) {
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LengthExpression expression) {
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LocateExpression expression) {
-			// TODO: Handle the position
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LowerExpression expression) {
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ModExpression expression) {
-			// In theory we would only allow Long and Integer
-			type = getType(Number.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SqrtExpression expression) {
-			type = getType(Number.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
 		public void visit(SubExpression expression) {
 			expression.getParent().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubstringExpression expression) {
-			// TODO: Handle the position
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SumFunction expression) {
-			type = getType(Number.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TrimExpression expression) {
-			type = getType(CharSequence.class);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpperExpression expression) {
-			type = getType(CharSequence.class);
 		}
 	}
 
@@ -5317,6 +5540,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 *
 		 */
 		protected boolean clauseOfItems;
+
+		/**
+		 *
+		 */
+		protected CollectionExpression collectionExpression;
 
 		/**
 		 *
@@ -5358,6 +5586,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		@Override
 		public void visit(CollectionExpression expression) {
 
+			collectionExpression = expression;
 			positionInCollection = expression.childrenSize() - 1;
 			hasComma = expression.hasComma(positionInCollection - 1);
 
@@ -5367,6 +5596,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			finally {
 				hasComma = false;
 				positionInCollection = -1;
+				collectionExpression = null;
 			}
 		}
 
@@ -5393,11 +5623,21 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(IdentificationVariable expression) {
+
 			if (clauseOfItems) {
 				appendable = (positionInCollection > -1) && !hasComma;
 			}
 			else {
-				appendable = (positionInCollection > -1);
+
+				// Special case if what's before is 'IS' or 'IS NOT', then it's not appendable
+				if (positionInCollection > 1) {
+					Expression child = collectionExpression.getChild(positionInCollection - 1);
+					String text = child.toActualText();
+					appendable = !text.equals(IS) && !text.equals("IS NOT");
+				}
+				else {
+					appendable = (positionInCollection > -1);
+				}
 			}
 		}
 
@@ -5624,6 +5864,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
+	/**
+	 * This visitor is meant to be subclassed and to complete its behavior, which is basically to
+	 * determine if the {@link Expression} is complete or not.
+	 */
 	protected abstract class CompletenessVisitor extends AbstractExpressionVisitor {
 
 		/**
@@ -5636,9 +5880,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		@Override
 		public void visit(CollectionExpression expression) {
-			int lastIndex = expression.childrenSize() - 1;
-			AbstractExpression child = (AbstractExpression) expression.getChild(lastIndex);
-			child.accept(this);
+			expression.accept(expression.childrenSize() - 1, this);
 		}
 	}
 
@@ -5649,6 +5891,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 */
 	protected class CompoundExpressionHelper extends AnonymousExpressionVisitor {
 
+		protected boolean betweenCollectionChildren;
 		protected Expression leftExpression;
 		protected LogicalExpression logicalExpression;
 		protected Expression rightExpression;
@@ -5671,13 +5914,19 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 
 		int identifierLength() {
+
 			if (logicalExpression != null) {
 				int length = logicalExpression.getIdentifier().length();
 				length += logicalExpression.hasLeftExpression()       ? 1 : 0;
 				length += logicalExpression.hasSpaceAfterIdentifier() ? 1 : 0;
 				return length;
 			}
+
 			return 0;
+		}
+
+		public boolean isBetweenCollectionChildren() {
+			return betweenCollectionChildren;
 		}
 
 		boolean isCompoundable() {
@@ -5685,9 +5934,11 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 
 		int length() {
+
 			if (leftExpression != null) {
 				return AbstractContentAssistVisitor.this.length(leftExpression);
 			}
+
 			return 0;
 		}
 
@@ -5701,6 +5952,24 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		@Override
 		public void visit(AndExpression expression) {
 			visitLogicalExpression(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+
+			int position = getPosition(expression);
+			int length = expression.toActualText(1).length();
+			betweenCollectionChildren = (position == length);
+
+			if (betweenCollectionChildren) {
+				leftExpression = expression.getChild(0);
+			}
+			else {
+				super.visit(expression);
+			}
 		}
 
 		/**
@@ -5749,6 +6018,20 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * possible expressions allowed in a conditional expression.<br>
 	 * "<code>HAVING e.age BETWEEN 5 AND 18</code>" is complete.<br>
 	 * "<code>HAVING e.age BETWEEN 5 AND</code>" is not complete.
+	 * <p>
+	 * Supported expressions are:
+	 * <ul>
+	 * <li><code><b>AND</b></code> : {@link AndExpression}</li>
+	 * <li><code><b>OR</b></code> : {@link OrExpression}</li>
+	 * <li><code><b>&lt;</b>, <b>&gt;</b>, <b>=</b>, <b>&lt;&gt;</b>, <b>&lt;=</b>, <b>&gt;=</b></code> : {@link ComparisonExpression}</li>
+	 * <li><code><b>[NOT] BETWEEN</b></code> : {@link BetweenExpression}</li>
+	 * <li><code><b>[NOT] LIKE</b></code> : {@link LikeExpression}</li>
+	 * <li><code><b>[NOT] IN</b></code> : {@link InExpression}</li>
+	 * <li><code><b>IS [NOT] NULL</b></code> : {@link NullComparisonExpression}</li>
+	 * <li><code><b>IS [NOT] EMPTY</b></code> : {@link EmptyCollectionComparisonExpression}</li>
+	 * <li><code><b>[NOT] MEMBER [OF]</b></code> : {@link CollectionMemberExpression}</li>
+	 * <li><code><b>[NOT] EXISTS</b></code> : {@link ExistsExpression}</li>
+	 * </ul>
 	 */
 	protected class ConditionalExpressionCompletenessVisitor extends CompletenessVisitor {
 
@@ -6044,6 +6327,139 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		public JPQLQueryBNF queryBNF(AbstractDoubleEncapsulatedExpression expression, int index) {
 			return getQueryBNF(expression.parameterExpressionBNF(index));
+		}
+	}
+
+	/**
+	 * This visitor determines whether a path expression can be resolved as a fully qualified enum
+	 * type and an enum constant.
+	 * <p>
+	 * The valid locations are:
+	 * <ul>
+	 * <li>{@link CollectionMemberExpression} : entity_or_value_expression (before <code><b>MEMBER</b></code> identifier);</li>
+	 * <li>{@link InExpression} : One of the items;</li>
+	 * <li>{@link CaseExpression} : The <code><b>ELSE</b> expression</code>;</li>
+	 * <li>{@link WhenClause} : The <code><b>WHEN</b></code> or <code><b>THEN</b></code> expressions;</li>
+	 * <li>{@link FunctionExpression} : One of the function items;</li>
+	 * <li>{@link ComparisonExpression} : The left or right expression if the comparison identifier
+	 *     is either <code><b>=</b></code> or <code><b>&lt;&gt;</b></code>;</li>
+	 * <li>{@link UpdateItem} : The new value;</li>
+	 * <li>{@link ConstructorExpression} : One of the constructor items;</li>
+	 * <li>{@link CoalesceExpression} : The expression at index 1 or greater;</li>
+	 * <li>{@link NullIfExpression} : The second expression;</li>
+	 * </ul>
+	 */
+	protected class EnumVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link AbstractPathExpression} being scanned for its location within the JPQL query.
+		 */
+		protected AbstractPathExpression pathExpression;
+
+		/**
+		 * Determines whether the path expression could potentially represent a fully qualified
+		 * enum constant, which is dictated by the location of the path expression within the query.
+		 * Only a few location allows an enum constant.
+		 */
+		protected boolean valid;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CaseExpression expression) {
+			valid = (pathExpression == expression.getElseExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CoalesceExpression expression) {
+			// TODO
+			valid = (pathExpression == expression.getExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionMemberExpression expression) {
+			valid = (pathExpression == expression.getEntityExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			expression.getParent().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ComparisonExpression expression) {
+			String identifier = expression.getComparisonOperator();
+			valid = ((identifier == EQUAL) || (identifier == DIFFERENT));
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ConstructorExpression expression) {
+			valid = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(FunctionExpression expression) {
+			valid = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(InExpression expression) {
+			valid = (pathExpression != expression.getExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullIfExpression expression) {
+			valid = (pathExpression == expression.getSecondExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpression expression) {
+			expression.getParent().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UpdateItem expression) {
+			valid = (pathExpression == expression.getNewValue());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(WhenClause expression) {
+			valid = (pathExpression == expression.getThenExpression() ||
+			         pathExpression == expression.getWhenExpression());
 		}
 	}
 
@@ -6367,31 +6783,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 */
 		public WhereClauseSelectStatementHelper getPreviousHelper() {
 			return whereClauseSelectStatementHelper();
-		}
-	}
-
-	protected class HavingClauseHelper implements ClauseHelper<HavingClause> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addAtTheEndOfExpression(HavingClause expression) {
-			addAllAggregates(ConditionalExpressionBNF.ID);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addProposals(HavingClause expression) {
-			addAllIdentificationVariables();
-			addAllFunctions(ConditionalExpressionBNF.ID);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Expression getClauseExpression(HavingClause expression) {
-			return expression.getConditionalExpression();
 		}
 	}
 
@@ -6768,12 +7159,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		}
 	}
 
-	protected class OrderByClauseCollectionHelper implements CollectionExpressionHelper<OrderByClause> {
+	protected class OrderByClauseCollectionHelper implements CollectionExpressionHelper<AbstractOrderByClause> {
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addAtTheEndOfChild(OrderByClause expression, Expression child, int index) {
+		public void addAtTheEndOfChild(AbstractOrderByClause expression, Expression child, int index) {
 
 			OrderByItem item = (OrderByItem) child;
 
@@ -6786,7 +7177,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		/**
 		 * {@inheritDoc}
 		 */
-		public void addProposals(OrderByClause expression, int index) {
+		public void addProposals(AbstractOrderByClause expression, int index) {
 			addAllIdentificationVariables();
 			addAllResultVariables();
 		}
@@ -6794,7 +7185,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		/**
 		 * {@inheritDoc}
 		 */
-		public CollectionExpression buildCollectionExpression(OrderByClause expression) {
+		public CollectionExpression buildCollectionExpression(AbstractOrderByClause expression) {
 			CollectionExpression collectionExpression = getCollectionExpression(expression.getOrderByItems());
 			if (collectionExpression == null) {
 				collectionExpression = expression.buildCollectionExpression();
@@ -6805,28 +7196,28 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		/**
 		 * {@inheritDoc}
 		 */
-		public boolean hasDelimiterAfterIdentifier(OrderByClause expression) {
+		public boolean hasDelimiterAfterIdentifier(AbstractOrderByClause expression) {
 			return expression.hasSpaceAfterIdentifier();
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public int maxCollectionSize(OrderByClause expression) {
+		public int maxCollectionSize(AbstractOrderByClause expression) {
 			return Integer.MAX_VALUE;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public int preExpressionLength(OrderByClause expression) {
+		public int preExpressionLength(AbstractOrderByClause expression) {
 			return 0;
 		}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public JPQLQueryBNF queryBNF(OrderByClause expression, int index) {
+		public JPQLQueryBNF queryBNF(AbstractOrderByClause expression, int index) {
 			return AbstractContentAssistVisitor.this.getQueryBNF(OrderByItemBNF.ID);
 		}
 	}
@@ -7898,6 +8289,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(FunctionExpression expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public void visit(IdentificationVariable expression) {
 			complete = true;
 		}
@@ -8445,48 +8844,6 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			else {
 				super.visit(expression);
 			}
-		}
-	}
-
-	protected class WhereClauseHelper implements ClauseHelper<WhereClause> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addAtTheEndOfExpression(WhereClause expression) {
-
-			Expression conditional = expression.getConditionalExpression();
-
-			if (areLogicSymbolsAppendable(conditional)) {
-				addAllLogicIdentifiers();
-			}
-
-			if (areArithmeticSymbolsAppendable(conditional)) {
-				addAllArithmeticIdentifiers();
-			}
-
-			if (areComparisonSymbolsAppendable(conditional)) {
-				addAllComparisonIdentifiers();
-			}
-
-			if (isCompoundable(conditional)) {
-				addAllCompounds(ConditionalExpressionBNF.ID);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void addProposals(WhereClause expression) {
-			addAllIdentificationVariables();
-			addAllFunctions(ConditionalExpressionBNF.ID);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Expression getClauseExpression(WhereClause expression) {
-			return expression.getConditionalExpression();
 		}
 	}
 
