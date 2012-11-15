@@ -1320,11 +1320,6 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         }
         
         cv.visit(version, access, name, signature, superName, newInterfaces);
-        
-        
-        if (weaveRest){
-            cv.visitInnerClass(classDetails.getClassName() + "/"  + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME, classDetails.getClassName(), "_persistence_RestAdapter", ACC_PUBLIC + ACC_STATIC);
-        }
     } 
 
     /**

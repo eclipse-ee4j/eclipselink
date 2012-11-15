@@ -104,7 +104,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
 
         // Set an adapter that is a subclass of ReferenceAdapter that can adapt the class to create a link for
         // the persistence_href field that has been weaved in.
-        String name = classDescriptor.getJavaClassName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+        String name = RestAdapterClassWriter.constructClassNameForReferenceAdapter(classDescriptor.getJavaClassName());
         XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
         adapter.setValue(name);
         adapter.setValueType(classDescriptor.getJavaClassName());

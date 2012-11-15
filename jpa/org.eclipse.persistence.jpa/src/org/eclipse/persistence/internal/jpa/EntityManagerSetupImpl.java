@@ -467,7 +467,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            processor.createRestInterfaces();
+                            if (weaveRest){
+                                processor.createRestInterfaces();
+                            }
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
                             session.getProject().convertClassNamesToClasses(classLoaderToUse);
