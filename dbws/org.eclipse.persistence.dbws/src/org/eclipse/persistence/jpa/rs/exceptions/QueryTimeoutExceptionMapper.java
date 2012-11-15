@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.QueryTimeoutException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -21,10 +21,9 @@ import javax.ws.rs.ext.Provider;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
-public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotFoundException> {
-
-    public Response toResponse(EntityNotFoundException exception) {
+public class QueryTimeoutExceptionMapper implements ExceptionMapper<QueryTimeoutException> {
+    public Response toResponse(QueryTimeoutException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.NOT_FOUND).build();
+        return Response.status(Status.BAD_REQUEST).build();
     }
 }

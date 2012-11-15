@@ -19,7 +19,6 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-
 import org.eclipse.persistence.jpa.rs.EntityResource;
 import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.jpa.rs.QueryResource;
 import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.EntityExistsExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.EntityNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IOExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IllegalAccessExceptionMapper;
@@ -40,6 +40,11 @@ import org.eclipse.persistence.jpa.rs.exceptions.NamingExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NoResultExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NoSuchMethodExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.OptimisticLockExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.PessimisticLockExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.QueryTimeoutExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.RollbackExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.TransactionRequiredExceptionMapper;
 
 /**
  * Config class for JPA-RS REST service.  This class should remain dependant only on classes from 
@@ -67,6 +72,7 @@ public class JPARSApplication extends Application {
         // Exception Mapping
         c.add(ClassNotFoundExceptionMapper.class);
         c.add(ConversionExceptionMapper.class);
+        c.add(EntityExistsExceptionMapper.class);
         c.add(EntityNotFoundExceptionMapper.class);
         c.add(IllegalAccessExceptionMapper.class);
         c.add(IllegalArgumentExceptionMapper.class);
@@ -80,6 +86,11 @@ public class JPARSApplication extends Application {
         c.add(NonUniqueResultExceptionExceptionMapper.class);
         c.add(NoResultExceptionMapper.class);
         c.add(NoSuchMethodExceptionMapper.class);
+        c.add(OptimisticLockExceptionMapper.class);
+        c.add(PessimisticLockExceptionMapper.class);
+        c.add(QueryTimeoutExceptionMapper.class);
+        c.add(RollbackExceptionMapper.class);
+        c.add(TransactionRequiredExceptionMapper.class);
 
         classes = Collections.unmodifiableSet(c);
     }

@@ -21,7 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,11 +49,12 @@ import org.eclipse.persistence.jpa.rs.QueryResource;
 import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
-import org.eclipse.persistence.jpars.test.model.StaticAuction;
-import org.eclipse.persistence.jpars.test.model.StaticBid;
-import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
+import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
+import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
@@ -70,25 +71,25 @@ import org.junit.Test;
 public class TestService {
 
     private static PersistenceFactoryBase factory;
-    public static URI BASE_URI;
+    private static PersistenceContext context;
 
-    public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties){
+    public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
         if (additionalProperties != null){
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("auction", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction", RestUtils.getServerURI(), properties);
         return context;
     }
 
-    public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties){
+    public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties) throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
         if (additionalProperties != null){
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("phonebook", BASE_URI, properties);
+        PersistenceContext context = factory.get("phonebook", RestUtils.getServerURI(), properties);
         return context;
     }
 
@@ -98,12 +99,11 @@ public class TestService {
         ExamplePropertiesLoader.loadProperties(properties); 
         factory = null;
         try{
-            BASE_URI = new URI("http://localhost:8080/JPA-RS/");
             factory = new PersistenceFactoryBase();
 
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-            properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
+            //properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
             properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
 
             getAuctionPersistenceContext(properties);
@@ -111,20 +111,21 @@ public class TestService {
             getPhoneBookPersistenceContext(properties);
 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
-            factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
+            context = factory.bootstrapPersistenceContext("auction-static-local", emf, RestUtils.getServerURI(), false);
 
             StaticModelDatabasePopulator.populateDB(emf);
 
         } catch (Exception e){
+            e.printStackTrace();
             fail(e.toString());
         }
     }
     @AfterClass
-    public static void teardown(){
-        //  clearData();
+    public static void teardown() throws URISyntaxException {
+        clearData();
     }
 
-    protected static void clearData(){
+    protected static void clearData() throws URISyntaxException {
         EntityManager em = getAuctionPersistenceContext(null).getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from Bid b").executeUpdate();
@@ -139,7 +140,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdateUserList(){
+    public void testUpdateUserList() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = TestService.getAuctionPersistenceContext(null);
@@ -190,7 +191,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdatePhoneNumberList(){
+    public void testUpdatePhoneNumberList() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getPhoneBookPersistenceContext(null);
@@ -245,7 +246,7 @@ public class TestService {
     }
 
     @Test 
-    public void testMarshallBid(){
+    public void testMarshallBid() throws URISyntaxException {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -279,7 +280,7 @@ public class TestService {
     }
 
     @Test
-    public void testNamedQuery(){
+    public void testNamedQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -313,7 +314,7 @@ public class TestService {
     }
 
     @Test
-    public void testNamedQuerySingleResult(){
+    public void testNamedQuerySingleResult() throws URISyntaxException {
         SingleResultQueryResource resource = new SingleResultQueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -343,7 +344,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdate() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -363,7 +364,7 @@ public class TestService {
     }
 
     @Test
-    public void testUpdateRelationship(){
+    public void testUpdateRelationship() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -391,7 +392,7 @@ public class TestService {
         String resultString = stringifyResults(output);
 
         assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
-        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:8080/JPA-RS/auction/entity/Bid/"));
+        assertTrue("link was not in results.", resultString.replace(" ", "").contains("http://localhost:8080/eclipselink.jpars.test/persistence/auction/entity/Bid/"));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
         assertTrue("Laptop was not a link in results.", !resultString.replace(" ","").contains("\"name\":\"Laptop\""));
 
@@ -426,7 +427,7 @@ public class TestService {
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -445,7 +446,7 @@ public class TestService {
     }
 
     @Test
-    public void testWriteQuery(){
+    public void testWriteQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -466,7 +467,7 @@ public class TestService {
     }
 
     @Test 
-    public void testDynamicCompositeKey(){
+    public void testDynamicCompositeKey() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -512,12 +513,12 @@ public class TestService {
     }
 
     @Test
-    public void testUpdateStaticRelationship(){
+    public void testUpdateStaticRelationship() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
         StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
@@ -538,12 +539,12 @@ public class TestService {
     }
 
     @Test
-    public void testDeleteStaticRelationship(){
+    public void testDeleteStaticRelationship() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
         StaticUser user = bid.getUser();
@@ -563,12 +564,12 @@ public class TestService {
     }
 
     @Test
-    public void testUpdateAndRemoveStaticCollectionRelationship(){
+    public void testUpdateAndRemoveStaticCollectionRelationship() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
         StaticBid bid = new StaticBid();
@@ -609,12 +610,12 @@ public class TestService {
 
 
     @Test
-    public void testStaticReportQuery(){
+    public void testStaticReportQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
         Long count = (Long)((List)context.query(null, "User.count", null)).get(0);
 
@@ -638,7 +639,7 @@ public class TestService {
     }
 
     @Test
-    public void testUnmarshallNonExistantLink(){
+    public void testUnmarshallNonExistantLink() throws URISyntaxException {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
@@ -681,12 +682,12 @@ public class TestService {
     }
 
     @Test
-    public void testMultitenant() throws JAXBException {
+    public void testMultitenant() throws JAXBException, URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
         Account account = new Account();
         account.setAccoutNumber("AAA111");
