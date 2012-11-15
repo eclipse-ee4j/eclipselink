@@ -107,6 +107,7 @@ import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
+import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.COLON;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DOT;
@@ -234,35 +235,54 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
-
             Result result = null;
-            if (storedProcedure.isFunctionType()) {
-                ArgumentType returnArg = ((FunctionType)storedProcedure).getReturnArgument();
-                result = buildResultForStoredFunction(returnArg, returnType);
-                // for strongly typed ref cursors we will customize the simple-xml-format 
-                // tags to better represent the PL/SQL record/table/column type
-                if (returnArg.getEnclosedType().isPLSQLCursorType()) {
-                    customizeSimpleXMLTagNames((PLSQLCursorType) returnArg.getEnclosedType(), procedureOperationModel);
+
+            /**
+             * For multiple OUT args as well as a stored function with OUT args, we want
+             * the result to be a collection and the type to be "xsd:any".  We will
+             * force SimpleXMLFormat for now as well.
+             */
+            int outArgCount = 0;
+            for (ArgumentType argument : storedProcedure.getArguments()) {
+                ArgumentTypeDirection argDirection = argument.getDirection();
+                if (argDirection == OUT) {
+                    outArgCount++;
                 }
-            } else if (hasComplexArgs) {
-                if (Util.noOutArguments(storedProcedure)) {
-                    result = new Result();
-                    result.setType(new QName(SCHEMA_URL, INT, SCHEMA_PREFIX)); // rowcount
-                }
-            } else { // !hasComplexArgs
-                // if user overrides returnType, assume they're right
-                if (returnType != null) {
-                    result = new Result();
-                    result.setType(buildCustomQName(returnType, dbwsBuilder));
-                } else {
-                    if (isCollection) {
-                        result = new CollectionResult();
-                        if (isSimpleXMLFormat) {
-                            result.setType(SXF_QNAME_CURSOR);
-                        }
-                    } else {
+            }            
+            if (outArgCount > 1 || (outArgCount > 0 && storedProcedure.isFunctionType())) {
+                isCollection = true;
+                isSimpleXMLFormat = true;
+                result = new CollectionResult();
+                result.setType(ANY_QNAME);
+            } else {
+                if (storedProcedure.isFunctionType()) {
+                    ArgumentType returnArg = ((FunctionType)storedProcedure).getReturnArgument();
+                    result = buildResultForStoredFunction(returnArg, returnType);
+                    // for strongly typed ref cursors we will customize the simple-xml-format 
+                    // tags to better represent the PL/SQL record/table/column type
+                    if (returnArg.getEnclosedType().isPLSQLCursorType()) {
+                        customizeSimpleXMLTagNames((PLSQLCursorType) returnArg.getEnclosedType(), procedureOperationModel);
+                    }
+                } else if (hasComplexArgs) {
+                    if (Util.noOutArguments(storedProcedure)) {
                         result = new Result();
-                        result.setType(SXF_QNAME);
+                        result.setType(new QName(SCHEMA_URL, INT, SCHEMA_PREFIX)); // rowcount
+                    }
+                } else { // !hasComplexArgs
+                    // if user overrides returnType, assume they're right
+                    if (returnType != null) {
+                        result = new Result();
+                        result.setType(buildCustomQName(returnType, dbwsBuilder));
+                    } else {
+                        if (isCollection) {
+                            result = new CollectionResult();
+                            if (isSimpleXMLFormat) {
+                                result.setType(SXF_QNAME_CURSOR);
+                            }
+                        } else {
+                            result = new Result();
+                            result.setType(SXF_QNAME);
+                        }
                     }
                 }
             }
