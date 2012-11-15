@@ -301,7 +301,6 @@ public class EntityListener extends DescriptorEventAdapter {
         // If we haven't built an overridden events map for this subclass, do so now.
         if (subClassMap == null) {
             subClassMap = new Hashtable<Integer, Boolean>();
-            m_overriddenEvents.put(forSubclass, subClassMap);
         }
         
         // Now check the individual events for this subclass.
@@ -329,6 +328,9 @@ public class EntityListener extends DescriptorEventAdapter {
                 }
             }
             subClassMap.put(eventCode, hasOverrides);
+            //putting this here prevents a vm reorder from putting an unbuilt Map in the 
+            //m_overriddenEvents collection
+            m_overriddenEvents.put(forSubclass, subClassMap);
         }
         
         return subClassMap.get(eventCode);
