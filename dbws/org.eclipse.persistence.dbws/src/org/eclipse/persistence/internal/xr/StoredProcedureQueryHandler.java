@@ -183,6 +183,13 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             if (!queryOperation.isSimpleXMLFormat() ||
                 (spCall.isStoredFunctionCall() && !isCursorType(xrService, resultType))) {
                 setSingleResult(xrService, spCall, resultType);
+                // support stored function with out args
+                for (ProcedureOutputArgument arg : getOutArguments()) {
+                    // use argument type
+                    if (arg.getResultType() == null || !isCursorType(xrService, arg.getResultType())) {
+                        spCall.addNamedOutputArgument(arg.getName());
+                    }
+                }                
             } else {
                 if (spCall.isStoredFunctionCall() && isCursorType(xrService, resultType)) {
                     spCall.setIsCursorOutputProcedure(true);

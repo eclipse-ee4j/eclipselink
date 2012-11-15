@@ -71,6 +71,7 @@ import static org.eclipse.persistence.internal.xr.Util.TEMP_DOC;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
 import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
 
 /**
@@ -82,7 +83,8 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
  */
 @SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
-
+    protected static final String RESULT_STR = "result";
+    
     protected Result result;
     protected QueryHandler queryHandler;
     protected boolean userDefined = true;
@@ -422,7 +424,7 @@ public class QueryOperation extends Operation {
         else {
             records = new Vector<DatabaseRecord>();
             DatabaseRecord dr = new DatabaseRecord();
-            dr.add(new DatabaseField("result"), value);
+            dr.add(new DatabaseField(RESULT_STR), value);
             records.add(dr);
         }
         SimpleXMLFormatModel simpleXMLFormatModel = new SimpleXMLFormatModel();
@@ -454,6 +456,10 @@ public class QueryOperation extends Operation {
                         fieldValue = conversionManager.convertObject((Blob) fieldValue, ClassConstants.APBYTE);
                     }
                     String elementName = sqlToXmlName(field.getName());
+                    if (elementName.equals(EMPTY_STRING)) {
+                        // return arg from stored function has no name
+                        elementName = RESULT_STR;
+                    }
                     Element columnElement = TEMP_DOC.createElement(elementName);
                     rowElement.appendChild(columnElement);
                     String fieldValueString = fieldValue.toString();

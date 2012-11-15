@@ -86,6 +86,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE2 AS" +
             "\nFUNCTION FINDPLSQLMAXSAL RETURN DECIMAL;" +
             "\nFUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL;" +
+            "\nFUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER;" +
         "\nEND SIMPLEPACKAGE2;";
     static final String CREATE_SIMPLEPACKAGE2_BODY =
         "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE2 AS" +
@@ -101,6 +102,12 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
                 "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF WHERE DEPTNO = DEPT;" +
                 "\nRETURN(MAXSAL);" +
             "\nEND FINDPLSQLMAXSALFORDEPT;" +
+            "\nFUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER AS" +
+            "\nBEGIN" +
+                "\nP2 := P1 + 1;" +
+                "\nP3 := P2 + 1;" +
+                "\nRETURN 666;" +
+            "\nEND TEST_MULTI_OUT;" +
         "\nEND SIMPLEPACKAGE2;";
     static final String DROP_SIMPLESF_TABLE =
         "DROP TABLE SIMPLESF";
@@ -181,6 +188,11 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
                   "isSimpleXMLFormat=\"true\" " +
                   "simpleXMLFormatTag=\"max-sal-for-dept\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestMultipleOut\" " +
+                  "catalogPattern=\"SIMPLEPACKAGE2\" " +
+                  "procedurePattern=\"TEST_MULTI_OUT\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           OracleHelper builderHelper = new OracleHelper(builder);
@@ -236,4 +248,28 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
             "<result>2850</result>" +
           "</simple-xml>" +
         "</max-sal-for-dept>";
+
+    @Test
+    public void testMultipleOut() {
+        Invocation invocation = new Invocation("TestMultipleOut");
+        invocation.setParameter("P1", 68);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TEST_OUTS_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    public static final String TEST_OUTS_XML =
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<result>666</result>" +
+              "<P2>69</P2>" +
+              "<P3>70</P3>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
 }

@@ -135,7 +135,6 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "name=\"InOutArgsTest\" " +
                   "catalogPattern=\"SIMPLEPACKAGE1\" " +
                   "procedurePattern=\"INOUTARGSPLSQLSP\" " +
-                  "isSimpleXMLFormat=\"true\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"InOutArgTest\" " +
