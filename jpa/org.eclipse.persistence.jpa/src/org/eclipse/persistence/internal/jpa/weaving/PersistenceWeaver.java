@@ -95,12 +95,6 @@ public class PersistenceWeaver implements ClassTransformer {
                     ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     return null;
                 }
-                
-                /*if (classWeaver.weavedRest && loader instanceof DynamicClassLoader){
-                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(classDetails.getClassName());
-                    ((DynamicClassLoader)loader).addClass(restAdapter.getClassName(), restAdapter);
-                }*/
-                
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
                     

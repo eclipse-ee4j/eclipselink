@@ -560,7 +560,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            processor.createRestInterfaces();
+                            if (weaveRest){
+                                processor.createRestInterfaces();
+                            }
                             
                             processor.addEntityListeners();
 

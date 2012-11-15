@@ -202,7 +202,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 return;
             }
             String attributeName = jpaMapping.getAttributeName();
-            String adapterClassName = jpaMapping.getReferenceDescriptor().getJavaClassName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+            String adapterClassName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(jpaMapping.getReferenceDescriptor().getJavaClassName());
             try {
                 if (jaxbMapping.isAbstractCompositeObjectMapping()) {
                     XMLChoiceObjectMapping xmlChoiceMapping = new XMLChoiceObjectMapping();

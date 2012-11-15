@@ -972,7 +972,7 @@ public class PersistenceContext {
                 // avoid embeddables
                 if (!desc.isAggregateCollectionDescriptor() && !desc.isAggregateDescriptor()) {
                     Class clz = desc.getJavaClass();
-                    String referenceAdapterName = clz.getName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+                    String referenceAdapterName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(clz.getName());
                     ClassLoader cl = getJpaSession().getDatasourcePlatform().getConversionManager().getLoader();
                     Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
                     Class[] argTypes = { String.class, PersistenceContext.class };
