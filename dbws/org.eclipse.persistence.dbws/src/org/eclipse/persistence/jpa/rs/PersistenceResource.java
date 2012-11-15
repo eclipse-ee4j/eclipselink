@@ -17,6 +17,11 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
@@ -62,6 +67,20 @@ public class PersistenceResource extends AbstractResource {
     @GET
     public Response getContexts(@Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
         return getContexts(hh, uriInfo.getBaseUri());
+    }
+    
+    protected Response getContexts(HttpHeaders hh, URI baseURI) throws JAXBException {
+        Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
+        Iterator<String> contextIterator = contexts.iterator();
+        List<Link> links = new ArrayList<Link>();
+        String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
+        while (contextIterator.hasNext()) {
+            String context = contextIterator.next();
+            links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
+        }
+        String result = null;
+        result = marshallMetadata(links, mediaType);
+        return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
     }
 
     @POST
