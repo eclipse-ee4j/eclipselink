@@ -1114,6 +1114,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Return the JDBC type for the given database field to be passed to Statement.setNull
+     */
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+        return getJDBCType(field);
+    }
+
+    /**
      * Return the JDBC type for the given database field.
      */
     public int getJDBCType(DatabaseField field) {
@@ -2272,7 +2279,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
             statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
         } else {
-            int jdbcType = getJDBCType(databaseField);
+            int jdbcType = getJDBCTypeForSetNull(databaseField);
             statement.setNull(index, jdbcType);
         }
     }

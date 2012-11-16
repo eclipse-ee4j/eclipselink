@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.xdb;
 
+import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -33,6 +34,17 @@ public class XMLTypeEmployeeSystem extends TestSystem {
 
         schemaManager.replaceObject(Employee_XML.tableDefinition());
         schemaManager.createSequences();
+        
+        String strCreateStoredFunction = 
+            "\ncreate or replace function STOREDFUNCTION_XMLTYPE\n" +
+            "  return XMLTYPE\n" +
+            "as\n" +
+            "begin\n" +
+            "  return XMLTYPE('<jb><data> BLAH </data></jb>');\n" + 
+            "end;";
+        DataModifyQuery query = new DataModifyQuery(strCreateStoredFunction);
+        query.setShouldBindAllParameters(false);
+        session.executeQuery(query);
     }
 
     public void populate(DatabaseSession session) {
