@@ -245,6 +245,8 @@
 
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
+    <property name="server.uri.base" value="http://localhost:8080"/>
+        <echo message="Server url is ${SERVER_URL}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
     </target>
     <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
@@ -257,18 +259,28 @@
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/auction"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/employee"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/multitenant"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/weaving"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF"/>
         <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF/xmldocs"/>
 
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/" includes="*.class"/>
         </copy>
-        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
+    	<copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/dynamic" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/auction">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/auction" includes="*.class"/>
         </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/multitenant">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/multitenant" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/employee">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/employee" includes="*.class"/>
         </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/weaving">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/weaving" includes="*.class"/>
@@ -288,8 +300,8 @@
     <macrodef name="run_jpars_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
-            <mkdir dir="${report.dir}"/>
+        	<delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
+        	<mkdir dir="${report.dir}"/>
             <mkdir dir="${jparstest.build.location}/${classes.dir}/META-INF"/>
             <copy todir="${jparstest.build.location}/${classes.dir}/META-INF">
                 <fileset dir="${jparstest.build.location}/${src.dir}/META-INF" includes="**"/>

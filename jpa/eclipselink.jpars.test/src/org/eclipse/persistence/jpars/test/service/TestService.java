@@ -392,7 +392,8 @@ public class TestService {
         String resultString = stringifyResults(output);
 
         assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
-        assertTrue("link was not in results.", resultString.replace(" ", "").contains("http://localhost:8080/eclipselink.jpars.test/persistence/auction/entity/Bid/"));
+        String uri = RestUtils.getServerURI() + "auction/entity/Bid/";
+        assertTrue("link was not in results.", resultString.replace(" ", "").contains(uri));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
         assertTrue("Laptop was not a link in results.", !resultString.replace(" ","").contains("\"name\":\"Laptop\""));
 
