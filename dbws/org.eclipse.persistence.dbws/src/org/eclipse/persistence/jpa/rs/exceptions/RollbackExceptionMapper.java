@@ -7,24 +7,31 @@
  * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *      gonural - initial
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import javax.persistence.EntityNotFoundException;
+import javax.persistence.RollbackException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
-public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotFoundException> {
-
-    public Response toResponse(EntityNotFoundException exception) {
+public class RollbackExceptionMapper implements ExceptionMapper<RollbackException> {
+    public Response toResponse(RollbackException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.NOT_FOUND).build();
+        if (exception != null) {
+            Throwable cause = exception.getCause();
+            if (cause != null) {
+                if (cause instanceof DatabaseException) {
+                    //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
+                    return Response.status(Status.CONFLICT).build();
+                }
+            }
+        }
+        return Response.status(Status.BAD_REQUEST).build();
     }
 }

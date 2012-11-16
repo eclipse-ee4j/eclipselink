@@ -760,16 +760,35 @@ public class PersistenceContext {
             unmarshaller.setAdapter(adapter);
         }
 
-        JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
-        if (element.getValue() instanceof List<?>){
-            for (Object object: (List<?>)element.getValue()){
-                wrap(object);
+        if (acceptedMedia == MediaType.APPLICATION_JSON_TYPE) {
+            // Part of the fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=394059
+            // This issue happens when request has objects derived from an abstract class.
+            // JSON_INCLUDE_ROOT is set to false for  JPA-RS. This means JSON requests won't have root tag.
+            // The unmarshal method needs to be called with type, so that moxy can unmarshal the message based on type.
+            // For xml, root tag is always set, unmarshaller must use root of the message for unmarshalling and type should
+            // not be passed to unmarshal for xml type requests.
+            JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
+            if (element.getValue() instanceof List<?>) {
+                for (Object object : (List<?>) element.getValue()) {
+                    wrap(object);
+                }
+                return element.getValue();
+            } else {
+                wrap(element.getValue());
             }
             return element.getValue();
-        } else {
-            wrap(element.getValue());
         }
-        return element.getValue();
+
+        Object domainObject = unmarshaller.unmarshal(new StreamSource(in));
+        if (domainObject instanceof List<?>) {
+            for (Object object : (List<?>) domainObject) {
+                wrap(object);
+            }
+            return domainObject;
+        } else {
+            wrap(domainObject);
+        }
+        return domainObject;
     }
 
     /**

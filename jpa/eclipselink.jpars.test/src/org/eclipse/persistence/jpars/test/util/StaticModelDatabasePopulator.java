@@ -15,10 +15,10 @@ package org.eclipse.persistence.jpars.test.util;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.eclipse.persistence.jpars.test.model.StaticAddress;
-import org.eclipse.persistence.jpars.test.model.StaticAuction;
-import org.eclipse.persistence.jpars.test.model.StaticBid;
-import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
+import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
+import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
+import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 
 public class StaticModelDatabasePopulator {
 
