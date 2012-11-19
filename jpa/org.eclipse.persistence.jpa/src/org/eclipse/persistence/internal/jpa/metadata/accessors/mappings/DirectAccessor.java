@@ -27,6 +27,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -110,7 +112,7 @@ public abstract class DirectAccessor extends MappingAccessor {
         // Set the converts if some are present. 
         // Process all the join columns first.
         if (isAnnotationPresent(JPA_CONVERTS)) {
-            for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
+            for (Object convert : getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
                 m_converts.add(new ConvertMetadata((MetadataAnnotation) convert, this));
             }
         }

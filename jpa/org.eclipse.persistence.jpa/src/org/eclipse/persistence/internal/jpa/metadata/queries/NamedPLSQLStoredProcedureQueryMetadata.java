@@ -21,6 +21,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -79,7 +81,7 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
     public NamedPLSQLStoredProcedureQueryMetadata(MetadataAnnotation namedStoredProcedureQuery, MetadataAccessor accessor) {
         super(namedStoredProcedureQuery, accessor);
          
-        for (Object storedProcedureParameter : (Object[]) namedStoredProcedureQuery.getAttributeArray("parameters")) {
+        for (Object storedProcedureParameter : namedStoredProcedureQuery.getAttributeArray("parameters")) {
            m_parameters.add(new PLSQLParameterMetadata((MetadataAnnotation)storedProcedureParameter, accessor));
         }
         

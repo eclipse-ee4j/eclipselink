@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.locking;
 
@@ -69,7 +71,7 @@ public class OptimisticLockingMetadata extends ORMetadata {
         m_type = (String) optimisticLocking.getAttribute("type");
         m_cascade = (Boolean) optimisticLocking.getAttribute("cascade");
         
-        for (Object selectedColumn : (Object[]) optimisticLocking.getAttributeArray("selectedColumns")) {
+        for (Object selectedColumn : optimisticLocking.getAttributeArray("selectedColumns")) {
             m_selectedColumns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));
         }
     }

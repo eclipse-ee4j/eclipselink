@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/    
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -24,7 +26,6 @@ import java.util.List;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -45,8 +46,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @author Guy Pelletier
  * @since TopLink 11g
  */
-public class CollectionTableMetadata extends TableMetadata {
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+public class CollectionTableMetadata extends RelationalTableMetadata {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
@@ -69,18 +69,12 @@ public class CollectionTableMetadata extends TableMetadata {
      * INTERNAL:
      * Used for annotation loading.
      */
-    public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessor accessor, boolean isJPACollectionTable) {
+    public CollectionTableMetadata(MetadataAnnotation collectionTable, MetadataAccessor accessor) {
         super(collectionTable, accessor);
         
         if (collectionTable != null) {
-            if (isJPACollectionTable) {
-                for (Object joinColumn : (Object[]) collectionTable.getAttributeArray("joinColumns")) {
-                    m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
-                }
-            } else {
-                for (Object primaryKeyJoinColumn : (Object[]) collectionTable.getAttributeArray("primaryKeyJoinColumns")) {
-                    m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessor));
-                }
+            for (Object primaryKeyJoinColumn : collectionTable.getAttributeArray("primaryKeyJoinColumns")) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, accessor));
             }
         }
     }
@@ -92,10 +86,6 @@ public class CollectionTableMetadata extends TableMetadata {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare)&& objectToCompare instanceof CollectionTableMetadata) {
             CollectionTableMetadata collectionTable = (CollectionTableMetadata) objectToCompare;
-            
-            if (! valuesMatch(m_joinColumns, collectionTable.getJoinColumns())) {
-                return false;
-            }
             
             return valuesMatch(m_primaryKeyJoinColumns, collectionTable.getPrimaryKeyJoinColumns());
         }
@@ -109,13 +99,6 @@ public class CollectionTableMetadata extends TableMetadata {
     @Override
     public String getCatalogContext() {
         return MetadataLogger.COLLECTION_TABLE_CATALOG;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    public List<JoinColumnMetadata> getJoinColumns() {
-        return m_joinColumns;
     }
     
     /**
@@ -147,15 +130,9 @@ public class CollectionTableMetadata extends TableMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize lists of ORMetadata objects.
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
-        initXMLObjects(m_joinColumns, accessibleObject);
-    }
-    
-        /**
-     * INTERNAL:
-     */
-    public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
-        m_joinColumns = joinColumns;
     }
     
     /**

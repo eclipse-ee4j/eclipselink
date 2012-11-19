@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
@@ -56,10 +58,11 @@ public class CacheIndexMetadata extends ORMetadata {
         super(index, accessor);
         
         if (index != null) {            
-            for (Object columnName : (Object[]) index.getAttributeArray("columnNames")) {
-                m_columnNames.add((String)columnName);
+            for (Object columnName : index.getAttributeArray("columnNames")) {
+                m_columnNames.add((String) columnName);
             }
-            this.updateable = (Boolean)index.getAttribute("updateable");
+            
+            this.updateable = (Boolean) index.getAttribute("updateable");
         }
     }
 

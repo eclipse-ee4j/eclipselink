@@ -89,6 +89,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1855,7 +1857,7 @@ public class MetadataProject {
         
         table.setFullyQualifiedTableName(tableName);
 
-        if (useDelimitedIdentifier()){
+        if (useDelimitedIdentifier()) {
             table.setUseDelimiters(useDelimitedIdentifier());
         }
 
@@ -1863,6 +1865,9 @@ public class MetadataProject {
 
         // Process the unique constraints.
         table.processUniqueConstraints();
+        
+        // Process the foreign key metadata.
+        table.processForeignKey();
     }
     
     /**

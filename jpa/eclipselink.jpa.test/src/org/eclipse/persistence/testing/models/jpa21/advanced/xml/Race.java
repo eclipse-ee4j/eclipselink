@@ -8,23 +8,33 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/25/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support
- ******************************************************************************/ 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
-import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
+import java.util.List;
 
-public class RunnerStatus {
-    RunningStatus runningStatus;
+public class Race {
+    public Integer id;
+    public String name;
+    public List<Runner> runners;
 
-    public RunningStatus getRunningStatus() {
-        return runningStatus;
+    public Race() {}
+
+    public String getName() {
+        return name;
+    }
+    
+    public List<Runner> getRunners() {
+        return runners;
     }
 
-    public void setRunningStatus(RunningStatus runningStatus) {
-        this.runningStatus = runningStatus;
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public void setRunners(List<Runner> runners) {
+        this.runners = runners;
     }
 }

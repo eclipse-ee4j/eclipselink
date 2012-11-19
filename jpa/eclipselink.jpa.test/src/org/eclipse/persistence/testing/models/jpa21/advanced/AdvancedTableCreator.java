@@ -14,6 +14,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -21,6 +23,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
@@ -40,10 +43,24 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildPROJECTTable());
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
+        addTableDefinition(buildRACETable());
         addTableDefinition(buildRUNNERTable());
         addTableDefinition(buildRUNNER_PBSTable());
+        addTableDefinition(buildRUNNERS_RACESTable());
+        addTableDefinition(buildSHOETable());
+        addTableDefinition(buildSHOETAGTable());
+        addTableDefinition(buildSPRINTERTable());
+        addTableDefinition(buildENDORSERTable());
+        addTableDefinition(buildENDORSEMENTSTable());
+        addTableDefinition(buildXMLRACETable());
         addTableDefinition(buildXMLRUNNERTable());
         addTableDefinition(buildXMLRUNNER_PBSTable());
+        addTableDefinition(buildXMLRUNNERS_RACESTable());
+        addTableDefinition(buildXMLSHOETable());
+        addTableDefinition(buildXMLSHOETAGTable());
+        addTableDefinition(buildXMLSPRINTERTable());
+        addTableDefinition(buildXMLENDORSERTable());
+        addTableDefinition(buildXMLENDORSEMENTSTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -329,6 +346,72 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildENDORSERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_ENDORSER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildENDORSEMENTSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_ENDORSEMENTS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ATHLETE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("ENDORSER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_ENDORSER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("ENDORSEMENT");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
     public TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_LPROJECT");
@@ -596,6 +679,62 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildRUNNERS_RACESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNERS_RACES");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RACE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_RACE.ID");
+        table.addField(field);
+            
+        return table;
+    }
+
+    public TableDefinition buildRACETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RACE");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
     public TableDefinition buildRUNNERTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_RUNNER");
@@ -680,6 +819,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         table.addField(field);
         
+        field = new FieldDefinition();
+        field.setName("DTYPE");
+        field.setTypeName("VARCHAR");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
         return table;
     }
     
@@ -721,6 +870,213 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setShouldAllowNull(true);
         table.addField(field);
 
+        return table;
+    }
+    
+    public TableDefinition buildSHOETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_SHOE");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("BRAND");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("MODEL");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("SIZZE");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("TAG_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        field.setForeignKeyFieldName("JPA21_SHOE_TAG.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSHOETAGTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_SHOE_TAG");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("TAG");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        return table;
+    }
+    
+    public TableDefinition buildSPRINTERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_SPRINTER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("SPRINTER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+    
+        return table;
+    }
+    
+    public TableDefinition buildXMLENDORSERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_ENDORSER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildXMLENDORSEMENTSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_ENDORSEMENTS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ATHLETE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("ENDORSER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_XML_ENDORSER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("ENDORSEMENT");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildXMLRACETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_RACE");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
         return table;
     }
     
@@ -846,6 +1202,159 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         table.addField(field);
         
+        field = new FieldDefinition();
+        field.setName("DTYPE");
+        field.setTypeName("VARCHAR");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildXMLSPRINTERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_SPRINTER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("SPRINTER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+    
+        return table;
+    }
+    
+    public TableDefinition buildXMLRUNNERS_RACESTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("RUNNERS_RACES");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RACE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_RACE.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildXMLSHOETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_SHOE");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("BRAND");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("MODEL");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("SIZZE");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("TAG_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        field.setForeignKeyFieldName("JPA21_XML_SHOE_TAG.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RUNNER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(true);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildXMLSHOETAGTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_SHOE_TAG");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("TAG");
+        field.setTypeName("VARCHAR");
+        field.setSize(25);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
         return table;
     }
 }

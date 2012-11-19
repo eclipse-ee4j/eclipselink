@@ -35,6 +35,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     05/17/2012-2.3.3 Arron Ferguson  
  *       - 379829: NPE Thrown with OneToOne Relationship
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -185,12 +187,12 @@ public class OneToManyAccessor extends CollectionAccessor {
         
         if (mapping instanceof ManyToManyMapping) {
             // 266912: If this 1:n accessor is different than the n:n mapping - track this
-            ((ManyToManyMapping)mapping).setDefinedAsOneToManyMapping(true);
+            ((ManyToManyMapping) mapping).setDefinedAsOneToManyMapping(true);
                     
             // Process the JoinTable metadata.
-            processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
+            processJoinTable(mapping, ((ManyToManyMapping) mapping).getRelationTableMechanism(), getJoinTableMetadata());
         } else if (mapping instanceof EISOneToManyMapping) {
-            processEISOneToManyMapping((EISOneToManyMapping)mapping);
+            processEISOneToManyMapping((EISOneToManyMapping) mapping);
         }
     }
     

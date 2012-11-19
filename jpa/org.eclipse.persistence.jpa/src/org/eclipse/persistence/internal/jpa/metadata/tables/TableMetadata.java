@@ -17,6 +17,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 8)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -77,7 +79,7 @@ public class TableMetadata extends ORMetadata {
             m_schema = (String) table.getAttribute("schema"); 
             m_catalog = (String) table.getAttribute("catalog");
 
-            for (Object uniqueConstraint : (Object[]) table.getAttributeArray("uniqueConstraints")) {
+            for (Object uniqueConstraint : table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));
             }
         }
@@ -202,6 +204,14 @@ public class TableMetadata extends ORMetadata {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Process any foreign key metadata for this table.
+     */
+    public void processForeignKey() {
+        // Does nothing at this level. Subclasses must override as needed.
+    }
+    
     /**
      * INTERNAL:
      * Add the unique constraints to the database table.

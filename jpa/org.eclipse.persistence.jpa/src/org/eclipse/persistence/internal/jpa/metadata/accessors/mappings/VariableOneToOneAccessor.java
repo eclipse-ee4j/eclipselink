@@ -32,6 +32,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/05/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 3)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -107,7 +109,7 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
             m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), this);
             
             // Set the discriminator classes if specified.
-            for (Object discriminatorClass : (Object[]) variableOneToOne.getAttributeArray("discriminatorClasses")) {
+            for (Object discriminatorClass : variableOneToOne.getAttributeArray("discriminatorClasses")) {
                 m_discriminatorClasses.add(new DiscriminatorClassMetadata((MetadataAnnotation) discriminatorClass, this));
             }
         }

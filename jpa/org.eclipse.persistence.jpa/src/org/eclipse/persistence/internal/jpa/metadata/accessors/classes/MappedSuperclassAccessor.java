@@ -68,6 +68,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -973,17 +975,16 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * Process cache index information for the given metadata descriptor.
      */
     protected void processCacheIndexes() {
-        MetadataAnnotation index = getAnnotation(CacheIndex.class);
-        
-        if (index != null) {
-            m_cacheIndexes.add(new CacheIndexMetadata(index, this));
+        // TODO: This method is adding annotation metadata to XML metadata. This 
+        // is wrong and does not follow the spec ideology. XML metadata should 
+        // override not merge with annotations.
+        if (isAnnotationPresent(CacheIndex.class)) {
+            m_cacheIndexes.add(new CacheIndexMetadata(getAnnotation(CacheIndex.class), this));
         }
         
-        MetadataAnnotation indexes = getAnnotation(CacheIndexes.class);
-        if (indexes != null) {
-            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
-            for (Object eachIndex : indexArray) {
-                m_cacheIndexes.add(new CacheIndexMetadata((MetadataAnnotation) eachIndex, this));            
+        if (isAnnotationPresent(CacheIndexes.class)) {
+            for (Object index : getAnnotation(CacheIndexes.class).getAttributeArray("value")) {
+                m_cacheIndexes.add(new CacheIndexMetadata((MetadataAnnotation) index, this));            
             }
         }
         
@@ -1131,7 +1132,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Process the fetch group annotations.
         // Look for a @FetchGroup.
         if (isAnnotationPresent(FetchGroups.class)) {
-            for (Object fetchGroup : (Object[]) getAnnotation(FetchGroups.class).getAttributeArray("value")) {
+            for (Object fetchGroup : getAnnotation(FetchGroups.class).getAttributeArray("value")) {
                 processFetchGroup(new FetchGroupMetadata((MetadataAnnotation) fetchGroup, this), fetchGroups);
             }
         }
@@ -1319,17 +1320,15 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the named query annotations.
         // Look for a @NamedQueries.
-        MetadataAnnotation namedQueries = getAnnotation(JPA_NAMED_QUERIES);
-        if (namedQueries != null) {
-            for (Object namedQuery : (Object[]) namedQueries.getAttributeArray("value")) { 
+        if (isAnnotationPresent(JPA_NAMED_QUERIES)) {
+            for (Object namedQuery : (Object[]) getAnnotation(JPA_NAMED_QUERIES).getAttributeArray("value")) { 
                 getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation) namedQuery, this));
             }
         }
         
         // Look for a @NamedQuery.
-        MetadataAnnotation namedQuery = getAnnotation(JPA_NAMED_QUERY);
-        if (namedQuery != null) {
-            getProject().addQuery(new NamedQueryMetadata(namedQuery, this));
+        if (isAnnotationPresent(JPA_NAMED_QUERY)) {
+            getProject().addQuery(new NamedQueryMetadata(getAnnotation(JPA_NAMED_QUERY), this));
         }
     }
     

@@ -13,6 +13,8 @@
  *       - 290567: mappedbyid support incomplete
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -58,9 +60,9 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the attribute value, or an empty array if not set.
      */
-    public Object getAttributeArray(String name) {
+    public Object[] getAttributeArray(String name) {
         Object value = getAttribute(name);
-        return (value == null) ? new Object[0] : value;
+        return (value == null) ? new Object[0] : (Object[]) value;
     }
     
     /**

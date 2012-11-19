@@ -10,18 +10,23 @@
  * Contributors:
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Runner extends Athlete {
     protected Integer id;
     protected Gender gender;
     protected RunnerInfo info;
+    protected List<Race> races;
+    protected Map<ShoeTag, Shoe> shoes;
     protected Map<String, String> personalBests;
 
     public Runner() {
@@ -46,6 +51,10 @@ public class Runner extends Athlete {
     
     public Map<String, String> getPersonalBests() {
         return personalBests;
+    }
+    
+    public Map<ShoeTag, Shoe> getShoes() {
+        return shoes;
     }
     
     public boolean isFemale() {
@@ -74,5 +83,9 @@ public class Runner extends Athlete {
     
     public void setPersonalBests(Map<String, String> personalBests) {
         this.personalBests = personalBests;
+    }
+    
+    public void setShoes(Map<ShoeTag, Shoe> shoes) {
+        this.shoes = shoes;
     }
 }

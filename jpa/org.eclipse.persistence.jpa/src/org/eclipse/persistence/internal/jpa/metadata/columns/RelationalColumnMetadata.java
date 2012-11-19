@@ -17,6 +17,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -40,6 +42,14 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 1.2
  */
 public abstract class RelationalColumnMetadata extends MetadataColumn {
+    // NOTE: The foreign key metadata is currently not mapped in the join-column 
+    // XML element, rather it is mapped as a separate element in a sequence with 
+    // it. Therefore, this element is only populated through annotation 
+    // processing right now, BUT this should be made available from our 
+    // eclipselink-orm.xml and therefore maintaining a better annotation/xml
+    // mirror which was unfortunately not followed with JPA 2.1.
+    private ForeignKeyMetadata m_foreignKey;
+    
     private String m_referencedColumnName;
     
     /**
@@ -51,9 +61,16 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
         
         if (relationalColumn != null) {
             m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedColumnName"));
+            
             // Also allow EIS/NoSQL synonym referencedFieldName
             if (m_referencedColumnName == null) {
                 m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedFieldName"));                
+            }
+            
+            // Set a foreign key if one if specified in the annotation.
+            MetadataAnnotation foreignKey = (MetadataAnnotation) relationalColumn.getAttribute("foreignKey");
+            if (foreignKey != null) {
+                m_foreignKey = new ForeignKeyMetadata(foreignKey, accessor);
             }
         }
     }
@@ -73,10 +90,23 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof RelationalColumnMetadata) {
             RelationalColumnMetadata relationalColumn = (RelationalColumnMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_foreignKey, relationalColumn.getForeignKey())) {
+                return false;
+            }
+            
             return valuesMatch(m_referencedColumnName, relationalColumn.getReferencedColumnName());
         }
         
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ForeignKeyMetadata getForeignKey() {
+        return m_foreignKey;
     }
     
     /**
@@ -116,6 +146,14 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
     
     /**
      * INTERNAL:
+     * Return true if a foreign key has been defined on this column.
+     */
+    public boolean hasForeignKey() {
+        return m_foreignKey != null;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean isForeignKeyFieldNotSpecified() {
         return getName() == null || getName().equals("");
@@ -126,6 +164,14 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
      */
     public boolean isPrimaryKeyFieldNotSpecified() {
         return m_referencedColumnName == null || m_referencedColumnName.equals("");
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setForeignKey(ForeignKeyMetadata foreignKey) {
+        m_foreignKey = foreignKey;
     }
     
     /**

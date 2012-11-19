@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -57,7 +59,7 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public PLSQLRecordMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
         super(record, accessor);
                 
-        for (Object field : (Object[]) record.getAttributeArray("fields")) {
+        for (Object field : record.getAttributeArray("fields")) {
             this.fields.add(new PLSQLParameterMetadata((MetadataAnnotation) field, accessor));
         }
     }

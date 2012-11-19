@@ -910,9 +910,10 @@
               <xsd:element name="table" type="orm:table" minOccurs="0"/>
               <xsd:element name="secondary-table" type="orm:secondary-table" minOccurs="0" maxOccurs="unbounded"/>
               <xsd:element name="struct" type="orm:struct" minOccurs="0"/>
-              <xsd:element name="primary-key-join-column" 
-                           type="orm:primary-key-join-column" 
-                           minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:sequence>
+                  <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+                  <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+              </xsd:sequence>
           </xsd:sequence>
           <xsd:element name="no-sql" type="orm:no-sql" minOccurs="0"/>
       </xsd:choice>
@@ -1036,9 +1037,9 @@
 
         @Target({TYPE, METHOD, FIELD}) @Retention(RUNTIME)
         public @interface AssociationOverride {
-          String name();
-          JoinColumn[] joinColumns() default{};
-          JoinTable joinTable() default @JoinTable;
+            String name();
+            JoinColumn[] joinColumns() default{};
+            JoinTable joinTable() default @JoinTable;
         }
 
       </xsd:documentation>
@@ -1046,10 +1047,11 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:choice>
-        <xsd:element name="join-column" type="orm:join-column"
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-table" type="orm:join-table"
-                     minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="join-table" type="orm:join-table" minOccurs="0"/>
       </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -1431,20 +1433,23 @@
 
         @Target({METHOD, FIELD}) @Retention(RUNTIME)
         public @interface CollectionTable {
-          String name() default "";
-          String catalog() default "";
-          String schema() default "";
-          JoinColumn[] joinColumns() default {};
-          UniqueConstraint[] uniqueConstraints() default {};
+            String name() default "";
+            String catalog() default "";
+            String schema() default "";
+            JoinColumn[] joinColumns() default {};
+            UniqueConstraint[] uniqueConstraints() default {};
+            Index[] indexes() default {};
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="join-column" type="orm:join-column" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:sequence>
+        <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -2303,7 +2308,10 @@
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
-            <xsd:element name="map-key-join-column" type="orm:map-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:sequence>
+              <xsd:element name="map-key-join-column" type="orm:map-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+            </xsd:sequence>
           </xsd:choice>
         </xsd:sequence>
       </xsd:choice>
@@ -2700,6 +2708,29 @@
 
   <!-- **************************************************** -->
 
+  <xsd:complexType name="foreign-key">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface ForeignKey {
+            String name() default "";
+            String foreign-key-definition() default "";
+            boolean disable-foreign-key() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="foreign-key-definition" type="xsd:string"/>
+    <xsd:attribute name="disable-foreign-key" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
   <xsd:complexType name="generated-value">
     <xsd:annotation>
       <xsd:documentation>
@@ -2959,6 +2990,7 @@
           boolean updatable() default true;
           String columnDefinition() default "";
           String table() default "";
+          ForeignKey foreignKey() default @ForeignKey();
         }
 
       </xsd:documentation>
@@ -3057,12 +3089,15 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="join-column" type="orm:join-column" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="inverse-join-column" type="orm:join-column" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:sequence>
+        <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="inverse-join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="inverse-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -3142,7 +3177,10 @@
           </xsd:choice>
           <xsd:choice>
             <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
-            <xsd:element name="map-key-join-column" type="orm:map-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:sequence>
+              <xsd:element name="map-key-join-column" type="orm:map-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+            </xsd:sequence>
           </xsd:choice>
         </xsd:sequence>
       </xsd:choice>
@@ -3153,12 +3191,10 @@
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:choice>
-          <xsd:element name="join-table" type="orm:join-table"
-                       minOccurs="0"/>
+          <xsd:element name="join-table" type="orm:join-table" minOccurs="0"/>
           <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
-      <xsd:element name="cascade" type="orm:cascade-type"
-                   minOccurs="0"/>
+      <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
@@ -3193,14 +3229,18 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>       
-        <xsd:element name="join-column" type="orm:join-column" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-table" type="orm:join-table" 
-                     minOccurs="0"/>
-          <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:sequence>
+          <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:sequence>
+          <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="join-table" type="orm:join-table" minOccurs="0"/>
+        <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
-      <xsd:element name="cascade" type="orm:cascade-type" 
-                   minOccurs="0"/>
+      <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
       <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
@@ -3992,17 +4032,13 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element name="order-by" type="orm:order-by"
-                   minOccurs="0"/>
-        <xsd:element name="order-column" type="orm:order-column"
-                   minOccurs="0"/>
+        <xsd:element name="order-by" type="orm:order-by" minOccurs="0"/>
+        <xsd:element name="order-column" type="orm:order-column" minOccurs="0"/>
       </xsd:choice>
       <xsd:choice>
-        <xsd:element name="map-key" type="orm:map-key"
-                   minOccurs="0"/>
+        <xsd:element name="map-key" type="orm:map-key" minOccurs="0"/>
         <xsd:sequence>
-          <xsd:element name="map-key-class" type="orm:map-key-class"
-                   minOccurs="0"/>
+          <xsd:element name="map-key-class" type="orm:map-key-class" minOccurs="0"/>
           <xsd:choice>
             <xsd:element name="map-key-temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="map-key-enumerated" type="orm:enumerated" minOccurs="0"/>
@@ -4013,38 +4049,38 @@
             </xsd:choice>
           </xsd:choice>
           <xsd:choice>
-            <xsd:element name="map-key-column" type="orm:map-key-column"
-                   minOccurs="0"/>
-            <xsd:element name="map-key-join-column"
-                   type="orm:map-key-join-column"
-                   minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="map-key-column" type="orm:map-key-column" minOccurs="0"/>
+            <xsd:sequence>
+              <xsd:element name="map-key-join-column" type="orm:map-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+              <xsd:element name="map-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+            </xsd:sequence>
           </xsd:choice>
        </xsd:sequence>
      </xsd:choice>
      <xsd:choice minOccurs="0" maxOccurs="1">
-        <xsd:element name="converter" type="orm:converter"/>
-        <xsd:element name="type-converter" type="orm:type-converter"/>
-        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
-        <xsd:element name="struct-converter" type="orm:struct-converter"/>
-      </xsd:choice>
-      <xsd:choice>
-        <xsd:element name="join-table" type="orm:join-table"
-                     minOccurs="0"/>
-        <xsd:element name="join-column" type="orm:join-column"
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:choice>
-      <xsd:element name="cascade" type="orm:cascade-type"
-                   minOccurs="0"/>
-      <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
+       <xsd:element name="converter" type="orm:converter"/>
+       <xsd:element name="type-converter" type="orm:type-converter"/>
+       <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+       <xsd:element name="struct-converter" type="orm:struct-converter"/>
+     </xsd:choice>
+     <xsd:choice>
+       <xsd:element name="join-table" type="orm:join-table" minOccurs="0"/>
+       <xsd:sequence>
+         <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+       </xsd:sequence>
+       <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
+     </xsd:choice>
+     <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
+     <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
      <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
      <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
      <xsd:element name="batch-fetch" type="orm:batch-fetch" minOccurs="0"/>
      <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
      <xsd:element name="access-methods" type="orm:access-methods" minOccurs="0"/>
-      <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
-       <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
-      <xsd:group ref="orm:partitioning-group"/>
+     <xsd:element name="noncacheable" type="orm:emptyType" minOccurs="0"/>
+     <xsd:element name="delete-all" type="orm:emptyType" minOccurs="0"/>
+     <xsd:group ref="orm:partitioning-group"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="target-entity" type="xsd:string"/>
@@ -4075,17 +4111,18 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element name="primary-key-join-column" 
-                     type="orm:primary-key-join-column" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-column" type="orm:join-column" 
-                     minOccurs="0" maxOccurs="unbounded"/>
-        <xsd:element name="join-table" type="orm:join-table" 
-                     minOccurs="0"/>
+        <xsd:sequence>
+          <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:sequence>
+          <xsd:element name="join-column" type="orm:join-column" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="join-table" type="orm:join-table" minOccurs="0"/>
         <xsd:element name="join-field" type="orm:join-field" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:choice>
-      <xsd:element name="cascade" type="orm:cascade-type" 
-                   minOccurs="0"/>
+      <xsd:element name="cascade" type="orm:cascade-type" minOccurs="0"/>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="private-owned" type="orm:emptyType" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
@@ -4677,16 +4714,18 @@
           String schema() default "";
           PrimaryKeyJoinColumn[] pkJoinColumns() default {};
           UniqueConstraint[] uniqueConstraints() default {};
+          Index[] indexes() default {};
          }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-       <xsd:element name="primary-key-join-column" 
-                    type="orm:primary-key-join-column" 
-                    minOccurs="0" maxOccurs="unbounded"/>
-       <xsd:element name="unique-constraint" type="orm:unique-constraint" 
-                    minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:sequence>
+            <xsd:element name="primary-key-join-column" type="orm:primary-key-join-column" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="primary-key-foreign-key" type="orm:foreign-key" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="catalog" type="xsd:string"/>

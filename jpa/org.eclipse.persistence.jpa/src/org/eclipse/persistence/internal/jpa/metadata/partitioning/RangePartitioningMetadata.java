@@ -11,8 +11,10 @@
  *     James Sutherland - initial API and implementation
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
@@ -64,7 +66,7 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
         super(annotation, accessor);
         
         this.partitions = new ArrayList<RangePartitionMetadata>();
-        for (Object partitionAnnotation : (Object[]) annotation.getAttributeArray("partitions")) {
+        for (Object partitionAnnotation : annotation.getAttributeArray("partitions")) {
             this.partitions.add(new RangePartitionMetadata((MetadataAnnotation) partitionAnnotation, accessor));
         }
     }

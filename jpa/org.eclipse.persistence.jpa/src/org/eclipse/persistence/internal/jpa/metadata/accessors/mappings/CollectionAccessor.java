@@ -49,6 +49,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support) (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -69,6 +71,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
@@ -122,6 +125,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private ColumnMetadata m_mapKeyColumn;
     private EnumeratedMetadata m_mapKeyEnumerated;
+    private ForeignKeyMetadata m_mapKeyForeignKey;
     
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
@@ -177,14 +181,23 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Set the map key join columns if some are present.
         // Process all the map key join columns first.
         if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMNS)) {
-            for (Object jColumn : (Object[]) getAnnotation(JPA_MAP_KEY_JOIN_COLUMNS).getAttributeArray("value")) {
-                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, this));
+            MetadataAnnotation mapKeyJoinColumns = getAnnotation(JPA_MAP_KEY_JOIN_COLUMNS);
+            
+            for (Object mapKeyJoinColumn : mapKeyJoinColumns.getAttributeArray("value")) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) mapKeyJoinColumn, this));
             }
+            
+            // Set the map key foreign key metadata.
+            setMapKeyForeignKey(new ForeignKeyMetadata((MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey"), this));
         }
         
         // Process the single map key key join column second.
         if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMN)) {
-            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(JPA_MAP_KEY_JOIN_COLUMN), this));
+            JoinColumnMetadata mapKeyJoinColumn = new JoinColumnMetadata(getAnnotation(JPA_MAP_KEY_JOIN_COLUMN), this);
+            m_mapKeyJoinColumns.add(mapKeyJoinColumn);
+            
+            // Set the map key foreign key metadata.
+            setMapKeyForeignKey(mapKeyJoinColumn.getForeignKey());
         }
         
         // Set the attribute overrides if some are present.
@@ -291,6 +304,10 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             }
             
             if (! valuesMatch(m_mapKeyJoinColumns, collectionAccessor.getMapKeyJoinColumns())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyForeignKey, collectionAccessor.getMapKeyForeignKey())) {
                 return false;
             }
             
@@ -436,6 +453,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public EnumeratedMetadata getMapKeyEnumerated() {
         return m_mapKeyEnumerated;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public ForeignKeyMetadata getMapKeyForeignKey() {
+        return m_mapKeyForeignKey;
     }
     
     /**
@@ -593,6 +618,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         initXMLObject(m_mapKeyColumn, accessibleObject);
         initXMLObject(m_orderBy, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
+        initXMLObject(m_mapKeyForeignKey, accessibleObject);
         
         // Initialize the map key class name we read from XML.
         m_mapKeyClass = initXMLClassName(m_mapKeyClassName);
@@ -643,20 +669,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
     }            
-        
-    /**
-     * Configure the EISOneToManyMapping properties based on the metadata.
-     */
-    protected void processEISOneToManyMapping(EISOneToManyMapping mapping) {
-        // EIS mappings always use foreign keys.
-        String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();        
-        processForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
-        if (getReferenceDescriptor().getPrimaryKeyFields().size() > 1) {
-            mapping.setForeignKeyGroupingElement((getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN)));
-        }
-    }
-
-    
     
     /**
      * INTERNAL:
@@ -688,6 +700,30 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             setOverrideMapping(overrideMapping);
         } else {
             super.processAssociationOverride(associationOverride, embeddableMapping, owningDescriptor);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Configure the EISOneToManyMapping properties based on the metadata.
+     */
+    protected void processEISOneToManyMapping(EISOneToManyMapping mapping) {
+        // EIS mappings always use foreign keys.
+        String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();
+        
+        // Get the join columns (directly or through an association override), 
+        // init them and validate.
+        List<JoinColumnMetadata> joinColumns = getJoinColumns(getJoinColumns(), getReferenceDescriptor());
+        
+        // Get the foreign key (directly or through an association override) and
+        // make sure it is initialized for processing.
+        ForeignKeyMetadata foreignKey = getForeignKey(getForeignKey(), getReferenceDescriptor());
+        
+        // Now process the foreign key relationship metadata.
+        processForeignKeyRelationship(mapping, joinColumns, foreignKey, getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
+        
+        if (getReferenceDescriptor().getPrimaryKeyFields().size() > 1) {
+            mapping.setForeignKeyGroupingElement((getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN)));
         }
     }
     
@@ -768,6 +804,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public void setMapKeyEnumerated(EnumeratedMetadata mapKeyEnumerated) {
         m_mapKeyEnumerated = mapKeyEnumerated;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyForeignKey(ForeignKeyMetadata mapKeyForeignKey) {
+        m_mapKeyForeignKey = mapKeyForeignKey;
     }
     
     /**

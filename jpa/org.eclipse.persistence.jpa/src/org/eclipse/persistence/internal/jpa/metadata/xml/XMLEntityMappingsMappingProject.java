@@ -75,6 +75,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 3746888: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -117,9 +119,11 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorClassMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.FieldMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinFieldMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
@@ -259,7 +263,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildOrderColumnDescriptor());
         addDescriptor(buildOrderByDescriptor());
         addDescriptor(buildJoinColumnDescriptor());
+        addDescriptor(buildForeignKeyDescriptor());
         addDescriptor(buildPrimaryKeyJoinColumnDescriptor());
+        addDescriptor(buildPrimaryKeyForeignKeyDescriptor());
         addDescriptor(buildAccessMethodsDescriptor());
         addDescriptor(buildAssociationOverrideDescriptor());
         addDescriptor(buildAttributeOverrideDescriptor());
@@ -421,9 +427,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     protected ClassDescriptor buildAssociationOverrideDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(AssociationOverrideMetadata.class);
-        
+
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getJoinTableMapping());
+        
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         
         return descriptor;
@@ -940,12 +950,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // to handle one or the other. XML will restrict the ability to set
         // both so this is not a problem.
         descriptor.addMapping(getJoinColumnMapping()); 
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
-        descriptor.addMapping(getCreationSuffixMapping());
+        descriptor.addMapping(getCreationSuffixAttributeMapping());
         
         return descriptor;
     }
@@ -1197,6 +1208,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyAssociationOverrideMapping());
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
+        descriptor.addMapping(getMapKeyForeignKeyMapping());
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getEnumeratedMapping());
@@ -1408,8 +1420,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getStructMapping());
         descriptor.addMapping(getNoSqlMapping());
-        
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getPrimaryKeyForeignKeyMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getIndexesMapping());
         descriptor.addMapping(getIdClassMapping());
@@ -1811,6 +1823,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: foreign-key
+     */
+    protected ClassDescriptor buildForeignKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(ForeignKeyMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getForeignKeyDefinitionAttributeMapping());
+        descriptor.addMapping(getDisableForeignKeyAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: generated-value
      */
     protected ClassDescriptor buildGeneratedValueDescriptor() {
@@ -2007,12 +2037,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(JoinTableMetadata.class);
     
         descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getInverseJoinColumnMapping());
+        descriptor.addMapping(getInverseForeignKeyMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());        
         descriptor.addMapping(getSchemaAttributeMapping());
-        descriptor.addMapping(getCreationSuffixMapping());
+        descriptor.addMapping(getCreationSuffixAttributeMapping());
         
         return descriptor;
     }
@@ -2048,6 +2080,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyAssociationOverrideMapping());
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
+        descriptor.addMapping(getMapKeyForeignKeyMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
@@ -2092,7 +2125,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(ManyToOneAccessor.class);
         
         // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getPrimaryKeyForeignKeyMapping());
         descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinFieldMapping());
         descriptor.addMapping(getCascadeMapping());
@@ -2102,7 +2138,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         descriptor.addMapping(getNonCacheableMapping());
-        
         descriptor.addMapping(getPartitioningMapping());
         descriptor.addMapping(getReplicationPartitioningMapping());
         descriptor.addMapping(getRoundRobinPartitioningMapping());
@@ -2474,12 +2509,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyAssociationOverrideMapping());
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
+        descriptor.addMapping(getMapKeyForeignKeyMapping());
         descriptor.addMapping(getConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getJoinFieldMapping());
         descriptor.addMapping(getCascadeMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
@@ -2523,7 +2560,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getPrimaryKeyForeignKeyMapping());
         descriptor.addMapping(getJoinColumnMapping());
+        descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinFieldMapping());
         descriptor.addMapping(getCascadeMapping());
@@ -2831,6 +2870,24 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: primary-key-foreign-key
+     */
+    protected ClassDescriptor buildPrimaryKeyForeignKeyDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(PrimaryKeyForeignKeyMetadata.class);
+        
+        // Element mappings - must remain in order of definition in XML.
+        
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getForeignKeyDefinitionAttributeMapping());
+        descriptor.addMapping(getDisableForeignKeyAttributeMapping());
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: primary-key-join-column
      */
     protected ClassDescriptor buildPrimaryKeyJoinColumnDescriptor() {
@@ -3000,12 +3057,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(SecondaryTableMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
+        descriptor.addMapping(getPrimaryKeyForeignKeyMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
+        
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
-        descriptor.addMapping(getCreationSuffixMapping());
+        descriptor.addMapping(getCreationSuffixAttributeMapping());
         
         return descriptor;
     } 
@@ -3128,7 +3189,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
-        descriptor.addMapping(getCreationSuffixMapping());
+        descriptor.addMapping(getCreationSuffixAttributeMapping());
         
         return descriptor;
     }
@@ -3181,7 +3242,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
-        descriptor.addMapping(getCreationSuffixMapping());
+        descriptor.addMapping(getCreationSuffixAttributeMapping());
         
         XMLDirectMapping pkColumnNameMapping = new XMLDirectMapping();
         pkColumnNameMapping.setAttributeName("m_pkColumnName");
@@ -3936,6 +3997,31 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeObjectMapping getForeignKeyMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_foreignKey");
+        mapping.setGetMethodName("getForeignKey");
+        mapping.setSetMethodName("setForeignKey");
+        mapping.setReferenceClass(ForeignKeyMetadata.class);
+        mapping.setXPath("orm:foreign-key");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getForeignKeyDefinitionAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_foreignKeyDefinition");
+        mapping.setGetMethodName("getForeignKeyDefinition");
+        mapping.setSetMethodName("setForeignKeyDefinition");
+        mapping.setXPath("@foreign-key-definition");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeDirectCollectionMapping getColumnNamesMapping() {
         XMLCompositeDirectCollectionMapping columnNamesMapping = new XMLCompositeDirectCollectionMapping();
         columnNamesMapping.setAttributeName("m_columnNames");
@@ -4085,7 +4171,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getCreationSuffixMapping() {
+    protected XMLDirectMapping getCreationSuffixAttributeMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("m_creationSuffix");
         mapping.setGetMethodName("getCreationSuffix");
@@ -4204,6 +4290,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setGetMethodName("getDisableConversion");
         mapping.setSetMethodName("setDisableConversion");
         mapping.setXPath("@disable-conversion");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getDisableForeignKeyAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_disableForeignKey");
+        mapping.setGetMethodName("getDisableForeignKey");
+        mapping.setSetMethodName("setDisableForeignKey");
+        mapping.setXPath("@disable-foreign-key");
         return mapping;
     }
     
@@ -4546,6 +4644,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeObjectMapping getInverseForeignKeyMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_inverseForeignKey");
+        mapping.setGetMethodName("getInverseForeignKey");
+        mapping.setSetMethodName("setInverseForeignKey");
+        mapping.setReferenceClass(ForeignKeyMetadata.class);
+        mapping.setXPath("orm:inverse-foreign-key");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeCollectionMapping getInverseJoinColumnMapping() {
         XMLCompositeCollectionMapping joinColumnMapping = new XMLCompositeCollectionMapping();
         joinColumnMapping.setAttributeName("m_inverseJoinColumns");
@@ -4585,13 +4696,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      * INTERNAL:
      */
     protected XMLCompositeCollectionMapping getJoinFieldMapping() {
-        XMLCompositeCollectionMapping joinColumnMapping = new XMLCompositeCollectionMapping();
-        joinColumnMapping.setAttributeName("m_joinFields");
-        joinColumnMapping.setGetMethodName("getJoinFields");
-        joinColumnMapping.setSetMethodName("setJoinFields");
-        joinColumnMapping.setReferenceClass(JoinFieldMetadata.class);
-        joinColumnMapping.setXPath("orm:join-field");
-        return joinColumnMapping;
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_joinFields");
+        mapping.setGetMethodName("getJoinFields");
+        mapping.setSetMethodName("setJoinFields");
+        mapping.setReferenceClass(JoinFieldMetadata.class);
+        mapping.setXPath("orm:join-field");
+        return mapping;
     }
     
     /**
@@ -4731,6 +4842,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapKeyEnumeratedMapping.setReferenceClass(EnumeratedMetadata.class);
         mapKeyEnumeratedMapping.setXPath("orm:map-key-enumerated");
         return mapKeyEnumeratedMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getMapKeyForeignKeyMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_mapKeyForeignKey");
+        mapping.setGetMethodName("getMapKeyForeignKey");
+        mapping.setSetMethodName("setMapKeyForeignKey");
+        mapping.setReferenceClass(ForeignKeyMetadata.class);
+        mapping.setXPath("orm:map-key-foreign-key");
+        return mapping;
     }
     
     /**
@@ -5335,6 +5459,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         primaryKeyMapping.setSetMethodName("setPrimaryKey");
         primaryKeyMapping.setXPath("@primary-key");
         return primaryKeyMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getPrimaryKeyForeignKeyMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_primaryKeyForeignKey");
+        mapping.setGetMethodName("getPrimaryKeyForeignKey");
+        mapping.setSetMethodName("setPrimaryKeyForeignKey");
+        mapping.setReferenceClass(PrimaryKeyForeignKeyMetadata.class);
+        mapping.setXPath("orm:primary-key-foreign-key");
+        return mapping;
     }
     
     /**

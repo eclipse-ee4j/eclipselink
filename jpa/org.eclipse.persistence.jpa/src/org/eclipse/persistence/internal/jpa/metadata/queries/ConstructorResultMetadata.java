@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -65,7 +67,7 @@ public class ConstructorResultMetadata extends ORMetadata {
         
         targetClass = getMetadataClass((String) constructorResult.getAttribute("targetClass")); 
         
-        for (Object columnResult : (Object[]) constructorResult.getAttributeArray("columns")) {
+        for (Object columnResult : constructorResult.getAttributeArray("columns")) {
             columnResults.add(new ColumnResultMetadata((MetadataAnnotation) columnResult, accessor));
         }
     }

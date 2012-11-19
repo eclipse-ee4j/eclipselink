@@ -21,6 +21,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -73,7 +75,7 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     public ObjectTypeConverterMetadata(MetadataAnnotation objectTypeConverter, MetadataAccessor accessor) {
         super(objectTypeConverter, accessor);
         
-        for (Object conversionValue: (Object[]) objectTypeConverter.getAttributeArray("conversionValues")) {
+        for (Object conversionValue: objectTypeConverter.getAttributeArray("conversionValues")) {
             m_conversionValues.add(new ConversionValueMetadata((MetadataAnnotation)conversionValue, accessor));
         }
         

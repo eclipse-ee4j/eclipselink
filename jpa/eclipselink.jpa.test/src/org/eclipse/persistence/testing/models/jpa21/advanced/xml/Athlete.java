@@ -10,20 +10,32 @@
  * Contributors:
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Athlete {
     protected Integer age;
-    
     protected String firstName;
-    
     protected String lastName;
+    protected Map<Endorser, Integer> endorsements;
 
+    public Athlete() {
+        endorsements = new HashMap<Endorser, Integer>();
+    }
+    
     public Integer getAge() {
         return age;
     }
 
+    public Map<Endorser, Integer> getEndorsements() {
+        return endorsements;
+    }
+    
     public String getFirstName() {
         return firstName;
     }
@@ -36,6 +48,10 @@ public class Athlete {
         this.age = age;
     }
 
+    public void setEndorsements(Map<Endorser, Integer> endorsements) {
+        this.endorsements = endorsements;
+    }
+    
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }

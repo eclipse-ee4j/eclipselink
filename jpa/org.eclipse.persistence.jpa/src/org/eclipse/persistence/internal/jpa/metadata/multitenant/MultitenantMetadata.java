@@ -24,6 +24,8 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.       
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.multitenant;
 
@@ -94,7 +96,7 @@ public class MultitenantMetadata extends ORMetadata {
 
         // Look for a @TenantDiscriminators
         if (accessor.isAnnotationPresent(TenantDiscriminatorColumns.class)) {
-            for (Object tenantDiscriminatorColumn : (Object[]) accessor.getAnnotation(TenantDiscriminatorColumns.class).getAttributeArray("value")) {
+            for (Object tenantDiscriminatorColumn : accessor.getAnnotation(TenantDiscriminatorColumns.class).getAttributeArray("value")) {
                 m_tenantDiscriminatorColumns.add(new TenantDiscriminatorColumnMetadata((MetadataAnnotation) tenantDiscriminatorColumn, accessor));
             }
         }

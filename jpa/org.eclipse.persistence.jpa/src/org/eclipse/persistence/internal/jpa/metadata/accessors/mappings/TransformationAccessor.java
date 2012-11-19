@@ -20,6 +20,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -87,7 +89,7 @@ public class TransformationAccessor extends BasicAccessor {
         // Set the write transformers if specified. 
         // Process all the write transformers first.
         if (isAnnotationPresent(WriteTransformers.class)) {
-            for (Object transformer : (Object[]) getAnnotation(WriteTransformers.class).getAttributeArray("value")) {
+            for (Object transformer : getAnnotation(WriteTransformers.class).getAttributeArray("value")) {
                 m_writeTransformers.add(new WriteTransformerMetadata((MetadataAnnotation) transformer, this));
             }
         }

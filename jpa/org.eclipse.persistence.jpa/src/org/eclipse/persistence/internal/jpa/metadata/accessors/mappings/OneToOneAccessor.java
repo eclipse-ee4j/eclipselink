@@ -29,6 +29,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     05/17/2012-2.3.3 Arron Ferguson  
  *       - 379829: NPE Thrown with OneToOne Relationship
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -156,10 +158,9 @@ public class OneToOneAccessor extends ObjectAccessor {
             }
         } else if (mapping instanceof OneToOneMapping) {
             // Owning side, look for JoinColumns or PrimaryKeyJoinColumns.
-            processOwningMappingKeys(((OneToOneMapping)mapping));
+            processOwningMappingKeys((OneToOneMapping) mapping);
         } else {
             processForeignKeyRelationship(mapping);
         }
-    }   
-    
+    }
 }

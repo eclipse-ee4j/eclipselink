@@ -25,6 +25,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -118,7 +120,7 @@ public class ManyToOneAccessor extends ObjectAccessor {
         
         if (mapping instanceof ManyToOneMapping) {
             // Process the owning keys for this mapping.
-            processOwningMappingKeys((ManyToOneMapping)mapping);
+            processOwningMappingKeys((ManyToOneMapping) mapping);
         } else {
             processForeignKeyRelationship(mapping);
         } 

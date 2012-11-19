@@ -38,6 +38,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -175,6 +177,18 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for annotation loading and switching from one metadata object to
+     * a more specific one.
+     */
+    public ORMetadata(ORMetadata orm) {
+        m_location = orm.getLocation();
+        m_accessibleObject = orm.getAccessibleObject();
+        m_project = orm.getProject();
+        m_annotation = orm.getAnnotation();
+    }
+    
+    /**
+     * INTERNAL:
      * Returns the accessible object for this accessor.
      */
     protected MetadataAccessibleObject getAccessibleObject() {
@@ -195,7 +209,7 @@ public abstract class ORMetadata {
      * This is a value is that is used when logging messages for overriding.
      * @see shouldOverride
      */
-    protected MetadataAnnotation getAnnotation() {
+    public MetadataAnnotation getAnnotation() {
         return m_annotation;
     }
     
