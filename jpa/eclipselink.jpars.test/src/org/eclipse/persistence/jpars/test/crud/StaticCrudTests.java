@@ -29,7 +29,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

@@ -91,6 +91,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 3746888: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -116,6 +118,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 
@@ -168,6 +171,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     private InheritanceMetadata m_inheritance;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
+    private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
     
     private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
@@ -382,6 +386,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     /**
      * INTERNAL:
      * Used for OX mapping.
+     */
+    public PrimaryKeyForeignKeyMetadata getPrimaryKeyForeignKey() {
+        return m_primaryKeyForeignKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
      */    
     public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
         return m_primaryKeyJoinColumns;
@@ -466,6 +478,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObject(m_inheritance, accessibleObject);
         initXMLObject(m_discriminatorColumn, accessibleObject);
         initXMLObject(m_table, accessibleObject);
+        initXMLObject(m_primaryKeyForeignKey, accessibleObject);
         
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_secondaryTables, accessibleObject);
@@ -518,6 +531,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         m_discriminatorColumn = (DiscriminatorColumnMetadata) mergeORObjects(m_discriminatorColumn, accessor.getDiscriminatorColumn());
         m_inheritance = (InheritanceMetadata) mergeORObjects(m_inheritance, accessor.getInheritance());
         m_table = (TableMetadata) mergeORObjects(m_table, accessor.getTable());
+        m_primaryKeyForeignKey = (PrimaryKeyForeignKeyMetadata) mergeORObjects(m_primaryKeyForeignKey, accessor.getPrimaryKeyForeignKey());
         
         // ORMetadata list merging. 
         m_secondaryTables = mergeORObjectLists(m_secondaryTables, accessor.getSecondaryTables());
@@ -1016,20 +1030,16 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process index information for the given metadata descriptor.
      */
     protected void processIndexes() {
-        // TODO: This goes against the JPA spec where XML always overrides
-        // annotations. This method is appending annotation metadata to XML
-        // metadata.
-        MetadataAnnotation index = getAnnotation(Index.class);
-        
-        if (index != null) {
-            m_indexes.add(new IndexMetadata(index, this));
+        // TODO: This method is adding annotation metadata to XML metadata. This 
+        // is wrong and does not follow the spec ideology. XML metadata should 
+        // override not merge with annotations.
+        if (isAnnotationPresent(Index.class)) {
+            m_indexes.add(new IndexMetadata(getAnnotation(Index.class), this));
         }
         
-        MetadataAnnotation indexes = getAnnotation(Indexes.class);
-        if (indexes != null) {
-            Object[] indexArray = (Object[])indexes.getAttributeArray("value");
-            for (Object eachIndex : indexArray) {
-                m_indexes.add(new IndexMetadata((MetadataAnnotation) eachIndex, this));            
+        if (isAnnotationPresent(Indexes.class)) {
+            for (Object index : getAnnotation(Indexes.class).getAttributeArray("value")) {
+                m_indexes.add(new IndexMetadata((MetadataAnnotation) index, this));            
             }
         }
         
@@ -1058,7 +1068,6 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * 
      * Process the inheritance metadata for an inheritance subclass. The
      * parent descriptor must be provided.
      */
@@ -1069,18 +1078,34 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // Process all the primary key join columns first.
             if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMNS)) {
                 MetadataAnnotation primaryKeyJoinColumns = getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMNS);
-                for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
+                
+                for (Object primaryKeyJoinColumn : primaryKeyJoinColumns.getAttributeArray("value")) { 
                     m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
                 }
+                
+                // Set the primary key foreign key metadata if specified.
+                setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata((MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey"), this));
             }
             
             // Process the single primary key join column second.
             if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMN)) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this));
+                PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this);
+                m_primaryKeyJoinColumns.add(primaryKeyJoinColumn);
+                
+                // Set the primary key foreign key metadata if specified.
+                if (primaryKeyJoinColumn.hasForeignKey()) {
+                    setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(primaryKeyJoinColumn.getForeignKey()));
+                }
             }
         }
         
+        // Process the primary key join columns into multiple table key fields.
         addMultipleTableKeyFields(m_primaryKeyJoinColumns, getDescriptor().getPrimaryTable(), MetadataLogger.INHERITANCE_PK_COLUMN, MetadataLogger.INHERITANCE_FK_COLUMN);
+        
+        // Process the primary key foreign key.
+        if (m_primaryKeyForeignKey != null) {
+            m_primaryKeyForeignKey.process(getDescriptor().getPrimaryTable());
+        }
     }
     
     /**
@@ -1180,7 +1205,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             if (m_secondaryTables.isEmpty()) {
                 // Look for a SecondaryTables annotation.
                 if (secondaryTables != null) {
-                    for (Object table : (Object[]) secondaryTables.getAttributeArray("value")) { 
+                    for (Object table : secondaryTables.getAttributeArray("value")) { 
                         processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, this));
                     }
                 } else {
@@ -1359,6 +1384,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setInheritance(InheritanceMetadata inheritance) {
         m_inheritance = inheritance;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPrimaryKeyForeignKey(PrimaryKeyForeignKeyMetadata primaryKeyForeignKey) {
+        m_primaryKeyForeignKey = primaryKeyForeignKey;
     }
     
     /**

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.persistence.jpa.jpql.DeclarationResolver.Declaration;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseChildrenVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
@@ -27,7 +26,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
@@ -58,7 +56,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -139,6 +137,12 @@ public abstract class JPQLQueryContext {
 	 * Expression}. The actual {@link Resolver} will calculate the proper {@link IType} as well.
 	 */
 	private ResolverBuilder resolverBuilder;
+
+	/**
+	 * Determines if the parsing system should be tolerant, meaning if it should try to parse invalid
+	 * or incomplete queries.
+	 */
+	private boolean tolerant;
 
 	/**
 	 * Internal flag used to determine if the declaration portion of the query was visited.
@@ -312,6 +316,19 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
+	 * Retrieves the {@link Declaration} for which the given variable name is used to navigate to the
+	 * "root" object. This does not go up the hierarchy when looking for the {@link Declaration}.
+	 *
+	 * @param variableName The name of the identification variable that is used to navigate a "root" object
+	 * @return The {@link Declaration} containing the information about the identification variable declaration
+	 * @see #findDeclaration(String)
+	 * @since 2.5
+	 */
+	public Declaration getDeclaration(String variableName) {
+		return getDeclarationResolver().getDeclaration(variableName);
+	}
+
+	/**
 	 * Returns the {@link DeclarationResolver} of the current query's declaration. For a
 	 * <b>SELECT</b> query, it contains the information defined in the <b>FROM</b> clause. For
 	 * <b>DELETE</b> and <b>UPDATE</b> queries, it contains a single range declaration variable. If
@@ -421,19 +438,6 @@ public abstract class JPQLQueryContext {
 			inputParameterVisitor = buildInputParameter();
 		}
 		return inputParameterVisitor;
-	}
-
-	/**
-	 * Returns the parsed representation of a <b>JOIN</b> and <b>JOIN FETCH</b> that were defined in
-	 * the same declaration than the given range identification variable name.
-	 *
-	 * @param variableName The name of the identification variable that should be used to define an
-	 * abstract schema name
-	 * @return The <b>JOIN</b> and <b>JOIN FETCH</b> expressions used in the same declaration or an
-	 * empty collection if none was defined
-	 */
-	public Collection<Join> getJoins(String variableName) {
-		return getDeclarationResolver().getJoins(variableName);
 	}
 
 	/**
@@ -689,15 +693,20 @@ public abstract class JPQLQueryContext {
 	 * @param jpqlGrammar The grammar that defines how to parse a JPQL query
 	 */
 	protected void initialize(JPQLGrammar jpqlGrammar) {
-		this.jpqlGrammar    = jpqlGrammar;
+		this.tolerant       = true;
 		this.currentContext = this;
+		this.jpqlGrammar    = jpqlGrammar;
 		this.contexts       = new HashMap<Expression, JPQLQueryContext>();
 	}
 
+	/**
+	 * Initializes the parsed tree representation of the JPQL query if it has not been set before
+	 * setting the {@link IQuery}.
+	 */
 	protected void initializeRoot() {
 
 		if (jpqlExpression == null) {
-			jpqlExpression = new JPQLExpression(query.getExpression(), jpqlGrammar, true);
+			jpqlExpression = new JPQLExpression(query.getExpression(), jpqlGrammar, tolerant);
 		}
 
 		currentQuery = jpqlExpression;
@@ -747,9 +756,22 @@ public abstract class JPQLQueryContext {
 	 *
 	 * @return <code>true</code> if the current context is for a subquery; <code>false</code> for the
 	 * top-level query
+	 * @since 2.5
 	 */
 	public boolean isSubquery() {
 		return currentContext.parent != null;
+	}
+
+	/**
+	 * Determines if the parser is in tolerant mode or is in fast mode. When the tolerant is turned
+	 * on, it means the parser will attempt to parse incomplete or invalid queries.
+	 *
+	 * @return <code>true</code> if the parsing system should parse invalid or incomplete queries;
+	 * <code>false</code> when the query is well-formed and valid
+	 * @since 2.5
+	 */
+	public boolean isTolerant() {
+		return tolerant;
 	}
 
 	/**
@@ -817,6 +839,21 @@ public abstract class JPQLQueryContext {
 	public void setQuery(IQuery query) {
 		this.query = query;
 		initializeRoot();
+	}
+
+	/**
+	 * Sets whether the parser is in tolerant mode or is in fast mode. When the tolerant is turned
+	 * on, it means the parser will attempt to parse incomplete or invalid queries.
+	 * <p>
+	 * Note: This needs to be set before {@link #setQuery(IQuery)} or {@link #setJPQLExpression(JPQLExpression)}
+	 * is invoked.
+	 *
+	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+	 * to parse invalid or incomplete queries
+	 * @since 2.5
+	 */
+	public void setTolerant(boolean tolerant) {
+		this.tolerant = tolerant;
 	}
 
 	/**

@@ -78,7 +78,8 @@ public class TransformerFactory {
             ((AbstractSession)session).log(SessionLog.SEVERE, SessionLog.WEAVER, WEAVER_NULL_PROJECT, null);
             throw new IllegalArgumentException("Weaver session's project cannot be null");
         }
-        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);        tf.buildClassDetailsAndModifyProject();
+        TransformerFactory tf = new TransformerFactory(session, entityClasses, classLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
+        tf.buildClassDetailsAndModifyProject();
         return tf.buildPersistenceWeaver();
     }
 

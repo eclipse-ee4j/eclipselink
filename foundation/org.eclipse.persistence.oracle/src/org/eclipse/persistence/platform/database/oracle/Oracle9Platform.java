@@ -172,7 +172,7 @@ public class Oracle9Platform extends Oracle8Platform {
             return getTIMESTAMPLTZFromResultSet(resultSet, columnNumber, type, session);
         } else if (type == OracleTypes.ROWID) {
             return resultSet.getString(columnNumber);
-        } else if (type == OracleTypes.OPAQUE) {
+        } else if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
             try {
                 Object result = resultSet.getObject(columnNumber);
                 if(!(result instanceof OPAQUE)) {
@@ -690,11 +690,12 @@ public class Oracle9Platform extends Oracle8Platform {
     
     
     /**
-     * Return the JDBC type for the given database field.
+     * Return the JDBC type for the given database field to be passed to Statement.setNull
      * The Oracle driver does not like the OPAQUE type so VARCHAR must be used.
      */
-    public int getJDBCType(DatabaseField field) {
-        int type = super.getJDBCType(field);
+    @Override
+    public int getJDBCTypeForSetNull(DatabaseField field) {
+        int type = getJDBCType(field);
         if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
             // VARCHAR seems to work, driver does not like OPAQUE.
             return java.sql.Types.VARCHAR;

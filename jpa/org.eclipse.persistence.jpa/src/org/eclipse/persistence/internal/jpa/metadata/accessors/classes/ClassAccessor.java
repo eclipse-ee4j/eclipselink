@@ -73,6 +73,8 @@
  *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 3746888: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1299,7 +1301,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Look for an @AssociationOverrides.
         MetadataAnnotation associationOverrides = getAnnotation(JPA_ASSOCIATION_OVERRIDES);
         if (associationOverrides != null) {
-            for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
+            for (Object associationOverride : associationOverrides.getAttributeArray("value")) {
                 processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
@@ -1603,16 +1605,14 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
 
         // Now add the properties defined in annotations.
-        MetadataAnnotation properties = getAnnotation(Properties.class);
-        if (properties != null) {
-            for (Object property : (Object[]) properties.getAttributeArray("value")) {
+        if (isAnnotationPresent(Properties.class)) {
+            for (Object property : getAnnotation(Properties.class).getAttributeArray("value")) {
                 getDescriptor().addProperty(new PropertyMetadata((MetadataAnnotation) property, this));
             }
         }
         
-        MetadataAnnotation property = getAnnotation(Property.class);
-        if (property != null) {
-            getDescriptor().addProperty(new PropertyMetadata(property, this));
+        if (isAnnotationPresent(Property.class)) {
+            getDescriptor().addProperty(new PropertyMetadata(getAnnotation(Property.class), this));
         }
     }
     

@@ -19,7 +19,6 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -32,7 +31,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
+public final class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
 
 	/**
 	 * {@inheritDoc}

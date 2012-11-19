@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
+import java.io.Writer;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -59,6 +60,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         complexType = true;
         isLastEventText = false;
         space = " ";
+    }
+    
+    public JSONFormattedWriterRecord(Writer writer){
+    	this();
+    	setWriter(writer);
+    }
+    
+    public JSONFormattedWriterRecord(Writer writer, String callbackName){
+    	this(writer);
+    	setCallbackName(callbackName);
     }
 
     private String tab() {

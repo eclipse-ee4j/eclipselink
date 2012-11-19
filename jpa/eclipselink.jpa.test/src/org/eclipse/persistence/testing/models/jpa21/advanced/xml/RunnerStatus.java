@@ -10,11 +10,10 @@
  * Contributors:
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
 

@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
 /**
  * The suite related to testing content assist.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -39,6 +39,7 @@ public final class AllContentAssistTests {
 
 	@SuiteClasses({
 		DefaultContentAssistTest.class,
+		DefaultContentAssistExtensionTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllDefaultContentAssistTests {
@@ -60,7 +61,8 @@ public final class AllContentAssistTests {
 	}
 
 	@SuiteClasses({
-		EclipseLinkContentAssistTest.class,
+		EclipseLinkContentAssistTest2_4.class,
+		EclipseLinkContentAssistExtensionTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllEclipseLinkContentAssistTests {

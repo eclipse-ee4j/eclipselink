@@ -46,6 +46,7 @@ public class IdHelper {
 
     private static final String SEPARATOR_STRING = "+";
 
+    @SuppressWarnings("rawtypes")
     public static Object buildId(PersistenceContext app, String entityName, String idString, Map<String, String> multitenantDiscriminators) {
         Server session = app.getJpaSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
@@ -74,7 +75,15 @@ public class IdHelper {
         Iterator<SortableKey> iterator = pkIndices.iterator();
         while (tokenizer.hasMoreTokens()){
             SortableKey key = iterator.next();
-            Object idValue = session.getPlatform().getConversionManager().convertObject(tokenizer.nextToken(), key.getMapping().getAttributeClassification());
+            String token = tokenizer.nextToken();
+            DatabaseMapping mapping = key.getMapping();
+            Class attributeClasification = mapping.getAttributeClassification();
+            if (attributeClasification == null) {
+                if ((mapping.getFields() != null) && (!mapping.getFields().isEmpty())) {
+                    attributeClasification = mapping.getFields().get(0).getType();
+                }
+            }
+            Object idValue = session.getPlatform().getConversionManager().convertObject(token, attributeClasification);
             keyElements[key.getIndex()] = idValue;
             index++;
         }

@@ -46,7 +46,7 @@
  *     08/20/2010-2.2 Guy Pelletier 
  *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
  *     08/25/2010-2.2 Guy Pelletier 
- *       - 309445: CannonicalModelProcessor process all files (minor correction to patch for bug above)
+ *       - 309445: CanonicalModelProcessor process all files (minor correction to patch for bug above)
  *     09/03/2010-2.2 Guy Pelletier 
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     01/04/2011-2.3 Guy Pelletier 
@@ -55,6 +55,8 @@
  *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -69,7 +71,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -83,7 +87,6 @@ import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirection
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
@@ -94,7 +97,6 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPS_ID;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
-
 
 /**
  * INTERNAL:
@@ -116,7 +118,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     private Boolean m_id;
     private Boolean m_optional;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
-    private String m_mapsId;
+    private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
+    private String m_mapsId;    
     
     /**
      * INTERNAL:
@@ -139,14 +142,24 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // Set the primary key join columns if some are present.
         // Process all the primary key join columns first.
         if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMNS)) {
-            for (Object primaryKeyJoinColumn : (Object[]) getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMNS).getAttributeArray("value")) { 
+            MetadataAnnotation primaryKeyJoinColumns = getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMNS);
+            for (Object primaryKeyJoinColumn : primaryKeyJoinColumns.getAttributeArray("value")) { 
                 m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
             }
+            
+            // Set the primary key foreign key metadata.
+            setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata((MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey"), this));
         }
         
         // Process the single primary key join column second.
         if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMN)) {
-            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this));
+            PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this);
+            m_primaryKeyJoinColumns.add(primaryKeyJoinColumn);
+            
+            // Set the primary key foreign key metadata.
+            if (primaryKeyJoinColumn.hasForeignKey()) {
+                setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(primaryKeyJoinColumn.getForeignKey()));
+            }
         }
         
         // Set the mapped by id if one is present.
@@ -176,8 +189,12 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             if (! valuesMatch(m_optional, objectAccessor.getOptional())) {
                 return false;
             }
-
+            
             if (! valuesMatch(m_primaryKeyJoinColumns, objectAccessor.getPrimaryKeyJoinColumns())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_primaryKeyForeignKey, objectAccessor.getPrimaryKeyForeignKey())) {
                 return false;
             }
             
@@ -232,8 +249,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Boolean getOptional() {
-        return m_optional;
+    public PrimaryKeyForeignKeyMetadata getPrimaryKeyForeignKey() {
+        return m_primaryKeyForeignKey;
     }
     
     /**
@@ -242,6 +259,14 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */    
     public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
         return m_primaryKeyJoinColumns;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getOptional() {
+        return m_optional;
     }
     
     /**
@@ -310,27 +335,6 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
-     * Initialize a OneToOneMapping.
-     */
-    protected ObjectReferenceMapping initOneToOneMapping() {
-        // Allow for different descriptor types (EIS) to create different mapping types.
-        ObjectReferenceMapping mapping = getDescriptor().getClassDescriptor().newOneToOneMapping();
-        processRelationshipMapping(mapping);
-        
-        mapping.setIsOptional(isOptional());
-        mapping.setDerivesId(derivesId());
-        
-        // Process the indirection.
-        processIndirection(mapping);
-        
-        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
-        processReturnInsertAndUpdate();
-        
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
      * Initialize a ManyToOneMapping.
      */
     protected ObjectReferenceMapping initManyToOneMapping() {
@@ -352,14 +356,39 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
     
     /**
      * INTERNAL:
+     * Initialize a OneToOneMapping.
+     */
+    protected ObjectReferenceMapping initOneToOneMapping() {
+        // Allow for different descriptor types (EIS) to create different mapping types.
+        ObjectReferenceMapping mapping = getDescriptor().getClassDescriptor().newOneToOneMapping();
+        processRelationshipMapping(mapping);
+        
+        mapping.setIsOptional(isOptional());
+        mapping.setDerivesId(derivesId());
+        
+        // Process the indirection.
+        processIndirection(mapping);
+        
+        // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
+        processReturnInsertAndUpdate();
+        
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-    
+
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+        
+        // Initialize single objects.
+        initXMLObject(m_primaryKeyForeignKey, accessibleObject);
     }
+    
     
     /**
      * INTERNAL:
@@ -615,7 +644,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * entities that have a composite primary key (validation exception will be 
      * thrown).
      */
-    protected void processForeignKeyRelationship(ForeignReferenceMapping mapping) {
+    protected void processForeignKeyRelationship(ObjectReferenceMapping mapping) {
         // If the fk field (name) is not specified, it defaults to the 
         // concatenation of the following: the name of the referencing 
         // relationship property or field of the referencing entity or
@@ -623,7 +652,16 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // column.
         String defaultFKFieldName = getDefaultAttributeName() + "_" + getReferenceDescriptor().getPrimaryKeyFieldName();
         
-        processForeignKeyRelationship(mapping, getJoinColumns(getJoinColumns(), getReferenceDescriptor()), getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
+        // Get the join columns (directly or through an association override), 
+        // init them and validate.
+        List<JoinColumnMetadata> joinColumns = getJoinColumns(getJoinColumns(), getReferenceDescriptor());
+        
+        // Get the foreign key (directly or through an association override) and
+        // make sure it is initialized for processing.
+        ForeignKeyMetadata foreignKey = getForeignKey(getForeignKey(), getReferenceDescriptor());
+
+        // Now process the foreign key relationship metadata.
+        processForeignKeyRelationship(mapping, joinColumns, foreignKey, getReferenceDescriptor(), defaultFKFieldName, getDescriptor().getPrimaryTable());
     }
     
     /**
@@ -655,6 +693,12 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // Set the primary key join column flag. This will also set the mapping
         // to read only.
         mapping.setIsOneToOnePrimaryKeyRelationship(true);
+
+        // Process the primary key foreign key metadata if specified for this
+        // accessor.
+        if (m_primaryKeyForeignKey != null) {
+            m_primaryKeyForeignKey.process(mapping);
+        }
     }
     
     /**
@@ -678,7 +722,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             processOneToOnePrimaryKeyRelationship(mapping);
         } else if (hasJoinTable()) {
             mapping.setRelationTableMechanism(new RelationTableMechanism());
-            processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTable()); 
+            processJoinTable(mapping, mapping.getRelationTableMechanism(), getJoinTableMetadata()); 
         } else {
             processForeignKeyRelationship(mapping);
         }
@@ -706,6 +750,14 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      */
     public void setOptional(Boolean isOptional) {
         m_optional = isOptional;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPrimaryKeyForeignKey(PrimaryKeyForeignKeyMetadata primaryKeyForeignKey) {
+        m_primaryKeyForeignKey = primaryKeyForeignKey;
     }
     
     /**

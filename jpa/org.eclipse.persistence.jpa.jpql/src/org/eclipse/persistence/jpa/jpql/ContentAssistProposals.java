@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
 
 /**
  * This object stores the various proposals available for content assist for a certain position
@@ -123,6 +124,15 @@ public interface ContentAssistProposals {
 	Iterable<String> columnNames();
 
 	/**
+	 * Returns the filtered list of possible enum constant names. This is usually available when the
+	 * cursor is after the dot separating a fully qualified enum type and the enum constant.
+	 *
+	 * @return The filtered list of possible enum constant names associated with its enum type
+	 * @since 2.5
+	 */
+	Iterable<EnumProposals> enumConstant();
+
+	/**
 	 * Retrieves the abstract schema type that is mapped with the given identification variable.
 	 *
 	 * @param identificationVariable The identification variable that, if defined as a range variable,
@@ -131,6 +141,11 @@ public interface ContentAssistProposals {
 	 * <code>null</code> if the given variable is mapped to something else or not mapped to anything
 	 */
 	IEntity getAbstractSchemaType(String identificationVariable);
+
+	/**
+	 * @since 2.5
+	 */
+	ClassType getClassType();
 
 	/**
 	 * Returns the role of the given JPQL identifier.
@@ -179,4 +194,41 @@ public interface ContentAssistProposals {
 	 * @since 2.5
 	 */
 	Iterable<String> tableNames();
+
+	/**
+	 * This enumeration determines the type of classes returned by {@link ContentAssistProposals#classNames()}.
+	 */
+	public enum ClassType {
+
+		/**
+		 * Indicates the only class type allowed is an enum type.
+		 */
+		ENUM,
+
+		/**
+		 * Indicates the class has to be instantiable, i.e. anonymous, interfaces, enums, annotations
+		 * are not allowed.
+		 */
+		INSTANTIABLE
+	}
+
+	/**
+	 * Holds onto the {@link IType} of the enum type and the list of possible enum constants.
+	 *
+	 * @version 2.5
+	 */
+	public interface EnumProposals {
+
+		/**
+		 * Returns the list of enum constants that have been filtered.
+		 */
+		Iterable<String> enumConstants();
+
+		/**
+		 * The {@link IType} representing the enum type.
+		 *
+		 * @return The {@link IType} representing the enum type
+		 */
+		IType enumType();
+	}
 }

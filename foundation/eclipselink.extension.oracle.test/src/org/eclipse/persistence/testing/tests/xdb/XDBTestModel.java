@@ -46,6 +46,7 @@ public class XDBTestModel extends TestModel {
         testSuite.addTest(new SessionBrokerTestCase());
         testSuite.addTest(new RemoteSessionTest());
         testSuite.addTest(new InsertWithNullTest());
+        testSuite.addTest(new StoredFunctionXMLTypeTest());
         return testSuite;
     }
 

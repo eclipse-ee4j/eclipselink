@@ -17,6 +17,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -45,6 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 1.0
  */
 public class AssociationOverrideMetadata extends OverrideMetadata {
+    private ForeignKeyMetadata m_foreignKey;
     private JoinTableMetadata m_joinTable;
     private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
     
@@ -63,9 +66,15 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     public AssociationOverrideMetadata(MetadataAnnotation associationOverride, MetadataAccessor accessor) {
         super(associationOverride, accessor);
         
-        // Set the join columns. 
-        for (Object joinColumn : (Object[]) associationOverride.getAttributeArray("joinColumns")) {
-            m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
+        // Set the join columns.
+        for (Object joinColumn : associationOverride.getAttributeArray("joinColumns")) {
+            JoinColumnMetadata joinColumnMetadata = new JoinColumnMetadata((MetadataAnnotation) joinColumn, accessor);
+            m_joinColumns.add(joinColumnMetadata);
+            
+            // Set the foreign key metadata from the join column if available.
+            if (joinColumnMetadata.hasForeignKey()) {
+                setForeignKey(joinColumnMetadata.getForeignKey());
+            }
         }
         
         // Set the join table.
@@ -84,6 +93,10 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
                 return false;
             }
             
+            if (! valuesMatch(m_foreignKey, associationOverride.getForeignKey())) {
+                return false;
+            }
+            
             return valuesMatch(m_joinTable, associationOverride.getJoinTable());
         }
         
@@ -96,6 +109,14 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     @Override
     public String getIgnoreMappedSuperclassContext() {
         return MetadataLogger.IGNORE_MAPPED_SUPERCLASS_ASSOCIATION_OVERRIDE;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ForeignKeyMetadata getForeignKey() {
+        return m_foreignKey;
     }
     
     /**
@@ -120,13 +141,23 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-
-        for (JoinColumnMetadata jcm : m_joinColumns){
-            // Initialize single objects.
-            initXMLObject(jcm, accessibleObject);
-        }
+        
+        // Initialize single objects.
         initXMLObject(m_joinTable, accessibleObject);
+        initXMLObject(m_foreignKey, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_joinColumns, accessibleObject);
     }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setForeignKey(ForeignKeyMetadata foreignKey) {
+        m_foreignKey = foreignKey;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

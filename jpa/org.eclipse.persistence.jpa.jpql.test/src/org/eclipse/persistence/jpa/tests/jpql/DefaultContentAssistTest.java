@@ -14,17 +14,20 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 /**
- * @version 2.4
+ * This unit-test tests the JPQL content assist at various position within the JPQL query and with
+ * complete and incomplete queries using the default (generic) JPA support.
+ *
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
-public class DefaultContentAssistTest extends AbstractContentAssistTest {
+public final class DefaultContentAssistTest extends AbstractContentAssistTest {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isJoinFetchIdentifiable() {
+	protected boolean isJoinFetchIdentifiable() {
 		return false;
 	}
 }

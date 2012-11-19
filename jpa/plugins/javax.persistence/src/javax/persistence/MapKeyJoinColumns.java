@@ -44,12 +44,12 @@ public @interface MapKeyJoinColumns {
 	 */
 	MapKeyJoinColumn[] value();
 
-        /**
-         *  (Optional)  Used to specify or disable a foreign key constraint when
-         *  table generation is in effect. If this element is not specified,
-         *  the persistence provider's default foreign key strategy will apply.
-         *
-         *  @since Java Persistence 2.1
-         */
-        ForeignKey foreignKey() default @ForeignKey();
+	/**
+	 * (Optional)  Used to specify or disable a foreign key constraint when
+	 * table generation is in effect. If this element is not specified,
+	 * the persistence provider's default foreign key strategy will apply.
+	 *
+	 * @since Java Persistence 2.1
+	 */
+	ForeignKey foreignKey() default @ForeignKey();
 }

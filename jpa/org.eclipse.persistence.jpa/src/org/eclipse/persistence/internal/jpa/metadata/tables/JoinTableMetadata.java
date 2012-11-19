@@ -15,6 +15,8 @@
  *       - 248293: JPA 2.0 Element Collections (part 2)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -25,12 +27,13 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 /**
  * INTERNAL:
- * Object to hold onto table metadata in a TopLink database table.
+ * Object to hold onto join table metadata in a EclipseLink database table.
  * 
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
@@ -43,8 +46,15 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @author Guy Pelletier
  * @since TopLink EJB 3.0 Reference Implementation
  */
-public class JoinTableMetadata extends TableMetadata {
-    private List<JoinColumnMetadata> m_joinColumns = new ArrayList<JoinColumnMetadata>();
+public class JoinTableMetadata extends RelationalTableMetadata {
+    // NOTE: The foreign key metadata is currently not mapped in the join-column 
+    // XML element, rather it is mapped as a separate element in a sequence with 
+    // it. Therefore, this element is only populated through annotation 
+    // processing right now, BUT this should be made available from our 
+    // eclipselink-orm.xml and therefore maintaining a better annoation/xml
+    // mirror which was unfortunately not followed with JPA 2.1.
+    private ForeignKeyMetadata m_inverseForeignKey;
+    
     private List<JoinColumnMetadata> m_inverseJoinColumns = new ArrayList<JoinColumnMetadata>();
     
     /**
@@ -71,12 +81,14 @@ public class JoinTableMetadata extends TableMetadata {
         super(joinTable, accessor);
         
         if (joinTable != null) {
-            for (Object joinColumn : (Object[]) joinTable.getAttributeArray("joinColumns")) {
-                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, accessor));
-            }  
-        
-            for (Object inverseJoinColumn : (Object[]) joinTable.getAttributeArray("inverseJoinColumns")) {
-                m_inverseJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)inverseJoinColumn, accessor));
+            for (Object inverseJoinColumn : joinTable.getAttributeArray("inverseJoinColumns")) {
+                JoinColumnMetadata inverseJoinColumnMetadata = new JoinColumnMetadata((MetadataAnnotation) inverseJoinColumn, accessor);
+                m_inverseJoinColumns.add(inverseJoinColumnMetadata);
+                    
+                // Set the inverse foreign key metadata from the inverse join column if available.
+                if (inverseJoinColumnMetadata.hasForeignKey()) {
+                    setInverseForeignKey(inverseJoinColumnMetadata.getForeignKey());
+                }
             }
         }
     }
@@ -89,11 +101,11 @@ public class JoinTableMetadata extends TableMetadata {
         if (super.equals(objectToCompare) && objectToCompare instanceof JoinTableMetadata) {
             JoinTableMetadata joinTable = (JoinTableMetadata) objectToCompare;
             
-            if (! valuesMatch(m_joinColumns, joinTable.getJoinColumns())) {
+            if (! valuesMatch(m_inverseJoinColumns, getInverseJoinColumns())) {
                 return false;
             }
             
-            return valuesMatch(m_inverseJoinColumns, joinTable.getInverseJoinColumns());
+            return valuesMatch(m_inverseForeignKey, joinTable.getInverseForeignKey());
         }
         
         return false;
@@ -111,16 +123,16 @@ public class JoinTableMetadata extends TableMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<JoinColumnMetadata> getInverseJoinColumns() {
-        return m_inverseJoinColumns;
+    public ForeignKeyMetadata getInverseForeignKey() {
+        return m_inverseForeignKey;
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public List<JoinColumnMetadata> getJoinColumns() {
-        return m_joinColumns;
+    public List<JoinColumnMetadata> getInverseJoinColumns() {
+        return m_inverseJoinColumns;
     }
     
     /**
@@ -146,30 +158,39 @@ public class JoinTableMetadata extends TableMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
 
-        for (JoinColumnMetadata jcm : m_inverseJoinColumns){
-            // Initialize single objects.
-            initXMLObject(jcm, accessibleObject);
-        }
-
-        for (JoinColumnMetadata jcm : m_joinColumns){
-            // Initialize single objects.
-            initXMLObject(jcm, accessibleObject);
-        }
-}
+        // Initialize single objects.
+        initXMLObject(m_inverseForeignKey, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_inverseJoinColumns, accessibleObject);
+    }
 
     /**
      * INTERNAL:
-     * Used for OX mapping.
+     * Process any foreign key specification for this table.
      */
-    public void setInverseJoinColumns(List<JoinColumnMetadata> inverseJoinColumns) {
-        m_inverseJoinColumns = inverseJoinColumns;
+    @Override
+    public void processForeignKey() {
+        super.processForeignKey();
+        
+        if (m_inverseForeignKey != null) {
+            m_inverseForeignKey.process(getDatabaseTable(), true);
+        }
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setJoinColumns(List<JoinColumnMetadata> joinColumns) {
-        m_joinColumns = joinColumns;
+    public void setInverseForeignKey(ForeignKeyMetadata inverseForeignKey) {
+        m_inverseForeignKey = inverseForeignKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setInverseJoinColumns(List<JoinColumnMetadata> inverseJoinColumns) {
+        m_inverseJoinColumns = inverseJoinColumns;
     }
 }

@@ -47,6 +47,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     05/17/2012-2.3.3 Guy Pelletier  
  *       - 379829: NPE Thrown with OneToOne Relationship
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -77,6 +79,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
@@ -108,6 +111,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     private Boolean m_privateOwned;
     
     private CascadeMetadata m_cascade;
+    private ForeignKeyMetadata m_foreignKey;
     protected MetadataClass m_referenceClass;
     private MetadataClass m_targetEntity;
     
@@ -138,7 +142,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         m_fetch = (annotation == null) ? getDefaultFetchType() : (String) annotation.getAttribute("fetch");
         m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
-        m_cascade = (annotation == null) ? null : new CascadeMetadata((Object[]) annotation.getAttributeArray("cascade"), this);
+        m_cascade = (annotation == null) ? null : new CascadeMetadata(annotation.getAttributeArray("cascade"), this);
         
         // Set the join fetch if one is present.                       
         if (isAnnotationPresent(JoinFetch.class)) {
@@ -156,20 +160,28 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Set the join columns if some are present. 
         // Process all the join columns first.
         if (isAnnotationPresent(JPA_JOIN_COLUMNS)) {
-            for (Object joinColumn : (Object[]) getAnnotation(JPA_JOIN_COLUMNS).getAttributeArray("value")) {
-                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, this));
+            MetadataAnnotation joinColumns = getAnnotation(JPA_JOIN_COLUMNS);
+            for (Object joinColumn : joinColumns.getAttributeArray("value")) {
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, this));
             }
+            
+            // Set the foreign key metadata.
+            setForeignKey(new ForeignKeyMetadata((MetadataAnnotation) joinColumns.getAttribute("foreignKey"), this));
         }
         
         // Process the single key join column second.
         if (isAnnotationPresent(JPA_JOIN_COLUMN)) {
-            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JPA_JOIN_COLUMN), this));
+            JoinColumnMetadata joinColumn = new JoinColumnMetadata(getAnnotation(JPA_JOIN_COLUMN), this);
+            m_joinColumns.add(joinColumn);
+            
+            // Set the foreign key metadata.
+            setForeignKey(joinColumn.getForeignKey());
         }
         
         // Set the join fields if some are present.
         if (isAnnotationPresent("org.eclipse.persistence.nosql.annotations.JoinFields")) {
-            for (Object joinColumn : (Object[]) getAnnotation("org.eclipse.persistence.nosql.annotations.JoinFields").getAttributeArray("value")) {
-                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, this));
+            for (Object joinColumn : getAnnotation("org.eclipse.persistence.nosql.annotations.JoinFields").getAttributeArray("value")) {
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, this));
             }
         }
         
@@ -292,6 +304,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 return false;
             }
             
+            if (! valuesMatch(m_foreignKey, relationshipAccessor.getForeignKey())) {
+                return false;
+            }
+            
             return valuesMatch(m_targetEntityName, relationshipAccessor.getTargetEntityName());
         }
         
@@ -340,11 +356,10 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * INTERNAL:
      * Return the default table to hold the foreign key of a MapKey when
      * and Entity is used as the MapKey
-     * @return
      */
     @Override
     protected DatabaseTable getDefaultTableForEntityMapKey(){
-        if (getJoinTable() != null){
+        if (getJoinTable() != null) {
             return getJoinTable().getDatabaseTable();
         } else {
             return super.getDefaultTableForEntityMapKey();
@@ -357,6 +372,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public String getFetch() {
         return m_fetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ForeignKeyMetadata getForeignKey() {
+        return m_foreignKey;
     }
     
     /**
@@ -400,17 +423,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     protected JoinTableMetadata getJoinTableMetadata() {
         if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
-            if (m_joinTable != null) {
-                // TODO: Log an override message ...
-            }
-            m_joinTable = getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinTable();
+            return getDescriptor().getAssociationOverrideFor(getAttributeName()).getJoinTable();
         } else {
             if (m_joinTable == null) {
-                // TODO: Log a defaulting message.
                 m_joinTable = new JoinTableMetadata(getClassAccessor());
             }
+            
+            return m_joinTable;
         }
-        return m_joinTable;
     }
     
     /**
@@ -559,7 +579,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Return true if a join table has been explicitly set on this accessor.
+     * Return true if a join table exists for this accessor (either directly
+     * set or through an association override).
      */
     protected boolean hasJoinTable() {
         return m_joinTable != null;
@@ -584,12 +605,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         if (m_joinFields != null) {
             m_joinColumns.addAll(m_joinFields);
         }
+        
         // Initialize lists of objects.
         initXMLObjects(m_joinColumns, accessibleObject);
         
         // Initialize single objects.
         initXMLObject(m_joinTable, accessibleObject);
         initXMLObject(m_cascade, accessibleObject);
+        initXMLObject(m_foreignKey, accessibleObject);
         
         // Initialize the target entity name we read from XML.
         m_targetEntity = initXMLClassName(m_targetEntityName);
@@ -860,6 +883,14 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setFetch(String fetch) {
         m_fetch = fetch;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setForeignKey(ForeignKeyMetadata foreignKey) {
+        m_foreignKey = foreignKey;
     }
     
     /**

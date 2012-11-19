@@ -12,6 +12,8 @@
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -66,7 +68,7 @@ public class FetchGroupMetadata extends ORMetadata {
         m_name = (String) fetchGroup.getAttribute("name");
         m_load = (Boolean) fetchGroup.getAttributeBooleanDefaultFalse("load");
          
-        for (Object fetchAttribute : (Object[]) fetchGroup.getAttributeArray("attributes")) { 
+        for (Object fetchAttribute : fetchGroup.getAttributeArray("attributes")) { 
             m_fetchAttributes.add(new FetchAttributeMetadata((MetadataAnnotation) fetchAttribute, accessor));
         }
     }

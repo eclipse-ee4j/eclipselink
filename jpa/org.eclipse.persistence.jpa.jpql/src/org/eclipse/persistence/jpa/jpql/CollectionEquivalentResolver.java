@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * Expression} and returns that type if they are all the same type otherwise the {@link IType} for
  * <code>Object</code> is returned.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,13 +45,6 @@ public class CollectionEquivalentResolver extends Resolver {
 	public CollectionEquivalentResolver(Resolver parent, List<Resolver> resolvers) {
 		super(parent);
 		this.resolvers = resolvers;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void accept(ResolverVisitor visitor) {
 	}
 
 	/**

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -70,7 +72,7 @@ public class IndexMetadata extends ORMetadata {
             m_table = (String) index.getAttribute("table");
             m_unique = (Boolean) index.getAttribute("unique");
             
-            for (Object columnName : (Object[]) index.getAttributeArray("columnNames")) {
+            for (Object columnName : index.getAttributeArray("columnNames")) {
                 m_columnNames.add((String)columnName);
             }
         }

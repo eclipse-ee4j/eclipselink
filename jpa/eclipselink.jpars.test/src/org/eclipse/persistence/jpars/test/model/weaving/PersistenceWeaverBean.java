@@ -18,7 +18,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
 /**
- * Forces weaving of the auction-static persistence unit
+ * Forces weaving of persistence units
  * @author tware
  *
  */
@@ -30,4 +30,7 @@ public class PersistenceWeaverBean {
     @PersistenceUnit(unitName = "auction-static")
     private EntityManagerFactory emf;
 
+    @SuppressWarnings("unused")
+    @PersistenceUnit(unitName = "employee-static")
+    private EntityManagerFactory emf2;
 }

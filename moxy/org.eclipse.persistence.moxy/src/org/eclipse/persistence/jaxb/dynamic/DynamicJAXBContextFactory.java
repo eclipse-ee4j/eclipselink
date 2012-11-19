@@ -18,11 +18,14 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.MetadataContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SchemaContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SessionsXmlContextInput;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 
@@ -243,7 +246,9 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.xsdImportNotSource());
         }
 
-        return new DynamicJAXBContext(new SchemaContextInput(schemaDOM, resolver, properties, classLoader));
+        DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaDOM, resolver, properties, classLoader));
+        fixDateTimeConversion(ctx);
+        return ctx;
     }
 
     /**
@@ -271,7 +276,9 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullInputStream());
         }
 
-        return new DynamicJAXBContext(new SchemaContextInput(schemaStream, resolver, properties, classLoader));
+        DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaStream, resolver, properties, classLoader));
+        fixDateTimeConversion(ctx);
+        return ctx;
     }
 
     /**
@@ -299,7 +306,9 @@ public class DynamicJAXBContextFactory {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.nullSource());
         }
 
-        return new DynamicJAXBContext(new SchemaContextInput(schemaSource, resolver, properties, classLoader));
+        DynamicJAXBContext ctx = new DynamicJAXBContext(new SchemaContextInput(schemaSource, resolver, properties, classLoader));
+        fixDateTimeConversion(ctx);
+        return ctx;
     }
 
     /**
@@ -336,6 +345,23 @@ public class DynamicJAXBContextFactory {
         }
 
         return new DynamicJAXBContext(new MetadataContextInput(properties, classLoader));
+    }
+
+    /**
+     * Ensures that XSD dateTimes will always be unmarshalled as XMLGregorianCalendars, and never
+     * as GregorianCalendars.  CALENDAR entries are removed from the default XMLConversionManager,
+     * and replaced with XML_GREGORIAN_CALENDAR.
+     */
+    private static void fixDateTimeConversion(DynamicJAXBContext ctx) {
+        XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager();
+
+        Map defaultXmlTypes = conversionManager.getDefaultXMLTypes();
+        defaultXmlTypes.remove(XMLConstants.DATE_TIME_QNAME);
+        defaultXmlTypes.put(XMLConstants.DATE_TIME_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+
+        Map defaultJavaTypes = conversionManager.getDefaultJavaTypes();
+        defaultJavaTypes.remove(ClassConstants.CALENDAR);
+        defaultJavaTypes.put(ClassConstants.XML_GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);
     }
 
 }

@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -918,17 +918,22 @@ public final class WordParser {
 		wordType = WordType.WORD;
 
 		// Parse a string literal
-		if (character == '\'' ||
-		    character == '\"') {
-
+		if (ExpressionTools.isQuote(character)) {
 			wordType = WordType.STRING_LITERAL;
+
+			// The quote is the end quote
+			if (position > 1) {
+				character = character(position - 1);
+				if (ExpressionTools.isQuote(character)) {
+					return endIndex;
+				}
+			}
+
 			return scanStringLiteral(position);
 		}
 
 		// Parse an input parameter
-		if (character == '?' ||
-		    character == ':') {
-
+		if (ExpressionTools.isParameter(character)) {
 			wordType = WordType.INPUT_PARAMETER;
 
 			for (; endIndex < length; endIndex++) {

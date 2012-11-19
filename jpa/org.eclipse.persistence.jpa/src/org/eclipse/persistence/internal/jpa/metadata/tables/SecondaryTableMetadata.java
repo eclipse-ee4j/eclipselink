@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -24,6 +26,7 @@ import java.util.List;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -44,6 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class SecondaryTableMetadata extends TableMetadata {
+    private PrimaryKeyForeignKeyMetadata m_primaryKeyForeignKey;
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     
     /**
@@ -62,8 +66,14 @@ public class SecondaryTableMetadata extends TableMetadata {
         super(secondaryTable, accessor);
        
         if (secondaryTable != null) {
-            for (Object primaryKeyJoinColumn : (Object[]) secondaryTable.getAttributeArray("pkJoinColumns")) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation)primaryKeyJoinColumn, accessor));
+            for (Object pkJoinColumn : secondaryTable.getAttributeArray("pkJoinColumns")) {
+                PrimaryKeyJoinColumnMetadata primaryKeyJoinColumn = new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) pkJoinColumn, accessor);
+                m_primaryKeyJoinColumns.add(primaryKeyJoinColumn);
+                
+                // Set the foreign key metadata from the primary key join column if available.
+                if (primaryKeyJoinColumn.hasForeignKey()) {
+                    setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(primaryKeyJoinColumn.getForeignKey()));
+                }
             }
         }
     }
@@ -75,6 +85,11 @@ public class SecondaryTableMetadata extends TableMetadata {
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && objectToCompare instanceof SecondaryTableMetadata) {
             SecondaryTableMetadata secondaryTable = (SecondaryTableMetadata) objectToCompare;
+            
+            if (! valuesMatch(m_primaryKeyForeignKey, secondaryTable.getPrimaryKeyForeignKey())) {
+                return false;
+            }
+            
             return valuesMatch(m_primaryKeyJoinColumns, secondaryTable.getPrimaryKeyJoinColumns());
         }
         
@@ -101,6 +116,14 @@ public class SecondaryTableMetadata extends TableMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public PrimaryKeyForeignKeyMetadata getPrimaryKeyForeignKey() {
+        return m_primaryKeyForeignKey;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<PrimaryKeyJoinColumnMetadata> getPrimaryKeyJoinColumns() {
         return m_primaryKeyJoinColumns;
     }
@@ -120,12 +143,32 @@ public class SecondaryTableMetadata extends TableMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
 
-        for (PrimaryKeyJoinColumnMetadata jcm : m_primaryKeyJoinColumns){
-            // Initialize single objects.
-            initXMLObject(jcm, accessibleObject);
+        // Initialize single objects.
+        initXMLObject(m_primaryKeyForeignKey, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process any primary key foreign key specification for this table.
+     */
+    @Override
+    public void processForeignKey() {
+        if (m_primaryKeyForeignKey != null) {
+            m_primaryKeyForeignKey.process(getDatabaseTable());
         }
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPrimaryKeyForeignKey(PrimaryKeyForeignKeyMetadata primaryKeyForeignKey) {
+        m_primaryKeyForeignKey = primaryKeyForeignKey;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

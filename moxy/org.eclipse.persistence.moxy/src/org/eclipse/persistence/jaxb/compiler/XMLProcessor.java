@@ -163,8 +163,8 @@ public class XMLProcessor {
             // build a map of enum class names to XmlEnum objects
             XmlEnums xmlEnums = xmlBindings.getXmlEnums();
             if (xmlEnums != null) {
-                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {
-                    xmlEnumMap.put(xmlEnum.getJavaEnum(), xmlEnum);
+                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {                    
+                    xmlEnumMap.put(getQualifiedJavaTypeName(xmlEnum.getJavaEnum(), packageName), xmlEnum);
                 }
             }
             
@@ -1598,20 +1598,15 @@ public class XMLProcessor {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    JavaClass nextClass = jModelInput.getJavaModel().getClass(getQualifiedJavaTypeName(javaType.getName(), packageName));
-                    String nextPackageName = nextClass.getPackageName();
-                    if(nextPackageName == null || !nextPackageName.equals(packageName)){
-                        throw JAXBException.javaTypeNotAllowedInBindingsFile(nextPackageName, packageName);
-                    }
-                    classes.add(nextClass);
+                    addClassToList(classes, javaType.getName(), packageName);
                 }
             }
 
             // add any enum types to the class list
             XmlEnums xmlEnums = xmlBindings.getXmlEnums();
             if (xmlEnums != null) {
-                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {
-                    classes.add(jModelInput.getJavaModel().getClass(xmlEnum.getJavaEnum()));
+                for (XmlEnum xmlEnum : xmlEnums.getXmlEnum()) {                  
+                    addClassToList(classes, xmlEnum.getJavaEnum(), packageName);
                 }
             }
 
@@ -1644,6 +1639,15 @@ public class XMLProcessor {
         return theMap;
     }
 
+    
+    private void addClassToList(List classes, String name, String packageName){    
+        JavaClass nextClass = jModelInput.getJavaModel().getClass(getQualifiedJavaTypeName(name, packageName));
+        String nextPackageName = nextClass.getPackageName();
+        if(nextPackageName == null || !nextPackageName.equals(packageName)){
+            throw JAXBException.javaTypeNotAllowedInBindingsFile(nextPackageName, packageName);
+        }
+        classes.add(nextClass);
+    }
     /**
      * Lazy load the metadata logger.
      * 

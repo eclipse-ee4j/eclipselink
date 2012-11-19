@@ -135,7 +135,6 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "name=\"InOutArgsTest\" " +
                   "catalogPattern=\"SIMPLEPACKAGE1\" " +
                   "procedurePattern=\"INOUTARGSPLSQLSP\" " +
-                  "isSimpleXMLFormat=\"true\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"InOutArgTest\" " +
@@ -165,7 +164,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_XML_RESULT));
+        Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     
@@ -178,10 +177,10 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_XML_RESULT));
+        Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    public static final String SIMPLE_XML_RESULT =
+    public static final String VALUE_1_XML =
         REGULAR_XML_HEADER +
     	"<simple-xml-format>" +
     	   "<simple-xml>" +

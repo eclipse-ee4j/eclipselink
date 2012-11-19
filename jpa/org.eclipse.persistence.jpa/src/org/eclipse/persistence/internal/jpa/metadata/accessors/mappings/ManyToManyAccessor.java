@@ -27,6 +27,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     05/17/2012-2.3.3 Arron Ferguson  
  *       - 379829: NPE Thrown with OneToOne Relationship
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -147,7 +149,7 @@ public class ManyToManyAccessor extends CollectionAccessor {
             DatabaseMapping owningMapping = getOwningMapping();
             if (owningMapping.isManyToManyMapping()){
                 ManyToManyMapping ownerMapping = (ManyToManyMapping) owningMapping;
-                processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), ((ManyToManyMapping)mapping).getRelationTableMechanism());
+                processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), ((ManyToManyMapping) mapping).getRelationTableMechanism());
                 
                 // Set the mapping read-only.
                 mapping.setIsReadOnly(true);
@@ -157,9 +159,9 @@ public class ManyToManyAccessor extends CollectionAccessor {
             }
         } else if (mapping instanceof ManyToManyMapping) { 
             // Processing the owning side of a M-M, process the join table.
-            processJoinTable(mapping, ((ManyToManyMapping)mapping).getRelationTableMechanism(), getJoinTableMetadata());
+            processJoinTable(mapping, ((ManyToManyMapping) mapping).getRelationTableMechanism(), getJoinTableMetadata());
         } else if (mapping instanceof EISOneToManyMapping) {
-            processEISOneToManyMapping((EISOneToManyMapping)mapping);
+            processEISOneToManyMapping((EISOneToManyMapping) mapping);
         }
     }
 }

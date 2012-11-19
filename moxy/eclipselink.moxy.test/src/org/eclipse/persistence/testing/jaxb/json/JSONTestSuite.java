@@ -31,8 +31,10 @@ import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnUnmarsha
 import org.eclipse.persistence.testing.jaxb.json.namespaces.SeparatorInNameTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootFalseWithXMLRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.IncludeRootTrueWithXMLRootElementTestCases;
+import org.eclipse.persistence.testing.jaxb.json.norootelement.InheritanceNoRootTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementNSTestCases;
 import org.eclipse.persistence.testing.jaxb.json.norootelement.NoRootElementTestCases;
+import org.eclipse.persistence.testing.jaxb.json.padding.JSONWithPaddingTestCases;
 import org.eclipse.persistence.testing.jaxb.json.rootlevellist.RootLevelListTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
@@ -69,6 +71,9 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(UsAsciiTestCases.class);
           suite.addTest(RootLevelListTestCases.suite());
           suite.addTestSuite(EmptyNullMarshalUnmarshalTestCases.class);
+          suite.addTestSuite(InheritanceNoRootTestCases.class);
+          suite.addTest(JSONWithPaddingTestCases.suite());
+
           return suite;
 	}
 }

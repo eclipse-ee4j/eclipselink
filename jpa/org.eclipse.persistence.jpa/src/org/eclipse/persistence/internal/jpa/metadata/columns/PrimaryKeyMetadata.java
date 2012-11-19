@@ -19,6 +19,8 @@
  *       - 3223850: Primary key metadata issues
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
@@ -74,7 +76,7 @@ public class PrimaryKeyMetadata extends ORMetadata {
         
         m_cacheKeyType = (String) primaryKey.getAttribute("cacheKeyType"); 
         
-        for (Object selectedColumn : (Object[]) primaryKey.getAttributeArray("columns")) {
+        for (Object selectedColumn : primaryKey.getAttributeArray("columns")) {
             m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));
         }
     }

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
@@ -934,6 +936,30 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         assertEquals("foo2", o);
     }
 
+    public void testDateTimeArray() throws Exception {
+        // Tests to ensure that XSD dateTime is always unmarshalled as XMLGregorianCalendar, and never
+        // as GregorianCalendar.  This can fail intermittently so is tested in a loop.
+
+        HashSet<Class> elemClasses = new HashSet<Class>();
+
+        for (int i = 0; i < 50; i++) {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(DATETIME_ARRAY);
+            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+
+            InputStream xmlStream = ClassLoader.getSystemResourceAsStream(DATETIME_ARRAY_XML);
+            JAXBElement<DynamicEntity> jelem = (JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(xmlStream);
+            DynamicEntity testBean = jelem.getValue();
+
+            ArrayList array = testBean.get("array");
+            elemClasses.add(array.get(0).getClass());
+        }
+
+        assertEquals("dateTime was not consistently unmarshalled as XMLGregorianCalendar " + elemClasses, 1, elemClasses.size());
+        Class elemClass = (Class) elemClasses.toArray()[0];
+        boolean isXmlGregorianCalendar = ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(elemClass);
+        assertTrue("dateTime was not unmarshalled as XMLGregorianCalendar", isXmlGregorianCalendar);
+    }
+
     // ====================================================================
 
     private void print(Object o) throws Exception {
@@ -978,6 +1004,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
     private static final String XMLSCHEMASCHEMA = RESOURCE_DIR + "XMLSchema.xsd";
     private static final String XPATH_POSITION = RESOURCE_DIR + "xpathposition.xsd";
+    private static final String DATETIME_ARRAY = RESOURCE_DIR + "dateTimeArray.xsd";
 
     private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_5.xsd";
 
@@ -985,6 +1012,7 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
     private static final String PERSONNE_XML = RESOURCE_DIR + "sub-personne-fr.xml";
     private static final String XPATH_POSITION_XML = RESOURCE_DIR + "xpathposition.xml";
+    private static final String DATETIME_ARRAY_XML = RESOURCE_DIR + "dateTimeArray.xml";
 
     // Names of types to instantiate
     private static final String PACKAGE = "mynamespace";

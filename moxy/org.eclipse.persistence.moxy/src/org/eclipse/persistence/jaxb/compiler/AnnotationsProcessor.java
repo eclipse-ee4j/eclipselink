@@ -1126,8 +1126,9 @@ public class AnnotationsProcessor {
 
         } else if (isCollectionType(javaClass)) {
             JavaClass componentClass;
-            if (javaClass.hasActualTypeArguments()) {
-                componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+            Collection args = javaClass.getActualTypeArguments();
+            if (args.size() >0) {
+                componentClass = (JavaClass) args.iterator().next();
                 if (!componentClass.isPrimitive()) {
                     extraClasses.add(componentClass);
                 }
@@ -1144,12 +1145,14 @@ public class AnnotationsProcessor {
         } else if (isMapType(javaClass)) {
             JavaClass keyClass;
             JavaClass valueClass;
-            if (javaClass.hasActualTypeArguments()) {
-                keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+            Collection args = javaClass.getActualTypeArguments();
+            Iterator argsIter = args.iterator();
+            if (args.size() > 1) {
+                keyClass = (JavaClass) argsIter.next();
                 if (!helper.isBuiltInJavaType(keyClass)) {
                     extraClasses.add(keyClass);
                 }
-                valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];
+                valueClass = (JavaClass) argsIter.next();
                 if (!helper.isBuiltInJavaType(valueClass)) {
                     extraClasses.add(valueClass);
                 }
@@ -1836,13 +1839,11 @@ public class AnnotationsProcessor {
         // check the class        
         if (isCollectionType(ptype)) {
             JavaClass componentType = helper.getJavaClass(Object.class);;
-            if(ptype.hasActualTypeArguments()){
-                ArrayList typeArgs =  (ArrayList) ptype.getActualTypeArguments();
-                if(typeArgs.size() > 0) {
-                    componentType = (JavaClass) typeArgs.get(0);                    
-                } 
-            }
             
+            Collection typeArgs =  ptype.getActualTypeArguments();
+            if(typeArgs.size() > 0) {
+                componentType = (JavaClass) typeArgs.iterator().next();                    
+            }            
             updatePropertyType(property, ptype, componentType);
         }else{
             updatePropertyType(property, ptype, ptype);
@@ -2340,12 +2341,15 @@ public class AnnotationsProcessor {
                 }
             }
             
-            if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName) && type.getActualTypeArguments().size() >0){
-            	JavaClass theType = (JavaClass) type.getActualTypeArguments().iterator().next();
-                TypeInfo refTypeInfo = typeInfo.get(theType.getQualifiedName());
-                if (refTypeInfo==null && shouldGenerateTypeInfo(theType)) {
-                    JavaClass[] jClassArray = new JavaClass[] { theType };
-                    buildNewTypeInfo(jClassArray);            
+            if(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName)){
+                Collection args = type.getActualTypeArguments();
+                if(args.size() > 0){            
+            	    JavaClass theType = (JavaClass) args.iterator().next();
+                    TypeInfo refTypeInfo = typeInfo.get(theType.getQualifiedName());
+                    if (refTypeInfo==null && shouldGenerateTypeInfo(theType)) {
+                        JavaClass[] jClassArray = new JavaClass[] { theType };
+                        buildNewTypeInfo(jClassArray);            
+                    }
                 }
             }
 
@@ -3535,8 +3539,9 @@ public class AnnotationsProcessor {
                     boolean isList = false;
                     if (JAVA_UTIL_LIST.equals(type.getName())) {
                         isList = true;
-                        if (type.hasActualTypeArguments()) {
-                            type = (JavaClass) type.getActualTypeArguments().toArray()[0];
+                        Collection args = type.getActualTypeArguments();
+                        if (args.size() > 0) {
+                            type = (JavaClass) args.iterator().next();
                         }
                     }
 
@@ -4055,11 +4060,14 @@ public class AnnotationsProcessor {
 
         if (typeMappingInfo != null && xmlElementType != null) {
             componentClass = helper.getJavaClass(xmlElementType);
-        } else if (collectionClass.hasActualTypeArguments()) {
-            componentClass = ((JavaClass) collectionClass.getActualTypeArguments().toArray()[0]);
-        } else {
-            componentClass = helper.getJavaClass(Object.class);
-        }
+        } else{
+            Collection args = collectionClass.getActualTypeArguments();
+            if(args.size() >0 ){
+                componentClass = ((JavaClass) args.toArray()[0]);    
+            }else{
+                componentClass = helper.getJavaClass(Object.class);                
+            }
+        }       
 
         boolean multiDimensional = false;
         if (componentClass.isPrimitive()) {

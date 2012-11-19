@@ -19,11 +19,12 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public class IncludeRootFalseWithXMLRootElementTestCases extends NoRootElementTestCases{
+    protected final static String JSON_RESOURCE_TYPE = "org/eclipse/persistence/testing/jaxb/json/norootelement/addressWithType.json";
 
 	public IncludeRootFalseWithXMLRootElementTestCases(String name) throws Exception {
 		super(name);
 		setControlJSON(JSON_RESOURCE_NO_ROOT);
-		setWriteControlJSON(JSON_RESOURCE_NO_ROOT);
+		setWriteControlJSON(JSON_RESOURCE_TYPE);
 		setClasses(new Class[]{AddressWithRootElement.class});		
 	}
 	

@@ -1046,7 +1046,7 @@ if(clazz == ClassConstants.OBJECT) {
         	InputStream is = getInputStreamFromString(inputSource.getSystemId());        	
 			return new BufferedReader(new InputStreamReader(is));			
         }   
-   	    return null;
+   	    throw XMLMarshalException.unmarshalException();
 	}
 	
 	private MediaType getMediaType(BufferedReader br) {

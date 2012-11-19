@@ -24,7 +24,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -89,15 +89,9 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean isDerived() {
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isRange() {
-		return false;
+	@Override
+	public Type getType() {
+		return Type.DERIVED;
 	}
 
 	/**

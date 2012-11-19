@@ -18,9 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -37,22 +35,19 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-import org.eclipse.persistence.jpars.test.model.StaticAddress;
-import org.eclipse.persistence.jpars.test.model.StaticAuction;
-import org.eclipse.persistence.jpars.test.model.StaticBid;
-import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
+import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;
+import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
+import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class MarshalUnmarshalTest {
-
-    private static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
     private static final String DEFAULT_PU = "auction-static";
     private static PersistenceContext context = null;
-    private static final String JSON_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/json/";
-    private static final String XML_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/xml/";
 
     /**
      * Setup.
@@ -74,7 +69,7 @@ public class MarshalUnmarshalTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
                 DEFAULT_PU, properties);
         context = factory.bootstrapPersistenceContext("auction-static", emf,
-                new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), false);
+                RestUtils.getServerURI(), false);
     }
 
     /**
@@ -106,7 +101,7 @@ public class MarshalUnmarshalTest {
         em.getTransaction().commit();
 
         //
-        String jsonMessage = getJSONMessage("auction-bidsByRef.json");
+        String jsonMessage = RestUtils.getJSONMessage("auction-bidsByRef.json");
         assertTrue(jsonMessage != null);
         StaticAuction auction = unmarshal(jsonMessage,
                 StaticAuction.class.getSimpleName());
@@ -127,7 +122,7 @@ public class MarshalUnmarshalTest {
      */
     @Test
     public void testUnmarshalByValue() throws JAXBException {
-        String jsonMessage = getJSONMessage("auction-bidsByValue.json");
+        String jsonMessage = RestUtils.getJSONMessage("auction-bidsByValue.json");
         StaticAuction auctionUnmarshalled = unmarshal(jsonMessage,
                 StaticAuction.class.getSimpleName());
 
@@ -149,7 +144,7 @@ public class MarshalUnmarshalTest {
             throws IOException, JAXBException {
         // Send a JSON message with links where the links point to non-existing
         // objects
-        String jsonMessage = getJSONMessage("auction-bidsByRef.json");
+        String jsonMessage = RestUtils.getJSONMessage("auction-bidsByRef.json");
         assertTrue(jsonMessage != null);
         // unmarshall should raise ConversionException
         unmarshal(jsonMessage, StaticAuction.class.getSimpleName());
@@ -208,7 +203,7 @@ public class MarshalUnmarshalTest {
 
         marshal(bid);
 
-        String xmlMessage = getXMLMessage("bid-UserByRef.xml");
+        String xmlMessage = RestUtils.getXMLMessage("bid-UserByRef.xml");
         StaticBid bidUnmarshalled = unmarshal(xmlMessage,
                 StaticBid.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
 
@@ -218,7 +213,6 @@ public class MarshalUnmarshalTest {
 
         dbDelete(bid);
     }
-
 
     @SuppressWarnings("unchecked")
     private static <T> T unmarshal(String msg, String type)
@@ -246,27 +240,6 @@ public class MarshalUnmarshalTest {
         context.marshallEntity(object, MediaType.APPLICATION_JSON_TYPE, os,
                 false);
         return os.toString("UTF-8");
-    }
-
-    private static String getJSONMessage(String inputFile) {
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(JSON_REST_MESSAGE_FOLDER + inputFile);
-        String msg = convertStreamToString(is);
-        return msg;
-    }
-
-    private static String getXMLMessage(String inputFile) {
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
-        return convertStreamToString(is);
-    }
-
-    private static String convertStreamToString(InputStream is) {
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private static void dbDelete(Object object) {

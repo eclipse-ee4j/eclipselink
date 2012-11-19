@@ -14,229 +14,29 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.DefaultContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.spi.IEntity;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
-import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
-import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBNFAccessor;
-import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
-import static org.junit.Assert.*;
 
 /**
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries.
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings({"nls", "unused"})
-public abstract class AbstractContentAssistTest extends JPQLCoreTest {
-
-	protected JPQLQueryBNFAccessor bnfAccessor;
-	@JPQLQueryHelperTestHelper
-	private AbstractJPQLQueryHelper queryHelper;
-	private JavaQuery virtualQuery;
-
-	protected final List<String> addAll(List<String> items1, Iterable<String> items2) {
-		for (String item2 : items2) {
-			items1.add(item2);
-		}
-		return items1;
-	}
-
-	protected void addClauseIdentifiers(String afterIdentifier,
-	                                    String beforeIdentifier,
-	                                    List<String> proposals) {
-
-		if (afterIdentifier == SELECT) {
-			proposals.add(FROM);
-		}
-		else if (afterIdentifier == FROM) {
-			proposals.add(WHERE);
-
-			if (beforeIdentifier != GROUP_BY) {
-				proposals.add(GROUP_BY);
-
-				if (beforeIdentifier != HAVING) {
-					proposals.add(HAVING);
-
-					if (beforeIdentifier != ORDER_BY) {
-						proposals.add(ORDER_BY);
-					}
-				}
-			}
-		}
-		else if (afterIdentifier == WHERE) {
-			proposals.add(GROUP_BY);
-			proposals.add(HAVING);
-			proposals.add(ORDER_BY);
-		}
-		else if (afterIdentifier == GROUP_BY) {
-			proposals.add(HAVING);
-			proposals.add(ORDER_BY);
-		}
-		else if (afterIdentifier == HAVING) {
-			proposals.add(ORDER_BY);
-		}
-	}
-
-	protected final void addIdentifiers(List<String> identifiers, String... expressionFactoryIds) {
-
-		ExpressionRegistry registry = getGrammar().getExpressionRegistry();
-
-		for (String id : expressionFactoryIds) {
-			ExpressionFactory factory = registry.getExpressionFactory(id);
-
-			for (String identifier : factory.identifiers()) {
-				identifiers.add(identifier);
-			}
-		}
-	}
-
-	protected final DefaultContentAssistProposals buildContentAssistProposals(String actualQuery,
-	                                                                          int position) {
-
-		queryHelper.setQuery(buildQuery(actualQuery));
-		return (DefaultContentAssistProposals) queryHelper.buildContentAssistProposals(position);
-	}
-
-	protected final IQuery buildQuery(String jpqlQuery) {
-		virtualQuery.setExpression(jpqlQuery);
-		return virtualQuery;
-	}
-
-	protected final Iterable<IEntity> entities() throws Exception {
-		return getPersistenceUnit().entities();
-	}
-
-	protected final Iterable<String> entityNames() throws Exception {
-		List<String> names = new ArrayList<String>();
-		for (IEntity entity : entities()) {
-			names.add(entity.getName());
-		}
-		return names;
-	}
-
-	protected final Iterable<String> filter(Iterable<String> proposals, String startsWith) {
-
-		List<String> results = new ArrayList<String>();
-		startsWith = startsWith.toUpperCase();
-
-		for (String proposal : proposals) {
-			if (proposal.toUpperCase().startsWith(startsWith)) {
-				results.add(proposal);
-			}
-		}
-
-		return results;
-	}
-
-	protected JPQLGrammar getGrammar() {
-		return queryHelper.getGrammar();
-	}
-
-	protected JPQLQueryBNFAccessor getQueryBNFAccessor() {
-		return bnfAccessor;
-	}
-
-	protected AbstractJPQLQueryHelper getQueryHelper() {
-		return queryHelper;
-	}
-
-	protected JavaQuery getVirtualQuery() {
-		return virtualQuery;
-	}
+@SuppressWarnings("nls")
+public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	/**
 	 * Determines whether a <code><b>JOIN FETCH</b></code> expression can be identified with an
 	 * identification variable.
 	 *
-	 * @return <code>true</code> if it can be identified by an identification variable; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if it can be identified by an identification variable; <code>false</code> otherwise
 	 */
-	abstract boolean isJoinFetchIdentifiable();
-
-	protected final boolean isJPA1_0() {
-		return jpqlGrammar().getJPAVersion() == JPAVersion.VERSION_1_0;
-	}
-
-	protected final boolean isJPA2_0() {
-		return jpqlGrammar().getJPAVersion() == JPAVersion.VERSION_2_0;
-	}
-
-	protected final boolean isJPA2_1() {
-		return jpqlGrammar().getJPAVersion() == JPAVersion.VERSION_2_1;
-	}
-
-	protected final Iterable<String> joinIdentifiers() {
-		List<String> proposals = new ArrayList<String>();
-		proposals.add(INNER_JOIN);
-		proposals.add(INNER_JOIN_FETCH);
-		proposals.add(JOIN);
-		proposals.add(JOIN_FETCH);
-		proposals.add(LEFT_JOIN);
-		proposals.add(LEFT_JOIN_FETCH);
-		proposals.add(LEFT_OUTER_JOIN);
-		proposals.add(LEFT_OUTER_JOIN_FETCH);
-		return proposals;
-	}
-
-	protected final Iterable<String> joinOnlyIdentifiers() {
-		List<String> proposals = new ArrayList<String>();
-		proposals.add(INNER_JOIN);
-		proposals.add(JOIN);
-		proposals.add(LEFT_JOIN);
-		proposals.add(LEFT_OUTER_JOIN);
-		return proposals;
-	}
-
-	protected JPQLGrammar jpqlGrammar() {
-		return queryHelper.getGrammar();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void setUpClass() throws Exception {
-		super.setUpClass();
-		virtualQuery = new JavaQuery(getPersistenceUnit(), null);
-		bnfAccessor  = new JPQLQueryBNFAccessor(getGrammar().getExpressionRegistry());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		queryHelper.dispose();
-		virtualQuery.setExpression(null);
-		super.tearDown();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void tearDownClass() throws Exception {
-		bnfAccessor  = null;
-		queryHelper  = null;
-		virtualQuery = null;
-		super.tearDownClass();
-	}
+	protected abstract boolean isJoinFetchIdentifiable();
 
 	@Test
 	public final void test_Abs_01() {
@@ -1223,6 +1023,55 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 AND ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AND);
+	}
+
+	@Test
+	public final void test_Between_18() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age B";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_19() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BE";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_20() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BET";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_21() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETW";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_22() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWE";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_32() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEE";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
+	}
+
+	@Test
+	public final void test_Between_33() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN";
+		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
@@ -2873,7 +2722,6 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
-	@Ignore("Deactivated for now")
 	public final void test_EmptyCollectionComparison_09() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT ";
 		int position = jpqlQuery.length();
@@ -2881,7 +2729,6 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
-	@Ignore("Deactivated for now")
 	public final void test_EmptyCollectionComparison_10() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT E";
 		int position = jpqlQuery.length();
@@ -2917,7 +2764,6 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
-	@Ignore("Deactivated for now")
 	public final void test_EmptyCollectionComparison_15() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS E";
 		int position = jpqlQuery.length();
@@ -3519,10 +3365,19 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public final void test_IsNotNull() throws Exception {
+	public final void test_Is_01() throws Exception {
+
 		String jpqlQuery = "select e from Employee e where e.managerEmployee is not ";
 		int position = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NOT_NULL);
+	}
+
+	@Test
+	public final void test_Is_02() throws Exception {
+
+		String jpqlQuery = "select e from Employee e where (select a from e.employees) is ";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
@@ -5156,7 +5011,6 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
-	@Ignore("Deactivated for now")
 	public final void test_NullComparison_05() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS ";
 		int position = jpqlQuery.length();
@@ -6035,6 +5889,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 	}
 
 	@Test
+	public final void test_StateFieldPath_16() throws Exception {
+
+		String jpqlQuery = "update Employee e set e.name = 'JPQL' where (select a from address a where a.";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, "city", "id", "state", "street", "zip");
+	}
+
+	@Test
 	public final void test_Subquery_01() throws Exception {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (".length();
@@ -6105,6 +5967,7 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public final void test_Subquery_10() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) ".length();
 
@@ -6114,6 +5977,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 		addAll(proposals, bnfAccessor.selectItemAggregates());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_Subquery_11() throws Exception {
+
+		String jpqlQuery = "select e from Employee e where (sel";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, SELECT);
 	}
 
 	@Test
@@ -7194,113 +7065,5 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 		String jpqlQuery = "SELECT e FROM Employee e J";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, WHERE);
-	}
-
-	protected final void testDoesNotHaveTheseProposals(String jpqlQuery, int position, Enum<?>... proposals) {
-		testDoesNotHaveTheseProposals(jpqlQuery, position, toString(proposals));
-	}
-
-	protected final void testDoesNotHaveTheseProposals(String jpqlQuery, int position, Iterable<String> proposals) {
-
-		DefaultContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
-		List<String> proposalsRemoved = new ArrayList<String>();
-
-		for (String proposal : proposals) {
-			if (contentAssistProposals.remove(proposal)) {
-				proposalsRemoved.add(proposal);
-			}
-		}
-
-		assertTrue(proposalsRemoved + " should not be proposals.", proposalsRemoved.isEmpty());
-	}
-
-	protected final void testDoesNotHaveTheseProposals(String jpqlQuery, int position, String... proposals) {
-		testDoesNotHaveTheseProposals(jpqlQuery, position, Arrays.asList(proposals));
-	}
-
-	protected final void testHasNoProposals(String jpqlQuery, int position) {
-		DefaultContentAssistProposals proposals = buildContentAssistProposals(jpqlQuery, position);
-		assertFalse(proposals + " should not be proposals.", proposals.hasProposals());
-	}
-
-	protected final void testHasOnlyTheseProposals(String jpqlQuery, int position, Enum<?>... proposals) {
-		testHasOnlyTheseProposals(jpqlQuery, position, toString(proposals));
-	}
-
-	protected final void testHasOnlyTheseProposals(String jpqlQuery, int position, Iterable<String> proposals) {
-
-		DefaultContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
-		List<String> proposalsNotRemoved = new ArrayList<String>();
-
-		for (String proposal : proposals) {
-			if (!contentAssistProposals.remove(proposal)) {
-				proposalsNotRemoved.add(proposal);
-			}
-		}
-
-		// Inconsistent list of proposals
-		if (contentAssistProposals.hasProposals() && !proposalsNotRemoved.isEmpty()) {
-			if (proposalsNotRemoved.size() == 1) {
-				fail(proposalsNotRemoved + " should be a proposal and " + contentAssistProposals + " should not be a proposal.");
-			}
-			else {
-				fail(proposalsNotRemoved + " should be proposals and " + contentAssistProposals + " should not be proposals.");
-			}
-		}
-		// Added more proposals than it should
-		else if (contentAssistProposals.hasProposals() && proposalsNotRemoved.isEmpty()) {
-			if (proposalsNotRemoved.size() == 1) {
-				fail(contentAssistProposals + " should not be a proposal.");
-			}
-			else {
-				fail(contentAssistProposals + " should not be proposals.");
-			}
-		}
-		// Forgot to add some proposals
-		else if (!proposalsNotRemoved.isEmpty()) {
-			if (proposalsNotRemoved.size() == 1) {
-				fail(proposalsNotRemoved + " should be a proposal.");
-			}
-			else {
-				fail(proposalsNotRemoved + " should be proposals.");
-			}
-		}
-	}
-
-	protected final void testHasOnlyTheseProposals(String jpqlQuery, int position, String... proposals) {
-		testHasOnlyTheseProposals(jpqlQuery, position, Arrays.asList(proposals));
-	}
-
-	protected final void testHasTheseProposals(String jpqlQuery, int position, Enum<?>... enums) {
-		testHasTheseProposals(jpqlQuery, position, toString(enums));
-	}
-
-	protected final void testHasTheseProposals(String jpqlQuery, int position, Iterable<String> proposals) {
-
-		DefaultContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
-		List<String> proposalsNotRemoved = new ArrayList<String>();
-
-		for (String proposal : proposals) {
-			if (!contentAssistProposals.remove(proposal)) {
-				proposalsNotRemoved.add(proposal);
-			}
-		}
-
-		assertTrue(proposalsNotRemoved + " should be proposals.", proposalsNotRemoved.isEmpty());
-	}
-
-	protected final void testHasTheseProposals(String jpqlQuery, int position, String... proposals) {
-		testHasTheseProposals(jpqlQuery, position, Arrays.asList(proposals));
-	}
-
-	protected final String[] toString(Enum<?>[] enums) {
-
-		String[] names = new String[enums.length];
-
-		for (int index = enums.length; --index >= 0; ) {
-			names[index] = enums[index].name();
-		}
-
-		return names;
 	}
 }

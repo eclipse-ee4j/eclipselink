@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     tware - added handling of database delimiters
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -36,6 +38,15 @@ public class DatabaseTable implements Cloneable, Serializable {
     protected String name;
     protected String tableQualifier;
     protected String qualifiedName;
+    
+    /** JPA 2.1 Foreign key specification data */
+    protected String foreignKeyDefinition;
+    protected String foreignKeyName;
+    protected boolean disableForeignKey;
+    
+    protected String inverseForeignKeyDefinition;
+    protected String inverseForeignKeyName;
+    protected boolean inverseDisableForeignKey;
     
     /**
      * Contains the user specified unique constraints. JPA 2.0 introduced 
@@ -372,5 +383,53 @@ public class DatabaseTable implements Cloneable, Serializable {
     
     public boolean shouldUseDelimiters() {
         return useDelimiters;
+    }
+    
+    public String getForeignKeyDefinition() {
+        return foreignKeyDefinition;
+    }
+
+    public void setForeignKeyDefinition(String foreignKeyDefinition) {
+        this.foreignKeyDefinition = foreignKeyDefinition;
+    }
+
+    public String getForeignKeyName() {
+        return foreignKeyName;
+    }
+
+    public void setForeignKeyName(String foreignKeyName) {
+        this.foreignKeyName = foreignKeyName;
+    }
+
+    public boolean isDisableForeignKey() {
+        return disableForeignKey;
+    }
+
+    public void setDisableForeignKey(boolean disableForeignKey) {
+        this.disableForeignKey = disableForeignKey;
+    }
+
+    public String getInverseForeignKeyDefinition() {
+        return inverseForeignKeyDefinition;
+    }
+
+    public void setInverseForeignKeyDefinition(String inverseForeignKeyDefinition) {
+        this.inverseForeignKeyDefinition = inverseForeignKeyDefinition;
+    }
+
+    public String getInverseForeignKeyName() {
+        return inverseForeignKeyName;
+    }
+
+    public void setInverseForeignKeyName(String inverseForeignKeyName) {
+        this.inverseForeignKeyName = inverseForeignKeyName;
+    }
+
+    public boolean isInverseDisableForeignKey() {
+        return inverseDisableForeignKey;
+    }
+
+    public void setInverseDisableForeignKey(boolean inverseDisableForeignKey) {
+        this.inverseDisableForeignKey = inverseDisableForeignKey;
     }
 }

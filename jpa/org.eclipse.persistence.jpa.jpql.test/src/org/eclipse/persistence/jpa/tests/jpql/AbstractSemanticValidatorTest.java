@@ -31,7 +31,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -79,6 +79,10 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	 */
 	@Override
 	protected abstract AbstractSemanticValidator buildValidator();
+
+	protected final JPQLQueryContext getQueryContext() {
+		return queryContext;
+	}
 
 	/**
 	 * {@inheritDoc}

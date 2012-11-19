@@ -79,6 +79,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -118,6 +120,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataM
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMetadata;
@@ -529,7 +532,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Return the default table to hold the foreign key of a MapKey when
      * and Entity is used as the MapKey
-     * @return
      */
     protected DatabaseTable getDefaultTableForEntityMapKey(){
         return getReferenceDescriptor().getPrimaryTable();
@@ -552,6 +554,28 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public ColumnMetadata getField() {
         return m_field;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the foreign key to use with this mapping accessor. This method 
+     * will look for association overrides and use the foreign key from it 
+     * instead (do as the association override says).
+     */
+    protected ForeignKeyMetadata getForeignKey(ForeignKeyMetadata potentialForeignKey, MetadataDescriptor descriptor) {
+        if (getDescriptor().hasAssociationOverrideFor(getAttributeName())) {
+            ForeignKeyMetadata foreignKey = getDescriptor().getAssociationOverrideFor(getAttributeName()).getForeignKey();
+            
+            // Have to init the foreign key with items that could potentially
+            // be required during processing here.
+            if (foreignKey != null) {
+                foreignKey.setProject(descriptor.getProject());
+            }
+            
+            return foreignKey;
+        } else {
+            return potentialForeignKey;
+        }
     }
     
     /**
@@ -1565,8 +1589,17 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // relationship property or field of the referencing entity or 
         // embeddable; "_"; "KEY"
         String defaultFKFieldName = getAttributeName() + DEFAULT_MAP_KEY_COLUMN_SUFFIX;
+
+        // Get the join columns (directly or through an association override), 
+        // init them and validate.
+        List<JoinColumnMetadata> joinColumns = getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor);
         
-        processForeignKeyRelationship(keyMapping, getJoinColumns(mappedKeyMapAccessor.getMapKeyJoinColumns(), mapKeyClassDescriptor), mapKeyClassDescriptor, defaultFKFieldName, getDefaultTableForEntityMapKey());
+        // Get the foreign key (directly or through an association override) and
+        // make sure it is initialized for processing.
+        ForeignKeyMetadata foreignKey = getForeignKey(mappedKeyMapAccessor.getMapKeyForeignKey(), mapKeyClassDescriptor);
+        
+        // Now process the foreign key relationship metadata.
+        processForeignKeyRelationship(keyMapping, joinColumns, foreignKey, mapKeyClassDescriptor, defaultFKFieldName, getDefaultTableForEntityMapKey());
 
         return keyMapping;
     }
@@ -1671,10 +1704,10 @@ public abstract class MappingAccessor extends MetadataAccessor {
         if (mapping instanceof ForeignReferenceMapping) {
             if (usesIndirection()) {
                 containerClass = ClassConstants.IndirectMap_Class;
-                ((ForeignReferenceMapping)mapping).setIndirectionPolicy(new TransparentIndirectionPolicy());
+                ((ForeignReferenceMapping) mapping).setIndirectionPolicy(new TransparentIndirectionPolicy());
             } else {
                 containerClass = java.util.Hashtable.class;
-                ((ForeignReferenceMapping)mapping).dontUseIndirection();
+                ((ForeignReferenceMapping) mapping).dontUseIndirection();
             }
         } else {
             containerClass = java.util.Hashtable.class;
@@ -1733,7 +1766,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * entities that have a composite primary key (validation exception will be 
      * thrown).
      */
-    protected void processForeignKeyRelationship(ForeignReferenceMapping mapping, List<JoinColumnMetadata> joinColumns, MetadataDescriptor referenceDescriptor, String defaultFKFieldName, DatabaseTable defaultFKTable) {
+    protected void processForeignKeyRelationship(ForeignReferenceMapping mapping, List<JoinColumnMetadata> joinColumns, ForeignKeyMetadata foreignKey, MetadataDescriptor referenceDescriptor, String defaultFKFieldName, DatabaseTable defaultFKTable) {
         // We need to know if all the mappings are read-only so we can determine 
         // if we use target foreign keys to represent read-only parts of the 
         // join, or if we simply set the whole mapping as read-only
@@ -1778,6 +1811,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         // If all the join columns are read-only then set the mapping as read only.
         mapping.setIsReadOnly(allReadOnly);
+        
+        // Process the foreign key if one is provided
+        if (foreignKey != null) {
+            foreignKey.process(mapping);
+        }
     }
     
     /**

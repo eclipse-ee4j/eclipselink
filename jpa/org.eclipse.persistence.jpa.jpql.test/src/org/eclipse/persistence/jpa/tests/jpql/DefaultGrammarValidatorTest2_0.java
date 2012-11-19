@@ -29,7 +29,7 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class DefaultGrammarValidatorTest2_0 extends AbstractGrammarValidatorTest {
+public final class DefaultGrammarValidatorTest2_0 extends AbstractGrammarValidatorTest {
 
 	/**
 	 * {@inheritDoc}

@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Join;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -53,13 +53,20 @@ public interface JPQLQueryDeclaration {
 	Expression getDeclarationExpression();
 
 	/**
-	 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
-	 * ordered they were parsed.
+	 * Returns the <code><b>JOIN</b></code> expressions defined with this declaration, if supported.
+	 * The list contains the <code><b>JOIN</b></code> expressions in ordered they were declared.
 	 *
-	 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was
-	 * present
+	 * @return The <b>JOIN</b> expressions defined with this declaration or an empty list if this
+	 * declaration does not support it
 	 */
 	List<Join> getJoins();
+
+	/**
+	 * Determines the type this declaration represents.
+	 *
+	 * @return One of the possible types
+	 */
+	Type getType();
 
 	/**
 	 * Returns the identification variable name that is defining either the abstract schema name
@@ -80,30 +87,64 @@ public interface JPQLQueryDeclaration {
 	boolean hasJoins();
 
 	/**
-	 * Determines whether this {@link JPQLQueryDeclaration} declaration represents a collection
-	 * member declaration or not.
-	 *
-	 * @return <code>true</code> if this is a collection member declaration; <code>false</code>
-	 * otherwise
+	 * This enum type defines the various types of declarations supported by both the JPA functional
+	 * specification and EclipseLink.
 	 */
-	boolean isCollection();
+	public enum Type {
 
-	/**
-	 * Determines whether the "root" object is a derived path expression where the identification
-	 * variable is declared in the super query, otherwise it's an entity name.
-	 *
-	 * @return <code>true</code> if the root path is a derived path expression; <code>false</code>
-	 * otherwise
-	 */
-	boolean isDerived();
+		/**
+		 * Indicates the "root" object maps a fully qualified class name.
+		 */
+		CLASS_NAME(false),
 
-	/**
-	 * Determines whether this {@link JPQLQueryDeclaration} represents a range identification variable
-	 * declaration, example: "Employee e".
-	 *
-	 * @return <code>true</code> if the declaration is over an abstract schema name; <code>false</code>
-	 * if it's over a collection-valued path expression
-	 * @see #isDerived()
-	 */
-	boolean isRange();
+		/**
+		 * Indicates the "root" object maps a collection-valued path expression.
+		 */
+		COLLECTION(false),
+
+		/**
+		 * Indicates the "root" object is a derived path expression where the identification variable
+		 * is declared in the super query, otherwise it's an entity name.
+		 */
+		DERIVED(true),
+
+		/**
+		 * Indicates the "root" object maps to an entity.
+		 */
+		RANGE(true),
+
+		/**
+		 * Indicates the "root" object maps to a subquery.
+		 */
+		SUBQUERY(false),
+
+		/**
+		 * Indicates the "root" object maps directly to a database table.
+		 */
+		TABLE(false),
+
+		/**
+		 * Indicates the "root" object maps to an unknown expression.
+		 */
+		UNKNOWN(false);
+
+		/**
+		 * Flag used to determine if the type represents a range variable declaration.
+		 */
+		private boolean range;
+
+		private Type(boolean range) {
+			this.range = range;
+		}
+
+		/**
+		 * Determines whether this type represents a range variable declaration.
+		 *
+		 * @return <code>true</code> if this constant represents a range variable declaration;
+		 * <code>false</code> otherwise
+		 */
+		public boolean isRange() {
+			return range;
+		}
+	}
 }

@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-
 /**
  * A utility class containing various methods related to the Hermes parser.
  * <p>
@@ -352,6 +351,26 @@ public final class ExpressionTools {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Determines whether the given string starts with the given prefix and ignores the case. If the
+	 * prefix is <code>null</code> or an empty string, then <code>true</code> is always returned.
+	 *
+	 * @param string The string to check if its beginning matches the prefix
+	 * @param prefix The prefix used to test matching the beginning of the sequence of characters
+	 * @return <code>true</code> if the given string begins with the given prefix and ignores the
+	 * case; <code>false</code> otherwise
+	 *
+	 * @since 2.5
+	 */
+	public static boolean startWithIgnoreCase(String string, String prefix) {
+
+		if (stringIsEmpty(prefix)) {
+			return true;
+		}
+
+		return string.regionMatches(true, 0, prefix, 0, prefix.length());
 	}
 
 	/**

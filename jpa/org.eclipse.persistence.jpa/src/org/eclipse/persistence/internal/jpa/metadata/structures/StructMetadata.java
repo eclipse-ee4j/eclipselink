@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial implementation
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.structures;
 
@@ -47,7 +49,7 @@ public class StructMetadata extends ORMetadata {
         super(struct, accessor);
         
         this.name = (String)struct.getAttribute("name");
-        for (Object field : (Object[])struct.getAttributeArray("fields")) {
+        for (Object field : struct.getAttributeArray("fields")) {
             this.fields.add((String)field);
         }
     }

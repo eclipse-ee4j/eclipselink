@@ -18,7 +18,7 @@ import java.util.ListResourceBundle;
 /**
  * The resource bundle containing the problems encountered in a JPQL query.
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -161,12 +161,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"COLLECTION_VALUED_PATH_EXPRESSION_NOT_RESOLVABLE",      "The collection-valued path ''{0}'' cannot be resolved to a valid association field."},
 			{"COLLECTION_VALUED_PATH_EXPRESSION_NOT_COLLECTION_TYPE", "The collection-valued path ''{0}'' must resolve to an association field."},
 
-			// ColumnExpression - Grammar
-			{"COLUMN_EXPRESSION_INVALID_EXPRESSION",        "Only a single expression must be specified."},
-			{"COLUMN_EXPRESSION_MISSING_COLUMN",            "The COLUMN name must be specified."},
-			{"COLUMN_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the COLUMN expression."},
-			{"COLUMN_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the COLUMN expression."},
-
 			// ComparisonExpression - Grammar
 			{"COMPARISON_EXPRESSION_MISSING_LEFT_EXPRESSION",  "A comparison expression must define the left side of the comparison."},
 			{"COMPARISON_EXPRESSION_MISSING_RIGHT_EXPRESSION", "A comparison expression must define the right side of the comparison."},
@@ -268,6 +262,8 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"FUNCTION_EXPRESSION_MISSING_ONE_EXPRESSION",    "The function {0} must have one argument specified."},
 			{"FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the function {0}."},
 			{"FUNCTION_EXPRESSION_MORE_THAN_ONE_EXPRESSION",  "The function {0} has more than one argument, can only specify one argument."},
+			// FunctionExpression - Semantic
+			{"FUNCTION_EXPRESSION_UNKNOWN_COLUMN",            "The column {0} cannot be found on the table {1}."},
 
 			// GroupByClause - Grammar
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},
@@ -498,6 +494,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT", "''{0}'' cannot be resolved to an Enum constant."},
 			{"STATE_FIELD_PATH_EXPRESSION_NO_MAPPING",            "No mapping is associated with the state field path ''{0}''."},
 			{"STATE_FIELD_PATH_EXPRESSION_NOT_RESOLVABLE",        "The state field path ''{0}'' cannot be resolved to a valid type."},
+			{"STATE_FIELD_PATH_EXPRESSION_UNKNOWN_COLUMN",        "The column {0} cannot be found on the table {1}."},
 
 			// StringLiteral - Grammar
 			{"STRING_LITERAL_MISSING_CLOSING_QUOTE", "The string literal is missing the closing quote."},
@@ -539,6 +536,8 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"TABLE_EXPRESSION_MISSING_EXPRESSION",         "The table name must be provided for an TABLE expression."},
 			{"TABLE_EXPRESSION_MISSING_LEFT_PARENTHESIS",   "The left parenthesis is missing from the TABLE expression."},
 			{"TABLE_EXPRESSION_MISSING_RIGHT_PARENTHESIS",  "The right parenthesis is missing from the TABLE expression."},
+			// TableExpression - Semantic
+			{"TABLE_EXPRESSION_INVALID_TABLE_NAME",         "The table ''{0}'' does not exist on the database."},
 
 			// TableVariableDeclaration - Grammar
 			{"TABLE_VARIABLE_DECLARATION_INVALID_JPA_VERSION",             "A table variable declaration can only be used when the platform is EclipseLink."},

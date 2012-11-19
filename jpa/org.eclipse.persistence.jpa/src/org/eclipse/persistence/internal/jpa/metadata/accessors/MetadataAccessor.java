@@ -59,6 +59,8 @@
  *                 does not correspond to a valid field on the mapping reference
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
@@ -742,7 +744,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Check for a Converters annotation
         MetadataAnnotation converters = getAnnotation(Converters.class);
         if (converters != null) {
-            for (Object converter : (Object[]) converters.getAttributeArray("value")) {
+            for (Object converter : converters.getAttributeArray("value")) {
                 getProject().addConverter(new ConverterMetadata((MetadataAnnotation) converter, this));
             }
         }
@@ -766,17 +768,15 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for an ObjectTypeConverters annotation
-        MetadataAnnotation objectTypeConverters = getAnnotation(ObjectTypeConverters.class);
-        if (objectTypeConverters != null) {
-            for (Object objectTypeConverter : (Object[]) objectTypeConverters.getAttributeArray("value")) {
+        if (isAnnotationPresent(ObjectTypeConverters.class)) {
+            for (Object objectTypeConverter : getAnnotation(ObjectTypeConverters.class).getAttributeArray("value")) {
                 getProject().addConverter(new ObjectTypeConverterMetadata((MetadataAnnotation) objectTypeConverter, this));
             }
         }
         
         // Check for an ObjectTypeConverter annotation.
-        MetadataAnnotation objectTypeConverter = getAnnotation(ObjectTypeConverter.class);
-        if (objectTypeConverter != null) {
-            getProject().addConverter(new ObjectTypeConverterMetadata(objectTypeConverter, this));
+        if (isAnnotationPresent(ObjectTypeConverter.class)) {
+            getProject().addConverter(new ObjectTypeConverterMetadata(getAnnotation(ObjectTypeConverter.class), this));
         }
     }
     
@@ -971,17 +971,15 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for a StructConverters annotation
-        MetadataAnnotation structConverters = getAnnotation(StructConverters.class);
-        if (structConverters != null) {
-            for (Object structConverter : (Object[]) structConverters.getAttributeArray("value")) {
+        if (isAnnotationPresent(StructConverters.class)) {
+            for (Object structConverter : getAnnotation(StructConverters.class).getAttributeArray("value")) {
                 getProject().addConverter(new StructConverterMetadata((MetadataAnnotation) structConverter, this));
             }
         }
         
         // Check for a StructConverter annotation.
-        MetadataAnnotation converter = getAnnotation(StructConverter.class);
-        if (converter != null) {
-            getProject().addConverter(new StructConverterMetadata(converter, this));
+        if (isAnnotationPresent(StructConverter.class)) {
+            getProject().addConverter(new StructConverterMetadata(getAnnotation(StructConverter.class), this));
         }
     }
     
@@ -1007,17 +1005,15 @@ public abstract class MetadataAccessor extends ORMetadata {
         }
         
         // Check for a TypeConverters annotation
-        MetadataAnnotation typeConverters = getAnnotation(TypeConverters.class);
-        if (typeConverters != null) {
-            for (Object typeConverter : (Object[]) typeConverters.getAttributeArray("value")) {
+        if (isAnnotationPresent(TypeConverters.class)) {
+            for (Object typeConverter : getAnnotation(TypeConverters.class).getAttributeArray("value")) {
                 getProject().addConverter(new TypeConverterMetadata((MetadataAnnotation) typeConverter, this));
             }
         }
         
         // Check for an TypeConverter annotation.
-        MetadataAnnotation typeConverter = getAnnotation(TypeConverter.class);
-        if (typeConverter != null) {
-            getProject().addConverter(new TypeConverterMetadata(typeConverter, this));
+        if (isAnnotationPresent(TypeConverter.class)) {
+            getProject().addConverter(new TypeConverterMetadata(getAnnotation(TypeConverter.class), this));
         }
     }
     

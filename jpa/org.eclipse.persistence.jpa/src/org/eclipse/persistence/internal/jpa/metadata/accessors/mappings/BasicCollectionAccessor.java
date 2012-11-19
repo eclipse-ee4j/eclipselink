@@ -31,6 +31,8 @@
  *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -102,7 +104,7 @@ public class BasicCollectionAccessor extends DirectCollectionAccessor {
         
         // Set the collection table if one is present.
         if (isAnnotationPresent(CollectionTable.class)) {
-            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), this, false));
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(CollectionTable.class), this));
         }
     }
     

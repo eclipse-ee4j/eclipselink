@@ -47,6 +47,8 @@
  *       - 374377: OrderBy with ElementCollection doesn't work
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support) (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -70,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.ForeignKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
@@ -130,6 +133,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private ColumnMetadata m_mapKeyColumn;
     
     private EnumeratedMetadata m_mapKeyEnumerated;
+    private ForeignKeyMetadata m_mapKeyForeignKey;
     
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
@@ -173,7 +177,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the attribute overrides if some are present.
         // Set the attribute overrides first if defined.
         if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDES)) {
-            for (Object attributeOverride : (Object[]) getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
+            for (Object attributeOverride : getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
                 addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, this));
             }
         }
@@ -203,7 +207,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the collection table if one is defined.
         if (isAnnotationPresent(JPA_COLLECTION_TABLE)) {
-            setCollectionTable(new CollectionTableMetadata(getAnnotation(JPA_COLLECTION_TABLE), this, true));
+            setCollectionTable(new CollectionTableMetadata(getAnnotation(JPA_COLLECTION_TABLE), this));
         }
         
         // Set the composite member if one is defined.
@@ -239,13 +243,23 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the map key join columns if some are present.
         // Process all the map key join columns first.
         if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMNS)) {
-            for (Object joinColumn : (Object[]) getAnnotation(JPA_MAP_KEY_JOIN_COLUMNS).getAttributeArray("value")) {
-                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, this));
+            MetadataAnnotation mapKeyJoinColumns = getAnnotation(JPA_MAP_KEY_JOIN_COLUMNS);
+            
+            for (Object mapKeyJoinColumn : mapKeyJoinColumns.getAttributeArray("value")) {
+                m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) mapKeyJoinColumn, this));
             }
+            
+            // Set the map key foreign key metadata.
+            setMapKeyForeignKey(new ForeignKeyMetadata((MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey"), this));
         }
         
+        // Process the single map key key join column second.
         if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMN)) {
-            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(JPA_MAP_KEY_JOIN_COLUMN), this));
+            JoinColumnMetadata mapKeyJoinColumn = new JoinColumnMetadata(getAnnotation(JPA_MAP_KEY_JOIN_COLUMN), this);
+            m_mapKeyJoinColumns.add(mapKeyJoinColumn);
+            
+            // Set the map key foreign key metadata.
+            setMapKeyForeignKey(mapKeyJoinColumn.getForeignKey());
         }
         
         // Set the map key column if one is defined.
@@ -346,6 +360,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             }
             
             if (! valuesMatch(m_mapKeyJoinColumns, elementCollectionAccessor.getMapKeyJoinColumns())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_mapKeyForeignKey, elementCollectionAccessor.getMapKeyForeignKey())) {
                 return false;
             }
             
@@ -542,6 +560,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     }
     
     /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public ForeignKeyMetadata getMapKeyForeignKey() {
+        return m_mapKeyForeignKey;
+    }
+    
+    /**
      * INTERNAL: 
      * Used for OX mapping.
      */
@@ -734,17 +760,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         super.initXMLObject(accessibleObject, entityMappings);
         
         // Initialize lists of ORMetadata objects.
-        initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_mapKeyAssociationOverrides, accessibleObject);
         initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
         initXMLObjects(m_mapKeyConverts, accessibleObject);
+        initXMLObjects(m_mapKeyJoinColumns, accessibleObject);
         
         // Initialize single objects.
         initXMLObject(m_column, accessibleObject);
         initXMLObject(m_mapKey, accessibleObject);
         initXMLObject(m_mapKeyColumn, accessibleObject);
+        initXMLObject(m_orderBy, accessibleObject);
         initXMLObject(m_orderColumn, accessibleObject);
+        initXMLObject(m_mapKeyForeignKey, accessibleObject);
+        initXMLObject(m_mapKeyEnumerated, accessibleObject);
+        initXMLObject(m_mapKeyTemporal, accessibleObject);
         
         // Initialize the any class names we read from XML.
         m_targetClass = initXMLClassName(m_targetClassName);
@@ -817,7 +848,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Add all the joinColumns (reference key fields) to the mapping. Join 
         // column validation is performed in the getJoinColumns call.
-        for (JoinColumnMetadata joinColumn : getJoinColumns(getCollectionTable().getJoinColumns(), getOwningDescriptor())) {
+        for (JoinColumnMetadata joinColumn : getJoinColumnsAndValidate(getCollectionTable().getJoinColumns(), getOwningDescriptor())) {
             // Look up the primary key field from the referenced column name.
             DatabaseField pkField = getReferencedField(joinColumn.getReferencedColumnName(), getOwningDescriptor(), MetadataLogger.PK_COLUMN, mapping.isAggregateCollectionMapping());
             
@@ -1060,6 +1091,14 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      */
     public void setMapKeyEnumerated(EnumeratedMetadata mapKeyEnumerated) {
         m_mapKeyEnumerated = mapKeyEnumerated;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping. 
+     */
+    public void setMapKeyForeignKey(ForeignKeyMetadata mapKeyForeignKey) {
+        m_mapKeyForeignKey = mapKeyForeignKey;
     }
     
     /**

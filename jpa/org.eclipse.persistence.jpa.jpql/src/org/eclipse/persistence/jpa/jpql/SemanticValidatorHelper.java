@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -67,6 +67,15 @@ public interface SemanticValidatorHelper {
 	 * @return The list of entity names
 	 */
 	String[] entityNames();
+
+	/**
+	 * Returns the ordered list of {@link JPQLQueryDeclaration}, which contain the information
+	 * contained in the query's <code>FROM</code> clause.
+	 *
+	 * @return The list of {@link JPQLQueryDeclaration} of the current query that was parsed and from
+	 * the parent queries
+	 */
+	List<JPQLQueryDeclaration> getAllDeclarations();
 
 	/**
 	 * Returns the constructors for the given type. All public, protected, default (package) access,
@@ -372,7 +381,9 @@ public interface SemanticValidatorHelper {
 	 *
 	 * @param expression The {@link StateFieldPathExpression} that might not need to be validated
 	 * @return <code>true</code> to validate the given path expression; <code>false</code> otherwise
+	 * @deprecated No longer used
 	 */
+	@Deprecated
 	boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression);
 
 	/**

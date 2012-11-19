@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} simply holds onto the actual type since it is already determined.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,13 +45,6 @@ public class ClassResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 		return getType(javaType);
 	}
@@ -62,5 +55,13 @@ public class ClassResolver extends Resolver {
 	@Override
 	protected ITypeDeclaration buildTypeDeclaration() {
 		return getType().getTypeDeclaration();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return javaType.getName();
 	}
 }

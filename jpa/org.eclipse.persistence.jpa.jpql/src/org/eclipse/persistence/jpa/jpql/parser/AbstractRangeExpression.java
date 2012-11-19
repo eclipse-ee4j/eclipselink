@@ -252,6 +252,8 @@ public abstract class AbstractRangeExpression extends AbstractExpression {
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
 		       word.equalsIgnoreCase(AND)                  ||
+		       word.equalsIgnoreCase(THEN)                 ||
+		       word.equalsIgnoreCase(ELSE)                 ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 

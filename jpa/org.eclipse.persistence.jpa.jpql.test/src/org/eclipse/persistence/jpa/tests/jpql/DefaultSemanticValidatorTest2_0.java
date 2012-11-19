@@ -21,7 +21,6 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -32,18 +31,27 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTest {
+public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new DefaultJPQLQueryContext(jpqlGrammar);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return false;

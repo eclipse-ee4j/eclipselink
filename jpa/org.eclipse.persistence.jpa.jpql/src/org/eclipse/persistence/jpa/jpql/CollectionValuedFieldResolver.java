@@ -44,14 +44,6 @@ public class CollectionValuedFieldResolver extends AbstractPathResolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 
 		ITypeDeclaration typeDeclaration = getTypeDeclaration();

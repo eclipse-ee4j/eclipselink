@@ -9,7 +9,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 /**
@@ -17,7 +16,7 @@ import static org.junit.Assert.*;
  */
 @UniqueSignature
 @SuppressWarnings("nls")
-public class HermesBugsTest extends JPQLCoreTest {
+public final class HermesBugsTest extends JPQLCoreTest {
 
 	@IJPQLQueryBuilderTestHelper
 	private IJPQLQueryBuilder queryBuilder;

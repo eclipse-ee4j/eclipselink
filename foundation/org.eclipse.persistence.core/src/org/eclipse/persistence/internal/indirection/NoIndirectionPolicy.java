@@ -12,9 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
@@ -331,5 +334,26 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      */
     public Object valueFromRow(Object object) {
         return object;
+    }
+    
+    /**
+     * Set the value of the appropriate attribute of target to attributeValue.
+     * In this case, place the value inside the target's ValueHolder.
+     * if trackChanges is true, set the value in the object as if the user was setting it.  Allow change tracking to pick up the change.
+     */
+    @Override
+    public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean trackChanges) {
+        Object oldValue = null;
+        if (trackChanges && (target instanceof ChangeTracker)) {
+            oldValue = getRealAttributeValueFromObject(target, mapping.getAttributeValueFromObject(target));
+        }
+        setRealAttributeValueInObject(target, attributeValue);
+        if (trackChanges && (target instanceof ChangeTracker)) {
+            PropertyChangeListener listener = ((ChangeTracker) target)._persistence_getPropertyChangeListener();
+            if (listener != null && attributeValue != oldValue)
+            {
+                listener.propertyChange(new PropertyChangeEvent(target, mapping.getAttributeName(), oldValue, attributeValue));
+            }
+        }
     }
 }

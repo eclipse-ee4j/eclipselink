@@ -46,6 +46,7 @@ public final class AllHermesTests {
 	@SuiteClasses({
 
 		// Test JPQLQueryHelper
+		AllJPQLQueryHelperTests.AllDefaultDeclarationTest.class,
 		AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests.class,
 		AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests2_1.class,
 
@@ -57,13 +58,13 @@ public final class AllHermesTests {
 		// Content assist support
 		AllContentAssistTests.AllDefaultContentAssistTests.class,
 
+		// Refactoring support
+		AllRefactoringToolTests.class,
+
 		// Testing the creation of the state model representation of a JPQL query
 		AllStateObjectTests.class,
 		AllStateObjectTest1_0.class,
-		AllStateObjectTest2_0.class,
-
-		// Refactoring support
-		AllRefactoringToolTests.class
+		AllStateObjectTest2_0.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class DefaultTestSuite {
@@ -72,6 +73,7 @@ public final class AllHermesTests {
 	@SuiteClasses({
 
 		// Test JPQLQueryHelper
+		AllJPQLQueryHelperTests.AllEclipseLinkDeclarationTest.class,
 		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests.class,
 		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_4.class,
 		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_5.class,
@@ -86,12 +88,12 @@ public final class AllHermesTests {
 		// Content assist support
 		AllContentAssistTests.AllEclipseLinkContentAssistTests.class,
 
+		// Refactoring support
+		AllRefactoringToolTests.class,
+
 		// Testing the creation of the state model representation of a JPQL query
 		AllStateObjectTests.class,
-		AllEclipseLinkStateObjectTest2_1.class,
-
-		// Refactoring support
-		AllRefactoringToolTests.class
+		AllEclipseLinkStateObjectTest2_1.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class EclipseLinkTestSuite {

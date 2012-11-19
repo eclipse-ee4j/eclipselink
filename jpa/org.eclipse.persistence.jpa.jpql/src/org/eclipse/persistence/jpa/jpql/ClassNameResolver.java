@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 /**
  * This {@link Resolver} simply holds onto the fully qualified class name of the {@link IType}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,13 +45,6 @@ public class ClassNameResolver extends Resolver {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void accept(ResolverVisitor visitor) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected IType buildType() {
 		return getType(className);
 	}
@@ -62,5 +55,13 @@ public class ClassNameResolver extends Resolver {
 	@Override
 	protected ITypeDeclaration buildTypeDeclaration() {
 		return getType().getTypeDeclaration();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return className;
 	}
 }

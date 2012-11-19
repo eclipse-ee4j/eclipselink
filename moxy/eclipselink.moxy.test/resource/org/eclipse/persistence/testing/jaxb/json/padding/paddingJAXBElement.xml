@@ -1,0 +1,4 @@
+<ns0:someRootName xmlns:ns0="someUri">
+    <id>1111</id>
+	<name>theName</name>
+</ns0:someRootName>

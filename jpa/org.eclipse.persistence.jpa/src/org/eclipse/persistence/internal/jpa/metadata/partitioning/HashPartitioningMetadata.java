@@ -11,6 +11,8 @@
  *     James Sutherland - initial API and implementation
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
@@ -57,7 +59,7 @@ public class HashPartitioningMetadata extends FieldPartitioningMetadata {
     public HashPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
         this.connectionPools = new ArrayList<String>();
-        this.connectionPools.addAll((List)Arrays.asList((Object[]) annotation.getAttributeArray("connectionPools")));
+        this.connectionPools.addAll((List)Arrays.asList(annotation.getAttributeArray("connectionPools")));
     }
     
     /**

@@ -9,11 +9,14 @@
  *
  * Contributors:
  *     10/25/2012-2.5 Guy Pelletier 
- *       - 3746888: JPA 2.1 Converter support
+ *       - 374688: JPA 2.1 Converter support
+ *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CollectionTable;
@@ -23,10 +26,16 @@ import javax.persistence.Converts;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter;
@@ -38,7 +47,10 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningS
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 
+import static javax.persistence.InheritanceType.JOINED;
+
 @Entity
+@Inheritance(strategy=JOINED)
 @Table(name="JPA21_RUNNER")
 @Convert(attributeName = "age", converter = AgeConverter.class)
 public class Runner extends Athlete {
@@ -57,12 +69,49 @@ public class Runner extends Athlete {
     })
     protected RunnerInfo info;
     
+    @OneToMany(mappedBy="runner")
+    @MapKeyJoinColumn(
+        name="TAG_ID",
+        foreignKey=@ForeignKey(
+            name="Runner_ShoeTag_Foreign_Key",
+            foreignKeyDefinition="Runner_ShoeTag_Foreign_Key_Definition"      
+        ) 
+    )
+    protected Map<ShoeTag, Shoe> shoes;
+
+    @ManyToMany
+    @JoinTable(
+        name="JPA21_RUNNERS_RACES",
+        joinColumns=@JoinColumn(
+            name="RUNNER_ID",
+            referencedColumnName="ID",
+            foreignKey=@ForeignKey(
+                name="Runners_Races_Foreign_Key",
+                foreignKeyDefinition="Runners_Races_Foreign_Key_Definition"      
+            )    
+        ),
+        inverseJoinColumns=@JoinColumn(
+            name="RACE_ID",
+            referencedColumnName="ID",
+            foreignKey=@ForeignKey(
+                name="Runners_Races_Inverse_Foreign_Key",
+                foreignKeyDefinition="Runners_Races_Inverse_Foreign_Key_Definition"      
+            )
+        )
+    )
+    protected List<Race> races;
+    
     @ElementCollection
     @Column(name="TIME")
     @MapKeyColumn(name="DISTANCE")
     @CollectionTable(
         name="JPA21_RUNNER_PBS",
-        joinColumns=@JoinColumn(name="RUNNER_ID")
+        joinColumns=@JoinColumn(
+                name="RUNNER_ID",
+                foreignKey=@ForeignKey(
+                  name="Runner_PBS_Foreign_Key",
+                  foreignKeyDefinition="Runner_PBS_Foreign_Key_Definition"
+                ))
     )
     @Converts({
         @Convert(attributeName="key", converter = DistanceConverter.class),
@@ -94,6 +143,14 @@ public class Runner extends Athlete {
         return personalBests;
     }
     
+    public List<Race> getRaces() {
+        return races;
+    }
+    
+    public Map<ShoeTag, Shoe> getShoes() {
+        return shoes;
+    }
+    
     public boolean isFemale() {
         return gender.equals(Gender.Female);
     }
@@ -120,5 +177,13 @@ public class Runner extends Athlete {
     
     public void setPersonalBests(Map<String, String> personalBests) {
         this.personalBests = personalBests;
+    }
+    
+    public void setRaces(List<Race> races) {
+        this.races = races;
+    }
+    
+    public void setShoes(Map<ShoeTag, Shoe> shoes) {
+        this.shoes = shoes;
     }
 }
