@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+import java.util.logging.Logger;
 
 import oracle.jdbc.OracleConnection;
 
@@ -60,6 +61,8 @@ public class TestOracleDataSource implements DataSource {
     public PrintWriter getLogWriter() throws SQLException {
         return null;
     }
+
+    public Logger getParentLogger() {return null;}
 
     public void setLoginTimeout(int arg1) throws SQLException {
     }
