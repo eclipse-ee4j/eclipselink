@@ -197,33 +197,6 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     /**
-     * Internal: This gets called on each batch statement execution Needs to be
-     * implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if
-     * useNativeBatchWriting is enabled, and the call uses optimistic locking).
-     * 
-     * @param isStatementPrepared
-     *            - flag is set to true if this statement is prepared
-     * @return - number of rows modified/deleted by this statement
-     */
-    @Override
-    public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
-        int[] updateResult = statement.executeBatch();
-        if (isStatementPrepared) {
-            int updateCount = 0;
-            for (int count : updateResult) {
-                if (count == Statement.SUCCESS_NO_INFO) {
-                    count = 1;
-                }
-                updateCount += count;
-            }
-            return updateCount;
-        } else {
-            return updateResult.length;
-        }
-    }
-
-    /**
      * INTERNAL:
      * Supports Batch Writing with Optimistic Locking.
      */

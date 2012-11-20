@@ -21,15 +21,21 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
+//import oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism;
+
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.ServerSession;
 //import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 //import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 //import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -50,6 +56,11 @@ public class JPAPerformanceComparisonModel extends TestModel {
         suite.addTest(buildReadAllVsReadAllResultSet());
         suite.addTest(buildBatchFetchTest());
         suite.addTest(buildLoadTest());
+        addTest(suite);
+        suite = new TestSuite();
+        suite.setName("WritingSuite");
+        suite.addTest(buildBatchWriteTest());
+        suite.addTest(buildBatchUpdateTest());
         addTest(suite);
     }
 
@@ -163,14 +174,14 @@ public class JPAPerformanceComparisonModel extends TestModel {
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
         properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
         
-        // For emulated connection testing.
+        /** For emulated connection testing.
         try {
             Class.forName(getSession().getLogin().getDriverClassName());
         } catch (Exception ignore) {}
         properties.put("eclipselink.jdbc.driver", "org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver");
         properties.put("eclipselink.jdbc.url", "emulate:" + getSession().getLogin().getConnectionString());
         properties.put("eclipselink.jdbc.user", getSession().getLogin().getUserName());
-        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());
+        properties.put("eclipselink.jdbc.password", getSession().getLogin().getPassword());*/
 
         //properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         //properties.put("eclipselink.persistence-context.close-on-commit", "true");
@@ -501,5 +512,271 @@ public class JPAPerformanceComparisonModel extends TestModel {
         EntityManager em = getExecutor().createEntityManager();
         em.createNamedQuery(query).getResultList().size();
         em.close();
+    }
+    
+    /**
+     * Add a test to compare various batch writing options.
+     */
+    public TestCase buildBatchWriteTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            int objects = 50;
+            boolean originalCacheStatements;
+            
+            public void setup() {
+                originalCacheStatements = getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().shouldCacheAllStatements();
+                getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().cacheAllStatements();
+                
+                if (!getTests().isEmpty()) {
+                    getTests().clear();
+                }
+                
+                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                            em.close();
+                        }
+                    }
+                };
+                test.setName("JDBCBatchTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().dontBindAllParameters();
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().bindAllParameters();
+                            em.close();
+                        }
+                    }
+                };
+                test.setName("DynamicSQLTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().dontCacheAllStatements();
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().cacheAllStatements();
+                            em.close();
+                        }
+                    }
+                };
+                test.setName("NoStatementCachingTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().dontBindAllParameters();
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                            em.unwrap(ServerSession.class).getLogin().bindAllParameters();
+                            em.close();
+                        }
+                    }
+                };
+                test.setName("DynamicBatchTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().dontUseJDBCBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().dontBindAllParameters();
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                            em.unwrap(ServerSession.class).getLogin().useJDBCBatchWriting();
+                            em.unwrap(ServerSession.class).getLogin().bindAllParameters();
+                            em.close();
+                        }
+                    }
+                };
+                test.setName("BufferedBatchTest");
+                //addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        DatabaseAccessor accessor =  null;
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
+                            uow.beginEarlyTransaction();
+                            accessor = (DatabaseAccessor)uow.getAccessor();
+                            //accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism(accessor));
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                            em.close();
+                            if (accessor != null) {
+                                accessor.setActiveBatchWritingMechanism(null);
+                            }
+                        }
+                    }
+                };   
+                test.setName("DynamicParameterizedBatchTest");
+                //addTest(test);
+            }
+            
+            public void test() throws Exception {
+                EntityManager em = getExecutor().createEntityManager();
+                em.getTransaction().begin();
+                persistBatch(em);
+                em.getTransaction().commit();
+                em.close();
+            }
+            
+            public void persistBatch(EntityManager em) {
+                for (int index = 0; index < this.objects; index++) {
+                    Address address = new Address();
+                    address.setStreet("100 Bank Street");
+                    address.setProvince("ON");
+                    address.setPostalCode("K2H8C5");
+                    address.setCity("Ottawa");
+                    address.setCountry("Canada");
+                    em.persist(address);
+                }
+            }
+            
+            public void reset() {
+                EntityManager em = getExecutor().createEntityManager();
+                em.getTransaction().begin();
+                em.createQuery("Delete from Address a where a.street = '100 Bank Street'").executeUpdate();
+                em.getTransaction().commit();
+                em.close();
+                if (!originalCacheStatements) {
+                    getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().dontCacheAllStatements();
+                }
+            }
+
+        };
+        test.setName("BatchWriteTest");
+        return test;
+    }
+
+    
+    /**
+     * Add a test to compare various batch writing options.
+     */
+    public TestCase buildBatchUpdateTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            boolean originalCacheStatements;
+            
+            public void setup() {
+                originalCacheStatements = getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().shouldCacheAllStatements();
+                getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().cacheAllStatements();
+                
+                if (!getTests().isEmpty()) {
+                    getTests().clear();
+                }
+                
+                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.getTransaction().begin();
+                        persistBatch(em);
+                        em.getTransaction().commit();
+                        em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                        em.close();                        
+                    }
+                };
+                test.setName("JDBCBatchUpdateTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().dontBindAllParameters();
+                        em.getTransaction().begin();
+                        persistBatch(em);
+                        em.getTransaction().commit();
+                        em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().useJDBCBatchWriting();
+                        em.unwrap(ServerSession.class).getLogin().bindAllParameters();
+                        em.close();                        
+                    }
+                };
+                test.setName("DynamicBatchUpdateTest");
+                addTest(test);
+                                
+                test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.getTransaction().begin();
+                        persistBatch(em);
+                        UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
+                        uow.beginEarlyTransaction();
+                        DatabaseAccessor accessor = (DatabaseAccessor)uow.getAccessor();
+                        //accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism(accessor));
+                        em.getTransaction().commit();
+                        em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                        em.close();
+                        accessor.setActiveBatchWritingMechanism(null);
+                    }
+                };   
+                test.setName("DynamicParameterizedBatchUpdateTest");
+                //addTest(test);
+            }
+            
+            public void test() throws Exception {
+                EntityManager em = getExecutor().createEntityManager();
+                em.getTransaction().begin();
+                persistBatch(em);
+                em.getTransaction().commit();
+                em.close();
+            }
+            
+            public void persistBatch(EntityManager em) {
+                List<Employee> employees = em.createQuery("Select e from Employee e").getResultList();
+                for (Employee employee : employees) {
+                    if (employee.getGender().equals("Male")) {
+                        employee.setFemale();
+                    } else {
+                        employee.setMale();                        
+                    }
+                }
+            }
+            
+            public void reset() {
+                if (!originalCacheStatements) {
+                    getExecutor().createEntityManager().unwrap(ServerSession.class).getLogin().dontCacheAllStatements();
+                }
+            }
+
+        };
+        test.setName("BatchUpdateTest");
+        return test;
     }
 }

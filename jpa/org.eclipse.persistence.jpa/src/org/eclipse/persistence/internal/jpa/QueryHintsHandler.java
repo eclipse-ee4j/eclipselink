@@ -73,6 +73,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
 import org.eclipse.persistence.queries.LoadGroup;
 import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.QueryRedirector;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -289,6 +290,7 @@ public class QueryHintsHandler {
             addHint(new ParameterDelimiterHint());
             addHint(new CompositeMemberHint());
             addHint(new AllowNativeSQLQueryHint());
+            addHint(new BatchWriteHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -605,6 +607,34 @@ public class QueryHintsHandler {
             } else if (query.isModifyAllQuery()) {
                 int cacheUsage = ((Integer)valueToApply).intValue();
                 ((ModifyAllQuery)query).setCacheUsage(cacheUsage);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+
+    /**
+     * Configure the cache usage of the query.
+     * As many of the usages require a ReadObjectQuery, the hint may also require to change the query type.
+     */
+    protected static class BatchWriteHint extends Hint {
+        BatchWriteHint() {
+            super(QueryHints.BATCH_WRITING_SUPPORTED, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                    {HintValues.FALSE, Boolean.FALSE},
+                    {HintValues.TRUE, Boolean.TRUE}
+                };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isDataReadQuery()) {                
+                DataModifyQuery newQuery = new DataModifyQuery();
+                newQuery.copyFromQuery(query);
+                newQuery.setIsBatchExecutionSupported(((Boolean)valueToApply).booleanValue());
+                return newQuery;
+            } else if (query.isModifyQuery()) {
+                ((ModifyQuery)query).setIsBatchExecutionSupported(((Boolean)valueToApply).booleanValue());
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }

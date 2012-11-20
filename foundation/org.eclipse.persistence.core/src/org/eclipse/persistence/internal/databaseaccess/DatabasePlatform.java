@@ -148,8 +148,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     /** Allow for our batch writing support to be used in JDK 1.2. **/
     protected boolean usesJDBCBatchWriting;
     
-    /** bug 4241441: Allow custom batch writing to enable batching with optimistic locking**/
+    /** bug 4241441: Allow custom batch writing to enable batching with optimistic locking. **/
     protected boolean usesNativeBatchWriting;
+    
+    /** Allow for a custom batch writing mechanism. **/
+    protected BatchWritingMechanism batchWritingMechanism;
 
     /** Allow configuration option to use Where clause outer joining or From clause joining. **/
     protected Boolean printOuterJoinInWhereClause;
@@ -778,8 +781,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Supports Batch Writing with Optimistic Locking.
      */
-    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
-        return false;
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call) {
+        if (this.batchWritingMechanism != null) {
+            // Assume a custom batch mechanism can return a valid row count.
+            return true;
+        }
+        // The JDBC spec supports this, so assume it is implemented correctly by default.
+        return true;
     }
 
     /**
@@ -894,6 +902,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setShouldCacheAllStatements(shouldCacheAllStatements());
         databasePlatform.setStatementCacheSize(getStatementCacheSize());
         databasePlatform.setTransactionIsolation(getTransactionIsolation());
+        databasePlatform.setBatchWritingMechanism(getBatchWritingMechanism());
         databasePlatform.setMaxBatchWritingSize(getMaxBatchWritingSize());
         databasePlatform.setShouldForceFieldNamesToUpperCase(shouldForceFieldNamesToUpperCase());
         databasePlatform.setShouldOptimizeDataConversion(shouldOptimizeDataConversion());
@@ -913,6 +922,35 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Used for batch writing and sp defs.
      */
     public String getBatchBeginString() {
+        return "";
+    }
+    
+    /**
+     * Return if the platform does not maintain the row count on batch executes
+     * and requires an output parameter to maintain the row count.
+     */
+    public boolean isRowCountOutputParameterRequired() {
+        return false;
+    }
+    
+    /**
+     * Used for batch writing for row count return.
+     */
+    public String getBatchRowCountDeclareString() {
+        return "";
+    }
+
+    /**
+     * Used for batch writing for row count return.
+     */
+    public String getBatchRowCountAssignString() {
+        return "";
+    }
+
+    /**
+     * Used for batch writing for row count return.
+     */
+    public String getBatchRowCountReturnString() {
         return "";
     }
 
@@ -1853,6 +1891,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     public void setUsesNativeSQL(boolean usesNativeSQL) {
         this.usesNativeSQL = usesNativeSQL;
     }
+
+    /**
+     * Return the custom batch writing mechanism.
+     */
+    public BatchWritingMechanism getBatchWritingMechanism() {
+        return batchWritingMechanism;
+    }
+
+    /**
+     * Set the custom batch writing mechanism.
+     */
+    public void setBatchWritingMechanism(BatchWritingMechanism batchWritingMechanism) {
+        this.batchWritingMechanism = batchWritingMechanism;
+    }
     
     /**
      * PUBLIC:
@@ -2124,15 +2176,27 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Internal: This gets called on each batch statement execution
      * Needs to be implemented so that it returns the number of rows successfully modified
-     * by this statement for optimistic locking purposes (if useNativeBatchWriting is enabled, and 
-     * the call uses optimistic locking).  
+     * by this statement for optimistic locking purposes.
      * 
      * @param isStatementPrepared - flag is set to true if this statement is prepared 
      * @return - number of rows modified/deleted by this statement
      */
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
-       statement.executeBatch();
-       return 1;
+       int[] rowCounts = statement.executeBatch(); 
+       int rowCount = 0;
+       // Otherwise check if the row counts were returned.
+       for (int count : rowCounts) {
+           if (count > 0) {
+               // The row count will be matched with the statement count.
+               rowCount ++;
+           } else {
+               // The row counts were not known, check for a total row count.
+               // If the total count is not known, then the update should fail,
+               // and the platform must override canBatchWriteWithOptimisticLocking() to return false.
+               return statement.getUpdateCount();
+           }
+       }
+       return rowCount;
     }
     
     /**

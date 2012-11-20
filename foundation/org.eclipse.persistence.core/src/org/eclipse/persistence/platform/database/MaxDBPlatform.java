@@ -155,7 +155,6 @@ public final class MaxDBPlatform extends DatabasePlatform {
      */
     protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {
         String typeName = fieldType.getName();
-        Class javaFieldType = field.getType();
         if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
             if (field.getSize() > MAX_VARCHAR_UNICODE_LENGTH) {
                 fieldType = FIELD_TYPE_DEFINITION_CLOB;
@@ -330,18 +329,6 @@ public final class MaxDBPlatform extends DatabasePlatform {
     @Override
     public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call) {
         return true;
-    }
-
-    @Override
-    public int executeBatch(Statement statement, boolean isStatementPrepared)
-            throws SQLException {
-        if (isStatementPrepared) {
-            statement.executeBatch();
-            return statement.getUpdateCount();
-        } else {
-            int[] updateCounts = statement.executeBatch();
-            return updateCounts.length;
-        }
     }
 
 }

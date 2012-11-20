@@ -109,10 +109,11 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
     public void clear() {
         this.previousCall = null;
         this.parameters.clear();
-        statementCount = executionCount  = 0;
+        this.statementCount = 0;
+        this.executionCount  = 0;
         clearCacheQueryTimeout();
         // bug 229831 : BATCH WRITING CAUSES MEMORY LEAKS WITH UOW
-        lastCallAppended = null;
+        this.lastCallAppended = null;
     }
 
     /**
@@ -131,7 +132,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
                 session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
                 session.log(SessionLog.FINE, SessionLog.SQL, this.previousCall.getSQLString(), null, this.databaseAccessor, false);
-                // took this loggin part from SQLCall
+                // took this logging part from SQLCall
                 for (Iterator iterator = this.parameters.iterator(); iterator.hasNext();) {
                     StringWriter writer = new StringWriter();
                     DatabaseCall.appendLogParameters((Collection)iterator.next(), this.databaseAccessor, writer, session);                
@@ -141,11 +142,12 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             }
             
             //bug 4241441: need to keep track of rows modified and throw opti lock exception if needed
-            PreparedStatement statement = this.prepareBatchStatements(session);
-            executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, this.lastCallAppended, session, true);
+            PreparedStatement statement = prepareBatchStatements(session);
+            // += is used as native batch writing can return a row count before execution.
+            this.executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, this.lastCallAppended, session, true);
             this.databaseAccessor.writeStatementsCount++;
             
-            if (this.previousCall.hasOptimisticLock() && (executionCount!=statementCount)){
+            if (this.previousCall.hasOptimisticLock() && (this.executionCount != this.statementCount)) {
                 throw OptimisticLockException.batchStatementExecutionFailure();
             }
         } finally {
@@ -170,31 +172,31 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      */
     protected PreparedStatement prepareBatchStatements(AbstractSession session) throws DatabaseException {
         PreparedStatement statement = null;
-
         try {
             session.startOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             try {
-                boolean shouldUnwrapConnection = session.getPlatform().usesNativeBatchWriting();
+                DatabasePlatform platform = session.getPlatform();
+                boolean shouldUnwrapConnection = platform.usesNativeBatchWriting();
                 statement = (PreparedStatement)this.databaseAccessor.prepareStatement(this.previousCall, session, shouldUnwrapConnection);
                 // Perform platform specific preparations
-                databaseAccessor.getPlatform().prepareBatchStatement(statement, maxBatchSize);
-               	if(queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
+                platform.prepareBatchStatement(statement, this.maxBatchSize);
+               	if (this.queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
                 	// Set the query timeout that was cached during the multiple calls to appendCall
-               		statement.setQueryTimeout(queryTimeoutCache);
+               		statement.setQueryTimeout(this.queryTimeoutCache);
                 }
                	
                 // Iterate over the parameter lists that were batched.
-                for (int statementIndex = 0; statementIndex < this.parameters.size();
-                         ++statementIndex) {
+                int statementSize = this.parameters.size();
+                for (int statementIndex = 0; statementIndex < statementSize; ++statementIndex) {
                     List parameterList = (List)this.parameters.get(statementIndex);
                     int size = parameterList.size();
                     for (int index = 0; index < size; index++) {
-                        session.getPlatform().setParameterValueInDatabaseCall(parameterList.get(index), statement, index+1, session);
+                        platform.setParameterValueInDatabaseCall(parameterList.get(index), statement, index+1, session);
                     }
 
                     // Batch the parameters to the statement.
-                    statementCount++;
-                    executionCount += this.databaseAccessor.getPlatform().addBatch(statement);
+                    this.statementCount++;
+                    this.executionCount += platform.addBatch(statement);
                 }
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);

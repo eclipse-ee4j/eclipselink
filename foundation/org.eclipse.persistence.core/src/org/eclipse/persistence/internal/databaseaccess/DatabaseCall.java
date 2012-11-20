@@ -140,6 +140,12 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /** The SQL string to execute. */
     protected String sqlString;
+
+    /**
+     * Define if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    protected boolean isBatchExecutionSupported;
     
     public DatabaseCall() {
         super.shouldProcessTokenInQuotes = false;
@@ -152,6 +158,7 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.isCursorOutputProcedure = false;
         this.shouldBuildOutputRow = false;
         this.returnsResultSet = null;
+        this.isBatchExecutionSupported = true;
     }
     
     /**
@@ -721,6 +728,16 @@ public abstract class DatabaseCall extends DatasourceCall {
         if (this.returnsResultSet == null) {
             setReturnsResultSet(!isCallableStatementRequired());
         }
+        // if there is nothing returned and we are not using optimistic locking then batch
+        //if it is a StoredProcedure with in/out or out parameters then do not batch
+        //logic may be weird but we must not batch if we are not using JDBC batchwriting and we have parameters
+        // we may want to refactor this some day
+        this.isBatchExecutionSupported = (isNothingReturned()
+                && (!hasOptimisticLock() || session.getPlatform().canBatchWriteWithOptimisticLocking(this)) 
+                && (!shouldBuildOutputRow())
+                && (session.getPlatform().usesJDBCBatchWriting() || (!hasParameters()))
+                && (!isLOBLocatorNeeded()))
+                && (getQuery().isModifyQuery() && ((ModifyQuery)getQuery()).isBatchExecutionSupported());
     }
 
     /**
@@ -1220,10 +1237,11 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Add a field - value pair for LOB field into the context.
      */
     public void addContext(DatabaseField field, Object value) {
-        if (contexts == null) {
-            contexts = new DatabaseRecord(2);
+        if (this.contexts == null) {
+            this.contexts = new DatabaseRecord(2);
         }
-        contexts.add(field, value);
+        this.contexts.add(field, value);
+        this.isBatchExecutionSupported = false;
     }
 
     /**
@@ -1256,5 +1274,23 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void useUnnamedCursorOutputAsResultSet() {
         setIsCursorOutputProcedure(true);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    public boolean isBatchExecutionSupported() {
+        return isBatchExecutionSupported;
+    }
+
+    /**
+     * INTERNAL:
+     * Set if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    public void setBatchExecutionSupported(boolean isBatchExecutionSupported) {
+        this.isBatchExecutionSupported = isBatchExecutionSupported;
     }
 }

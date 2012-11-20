@@ -807,5 +807,16 @@ public class QueryHints {
      * It specifies the name of composite member persistence unit to execute the query on.
      * @see org.eclipse.persistence.queries.DatabaseQuery#setSessionName(String)
      */
-    public static final String COMPOSITE_UNIT_MEMBER = "eclipselink.composite-unit.member";    
+    public static final String COMPOSITE_UNIT_MEMBER = "eclipselink.composite-unit.member";
+    
+    /**
+     * "eclipselink.jdbc.batch-writing"
+     * <p>Configures if this modify query can be batched through batch writing.
+     * Some types of queries cannot be batched, such as DDL on some databases.
+     * Disabling batch writing will also allow the row count to be returned.
+     * Valid values are:  HintValues.PERSISTENCE_UNIT_DEFAULT, HintValues.TRUE, HintValues.FALSE,
+     * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT
+     * @see org.eclipse.persistence.queries.ModifyQuery#setIsBatchExecutionSupported(boolean)
+     */
+    public static final String BATCH_WRITING_SUPPORTED = "eclipselink.jdbc.batch-writing";
 }

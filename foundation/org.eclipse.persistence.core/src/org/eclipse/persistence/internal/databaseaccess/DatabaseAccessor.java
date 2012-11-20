@@ -357,7 +357,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public Object clone() {
         DatabaseAccessor accessor = (DatabaseAccessor)super.clone();
         accessor.dynamicSQLMechanism = null;
-        accessor.activeBatchWritingMechanism = null;
+        if (this.activeBatchWritingMechanism != null) {
+            accessor.activeBatchWritingMechanism = this.activeBatchWritingMechanism.clone();
+        }
         accessor.parameterizedMechanism = null;
         accessor.statementCache = null;
         return accessor;
@@ -565,8 +567,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             //if it is a StoredProcedure with in/out or out parameters then do not batch
             //logic may be weird but we must not batch if we are not using JDBC batchwriting and we have parameters
             // we may want to refactor this some day
-            if (dbCall.isNothingReturned() && (!dbCall.hasOptimisticLock() || getPlatform().canBatchWriteWithOptimisticLocking(dbCall) ) 
-                && (!dbCall.shouldBuildOutputRow()) && (getPlatform().usesJDBCBatchWriting() || (!dbCall.hasParameters())) && (!dbCall.isLOBLocatorNeeded())) {
+            if (dbCall.isBatchExecutionSupported()) {
                 // this will handle executing batched statements, or switching mechanisms if required
                 getActiveBatchWritingMechanism().appendCall(session, dbCall);
                 //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there   
@@ -1058,7 +1059,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public BatchWritingMechanism getActiveBatchWritingMechanism() {
         if (this.activeBatchWritingMechanism == null) {
-            this.activeBatchWritingMechanism = getParameterizedMechanism();
+            // If the platform defines a custom mechanism, then use it.
+            if (((DatabasePlatform)this.platform).getBatchWritingMechanism() != null) {
+                this.activeBatchWritingMechanism = ((DatabasePlatform)this.platform).getBatchWritingMechanism().clone();
+                this.activeBatchWritingMechanism.setAccessor(this);
+            } else {
+                this.activeBatchWritingMechanism = getParameterizedMechanism();
+            }
         }
         return this.activeBatchWritingMechanism;
     }
@@ -1515,6 +1522,38 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
+     * Prepare the SQL statement for the call.
+     * First check if the statement is cached before building a new one.
+     */
+    public PreparedStatement prepareStatement(String sql, AbstractSession session, boolean callable) throws SQLException {
+        PreparedStatement statement = null;
+        // Check the cache by sql string, must synchronize check and removal.
+        Map statementCache = getStatementCache();
+        synchronized (statementCache) {
+            statement = (PreparedStatement)statementCache.get(sql);
+            if (statement != null) {
+                // Need to remove to allow concurrent statement execution.
+                statementCache.remove(sql);
+            }
+        }
+
+        if (statement == null) {
+            Connection nativeConnection = getConnection();
+            if (nativeConnection == null ) {
+                throw DatabaseException.databaseAccessorConnectionIsNull(this, session);
+            }
+            if (callable) {
+                // Callable statements are used for StoredProcedures and PLSQL blocks.
+                statement = nativeConnection.prepareCall(sql);
+            } else {
+                statement = nativeConnection.prepareStatement(sql);
+            }
+        }
+
+        return statement;
+    }
+
+    /**
      * This method is used to process an SQL exception and determine if the exception
      * should be passed on for further processing.
      * If the Exception was communication based then a DatabaseException will be return.
@@ -1548,14 +1587,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Release the statement through closing it or putting it back in the statement cache.
      */
     public void releaseStatement(Statement statement, String sqlString, DatabaseCall call, AbstractSession session) throws SQLException {
-        if (call.usesBinding(session) && call.shouldCacheStatement(session)) {
+        if ((call == null) || (call.usesBinding(session) && call.shouldCacheStatement(session))) {
             Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
                 PreparedStatement preparedStatement = (PreparedStatement)statement;
                 if (!statementCache.containsKey(sqlString)) {// May already be there by other thread.
                     preparedStatement.clearParameters();
                     // Bug 5709179 - reset statement settings on cached statements (dminsky) - inclusion of reset
-                    resetStatementFromCall(preparedStatement, call);
+                    if (call != null) {
+                        resetStatementFromCall(preparedStatement, call);
+                    }
                     if (statementCache.size() > getPlatform().getStatementCacheSize()) {
                         // Currently one is removed at random...
                         PreparedStatement removedStatement = (PreparedStatement)statementCache.remove(statementCache.keySet().iterator().next());
@@ -1572,7 +1613,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if (statement == this.dynamicStatement) {
             // The dynamic statement is cached and only closed on disconnect.
             // Bug 5709179 - reset statement settings on cached statements (dminsky) - moved to its own method
-            resetStatementFromCall(statement, call);
+            if (call != null) {
+                resetStatementFromCall(statement, call);
+            }
             setIsDynamicStatementInUse(false);
             decrementCallCount();
         } else {
@@ -1625,7 +1668,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      *  INTERNAL:
-     *  This method is used to set the active Batch Mechanism on the accessor
+     *  This method is used to set the active Batch Mechanism on the accessor.
      */
     public void setActiveBatchWritingMechanismToParameterizedSQL() {
         this.activeBatchWritingMechanism = getParameterizedMechanism();
@@ -1639,7 +1682,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
     /**
      *  INTERNAL:
-     *  This method is used to set the active Batch Mechanism on the accessor
+     *  This method is used to set the active Batch Mechanism on the accessor.
      */
     public void setActiveBatchWritingMechanismToDynamicSQL() {
         this.activeBatchWritingMechanism = getDynamicSQLMechanism();
@@ -1649,6 +1692,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
         }
     }
 
+    /**
+     *  INTERNAL:
+     *  This method is used to set the active Batch Mechanism on the accessor.
+     */
+    public void setActiveBatchWritingMechanism(BatchWritingMechanism mechanism) {
+        this.activeBatchWritingMechanism = mechanism;
+    }
     /**
      * The statement cache stores a fixed sized number of prepared statements.
      */

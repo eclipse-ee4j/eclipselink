@@ -131,6 +131,8 @@ public class QueryImpl {
     protected void setAsDataModifyQuery() {
         DataModifyQuery query = new DataModifyQuery();
         query.setIsUserDefined(this.databaseQuery.isUserDefined());
+        // By default, do not batch user native queries, as row count must be returned.
+        query.setIsBatchExecutionSupported(false);
         query.copyFromQuery(this.databaseQuery);
         // Need to clone call, in case was executed as read.
         query.setDatasourceCall((Call) this.databaseQuery.getDatasourceCall().clone());

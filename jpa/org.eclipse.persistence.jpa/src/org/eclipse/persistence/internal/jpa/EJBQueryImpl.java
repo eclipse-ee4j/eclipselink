@@ -51,6 +51,7 @@ import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -146,6 +147,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                 if (readAllQuery.hasJoining() && (readAllQuery.getDistinctState() == ReadAllQuery.DONT_USE_DISTINCT)) {
                     readAllQuery.setShouldFilterDuplicates(false);
                 }
+            } else if (databaseQuery.isModifyQuery()) {
+                // By default, do not batch modify queries, as row count must be returned.
+                ((ModifyQuery)databaseQuery).setIsBatchExecutionSupported(false);
             }
          
             ((JPQLCallQueryMechanism) databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);

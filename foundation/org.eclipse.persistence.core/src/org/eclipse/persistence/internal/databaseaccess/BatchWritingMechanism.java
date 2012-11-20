@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.io.Serializable;
+
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -26,7 +28,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  *    @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
-public abstract class BatchWritingMechanism {
+public abstract class BatchWritingMechanism implements Cloneable, Serializable {
 
     /**
      * This member variable stores the reference to the DatabaseAccessor that is
@@ -98,20 +100,32 @@ public abstract class BatchWritingMechanism {
      * being batched.  This call may result in the Mechanism executing the batched statements and
      * possibly, switching out the mechanisms
      */
-    abstract public void appendCall(AbstractSession session, DatabaseCall call);
+    public abstract void appendCall(AbstractSession session, DatabaseCall call);
 
     /**
      * INTERNAL:
      * This method is used to clear the batched statements without the need to execute the statements first
      * This is used in the case of rollback.
      */
-    abstract public void clear();
+    public abstract void clear();
 
     /**
      * INTERNAL:
      * This method is used by the DatabaseAccessor to clear the batched statements in the
      * case that a non batchable statement is being execute
      */
-    abstract public void executeBatchedStatements(AbstractSession session);
+    public abstract void executeBatchedStatements(AbstractSession session);
+    
+    /**
+     * INTERNAL:
+     * The mechanism will be cloned to be set into each accessor.
+     */
+    public BatchWritingMechanism clone() {
+        try {
+            return (BatchWritingMechanism)super.clone();
+        } catch (CloneNotSupportedException notPossible) {
+            throw new InternalError(notPossible.toString());
+        }
+    }
 
 }

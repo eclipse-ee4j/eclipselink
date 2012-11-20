@@ -292,6 +292,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testPersistRemoved");
         tests.add("testREADLock");
         tests.add("testOPTIMISTICLock");
+        tests.add("testBatchWriteOPTIMISTICLock");        
         tests.add("testPESSIMISTIC_READLock");
         tests.add("testPESSIMISTIC_WRITELock");
         tests.add("testPESSIMISTIC_READLockWithNoChanges");
@@ -1565,8 +1566,19 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertFalse("Proper exception not thrown when EntityManager.lock(object, WRITE) is used.", optimisticLockException == null);
         }
     }
+
+    // Ensure optimistic locking works with batch writing.
+    public void testBatchWriteOPTIMISTICLock() {
+        boolean old = getDatabaseSession().getPlatform().usesBatchWriting();
+        getDatabaseSession().getPlatform().setUsesBatchWriting(true);
+        try {
+            testOPTIMISTICLock();
+        } finally {
+            getDatabaseSession().getPlatform().setUsesBatchWriting(old);
+        }
+    }
     
-    public void testOPTIMISTICLock(){
+    public void testOPTIMISTICLock() {
         // Cannot create parallel entity managers in the server.
         if (! isOnServer()) {
             EntityManager em = createEntityManager();
@@ -6348,7 +6360,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // create sequence
             String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
-            em.createNativeQuery(createStr).executeUpdate();
+            Query query = em.createNativeQuery(createStr);
+            query.setHint(QueryHints.BATCH_WRITING_SUPPORTED, false);
+            query.executeUpdate();
             commitTransaction(em);
 
             // sequence value preallocated
@@ -6358,6 +6372,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 fail(seqName + " sequence with preallocationSize = "+preallocationSize+" and startValue = " + startValue + " produced wrong firstSequenceValue =" + firstSequenceValue);
             }
         } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             sequence.onDisconnect(ss.getPlatform());
             // Symfoware doesn't allow drop while connections that performed
             // CREATE and DML on the sequence are still open.
@@ -6365,7 +6382,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // drop sequence
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
-            em.createNativeQuery(dropStr).executeUpdate();
+            Query query = em.createNativeQuery(dropStr);
+            query.setHint(QueryHints.BATCH_WRITING_SUPPORTED, false);
+            query.executeUpdate();
             commitTransaction(em);
         }
     }

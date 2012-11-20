@@ -87,6 +87,7 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.ValidationMode;
 
+import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
@@ -2461,7 +2462,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             setSessionEventListener(m, loader);
             setExceptionHandler(m, loader);
 
-            updateBatchWritingSetting(m);
+            updateBatchWritingSetting(m, loader);
     
             updateNativeSQLSetting(m);
             updateAllowNativeSQLQueriesSetting(m);
@@ -2763,7 +2764,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Update batch writing setting.
      * The method needs to be called in deploy stage.
      */
-    protected void updateBatchWritingSetting(Map persistenceProperties) {
+    protected void updateBatchWritingSetting(Map persistenceProperties, ClassLoader loader) {
         String batchWritingSettingString = PropertiesHandler.getPropertyValueLogDebug(PersistenceUnitProperties.BATCH_WRITING, persistenceProperties, this.session);
         if (batchWritingSettingString != null) {
              this.session.getPlatform().setUsesBatchWriting(batchWritingSettingString != BatchWriting.None);
@@ -2776,6 +2777,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
              } else if (batchWritingSettingString == BatchWriting.OracleJDBC) {
                  this.session.getPlatform().setUsesNativeBatchWriting(true);
                  this.session.getPlatform().setUsesJDBCBatchWriting(true);
+             } else {
+                 Class cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
+                 BatchWritingMechanism mechanism = null;
+                 try {
+                     Constructor constructor = cls.getConstructor();
+                     mechanism = (BatchWritingMechanism)constructor.newInstance();
+                 } catch (Exception exception) {
+                     throw EntityManagerSetupException.failedToInstantiateProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, exception);
+                 }
+                 this.session.getPlatform().setBatchWritingMechanism(mechanism);
              }
         }
         // Set batch size.

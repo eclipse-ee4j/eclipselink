@@ -17,6 +17,7 @@ import java.beans.PropertyChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
@@ -149,9 +150,17 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index, isSet, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
         }
+    }
+    
+    protected boolean isRelationshipMaintenanceRequired() {
+        if (this.valueHolder instanceof UnitOfWorkQueryValueHolder) {
+            DatabaseMapping mapping = ((UnitOfWorkQueryValueHolder)this.valueHolder).getMapping();
+            return (mapping != null) && (mapping.getRelationshipPartner() != null);
+        }
+        return false;
     }
     
     /**
@@ -164,7 +173,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index, isSet, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
         }
     }
@@ -181,7 +190,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (shouldAvoidInstantiation()) {
             if (hasRemovedElements() && getRemovedElements().contains(element)) {
                 getRemovedElements().remove(element);
-            } else if (getAddedElements().contains(element)) {
+            } else if (isRelationshipMaintenanceRequired() && getAddedElements().contains(element)) {
                 // Must avoid recursion for relationship maintenance.
                 return false;
             } else {

@@ -590,6 +590,7 @@ public class PropertiesHandler {
     protected static class BatchWritingProp extends Prop {
         BatchWritingProp() {
             super(PersistenceUnitProperties.BATCH_WRITING, BatchWriting.DEFAULT);
+            this.shouldReturnOriginalValueIfValueToApplyNotFound = true;
             valueArray = new Object[] { 
                 BatchWriting.None,
                 BatchWriting.JDBC,

@@ -402,6 +402,9 @@ public class SchemaManager {
             return new UnaryTableSequenceDefinition(sequence);
         } else if (sequence instanceof NativeSequence || 
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
+            if (((NativeSequence)sequence).hasDelegateSequence()) {
+                return buildSequenceDefinition(((NativeSequence)sequence).getDelegateSequence());
+            }
             return new SequenceObjectDefinition(sequence);
         } else {
             return null;

@@ -73,29 +73,28 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     public void appendCall(AbstractSession session, DatabaseCall dbCall) {
         // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
-    	if(dbCall != null) {
-        	cacheQueryTimeout(session, dbCall);
+    	if (dbCall != null) {
+            cacheQueryTimeout(session, dbCall);
         }
     	
         if (!dbCall.hasParameters()) {
-            if ((batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
+            if ((this.batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
                 executeBatchedStatements(session);
             }
-            if (this.usesOptimisticLocking != dbCall.hasOptimisticLock){
+            if (this.usesOptimisticLocking != dbCall.hasOptimisticLock) {
                 executeBatchedStatements(session);
             }
             this.sqlStrings.add(dbCall.getSQLString());
             this.batchSize += dbCall.getSQLString().length();
             this.usesOptimisticLocking = dbCall.hasOptimisticLock;
-            ++this.statementCount;
+            this.statementCount++;
             // feature for bug 4104613, allows users to force statements to flush on execution
-            if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution())
-            {
+            if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution()) {
               executeBatchedStatements(session);
             }
         } else {
             executeBatchedStatements(session);
-            this.switchMechanisms(session, dbCall);
+            switchMechanisms(session, dbCall);
         }
     }
 
@@ -141,14 +140,14 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             } else {
                 //lets add optimistic locking support.
                 Statement statement = prepareJDK12BatchStatement(session);
-                executionCount += this.databaseAccessor.executeJDK12BatchStatement(statement, null, session, false);
-                if (this.usesOptimisticLocking && (executionCount!=statementCount)){
+                this.executionCount = this.databaseAccessor.executeJDK12BatchStatement(statement, null, session, false);
+                if (this.usesOptimisticLocking && (executionCount != statementCount)) {
                     throw OptimisticLockException.batchStatementExecutionFailure();
                 }
             }
         } finally {
             // Reset the batched sql string
-            this.clear();
+            clear();
         }
     }
 

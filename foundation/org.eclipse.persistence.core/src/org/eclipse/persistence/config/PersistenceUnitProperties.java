@@ -34,6 +34,7 @@ import javax.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
@@ -1455,6 +1456,9 @@ public class PersistenceUnitProperties {
     /**
      * The <code>"eclipselink.jdbc.batch-writing"</code> property configures the
      * use of batch writing to optimize transactions with multiple writes.
+     * <p>Batch writing allows multiple heterogeneous dynamic SQL statements to be sent to the database as a single
+     * execution, or multiple homogeneous parameterized SQL statements to be executed as a single batch execution.
+     * <p>Note that not all JDBC drivers, or databases support batch writing.
      * <p>
      * Values (case insensitive):
      * <ul>
@@ -1463,10 +1467,12 @@ public class PersistenceUnitProperties {
      * batch writing.
      * <li>"Oracle-JDBC": use Oracle's native batch writing. This requires the
      * use of an Oracle JDBC driver.
+     * <li>&ltcustom-class&gt - A custom class that extends the BatchWritingMechansim class.
      * <li>"None" (DEFAULT): do not use batch writing (turn it off).
      * </ul>
      * 
      * @see BatchWriting
+     * @see BatchWritingMechanism
      */
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
 

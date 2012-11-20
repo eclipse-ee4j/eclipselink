@@ -27,6 +27,12 @@ public abstract class ModifyQuery extends DatabaseQuery {
     
     // needed to allow the user to force SQL to database when batch writing is used. bug:4104613
     protected boolean forceBatchStatementExecution = false;
+    
+    /**
+     * Define if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    protected boolean isBatchExecutionSupported = true;
 
     /**
      * INTERNAL:
@@ -74,5 +80,24 @@ public abstract class ModifyQuery extends DatabaseQuery {
      */     
     public boolean forceBatchStatementExecution() {
         return forceBatchStatementExecution;
+    }
+
+    /**
+     * PUBLIC:
+     * Return if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    public boolean isBatchExecutionSupported() {
+        return isBatchExecutionSupported;
+    }
+
+    /**
+     * PUBLIC:
+     * Set if this query is compatible with batch writing.
+     * Some queries, such as DDL are not compatible.
+     */
+    public void setIsBatchExecutionSupported(boolean isBatchExecutionSupported) {
+        this.isBatchExecutionSupported = isBatchExecutionSupported;
+        setIsPrepared(false);
     }
 }

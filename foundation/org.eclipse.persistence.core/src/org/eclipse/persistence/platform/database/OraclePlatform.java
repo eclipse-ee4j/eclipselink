@@ -75,6 +75,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /*
      * Used for stored procedure definitions.
      */
+    @Override
     public boolean allowsSizeInProcedureArguments() {
         return false;
     }
@@ -84,6 +85,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * If using native SQL then print a byte[] literally as a hex string otherwise use ODBC format
      * as provided in DatabasePlatform.
      */
+    @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write('\'');
@@ -99,6 +101,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Appends an Oracle specific date if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: to_date('1997-11-06','yyyy-mm-dd')
      */
+    @Override
     protected void appendDate(java.sql.Date date, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_date('");
@@ -114,6 +117,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Appends an Oracle specific time if usesNativeSQL is true otherwise use the ODBC format.
      * Native FORMAT: to_date(#####, 'sssss').
      */
+    @Override
     protected void appendTime(java.sql.Time time, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_date('");
@@ -129,6 +133,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_date('");
@@ -144,6 +149,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      * Native Format: to_date ('1997-11-06 10:35:45.0' , 'yyyy-mm-dd hh:mm:ss.n')
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_date('");
@@ -165,6 +171,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL:
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypeMapping;
 
@@ -205,6 +212,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Returns null unless the platform supports call with returning
      */
+    @Override
     public DatabaseCall buildCallWithReturning(SQLCall sqlCall, Vector returnFields) {
         SQLCall call = new SQLCall();
         call.setParameters(sqlCall.getParameters());
@@ -251,6 +259,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * In case this method returns true, buildCallWithReturning method
      * may be called.
      */
+    @Override
     public boolean canBuildCallWithReturning() {
         return true;
     }
@@ -266,6 +275,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Used for stored function calls.
      */
+    @Override
     public String getAssignmentString() {
         return ":= ";
     }
@@ -281,6 +291,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchBeginString() {
         return "BEGIN ";
     }
@@ -288,15 +299,50 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for batch writing and sp defs.
      */
+    @Override
     public String getBatchEndString() {
         return "END;";
     }
 
     /**
+     * Used for batch writing for row count return.
+     */
+    @Override
+    public String getBatchRowCountDeclareString() {
+        return "DECLARE EL_COUNTER NUMBER := 0; ";
+    }
+    
+    /**
+     * Oracle does not return the row count from PLSQL anon blocks,
+     * so an output parameter is required for this.
+     */
+    @Override
+    public boolean isRowCountOutputParameterRequired() {
+        return true;
+    }
+
+    /**
+     * Used for batch writing for row count return.
+     */
+    @Override
+    public String getBatchRowCountReturnString() {
+        return "? := EL_COUNTER; ";
+    }
+
+    /**
+     * Used for batch writing for row count return.
+     */
+    @Override
+    public String getBatchRowCountAssignString() {
+        return "EL_COUNTER := EL_COUNTER + SQL%ROWCOUNT; ";
+    }
+    
+    /**
      * INTERNAL:
      * returns the maximum number of characters that can be used in a field
      * name on this platform.
      */
+    @Override
     public int getMaxFieldNameSize() {
         return 30;
     }
@@ -328,6 +374,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureArgumentSetter() {
         return "=>";
     }
@@ -335,6 +382,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallHeader() {
         return "BEGIN ";
     }
@@ -342,10 +390,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Used for sp calls.
      */
+    @Override
     public String getProcedureCallTail() {
         return "; END;";
     }
 
+    @Override
     public String getSelectForUpdateString() {
         return " FOR UPDATE";
     }
@@ -355,10 +405,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return " FOR UPDATE WAIT " + waitTimeout.intValue();
     }
 
+    @Override
     public String getStoredProcedureParameterPrefix() {
         return "P_";
     }
 
+    @Override
     public String getStoredProcedureTerminationToken() {
         return "";
     }
@@ -381,6 +433,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * This method returns the query to select the timestamp
      * from the server for Oracle.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -455,6 +508,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Overrides the default behavior to specifically return a timestamp.  Added
      * to overcome an issue with the oracle 9.0.1.4 JDBC driver.
      */
+    @Override
     public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         //Bug#3381652 10G Drivers return sql.Date instead of timestamp on DATE field
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
@@ -467,6 +521,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Initialize any platform-specific operators
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(operatorOuterJoin());
@@ -531,7 +586,8 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean isNativeConnectionRequiredForLobLocator() {
         return false;
     }
-    
+
+    @Override
     public boolean isOracle() {
         return true;
     }
@@ -557,6 +613,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -576,6 +633,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * might also be useful to end users attempting to sanitize values.
      * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
      */
+    @Override
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
 
@@ -596,6 +654,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * and returns it. Currently implemented on Oracle only.
      * @param qualifiedSeqName known by Oracle to be a defined sequence
      */
+    @Override
     public ValueReadQuery buildSelectQueryForSequenceObject(String qualifiedSeqName, Integer size) {
         return new ValueReadQuery("SELECT " + qualifiedSeqName + ".NEXTVAL FROM DUAL");
     }
@@ -606,6 +665,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * see comment to setSupportsIdentity method.
      * @param qualifiedSeqName known by Oracle to be a defined sequence
      */
+    @Override
     public ValueReadQuery buildSelectQueryForIdentity(String qualifiedSeqName, Integer size) {
         return new ValueReadQuery("SELECT " + qualifiedSeqName + ".CURRVAL FROM DUAL");
     }
@@ -664,6 +724,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Append the receiver's field 'NULL' constraint clause to a writer.
      */
+    @Override
     public void printFieldNullClause(Writer writer) throws ValidationException {
         try {
             writer.write(" NULL");
@@ -683,6 +744,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
+    @Override
     public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
@@ -692,6 +754,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * UPDATE OL_PHONE SET PHONE_ORDER_VARCHAR = (PHONE_ORDER_VARCHAR + 1) WHERE ...
      * SELECT ... WHERE  ... t0.MANAGED_ORDER_VARCHAR BETWEEN 1 AND 4 ...
      */
+    @Override
     public boolean supportsAutoConversionToNumericForArithmeticOperations() {
         return true;
     }
@@ -701,6 +764,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Indicates whether the platform supports sequence objects.
      * This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsSequenceObjects() {
         return true;
     }
@@ -710,6 +774,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Indicates whether the platform supports identity.
      * This method is to be used *ONLY* by sequencing classes
      */
+    @Override
     public boolean supportsIdentity() {
         return supportsIdentity;
     }
@@ -737,6 +802,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Return if database stored functions are supported.
      */
+    @Override
     public boolean supportsStoredFunctions() {
         return true;
     }
@@ -744,6 +810,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * Oracle db supports VPD.
      */
+    @Override
     public boolean supportsVPD() {
         return true;
     }
@@ -801,6 +868,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * in the DatabaseCall.  This implementation works MaxRows and FirstResult into the SQL using
      * Oracle's ROWNUM to filter values if shouldUseRownumFiltering is true.  
      */
+    @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
         int max = 0;
         int firstRow = 0;
@@ -844,6 +912,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * Override this method if the platform supports sequence objects
      * and it's possible to alter sequence object's increment in the database.
      */
+    @Override
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }
@@ -852,6 +921,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * INTERNAL:
      * Indicates whether SELECT DISTINCT ... FOR UPDATE is allowed by the platform (Oracle doesn't allow this).
      */
+    @Override
     public boolean isForUpdateCompatibleWithDistinct() {
         return false;
     }
@@ -873,7 +943,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.
      */
-    
+    @Override
     public boolean wasFailureCommunicationBased(SQLException exception, Connection connection, AbstractSession sessionForProfile){
         if (exception != null){
             if (exception.getErrorCode() == 17410){

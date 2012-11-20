@@ -73,6 +73,7 @@ public class JUnitTestCaseHelper {
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MIN, "4");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "4");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.BATCH_WRITING_SIZE, "150");
+        //persistencePropertiesTestMap.put(PersistenceUnitProperties.BATCH_WRITING, "oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism");
     }
 
     /**

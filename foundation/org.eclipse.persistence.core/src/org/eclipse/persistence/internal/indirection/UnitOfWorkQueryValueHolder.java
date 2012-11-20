@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.indirection;
 
+import java.util.Collection;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.WrapperPolicy;
 import org.eclipse.persistence.indirection.*;
@@ -128,7 +130,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * We only worry about ObjectReferenceMappings as the collections mappings will be handled by transparentIndirection
      */
     public void updateForeignReferenceSet(Object value, Object oldValue) {
-        if ((value != null) && (ClassConstants.Collection_Class.isAssignableFrom(value.getClass()))) {
+        if ((value != null) && (value instanceof Collection)) {
             //I'm passing a collection into the valueholder not an object
             return;
         }
