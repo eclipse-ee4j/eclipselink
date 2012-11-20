@@ -218,35 +218,53 @@ if build=true
         <say  message="oracle.current                 = undefined ('prebuild.oracle.ext.version' doesn't contain 'prebuild.ext.hash')"           unless="oracle.current"/>
         <say  message="nosql.current                  = undefined ('prebuild.oracle.nosql.version' doesn't contain 'prebuild.nosql.hash')"       unless="nosql.current"/>
 
+        <!-- set what should clean -->
         <!-- if either oracle or nosql need rebuild (clean will need to happen in either case)-->
-        <condition property="oracle.clean" value="true">
-            <or>
+        <condition property="clean.target" value="oracle">
+            <and>
                 <not> <isset property="oracle.current"/> </not>
                 <not> <isset property="nosql.current"/>  </not>
-            </or>
+            </and>
         </condition>
-        <say  message="oracle.clean                   = '${oracle.clean}'"      if="oracle.clean"/>
-        <say  message="oracle.clean                   = undefined"          unless="oracle.clean"/>
+        <condition property="clean.target" value="oracle.ext">
+            <and>
+                <not> <isset property="oracle.current"/> </not>
+                <isset property="nosql.current"/>  </not>
+            </and>
+        </condition>
+        <condition property="clean.target" value="oracle.nosql">
+            <and>
+                <isset property="oracle.current"/> </not>
+                <not> <isset property="nosql.current"/>  </not>
+            </and>
+        </condition>
+
+        <say  message="clean.target                   = '${clean.target}'"      if="clean.target"/>
+        <say  message="clean.target                   = undefined"          unless="clean.target"/>
     </target>
 
     <!-- ================================================================ -->
     <!--  BUILD TARGETS                                                   -->
     <!-- ================================================================ -->
-    <target name="report-build-not-required" unless="oracle.clean" depends="set-build-required">
+    <target name="report-build-not-required" unless="clean.target" depends="set-build-required">
         <echo message="Oracle extensions appear current. Conditions not met for rebuild. Build target will be bypassed."/>
     </target>
 
 
-    <target name="clean-oracle" if="oracle.clean" depends="report-build-not-required">
+    <target name="clean-oracle" if="clean.target" depends="report-build-not-required">
         <!-- === Which extensions targeted is based on ${oracle.target} === -->
         <!--   oracle.target = oracle.ext:   build oracle extension         -->
         <!--                 = oracle.nosql: build oracle nosql extension   -->
         <!--                 = oracle:       build both                     -->
         <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="clean-oracle-extension">
            <property name="version.qualifier" value="v${oraclebuild.build.date}-${prebuild.git.hash}"/>
-           <property name="oracle.target" value="oracle"/>
+           <property name="oracle.target" value="${clean.target}"/>
         </ant>
-        <!-- What about reverting a deleted bundle that hasn't been rebuilt? -->
+        <!-- Also need to clean the compdeps repo so it is forced to regenerate -->
+        <ant antfile="antbuild.xml" dir="${oraclebuild.2.base.dir}"     target="generate-local-compdeps">
+           <property name="generate.compdeps" value="true"/>
+        </ant>
+        <!-- What about the oracle repo? force regen, or allow manual install of local repo? -->
     </target>
 
     <target name="build-oracle" unless="oracle.current" >
@@ -389,7 +407,7 @@ if build=true
             <say message="Bundle was successfully generated:"                                                     if="@{successproperty}"/>
             <say message="    @{currentversionproperty} ('${@{currentversionproperty}}') != '@{prebuildversion}'" if="@{successproperty}"/>
             <say message="    and '${@{prebuildhashproperty}}' is a substring of '${@{currentversionproperty}}'"  if="@{successproperty}"/>
-            <say message="Bundle generation failure detected."                                                    if="@{failureproperty}"/>            	           
+            <say message="Bundle generation failure detected."                                                    if="@{failureproperty}"/>
         </sequential>
     </macrodef>
 

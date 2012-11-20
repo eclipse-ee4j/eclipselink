@@ -238,6 +238,7 @@
         <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
         <!--           (Indigo or higher has been tested) by using a -D on        -->
         <!--           the commandline, or adding it in a user properties file    -->
+        <!-- Test to see if local repo can be generated: tools exist                -->
         <condition property="local.compdeps" value="true" else="false">
             <and>
                 <isset property="eclipse.install.dir"/>
@@ -422,7 +423,7 @@
     </target>
 
     <!-- Oracle extensions Targets -->
-    <target name="clean-oracle-extension" depends="generate-oracle-p2" description="Clean the maven built oracle projects">
+    <target name="clean-oracle-extension" depends="generate-oracle-p2, generate-local-compdeps" description="Clean the maven built oracle projects">
         <!-- === Which extensions 'clean' is based on ${oracle.target} === -->
         <!--  oracle.target = oracle.ext:   build oracle extension         -->
         <!--                = oracle.nosql: build oracle nosql extension   -->
@@ -1276,14 +1277,9 @@
     </target>
 
     <!-- Build Infrastructure targets -->
-    <target name="refresh-plugins" description="populate plugins with dependent jars from specified Orbit repository">
+    <target name="Refresh-Plugins" description="populate plugins with dependent jars from specified Orbit repository">
         <ant antfile="antbuild.xml" dir="${eclipselink.bldplugins}"  target="build"/>
     </target>
-
-    <!-- commented out because is currently above with build-core -->
-    <!-- target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
-        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
-    </target -->
 
     <target name="check-oracle-p2" depends="check-maven" description="Setup for use of local oracle p2, and whether to generate">
         <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
