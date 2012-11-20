@@ -316,6 +316,9 @@ public class XPathFragment {
     }
 
     public boolean equals(Object object) {
+        return equals(object, false);
+    }
+    public boolean equals(Object object, boolean ignorePredicate) {
         if (null == object) {
             return false;
         } else if (this == object) {
@@ -346,11 +349,13 @@ public class XPathFragment {
             if (indexValue != xPathFragment.indexValue) {
                 return false;
             }
-            if (null == predicate && null != xPathFragment.predicate) {
-                return false;
-            }
-            if (null != predicate && !predicate.equals(xPathFragment.predicate)) {
-                return false;
+            if(!ignorePredicate) {
+                if (null == predicate && null != xPathFragment.predicate) {
+                    return false;
+                }
+                if (null != predicate && !predicate.equals(xPathFragment.predicate)) {
+                    return false;
+                }
             }
         } catch (ClassCastException e) {
             return false;

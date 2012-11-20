@@ -74,6 +74,8 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.SameFieldLinkTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.SameFieldCollectionAddressTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.SameFieldCollectionLinkTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.PredicateAddressTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.PredicateLinkTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementArrayTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementLaxTestCases.class);
