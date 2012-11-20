@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -46,6 +45,14 @@ public class ServerCrudTest {
     private static Client client = null;
     private static PersistenceContext context = null;
 
+    /**
+     * Sample user json for id.
+     *
+     * @param userId the user id
+     * @param addressId the address id
+     * @return the byte array output stream
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static ByteArrayOutputStream sampleUserJSONForId(Integer userId, Integer addressId) throws IOException{
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         StringBuffer json = new StringBuffer();
@@ -65,6 +72,11 @@ public class ServerCrudTest {
         return stream;
     }
 
+    /**
+     * Setup.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @BeforeClass
     public static void setup() throws URISyntaxException{
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -82,11 +94,20 @@ public class ServerCrudTest {
         client = Client.create();
     }
 
+    /**
+     * Teardown.
+     */
     @AfterClass
     public static void teardown() {
         StaticModelDatabasePopulator.cleanupDB(context.getEmf());
     }
 
+    /**
+     * Test read.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testRead() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
@@ -94,6 +115,12 @@ public class ServerCrudTest {
         assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
 
+    /**
+     * Test read xml.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testReadXML() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
@@ -101,21 +128,45 @@ public class ServerCrudTest {
         assertTrue("Wrong big in DB.", bid.getAmount() == bid2.getAmount());
     }
 
+    /**
+     * Test read non existant.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testReadNonExistant() throws RestCallFailedException, URISyntaxException {
         restRead(0, "StaticBid", StaticBid.class);
     }
 
+    /**
+     * Test read non existant type.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testReadNonExistantType() throws RestCallFailedException, URISyntaxException {
         restRead(1, "NonExistant", StaticBid.class);
     }
 
+    /**
+     * Test read non existant pu.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testReadNonExistantPU() throws RestCallFailedException, URISyntaxException {
         restRead(1, "StaticBid", StaticBid.class, "non-existant", null, MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test update.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testUpdate() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
@@ -129,6 +180,12 @@ public class ServerCrudTest {
         bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
     }
 
+    /**
+     * Test create delete.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testCreateDelete() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -143,6 +200,12 @@ public class ServerCrudTest {
         assertTrue("User was not deleted.", dbUser == null);
     }
 
+    /**
+     * Test create xml.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testCreateXML() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -157,6 +220,12 @@ public class ServerCrudTest {
         assertTrue("User was not deleted.", dbUser == null);
     }
 
+    /**
+     * Test create sequenced.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateSequenced() throws RestCallFailedException, URISyntaxException {
         StaticAuction auction = new StaticAuction();
@@ -164,6 +233,12 @@ public class ServerCrudTest {
         auction = restCreate(auction, "StaticAuction", StaticAuction.class);
     }
 
+    /**
+     * Test create non existant.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateNonExistant() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -172,6 +247,12 @@ public class ServerCrudTest {
         user = restCreate(user, "NonExistant", StaticUser.class);
     }
 
+    /**
+     * Test create non existant persistence unit.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -181,24 +262,10 @@ public class ServerCrudTest {
     }
 
     /**
-     * Removed.  Requires a JSON parsing feature to detect incorrect data
-     * @throws IOException
-     * @throws URISyntaxException
-
-    @Test
-    public void testCreateWrongType(){
-
-        WebResource webResource = client.resource(SERVER_URI + DEFAULT_PU + "/entity/" + "StaticUser");
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
-            context.marshallEntity(new StaticBid(), MediaType.APPLICATION_JSON_TYPE, os);       
-        } catch (JAXBException e){
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        ClientResponse response = webResource.type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).put(ClientResponse.class, os.toString());
-        Status status = response.getClientResponseStatus();
-        assertTrue("Wrong exception thrown for non-existant object read.", status.equals(Status.NOT_FOUND));
-    }
+     * Test create garbage.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws URISyntaxException the uRI syntax exception
      */
 
     @Test
@@ -212,6 +279,12 @@ public class ServerCrudTest {
         assertTrue("Wrong exception garbage write. " + status, status.equals(Status.BAD_REQUEST));
     }
 
+    /**
+     * Test update xml.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testUpdateXML() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
@@ -224,6 +297,12 @@ public class ServerCrudTest {
         bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
     }
 
+    /**
+     * Test post new entity.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testPostNewEntity() throws RestCallFailedException, URISyntaxException {
         StaticAuction auction = new StaticAuction();
@@ -236,6 +315,12 @@ public class ServerCrudTest {
         restDelete(auction.getId(), "StaticAuction", StaticAuction.class);
     }
 
+    /**
+     * Test update non existant.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testUpdateNonExistant() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -243,6 +328,12 @@ public class ServerCrudTest {
         user = restUpdate(user, "NonExistant", StaticUser.class, true);
     }
 
+    /**
+     * Test update non existant persistence unit.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testUpdateNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
         StaticUser user = new StaticUser();
@@ -250,6 +341,12 @@ public class ServerCrudTest {
         user = restUpdate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
     }
 
+    /**
+     * Test update garbage.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testUpdateGarbage() throws IOException, URISyntaxException {
         WebResource webResource = client.resource(RestUtils.getServerURI() + DEFAULT_PU + "/entity/" + "StaticUser");
@@ -261,6 +358,12 @@ public class ServerCrudTest {
         assertTrue("Wrong exception garbage write. " + status, status.equals(Status.BAD_REQUEST));
     }
 
+    /**
+     * Test update relationship.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testUpdateRelationship() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
@@ -278,27 +381,57 @@ public class ServerCrudTest {
         dbDelete(newUser);
     }
 
+    /**
+     * Test delete non existant.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testDeleteNonExistant() throws RestCallFailedException, URISyntaxException {
         restDelete(1000, "StaticUser", StaticUser.class);
     }
 
+    /**
+     * Test delete non existant type.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testDeleteNonExistantType() throws RestCallFailedException, URISyntaxException {
         restDelete(1000, "NonExistant", StaticUser.class);
     }
 
+    /**
+     * Test delete non existant persistence unit.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testDeleteNonExistantPersistenceUnit() throws RestCallFailedException, URISyntaxException {
         restDelete(1000, "StaticUser", StaticUser.class, "non-existant", null);
     }
 
+    /**
+     * Test named query.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQuery() throws URISyntaxException {
         List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, null);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
     }
 
+    /**
+     * Test named query parameter.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameter() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -308,6 +441,12 @@ public class ServerCrudTest {
         assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
     }
 
+    /**
+     * Test named query parameters.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameters() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -317,6 +456,11 @@ public class ServerCrudTest {
         assertTrue("Incorrect Number of users found.", users.size() == 2);
     }
 
+    /**
+     * Test named query wrong parameter.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQueryWrongParameter() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -324,6 +468,11 @@ public class ServerCrudTest {
         restNamedQuery("User.byId", "StaticUser", parameters, null);
     }
 
+    /**
+     * Test named query wrong number of parameters.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQueryWrongNumberOfParameters() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -331,6 +480,12 @@ public class ServerCrudTest {
         restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
     }
 
+    /**
+     * Test named query no results.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryNoResults() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -339,6 +494,11 @@ public class ServerCrudTest {
         assertTrue("Incorrect Number of users found.", users.size() == 0);
     }
 
+    /**
+     * Test non existant named query.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testNonExistantNamedQuery() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -346,6 +506,11 @@ public class ServerCrudTest {
         restNamedQuery("User.nonExistant", "StaticUser", parameters, null);
     }
 
+    /**
+     * Test non existant persistence unit named query.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testNonExistantPersistenceUnitNamedQuery() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -353,6 +518,12 @@ public class ServerCrudTest {
         restNamedQuery("User.all", "StatisUser", "nonExistant", parameters, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test named query hint.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryHint() throws URISyntaxException {
         // load the cache
@@ -379,6 +550,12 @@ public class ServerCrudTest {
         users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
     }
 
+    /**
+     * Test named query parameter hint.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @SuppressWarnings("unchecked")
     @Test
     public void testNamedQueryParameterHint() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -405,6 +582,11 @@ public class ServerCrudTest {
         users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
     }
 
+    /**
+     * Test named query single result.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testNamedQuerySingleResult() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -414,6 +596,11 @@ public class ServerCrudTest {
         assertTrue("incorrect user returned", user.getName().equals("user1"));
     }
 
+    /**
+     * Test named query single result no result.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testNamedQuerySingleResultNoResult() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -422,6 +609,11 @@ public class ServerCrudTest {
         assertTrue("user shoudl not have been returned", user == null);
     }
 
+    /**
+     * Test update query.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testUpdateQuery() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -436,6 +628,12 @@ public class ServerCrudTest {
         dbUpdate(user1);
     }
 
+    /**
+     * Test multitenant.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testMultitenant() throws RestCallFailedException, URISyntaxException {
         Account account = new Account();
@@ -461,6 +659,13 @@ public class ServerCrudTest {
     }
 
     //@Test
+    /**
+     * Test create object graph put.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws JAXBException the jAXB exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     public void testCreateObjectGraphPut() throws RestCallFailedException, JAXBException, URISyntaxException {
         // Create a bid without auction and user first
         StaticBid bid = new StaticBid();
@@ -517,6 +722,13 @@ public class ServerCrudTest {
     }
 
     //@Test
+    /**
+     * Test create object graph post.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws JAXBException the jAXB exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     public void testCreateObjectGraphPost() throws RestCallFailedException, JAXBException, URISyntaxException {
         // Create a bid without auction and user first (no id)
         StaticBid bid = new StaticBid();
@@ -569,6 +781,12 @@ public class ServerCrudTest {
         dbDelete(auction);
     }
 
+    /**
+     * Test read composite pk.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test
     public void testReadCompositePK() throws RestCallFailedException, URISyntaxException {
         StaticAddress address = new StaticAddress();
@@ -585,28 +803,41 @@ public class ServerCrudTest {
         dbDelete(address);
     }
 
+    /**
+     * Test read non existing composite pk.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testReadNonExistingCompositePK() throws RestCallFailedException, URISyntaxException {
         String id = "home+10012090";
         restRead(id, "StaticAddress", StaticAddress.class);
     }
 
-
-    private static ByteArrayOutputStream getJSONMessage(String inputFile) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("org/eclipse/persistence/jpars/test/restmessage/json/" + inputFile);
-        String json = convertStreamToString(is);
-        stream.write(json.toString().getBytes());
-        return stream;
-    }
-
-    private static String convertStreamToString(InputStream is) {
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (Exception e) {
-            return null;
+    /**
+     * Test get contexts.
+     * @throws URISyntaxException
+     */
+    @Test
+    public void testGetContexts() throws URISyntaxException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(RestUtils.getServerURI());
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK){
+            throw new RestCallFailedException(status);
         }
+
+        String result = response.getEntity(String.class);
+
+        assertTrue(result != null);
+        assertTrue(result.contains(RestUtils.getServerURI() + "auction/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "auction-static-local/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "auction-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "employee-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "phonebook/metadata"));
     }
 
     private static void dbCreate(Object object) {
@@ -652,6 +883,7 @@ public class ServerCrudTest {
     }
 
 
+    @SuppressWarnings("unchecked")
     private static <T> T restCreate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
@@ -779,6 +1011,7 @@ public class ServerCrudTest {
         return restRead(id, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
@@ -824,6 +1057,7 @@ public class ServerCrudTest {
     }
 
 
+    @SuppressWarnings("unchecked")
     private static <T> T restUpdate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException, URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
@@ -850,6 +1084,7 @@ public class ServerCrudTest {
         return resultObject;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException, URISyntaxException {
         WebResource webResource = client.resource(RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -875,6 +1110,7 @@ public class ServerCrudTest {
         return resultObject;
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T restReadByHref(String href, String type, MediaType outputMediaType) throws RestCallFailedException, JAXBException {
         WebResource webResource = client.resource(href);
         ClientResponse response = webResource.accept(outputMediaType).get(
@@ -884,8 +1120,7 @@ public class ServerCrudTest {
             throw new RestCallFailedException(status);
         }
         String result = response.getEntity(String.class);
-        return (T) context.unmarshalEntity(type, outputMediaType,
-                new ByteArrayInputStream(result.getBytes()));
+        return (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
     }
 
     private static String restUpdateBidirectionalRelationship(String objectId,

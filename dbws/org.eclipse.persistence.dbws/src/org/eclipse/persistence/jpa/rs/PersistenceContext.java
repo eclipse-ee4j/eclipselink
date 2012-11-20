@@ -84,8 +84,6 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.server.Server;
-import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
  * A wrapper around the JPA and JAXB artifacts used to persist an application.
@@ -154,7 +152,7 @@ public class PersistenceContext {
             transaction = new ResourceLocalTransactionWrapper();
         }
         try{
-            this.context = createDynamicJAXBContext(emf.getServerSession());
+            this.context = createDynamicJAXBContext(emf.getDatabaseSession());
         } catch (JAXBException jaxbe){
             JPARSLogger.exception("exception_creating_jaxb_context", new Object[]{emfName, jaxbe.toString()}, jaxbe);
             emf.close();
@@ -175,7 +173,7 @@ public class PersistenceContext {
      * @param persistenceUnitName
      * @param session
      */
-    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, Server session){
+    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, DatabaseSession session) {
         Set<String> packages = new HashSet<String>();
         Iterator<Class> i = session.getDescriptors().keySet().iterator();
         while (i.hasNext()){
@@ -216,7 +214,7 @@ public class PersistenceContext {
      * @param session
      * @return
      */
-    protected JAXBContext createDynamicJAXBContext(Server session) throws JAXBException, IOException {
+    protected JAXBContext createDynamicJAXBContext(DatabaseSession session) throws JAXBException, IOException {
         JAXBContext jaxbContext = (JAXBContext) session.getProperty(JAXBContext.class.getName());
         if (jaxbContext != null) {
             return jaxbContext;
@@ -263,7 +261,7 @@ public class PersistenceContext {
      * @return
      * @throws IOException
      */
-    protected Map<String, Object> createJAXBProperties(Server session) throws IOException{
+    protected Map<String, Object> createJAXBProperties(DatabaseSession session) throws IOException {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         List<Object> metadataLocations = new ArrayList<Object>();
 
@@ -374,7 +372,7 @@ public class PersistenceContext {
             if (mapping == null){
                 return null;
             }
-            return mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(object), object, getJpaSession());
+            return mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(object), object, (AbstractSession) getJpaSession());
         } finally {
             em.close();
         }
@@ -459,7 +457,7 @@ public class PersistenceContext {
 
     protected void removeMappingValueFromObject(Object object, Object attributeValue, DatabaseMapping mapping, DatabaseMapping partner){
         if (mapping.isObjectReferenceMapping()){
-            Object currentValue = mapping.getRealAttributeValueFromObject(object, getJpaSession());
+            Object currentValue = mapping.getRealAttributeValueFromObject(object, (AbstractSession) getJpaSession());
             if (currentValue.equals(attributeValue)){
                 ((ObjectReferenceMapping)mapping).getIndirectionPolicy().setRealAttributeValueInObject(object, null, true);
                 if (partner != null){
@@ -467,7 +465,7 @@ public class PersistenceContext {
                 }
             }
         } else if (mapping.isCollectionMapping()){
-            boolean removed = ((Collection)mapping.getRealAttributeValueFromObject(object, getJpaSession())).remove(attributeValue);
+            boolean removed = ((Collection) mapping.getRealAttributeValueFromObject(object, (AbstractSession) getJpaSession())).remove(attributeValue);
             if (removed && partner != null){
                 removeMappingValueFromObject(attributeValue, object, partner, null);
             }
@@ -492,8 +490,10 @@ public class PersistenceContext {
         return descriptor.getJavaClass();
     }
 
-    public ServerSession getJpaSession(){
-        return (ServerSession)JpaHelper.getServerSession(emf);
+    public DatabaseSession getJpaSession() {
+        // Fix for bug 390786 - JPA-RS: ClassCastException retrieving metadata for Composite Persistence Unit
+        DatabaseSession dbSession = JpaHelper.getDatabaseSession(emf);
+        return dbSession;
     }
 
     /**
@@ -505,7 +505,7 @@ public class PersistenceContext {
      * @return
      */
     public ClassDescriptor getDescriptor(String entityName){
-        Server session = getJpaSession();
+        DatabaseSession session = getJpaSession();
         ClassDescriptor descriptor = session.getDescriptorForAlias(entityName);
         if (descriptor == null){
             for (Object ajaxBSession:((JAXBContext)getJAXBContext()).getXMLContext().getSessions() ){
@@ -520,7 +520,7 @@ public class PersistenceContext {
 
     @SuppressWarnings("rawtypes")
     public ClassDescriptor getDescriptorForClass(Class clazz){
-        Server session = getJpaSession();
+        DatabaseSession session = getJpaSession();
         ClassDescriptor descriptor = session.getDescriptor(clazz);
         if (descriptor == null){
             return getJAXBDescriptorForClass(clazz);
@@ -918,7 +918,7 @@ public class PersistenceContext {
                         info.setAttributeName(frMapping.getAttributeName());
                         info.setOwningEntity(entity);
                         info.setOwningEntityAlias(descriptor.getAlias());
-                        info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, getJpaSession()));
+                        info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
                         ((PersistenceWeavedRest)entity)._persistence_getRelationships().add(info);
                     }
                 }

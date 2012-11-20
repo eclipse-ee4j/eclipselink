@@ -122,8 +122,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         entityType = entityType.substring(entityType.lastIndexOf("/") + 1);
         String entityId = uri.substring(uri.lastIndexOf("/") + 1);
         ClassDescriptor descriptor = context.getDescriptor(entityType);
-        Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId,
-                null);
+        Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
 
         T foundEntity = (T) getObjectById(entityType, id);
         return foundEntity;
