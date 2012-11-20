@@ -30,9 +30,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -68,7 +68,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.NOT_FOUND).build();
         }
         Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key, discriminators);
+        Object id = IdHelper.buildId(app, type, key);
 
         Object entity = app.findAttribute(discriminators, type, id, getHintMap(ui), attribute);
 
@@ -99,7 +99,7 @@ public class EntityResource extends AbstractResource {
         }
         Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
 
-        Object id = IdHelper.buildId(app, type, key, discriminators);
+        Object id = IdHelper.buildId(app, type, key);
 
         Object entity = app.find(discriminators, type, id, getHintMap(ui));
 
@@ -200,8 +200,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.NOT_FOUND).build();
         }
 
-        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key, discriminators);
+        Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
         String partner = (String) getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
@@ -246,8 +245,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.NOT_FOUND).build();
         }
 
-        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key, discriminators);
+        Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
         String partner = (String) getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
@@ -290,8 +288,9 @@ public class EntityResource extends AbstractResource {
             }
             return Response.status(Status.NOT_FOUND).build();
         }
+
         Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
-        Object id = IdHelper.buildId(app, type, key, discriminators);
+        Object id = IdHelper.buildId(app, type, key);
         app.delete(discriminators, type, id);
         return Response.ok().build();
     }

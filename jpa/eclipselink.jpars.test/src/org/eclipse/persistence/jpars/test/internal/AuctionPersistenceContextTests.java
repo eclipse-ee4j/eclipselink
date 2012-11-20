@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
-import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public class AuctionPersistenceContextTests {
         EntityManagerFactory emf = context.getEmf();
         Assert.assertNotNull(emf);
         
-        Server session = JpaHelper.getServerSession(emf);
+        DatabaseSession session = JpaHelper.getServerSession(emf);
         Assert.assertEquals(3, session.getDescriptors().size());
     }
     
