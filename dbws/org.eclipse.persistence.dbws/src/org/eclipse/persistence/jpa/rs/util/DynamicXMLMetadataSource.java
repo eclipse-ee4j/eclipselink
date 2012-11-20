@@ -36,13 +36,12 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 
 /**
  * {@link MetadataSource} used in the creation of dynamic JAXB contexts for applications.
- * 
- * @see PersistenceFactory#createJAXBContext(Server)
+ *
  * @author dclarke
  * @since EclipseLink 2.4.0
  */
@@ -50,10 +49,10 @@ public class DynamicXMLMetadataSource implements MetadataSource {
 
     private static final String LINK_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
     private static final String LINK_PREFIX = "atom";
-    
+
     private XmlBindings xmlBindings;
 
-    public DynamicXMLMetadataSource(Server session, String packageName) {
+    public DynamicXMLMetadataSource(DatabaseSession session, String packageName) {
         ObjectFactory objectFactory = new ObjectFactory();
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(packageName);

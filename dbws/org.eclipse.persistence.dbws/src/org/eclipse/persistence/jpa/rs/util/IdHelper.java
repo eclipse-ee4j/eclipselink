@@ -31,7 +31,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.queries.FetchGroupTracker;
-import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.sessions.DatabaseSession;
 
 
 /**
@@ -47,8 +47,8 @@ public class IdHelper {
     private static final String SEPARATOR_STRING = "+";
 
     @SuppressWarnings("rawtypes")
-    public static Object buildId(PersistenceContext app, String entityName, String idString, Map<String, String> multitenantDiscriminators) {
-        Server session = app.getJpaSession();
+    public static Object buildId(PersistenceContext app, String entityName, String idString) {
+        DatabaseSession session = app.getJpaSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
@@ -146,7 +146,7 @@ public class IdHelper {
                                                             if (sourceToTargetFields.containsKey(field)) {
                                                                 if ((fieldName != null) && (dbFieldName.equals(fieldName))) {
                                                                     Object value = descriptor.getObjectBuilder().getBaseValueForField(dbField, entity);
-                                                                    Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, app.getJpaSession());
+                                                                    Object realAttributeValue = refMapping.getRealAttributeValueFromAttribute(refMapping.getAttributeValueFromObject(value), value, (AbstractSession) app.getJpaSession());
                                                                     key.append(realAttributeValue);
                                                                 }
                                                             }
@@ -187,7 +187,7 @@ public class IdHelper {
         Object entity = null;
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            entity = policy.createBeanUsingKey(id, context.getJpaSession());
+            entity = policy.createBeanUsingKey(id, (AbstractSession) context.getJpaSession());
         } else if (entity instanceof DynamicEntity) {
             DynamicEntityImpl dynamicEntity = (DynamicEntityImpl) context.newEntity(entityType);
             // if there is only one PK mapping, we assume the id object

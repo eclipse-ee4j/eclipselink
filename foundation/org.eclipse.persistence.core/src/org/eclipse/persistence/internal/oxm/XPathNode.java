@@ -61,6 +61,8 @@ public class XPathNode {
     private XPathNode textNode;
     private XPathNode anyNode;
     private boolean hasTypeChild;
+    private boolean hasPredicateSiblings;
+    private boolean hasPredicateChildren;
 
 
 	public XPathFragment getXPathFragment() {
@@ -278,8 +280,21 @@ public class XPathNode {
             }
             return xPathNode;
         }
-        boolean isSelfFragment = XPathFragment.SELF_FRAGMENT.equals(anXPathFragment);
+        this.hasPredicateChildren = hasPredicateChildren || anXPathFragment.getPredicate() != null;
+        if(this.getNonAttributeChildren() != null && this.hasPredicateChildren) {
+            for(XPathNode nextChild: this.getNonAttributeChildren()) {
+                XPathFragment nextFrag = nextChild.getXPathFragment();
+                if(nextFrag != null && nextFrag.equals(anXPathFragment, true)) {
+                    if(nextFrag.getPredicate() == null && anXPathFragment.getPredicate() != null) {
+                        nextChild.setHasPredicateSiblings(true);
+                    } else if(anXPathFragment.getPredicate() == null && nextFrag.getPredicate() != null) {
+                        xPathNode.setHasPredicateSiblings(true);
+                    }
+                }
+            }
+        }
 
+        boolean isSelfFragment = XPathFragment.SELF_FRAGMENT.equals(anXPathFragment);
         if(isSelfFragment){
             children.add(xPathNode);
             if (null == selfChildren) {
@@ -311,6 +326,14 @@ public class XPathNode {
             xPathNode.addChild(nextFragment, aNodeValue, namespaceResolver);
         }
         return xPathNode;
+    }
+
+    private void setHasPredicateSiblings(boolean b) {
+        this.hasPredicateSiblings = b;
+    }
+    
+    public boolean hasPredicateSiblings() {
+        return this.hasPredicateSiblings;
     }
 
     public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {

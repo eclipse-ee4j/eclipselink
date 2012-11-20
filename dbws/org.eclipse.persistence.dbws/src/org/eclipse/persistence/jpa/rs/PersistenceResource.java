@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -62,13 +63,14 @@ import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+@Path("/")
 public class PersistenceResource extends AbstractResource {
 
     @GET
     public Response getContexts(@Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
         return getContexts(hh, uriInfo.getBaseUri());
     }
-    
+
     protected Response getContexts(HttpHeaders hh, URI baseURI) throws JAXBException {
         Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
         Iterator<String> contextIterator = contexts.iterator();
@@ -85,14 +87,12 @@ public class PersistenceResource extends AbstractResource {
 
     @POST
     @Produces(MediaType.WILDCARD)
-    public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, @Context UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException,
-    NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return callSessionBean(hh, ui, ui.getBaseUri(), is);
+    public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        return callSessionBeanInternal(hh, ui, is);
     }
 
     @SuppressWarnings("rawtypes")
-    public Response callSessionBean(HttpHeaders hh, UriInfo ui, URI baseURI, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
-    InvocationTargetException, IllegalAccessException {
+    protected Response callSessionBeanInternal(HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         SessionBeanCall call = null;
         call = unmarshallSessionBeanCall(is);
 
@@ -106,7 +106,7 @@ public class PersistenceResource extends AbstractResource {
 
         PersistenceContext context = null;
         if (call.getContext() != null) {
-            context = getPersistenceFactory().get(call.getContext(), baseURI, null);
+            context = getPersistenceFactory().get(call.getContext(), ui.getBaseUri(), null);
             if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
                 return Response.status(Status.NOT_FOUND).build();
