@@ -1151,6 +1151,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         Map nonAttributeChildrenMap = xPathNode.getNonAttributeChildrenMap();
         if (null != nonAttributeChildrenMap) {
             resultNode = (XPathNode)nonAttributeChildrenMap.get(xPathFragment);
+            XPathNode nonPredicateNode = null;
+            if(resultNode != null && resultNode.hasPredicateSiblings()) {
+                nonPredicateNode = resultNode;
+                resultNode = null;
+            }
             if (null == resultNode) {
                 // POSITIONAL MAPPING
                 int newIndex;
@@ -1188,11 +1193,14 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                             }
                         }
                     }
-                    if(null == resultNode) {
+                    if(null == resultNode && null == nonPredicateNode) {
                         // ANY MAPPING
                         resultNode = xPathNode.getAnyNode();
                     }
                 }
+            }
+            if(resultNode == null && nonPredicateNode != null) {
+                return nonPredicateNode;
             }
             return resultNode;
         }
