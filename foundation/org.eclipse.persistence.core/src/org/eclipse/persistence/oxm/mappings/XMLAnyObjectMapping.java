@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -40,7 +41,9 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -48,6 +51,7 @@ import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -153,7 +157,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMapping {
+public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMapping, XMLConverterMapping<Session> {
     private XMLField field;
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;
@@ -308,9 +312,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
             if (next.getNodeType() == Node.TEXT_NODE) {
                 if ((i == (length - 1)) || (next.getNodeValue().trim().length() > 0)) {
                     objectValue = next.getNodeValue();
-                    if(getConverter() != null) {
-                        objectValue = getConverter().convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
-                    }
+                    objectValue = convertDataValueToObjectValue(objectValue, session, record.getUnmarshaller());
                     return objectValue;
                 }
             } else if (next.getNodeType() == Node.ELEMENT_NODE) {
@@ -389,9 +391,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
         DOMRecord record = (DOMRecord) row;
         Node root = record.getDOM();
         Object objectValue = value;
-        if(this.getConverter() != null) {
-            objectValue = getConverter().convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
-        }
+        objectValue = convertObjectValueToDataValue(objectValue, session, row.getMarshaller());
         if (field != null) {
             root = XPathEngine.getInstance().create((XMLField) getField(), root, session);
         }
@@ -631,6 +631,28 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
     
     public void setMixedContent(boolean mixed) {
         this.isMixedContent = mixed;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (null != converter) {
+            return converter.convertObjectValueToDataValue(value, session, marshaller);
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (null != converter) {
+            return converter.convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+        }
+        return fieldValue;
     }
 
 }

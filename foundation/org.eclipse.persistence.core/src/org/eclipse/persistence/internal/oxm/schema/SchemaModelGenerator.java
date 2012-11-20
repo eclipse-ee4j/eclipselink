@@ -29,7 +29,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
@@ -536,7 +536,7 @@ public class SchemaModelGenerator {
         if (schemaType != null) {
             schemaTypeString = getSchemaTypeString(schemaType, workingSchema);
         } else {
-            if (attrClass != null && !attrClass.equals(ClassConstants.STRING)) {
+            if (attrClass != null && !attrClass.equals(CoreClassConstants.STRING)) {
                 QName qName = (QName) XMLConversionManager.getDefaultJavaTypes().get(attrClass);
                 if (qName != null) {
                     schemaTypeString = getSchemaTypeString(qName, workingSchema);

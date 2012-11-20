@@ -17,19 +17,19 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
     // Protected to public
-    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, DatabaseMapping mapping) throws SAXException {
+    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, CoreMapping mapping) throws SAXException {
         if(xmlDescriptor == null){
             //Use the DescriptorNotFoundContentHandler to "look ahead" and determine if this is a simple or complex element
             //if it is complex the exception should be thrown
@@ -57,8 +57,8 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
-            AbstractSession session = unmarshalRecord.getSession();
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
+            CoreAbstractSession session = unmarshalRecord.getSession();
+            Class classValue = ((CoreInheritancePolicy) xmlDescriptor.getInheritancePolicy()).classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -94,7 +94,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         xmlReader.setLexicalHandler(childRecord);
     }
 
-    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, DatabaseMapping mapping, UnmarshalKeepAsElementPolicy policy) {
+    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, CoreMapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
@@ -166,7 +166,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
 
-    protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, AbstractSession session) {
+    protected void writeExtraNamespaces(List extraNamespaces, XMLRecord xmlRecord, CoreAbstractSession session) {
         if (extraNamespaces == null) {
             return;
         }
@@ -207,7 +207,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
     }
 
-    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverter converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
+    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverterMapping converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
         Object node = builder.getNodes().remove(builder.getNodes().size() -1);
         if (converter != null) {
             node = converter.convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
@@ -220,11 +220,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 unmarshalRecord.addAttributeValue((ContainerValue) this, node);
             }
         } else {
-            unmarshalRecord.setAttributeValue(node, (DatabaseMapping) mapping);
+            unmarshalRecord.setAttributeValue(node, (CoreMapping) mapping);
         }
     }
 
-    protected void endElementProcessText(UnmarshalRecord unmarshalRecord, Converter converter, XPathFragment xPathFragment, Object collection) {
+    protected void endElementProcessText(UnmarshalRecord unmarshalRecord, XMLConverterMapping converter, XPathFragment xPathFragment, Object collection) {
         Object value = unmarshalRecord.getCharacters().toString();
 
         unmarshalRecord.resetStringBuffer();
@@ -240,13 +240,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     }
                 }
             }
-            if(converter != null) {
-                if(converter instanceof XMLConverter){
-                    value = ((XMLConverter)converter).convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-                }else{
-                    value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession());
-                }
-            }            
+            value = converter.convertDataValueToObjectValue(value, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
             setOrAddAttributeValue(unmarshalRecord, value, xPathFragment, collection);
         }
     }

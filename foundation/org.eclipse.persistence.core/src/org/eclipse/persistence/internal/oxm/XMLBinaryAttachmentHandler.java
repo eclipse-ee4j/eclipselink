@@ -14,17 +14,15 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -38,16 +36,16 @@ import org.xml.sax.SAXException;
 
 public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     UnmarshalRecord record;
-    DatabaseMapping mapping;
+    CoreMapping mapping;
     String c_id = null;
-    Converter converter;
+    XMLConverterMapping converter;
     NodeValue nodeValue;
     boolean isCollection = false;
     
     private static final String INCLUDE_ELEMENT_NAME = "Include";
     private static final String HREF_ATTRIBUTE_NAME = "href";
 
-    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, DatabaseMapping mapping, Converter converter, boolean isCollection) {
+    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, CoreMapping mapping, XMLConverterMapping converter, boolean isCollection) {
         super(null);
         record = unmarshalRecord;
         this.mapping = mapping;
@@ -112,14 +110,7 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
                     data = attachmentUnmarshaller.getAttachmentAsByteArray(this.c_id);
                 }
                 data = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(data, mapping.getAttributeClassification(), record.getSession());
-                if (this.converter != null) {
-                    Converter converter = this.converter;
-                    if (converter instanceof XMLConverter) {
-                        data = ((XMLConverter) converter).convertDataValueToObjectValue(data, record.getSession(), record.getUnmarshaller());
-                    } else {
-                        data = converter.convertDataValueToObjectValue(data, record.getSession());
-                    }
-                }
+                data = converter.convertDataValueToObjectValue(data, record.getSession(), unmarshaller);
                 //check for collection case
                 if (isCollection) {
                     if(data != null) {

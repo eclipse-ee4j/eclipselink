@@ -17,24 +17,23 @@ import javax.xml.namespace.QName;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -59,19 +58,19 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return getContainerPolicy().containerInstance();
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlBinaryDataCollectionMapping.getContainerPolicy();
     }
 
-    protected String getValueToWrite(QName schemaType, Object value, AbstractSession session) {
-        return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+    protected String getValueToWrite(QName schemaType, Object value, CoreAbstractSession session) {
+        return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return xPathFragment.getNextFragment() == null || xPathFragment.isAttribute();
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlBinaryDataCollectionMapping.isReadOnly()) {
             return false;
         }
@@ -86,7 +85,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             }
         }
   
-        ContainerPolicy cp = getContainerPolicy();
+        CoreContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (!cp.hasNext(iterator)) {
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null);
@@ -166,7 +165,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
     }
 
 	@Override
-	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(objectValue == null) {
             AbstractNullPolicy nullPolicy = xmlBinaryDataCollectionMapping.getNullPolicy();
             if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
@@ -187,19 +186,9 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             mimeType = XMLConstants.EMPTY_STRING;
         }
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
-        if (xmlBinaryDataCollectionMapping.getValueConverter() != null) {
-            Converter converter = xmlBinaryDataCollectionMapping.getValueConverter();
-            if (converter instanceof XMLConverter) {
-                objectValue = ((XMLConverter) converter).convertObjectValueToDataValue(objectValue, session, marshaller);
-            } else {
-                objectValue = converter.convertObjectValueToDataValue(objectValue, session);
-            }
-        }        
+        objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshaller);
         marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         marshalRecord.closeStartElement();
-        
-        
-        
 
         if (xmlBinaryDataCollectionMapping.isSwaRef() && marshaller.getAttachmentMarshaller() != null) {
             //object value should be a DataHandler
@@ -224,7 +213,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 XPathFragment lastFrag = ((XMLField) xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
                 String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
-                if (objectValue.getClass() == ClassConstants.APBYTE) {
+                if (objectValue.getClass() == CoreClassConstants.APBYTE) {
                     bytes = (byte[]) objectValue;
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataCollectionMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else if (xmlBinaryDataCollectionMapping.getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {

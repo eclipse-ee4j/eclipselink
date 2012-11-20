@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm.record.namespaces;
 import java.lang.reflect.Method;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 
@@ -32,7 +32,7 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
     private static String GET_CONTEXTUAL_NAMESPACE_DECL_METHOD_NAME = "getContextualNamespaceDecls";
     
     private static final Class[] EMPTY_CLASS_ARRAY = new Class[]{};
-    private static final Class[] PREF_PREFIX_PARAM_TYPES = new Class[] {String.class, String.class, ClassConstants.PBOOLEAN};
+    private static final Class[] PREF_PREFIX_PARAM_TYPES = new Class[] {CoreClassConstants.STRING, CoreClassConstants.STRING, CoreClassConstants.PBOOLEAN};
     
     private Object prefixMapper;
     private Method getPreferredPrefixMethod;

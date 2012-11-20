@@ -25,14 +25,12 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -163,14 +161,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
 
     public void writeSingleValue(Object attributeValue, Object parent, XMLRecord record, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
-        if (getConverter() != null) {
-            Converter converter = getConverter();
-            if (converter instanceof XMLConverter) {
-                attributeValue = ((XMLConverter) converter).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
-            } else {
-                attributeValue = converter.convertObjectValueToDataValue(attributeValue, session);
-            }
-        }
+        attributeValue = convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
         XMLField field = (XMLField) getField();
         if (field.getLastXPathFragment().isAttribute()) {
             if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
@@ -417,15 +408,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 }
             }
         }
-        Object attributeValue = fieldValue;
-        if (getConverter() != null) {
-            if (getConverter() instanceof XMLConverter) {
-                attributeValue = ((XMLConverter) getConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
-            } else {
-                attributeValue = getConverter().convertDataValueToObjectValue(fieldValue, executionSession);
-            }
-        }
-
+        Object attributeValue = convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
         attributeValue = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(attributeValue, getAttributeClassification(), executionSession);
 
         return attributeValue;

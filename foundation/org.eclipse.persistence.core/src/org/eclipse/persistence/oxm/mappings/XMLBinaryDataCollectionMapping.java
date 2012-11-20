@@ -26,14 +26,12 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -235,16 +233,8 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
 
     public Object getValueToWrite(Object value, Object parent, XMLRecord record, XMLField field, XMLField includeField, AbstractSession session) {
         XMLMarshaller marshaller = record.getMarshaller();
-        Object element = value;
+        Object element = convertObjectValueToDataValue(value, session, record.getMarshaller());
         boolean isAttribute = ((XMLField) getField()).getLastXPathFragment().isAttribute();
-        if (getValueConverter() != null) {
-            Converter converter = getValueConverter();
-            if (converter instanceof XMLConverter) {
-                element = ((XMLConverter) converter).convertObjectValueToDataValue(element, session, record.getMarshaller());
-            } else {
-                element = converter.convertObjectValueToDataValue(element, session);
-            }
-        }
 
         if(element == null){
             return null;
@@ -474,15 +464,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                     }
                 }
             }
-            Object attributeValue = fieldValue;
-            if (getValueConverter() != null) {
-                if (getValueConverter() instanceof XMLConverter) {
-                    attributeValue = ((XMLConverter) getValueConverter()).convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
-                } else {
-                    attributeValue = getValueConverter().convertDataValueToObjectValue(fieldValue, executionSession);
-                }
-            }
-
+            Object attributeValue = convertDataValueToObjectValue(fieldValue, executionSession, unmarshaller);
             cp.addInto(attributeValue, result, query.getSession());
         }
         return result;

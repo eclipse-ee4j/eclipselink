@@ -15,6 +15,9 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -47,11 +50,11 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return xPathFragment.hasAttribute || xPathFragment.nameIsText;
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlDirectMapping.isReadOnly()) {
             return false;
         }
@@ -59,8 +62,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, (AbstractSession) session, marshalRecord);
         
         // Check for a null value 
         if (null == fieldValue) {
@@ -146,11 +149,11 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         XMLField xmlField = (XMLField) xmlDirectMapping.getField();
-        AbstractSession session = unmarshalRecord.getSession();        
+        CoreAbstractSession session = unmarshalRecord.getSession();        
         Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 
         // Perform operations on the object based on the null policy
-        Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, session, unmarshalRecord);
+        Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, (AbstractSession) session, unmarshalRecord);
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
     }
 
@@ -173,7 +176,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             value = unmarshalRecordCharacters.toString();
         }
         unmarshalRecord.resetStringBuffer();
-        AbstractSession session = unmarshalRecord.getSession();
+        CoreAbstractSession session = unmarshalRecord.getSession();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         QName typeQName = unmarshalRecord.getTypeQName(); 
         if (typeQName != null) {
@@ -183,12 +186,12 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }
 
-        Object convertedValue = xmlDirectMapping.getAttributeValue(value, session, unmarshalRecord);
+        Object convertedValue = xmlDirectMapping.getAttributeValue(value, (AbstractSession) session, unmarshalRecord);
         unmarshalRecord.setAttributeValue(convertedValue, xmlDirectMapping);
     }
 
-    public void setNullValue(Object object, Session session) {
-        Object value = xmlDirectMapping.getObjectValue(null, session);
+    public void setNullValue(Object object, CoreSession session) {
+        Object value = xmlDirectMapping.getObjectValue(null, (Session) session);
         xmlDirectMapping.setAttributeValueInObject(object, value);
     }
 

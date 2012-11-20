@@ -33,10 +33,10 @@ import org.eclipse.persistence.sdo.SDOProperty;
 import org.eclipse.persistence.sdo.SDOType;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.SDOException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 
@@ -713,7 +713,7 @@ public class SDODataHelper implements DataHelper {
             try {
                 Class binaryDataHelper = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper");
                 java.lang.reflect.Method getHelperMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "getXMLBinaryDataHelper", new Class[] {}, false);
-                java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class[] { Object.class, QName.class, AbstractSession.class }, false);
+                java.lang.reflect.Method stringToDataHandlerMethod = PrivilegedAccessHelper.getMethod(binaryDataHelper, "stringFromDataHandler", new Class[] { Object.class, QName.class, CoreAbstractSession.class }, false);
 
                 Object helper = PrivilegedAccessHelper.invokeMethod(getHelperMethod, binaryDataHelper, new Object[] {});
                 String result = (String) PrivilegedAccessHelper.invokeMethod(stringToDataHandlerMethod, helper, new Object[] { value, xsdType, ((SDOXMLHelper) getHelperContext().getXMLHelper()).getXmlContext().getSession(0) });

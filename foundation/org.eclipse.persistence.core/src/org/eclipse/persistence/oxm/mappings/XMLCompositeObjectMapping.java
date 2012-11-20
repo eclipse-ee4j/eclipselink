@@ -27,6 +27,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -40,6 +41,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -47,6 +50,7 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p>Composite object XML mappings represent a relationship between two classes.  In XML, the "owned"
@@ -194,7 +198,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping {
+public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping, XMLConverterMapping<Session> {
     AbstractNullPolicy nullPolicy;
     private XMLInverseReferenceMapping inverseReferenceMapping;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
@@ -503,13 +507,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) nestedRow.getDOM());
                 toReturn = nestedRow.getDOM();
-                if (getConverter() != null) {
-                    if (getConverter() instanceof XMLConverter) {
-                        toReturn = ((XMLConverter) getConverter()).convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
-                    } else {
-                        toReturn = getConverter().convertDataValueToObjectValue(toReturn, executionSession);
-                    }
-                }
+                toReturn = convertDataValueToObjectValue(toReturn, executionSession, nestedRow.getUnmarshaller());
 
                 //try simple case
                 toReturn = convertToSimpleTypeIfPresent(toReturn,  nestedRow, executionSession);
@@ -627,14 +625,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
-        Object attributeValue = value;
-        if (getConverter() != null) {
-            if (getConverter() instanceof XMLConverter) {
-                attributeValue = ((XMLConverter) getConverter()).convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
-            } else {
-                attributeValue = getConverter().convertObjectValueToDataValue(attributeValue, session);
-            }
-        }
+        Object attributeValue = convertObjectValueToDataValue(value, session, record.getMarshaller());
         // handle "self" xpath
         if (((XMLField) getField()).isSelfField()) {
              if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && attributeValue instanceof org.w3c.dom.Node) {
@@ -783,6 +774,36 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
     void setInverseReferenceMapping(XMLInverseReferenceMapping inverseReferenceMapping) {
         this.inverseReferenceMapping = inverseReferenceMapping;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                return converter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+            } else {
+                return converter.convertDataValueToObjectValue(fieldValue, session);
+            }
+        }
+        return fieldValue;
     }
 
 }

@@ -66,6 +66,7 @@ import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.descriptors.copying.*;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.descriptors.invalidation.*;
@@ -89,7 +90,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * @see org.eclipse.persistence.eis.EISDescriptor
  * @see org.eclipse.persistence.oxm.XMLDescriptor
  */
-public class ClassDescriptor implements Cloneable, Serializable {
+public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, DatabaseField, InheritancePolicy, InstantiationPolicy, Vector, ObjectBuilder> implements Cloneable, Serializable {
     protected Class javaClass;
     protected String javaClassName;
     protected Vector<DatabaseTable> tables;
@@ -130,13 +131,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected boolean shouldRegisterResultsInUnitOfWork = true;
 
     // Delegation objects, these perform most of the behavior.
-    protected DescriptorEventManager eventManager;
     protected DescriptorQueryManager queryManager;
-    protected ObjectBuilder objectBuilder;
     protected CopyPolicy copyPolicy;
     protected String copyPolicyClassName;
-    protected InstantiationPolicy instantiationPolicy;
-    protected InheritancePolicy inheritancePolicy;
     protected InterfacePolicy interfacePolicy;
     protected OptimisticLockingPolicy optimisticLockingPolicy;
     protected List<CascadeLockingPolicy> cascadeLockingPolicies;
@@ -2186,6 +2183,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Get the event manager for the descriptor.  The event manager is responsible
      * for managing the pre/post selectors.
      */
+    @Override
     public DescriptorEventManager getEventManager() {
         // Lazy initialize for XML deployment.
         if (eventManager == null) {
@@ -2247,6 +2245,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Caution must be used in using this method as it lazy initializes an inheritance policy.
      * Calling this on a descriptor that does not use inheritance will cause problems, #hasInheritance() must always first be called.
      */
+    @Override
     public InheritancePolicy getInheritancePolicy() {
         if (inheritancePolicy == null) {
             // Lazy initialize to conserve space in non-inherited classes.
@@ -2267,6 +2266,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Returns the instantiation policy.
      */
+    @Override
     public InstantiationPolicy getInstantiationPolicy() {
         // Lazy initialize for XML deployment.
         if (instantiationPolicy == null) {
@@ -2302,6 +2302,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * PUBLIC:
      * Return the java class.
      */
+    @Override
     public Class getJavaClass() {
         return javaClass;
     }
@@ -2450,6 +2451,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Return the object builder
      */
+    @Override
     public ObjectBuilder getObjectBuilder() {
         return objectBuilder;
     }
@@ -2490,6 +2492,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * PUBLIC:
      * Return the names of all the primary keys.
      */
+    @Override
     public Vector<String> getPrimaryKeyFieldNames() {
         Vector<String> result = new Vector(getPrimaryKeyFields().size());
         List primaryKeyFields = getPrimaryKeyFields();
@@ -2504,6 +2507,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Return all the primary key fields
      */
+    @Override
     public List<DatabaseField> getPrimaryKeyFields() {
         return primaryKeyFields;
     }
@@ -2730,6 +2734,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * searches first descriptor than its ReturningPolicy for an equal field
      */
+    @Override
     public DatabaseField getTypedField(DatabaseField field) {
         boolean mayBeMoreThanOne = hasMultipleTables() && !field.hasTableName();
         DatabaseField foundField = null;
@@ -2796,6 +2801,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * returns true if a DescriptorEventManager has been set.
      */ 
+    @Override
     public boolean hasEventManager() {
         return null != eventManager;
     }
@@ -2807,6 +2813,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * method will return false. 
      * @see hasTablePerClassPolicy()
      */
+    @Override
     public boolean hasInheritance() {
         return (inheritancePolicy != null);
     }
@@ -4373,6 +4380,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Set the event manager for the descriptor.  The event manager is responsible
      * for managing the pre/post selectors.
      */
+    @Override
     public void setEventManager(DescriptorEventManager eventManager) {
         this.eventManager = eventManager;
         if (eventManager != null) {
@@ -4439,6 +4447,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Sets the inheritance policy.
      */
+    @Override
     public void setInheritancePolicy(InheritancePolicy inheritancePolicy) {
         this.inheritancePolicy = inheritancePolicy;
         if (inheritancePolicy != null) {
@@ -4468,6 +4477,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Sets the instantiation policy.
      */
+    @Override
     public void setInstantiationPolicy(InstantiationPolicy instantiationPolicy) {
         this.instantiationPolicy = instantiationPolicy;
         if (instantiationPolicy != null) {
@@ -4648,6 +4658,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
     * Set the Java class that this descriptor maps.
     * Every descriptor maps one and only one class.
     */
+    @Override
     public void setJavaClass(Class theJavaClass) {
         javaClass = theJavaClass;
     }
@@ -4763,6 +4774,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Set the ObjectBuilder.
      */
+    @Override
     protected void setObjectBuilder(ObjectBuilder builder) {
         objectBuilder = builder;
     }
@@ -4801,6 +4813,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      *
      * @see #addPrimaryKeyFieldName(String)
      */
+    @Override
     public void setPrimaryKeyFieldNames(Vector primaryKeyFieldsName) {
         setPrimaryKeyFields(new ArrayList(primaryKeyFieldsName.size()));
         for (Enumeration keyEnum = primaryKeyFieldsName.elements(); keyEnum.hasMoreElements();) {
@@ -4812,6 +4825,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * INTERNAL:
      * Set the primary key fields
      */
+    @Override
     public void setPrimaryKeyFields(List<DatabaseField> thePrimaryKeyFields) {
         primaryKeyFields = thePrimaryKeyFields;
     }

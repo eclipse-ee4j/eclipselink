@@ -55,6 +55,7 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreHelper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
@@ -68,7 +69,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * <p>
  * <b>Purpose</b>: Define any useful methods that are missing from the base Java.
  */
-public class Helper implements Serializable {
+public class Helper extends CoreHelper implements Serializable {
 
     /** Used to configure JDBC level date optimization. */
     public static boolean shouldOptimizeDates = false;

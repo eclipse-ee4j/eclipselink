@@ -27,8 +27,8 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 import javax.xml.validation.ValidatorHandler;
 
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -278,7 +278,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
         //no op in this class.
     }
 
-    public Object getCurrentObject(AbstractSession session, XMLMapping selfRecordMapping) {
+    public Object getCurrentObject(CoreAbstractSession session, XMLMapping selfRecordMapping) {
         return null;
     }
 

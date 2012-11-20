@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.queries.CoreMappedKeyMapContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
@@ -46,7 +48,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return xPathFragment == null;
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlAnyAttributeMapping.isReadOnly()) {
             return false;
         }
@@ -54,7 +56,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         if (collection == null) {
             return false;
         }
-        ContainerPolicy cp = getContainerPolicy();
+        CoreContainerPolicy cp = getContainerPolicy();
         Object iter = cp.iteratorFor(collection);
         if (!cp.hasNext(iter)) {
             return false;
@@ -128,15 +130,15 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         xmlAnyAttributeMapping.setAttributeValueInObject(object, container);
     }
 
-    public MappedKeyMapContainerPolicy getContainerPolicy() {
-        return (MappedKeyMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
+    public CoreMappedKeyMapContainerPolicy getContainerPolicy() {
+        return (CoreMappedKeyMapContainerPolicy) xmlAnyAttributeMapping.getContainerPolicy();
     }
 
     public boolean isContainerValue() {
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         return true;
     }
 

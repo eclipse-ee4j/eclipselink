@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -57,7 +58,9 @@ import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMa
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -65,6 +68,7 @@ import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
@@ -90,7 +94,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * 
  */
 
-public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
+public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping, XMLConverterMapping<Session> {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;
@@ -241,28 +245,15 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
        for(XMLEntry next:values) {
            XMLField valueField = next.getXMLField();
            DatabaseMapping nextMapping = (DatabaseMapping)this.choiceElementMappings.get(valueField);
-           Converter converter = getConverter();
            if(nextMapping.isAbstractCompositeCollectionMapping()) {
                XMLCompositeCollectionMapping xmlMapping = (XMLCompositeCollectionMapping)nextMapping;
                Object value = xmlMapping.buildObjectFromNestedRow((AbstractRecord)next.getValue(), joinManager, sourceQuery, executionSession, isTargetProtected);
-               if(converter != null) {
-                   if (converter instanceof XMLConverter) {
-                       value = ((XMLConverter) converter).convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
-                   } else {
-                       value = converter.convertDataValueToObjectValue(value, executionSession);
-                   }
-               }
+               value = convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
                getContainerPolicy().addInto(value, container, executionSession);
            } else if(nextMapping instanceof XMLCompositeDirectCollectionMapping){
                XMLCompositeDirectCollectionMapping xmlMapping = (XMLCompositeDirectCollectionMapping)nextMapping;
                Object value = next.getValue();
-               if(converter != null) {
-                   if (converter instanceof XMLConverter) {
-                       value = ((XMLConverter) converter).convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
-                   } else {
-                       value = converter.convertDataValueToObjectValue(value, executionSession);
-                   }
-               }
+               value = convertDataValueToObjectValue(value, executionSession, ((XMLRecord) row).getUnmarshaller());
                getContainerPolicy().addInto(value, container, executionSession);
            }
        }
@@ -291,13 +282,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
             if(null != iterator) {
                 while(cp.hasNext(iterator)) {
                     Object value = cp.next(iterator, session);
-                    if (null != converter) {
-                        if (converter instanceof XMLConverter) {
-                            value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, record.getMarshaller());
-                        } else {
-                            value = converter.convertObjectValueToDataValue(value, session);
-                        }
-                    }
+                    value = convertObjectValueToDataValue(value, session, record.getMarshaller());
                     NodeValue associatedNodeValue = null;
                     XMLField associatedField = null;
                     Object fieldValue = value;
@@ -974,4 +959,35 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     public void setChoiceElementMappingsByClass(Map<Class, XMLMapping> choiceElementMappingsByClass) {
         this.choiceElementMappingsByClass = choiceElementMappingsByClass;
     }      
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                return converter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object fieldValue, Session session, XMLUnmarshaller unmarshaller) {
+        if (null != converter) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertDataValueToObjectValue(fieldValue, session, unmarshaller);
+            } else {
+                return converter.convertDataValueToObjectValue(fieldValue, session);
+            }
+        }
+        return fieldValue;
+    }
+
 }

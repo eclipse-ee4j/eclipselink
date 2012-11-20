@@ -23,13 +23,14 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
  */
-public class ClassConstants {
+public class ClassConstants extends CoreClassConstants {
     // Java classes
     public static final Class Collection_Class = Collection.class;
     public static final Class Hashtable_Class = Hashtable.class;

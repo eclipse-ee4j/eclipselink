@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -40,6 +41,8 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -48,6 +51,7 @@ import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -149,7 +153,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping, XMLContainerMapping {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping, XMLContainerMapping, XMLConverterMapping<Session> {
     AbstractNullPolicy nullPolicy;
     private AbstractNullPolicy wrapperNullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
@@ -420,13 +424,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             while(cp.hasNext(iter)) {
                 Object element = cp.next(iter, session);
                 // convert the value - if necessary
-                if (hasConverter()) {
-                    if (getConverter() instanceof XMLConverter) {
-                        element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
-                    } else {
-                        element = getConverter().convertObjectValueToDataValue(element, session);
-                    }
-                }
+                element = convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
                 if(element == null) {
                     XMLNullRepresentationType nullRepresentation = getNullPolicy().getMarshalNullRepresentation();
                     if(nullRepresentation == XMLNullRepresentationType.XSI_NIL) {
@@ -519,13 +517,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
             if ((getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (getKeepAsElementPolicy() == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
                 XMLPlatformFactory.getInstance().getXMLPlatform().namespaceQualifyFragment((Element) ((DOMRecord)nestedRow).getDOM());
                 objectToAdd = ((DOMRecord)nestedRow).getDOM();
-                if (getConverter() != null) {     
-                    if (getConverter() instanceof XMLConverter) {
-                        objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
-                    } else {
-                        objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
-                    }
-                }
+                convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
                 //simple case
                 objectToAdd = convertToSimpleTypeIfPresent(objectToAdd, nestedRow,executionSession);
             } else {
@@ -574,13 +566,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
             //Object element 
             objectToAdd = buildCompositeObject(aDescriptor, nestedRow, sourceQuery, null, joinManager, executionSession);
-            if (hasConverter()) {
-                if (getConverter() instanceof XMLConverter) {
-                    objectToAdd = ((XMLConverter) getConverter()).convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
-                } else {
-                    objectToAdd = getConverter().convertDataValueToObjectValue(objectToAdd, executionSession);
-                }
-            }
+            objectToAdd = convertDataValueToObjectValue(objectToAdd, executionSession, ((XMLRecord) nestedRow).getUnmarshaller());
         }
         return objectToAdd;
     }
@@ -667,14 +653,7 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
-        Object element = value;
-        if (hasConverter()) {
-            if (getConverter() instanceof XMLConverter) {
-                element = ((XMLConverter) getConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
-            } else {
-                element = getConverter().convertObjectValueToDataValue(element, session);
-            }
-        }
+        Object element = convertObjectValueToDataValue(value, session, record.getMarshaller());
         XMLRecord nestedRow = (XMLRecord) buildCompositeRow(element, session, record, WriteType.UNDEFINED);
         record.add(getField(), nestedRow);
     }
@@ -794,6 +773,36 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
 
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertObjectValueToDataValue(value, (AbstractSession) session, marshaller);
+            } else {
+                return converter.convertObjectValueToDataValue(value, (AbstractSession) session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object value, Session session, XMLUnmarshaller unmarshaller) {
+        if (hasConverter()) {
+            if (converter instanceof XMLConverter) {
+                return ((XMLConverter)converter).convertDataValueToObjectValue(value, session, unmarshaller);
+            } else {
+                return converter.convertDataValueToObjectValue(value, session);
+            }
+        }
+        return value;
     }
 
 }

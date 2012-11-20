@@ -21,9 +21,11 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
@@ -194,7 +196,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             // MAPPINGS
             Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
             Iterator fieldTransformerIterator;
-            DatabaseMapping xmlMapping;
+            CoreMapping xmlMapping;
     
             // Transformation Mapping
             AbstractTransformationMapping transformationMapping;
@@ -207,7 +209,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             NodeValue mappingNodeValue = null;
             XMLField xmlField;
             while (mappingIterator.hasNext()) {
-                xmlMapping = (DatabaseMapping)mappingIterator.next();
+                xmlMapping = (CoreMapping)mappingIterator.next();
                 
                 if (xmlMapping instanceof XMLInverseReferenceMapping) {
                     continue;
@@ -399,7 +401,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         return buildRow(record, object, session, null, null, writeType);
     }
 
-    public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
+    public AbstractRecord buildRow(AbstractRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
         lazyInitialize();
         XPathNode textNode = rootXPathNode.getTextNode();
         List<XPathNode> nonAttributeChildren = rootXPathNode.getNonAttributeChildren();
@@ -501,7 +503,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         }
     }
 
-    public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session) {
+    public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session) {
         lazyInitialize();
         boolean hasValue = false;
         NamespaceResolver namespaceResolver = ((XMLDescriptor)descriptor).getNamespaceResolver();
@@ -523,7 +525,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             for (XPathNode selfXPathNode : selfChildren) {
                 NodeValue marshalNodeValue = selfXPathNode.getMarshalNodeValue();
                 if(marshalNodeValue instanceof MappingNodeValue) {
-                    DatabaseMapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
+                    CoreMapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
                     Object value = selfMapping.getAttributeValueFromObject(object);
                     XMLDescriptor referenceDescriptor = (XMLDescriptor)selfMapping.getReferenceDescriptor();
                     XMLDescriptor valueDescriptor;

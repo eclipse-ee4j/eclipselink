@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -30,6 +31,8 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -37,6 +40,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p>Composite direct collection XML mappings map a collection of simple types (String, Number, Date,
@@ -224,7 +228,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLContainerMapping, XMLNillableMapping {
+public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLContainerMapping, XMLNillableMapping, XMLConverterMapping<Session> {
     private boolean isCDATA;
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;
@@ -339,13 +343,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
         for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
             Object element = stream.nextElement();
-            if (null != valueConverter) {
-                if (valueConverter instanceof XMLConverter) {
-                    element = ((XMLConverter) valueConverter).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
-                } else {
-                    element = valueConverter.convertDataValueToObjectValue(element, executionSession);
-                }
-            }
+            element = convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
             if (element != null && element.getClass() == ClassConstants.STRING) {
                 if (isCollapsingStringValues) {
                     element = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)element);
@@ -380,13 +378,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
         if (null != iter) {
             while (cp.hasNext(iter)) {
                 Object element = cp.next(iter, session);
-                if (null != valueConverter) {
-                    if (valueConverter instanceof XMLConverter) {
-                        element = ((XMLConverter) valueConverter).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
-                    } else {
-                        element = valueConverter.convertObjectValueToDataValue(element, session);
-                    }
-                }
+                element = convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
 
                 if (element != null) {
                     elements.addElement(element);
@@ -415,14 +407,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     }
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
-        Object element = value;
-        if (null != valueConverter) {
-            if (valueConverter instanceof XMLConverter) {
-                element = ((XMLConverter) valueConverter).convertObjectValueToDataValue(element, session, record.getMarshaller());
-            } else {
-                element = valueConverter.convertObjectValueToDataValue(element, session);
-            }
-        }
+        Object element = convertObjectValueToDataValue(value, session, record.getMarshaller());
         record.add(this.getField(), element);
     }
 
@@ -551,6 +536,36 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
     public void setWrapperNullPolicy(AbstractNullPolicy policy) {
         this.wrapperNullPolicy = policy;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertObjectValueToDataValue(Object value, Session session, XMLMarshaller marshaller) {
+        if (hasValueConverter()) {
+            if (valueConverter instanceof XMLConverter) {
+                return ((XMLConverter)valueConverter).convertObjectValueToDataValue(value, session, marshaller);
+            } else {
+                return valueConverter.convertObjectValueToDataValue(value, session);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public Object convertDataValueToObjectValue(Object value, Session session, XMLUnmarshaller unmarshaller) {
+        if (hasValueConverter()) {
+            if (valueConverter instanceof XMLConverter) {
+                return ((XMLConverter)valueConverter).convertDataValueToObjectValue(value, session, unmarshaller);
+            } else {
+                return valueConverter.convertDataValueToObjectValue(value, session);
+            }
+        }
+        return value;
     }
 
 }

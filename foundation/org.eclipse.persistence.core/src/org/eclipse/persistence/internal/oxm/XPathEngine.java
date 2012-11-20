@@ -20,10 +20,10 @@ import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -81,11 +81,11 @@ public class XPathEngine {
     *
     * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
     */
-    public Node create(XMLField xmlField, Node element, AbstractSession session) throws XMLMarshalException {
+    public Node create(XMLField xmlField, Node element, CoreAbstractSession session) throws XMLMarshalException {
         return create(xmlField, element, this, session);
     }
 
-    public Node create(XMLField xmlField, Node element, Object value, AbstractSession session) {
+    public Node create(XMLField xmlField, Node element, Object value, CoreAbstractSession session) {
         return create(xmlField, element, value, null, noDocPresPolicy, session);
     }
 
@@ -103,7 +103,7 @@ public class XPathEngine {
     *
     * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
     */
-    public Node create(XMLField xmlField, Node element, Object value, XMLField lastUpdated, DocumentPreservationPolicy docPresPolicy, AbstractSession session) throws XMLMarshalException {
+    public Node create(XMLField xmlField, Node element, Object value, XMLField lastUpdated, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) throws XMLMarshalException {
         if (null == value) {
             return null;
         }
@@ -135,7 +135,7 @@ public class XPathEngine {
         return created.item(0);
     }
 
-    public void create(List<XMLField> xmlFields, Node contextNode, List<XMLEntry> values, XMLField lastUpdatedField, DocumentPreservationPolicy docPresPolicy, AbstractSession session) {
+    public void create(List<XMLField> xmlFields, Node contextNode, List<XMLEntry> values, XMLField lastUpdatedField, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) {
         List itemsToWrite = new ArrayList();
         for(int i = 0, size = values.size(); i < size; i++) {
             XMLEntry nextEntry = values.get(i);
@@ -164,7 +164,7 @@ public class XPathEngine {
     *
     * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
     */
-    private NodeList createCollection(XMLField xmlField, Node element, Object value, XMLField lastUpdated, DocumentPreservationPolicy docPresPolicy, AbstractSession session) throws XMLMarshalException {
+    private NodeList createCollection(XMLField xmlField, Node element, Object value, XMLField lastUpdated, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) throws XMLMarshalException {
         XMLNodeList createdElements = new XMLNodeList();
 
         //CR:### If the value is null, then the node(s) must not be created.
@@ -249,7 +249,7 @@ public class XPathEngine {
         return createdElements;
     }
 
-    private Object getNonNodeValueToWrite(Object value, XMLField xmlField, AbstractSession session) {
+    private Object getNonNodeValueToWrite(Object value, XMLField xmlField, CoreAbstractSession session) {
         if (this == value) {
             return this;
         }
@@ -275,7 +275,7 @@ public class XPathEngine {
                     if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
                         nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
                     }else{
-                    	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
+                    	nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
                     }
                     returnStringBuilder.append(nextConvertedItem);
                     if (i < (((List)value).size() - 1)) {
@@ -294,7 +294,7 @@ public class XPathEngine {
                             String nextConvertedItem = getStringForQName((QName)nextItem, getNamespaceResolverForField(xmlField));
                             items.add(nextConvertedItem);
                         }else{
-                            String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, ClassConstants.STRING, schemaType);
+                            String nextConvertedItem = (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(nextItem, CoreClassConstants.STRING, schemaType);
                             items.add(nextConvertedItem);
                         }
                     }
@@ -305,11 +305,11 @@ public class XPathEngine {
             if(schemaType != null && schemaType.equals(XMLConstants.QNAME_QNAME)){
                 return getStringForQName((QName)value, getNamespaceResolverForField(xmlField));
             }
-            return ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+            return ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
         }
     }
 
-    private Object getValueToWrite(Object value, XMLField xmlField, AbstractSession session) {
+    private Object getValueToWrite(Object value, XMLField xmlField, CoreAbstractSession session) {
         if (value instanceof Node || value == XMLRecord.NIL) {
             return value;
         }
@@ -317,7 +317,7 @@ public class XPathEngine {
         return getNonNodeValueToWrite(value, xmlField, session);
     }
 
-    private String getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
+    private String getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         for (int i = 0; i < schemaTypes.size(); i++) {
@@ -335,10 +335,10 @@ public class XPathEngine {
                 }
             }
         }
-        return (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType);
+        return (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
-    private Object getValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
+    private Object getValueToWriteForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
         if (value instanceof List) {
             if (xmlField.usesSingleNode()) {
                 StringBuilder returnStringBuilder = new StringBuilder();
@@ -381,7 +381,7 @@ public class XPathEngine {
     *
     * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
     */
-    private Node addIndexedElement(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, AbstractSession session) throws XMLMarshalException {
+    private Node addIndexedElement(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, CoreAbstractSession session) throws XMLMarshalException {
         String element = fragment.getShortName();
 
         int index = fragment.getIndexValue();
@@ -433,11 +433,11 @@ public class XPathEngine {
     *
     * @return The <code>XMLElement</code> that was created/found
     */
-    private Node addElement(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, AbstractSession session) {
+    private Node addElement(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, CoreAbstractSession session) {
         return addElement(fragment, xmlField, parent, null, value, forceCreate, session);
     }
 
-    private Node addElement(XPathFragment fragment, XMLField xmlField, Node parent, QName schemaType, Object value, boolean forceCreate, AbstractSession session) {
+    private Node addElement(XPathFragment fragment, XMLField xmlField, Node parent, QName schemaType, Object value, boolean forceCreate, CoreAbstractSession session) {
         NodeList list = addElements(fragment, xmlField, parent, value, forceCreate, null, noDocPresPolicy, session);
         if (list.getLength() > 0) {
             return list.item(0);
@@ -458,7 +458,7 @@ public class XPathEngine {
 
     * @return The <code>NodeList</code> that was created/found
     */
-    private NodeList addElements(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, Element sibling, DocumentPreservationPolicy docPresPolicy, AbstractSession session) {
+    private NodeList addElements(XPathFragment fragment, XMLField xmlField, Node parent, Object value, boolean forceCreate, Element sibling, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) {
         if (!forceCreate) {
             NodeList nodes = unmarshalXPathEngine.selectElementNodes(parent, fragment, getNamespaceResolverForField(xmlField));
             if (nodes.getLength() > 0) {
@@ -561,7 +561,7 @@ public class XPathEngine {
     * @param elementName tag name for the new element
     * @param value Object to add
     */
-    private Node createElement(Node parent, XPathFragment fragment, XMLField xmlField, Object value, AbstractSession session) {
+    private Node createElement(Node parent, XPathFragment fragment, XMLField xmlField, Object value, CoreAbstractSession session) {
         if (value == null) {
             return parent;
         }
@@ -672,7 +672,7 @@ public class XPathEngine {
             next = elements.item(i);
             if (next.getNodeType() == Node.ELEMENT_NODE) {
                 Class valueClass = values.get(i).getClass();
-                if(valueClass != ClassConstants.STRING){
+                if(valueClass != CoreClassConstants.STRING){
                     QName qname = field.getXMLType(valueClass);
                     if (qname != null) {
                         if (null == schemaInstancePrefix) {
@@ -759,7 +759,7 @@ public class XPathEngine {
     *
     * @return The <code>XMLElement</code> that the attribute was added to (same as the <code>parent</code> parameter).
     */
-    private Node addAttribute(XPathFragment attributeFragment, XMLField xmlField, Node parent, Object value, AbstractSession session) {
+    private Node addAttribute(XPathFragment attributeFragment, XMLField xmlField, Node parent, Object value, CoreAbstractSession session) {
         Object valueToWrite = null;
 
         if (!(parent instanceof Element)) {
@@ -870,7 +870,7 @@ public class XPathEngine {
     *
     * @return <code>NodeList</code> containing the nodes that were replaced.
     */
-    public NodeList replaceValue(XMLField xmlField, Node parent, Object value, AbstractSession session) throws XMLMarshalException {
+    public NodeList replaceValue(XMLField xmlField, Node parent, Object value, CoreAbstractSession session) throws XMLMarshalException {
         NodeList nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField));
         int numberOfNodes = nodes.getLength();
         XMLNodeList createdElements = new XMLNodeList();
@@ -892,7 +892,7 @@ public class XPathEngine {
                             addXsiNilToElement(parentElement, xmlField);
                             parentElement.removeChild(node);
                         } else {
-                            String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING);
+                            String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING);
                             Element parentElement = (Element)node.getParentNode();
                             if(parentElement == null && parent.getNodeType() == Node.ELEMENT_NODE) {
                                 parentElement = (Element)parent;
@@ -942,7 +942,7 @@ public class XPathEngine {
         return nodes;
     }
 
-    public List<XMLEntry> replaceCollection(List<XMLField> xmlFields, List<XMLEntry> values, Node contextNode, DocumentPreservationPolicy docPresPolicy, XMLField lastUpdatedField, AbstractSession session) {
+    public List<XMLEntry> replaceCollection(List<XMLField> xmlFields, List<XMLEntry> values, Node contextNode, DocumentPreservationPolicy docPresPolicy, XMLField lastUpdatedField, CoreAbstractSession session) {
         List<XMLEntry> oldNodes = unmarshalXPathEngine.selectNodes(contextNode, xmlFields, getNamespaceResolverForField(xmlFields.get(0)));
         if(oldNodes == null || oldNodes.size() == 0) {
             return oldNodes;
@@ -970,7 +970,7 @@ public class XPathEngine {
 
         return oldNodes;
     }
-    public NodeList replaceCollection(XMLField xmlField, Node parent, Collection values, AbstractSession session) throws XMLMarshalException {
+    public NodeList replaceCollection(XMLField xmlField, Node parent, Collection values, CoreAbstractSession session) throws XMLMarshalException {
         NodeList nodes = null;
         if (xmlField != null) {
             nodes = unmarshalXPathEngine.selectNodes(parent, xmlField, getNamespaceResolverForField(xmlField));
@@ -1005,7 +1005,7 @@ public class XPathEngine {
                     Node grandParentNode = parentNode.getParentNode();
                     grandParentNode.removeChild(parentNode);
                 } else {
-                    oldChild.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING));
+                    oldChild.setNodeValue((String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING));
                 }
             } else {
                 Element element = (Element)oldChild;

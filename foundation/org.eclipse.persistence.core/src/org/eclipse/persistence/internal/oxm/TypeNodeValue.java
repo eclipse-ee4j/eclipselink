@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -33,17 +34,17 @@ public class TypeNodeValue extends NodeValue {
         return (null != xPathFragment) && xPathFragment.isAttribute();
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Object objectValue = directMapping.getAttributeValueFromObject(object);
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = directMapping.getFieldValue(objectValue, session);
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Object fieldValue = directMapping.getFieldValue(objectValue, (AbstractSession) session);
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
         }
@@ -86,7 +87,7 @@ public class TypeNodeValue extends NodeValue {
         this.directMapping = directMapping;
     }
 
-    private QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
+    private QName getSchemaType(XMLField xmlField, Object value, CoreAbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
@@ -98,7 +99,7 @@ public class TypeNodeValue extends NodeValue {
         return schemaType;
     }
 
-    private QName getSchemaTypeForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
+    private QName getSchemaTypeForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
         ArrayList schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;

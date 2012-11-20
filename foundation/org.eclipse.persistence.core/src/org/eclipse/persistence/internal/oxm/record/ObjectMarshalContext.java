@@ -12,11 +12,11 @@
  ******************************************************************************/
  package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
@@ -48,15 +48,15 @@ public class ObjectMarshalContext implements MarshalContext {
         return xPathNode.getNonAttributeChildren().get(index);
     }
 
-    public Object getAttributeValue(Object object, DatabaseMapping mapping) {
+    public Object getAttributeValue(Object object, CoreMapping mapping) {
         return mapping.getAttributeValueFromObject(object);
     }
 
-    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this);
     }
     
-    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment) {
         return nodeValue.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, this, rootFragment);
     }
 

@@ -14,11 +14,11 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.util.Map.Entry;
 
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
@@ -48,12 +48,12 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
      * Override the method in XPathNode such that the marshaller can be set on the
      * marshalRecord - this is required for XMLConverter usage.
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlFragmentCollectionMapping.isReadOnly()) {
             return false;
         }
 
-        ContainerPolicy cp = xmlFragmentCollectionMapping.getContainerPolicy();
+        CoreContainerPolicy cp = xmlFragmentCollectionMapping.getContainerPolicy();
         Object collection = xmlFragmentCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             return false;
@@ -113,7 +113,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         xmlFragmentCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlFragmentCollectionMapping.getContainerPolicy();
     }
 
@@ -121,7 +121,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (value instanceof Node) {
             marshalRecord.node((org.w3c.dom.Node)value, namespaceResolver);
         }

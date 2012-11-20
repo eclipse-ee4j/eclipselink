@@ -17,7 +17,7 @@ package org.eclipse.persistence.sdo.helper.jaxb;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
@@ -36,7 +36,7 @@ public class JAXBListWrapper extends ListWrapper {
         jaxbValueStore = aJAXBValueStore;
         currentElements = new JAXBList(aJAXBValueStore, aProperty);
         xmlInverseReferenceMapping = null;
-        DatabaseMapping jaxbMapping = jaxbValueStore.getJAXBMappingForProperty(property);
+        CoreMapping jaxbMapping = jaxbValueStore.getJAXBMappingForProperty(property);
         if(jaxbMapping.isAbstractCompositeCollectionMapping()) {
             XMLCompositeCollectionMapping xmlCompositeCollectionMapping = (XMLCompositeCollectionMapping) jaxbMapping;
             xmlInverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();

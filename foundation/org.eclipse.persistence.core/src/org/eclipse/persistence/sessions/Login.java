@@ -14,6 +14,7 @@ package org.eclipse.persistence.sessions;
 
 import java.util.Properties;
 
+import org.eclipse.persistence.core.sessions.CoreLogin;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -29,7 +30,7 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
  * <p>
  * @see DatabaseLogin
  */
-public interface Login {
+public interface Login extends CoreLogin {
 
     /**
      * PUBLIC:

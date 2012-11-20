@@ -15,6 +15,7 @@ package org.eclipse.persistence.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.config.ReferenceMode;
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.expressions.*;
@@ -47,7 +48,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
  * @see org.eclipse.persistence.sessions.server.ServerSession
  * @see org.eclipse.persistence.sessions.server.ClientSession
  */
-public interface Session {
+public interface Session extends CoreSession<ClassDescriptor, Login> {
 
     /**
      * ADVANCED:
@@ -434,12 +435,14 @@ public interface Session {
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
+    @Override
     public ClassDescriptor getDescriptor(Class theClass);
 
     /**
      * ADVANCED:
      * Return the descriptor specified for the object's class.
      */
+    @Override
     public ClassDescriptor getDescriptor(Object domainObject);
 
     /**

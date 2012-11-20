@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -839,7 +841,7 @@ public class DOMRecord extends XMLRecord {
      * references.
      * @since EclipseLink 2.5.0
      */
-    public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
+    public void resolveReferences(CoreAbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
             referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }

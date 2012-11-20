@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -136,7 +137,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * (in the XMLObjectReferenceMapping's source-target key field association list)
      * is retrieved and written out. 
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         return marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
 
@@ -146,7 +147,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * (in the XMLObjectReferenceMapping's source-target key field association list)
      * is retrieved and written out. 
      */
-    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+    public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if (xmlObjectReferenceMapping.isReadOnly()) {
             return false;
         }
@@ -154,8 +155,8 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, targetObject, session, namespaceResolver, marshalContext);
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
+    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+        Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, (AbstractSession) session);
         if (fieldValue == null) {
             if(null != targetObject) {
                 XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);

@@ -20,13 +20,13 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -809,7 +809,7 @@ public class XMLField extends DatabaseField {
     /**
      * INTERNAL:
      */
-    public QName getSchemaTypeForValue(Object value, AbstractSession session) {
+    public QName getSchemaTypeForValue(Object value, CoreAbstractSession session) {
         if(leafElementType != null){
             return leafElementType;
         }else if (isTypedTextField) {

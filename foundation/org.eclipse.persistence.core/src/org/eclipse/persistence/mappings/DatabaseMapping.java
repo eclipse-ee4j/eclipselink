@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -65,7 +66,7 @@ import org.eclipse.persistence.sessions.Project;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public abstract class DatabaseMapping implements Cloneable, Serializable {
+public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, AbstractSession, ContainerPolicy, ClassDescriptor, DatabaseField> implements Cloneable, Serializable {
     public enum WriteType { INSERT, UPDATE, UNDEFINED } 
     
     /** Used to reduce memory for mappings with no fields. */
@@ -539,6 +540,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * The attribute accessor is responsible for setting and retrieving the attribute value
      * from the object for this mapping.
      */
+    @Override
     public AttributeAccessor getAttributeAccessor() {
         return attributeAccessor;
     }
@@ -547,6 +549,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * PUBLIC:
      * The classification type for the attribute this mapping represents
      */
+    @Override
     public Class getAttributeClassification() {
         return null;
     }
@@ -555,6 +558,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * PUBLIC:
      * Return the name of the attribute set in the mapping. 
      */
+    @Override
     public String getAttributeName() {
     	// The attribute name on the attributeAccessor will always override any attribute already set
     	// Use the attributeAccessor attribute over the current attribute name
@@ -568,6 +572,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Return the value of an attribute which this mapping represents for an object.
      */
+    @Override
     public Object getAttributeValueFromObject(Object object) throws DescriptorException {
         try {
             // PERF: direct-access.
@@ -582,6 +587,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Return the mapping's containerPolicy.
      */
+    @Override
     public ContainerPolicy getContainerPolicy() {
         throw DescriptorException.invalidMappingOperation(this, "getContainerPolicy");
     }
@@ -609,6 +615,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * they are defined in in an Enterprise context they cannot be cast to.
      * Mappings that have a field include direct mappings and object relational mappings.
      */
+    @Override
     public DatabaseField getField() {
         return null;
     }
@@ -645,6 +652,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Returns a vector of all the fields this mapping represents.
      */
+    @Override
     public Vector<DatabaseField> getFields() {
         return this.fields;
     }
@@ -757,6 +765,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * Return the referenceDescriptor. This is a descriptor which is associated with
      * the reference class.
      */
+    @Override
     public ClassDescriptor getReferenceDescriptor() {
         return null;
     }
@@ -1112,6 +1121,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isAbstractDirectMapping() {
         return false;
     }
@@ -1127,6 +1137,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isAbstractCompositeDirectCollectionMapping() {
         return false;
     }
@@ -1135,6 +1146,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isAbstractCompositeObjectMapping() {
         return false;
     }
@@ -1143,6 +1155,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isAbstractCompositeCollectionMapping() {
         return false;
     }
@@ -1227,6 +1240,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Returns true if mapping is read only else false.
      */
+    @Override
     public boolean isReadOnly() {
         return isReadOnly;
     }
@@ -1235,6 +1249,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isReferenceMapping() {
         return false;
     }
@@ -1255,6 +1270,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Related mapping should implement this method to return true.
      */
+    @Override
     public boolean isTransformationMapping() {
         return false;
     }
@@ -1286,6 +1302,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Some mappings support no attribute (transformation and multitenant primary key).
      */
+    @Override
     public boolean isWriteOnly() {
         return false;
     }
@@ -1510,6 +1527,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * This can be set to an implementor of AttributeAccessor if the attribute
      * requires advanced conversion of the mapping value, or a real attribute does not exist.
      */
+    @Override
     public void setAttributeAccessor(AttributeAccessor attributeAccessor) {
         String attributeName = getAttributeName();
         this.attributeAccessor = attributeAccessor;
@@ -1523,6 +1541,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * PUBLIC:
      * Sets the name of the attribute in the mapping.
      */
+    @Override
     public void setAttributeName(String attributeName) {
         getAttributeAccessor().setAttributeName(attributeName);
         // Clear the mapping attribute name until a getAttributeName() call copies the accessor attributeName        
@@ -1533,6 +1552,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Set the value of the attribute mapped by this mapping.
      */
+    @Override
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         // PERF: Direct variable access.
         try {
@@ -1561,6 +1581,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Set the descriptor to which this mapping belongs
      */
+    @Override
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
     }
@@ -1569,6 +1590,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Set the mapping's field collection.
      */
+    @Override
     protected void setFields(Vector<DatabaseField> fields) {
         this.fields = fields;
     }
@@ -1723,6 +1745,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * it should return null.
      * Return the Value from the object.
      */
+    @Override
     public Object valueFromObject(Object anObject, DatabaseField field, AbstractSession session) {
         return null;
     }

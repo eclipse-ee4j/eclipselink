@@ -26,6 +26,7 @@ import static java.lang.Integer.MIN_VALUE;
 
 //EclipseLink imports
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -40,7 +41,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * </ul>
  * @see DatabaseTable
  */
-public class DatabaseField implements Cloneable, Serializable {
+public class DatabaseField extends CoreField implements Cloneable, Serializable {
     /** Variables used for generating DDL **/
     protected int scale;
     protected int length;
@@ -288,6 +289,7 @@ public class DatabaseField implements Cloneable, Serializable {
     /**
      * Return the unqualified name of the field.
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -351,6 +353,7 @@ public class DatabaseField implements Cloneable, Serializable {
         setTable(new DatabaseTable(tableName));
     }
 
+    @Override
     public Class getType() {
         return type;
     }
@@ -495,6 +498,7 @@ public class DatabaseField implements Cloneable, Serializable {
     /**
      * Set the unqualified name of the field.
      */
+    @Override
     public void setName(String name) {
         setName(name, null, null);
     }
@@ -580,6 +584,7 @@ public class DatabaseField implements Cloneable, Serializable {
      * The JDBC type is determined from the class type,
      * this is used to optimize performance, and for binding.
      */
+    @Override
     public void setType(Class type) {
         this.type = type;
         if (this.type != null && typeName == null) {

@@ -12,11 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
@@ -49,14 +49,14 @@ public interface MarshalContext {
     /**
      * @return the attribute value corresponding to the object parameter. 
      */
-    public Object getAttributeValue(Object object, DatabaseMapping mapping);
+    public Object getAttributeValue(Object object, CoreMapping mapping);
 
     /**
      * Perform a marshal using the NodeValue parameter.
      * @return If anything as marshalled as a result of this call. 
      */
-    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver);
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver);
     
-    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment);
+    public boolean marshal(NodeValue nodeValue, XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XPathFragment rootFragment);
 
 }

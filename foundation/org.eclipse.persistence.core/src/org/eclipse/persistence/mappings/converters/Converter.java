@@ -13,6 +13,8 @@
 package org.eclipse.persistence.mappings.converters;
 
 import java.io.Serializable;
+
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.sessions.Session;
 
@@ -30,13 +32,14 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public interface Converter extends Serializable {
+public interface Converter extends CoreConverter<DatabaseMapping, Session>, Serializable {
 
     /**
      * PUBLIC:
      * Convert the object's representation of the value to the databases' data representation.
      * For example this could convert between a Calendar Java type and the sql.Time datatype.
      */
+    @Override
     Object convertObjectValueToDataValue(Object objectValue, Session session);
 
     /**
@@ -44,6 +47,7 @@ public interface Converter extends Serializable {
      * Convert the databases' data representation of the value to the object's representation.
      * For example this could convert between an sql.Time datatype and the Java Calendar type.
      */
+    @Override
     Object convertDataValueToObjectValue(Object dataValue, Session session);
 
     /**
@@ -60,5 +64,6 @@ public interface Converter extends Serializable {
      * PUBLIC:
      * Allow for any initialization.
      */
+    @Override
     void initialize(DatabaseMapping mapping, Session session);
 }
