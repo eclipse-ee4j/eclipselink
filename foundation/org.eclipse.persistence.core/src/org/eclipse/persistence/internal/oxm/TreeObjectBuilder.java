@@ -62,6 +62,7 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.w3c.dom.Node;
 
@@ -582,6 +583,15 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
      */
     public AbstractRecord createRecord(int size, AbstractSession session) {
         return createRecord(session);
+    }
+
+    @Override
+    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+        if (rootXPathNode.getNonAttributeChildren() == null) {
+            return null;
+        } else {
+            return super.addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, allowOverride, ignoreEqualResolvers);
+        }
     }
 
 }
