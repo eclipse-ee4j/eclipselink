@@ -40,7 +40,7 @@ public class XMLTypeEmployeeSystem extends TestSystem {
             "  return XMLTYPE\n" +
             "as\n" +
             "begin\n" +
-            "  return XMLTYPE('<jb><data> BLAH </data></jb>');\n" + 
+            "  return XMLTYPE('<jb><data>BLAH</data></jb>');\n" + 
             "end;";
         DataModifyQuery query = new DataModifyQuery(strCreateStoredFunction);
         query.setShouldBindAllParameters(false);
