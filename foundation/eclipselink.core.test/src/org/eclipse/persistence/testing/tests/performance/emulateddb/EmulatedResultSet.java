@@ -2611,4 +2611,6 @@ public class EmulatedResultSet implements ResultSet {
        return iFace.cast(this);
    }
 
+   public <T> T getObject(String columnLabel, Class<T> type){return null;}
+   public <T> T getObject(int columnIndex, Class<T> type){return null;}
 }

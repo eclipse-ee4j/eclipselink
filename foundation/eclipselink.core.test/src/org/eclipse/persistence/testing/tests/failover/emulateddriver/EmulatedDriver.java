@@ -18,6 +18,7 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class EmulatedDriver implements Driver {
 
@@ -62,4 +63,5 @@ public class EmulatedDriver implements Driver {
         return null;
     }
 
+    public Logger getParentLogger(){return null;}
 }

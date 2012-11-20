@@ -193,4 +193,6 @@ public class TestStatement implements Statement{
         return iFace.cast(this);
     }
     
+    public boolean isCloseOnCompletion(){return false;}
+    public void closeOnCompletion(){}
 }

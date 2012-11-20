@@ -34,6 +34,8 @@ import java.util.Properties;
 import java.util.Stack;
 
 import javax.sql.DataSource;
+import java.util.logging.Logger;
+import java.util.concurrent.Executor;
 
 class PooledDataSource implements DataSource {
 
@@ -66,6 +68,7 @@ class PooledDataSource implements DataSource {
     public PrintWriter getLogWriter() throws SQLException {
         return other.getLogWriter();
     }
+    public Logger getParentLogger() {return null;}
 
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return other.isWrapperFor(iface);
@@ -343,6 +346,11 @@ class PooledDataSource implements DataSource {
             }
         }
 
+        public int getNetworkTimeout(){return 0;}
+        public void setNetworkTimeout(Executor executor, int milliseconds){}
+        public void abort(Executor executor){}
+        public String getSchema(){return null;}
+        public void setSchema(String schema){}
     }
 
 }

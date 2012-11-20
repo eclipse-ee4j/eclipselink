@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import oracle.jdbc.OracleConnection;
 
@@ -213,4 +214,9 @@ public class TestOracleConnection implements Connection{
         return iFace.cast(this);
     }    
     
+    public int getNetworkTimeout(){return 0;}
+    public void setNetworkTimeout(Executor executor, int milliseconds){}
+    public void abort(Executor executor){}
+    public String getSchema(){return null;}
+    public void setSchema(String schema){}
 }

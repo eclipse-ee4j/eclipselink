@@ -456,4 +456,6 @@ public class TestPreparedStatement implements PreparedStatement{
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }    
+    public boolean isCloseOnCompletion(){return false;}
+    public void closeOnCompletion(){}
 }

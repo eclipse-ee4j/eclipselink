@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.models.weaving;
 
 // J2SE imports
-import java.beans.*;
+import java.beans.PropertyChangeListener;
 
 // J2EE persistence imports
 import static javax.persistence.GenerationType.TABLE;

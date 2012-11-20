@@ -21,6 +21,7 @@ import javax.persistence.*;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
@@ -211,5 +212,6 @@ public class ValidationTestSuite extends JUnitTestCase {
         public int getLoginTimeout() throws SQLException{return 1;}
         public <T> T unwrap(Class<T> iface) throws SQLException { return null; }
         public boolean isWrapperFor(Class<?> iface) throws SQLException { return false; }
+        public Logger getParentLogger(){return null;}
     }
 }

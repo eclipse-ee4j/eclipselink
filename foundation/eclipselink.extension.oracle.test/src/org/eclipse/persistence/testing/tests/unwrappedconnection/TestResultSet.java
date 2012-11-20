@@ -35,6 +35,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.eclipse.persistence.sessions.DatabaseRecord;
 public class TestResultSet implements ResultSet {
 
     private ResultSet resultSet;
@@ -817,4 +818,6 @@ public class TestResultSet implements ResultSet {
         return null; //resultSet.unwrap(iface);
     }
     
+   public <T> T getObject(String columnLabel, Class<T> type){return null;}
+   public <T> T getObject(int columnIndex, Class<T> type){return null;}
 }
