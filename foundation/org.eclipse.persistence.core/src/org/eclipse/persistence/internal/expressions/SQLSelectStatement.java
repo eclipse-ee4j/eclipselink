@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     20/11/2012-2.5 Guy Pelletier  
+ *       - 394524: Invalid query key [...] in expression
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -1273,8 +1275,14 @@ public class SQLSelectStatement extends SQLStatement {
         if (!builder.doesNotRepresentAnObjectInTheQuery()) {
             if (descriptor != null) {
                 Class queryClass = builder.getQueryClass();
-                // GF 2333 Only change the descriptor class if it is not set, or if this is an inheritance query
-                if ((queryClass == null) || descriptor.isChildDescriptor()) {
+                // GF 2333 Only change the descriptor class if:
+                //  1 - it is not set
+                //  2 - if this is an inheritance query
+                //  3 - if it is to a table per tenant multitenant descriptor.
+                //      When used at the EM level we need to ensure we are
+                //      normalizing against the initialized descriptor and not
+                //      that of the server session which is uninitialized.
+                if ((queryClass == null) || descriptor.isChildDescriptor() || descriptor.hasTablePerMultitenantPolicy()) {
                     builder.setQueryClassAndDescriptor(descriptor.getJavaClass(), descriptor);
                 }
             }

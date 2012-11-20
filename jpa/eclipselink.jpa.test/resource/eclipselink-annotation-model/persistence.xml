@@ -325,6 +325,8 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
@@ -336,6 +338,8 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>

@@ -18,6 +18,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     01/06/2011-2.3 Guy Pelletier 
  *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
+ *     20/11/2012-2.5 Guy Pelletier  
+ *       - 394524: Invalid query key [...] in expression
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -62,6 +64,12 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSupporterTenantATable());
         addTableDefinition(buildSupporterTenantBTable());
         addTableDefinition(buildSupporterTenantCTable());
+        addTableDefinition(buildSupporterInfoTenantATable());
+        addTableDefinition(buildSupporterInfoTenantBTable());
+        addTableDefinition(buildSupporterInfoTenantCTable());
+        addTableDefinition(buildSupporterInfoSubTenantATable());
+        addTableDefinition(buildSupporterInfoSubTenantBTable());
+        addTableDefinition(buildSupporterInfoSubTenantCTable());
         addTableDefinition(buildMasonTenantATable());
         addTableDefinition(buildMasonTenantBTable());
         addTableDefinition(buildMasonTenantCTable());
@@ -1264,6 +1272,201 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildSupporterInfoSubTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("A_JPA_SUPPORTER_INFO_SUB");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("SUB_DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterInfoSubTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("B_JPA_SUPPORTER_INFO_SUB");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("SUB_DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterInfoSubTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("C_JPA_SUPPORTER_INFO_SUB");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("SUB_DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterInfoTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("A_JPA_SUPPORTER_INFO");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("SUPPORTER_INFO_SUB_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("A_JPA_SUPPORTER_INFO_SUB.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterInfoTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("B_JPA_SUPPORTER_INFO");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("SUPPORTER_INFO_SUB_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("B_JPA_SUPPORTER_INFO_SUB.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterInfoTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("C_JPA_SUPPORTER_INFO");
+        
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DESCRIP");
+        field.setTypeName("VARCHAR");
+        field.setSize(30);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("SUPPORTER_INFO_SUB_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("C_JPA_SUPPORTER_INFO_SUB.ID");
+        table.addField(field);
+        
+        return table;
+    }
+    
     public TableDefinition buildSupporterTenantATable() {
         TableDefinition table = new TableDefinition();
         table.setName("A_JPA_SUPPORTER");
@@ -1287,6 +1490,17 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
+        
+        FieldDefinition fieldSupporterInfo = new FieldDefinition();
+        fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
+        fieldSupporterInfo.setTypeName("NUMERIC");
+        fieldSupporterInfo.setSize(15);
+        fieldSupporterInfo.setShouldAllowNull(true);
+        fieldSupporterInfo.setIsPrimaryKey(false);
+        fieldSupporterInfo.setUnique(false);
+        fieldSupporterInfo.setIsIdentity(false);
+        fieldSupporterInfo.setForeignKeyFieldName("A_JPA_SUPPORTER_INFO.ID");
+        table.addField(fieldSupporterInfo);
         
         return table;
     }
@@ -1315,6 +1529,17 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
         
+        FieldDefinition fieldSupporterInfo = new FieldDefinition();
+        fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
+        fieldSupporterInfo.setTypeName("NUMERIC");
+        fieldSupporterInfo.setSize(15);
+        fieldSupporterInfo.setShouldAllowNull(true);
+        fieldSupporterInfo.setIsPrimaryKey(false);
+        fieldSupporterInfo.setUnique(false);
+        fieldSupporterInfo.setIsIdentity(false);
+        fieldSupporterInfo.setForeignKeyFieldName("B_JPA_SUPPORTER_INFO.ID");
+        table.addField(fieldSupporterInfo);
+        
         return table;
     }
     
@@ -1341,6 +1566,17 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         fieldName.setShouldAllowNull(false);
         table.addField(fieldName);
+        
+        FieldDefinition fieldSupporterInfo = new FieldDefinition();
+        fieldSupporterInfo.setName("SUPPORTER_INFO_ID");
+        fieldSupporterInfo.setTypeName("NUMERIC");
+        fieldSupporterInfo.setSize(15);
+        fieldSupporterInfo.setShouldAllowNull(true);
+        fieldSupporterInfo.setIsPrimaryKey(false);
+        fieldSupporterInfo.setUnique(false);
+        fieldSupporterInfo.setIsIdentity(false);
+        fieldSupporterInfo.setForeignKeyFieldName("C_JPA_SUPPORTER_INFO.ID");
+        table.addField(fieldSupporterInfo);
         
         return table;
     }

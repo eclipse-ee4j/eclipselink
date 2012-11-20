@@ -12,8 +12,12 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     20/11/2012-2.5 Guy Pelletier  
+ *       - 394524: Invalid query key [...] in expression
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
+
+import static javax.persistence.CascadeType.PERSIST;
 
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
 import static org.eclipse.persistence.annotations.TenantTableDiscriminatorType.PREFIX;
@@ -24,10 +28,12 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.NamedQueries;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Multitenant;
@@ -40,7 +46,13 @@ import org.eclipse.persistence.annotations.TenantTableDiscriminator;
 @NamedQueries({
     @NamedQuery(
         name = "Supporter.findAll",
-        query = "SELECT a FROM Supporter a ORDER BY a.id DESC")
+        query = "SELECT a FROM Supporter a ORDER BY a.id DESC"),
+    @NamedQuery(
+        name = "Supporter.findBySupporterInfo",
+        query = "SELECT a FROM Supporter a WHERE a.info.description = :desc"),
+    @NamedQuery(
+        name = "Supporter.findBySupporterInfoSub",
+        query = "SELECT a FROM Supporter a WHERE a.info.subInfo.subDescription = :subDesc")    
 })
 public class Supporter {
     @Id
@@ -51,6 +63,10 @@ public class Supporter {
     @ManyToMany(mappedBy="supporters")
     public List<Candidate> supportedCandidates;
     
+    @OneToOne(cascade=PERSIST)
+    @JoinColumn(name="SUPPORTER_INFO_ID")
+    public SupporterInfo info;
+
     public Supporter() {
         supportedCandidates = new ArrayList<Candidate>();
     }
@@ -61,6 +77,10 @@ public class Supporter {
     
     public long getId() {
         return id;
+    }
+
+    public SupporterInfo getInfo() {
+        return info;
     }
 
     public String getName() {
@@ -75,6 +95,10 @@ public class Supporter {
         this.id = id;
     }
 
+    public void setInfo(SupporterInfo info) {
+        this.info = info;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

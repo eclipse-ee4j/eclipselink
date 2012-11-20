@@ -34,6 +34,8 @@
  *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     20/11/2012-2.5 Guy Pelletier  
+ *       - 394524: Invalid query key [...] in expression
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -87,6 +89,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Soldier;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubTask;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfo;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SupporterInfoSub;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
@@ -187,14 +191,32 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             
             Supporter supporter1 = new Supporter();
             supporter1.setName("Supporter1a");
+            SupporterInfo supporter1Info = new SupporterInfo();
+            supporter1Info.setDescription("Supporter1aDesc");
+            SupporterInfoSub supporter1InfoSub = new SupporterInfoSub();
+            supporter1InfoSub.setSubDescription("Supporter1aSubDesc");
+            supporter1Info.setSubInfo(supporter1InfoSub);
+            supporter1.setInfo(supporter1Info);
             candidateA.addSupporter(supporter1);
             
             Supporter supporter2 = new Supporter();
             supporter2.setName("Supporter2a");
+            SupporterInfo supporter2Info = new SupporterInfo();
+            supporter2Info.setDescription("Supporter2aDesc");
+            SupporterInfoSub supporter2InfoSub = new SupporterInfoSub();
+            supporter2InfoSub.setSubDescription("Supporter2aSubDesc");
+            supporter2Info.setSubInfo(supporter2InfoSub);
+            supporter2.setInfo(supporter2Info);
             candidateA.addSupporter(supporter2);
             
             Supporter supporter3 = new Supporter();
             supporter3.setName("Supporter3a");
+            SupporterInfo supporter3Info = new SupporterInfo();
+            supporter3Info.setDescription("Supporter3aDesc");
+            SupporterInfoSub supporter3InfoSub = new SupporterInfoSub();
+            supporter3InfoSub.setSubDescription("Supporter3aSubDesc");
+            supporter3Info.setSubInfo(supporter3InfoSub);
+            supporter3.setInfo(supporter3Info);
             candidateA.addSupporter(supporter3);
             
             Party party = new Party();
@@ -259,6 +281,16 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             
             assertTrue("Incorrect number of supporters returned from named query.", resultsFromNamedQuery.size() == 3);
             assertTrue("Incorrect number of supporters returned from dynamic query.", resultsFromDynamicQuery.size() == 3);
+            
+            // Test some more complex joining queries.
+            List<Supporter> results = em.createNamedQuery("Supporter.findBySupporterInfo").setParameter("desc", "Supporter1aDesc").getResultList();
+            assertFalse("No results returned.", results == null);
+            assertTrue("Single result not returned.", results.size() == 1);
+            assertTrue("Didn't return supporter1a", results.get(0).getName().equals("Supporter1a"));
+            results = em.createNamedQuery("Supporter.findBySupporterInfoSub").setParameter("subDesc", "Supporter3aSubDesc").getResultList();
+            assertFalse("No results returned.", results == null);
+            assertTrue("Single result not returned.", results.size() == 1);
+            assertTrue("Didn't return supporter3a", results.get(0).getName().equals("Supporter3a"));
             
             commitTransaction(em);
         } catch (RuntimeException e) {
