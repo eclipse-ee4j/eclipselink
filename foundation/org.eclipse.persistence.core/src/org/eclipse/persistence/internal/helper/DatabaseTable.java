@@ -12,6 +12,8 @@
  *     tware - added handling of database delimiters
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -95,6 +97,13 @@ public class DatabaseTable implements Cloneable, Serializable {
         this.useDelimiters = useDelimiters;
     }
 
+    /**
+     * Add an index definition to this table.
+     */
+    public void addIndex(IndexDefinition index) {
+        getIndexes().add(index);
+    }
+    
     /**
      * Add the unique constraint for the columns names. Used for DDL generation.
      * For now we just add all the unique constraints as we would have before

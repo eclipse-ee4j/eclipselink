@@ -9,11 +9,16 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.sequencing;
 
 import java.io.StringWriter;
+import java.util.List;
+
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 
@@ -136,6 +141,10 @@ public class TableSequence extends QuerySequence {
 
     public DatabaseTable getTable() {
         return table;
+    }
+    
+    public List<IndexDefinition> getTableIndexes() {
+        return getTable().getIndexes();
     }
     
     public String getTableName() {

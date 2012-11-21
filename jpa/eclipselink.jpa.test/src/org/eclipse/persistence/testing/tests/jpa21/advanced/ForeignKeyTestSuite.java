@@ -10,6 +10,8 @@
  * Contributors:
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -35,19 +37,22 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 public class ForeignKeyTestSuite extends JUnitTestCase {
-    protected boolean m_reset = false;
-
     public ForeignKeyTestSuite() {}
     
     public ForeignKeyTestSuite(String name) {
         super(name);
     }
     
+    @Override
+    public void setUp () {
+        super.setUp();
+        clearCache();
+    }
+    
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ForeignKeyTestSuite");
         
-        suite.addTest(new ForeignKeyTestSuite("testSetup"));
         suite.addTest(new ForeignKeyTestSuite("testInheritancePrimaryKeyForeignKey"));
         suite.addTest(new ForeignKeyTestSuite("testCollectionTableForeignKey"));
         suite.addTest(new ForeignKeyTestSuite("testJoinTableForeignKeys"));
@@ -58,20 +63,6 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
         suite.addTest(XMLForeignKeyTestSuite.suite());
         
         return suite;
-    }
-    
-    public void setUp () {
-        m_reset = true;
-        super.setUp();
-        clearCache();
-    }
-    
-    public void tearDown () {
-        if (m_reset) {
-            m_reset = false;
-        }
-        
-        super.tearDown();
     }
     
     /**
@@ -164,12 +155,5 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
         assertTrue("Map key foreign key name was not set correctly", keyMapping.getForeignKeyName().equals("Endorsements_Key_Foreign_Key"));
         assertFalse("Map key foreign key definition was null", keyMapping.getForeignKeyDefinition() == null);
         assertTrue("Map key foreign key definition was not set correctly", keyMapping.getForeignKeyDefinition().equals("Endorsements_Key_Foreign_Key_Definition"));
-    }
-    
-    /**
-     * The setup is done as a test, both to record its failure, and to allow execution in the server.
-     */
-    public void testSetup() {
-        clearCache();
     }
 }

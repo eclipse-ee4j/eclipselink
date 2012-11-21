@@ -11,9 +11,12 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
+import java.util.List;
 import java.util.Vector;
 import java.io.*;
 import java.math.BigDecimal;
@@ -30,7 +33,8 @@ import org.eclipse.persistence.sequencing.TableSequence;
  * <p>
  */
 public class TableSequenceDefinition extends SequenceDefinition {
-
+    protected TableDefinition tableDefinition;
+    
     /**
      * INTERNAL:
      * Should be a sequence defining table sequence in the db:
@@ -92,6 +96,10 @@ public class TableSequenceDefinition extends SequenceDefinition {
     public String getSequenceTableName() {
         return getTableSequence().getQualifiedTableName();
     }
+    
+    public List<IndexDefinition> getSequenceTableIndexes() {
+        return getTableSequence().getTableIndexes();
+    }
 
     /**
      * PUBLIC:
@@ -110,13 +118,18 @@ public class TableSequenceDefinition extends SequenceDefinition {
     /**
      * INTERNAL:
      * Return a TableDefinition specifying sequence table.
+     * Cache the table definition for re-use (during CREATE and DROP)
      */
     public TableDefinition buildTableDefinition() {
-        TableDefinition definition = new TableDefinition();
-        definition.setName(getSequenceTableName());
-        definition.addPrimaryKeyField(getSequenceNameFieldName(), String.class, 50);
-        definition.addField(getSequenceCounterFieldName(), BigDecimal.class);
-        return definition;
+        if (tableDefinition == null) {
+            tableDefinition = new TableDefinition();
+            tableDefinition.setName(getSequenceTableName());
+            tableDefinition.addPrimaryKeyField(getSequenceNameFieldName(), String.class, 50);
+            tableDefinition.addField(getSequenceCounterFieldName(), BigDecimal.class);
+            tableDefinition.setIndexes(getSequenceTableIndexes());
+        }
+        
+        return tableDefinition;
     }
     
     protected TableSequence getTableSequence() {
@@ -125,5 +138,14 @@ public class TableSequenceDefinition extends SequenceDefinition {
         } else {
             return (TableSequence)((DefaultSequence)sequence).getDefaultSequence();
         }
+    }
+    
+    /**
+     * Execute any statements required before the deletion of the object
+     * @param session
+     * @param dropSchemaWriter
+     */
+    public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
+        buildTableDefinition().preDropObject(session, dropSchemaWriter, createSQLFiles);
     }
 }

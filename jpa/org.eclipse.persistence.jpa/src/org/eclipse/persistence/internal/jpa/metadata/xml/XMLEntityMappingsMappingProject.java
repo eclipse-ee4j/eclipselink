@@ -77,6 +77,8 @@
  *       - 3746888: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -949,10 +951,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // specified. We therefore map both since the metadata object is built
         // to handle one or the other. XML will restrict the ability to set
         // both so this is not a problem.
+        
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getJoinColumnMapping()); 
         descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getIndexesMapping());
+        
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
@@ -1932,6 +1939,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTableAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());
         descriptor.addMapping(getSchemaAttributeMapping());
+        descriptor.addMapping(getColumnListAttributeMapping());
         descriptor.addMapping(getUniqueAttributeMapping());
         
         return descriptor;
@@ -1939,22 +1947,23 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: index
+     * XSD: cache-index
      */
     protected ClassDescriptor buildCacheIndexDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(CacheIndexMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
+        descriptor.addMapping(getColumnNamesMapping());
+        
+        // Attribute mappings.
         XMLDirectMapping updateableMapping = new XMLDirectMapping();
         updateableMapping.setAttributeName("updateable");
         updateableMapping.setGetMethodName("getUpdateable");
         updateableMapping.setSetMethodName("setUpdateable");
         updateableMapping.setXPath("@updateable");
         descriptor.addMapping(updateableMapping);
-        
-        // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getColumnNamesMapping());
-                
+                 
         return descriptor;
     }
     
@@ -2036,11 +2045,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(JoinTableMetadata.class);
     
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getJoinColumnMapping());
         descriptor.addMapping(getForeignKeyMapping());
         descriptor.addMapping(getInverseJoinColumnMapping());
         descriptor.addMapping(getInverseForeignKeyMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getIndexesMapping());
+        
+        // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getCatalogAttributeMapping());        
         descriptor.addMapping(getSchemaAttributeMapping());
@@ -3061,6 +3074,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getPrimaryKeyJoinColumnMapping());
         descriptor.addMapping(getPrimaryKeyForeignKeyMapping());
         descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getIndexesMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -3184,6 +3198,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getIndexesMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -3224,8 +3239,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(TableGeneratorMetadata.class);
 
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getUniqueConstraintMapping());
+        descriptor.addMapping(getIndexesMapping());
         
+        // Attribute mappings.
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("m_generatorName");
         nameMapping.setGetMethodName("getGeneratorName");
@@ -3966,6 +3984,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         columnDefinitionMapping.setSetMethodName("setColumnDefinition");
         columnDefinitionMapping.setXPath("@column-definition");
         return columnDefinitionMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getColumnListAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_columnList");
+        mapping.setGetMethodName("getColumnList");
+        mapping.setSetMethodName("setColumnList");
+        mapping.setXPath("@column-list");
+        return mapping;
     }
     
     /**
@@ -5752,7 +5782,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         scaleMapping.setXPath("@scale");
         return scaleMapping;   
     }
-    
+
     /**
      * INTERNAL:
      */

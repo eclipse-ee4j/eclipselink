@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.1" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_1.xsd">
+    <description>Mapping Document containing persistence unit metadata.</description>
+    
+    <package>org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl</package>
+    
+    <mapped-superclass class="Utensil">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_UTENSIL_ID_GENERATOR"/>
+                <table-generator name="XML_UTENSIL_ID_GENERATOR" table="JPA21_XML_PK_SEQ" pk-column-name="XML_SEQ_NAME" value-column-name="XML_SEQ_COUNT"  pk-column-value="XML_UTENSIL_SEQ">
+                    <index name="XML_TABLE_GENERATOR_INDEX" column-list="XML_SEQ_COUNT,XML_SEQ_NAME"/>
+                </table-generator>
+            </id>
+            <basic name="serialTag">
+                <column name="SERIAL_TAG"/>
+            </basic>
+        </attributes>
+    </mapped-superclass>
+    
+    <entity name="XMLFork" class="Fork">
+        <table name="JPA21_XML_FORK">
+            <!-- default the name to JPA21_XML_FORK_INDEX_STYLE_COLOR -->
+            <index column-list="STYLE, COLOR"/>
+        </table>
+        <secondary-table name="JPA21_XML_FORK_COSTS">
+            <index name="XML_FORK_COSTS_INDEX" column-list="COST, RENTAL_COST"/>
+        </secondary-table>
+        <attributes>
+            <basic name="price">
+                <column name="COST" table="JPA21_XML_FORK_COSTS"/>
+            </basic>
+            <basic name="rental">
+                <column name="RENTAL_COST" table="JPA21_XML_FORK_COSTS"/>
+            </basic>
+            <many-to-many name="users">
+                <join-table name="JPA21_XML_FORK_FORK_USERS">
+                    <join-column name="FORK_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="FORK_USER_ID" referenced-column-name="ID"/>
+                    <index name="JPA21_XML_FORK_USERS_INDEX" column-list="FORK_USER_ID, FORK_ID"/>
+                </join-table>
+            </many-to-many>
+            <element-collection name="uses">
+                <column name="DESCRIP"/>
+                <collection-table name="JPA21_XML_FORK_USES">
+                    <index name="JPA21_XML_FORK_USES_INDEX" column-list="DESCRIP"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLForkUser" class="ForkUser">
+        <table name="JPA21_XML_FORK_USER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <many-to-many name="forks" mapped-by="users"/>
+        </attributes>
+
+    </entity>
+
+</entity-mappings>

@@ -13,11 +13,14 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -48,6 +51,7 @@ public class IndexMetadata extends ORMetadata {
     private String m_schema;
     private String m_catalog;
     private String m_table;
+    private String m_columnList;
     
     private List<String> m_columnNames = new ArrayList();
 
@@ -65,16 +69,15 @@ public class IndexMetadata extends ORMetadata {
     public IndexMetadata(MetadataAnnotation index, MetadataAccessor accessor) {
         super(index, accessor);
         
-        if (index != null) {
-            m_name = (String) index.getAttribute("name"); 
-            m_schema = (String) index.getAttribute("schema"); 
-            m_catalog = (String) index.getAttribute("catalog");
-            m_table = (String) index.getAttribute("table");
-            m_unique = (Boolean) index.getAttribute("unique");
+        m_name = (String) index.getAttribute("name"); 
+        m_schema = (String) index.getAttribute("schema"); 
+        m_catalog = (String) index.getAttribute("catalog");
+        m_table = (String) index.getAttribute("table");
+        m_unique = (Boolean) index.getAttribute("unique");
+        m_columnList = (String) index.getAttribute("columnList");
             
-            for (Object columnName : index.getAttributeArray("columnNames")) {
-                m_columnNames.add((String)columnName);
-            }
+        for (Object columnName : index.getAttributeArray("columnNames")) {
+            m_columnNames.add((String) columnName);
         }
     }
 
@@ -84,21 +87,33 @@ public class IndexMetadata extends ORMetadata {
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof IndexMetadata) {
-            IndexMetadata table = (IndexMetadata) objectToCompare;
+            IndexMetadata index = (IndexMetadata) objectToCompare;
             
-            if (! valuesMatch(this.m_name, table.getName())) {
+            if (! valuesMatch(m_name, index.getName())) {
                 return false;
             }
             
-            if (! valuesMatch(this.m_schema, table.getSchema())) {
+            if (! valuesMatch(m_unique, index.getUnique())) {
                 return false;
             }
             
-            if (! valuesMatch(this.m_catalog, table.getCatalog())) {
+            if (! valuesMatch(m_schema, index.getSchema())) {
                 return false;
             }
             
-            return this.m_columnNames.equals(table.getColumnNames());
+            if (! valuesMatch(m_catalog, index.getCatalog())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_table, index.getTable())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_columnList, index.getColumnList())) {
+                return false;
+            }
+            
+            return m_columnNames.equals(index.getColumnNames());
         }
         
         return false;
@@ -110,6 +125,14 @@ public class IndexMetadata extends ORMetadata {
      */
     public String getCatalog() {
         return m_catalog;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public String getColumnList() {
+        return m_columnList;
     }
     
     /**
@@ -169,10 +192,54 @@ public class IndexMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Process the index metadata
+     * Return true is a name has been specified for this index.
+     */
+    protected boolean hasName() {
+        return m_name != null && ! m_name.equals("");
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is there is a unique setting for this index.
+     */
+    protected boolean isUnique() {
+        return m_unique != null && m_unique.booleanValue();
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the index metadata. This is called from all table metadata.
+     * CollectionTable, SecondaryTable, JoinTable, Table, TableGenerator.
+     */
+    public void process(DatabaseTable table) {
+        IndexDefinition indexDefinition = new IndexDefinition();
+        
+        // Process the column list (comma separated string) 
+        StringTokenizer st = new StringTokenizer(m_columnList, ",");
+        while (st.hasMoreTokens()) {
+            indexDefinition.addField(((String) st.nextToken()).trim());
+        }
+        
+        // Process the name value.
+        indexDefinition.setName(processName(table, indexDefinition));
+        
+        // Process the unique value.
+        indexDefinition.setIsUnique(isUnique());
+        
+        // Add the index definition to the table provided.
+        indexDefinition.setQualifier(table.getTableQualifier());
+        indexDefinition.setTargetTable(table.getQualifiedName());
+        table.addIndex(indexDefinition);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the index metadata. This is called from EntityAccessor and 
+     * BasicAccesor (for Basic, Id and Version)
      */
     public void process(MetadataDescriptor descriptor, String defaultColumnName) {
         IndexDefinition indexDefinition = new IndexDefinition();
+        DatabaseTable primaryTable = descriptor.getPrimaryTable();
         
         if (m_columnNames.isEmpty() && defaultColumnName != null) {
             indexDefinition.getFields().add(defaultColumnName);
@@ -181,17 +248,7 @@ public class IndexMetadata extends ORMetadata {
         }
         
         // Process the name value.
-        if (m_name != null && m_name.length() != 0) {
-            indexDefinition.setName(m_name);            
-        } else {            
-            String name = "INDEX_" + descriptor.getPrimaryTableName();
-            
-            for (String column : indexDefinition.getFields()) {
-                name = name + "_" + column;
-            }
-            
-            indexDefinition.setName(name);
-        }
+        indexDefinition.setName(processName(primaryTable, indexDefinition));
         
         // Process the schema value.
         if (m_schema != null && m_schema.length() != 0) {
@@ -208,71 +265,89 @@ public class IndexMetadata extends ORMetadata {
         }
         
         // Process the unique value.
-        if (m_unique != null) {
-            indexDefinition.setIsUnique(m_unique);
-        }
+        indexDefinition.setIsUnique(isUnique());
         
         // Process table value.
         if (m_table == null || m_table.length() == 0) {
-            indexDefinition.setTargetTable(descriptor.getPrimaryTable().getQualifiedName());
-            descriptor.getPrimaryTable().getIndexes().add(indexDefinition);
-        } else if (m_table.equals(descriptor.getPrimaryTable().getQualifiedName()) || m_table.equals(descriptor.getPrimaryTableName())) {
+            indexDefinition.setTargetTable(primaryTable.getQualifiedName());
+            primaryTable.addIndex(indexDefinition);
+        } else if (m_table.equals(primaryTable.getQualifiedName()) || m_table.equals(primaryTable.getName())) {
             indexDefinition.setTargetTable(m_table);
-            descriptor.getPrimaryTable().getIndexes().add(indexDefinition);
+            primaryTable.addIndex(indexDefinition);
         } else {
             indexDefinition.setTargetTable(m_table);
             boolean found = false;
             for (DatabaseTable databaseTable : descriptor.getClassDescriptor().getTables()) {
                 if (m_table.equals(databaseTable.getQualifiedName()) || m_table.equals(databaseTable.getName())) {
-                    databaseTable.getIndexes().add(indexDefinition);
+                    databaseTable.addIndex(indexDefinition);
                     found = true;
                 }
             }
             
             if (!found) {
-                descriptor.getPrimaryTable().getIndexes().add(indexDefinition);
+                primaryTable.addIndex(indexDefinition);
             }
         }
     }
-
+    
     /**
-     * INTERNAL: 
-     * Used for OX mapping.
+     * INTERNAL:
+     * Process the name. If specified it, use it, otherwise create a default.
+     * e.g. INDEX_tablename_field1_field2_.....
      */
-    public void setUnique(Boolean unique) {
-        this.m_unique = unique;
+    protected String processName(DatabaseTable table, IndexDefinition indexDefinition) {
+        if (hasName()) {
+            return m_name;            
+        } else {            
+            String name = "INDEX_" + table.getName();
+        
+            // Append all the field names to it.
+            for (String field : indexDefinition.getFields()) {
+                name = name + "_" + field;
+            }
+            
+            return name;
+        }   
     }
 
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setColumnNames(List<String> columnNames) {
-        this.m_columnNames = columnNames;
+    public void setCatalog(String catalog) {
+        m_catalog = catalog;
     }
     
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
-    public void setCatalog(String catalog) {
-        this.m_catalog = catalog;
+    public void setColumnList(String columnList) {
+        m_columnList = columnList;
     }
-
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setColumnNames(List<String> columnNames) {
+        m_columnNames = columnNames;
+    }
+    
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public void setName(String name) {
-        this.m_name = name;
+        m_name = name;
     }
-
+    
     /**
      * INTERNAL: 
      * Used for OX mapping.
      */
     public void setSchema(String schema) {
-        this.m_schema = schema;
+        m_schema = schema;
     }
     
     /**
@@ -280,6 +355,14 @@ public class IndexMetadata extends ORMetadata {
      * Used for OX mapping.
      */
     public void setTable(String table) {
-        this.m_table = table;
+        m_table = table;
     }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setUnique(Boolean unique) {
+        m_unique = unique;
+    }   
 }

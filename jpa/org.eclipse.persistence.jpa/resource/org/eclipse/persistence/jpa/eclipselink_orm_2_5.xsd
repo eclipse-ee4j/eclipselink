@@ -918,7 +918,7 @@
           <xsd:element name="no-sql" type="orm:no-sql" minOccurs="0"/>
       </xsd:choice>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
-      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:eclipselink-index" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="id-class" type="orm:id-class" minOccurs="0"/>
       <xsd:element name="primary-key" type="orm:primary-key" minOccurs="0"/>
       <xsd:element name="inheritance" type="orm:inheritance" minOccurs="0"/>
@@ -1135,7 +1135,7 @@
           <xsd:element name="column" type="orm:column" minOccurs="0"/>
           <xsd:element name="field" type="orm:field" minOccurs="0"/>
       </xsd:choice>
-      <xsd:element name="index" type="orm:index" minOccurs="0"/>
+      <xsd:element name="index" type="orm:eclipselink-index" minOccurs="0"/>
       <xsd:element name="cache-index" type="orm:cache-index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
       <xsd:choice minOccurs="0">
@@ -2781,7 +2781,7 @@
           <xsd:element name="column" type="orm:column" minOccurs="0"/>
           <xsd:element name="field" type="orm:field" minOccurs="0"/>
       </xsd:choice>
-      <xsd:element name="index" type="orm:index" minOccurs="0"/>
+      <xsd:element name="index" type="orm:eclipselink-index" minOccurs="0"/>
       <xsd:element name="cache-index" type="orm:cache-index" minOccurs="0"/>
       <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
       <xsd:choice minOccurs="0">
@@ -3084,6 +3084,7 @@
           JoinColumn[] joinColumns() default {};
           JoinColumn[] inverseJoinColumns() default {};
           UniqueConstraint[] uniqueConstraints() default {};
+          Index[] indexes() default {};
         }
 
       </xsd:documentation>
@@ -3098,6 +3099,7 @@
         <xsd:element name="inverse-foreign-key" type="orm:foreign-key" minOccurs="0"/>
       </xsd:sequence>
       <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -5055,13 +5057,14 @@
           String catalog() default "";
           String schema() default "";
           UniqueConstraint[] uniqueConstraints() default {};
+          Index[] indexes() default {};
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -5072,6 +5075,30 @@
   <!-- **************************************************** -->
 
   <xsd:complexType name="index">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface Index {
+          String name() default "";
+          String columnList();
+          boolean unique() default false;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="column-list" type="xsd:string" use="required"/>
+    <xsd:attribute name="unique" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="eclipselink-index">
     <xsd:annotation>
       <xsd:documentation>
 
@@ -5110,8 +5137,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="column-name" type="xsd:string" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="column-name" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="catalog" type="xsd:string"/>
@@ -5182,14 +5208,15 @@
           int initialValue() default 0;
           int allocationSize() default 50;
           UniqueConstraint[] uniqueConstraints() default {};
+          Indexes[] indexes() default {};
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-      <xsd:element name="unique-constraint" type="orm:unique-constraint" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="unique-constraint" type="orm:unique-constraint" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="index" type="orm:index" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="table" type="xsd:string"/>
@@ -5643,7 +5670,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="column" type="orm:column" minOccurs="0"/>
-      <xsd:element name="index" type="orm:index" minOccurs="0"/>
+      <xsd:element name="index" type="orm:eclipselink-index" minOccurs="0"/>
       <xsd:choice minOccurs="0">
         <xsd:element name="temporal" type="orm:temporal"/>
         <xsd:element name="convert" type="orm:convert"/>

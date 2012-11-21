@@ -19,6 +19,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 8)
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -52,6 +54,8 @@ import org.eclipse.persistence.internal.helper.Helper;
  */
 public class TableMetadata extends ORMetadata {
     private DatabaseTable m_databaseTable = new DatabaseTable();
+    
+    private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
     private List<UniqueConstraintMetadata> m_uniqueConstraints = new ArrayList<UniqueConstraintMetadata>();
     
     private String m_name;
@@ -69,7 +73,7 @@ public class TableMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
-     * Used for annotatation loading.
+     * Used for annotation loading.
      */
     public TableMetadata(MetadataAnnotation table, MetadataAccessor accessor) {
         super(table, accessor);
@@ -81,6 +85,10 @@ public class TableMetadata extends ORMetadata {
 
             for (Object uniqueConstraint : table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));
+            }
+            
+            for (Object index : table.getAttributeArray("indexes")) {
+                m_indexes.add(new IndexMetadata((MetadataAnnotation) index, accessor));
             }
         }
     }
@@ -114,6 +122,10 @@ public class TableMetadata extends ORMetadata {
             }
 
             if (! valuesMatch(m_creationSuffix, table.getCreationSuffix())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_indexes, table.getIndexes())) {
                 return false;
             }
 
@@ -151,6 +163,14 @@ public class TableMetadata extends ORMetadata {
      */
     public DatabaseTable getDatabaseTable() {
         return m_databaseTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<IndexMetadata> getIndexes() {
+        return m_indexes;
     }
     
     /**
@@ -197,13 +217,30 @@ public class TableMetadata extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-
-        for (UniqueConstraintMetadata jcm : m_uniqueConstraints){
-            // Initialize single objects.
-            initXMLObject(jcm, accessibleObject);
-        }
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_indexes, accessibleObject);
+        initXMLObjects(m_uniqueConstraints, accessibleObject);
     }
 
+    /**
+     * INTERNAL:
+     * Process the creation suffix.
+     */
+    public void processCreationSuffix() {
+        m_databaseTable.setCreationSuffix(m_creationSuffix);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the index metadata for this table.
+     */
+    public void processIndexes() {
+        for (IndexMetadata index : m_indexes) {
+            index.process(m_databaseTable);
+        }
+    }
+    
     /**
      * INTERNAL:
      * Process any foreign key metadata for this table.
@@ -217,13 +254,11 @@ public class TableMetadata extends ORMetadata {
      * Add the unique constraints to the database table.
      */
     public void processUniqueConstraints() {
-        if (m_uniqueConstraints != null) {
-            for (UniqueConstraintMetadata uniqueConstraint : m_uniqueConstraints) {
-                if (uniqueConstraint.hasName() && m_databaseTable.getUniqueConstraints().containsKey(uniqueConstraint.getName())) {
-                    throw ValidationException.multipleUniqueConstraintsWithSameNameSpecified(uniqueConstraint.getName(), getName(), getLocation());
-                } else {
-                    m_databaseTable.addUniqueConstraints(uniqueConstraint.getName(), uniqueConstraint.getColumnNames());
-                }
+        for (UniqueConstraintMetadata uniqueConstraint : m_uniqueConstraints) {
+            if (uniqueConstraint.hasName() && m_databaseTable.getUniqueConstraints().containsKey(uniqueConstraint.getName())) {
+                throw ValidationException.multipleUniqueConstraintsWithSameNameSpecified(uniqueConstraint.getName(), getName(), getLocation());
+            } else {
+                m_databaseTable.addUniqueConstraints(uniqueConstraint.getName(), uniqueConstraint.getColumnNames());
             }
         }
     }
@@ -256,6 +291,14 @@ public class TableMetadata extends ORMetadata {
      */
     public void setDatabaseTable(DatabaseTable databaseTable) {
         m_databaseTable = databaseTable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setIndexes(List<IndexMetadata> indexes) {
+        m_indexes = indexes;
     }
     
     /**

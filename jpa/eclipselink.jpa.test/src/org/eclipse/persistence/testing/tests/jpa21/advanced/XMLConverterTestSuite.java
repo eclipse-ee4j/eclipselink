@@ -10,6 +10,8 @@
  * Contributors:
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -28,8 +30,6 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerStatus;
 
 public class XMLConverterTestSuite extends JUnitTestCase {
-    protected boolean m_reset = false;
-    
     protected static final String XML_PU = "xml-default";
 
     public XMLConverterTestSuite() {}
@@ -38,18 +38,10 @@ public class XMLConverterTestSuite extends JUnitTestCase {
         super(name);
     }
     
+    @Override
     public void setUp () {
-        m_reset = true;
         super.setUp();
         clearCache();
-    }
-    
-    public void tearDown () {
-        if (m_reset) {
-            m_reset = false;
-        }
-        
-        super.tearDown();
     }
     
     public static Test suite() {

@@ -16,6 +16,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     11/22/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -32,7 +34,7 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(ConverterTestSuite.suite());
         fullSuite.addTest(CriteriaQueryTestSuite.suite());
         fullSuite.addTest(CriteriaQueryMetamodelTestSuite.suite());
-        fullSuite.addTest(ForeignKeyTestSuite.suite());
+        fullSuite.addTest(DDLTestSuite.suite());
         
         return fullSuite;
     }
