@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.core.descriptors;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
@@ -24,7 +25,7 @@ public abstract class CoreDescriptor<
     INHERITANCE_POLICY extends CoreInheritancePolicy,
     INSTANTIATION_POLICY extends CoreInstantiationPolicy,
     LIST extends List,
-    OBJECT_BUILDER extends CoreObjectBuilder> {
+    OBJECT_BUILDER extends CoreObjectBuilder> implements Serializable {
 
     protected DESCRIPTOR_EVENT_MANAGER eventManager;
     protected FIELD field;
