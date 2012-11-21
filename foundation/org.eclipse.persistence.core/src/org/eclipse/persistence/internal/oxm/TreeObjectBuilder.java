@@ -348,6 +348,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             XMLField nextField = nextEntry.getKey();
                             XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, nextField);
                             nodeValue.setContainerNodeValue(unmarshalValue);
+                            nodeValue.setIndex(unmarshalValue.getIndex());
                             ((ContainerValue)nodeValue.getChoiceElementNodeValue()).setIndex(unmarshalValue.getIndex());
                             addChild(nextField.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
                             fieldToNodeValues.put(nextField, nodeValue);
