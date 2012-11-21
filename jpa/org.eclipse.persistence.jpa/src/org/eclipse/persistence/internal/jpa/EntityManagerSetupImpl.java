@@ -175,6 +175,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
 import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
 import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
@@ -2777,6 +2778,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
              } else if (batchWritingSettingString == BatchWriting.OracleJDBC) {
                  this.session.getPlatform().setUsesNativeBatchWriting(true);
                  this.session.getPlatform().setUsesJDBCBatchWriting(true);
+             } else if (batchWritingSettingString == BatchWriting.None) {
+                 // Nothing required.
              } else {
                  Class cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
                  BatchWritingMechanism mechanism = null;
@@ -2784,7 +2787,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                      Constructor constructor = cls.getConstructor();
                      mechanism = (BatchWritingMechanism)constructor.newInstance();
                  } catch (Exception exception) {
-                     throw EntityManagerSetupException.failedToInstantiateProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, exception);
+                     if (batchWritingSettingString.indexOf('.') == -1) {
+                         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-illegal-property-value", new Object[]{PersistenceUnitProperties.BATCH_WRITING, batchWritingSettingString}));
+                     } else {
+                         throw EntityManagerSetupException.failedToInstantiateProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, exception);
+                     }
                  }
                  this.session.getPlatform().setBatchWritingMechanism(mechanism);
              }
