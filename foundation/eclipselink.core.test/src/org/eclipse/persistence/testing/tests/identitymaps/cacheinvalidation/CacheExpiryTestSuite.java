@@ -199,6 +199,11 @@ public class CacheExpiryTestSuite extends TestSuite {
         addTest(new PrimaryKeyQueryInUOWTest());
         // EL bug 276362 - Re-Validate CacheKey before refreshing object graph
         addTest(new UnitOfWorkRefreshAfterInvalidationTest());
+        
+        // EL bug 336486
+        addTest(new CacheInvalidationPolicyCloneTest(NoExpiryCacheInvalidationPolicy.class));
+        addTest(new CacheInvalidationPolicyCloneTest(DailyCacheInvalidationPolicy.class));
+        addTest(new CacheInvalidationPolicyCloneTest(TimeToLiveCacheInvalidationPolicy.class));
     }
 
 }

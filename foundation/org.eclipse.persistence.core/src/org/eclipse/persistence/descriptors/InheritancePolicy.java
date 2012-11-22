@@ -27,6 +27,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -1084,6 +1085,15 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             getDescriptor().setOptimisticLockingPolicy((OptimisticLockingPolicy)getParentDescriptor().getOptimisticLockingPolicy().clone());
             getDescriptor().getOptimisticLockingPolicy().setDescriptor(getDescriptor());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Potentially override the cache invalidation behavior
+     */
+    protected void initializeCacheInvalidationPolicy() {
+        CacheInvalidationPolicy parentPolicyClone = (CacheInvalidationPolicy)getParentDescriptor().getCacheInvalidationPolicy().clone(); 
+        getDescriptor().setCacheInvalidationPolicy(parentPolicyClone);
     }
     
     /**

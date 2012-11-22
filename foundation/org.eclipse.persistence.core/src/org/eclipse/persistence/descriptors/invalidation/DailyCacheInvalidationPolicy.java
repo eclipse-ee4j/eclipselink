@@ -146,4 +146,22 @@ public class DailyCacheInvalidationPolicy extends CacheInvalidationPolicy {
     public void setExpiryTime(Calendar calendar) {
         setExpiryTime(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND), calendar.get(Calendar.MILLISECOND));
     }
+    
+    public Object clone() {
+        DailyCacheInvalidationPolicy clone = null;
+        
+        try {
+            clone = (DailyCacheInvalidationPolicy)super.clone();
+            if (this.expiryTime != null) {
+                clone.setExpiryTime((Calendar)this.expiryTime.clone());
+            }
+            if (this.previousExpiry != null) {
+                clone.previousExpiry = (Calendar)this.previousExpiry.clone();
+            }
+        } catch (Exception exception) {
+            throw new InternalError("clone failed");
+        }
+        
+        return clone;
+    }
 }

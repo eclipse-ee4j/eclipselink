@@ -2948,6 +2948,8 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
             // Setup this early before useOptimisticLocking is called so that subclass
             // versioned by superclass are also covered
             getInheritancePolicy().initializeOptimisticLocking();
+            // EL bug 336486
+            getInheritancePolicy().initializeCacheInvalidationPolicy();
         }
 
         // Mappings must be sorted before field are collected in the order of the mapping for indexes to work.
