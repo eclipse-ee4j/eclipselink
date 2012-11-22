@@ -175,7 +175,7 @@ public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMa
                 primaryKeys = (CacheId) reference.getPrimaryKey();
             }
             XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
-            int idx = pkFieldNames.indexOf(tgtFld.getXPath());
+            int idx = pkFieldNames.indexOf(tgtFld.getQualifiedName());
             // fix for bug# 5687430
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.

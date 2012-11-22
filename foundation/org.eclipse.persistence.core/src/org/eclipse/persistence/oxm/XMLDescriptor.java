@@ -498,16 +498,9 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public DatabaseField buildField(DatabaseField field) {
         try {
-            Map<DatabaseField, DatabaseField> builtFields = getObjectBuilder().getFieldsMap();
-            DatabaseField builtField = builtFields.get(field);
-            if (builtField == null) {
-                XMLField xmlField = (XMLField) field;
-                xmlField.setNamespaceResolver(this.getNamespaceResolver());
-                xmlField.initialize();
-                builtFields.put(xmlField, xmlField);
-                return xmlField;
-            }
-            return builtField;
+            XMLField xmlField = (XMLField) field;
+            xmlField.setNamespaceResolver(this.getNamespaceResolver());
+            xmlField.initialize();
         } catch (ClassCastException e) {
             // Assumes field is always an XMLField
         }
