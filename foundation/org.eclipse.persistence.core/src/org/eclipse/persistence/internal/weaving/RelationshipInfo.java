@@ -10,9 +10,7 @@
  * Contributors:
  *      tware - initial 
  ******************************************************************************/
- package org.eclipse.persistence.internal.weaving;
-
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+package org.eclipse.persistence.internal.weaving;
 
 /**
  * Stores information about a relationships mapping that is used by JPA-RS to build links for relationships.

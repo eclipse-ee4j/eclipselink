@@ -15,9 +15,7 @@ package org.eclipse.persistence.internal.indirection;
 import java.util.Collection;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.WrapperPolicy;
 import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.*;

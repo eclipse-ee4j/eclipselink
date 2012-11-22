@@ -16,7 +16,6 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
-import java.sql.Statement;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.ValidationException;
