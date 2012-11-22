@@ -717,36 +717,40 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
              }
         }
 
+        if(xmlGregorianCalender == null){
+        	return null;
+        }
+            
         QName calendarQName = xmlGregorianCalender.getXMLSchemaType();
-        if (!calendarQName.equals(schemaTypeQName)) {
-            if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
-                if (calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
-                    //clear out the time portion
-                    xmlGregorianCalender.setHour(DatatypeConstants.FIELD_UNDEFINED);
-                    xmlGregorianCalender.setMinute(DatatypeConstants.FIELD_UNDEFINED);
-                    xmlGregorianCalender.setSecond(DatatypeConstants.FIELD_UNDEFINED);
-                    xmlGregorianCalender.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
-                    return xmlGregorianCalender;
-                } else {
-                    throw ConversionException.incorrectDateFormat(sourceString);
-                }
-             } else if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
-                 throw ConversionException.incorrectTimeFormat(sourceString);
-             } else if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
-                 throw XMLConversionException.incorrectGDayFormat(sourceString);
-             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
-                 throw XMLConversionException.incorrectGMonthFormat(sourceString);
-             } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
-                 throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-             } else if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
-                 throw XMLConversionException.incorrectGYearFormat(sourceString);
-             } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
-                 throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-             } else if (XMLConstants.DURATION_QNAME.equals(schemaTypeQName)) {
-                 throw new IllegalArgumentException();
-             } else if (XMLConstants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
-                 throw ConversionException.incorrectDateTimeFormat(sourceString);
-             }
+	    if (!calendarQName.equals(schemaTypeQName)) {
+	        if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
+	            if (calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
+	                //clear out the time portion
+	                xmlGregorianCalender.setHour(DatatypeConstants.FIELD_UNDEFINED);
+	                xmlGregorianCalender.setMinute(DatatypeConstants.FIELD_UNDEFINED);
+	                xmlGregorianCalender.setSecond(DatatypeConstants.FIELD_UNDEFINED);
+	                xmlGregorianCalender.setMillisecond(DatatypeConstants.FIELD_UNDEFINED);
+	                return xmlGregorianCalender;
+	            } else {
+	                throw ConversionException.incorrectDateFormat(sourceString);
+	            }
+	         } else if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
+	             throw ConversionException.incorrectTimeFormat(sourceString);
+	         } else if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
+	             throw XMLConversionException.incorrectGDayFormat(sourceString);
+	         } else if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+	             throw XMLConversionException.incorrectGMonthFormat(sourceString);
+	         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+	             throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
+	         } else if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+	             throw XMLConversionException.incorrectGYearFormat(sourceString);
+	         } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+	             throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
+	         } else if (XMLConstants.DURATION_QNAME.equals(schemaTypeQName)) {
+	             throw new IllegalArgumentException();
+	         } else if (XMLConstants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
+	             throw ConversionException.incorrectDateTimeFormat(sourceString);
+	         }	        
         }
         return xmlGregorianCalender;
     }

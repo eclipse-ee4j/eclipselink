@@ -25,7 +25,11 @@ public class EmployeeDate {
         if(!(o instanceof EmployeeDate) || o == null) {
             return false;
         } else {
-            return ((EmployeeDate)o).startDate.equals(this.startDate);
+        	if(startDate == null){
+        		return  ((EmployeeDate)o).startDate == null;
+        	}else{
+                return ((EmployeeDate)o).startDate.equals(this.startDate);
+        	}
         }
     }
     
