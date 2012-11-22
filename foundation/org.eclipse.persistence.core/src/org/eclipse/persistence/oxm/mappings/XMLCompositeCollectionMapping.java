@@ -22,14 +22,16 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
@@ -153,7 +155,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements XMLMapping, XMLNillableMapping, XMLContainerMapping, XMLConverterMapping<Session> {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements CompositeCollectionMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private AbstractNullPolicy wrapperNullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
@@ -528,9 +530,9 @@ public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMa
                         //complex child
                         String type = ((Element) ((DOMRecord)nestedRow).getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {
-                            throw XMLMarshalException.unknownXsiTypeValue(type, this);
+                            throw XMLMarshalException.unknownXsiTypeValue(type, (Mapping) this);
                         } else {
-                            throw XMLMarshalException.noDescriptorFound(this);
+                            throw XMLMarshalException.noDescriptorFound((Mapping) this);
                         }
                     }
                 }

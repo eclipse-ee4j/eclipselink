@@ -18,18 +18,16 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 
 /**
@@ -40,10 +38,10 @@ import org.xml.sax.Attributes;
 
 public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private static final String SPACE = " ";
-    private XMLCompositeDirectCollectionMapping xmlCompositeDirectCollectionMapping;
+    private DirectCollectionMapping xmlCompositeDirectCollectionMapping;
     private int index = -1;
 
-    public XMLCompositeDirectCollectionMappingNodeValue(XMLCompositeDirectCollectionMapping xmlCompositeDirectCollectionMapping) {
+    public XMLCompositeDirectCollectionMappingNodeValue(DirectCollectionMapping xmlCompositeDirectCollectionMapping) {
         super();
         this.xmlCompositeDirectCollectionMapping = xmlCompositeDirectCollectionMapping;
     }
@@ -103,7 +101,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
-                objectValue = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshalRecord.getMarshaller());
+                objectValue = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
                 schemaType = xmlField.getSchemaTypeForValue(objectValue, session);
 
                 newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
@@ -268,7 +266,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        value = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(value, (Session) session, marshalRecord.getMarshaller());
+        value = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
 
         if (null != value) {
             XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
@@ -327,7 +325,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return false;
     }
 
-    public XMLCompositeDirectCollectionMapping getMapping() {
+    public DirectCollectionMapping getMapping() {
         return xmlCompositeDirectCollectionMapping;
     }
 

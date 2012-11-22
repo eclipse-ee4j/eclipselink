@@ -18,16 +18,15 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -35,9 +34,9 @@ import org.eclipse.persistence.sessions.Session;
  * with the TreeObjectBuilder.</p>
  */
 public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullCapableValue {
-    private XMLDirectMapping xmlDirectMapping;
+    private DirectMapping xmlDirectMapping;
 
-    public XMLDirectMappingNodeValue(XMLDirectMapping xmlDirectMapping) {
+    public XMLDirectMappingNodeValue(DirectMapping xmlDirectMapping) {
         this.xmlDirectMapping = xmlDirectMapping;
     }
 
@@ -191,7 +190,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public void setNullValue(Object object, CoreSession session) {
-        Object value = xmlDirectMapping.getObjectValue(null, (Session) session);
+        Object value = xmlDirectMapping.getObjectValue(null, session);
         xmlDirectMapping.setAttributeValueInObject(object, value);
     }
 
@@ -202,7 +201,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         return xmlDirectMapping.getNullPolicy().getIsSetPerformedForAbsentNode();
     }
 
-    public XMLDirectMapping getMapping() {
+    public DirectMapping getMapping() {
         return xmlDirectMapping;
     }
 

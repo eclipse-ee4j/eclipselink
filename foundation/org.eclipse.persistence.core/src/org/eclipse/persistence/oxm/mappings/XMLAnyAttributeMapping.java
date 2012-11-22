@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -28,9 +29,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Namespace;
-import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
@@ -40,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -71,7 +74,7 @@ import org.w3c.dom.Node;
  * current Element.
  *
  */
-public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping {
+public class XMLAnyAttributeMapping extends DatabaseMapping implements AnyAttributeMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField> {
     private AbstractNullPolicy wrapperNullPolicy;
     private XMLField field;
     private MappedKeyMapContainerPolicy containerPolicy;

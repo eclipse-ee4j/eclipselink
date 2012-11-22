@@ -12,7 +12,8 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
@@ -50,7 +51,7 @@ public class ChoiceUnmarshalContext implements UnmarshalContext {
         unmarshalContext.reference(reference);
     }
 
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, CoreMapping mapping) {
+    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         unmarshalContext.setAttributeValue(unmarshalRecord, getValue(value, unmarshalRecord), mapping);
     }
 

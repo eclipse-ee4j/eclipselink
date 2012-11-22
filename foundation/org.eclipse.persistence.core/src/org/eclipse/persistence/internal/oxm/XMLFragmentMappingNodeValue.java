@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -29,10 +30,8 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -41,10 +40,10 @@ import org.eclipse.persistence.sessions.Session;
  * @author  mmacivor
  */
 public class XMLFragmentMappingNodeValue extends MappingNodeValue implements NullCapableValue {
-    private XMLFragmentMapping xmlFragmentMapping;
+    private FragmentMapping xmlFragmentMapping;
     private boolean selfMapping;
 
-    public XMLFragmentMappingNodeValue(XMLFragmentMapping xmlFragmentMapping) {
+    public XMLFragmentMappingNodeValue(FragmentMapping xmlFragmentMapping) {
         super();
         this.xmlFragmentMapping = xmlFragmentMapping;
         this.selfMapping = XPathFragment.SELF_XPATH.equals(xmlFragmentMapping.getXPath());
@@ -55,7 +54,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     }
     
     public void setNullValue(Object object, CoreSession session) {
-        Object value = xmlFragmentMapping.getObjectValue(null, (Session) session);
+        Object value = xmlFragmentMapping.getObjectValue(null, session);
         xmlFragmentMapping.setAttributeValueInObject(object, value);
     }
 
@@ -182,7 +181,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         xmlFragmentMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), attributeValue);       
     }
 
-    public XMLFragmentMapping getMapping() {
+    public FragmentMapping getMapping() {
         return xmlFragmentMapping;
     }
 

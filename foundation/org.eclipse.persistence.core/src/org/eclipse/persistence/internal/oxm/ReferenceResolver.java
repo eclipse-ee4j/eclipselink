@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -29,14 +30,13 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -88,7 +88,7 @@ public class ReferenceResolver {
      *
      * @param reference
      */
-    private void createPKVectorsFromMap(Reference reference, XMLCollectionReferenceMapping mapping) {
+    private void createPKVectorsFromMap(Reference reference, CollectionReferenceMapping mapping) {
         CoreDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
         Vector pks = new Vector();
         if(null == referenceDescriptor) {
@@ -139,7 +139,7 @@ public class ReferenceResolver {
      *
      * @param mapping
      */
-    public Reference getReference(XMLObjectReferenceMapping mapping, Object sourceObject) {
+    public Reference getReference(ObjectReferenceMapping mapping, Object sourceObject) {
         for (int x = 0; x < references.size(); x++) {
             Reference reference = (Reference) references.get(x);
             if (reference.getMapping() == mapping && reference.getSourceObject() == sourceObject) {
@@ -154,7 +154,7 @@ public class ReferenceResolver {
      * contain an entry for the provided field. 
      * @return
      */
-    public Reference getReference(XMLObjectReferenceMapping mapping, Object sourceObject, XMLField xmlField) {
+    public Reference getReference(ObjectReferenceMapping mapping, Object sourceObject, XMLField xmlField) {
         XMLField targetField = (XMLField)mapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXpath = null;
         if(!(mapping.getReferenceClass() == null || mapping.getReferenceClass() == Object.class)) {
@@ -182,8 +182,8 @@ public class ReferenceResolver {
         for (int x = 0, referencesSize = references.size(); x < referencesSize; x++) {
             Reference reference = (Reference) references.get(x);
             Object referenceSourceObject = reference.getSourceObject();
-            if (reference.getMapping() instanceof XMLCollectionReferenceMapping) {
-                XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) reference.getMapping();
+            if (reference.getMapping() instanceof CollectionReferenceMapping) {
+                CollectionReferenceMapping mapping = (CollectionReferenceMapping) reference.getMapping();
                 CoreContainerPolicy cPolicy = mapping.getContainerPolicy();
                 //container should never be null                
                 Object container = reference.getContainer();              
@@ -208,9 +208,9 @@ public class ReferenceResolver {
                 // for each reference, get the source object and add it to the container policy
                 // when finished, set the policy on the mapping
                 mapping.setAttributeValueInObject(referenceSourceObject, container);
-                XMLInverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
+                InverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
                 if(inverseReferenceMapping != null && value != null) {
-                    AttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
+                    CoreAttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
                     CoreContainerPolicy backpointerContainerPolicy = inverseReferenceMapping.getContainerPolicy();
                     if(backpointerContainerPolicy == null) {
                         backpointerAccessor.setAttributeValueInObject(value, referenceSourceObject);
@@ -223,7 +223,7 @@ public class ReferenceResolver {
                         backpointerContainerPolicy.addInto(referenceSourceObject, backpointerContainer, session);
                     }
                 }
-            } else if (reference.getMapping() instanceof XMLObjectReferenceMapping) {
+            } else if (reference.getMapping() instanceof ObjectReferenceMapping) {
                 CacheId primaryKey = (CacheId) reference.getPrimaryKey();
                 Object value = null;
                 if (userSpecifiedResolver != null) {
@@ -232,8 +232,8 @@ public class ReferenceResolver {
                         if (primaryKey.getPrimaryKey().length > 1) {
                             Map<String, Object> idWrapper = new HashMap<String, Object>();
                             for (int y = 0; y < primaryKey.getPrimaryKey().length; y++) {
-                                XMLObjectReferenceMapping refMapping = (XMLObjectReferenceMapping) reference.getMapping();
-                                String idName = refMapping.getReferenceDescriptor().getPrimaryKeyFieldNames().elementAt(y);
+                                ObjectReferenceMapping refMapping = (ObjectReferenceMapping) reference.getMapping();
+                                String idName = (String) refMapping.getReferenceDescriptor().getPrimaryKeyFieldNames().get(y);
                                 Object idValue = primaryKey.getPrimaryKey()[y];
                                 idWrapper.put(idName, idValue);
                             }
@@ -251,7 +251,7 @@ public class ReferenceResolver {
                     value = getValue(session, reference, primaryKey, handler);
                 }
 
-                XMLObjectReferenceMapping mapping = (XMLObjectReferenceMapping)reference.getMapping();
+                ObjectReferenceMapping mapping = (ObjectReferenceMapping)reference.getMapping();
                 if (value != null) {
                     mapping.setAttributeValueInObject(reference.getSourceObject(), value);
                 }
@@ -259,9 +259,9 @@ public class ReferenceResolver {
                     reference.getSetting().setValue(value);
                 }
 
-                XMLInverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
+                InverseReferenceMapping inverseReferenceMapping = mapping.getInverseReferenceMapping();
                 if(inverseReferenceMapping != null) {
-                    AttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
+                    CoreAttributeAccessor backpointerAccessor = inverseReferenceMapping.getAttributeAccessor();
                     CoreContainerPolicy backpointerContainerPolicy = inverseReferenceMapping.getContainerPolicy();
                     if(backpointerContainerPolicy == null) {
                         backpointerAccessor.setAttributeValueInObject(value, referenceSourceObject);

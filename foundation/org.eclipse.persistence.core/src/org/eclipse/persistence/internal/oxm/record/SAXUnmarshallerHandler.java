@@ -40,6 +40,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
@@ -313,7 +314,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             
             unmarshalRecord.startDocument();
-            unmarshalRecord.initializeRecord(null);
+            unmarshalRecord.initializeRecord((Mapping) null);
             xmlReader.setContentHandler(unmarshalRecord);
             xmlReader.setLexicalHandler(unmarshalRecord);
             unmarshalRecord.startElement(namespaceURI, localName, qName, atts);

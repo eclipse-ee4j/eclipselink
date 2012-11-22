@@ -10,7 +10,7 @@
  * Contributors:
  *     Blaise Doughan - 2.3.3 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.internal.oxm;
+package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 

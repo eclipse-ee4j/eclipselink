@@ -21,11 +21,25 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
+import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.FragmentCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
+import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
@@ -42,23 +56,9 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
-import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -197,7 +197,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             // MAPPINGS
             Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
             Iterator fieldTransformerIterator;
-            CoreMapping xmlMapping;
+            Mapping xmlMapping;
     
             // Transformation Mapping
             AbstractTransformationMapping transformationMapping;
@@ -210,9 +210,9 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             NodeValue mappingNodeValue = null;
             XMLField xmlField;
             while (mappingIterator.hasNext()) {
-                xmlMapping = (CoreMapping)mappingIterator.next();
+                xmlMapping = (Mapping)mappingIterator.next();
                 
-                if (xmlMapping instanceof XMLInverseReferenceMapping) {
+                if (xmlMapping instanceof InverseReferenceMapping) {
                     continue;
                 }
                 
@@ -235,33 +235,33 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
                         mappingNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
-                        XMLCompositeDirectCollectionMapping collectionMapping = (XMLCompositeDirectCollectionMapping) xmlMapping;
+                        DirectCollectionMapping collectionMapping = (DirectCollectionMapping) xmlMapping;
                         mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue(collectionMapping);
                         if (collectionMapping.getWrapperNullPolicy() != null) {
                             addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
                         }
                     } else if (xmlMapping.isAbstractCompositeCollectionMapping()) {
-                        XMLCompositeCollectionMapping collectionMapping = (XMLCompositeCollectionMapping) xmlMapping;
+                        CompositeCollectionMapping collectionMapping = (CompositeCollectionMapping) xmlMapping;
                         mappingNodeValue = new XMLCompositeCollectionMappingNodeValue(collectionMapping);
                         if (collectionMapping.getWrapperNullPolicy() != null) {
                             addChild(xmlField.getXPathFragment(), new CollectionGroupingElementNodeValue((ContainerValue) mappingNodeValue), xmlDescriptor.getNamespaceResolver());
                         }
-                    } else if (xmlMapping instanceof XMLAnyObjectMapping) {
-                        mappingNodeValue = new XMLAnyObjectMappingNodeValue((XMLAnyObjectMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLAnyCollectionMapping) {
-                        mappingNodeValue = new XMLAnyCollectionMappingNodeValue((XMLAnyCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLAnyAttributeMapping) {
-                        mappingNodeValue = new XMLAnyAttributeMappingNodeValue((XMLAnyAttributeMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLBinaryDataMapping) {
-                        mappingNodeValue = new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLBinaryDataCollectionMapping) {
-                        mappingNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLFragmentMapping) {
-                        mappingNodeValue = new XMLFragmentMappingNodeValue((XMLFragmentMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLFragmentCollectionMapping) {
-                        mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((XMLFragmentCollectionMapping)xmlMapping);
-                    } else if (xmlMapping instanceof XMLCollectionReferenceMapping) {
-                        XMLCollectionReferenceMapping xmlColMapping = (XMLCollectionReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof AnyObjectMapping) {
+                        mappingNodeValue = new XMLAnyObjectMappingNodeValue((AnyObjectMapping)xmlMapping);
+                    } else if (xmlMapping instanceof AnyCollectionMapping) {
+                        mappingNodeValue = new XMLAnyCollectionMappingNodeValue((AnyCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof AnyAttributeMapping) {
+                        mappingNodeValue = new XMLAnyAttributeMappingNodeValue((AnyAttributeMapping)xmlMapping);
+                    } else if (xmlMapping instanceof BinaryDataMapping) {
+                        mappingNodeValue = new XMLBinaryDataMappingNodeValue((BinaryDataMapping)xmlMapping);
+                    } else if (xmlMapping instanceof BinaryDataCollectionMapping) {
+                        mappingNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof FragmentMapping) {
+                        mappingNodeValue = new XMLFragmentMappingNodeValue((FragmentMapping)xmlMapping);
+                    } else if (xmlMapping instanceof FragmentCollectionMapping) {
+                        mappingNodeValue = new XMLFragmentCollectionMappingNodeValue((FragmentCollectionMapping)xmlMapping);
+                    } else if (xmlMapping instanceof CollectionReferenceMapping) {
+                        CollectionReferenceMapping xmlColMapping = (CollectionReferenceMapping)xmlMapping;
                         
                         List fields = xmlColMapping.getFields();
                         XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
@@ -293,8 +293,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                        
                       
                         continue;
-                    } else if (xmlMapping instanceof XMLObjectReferenceMapping) {
-                        XMLObjectReferenceMapping xmlORMapping = (XMLObjectReferenceMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ObjectReferenceMapping) {
+                        ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;
                         Iterator fieldIt = xmlORMapping.getFields().iterator();
                         while (fieldIt.hasNext()) {
                             XMLField xmlFld = (XMLField)fieldIt.next();
@@ -308,8 +308,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             addChild(xmlFld.getXPathFragment(), mappingNodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if (xmlMapping instanceof XMLChoiceObjectMapping) {
-                        XMLChoiceObjectMapping xmlChoiceMapping = (XMLChoiceObjectMapping)xmlMapping;
+                    } else if (xmlMapping instanceof ChoiceObjectMapping) {
+                        ChoiceObjectMapping xmlChoiceMapping = (ChoiceObjectMapping)xmlMapping;
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
                         XMLField firstField = (XMLField)fields.next();
                         XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
@@ -323,8 +323,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
                         }
                         continue;
-                    } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
-                        XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
+                    } else if(xmlMapping instanceof ChoiceCollectionMapping) {
+                        ChoiceCollectionMapping xmlChoiceMapping = (ChoiceCollectionMapping)xmlMapping;
 
                         Iterator<Entry<XMLField, XMLMapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
                         Entry<XMLField, XMLMapping> firstEntry = fields.next();
@@ -527,7 +527,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             for (XPathNode selfXPathNode : selfChildren) {
                 NodeValue marshalNodeValue = selfXPathNode.getMarshalNodeValue();
                 if(marshalNodeValue instanceof MappingNodeValue) {
-                    CoreMapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
+                    Mapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
                     Object value = selfMapping.getAttributeValueFromObject(object);
                     XMLDescriptor referenceDescriptor = (XMLDescriptor)selfMapping.getReferenceDescriptor();
                     XMLDescriptor valueDescriptor;

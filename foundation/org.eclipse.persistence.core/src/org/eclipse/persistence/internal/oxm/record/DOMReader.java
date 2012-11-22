@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -25,7 +26,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -327,11 +327,13 @@ public class DOMReader extends XMLReaderAdapter {
      * An EclipseLink specific callback into the Reader. This allows Objects to be 
      * associated with the XML Nodes they came from.
      */
-    public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
+    @Override
+    public void newObjectEvent(Object object, Object parent, Mapping selfRecordMapping) {
         docPresPolicy.addObjectToCache(object, currentNode, selfRecordMapping);
     }
 
-    public Object getCurrentObject(CoreAbstractSession session, XMLMapping selfRecordMapping) {
+    @Override
+    public Object getCurrentObject(CoreAbstractSession session, Mapping selfRecordMapping) {
         //if session == null then this is a marshal of a non-root
         //if docPres policy is null, then we never unmarshalled anything, and can
         //safely return null;

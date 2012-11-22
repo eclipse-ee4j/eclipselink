@@ -14,8 +14,13 @@ package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 
@@ -121,7 +126,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
- public class XMLTransformationMapping extends AbstractTransformationMapping implements XMLMapping {
+ public class XMLTransformationMapping extends AbstractTransformationMapping implements TransformationMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, XMLMapping {
     public XMLTransformationMapping() {
         super();
     }

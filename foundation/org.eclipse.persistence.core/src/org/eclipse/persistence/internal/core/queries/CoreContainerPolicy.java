@@ -15,8 +15,6 @@ package org.eclipse.persistence.internal.core.queries;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSession> {
 
@@ -28,6 +26,15 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * Return whether the container changed
      */
     public boolean addInto(Object element, Object container, ABSTRACT_SESSION session);
+
+    /**
+     * INTERNAL:
+     * Add element to container.
+     * This is used to add to a collection independent of type.
+     * The session may be required to wrap for the wrapper policy.
+     * Return whether the container changed.
+     */
+    public boolean addInto(Object key, Object element, Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:

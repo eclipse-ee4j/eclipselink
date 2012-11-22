@@ -28,11 +28,14 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
@@ -52,7 +55,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * to locate the correct target object instance in the session cache when resolving
  * mapping references.
  */
-public class XMLObjectReferenceMapping extends AggregateMapping implements XMLMapping {
+public class XMLObjectReferenceMapping extends AggregateMapping implements ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, XMLMapping {
     protected HashMap sourceToTargetKeyFieldAssociations;
     protected Vector sourceToTargetKeys; // maintain the order of the keys
     private boolean isWriteOnly;

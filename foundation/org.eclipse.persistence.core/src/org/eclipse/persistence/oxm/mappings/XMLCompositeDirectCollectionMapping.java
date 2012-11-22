@@ -15,18 +15,21 @@ package org.eclipse.persistence.oxm.mappings;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -228,7 +231,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements XMLMapping, XMLContainerMapping, XMLNillableMapping, XMLConverterMapping<Session> {
+public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirectCollectionMapping implements DirectCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLMapping, XMLNillableMapping {
     private boolean isCDATA;
     private boolean isDefaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;

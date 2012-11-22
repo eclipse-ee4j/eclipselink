@@ -16,12 +16,12 @@ import java.util.Map.Entry;
 
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.FragmentCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
@@ -36,10 +36,10 @@ import org.xml.sax.SAXException;
  * @author  mmacivor
  */
 public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements ContainerValue {
-    private XMLFragmentCollectionMapping xmlFragmentCollectionMapping;
+    private FragmentCollectionMapping xmlFragmentCollectionMapping;
     private int index = -1;
 
-    public XMLFragmentCollectionMappingNodeValue(XMLFragmentCollectionMapping xmlFragmentCollectionMapping) {
+    public XMLFragmentCollectionMappingNodeValue(FragmentCollectionMapping xmlFragmentCollectionMapping) {
         super();
         this.xmlFragmentCollectionMapping = xmlFragmentCollectionMapping;
     }
@@ -128,7 +128,7 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return true;
     }
 
-    public XMLFragmentCollectionMapping getMapping() {
+    public FragmentCollectionMapping getMapping() {
         return xmlFragmentCollectionMapping;
     }
 

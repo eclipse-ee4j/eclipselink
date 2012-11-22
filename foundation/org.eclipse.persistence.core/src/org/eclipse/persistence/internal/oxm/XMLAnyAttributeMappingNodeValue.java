@@ -21,11 +21,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.queries.CoreMappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
@@ -36,10 +35,10 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  */
 
 public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements ContainerValue {
-    private XMLAnyAttributeMapping xmlAnyAttributeMapping;
+    private AnyAttributeMapping xmlAnyAttributeMapping;
     private int index = -1;
     
-    public XMLAnyAttributeMappingNodeValue(XMLAnyAttributeMapping xmlAnyAttributeMapping) {
+    public XMLAnyAttributeMappingNodeValue(AnyAttributeMapping xmlAnyAttributeMapping) {
         super();
         this.xmlAnyAttributeMapping = xmlAnyAttributeMapping;
     }
@@ -115,7 +114,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         }
                     
         if(includeAttribute){
-            ContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
+            CoreContainerPolicy cp = xmlAnyAttributeMapping.getContainerPolicy();
             Object containerInstance = unmarshalRecord.getContainerInstance(this);
             QName key = new QName(namespaceURI, localName);            
             cp.addInto(key, value, containerInstance, unmarshalRecord.getSession());
@@ -142,7 +141,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return true;
     }
 
-    public XMLAnyAttributeMapping getMapping() {
+    public AnyAttributeMapping getMapping() {
         return xmlAnyAttributeMapping;
     }
 

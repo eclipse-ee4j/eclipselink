@@ -12,9 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -45,7 +45,7 @@ public interface ContainerValue {
      */
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 
-    public CoreMapping getMapping();    
+    public Mapping getMapping();    
 
     /**
      * Return true if the original container on the object should be used if 

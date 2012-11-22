@@ -14,8 +14,9 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.activation.DataHandler;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
 
 public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     UnmarshalRecord record;
-    CoreMapping mapping;
+    Mapping mapping;
     String c_id = null;
     XMLConverterMapping converter;
     NodeValue nodeValue;
@@ -45,7 +46,7 @@ public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
     private static final String INCLUDE_ELEMENT_NAME = "Include";
     private static final String HREF_ATTRIBUTE_NAME = "href";
 
-    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, CoreMapping mapping, XMLConverterMapping converter, boolean isCollection) {
+    public XMLBinaryAttachmentHandler(UnmarshalRecord unmarshalRecord, NodeValue nodeValue, Mapping mapping, XMLConverterMapping converter, boolean isCollection) {
         super(null);
         record = unmarshalRecord;
         this.mapping = mapping;

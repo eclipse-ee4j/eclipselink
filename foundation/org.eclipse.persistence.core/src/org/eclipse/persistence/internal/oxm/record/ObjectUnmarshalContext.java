@@ -12,9 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
@@ -38,7 +38,7 @@ public class ObjectUnmarshalContext implements UnmarshalContext {
     public void endElement(UnmarshalRecord unmarshalRecord) {
     }
 
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, CoreMapping mapping) {
+    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         mapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
     }
     

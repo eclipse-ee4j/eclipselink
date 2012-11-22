@@ -12,11 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 
 /**
  * <P><B>Purpose</B>: XMLMarshalExceptions are raised when issues are encountered
@@ -259,7 +259,10 @@ public class XMLMarshalException extends ValidationException {
         return exception;
     }
 
-    public static XMLMarshalException noDescriptorFound(CoreMapping mapping) {
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    public static XMLMarshalException noDescriptorFound(Mapping mapping) {
         Object[] args = { mapping.getAttributeName() };
 
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, NO_DESCRIPTOR_FOUND, args));
@@ -309,7 +312,10 @@ public class XMLMarshalException extends ValidationException {
         return exception;
     }
     
-    public static XMLMarshalException unknownXsiTypeValue(String xsiType, CoreMapping mapping) {
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    public static XMLMarshalException unknownXsiTypeValue(String xsiType, Mapping mapping) {
         Object[] args = {xsiType, mapping};
         
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, UNKNOWN_XSI_TYPE, args));

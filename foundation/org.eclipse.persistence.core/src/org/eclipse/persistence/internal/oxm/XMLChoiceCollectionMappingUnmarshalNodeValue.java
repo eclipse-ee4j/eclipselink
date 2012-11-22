@@ -15,21 +15,21 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 
 import org.xml.sax.Attributes;
 
@@ -42,7 +42,7 @@ import org.xml.sax.Attributes;
 public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue implements ContainerValue {
     private NodeValue choiceElementNodeValue;
     private NodeValue choiceElementMarshalNodeValue;
-    private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
+    private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private XMLMapping nestedMapping;
     private Map<XMLField, NodeValue> fieldToNodeValues;
     private XMLField xmlField;
@@ -50,14 +50,14 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private boolean isMixedNodeValue;
     private int index = -1;
 
-    public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField) {
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
-        this.nestedMapping = mapping.getChoiceElementMappings().get(xmlField);
+        this.nestedMapping = (XMLMapping) mapping.getChoiceElementMappings().get(xmlField);
         initializeNodeValue();
     }
     
-    public XMLChoiceCollectionMappingUnmarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField, XMLMapping nestedMapping) {
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField, XMLMapping nestedMapping) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         this.nestedMapping = nestedMapping;
@@ -77,18 +77,18 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     
     private void initializeNodeValue() {
         XMLMapping xmlMapping = this.nestedMapping;
-        if(xmlMapping instanceof XMLBinaryDataCollectionMapping) {
-            choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
+        if(xmlMapping instanceof BinaryDataCollectionMapping) {
+            choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;
-        } else if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
-            choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
+        } else if(xmlMapping instanceof DirectCollectionMapping) {
+            choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((DirectCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;
-        } else if(xmlMapping instanceof XMLCompositeCollectionMapping){
-            choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+        } else if(xmlMapping instanceof CompositeCollectionMapping){
+            choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;
         } else {
-            choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((XMLCollectionReferenceMapping)xmlMapping, xmlField);
-            choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((XMLCollectionReferenceMapping)xmlMapping);
+            choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((CollectionReferenceMapping)xmlMapping, xmlField);
+            choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
         }
     }
     
@@ -96,7 +96,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         this.containerNodeValue = nodeValue;
     }
     
-    public void setNullValue(Object object, Session session) {
+    public void setNullValue(Object object, CoreSession session) {
         xmlChoiceCollectionMapping.setAttributeValueInObject(object, null);
     }
 
@@ -164,7 +164,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return false;
     }
     
-    public XMLChoiceCollectionMapping getMapping() {
+    public ChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
     }    
 

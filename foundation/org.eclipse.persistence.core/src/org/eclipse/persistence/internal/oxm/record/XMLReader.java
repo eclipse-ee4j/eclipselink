@@ -29,10 +29,10 @@ import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -274,11 +274,11 @@ public class XMLReader implements org.xml.sax.XMLReader {
         return this.validatingContentHandler.getValidatorHandler();
     }
     
-    public void newObjectEvent(Object object, Object parent, XMLMapping selfRecordMapping) {
+    public void newObjectEvent(Object object, Object parent, Mapping selfRecordMapping) {
         //no op in this class.
     }
 
-    public Object getCurrentObject(CoreAbstractSession session, XMLMapping selfRecordMapping) {
+    public Object getCurrentObject(CoreAbstractSession session, Mapping selfRecordMapping) {
         return null;
     }
 

@@ -17,8 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.sdo.SDODataObject;
@@ -42,7 +42,7 @@ public class JAXBList implements List {
 
         JAXBContext jaxbContext = (JAXBContext) jaxbValueStore.getJAXBHelperContext().getJAXBContext();
         this.session = jaxbContext.getXMLContext().getSession(aJAXBValueStore.getEntity().getClass());
-        CoreMapping mapping = aJAXBValueStore.getJAXBMappingForProperty(property);
+        Mapping mapping = aJAXBValueStore.getJAXBMappingForProperty(property);
         this.containerPolicy = mapping.getContainerPolicy();
     }
 
@@ -196,7 +196,7 @@ public class JAXBList implements List {
     }
 
     private Object getContainer() {
-        CoreMapping mapping = jaxbValueStore.getJAXBMappingForProperty(property);
+        Mapping mapping = jaxbValueStore.getJAXBMappingForProperty(property);
         Object container = mapping.getAttributeValueFromObject(jaxbValueStore.getEntity());
         if(null == container) {
             container = containerPolicy.containerInstance();

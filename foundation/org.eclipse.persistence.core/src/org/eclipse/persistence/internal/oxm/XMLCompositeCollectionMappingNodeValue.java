@@ -19,6 +19,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -31,14 +33,10 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -53,10 +51,10 @@ import org.xml.sax.SAXException;
  * handled when used with the TreeObjectBuilder.</p>
  */
 public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
-    private XMLCompositeCollectionMapping xmlCompositeCollectionMapping;
+    private CompositeCollectionMapping xmlCompositeCollectionMapping;
     private int index = -1;
 
-    public XMLCompositeCollectionMappingNodeValue(XMLCompositeCollectionMapping xmlCompositeCollectionMapping) {
+    public XMLCompositeCollectionMappingNodeValue(CompositeCollectionMapping xmlCompositeCollectionMapping) {
         super();
         this.xmlCompositeCollectionMapping = xmlCompositeCollectionMapping;
     }
@@ -202,7 +200,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                        }
                    }
             	   if(builder.getNodes().size() > 1) {
-                       setOrAddAttributeValueForKeepAsElement(builder, (XMLMapping) xmlCompositeCollectionMapping, xmlCompositeCollectionMapping, unmarshalRecord, true, collection);
+                       setOrAddAttributeValueForKeepAsElement(builder, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping, unmarshalRecord, true, collection);
                        return;
                    }
                }else{
@@ -218,7 +216,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         objectValue = xmlCompositeCollectionMapping.convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
         unmarshalRecord.addAttributeValue(this, objectValue, collection);
 
-        XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();
+        InverseReferenceMapping inverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();
         if(null != inverseReferenceMapping) {
             if(inverseReferenceMapping.getContainerPolicy() == null) {
                 inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(objectValue, unmarshalRecord.getCurrentObject());
@@ -255,7 +253,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
       
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         // convert the value - if necessary
-        value = xmlCompositeCollectionMapping.convertObjectValueToDataValue(value, (Session) session, marshaller);
+        value = xmlCompositeCollectionMapping.convertObjectValueToDataValue(value, session, marshaller);
         if (null == value) {
         	   return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
@@ -305,7 +303,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         return true;
     }
 
-    public XMLCompositeCollectionMapping getMapping() {
+    public CompositeCollectionMapping getMapping() {
         return xmlCompositeCollectionMapping;
     }
 

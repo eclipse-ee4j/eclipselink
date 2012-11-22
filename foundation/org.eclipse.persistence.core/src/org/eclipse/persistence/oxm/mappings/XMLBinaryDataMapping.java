@@ -17,14 +17,19 @@ import javax.activation.DataHandler;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -34,6 +39,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <p><b>Purpose:</b>Provide a mapping for binary data that can be treated as either inline or as
@@ -70,7 +76,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
  *  @since   TopLink 11.1.1.0.0g
  */
-public class XMLBinaryDataMapping extends XMLDirectMapping {
+public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session> {
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;

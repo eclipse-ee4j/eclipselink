@@ -15,21 +15,21 @@ package org.eclipse.persistence.internal.oxm.record;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataMappingNodeValue;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 public class BinaryDataUnmarshalRecord extends UnmarshalRecord {
-	private XMLBinaryDataMapping xmlBinaryDataMapping;
+	private BinaryDataMapping xmlBinaryDataMapping;
 	private XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue;
 	private UnmarshalRecord parentRecord;
 	private BinaryMappingContentHandler handler;
 	private ContentHandler activeContentHandler;
 
-	public BinaryDataUnmarshalRecord(TreeObjectBuilder treeObjectBuilder, UnmarshalRecord parentRecord, XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue, XMLBinaryDataMapping xmlBinaryDataMapping) {
+	public BinaryDataUnmarshalRecord(TreeObjectBuilder treeObjectBuilder, UnmarshalRecord parentRecord, XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue, BinaryDataMapping xmlBinaryDataMapping) {
 		super(treeObjectBuilder);
 		this.parentRecord = parentRecord;
 		this.xmlBinaryDataMappingNodeValue = xmlBinaryDataMappingNodeValue;

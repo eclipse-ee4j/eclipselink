@@ -19,17 +19,17 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
     // Protected to public
-    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, CoreMapping mapping) throws SAXException {
+    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, Mapping mapping) throws SAXException {
         if(xmlDescriptor == null){
             //Use the DescriptorNotFoundContentHandler to "look ahead" and determine if this is a simple or complex element
             //if it is complex the exception should be thrown
@@ -86,7 +86,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         UnmarshalRecord childRecord = unmarshalRecord.getChildUnmarshalRecord(targetObjectBuilder);
         childRecord.setAttributes(atts);
         childRecord.startDocument();
-        childRecord.initializeRecord(null);
+        childRecord.initializeRecord((Mapping) null);
         childRecord.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), atts);
 
         XMLReader xmlReader = unmarshalRecord.getXMLReader();
@@ -94,7 +94,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         xmlReader.setLexicalHandler(childRecord);
     }
 
-    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, CoreMapping mapping, UnmarshalKeepAsElementPolicy policy) {
+    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
@@ -207,7 +207,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
     }
 
-    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, XMLMapping mapping, XMLConverterMapping converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
+    protected void setOrAddAttributeValueForKeepAsElement(SAXFragmentBuilder builder, Mapping mapping, XMLConverterMapping converter, UnmarshalRecord unmarshalRecord, boolean isCollection, Object collection) {
         Object node = builder.getNodes().remove(builder.getNodes().size() -1);
         if (converter != null) {
             node = converter.convertDataValueToObjectValue(node, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
@@ -220,7 +220,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 unmarshalRecord.addAttributeValue((ContainerValue) this, node);
             }
         } else {
-            unmarshalRecord.setAttributeValue(node, (CoreMapping) mapping);
+            unmarshalRecord.setAttributeValue(node, mapping);
         }
     }
 

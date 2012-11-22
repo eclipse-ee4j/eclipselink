@@ -1,10 +1,10 @@
 // Copyright (c) 1998, 2007, Oracle. All rights reserved. 
 package org.eclipse.persistence.internal.oxm.record;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -67,7 +67,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         }
     }
 
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, CoreMapping mapping) {
+    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping) {
         currentSetting.setMapping((DatabaseMapping) mapping);
         currentSetting.setObject(unmarshalRecord.getCurrentObject());
         currentSetting.setValue(value);

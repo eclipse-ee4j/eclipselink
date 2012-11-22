@@ -13,13 +13,13 @@
 package org.eclipse.persistence.internal.oxm.record.deferred;
 
 import org.xml.sax.SAXException;
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLBinaryAttachmentHandler;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLInlineBinaryHandler;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
@@ -31,14 +31,14 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  * </ul>
  */
 public class BinaryMappingContentHandler extends DeferredContentHandler {
-    private CoreMapping mapping;
+    private Mapping mapping;
     private NodeValue nodeValue;
     private XMLConverterMapping converter;
     private boolean isCollection;
     private UnmarshalRecord workingUnmarshalRecord;
     private boolean finished;          
      
-    public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataMapping mapping) {
+    public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, BinaryDataMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
         this.converter = mapping;
@@ -47,7 +47,7 @@ public class BinaryMappingContentHandler extends DeferredContentHandler {
         this.finished = false;
     }
     
-    public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, XMLBinaryDataCollectionMapping mapping) {
+    public BinaryMappingContentHandler(UnmarshalRecord parentRecord, NodeValue nodeValue, BinaryDataCollectionMapping mapping) {
         super(parentRecord);
         this.mapping = mapping;
         this.converter = mapping;

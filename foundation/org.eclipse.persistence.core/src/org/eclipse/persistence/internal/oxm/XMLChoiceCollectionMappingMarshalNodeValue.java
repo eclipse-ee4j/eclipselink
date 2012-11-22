@@ -18,32 +18,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.sessions.Session;
 
 import java.util.Iterator;
 
 public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implements ContainerValue {
-    private XMLChoiceCollectionMapping xmlChoiceCollectionMapping;
+    private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<XMLField, NodeValue> fieldToNodeValues;
     private Map<Class, NodeValue> classToNodeValues;
     private NodeValue choiceElementNodeValue;
@@ -51,7 +49,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     private boolean isMixedNodeValue;
     private int index = -1;
 
-    public XMLChoiceCollectionMappingMarshalNodeValue(XMLChoiceCollectionMapping mapping, XMLField xmlField) {
+    public XMLChoiceCollectionMappingMarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         initializeNodeValue();
@@ -72,16 +70,16 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         this.fieldToNodeValues = fieldToNodeValues;
         this.classToNodeValues = new HashMap<Class, NodeValue>();
         for(XMLField nextField:fieldToNodeValues.keySet()) {
-            Class associatedClass = this.xmlChoiceCollectionMapping.getFieldToClassMappings().get(nextField);
+            Class associatedClass = ((Map<XMLField, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
             this.classToNodeValues.put(associatedClass, fieldToNodeValues.get(nextField));
         }
         
         Collection classes = this.classToNodeValues.keySet();
-        for(Class nextClass:this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().keySet()) {
+        for(Class nextClass:((Map<Class, XMLMapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
-                XMLField field = xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
-                NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
+                XMLField field = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
+                NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (XMLMapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
                 this.classToNodeValues.put(nextClass, nodeValue);
                 NodeValue nodeValueForField = fieldToNodeValues.get(field);
                 nodeValue.setXPathNode(nodeValueForField.getXPathNode());
@@ -90,19 +88,19 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     private void initializeNodeValue() {
-        XMLMapping xmlMapping = xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
-        if(xmlMapping instanceof XMLBinaryDataCollectionMapping) {
-            choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((XMLBinaryDataCollectionMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLCompositeDirectCollectionMapping) {
-            choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((XMLCompositeDirectCollectionMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLCompositeCollectionMapping) {
-            choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((XMLCompositeCollectionMapping)xmlMapping);
+        XMLMapping xmlMapping = (XMLMapping) xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
+        if(xmlMapping instanceof BinaryDataCollectionMapping) {
+            choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
+        } else if(xmlMapping instanceof DirectCollectionMapping) {
+            choiceElementNodeValue = new XMLCompositeDirectCollectionMappingNodeValue((DirectCollectionMapping)xmlMapping);
+        } else if(xmlMapping instanceof CompositeCollectionMapping) {
+            choiceElementNodeValue = new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping);
         } else {
-            XMLCollectionReferenceMapping refMapping = ((XMLCollectionReferenceMapping)xmlMapping);
+            CollectionReferenceMapping refMapping = ((CollectionReferenceMapping)xmlMapping);
             if(refMapping.usesSingleNode() || refMapping.getFields().size() == 1) {
                 choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue(refMapping, xmlField);
             } else {
-                choiceElementNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((XMLCollectionReferenceMapping)xmlMapping);
+                choiceElementNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
             }
         }
     }
@@ -143,7 +141,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
             //sort the elements. Results will be a list of nodevalues and a corresponding list of 
             //collections associated with those nodevalues
             while(cp.hasNext(iterator)) {        	    
-        	    Object nextValue = xmlChoiceCollectionMapping.convertObjectValueToDataValue(cp.next(iterator, session), (Session) session, marshalRecord.getMarshaller());
+        	    Object nextValue = xmlChoiceCollectionMapping.convertObjectValueToDataValue(cp.next(iterator, session), session, marshalRecord.getMarshaller());
 		        NodeValue nodeValue = getNodeValueForValue(nextValue);
 		        
 		        if(nodeValue != null){
@@ -208,7 +206,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
-        value = xmlChoiceCollectionMapping.convertObjectValueToDataValue(value, (Session) session, marshalRecord.getMarshaller());
+        value = xmlChoiceCollectionMapping.convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
         if(value !=null && value.getClass() == CoreClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
     		marshalMixedContent(marshalRecord, (String)value);
 	        return true;
@@ -248,17 +246,17 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		    NodeValue nextNodeValue = unmarshalNodeValue.getChoiceElementMarshalNodeValue();    		    
     		    
     		    if(nextNodeValue instanceof MappingNodeValue){
-	        		CoreMapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
+	        		Mapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
 	        		if(nextMapping.isAbstractCompositeCollectionMapping()){
-	        			if(((XMLCompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        			if(((CompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
 	        				return unmarshalNodeValue;	        				
 	        			}
 	        		}else if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
-	        			if(((XMLCompositeDirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        			if(((DirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
 	        				return unmarshalNodeValue;
 	        			}
-	        		}else if(nextMapping instanceof XMLBinaryDataCollectionMapping){
-	        			if(((XMLBinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        		}else if(nextMapping instanceof BinaryDataCollectionMapping){
+	        			if(((BinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
 	        				return unmarshalNodeValue;
 	        			}
 	        		}
@@ -279,7 +277,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		if(associatedField == null) {
     		    Class theClass = fieldValue.getClass();
     		    while(associatedField == null) {
-                    associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                    associatedField = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
                         theClass = theClass.getSuperclass();
                     } else {
@@ -293,7 +291,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	} else {
             Class theClass = value.getClass();
             while(associatedField == null) {
-                associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                associatedField = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                 nodeValue = classToNodeValues.get(theClass);
                 if(theClass.getSuperclass() != null) {
                     theClass = theClass.getSuperclass();
@@ -307,7 +305,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	    List<XMLField> sourceFields = null;
     	    Class theClass = value.getClass();
     	    while(theClass != null) {
-    	        sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
+    	        sourceFields = (List<XMLField>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
     	        if(sourceFields != null) {
     	            break;
     	        }
@@ -394,7 +392,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         return true;
     }  
     
-    public XMLChoiceCollectionMapping getMapping() {
+    public ChoiceCollectionMapping getMapping() {
         return xmlChoiceCollectionMapping;
     }    
 

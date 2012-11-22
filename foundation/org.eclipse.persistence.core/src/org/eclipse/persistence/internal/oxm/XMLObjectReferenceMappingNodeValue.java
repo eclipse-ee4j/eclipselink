@@ -15,13 +15,12 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
@@ -48,7 +47,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  */
 
 public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
-    private XMLObjectReferenceMapping xmlObjectReferenceMapping;
+    private ObjectReferenceMapping xmlObjectReferenceMapping;
     private XMLField xmlField;
 
     /**
@@ -57,7 +56,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * 
      * @param xmlObjectReferenceMapping
      */
-    public XMLObjectReferenceMappingNodeValue(XMLObjectReferenceMapping xmlObjectReferenceMapping) {
+    public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping) {
         super();
         this.xmlObjectReferenceMapping = xmlObjectReferenceMapping;
     }
@@ -69,7 +68,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * @param xmlObjectReferenceMapping
      * @param xmlField
      */
-    public XMLObjectReferenceMappingNodeValue(XMLObjectReferenceMapping xmlObjectReferenceMapping, XMLField xmlField) {
+    public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping, XMLField xmlField) {
         super();
         this.xmlObjectReferenceMapping = xmlObjectReferenceMapping;
         this.xmlField = xmlField;
@@ -156,7 +155,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object targetObject, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, (AbstractSession) session);
+        Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
             if(null != targetObject) {
                 XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
@@ -185,7 +184,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         return true;
     }
 
-    public XMLObjectReferenceMapping getMapping() {
+    public ObjectReferenceMapping getMapping() {
         return xmlObjectReferenceMapping;
     }
 

@@ -26,6 +26,7 @@ import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -36,10 +37,10 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
-import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -94,7 +95,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * 
  */
 
-public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMapping, XMLContainerMapping, XMLConverterMapping<Session> {
+public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session>, XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;

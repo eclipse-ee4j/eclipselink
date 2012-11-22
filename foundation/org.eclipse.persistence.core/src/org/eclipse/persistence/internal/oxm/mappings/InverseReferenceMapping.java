@@ -10,16 +10,17 @@
  * Contributors:
  *     Blaise Doughan - 2.5 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.internal.oxm;
+package org.eclipse.persistence.internal.oxm.mappings;
 
-import org.eclipse.persistence.core.sessions.CoreSession;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.core.descriptors.CoreDescriptor;
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 
-public interface XMLConverterMapping<SESSION extends CoreSession> {
-
-    Object convertDataValueToObjectValue(Object fieldValue, SESSION session, XMLUnmarshaller unmarshaller);
-
-    Object convertObjectValueToDataValue(Object value, SESSION session, XMLMarshaller marshaller);
+public interface InverseReferenceMapping<
+    ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
+    CONTAINER_POLICY extends CoreContainerPolicy,
+    DESCRIPTOR extends CoreDescriptor,
+    FIELD extends CoreField> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD> {
 
 }

@@ -14,8 +14,8 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 
 import org.eclipse.persistence.internal.oxm.XMLCompositeCollectionMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -31,7 +31,7 @@ public class CompositeCollectionMappingContentHandler extends CompositeMappingCo
      * @param aNullPolicy
      */
     public CompositeCollectionMappingContentHandler(UnmarshalRecord parentRecord, //
-            XMLCompositeCollectionMappingNodeValue aNodeValue, XMLCompositeCollectionMapping aMapping, //
+            XMLCompositeCollectionMappingNodeValue aNodeValue, CompositeCollectionMapping aMapping, //
             Attributes atts, XPathFragment aFragment, XMLDescriptor aDescriptor) {
         super(parentRecord, aMapping, atts, aMapping.getNullPolicy(), aFragment, aDescriptor);
         nodeValue = aNodeValue;

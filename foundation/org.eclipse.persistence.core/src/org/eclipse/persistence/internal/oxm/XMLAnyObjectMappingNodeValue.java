@@ -15,11 +15,12 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.List;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -35,10 +36,8 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -48,9 +47,9 @@ import org.xml.sax.SAXException;
  * used with the TreeObjectBuilder.</p>
  */
 public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValue implements NullCapableValue {
-    private XMLAnyObjectMapping xmlAnyObjectMapping;
+    private AnyObjectMapping xmlAnyObjectMapping;
 
-    public XMLAnyObjectMappingNodeValue(XMLAnyObjectMapping xmlAnyObjectMapping) {
+    public XMLAnyObjectMappingNodeValue(AnyObjectMapping xmlAnyObjectMapping) {
         super();
         this.xmlAnyObjectMapping = xmlAnyObjectMapping;
     }
@@ -75,7 +74,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         XPathFragment rootFragment = null;
 
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
-        objectValue = xmlAnyObjectMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshalRecord.getMarshaller());
+        objectValue = xmlAnyObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
 
         if (null == objectValue) {
             return false;
@@ -288,7 +287,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         }
     }
 
-    public XMLAnyObjectMapping getMapping() {
+    public AnyObjectMapping getMapping() {
         return xmlAnyObjectMapping;
     }
 
@@ -305,7 +304,8 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         return this.xmlAnyObjectMapping.isMixedContent();
     }
 
-    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, CoreMapping mapping, UnmarshalKeepAsElementPolicy policy) {
+    @Override
+    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
         XMLDescriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
         if (referenceDescriptor == null) {
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 

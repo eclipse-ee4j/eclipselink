@@ -25,13 +25,15 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -198,7 +200,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, XMLNillableMapping, XMLConverterMapping<Session> {
+public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, CompositeObjectMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private XMLInverseReferenceMapping inverseReferenceMapping;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;
@@ -520,9 +522,9 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                         //complex child
                         String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {
-                            throw XMLMarshalException.unknownXsiTypeValue(type, this);
+                            throw XMLMarshalException.unknownXsiTypeValue(type, (CompositeObjectMapping) this);
                         } else {
-                            throw XMLMarshalException.noDescriptorFound(this);
+                            throw XMLMarshalException.noDescriptorFound((CompositeObjectMapping) this);
                         }
                     }
                 }

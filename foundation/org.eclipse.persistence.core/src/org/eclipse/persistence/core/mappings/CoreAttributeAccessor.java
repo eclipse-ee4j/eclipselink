@@ -19,9 +19,12 @@ public interface CoreAttributeAccessor {
      */
     public abstract Object getAttributeValueFromObject(Object object);
 
+    public abstract boolean isInstanceVariableAttributeAccessor();
+
     /**
      * Set the attribute value into the object.
      */
     public void setAttributeValueInObject(Object object, Object value);
+
 
 }

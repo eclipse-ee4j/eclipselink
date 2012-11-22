@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
@@ -44,6 +43,7 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.ObjectUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
@@ -321,7 +321,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         Object containerInstance = containerInstances[c.getIndex()];
 
         if (containerInstance == null) {
-            CoreMapping mapping = c.getMapping();
+            Mapping mapping = c.getMapping();
             //don't attempt to do a get on a readOnly property.        	
             if(c.getReuseContainer() && !(mapping.isReadOnly())) {
             	containerInstance = mapping.getAttributeValueFromObject(currentObject);                
@@ -513,8 +513,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
          initializeRecord((XMLMapping)null);
     }
     
-    public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
-    	try {
+    public void initializeRecord(Mapping selfRecordMapping) throws SAXException {
+        try {
             XMLDescriptor xmlDescriptor = (XMLDescriptor) treeObjectBuilder.getDescriptor();
             if(xmlDescriptor.isSequencedObject()) {
                 unmarshalContext = new SequencedUnmarshalContext();
@@ -524,12 +524,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
             currentObject = this.xmlReader.getCurrentObject(session, selfRecordMapping);
             if (currentObject == null) {
-            	currentObject = treeObjectBuilder.buildNewInstance();
+                currentObject = treeObjectBuilder.buildNewInstance();
             }
             if (xmlDescriptor.getLocationAccessor() != null && xmlReader.getLocator() != null){
                 // Check to see if this Descriptor isLocationAware
                     // Store the snapshot of the current documentLocator
-                	xmlLocation  = new Locator2Impl(xmlReader.getLocator());
+                    xmlLocation  = new Locator2Impl(xmlReader.getLocator());
             }
             
             Object parentRecordCurrentObject = null;
@@ -552,9 +552,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
-            	int containerSize = containerValues.size();
-            	containerInstances = new Object[containerSize];
-            	populatedContainerValues = new ArrayList(containerSize);
+                int containerSize = containerValues.size();
+                containerInstances = new Object[containerSize];
+                populatedContainerValues = new ArrayList(containerSize);
             }
 
             if (null != xPathNode.getSelfChildren()) {
@@ -575,6 +575,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
+    }
+
+    public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
+        initializeRecord((Mapping) selfRecordMapping);
     }
 
     public void endDocument() throws SAXException {
@@ -1006,7 +1010,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                     } else {
                         if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                            CoreMapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                            Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
                             if(mapping.isAbstractDirectMapping()) {
                                 Object nullValue = ((AbstractDirectMapping)mapping).getNullValue();
                                 if(!(XMLConstants.EMPTY_STRING.equals(nullValue))) {
@@ -1352,10 +1356,14 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void setAttributeValue(Object value, DatabaseMapping mapping) {
-        this.unmarshalContext.setAttributeValue(this, value, mapping);
+        this.unmarshalContext.setAttributeValue(this, value, (Mapping) mapping);
     }
 
-    public void setAttributeValue(Object value, CoreMapping mapping) {
+    /**
+     * INTERNAL
+     * @since EclipseLink 2.5.0
+     */
+    public void setAttributeValue(Object value, Mapping mapping) {
         this.unmarshalContext.setAttributeValue(this, value, mapping);
     }
 

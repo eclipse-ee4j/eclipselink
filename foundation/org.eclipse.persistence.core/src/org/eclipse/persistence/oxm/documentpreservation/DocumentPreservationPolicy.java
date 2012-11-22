@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.documentpreservation;
 
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
@@ -49,12 +50,19 @@ public abstract class DocumentPreservationPolicy {
     
     public abstract void addObjectToCache(Object obj, Node node);
     
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    public abstract void addObjectToCache(Object obj, Node node, Mapping selfRecordMapping);
+
     public abstract void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping);
         
     public abstract Node getNodeForObject(Object obj);
     
     public abstract Object getObjectForNode(Node node);
     
+    public abstract Object getObjectForNode(Node node, Mapping selfRecordMapping);
+
     public abstract Object getObjectForNode(Node node, XMLMapping selfRecordMapping);
     
     public abstract boolean shouldPreserveDocument();

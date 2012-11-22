@@ -16,10 +16,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.AggregateMapping;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -70,7 +73,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * ...<br>
  * </code>
  */
-public class XMLInverseReferenceMapping extends AggregateMapping implements ContainerMapping {
+public class XMLInverseReferenceMapping extends AggregateMapping implements InverseReferenceMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, ContainerMapping {
 
     private String mappedBy;
     private ContainerPolicy containerPolicy;

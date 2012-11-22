@@ -12,11 +12,11 @@
  ******************************************************************************/
  package org.eclipse.persistence.internal.oxm.record;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
@@ -48,7 +48,7 @@ public class ObjectMarshalContext implements MarshalContext {
         return xPathNode.getNonAttributeChildren().get(index);
     }
 
-    public Object getAttributeValue(Object object, CoreMapping mapping) {
+    public Object getAttributeValue(Object object, Mapping mapping) {
         return mapping.getAttributeValueFromObject(object);
     }
 

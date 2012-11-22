@@ -21,12 +21,11 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
@@ -39,12 +38,10 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -57,11 +54,11 @@ import org.xml.sax.SAXException;
  * used with the TreeObjectBuilder.</p>
  */
 public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNodeValue implements ContainerValue {
-    private XMLAnyCollectionMapping xmlAnyCollectionMapping;
+    private AnyCollectionMapping xmlAnyCollectionMapping;
     private int index = -1;
     private static XPathFragment SIMPLE_FRAGMENT = new XPathFragment();
     
-    public XMLAnyCollectionMappingNodeValue(XMLAnyCollectionMapping xmlAnyCollectionMapping) {
+    public XMLAnyCollectionMappingNodeValue(AnyCollectionMapping xmlAnyCollectionMapping) {
         super();
         this.xmlAnyCollectionMapping = xmlAnyCollectionMapping;
     }
@@ -104,7 +101,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             while(cp.hasNext(iterator)) {        	    
         	    
                 Object nextValue = cp.next(iterator, session);
-                nextValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(nextValue, (Session) session, marshalRecord.getMarshaller());
+                nextValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(nextValue, session, marshalRecord.getMarshaller());
                 XPathFragment frag = getXPathFragmentForValue(nextValue, marshalRecord,marshalRecord.getMarshaller() );
                 if(frag != null){    
                 	if(frag == SIMPLE_FRAGMENT){
@@ -148,7 +145,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 	        marshalRecord.startCollection();
 	        while (cp.hasNext(iterator)) {
 	            objectValue = cp.next(iterator, session);
-	            objectValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(objectValue, (AbstractSession) session, marshalRecord.getMarshaller());
+	            objectValue = xmlAnyCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
 	            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
 	        }
 	        marshalRecord.endCollection();
@@ -327,7 +324,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         xmlAnyCollectionMapping.setAttributeValueInObject(object, containerInstance);
     }
 
-    public ContainerPolicy getContainerPolicy() {
+    public CoreContainerPolicy getContainerPolicy() {
         return xmlAnyCollectionMapping.getContainerPolicy();
     }
 
@@ -463,7 +460,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
     }
 
-    public XMLAnyCollectionMapping getMapping() {
+    public AnyCollectionMapping getMapping() {
         return xmlAnyCollectionMapping;
     }
     

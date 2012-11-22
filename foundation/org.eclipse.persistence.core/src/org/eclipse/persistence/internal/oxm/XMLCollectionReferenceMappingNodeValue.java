@@ -12,18 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+
 import javax.xml.namespace.QName;
 
 import org.xml.sax.Attributes;
 
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
@@ -52,7 +52,7 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
  */
 
 public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue implements ContainerValue {
-    private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
+    private CollectionReferenceMapping xmlCollectionReferenceMapping;
     private XMLField xmlField;
     private static final String SPACE = " ";
     private int index = -1;
@@ -63,7 +63,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * 
      * @param xmlCollectionReferenceMapping
      */
-    public XMLCollectionReferenceMappingNodeValue(XMLCollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
+    public XMLCollectionReferenceMappingNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
         super();
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
         this.xmlField = xmlField;
@@ -187,7 +187,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             QName schemaType;
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
-                Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, (AbstractSession) session);
+                Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, session);
                 if (fieldValue == null) {
                     if(null != objectValue) {
                         XMLField fkField = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
@@ -254,7 +254,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             }
         } else {
             QName schemaType;
-            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, (AbstractSession) session);
+            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
                 return false;
             }
@@ -275,7 +275,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return true;
     }
 
-    public XMLCollectionReferenceMapping getMapping() {
+    public CollectionReferenceMapping getMapping() {
         return xmlCollectionReferenceMapping;
     }
 

@@ -14,7 +14,8 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
 
-import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
@@ -23,13 +24,13 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 public class XMLInlineBinaryHandler extends UnmarshalRecord {
     NodeValue nodeValue;
-    CoreMapping mapping;
+    Mapping mapping;
     boolean isCollection = false;
     XMLConverterMapping converter;
     UnmarshalRecord parent;
     CharSequence characters;
     
-    public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, CoreMapping mapping, XMLConverterMapping converter, boolean isCollection) {
+    public XMLInlineBinaryHandler(UnmarshalRecord parent, NodeValue nodeValue, Mapping mapping, XMLConverterMapping converter, boolean isCollection) {
         super(null);
         this.nodeValue = nodeValue;
         this.isCollection = isCollection;

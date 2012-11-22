@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.documentpreservation;
 
 import org.w3c.dom.Node;
 
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderingPolicy;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -37,26 +38,39 @@ public class NoDocumentPreservationPolicy extends DocumentPreservationPolicy {
         setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());
     }
     
+    @Override
     public void addObjectToCache(Object obj, Node node) {
         //No op
     }
 
-    public void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping) {
-        
+    @Override
+    public void addObjectToCache(Object obj, Node node, Mapping selfRecordMapping) {
     }
-    
+
+    public void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping) {
+    }
+
+    @Override
     public Node getNodeForObject(Object obj) {
         return null;
     }
-    
+
+    @Override
     public Object getObjectForNode(Node node) {
-        return getObjectForNode(node, null);
+        return getObjectForNode(node, (Mapping) null);
     }
-    
+
+    @Override
+    public Object getObjectForNode(Node node, Mapping selfRecordNodeValue) {
+        return null;
+    }
+
+    @Override
     public Object getObjectForNode(Node node, XMLMapping selfRecordNodeValue) {
         return null;
     }
-    
+
+    @Override
     public boolean shouldPreserveDocument() {
         return false;
     }

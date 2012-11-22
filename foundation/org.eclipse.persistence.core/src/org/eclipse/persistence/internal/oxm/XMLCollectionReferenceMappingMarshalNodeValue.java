@@ -17,22 +17,21 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
 
-    private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
+    private CollectionReferenceMapping xmlCollectionReferenceMapping;
     private XPathNode branchNode;
     private int index = -1;
 
-    public XMLCollectionReferenceMappingMarshalNodeValue(XMLCollectionReferenceMapping xmlCollectionReferenceMapping) {
+    public XMLCollectionReferenceMappingMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping) {
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
         branchNode = new XPathNode();
         NamespaceResolver namespaceResolver = ((XMLDescriptor) xmlCollectionReferenceMapping.getDescriptor()).getNamespaceResolver();
@@ -57,7 +56,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
     }
 
     @Override
-    public XMLCollectionReferenceMapping getMapping() {
+    public CollectionReferenceMapping getMapping() {
         return xmlCollectionReferenceMapping;
     }
 
@@ -137,10 +136,10 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
 
     private static class XMLCollectionReferenceMappingFKMarshalNodeValue extends MappingNodeValue {
 
-        private XMLCollectionReferenceMapping xmlCollectionReferenceMapping;
+        private CollectionReferenceMapping xmlCollectionReferenceMapping;
         private XMLField xmlField;
 
-        public XMLCollectionReferenceMappingFKMarshalNodeValue(XMLCollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
+        public XMLCollectionReferenceMappingFKMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
             this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
             this.xmlField = xmlField;
         }
@@ -159,7 +158,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
 
         @Override
         public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, (AbstractSession) session);
+            Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
                 if(null != value) {
                     XMLField f2 = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
@@ -182,7 +181,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         }
 
         @Override
-        public XMLCollectionReferenceMapping getMapping() {
+        public CollectionReferenceMapping getMapping() {
             return xmlCollectionReferenceMapping;
         }
 

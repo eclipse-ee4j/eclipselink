@@ -31,8 +31,9 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
-import org.eclipse.persistence.internal.oxm.XMLContainerMapping;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -40,6 +41,7 @@ import org.eclipse.persistence.internal.queries.ListContainerPolicy;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -65,7 +67,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @see XMLObjectReferenceMapping
  * @see ContainerMapping
  */
-public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping implements ContainerMapping, XMLContainerMapping {
+public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping implements CollectionReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, ContainerMapping {
     protected ContainerPolicy containerPolicy; // type of container used to hold the aggregate objects
     private static final String SPACE = " ";
     private DatabaseField field;

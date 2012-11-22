@@ -16,6 +16,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -26,8 +27,9 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -87,7 +89,7 @@ import javax.xml.namespace.QName;
  * 
  */
 
-public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMapping, XMLConverterMapping<Session> {
+public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObjectMapping<AttributeAccessor, AbstractSession, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session>, XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<String, XMLField> classNameToFieldMappings;

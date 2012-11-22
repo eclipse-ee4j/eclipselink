@@ -21,6 +21,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -44,7 +44,7 @@ import org.eclipse.persistence.sessions.Session;
  */
 
 public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapableValue {
-    private XMLBinaryDataMapping xmlBinaryDataMapping;
+    private BinaryDataMapping xmlBinaryDataMapping;
 
     protected String getValueToWrite(QName schemaType, Object value, CoreAbstractSession session) {
         return (String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
@@ -54,7 +54,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return (xPathFragment.getNextFragment() == null) || xPathFragment.isAttribute();
     }
 
-    public XMLBinaryDataMappingNodeValue(XMLBinaryDataMapping mapping) {
+    public XMLBinaryDataMappingNodeValue(BinaryDataMapping mapping) {
         this.xmlBinaryDataMapping = mapping;
     }
 
@@ -301,7 +301,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         return null;
     }
     
-    public XMLBinaryDataMapping getMapping() {
+    public BinaryDataMapping getMapping() {
         return this.xmlBinaryDataMapping;
     }
     
@@ -314,4 +314,5 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {
         unmarshalRecord.resetStringBuffer();
     }
+
 }

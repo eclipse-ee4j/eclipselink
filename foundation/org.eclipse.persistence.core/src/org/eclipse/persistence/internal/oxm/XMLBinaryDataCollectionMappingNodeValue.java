@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
@@ -28,12 +29,10 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -43,10 +42,10 @@ import org.eclipse.persistence.sessions.Session;
 
 public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue implements ContainerValue {
 
-    private XMLBinaryDataCollectionMapping xmlBinaryDataCollectionMapping;
+    private BinaryDataCollectionMapping xmlBinaryDataCollectionMapping;
     private int index = -1;
 
-    public XMLBinaryDataCollectionMappingNodeValue(XMLBinaryDataCollectionMapping mapping) {
+    public XMLBinaryDataCollectionMappingNodeValue(BinaryDataCollectionMapping mapping) {
         this.xmlBinaryDataCollectionMapping = mapping;
     }
 
@@ -186,7 +185,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             mimeType = XMLConstants.EMPTY_STRING;
         }
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
-        objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshaller);
+        objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
         marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         marshalRecord.closeStartElement();
 
@@ -265,7 +264,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
-    public XMLBinaryDataCollectionMapping getMapping() {
+    public BinaryDataCollectionMapping getMapping() {
         return xmlBinaryDataCollectionMapping;
     }
 

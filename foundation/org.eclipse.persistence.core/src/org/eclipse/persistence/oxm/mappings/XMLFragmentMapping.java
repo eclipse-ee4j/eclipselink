@@ -12,15 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
@@ -55,7 +61,7 @@ import org.w3c.dom.Text;
 * </pre>
 * </code>
 */
-public class XMLFragmentMapping extends XMLDirectMapping {
+public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session> {
 
     /**
      * INTERNAL:

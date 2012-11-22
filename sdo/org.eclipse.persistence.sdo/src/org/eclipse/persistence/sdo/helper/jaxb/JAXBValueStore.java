@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
-import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -27,6 +26,7 @@ import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
@@ -135,7 +135,7 @@ public class JAXBValueStore implements ValueStore {
         if(declaredProperty.getType().isChangeSummaryType()) {
             return dataObject.getChangeSummary();
         }
-        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        Mapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
         if (declaredProperty.isMany()) {
             JAXBListWrapper listWrapper = listWrappers.get(declaredProperty);
@@ -165,7 +165,7 @@ public class JAXBValueStore implements ValueStore {
             return;
         }
 
-        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        Mapping mapping = this.getJAXBMappingForProperty(declaredProperty);
 
         Object newValue = value;
         Object oldValue = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
@@ -217,7 +217,7 @@ public class JAXBValueStore implements ValueStore {
         if(declaredProperty.getType().isChangeSummaryType()) {
             return true;
         }
-        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        Mapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         if (declaredProperty.isMany()) {
             Collection collection = (Collection) mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
             if (null == collection) {
@@ -235,7 +235,7 @@ public class JAXBValueStore implements ValueStore {
      */
     public void unsetDeclaredProperty(int propertyIndex) {
         SDOProperty declaredProperty = (SDOProperty) dataObject.getType().getDeclaredProperties().get(propertyIndex);
-        CoreMapping mapping = this.getJAXBMappingForProperty(declaredProperty);
+        Mapping mapping = this.getJAXBMappingForProperty(declaredProperty);
         if (declaredProperty.isMany()) {
             ContainerMapping containerMapping = (ContainerMapping) mapping;
             ContainerPolicy containerPolicy = containerMapping.getContainerPolicy();
@@ -303,7 +303,7 @@ public class JAXBValueStore implements ValueStore {
 
         for(SDOProperty sdoProperty : (List<SDOProperty>) dataObject.getType().getProperties()) {
             if(!sdoProperty.getType().isChangeSummaryType()) {
-                CoreMapping mapping = getJAXBMappingForProperty(sdoProperty);
+                Mapping mapping = getJAXBMappingForProperty(sdoProperty);
                 CoreAttributeAccessor attributeAccessor = mapping.getAttributeAccessor();
                 Object attributeValue = attributeAccessor.getAttributeValueFromObject(originalEntity);
                 if(mapping.isCollectionMapping()) {
@@ -336,7 +336,7 @@ public class JAXBValueStore implements ValueStore {
      * Return the JAXB mapping for the SDO property.  They are matched
      * on their XML schema representation. 
      */
-    CoreMapping getJAXBMappingForProperty(SDOProperty sdoProperty) {
+    Mapping getJAXBMappingForProperty(SDOProperty sdoProperty) {
         DatabaseMapping sdoMapping = sdoProperty.getXmlMapping();
         XMLField field;
         if (sdoMapping instanceof XMLObjectReferenceMapping) {
