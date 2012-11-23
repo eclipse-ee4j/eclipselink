@@ -213,4 +213,16 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
         throw new UnsupportedOperationException("getComponents");
     }
 
+    @SuppressWarnings("unchecked")
+    public String getName() {
+        try {
+            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
+            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
+            Annotation annotationClass = (Annotation) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
+            return annotationClass.annotationType().getName();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

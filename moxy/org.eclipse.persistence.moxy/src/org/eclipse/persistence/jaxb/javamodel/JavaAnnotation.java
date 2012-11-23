@@ -19,6 +19,7 @@ import java.util.Map;
  * <p><b>Purpose:</b>A TopLink JAXB 2.0 Java model representation of a JDK Annotation.
  * <p><b>Responsibilities:</b>
  * <ul>
+ * <li>Provide the annotation's name</li> 
  * <li>Provide a map of components (declared members) for this annotation type</li>
  * </ul>
  *
@@ -27,5 +28,9 @@ import java.util.Map;
  * 
  */
 public interface JavaAnnotation {
+
     public Map getComponents();
+
+    public String getName();
+
 }

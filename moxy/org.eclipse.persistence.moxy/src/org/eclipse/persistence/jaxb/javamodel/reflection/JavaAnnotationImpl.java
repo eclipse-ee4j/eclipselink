@@ -50,4 +50,12 @@ public class JavaAnnotationImpl implements JavaAnnotation {
         return null;
     }
 
+    public String getName() {
+        if (jAnnotation == null) {
+            return null;
+        } else {
+            return jAnnotation.annotationType().getName();
+        }
+    }
+
 }

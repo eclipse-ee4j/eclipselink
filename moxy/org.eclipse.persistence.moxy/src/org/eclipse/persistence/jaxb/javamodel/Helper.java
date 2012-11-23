@@ -94,7 +94,9 @@ public class Helper {
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
-    
+
+    private HashMap<Class, JavaClass> annotationJavaClasses = new HashMap<Class, JavaClass>();
+
     /**
      * INTERNAL:
      * This is the preferred constructor.
@@ -228,7 +230,7 @@ public class Helper {
         }
         return jModel.getAnnotation(janno, annotationClass);
     }
-    
+
     /**
      * Returns a JavaClass instance wrapping the provided field's resolved
      * type.
@@ -252,10 +254,17 @@ public class Helper {
      * @return
      */
     public boolean isAnnotationPresent(JavaHasAnnotations element, Class annotationClass) {
-        if(element == null || annotationClass == null) {
+        if (element == null || annotationClass == null) {
             return false;
         }
-        return (element.getAnnotation(jModel.getClass(annotationClass)) != null);
+        JavaClass annoJavaClass = annotationJavaClasses.get(annotationClass); 
+        if (annoJavaClass != null) {
+            return (element.getAnnotation(annoJavaClass) != null);
+        } else {
+            annoJavaClass = jModel.getClass(annotationClass);
+            annotationJavaClasses.put(annotationClass, annoJavaClass);
+            return (element.getAnnotation(annoJavaClass) != null);
+        }
     }
 
     /**
