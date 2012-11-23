@@ -94,7 +94,9 @@ public class Helper {
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
-    
+
+    private HashMap<Class, JavaClass> annotationJavaClasses = new HashMap<Class, JavaClass>();
+
     /**
      * INTERNAL:
      * This is the preferred constructor.
@@ -228,7 +230,7 @@ public class Helper {
         }
         return jModel.getAnnotation(janno, annotationClass);
     }
-    
+
     /**
      * Returns a JavaClass instance wrapping the provided field's resolved
      * type.
@@ -252,10 +254,17 @@ public class Helper {
      * @return
      */
     public boolean isAnnotationPresent(JavaHasAnnotations element, Class annotationClass) {
-        if(element == null || annotationClass == null) {
+        if (element == null || annotationClass == null) {
             return false;
         }
-        return (element.getAnnotation(jModel.getClass(annotationClass)) != null);
+        JavaClass annoJavaClass = annotationJavaClasses.get(annotationClass); 
+        if (annoJavaClass != null) {
+            return (element.getAnnotation(annoJavaClass) != null);
+        } else {
+            annoJavaClass = jModel.getClass(annotationClass);
+            annotationJavaClasses.put(annotationClass, annoJavaClass);
+            return (element.getAnnotation(annoJavaClass) != null);
+        }
     }
 
     /**
@@ -289,42 +298,42 @@ public class Helper {
     public ClassLoader getClassLoader() {
     	return loader;
     }
-    
+
     public Class getClassForJavaClass(JavaClass javaClass){
-    	String javaClassName = javaClass.getRawName();
-    	if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
-    		if (ClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){
-    			return Byte[].class;    			
-    		}
-    		if (ClassConstants.PBYTE.getCanonicalName().equals(javaClassName)){
-    			return Byte.class;
-    		}
-    		if (ClassConstants.PBOOLEAN.getCanonicalName().equals(javaClassName)){
-    			return Boolean.class;
-    		}
-    		if (ClassConstants.PSHORT.getCanonicalName().equals(javaClassName)){
-    			return Short.class;
-    		}
-    		if (ClassConstants.PFLOAT.getCanonicalName().equals(javaClassName)){
-    			return Float.class;
-    		}
-    		if (ClassConstants.PCHAR.getCanonicalName().equals(javaClassName)){
-    			return Character.class;
-    		}
-    		if (ClassConstants.PDOUBLE.getCanonicalName().equals(javaClassName)){
-    			return Double.class;
-    		}
-    		if (ClassConstants.PINT.getCanonicalName().equals(javaClassName)){
-    			return Integer.class;
-    		}
-    		if (ClassConstants.PLONG.getCanonicalName().equals(javaClassName)){
-    			return Long.class;
-    		}
-			return null;
-    	}
-		return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);                          		
+        String javaClassName = javaClass.getRawName();
+        if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
+            if (ClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){
+                return Byte[].class;
+            }
+            if (ClassConstants.PBYTE.getCanonicalName().equals(javaClassName)){
+                return Byte.class;
+            }
+            if (ClassConstants.PBOOLEAN.getCanonicalName().equals(javaClassName)){
+                return Boolean.class;
+            }
+            if (ClassConstants.PSHORT.getCanonicalName().equals(javaClassName)){
+                return Short.class;
+            }
+            if (ClassConstants.PFLOAT.getCanonicalName().equals(javaClassName)){
+                return Float.class;
+            }
+            if (ClassConstants.PCHAR.getCanonicalName().equals(javaClassName)){
+                return Character.class;
+            }
+            if (ClassConstants.PDOUBLE.getCanonicalName().equals(javaClassName)){
+                return Double.class;
+            }
+            if (ClassConstants.PINT.getCanonicalName().equals(javaClassName)){
+                return Integer.class;
+            }
+            if (ClassConstants.PLONG.getCanonicalName().equals(javaClassName)){
+                return Long.class;
+            }
+            return null;
+        }
+        return org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(javaClass.getQualifiedName(), loader);
     }
-    
+
     /**
      * Convenience method to determine if a class exists in a given ArrayList.
      */

@@ -93,6 +93,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
+import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -165,6 +166,8 @@ public class AnnotationsProcessor {
     static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
+    private static final String JAVAX_XML_BIND_ANNOTATION = "javax.xml.bind.annotation";
+    private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
     private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
@@ -3679,55 +3682,23 @@ public class AnnotationsProcessor {
      * annotations.
      */
     private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
-                //javax.xml.bind.annotation 
-        return (helper.isAnnotationPresent(elem, XmlAttachmentRef.class)) ||
-                helper.isAnnotationPresent(elem, XmlAttribute.class) ||
-                helper.isAnnotationPresent(elem, XmlAnyAttribute.class) ||
-                helper.isAnnotationPresent(elem, XmlAnyElement.class) ||                               
-                helper.isAnnotationPresent(elem, XmlElement.class) ||
-                helper.isAnnotationPresent(elem, XmlElementDecl.class) ||
-                helper.isAnnotationPresent(elem, XmlElements.class) ||
-                helper.isAnnotationPresent(elem, XmlElementRef.class) ||
-                helper.isAnnotationPresent(elem, XmlElementRefs.class) ||
-                helper.isAnnotationPresent(elem, XmlElementWrapper.class) ||
-                helper.isAnnotationPresent(elem, XmlEnumValue.class) ||
-                helper.isAnnotationPresent(elem, XmlID.class) ||
-                helper.isAnnotationPresent(elem, XmlIDREF.class) ||                
-                helper.isAnnotationPresent(elem, XmlInlineBinaryData.class) ||
-                helper.isAnnotationPresent(elem, XmlList.class) ||
-                helper.isAnnotationPresent(elem, XmlMimeType.class) ||
-                helper.isAnnotationPresent(elem, XmlMixed.class) ||
-                helper.isAnnotationPresent(elem, XmlSchemaType.class) ||                            
-                helper.isAnnotationPresent(elem, XmlTransient.class) ||
-                helper.isAnnotationPresent(elem, XmlValue.class) ||
-                //org.eclipse.persistence.oxm.annotations 
-                helper.isAnnotationPresent(elem, XmlAccessMethods.class) ||
-                helper.isAnnotationPresent(elem, XmlCDATA.class) ||
-                helper.isAnnotationPresent(elem, XmlContainerProperty.class) ||
-                helper.isAnnotationPresent(elem, XmlElementsJoinNodes.class) ||
-                helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
-                helper.isAnnotationPresent(elem, XmlIsSetNullPolicy.class) ||
-                helper.isAnnotationPresent(elem, XmlJavaTypeAdapter.class) ||
-                helper.isAnnotationPresent(elem, XmlJoinNode.class) ||
-                helper.isAnnotationPresent(elem, XmlJoinNodes.class) ||
-                helper.isAnnotationPresent(elem, XmlKey.class) ||
-                helper.isAnnotationPresent(elem, XmlLocation.class) ||
-                helper.isAnnotationPresent(elem, XmlNullPolicy.class) ||
-                helper.isAnnotationPresent(elem, XmlPath.class) ||                
-                helper.isAnnotationPresent(elem, XmlPaths.class) ||
-                helper.isAnnotationPresent(elem, XmlProperty.class) ||
-                helper.isAnnotationPresent(elem, XmlProperties.class) ||
-                helper.isAnnotationPresent(elem, XmlReadOnly.class) ||
-                helper.isAnnotationPresent(elem, org.eclipse.persistence.oxm.annotations.XmlReadTransformer.class) ||
-                helper.isAnnotationPresent(elem, org.eclipse.persistence.oxm.annotations.XmlTransformation.class) ||
-                helper.isAnnotationPresent(elem, XmlWriteOnly.class) ||
-                helper.isAnnotationPresent(elem, org.eclipse.persistence.oxm.annotations.XmlWriteTransformer.class) ||
-                helper.isAnnotationPresent(elem, org.eclipse.persistence.oxm.annotations.XmlWriteTransformers.class) ||
-                //other annotations
-                helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
-                helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
-                
+        Collection annotations = elem.getAnnotations();
+        if (annotations == null || annotations.size() == 0) {
+            return false;
+        }
+        Iterator annotationsIter = annotations.iterator();
+        while (annotationsIter.hasNext()) {
+            String nextName = ((JavaAnnotation) annotationsIter.next()).getName();
+            if (nextName.startsWith(JAVAX_XML_BIND_ANNOTATION)
+                    || nextName.startsWith(OXM_ANNOTATIONS)
+                    || nextName.equals(CompilerHelper.XML_LOCATION_ANNOTATION_NAME)
+                    || nextName.equals(CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_NAME)) {
+                return true;
+            }
+        }
+        return false;
     }
+
 
     private void validatePropOrderForInfo(TypeInfo info) {
         if (info.isTransient()) {

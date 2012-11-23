@@ -56,8 +56,8 @@ public class CompilerHelper {
 
     private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
     private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
-    private static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
-    private static final String INTERNAL_XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.internal.bind.annotation.XmlLocation";
+    public static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
+    public static final String INTERNAL_XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.internal.bind.annotation.XmlLocation";
     public static Class ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method ACCESSOR_FACTORY_VALUE_METHOD = null;
     public static Class INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
