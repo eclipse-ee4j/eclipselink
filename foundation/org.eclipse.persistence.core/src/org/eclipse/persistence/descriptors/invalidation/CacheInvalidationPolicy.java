@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @see org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy
  * @see org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy
  */
-public abstract class CacheInvalidationPolicy implements java.io.Serializable {
+public abstract class CacheInvalidationPolicy implements java.io.Serializable, Cloneable {
     public static final long NO_EXPIRY = -1;
 
     /** This will represent objects that do not expire. */
@@ -163,5 +163,20 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable {
     
     public boolean shouldRefreshInvalidObjectsOnClone() {
         return shouldRefreshInvalidObjectsOnClone;
+    }
+    
+    public Object clone() {
+        CacheInvalidationPolicy clone = null;
+        
+        try {
+            clone = (CacheInvalidationPolicy)super.clone();
+            clone.setShouldUpdateReadTimeOnUpdate(this.shouldUpdateReadTimeOnUpdate);
+            clone.setShouldRefreshInvalidObjectsOnClone(this.shouldRefreshInvalidObjectsOnClone);
+            clone.setIsInvalidationRandomized(this.isInvalidationRandomized);            
+        } catch (Exception exception) {
+            throw new InternalError("clone failed");
+        }
+        
+        return clone;
     }
 }

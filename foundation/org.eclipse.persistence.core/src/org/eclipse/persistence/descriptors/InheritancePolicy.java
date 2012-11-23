@@ -24,6 +24,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 
+import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
@@ -1071,6 +1072,15 @@ public class InheritancePolicy implements Serializable, Cloneable {
             getDescriptor().setOptimisticLockingPolicy((OptimisticLockingPolicy)getParentDescriptor().getOptimisticLockingPolicy().clone());
             getDescriptor().getOptimisticLockingPolicy().setDescriptor(getDescriptor());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Potentially override the cache invalidation behavior
+     */
+    protected void initializeCacheInvalidationPolicy() {
+        CacheInvalidationPolicy parentPolicyClone = (CacheInvalidationPolicy)getParentDescriptor().getCacheInvalidationPolicy().clone(); 
+        getDescriptor().setCacheInvalidationPolicy(parentPolicyClone);
     }
     
     /**

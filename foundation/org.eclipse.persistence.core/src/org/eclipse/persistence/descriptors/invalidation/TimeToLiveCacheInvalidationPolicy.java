@@ -83,4 +83,17 @@ public class TimeToLiveCacheInvalidationPolicy extends CacheInvalidationPolicy {
     public void setTimeToLive(long timeToLive) {
         this.timeToLive = timeToLive;
     }
+    
+    public Object clone() {
+        TimeToLiveCacheInvalidationPolicy clone = null;
+
+        try {
+            clone = (TimeToLiveCacheInvalidationPolicy)super.clone();
+            clone.timeToLive = this.timeToLive;
+        } catch (Exception exception) {
+            throw new InternalError("clone failed");
+        }
+
+        return clone;
+    }
 }

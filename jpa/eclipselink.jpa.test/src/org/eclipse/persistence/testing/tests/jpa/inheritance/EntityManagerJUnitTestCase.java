@@ -16,11 +16,14 @@ package org.eclipse.persistence.testing.tests.jpa.inheritance;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
@@ -93,6 +96,46 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         }
     }
 
+    /**
+     * EL Bug 336486
+     */
+    public void testCacheExpiryInitializationForInheritance() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor personDescriptor = session.getDescriptor(Person.class); // parent
+        ClassDescriptor engineerDescriptor = session.getDescriptor(Engineer.class); // subclass
+        ClassDescriptor seniorEngineerDescriptor = session.getDescriptor(SeniorEngineer.class); // subclass of subclass
+        
+        // Policy existence check
+        assertNotNull("personDescriptor's cacheInvalidationPolicy should not be null", 
+                personDescriptor.getCacheInvalidationPolicy());
+        assertNotNull("engineerDescriptor's cacheInvalidationPolicy should not be null", 
+                engineerDescriptor.getCacheInvalidationPolicy());
+        assertNotNull("seniorEngineerDescriptor's cacheInvalidationPolicy should not be null", 
+                seniorEngineerDescriptor.getCacheInvalidationPolicy());
+        
+        // Policy class check
+        assertTrue("personDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+                personDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
+        assertTrue("engineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+                engineerDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
+        assertTrue("seniorEngineerDescriptor's cacheInvalidationPolicy should be TimeToLiveCacheInvalidationPolicy", 
+                seniorEngineerDescriptor.getCacheInvalidationPolicy() instanceof TimeToLiveCacheInvalidationPolicy);
+        
+        // Subclass clone check
+        assertFalse("engineerDescriptor's cacheInvalidationPolicy should be a clone", 
+                engineerDescriptor.getCacheInvalidationPolicy() == personDescriptor.getCacheInvalidationPolicy());
+        assertFalse("seniorEngineerDescriptor's cacheInvalidationPolicy should be a clone", 
+                seniorEngineerDescriptor.getCacheInvalidationPolicy() == personDescriptor.getCacheInvalidationPolicy());
+        
+        // Subclass TTL check
+        long ttl = ((TimeToLiveCacheInvalidationPolicy)personDescriptor.getCacheInvalidationPolicy()).getTimeToLive();
+        assertEquals("engineerDescriptor's invalidation TTL should be " + ttl, 
+                ttl, ((TimeToLiveCacheInvalidationPolicy)engineerDescriptor.getCacheInvalidationPolicy()).getTimeToLive());
+        assertEquals("seniorEngineerDescriptor's invalidation TTL should be " + ttl, 
+                ttl, ((TimeToLiveCacheInvalidationPolicy)seniorEngineerDescriptor.getCacheInvalidationPolicy()).getTimeToLive());
+    }
+    
     // test if we can associate with a subclass entity 
     // whose root entity has EmbeddedId in Joined inheritance strategy
     // Issue: GF#1153 && GF#1586 (desktop amendment)
