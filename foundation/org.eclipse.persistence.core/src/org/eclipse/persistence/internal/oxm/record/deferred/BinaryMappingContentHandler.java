@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 
 /**
  * <p><b>Purpose</b>: Implementation of DeferredContentHandler for Binary Mappings.

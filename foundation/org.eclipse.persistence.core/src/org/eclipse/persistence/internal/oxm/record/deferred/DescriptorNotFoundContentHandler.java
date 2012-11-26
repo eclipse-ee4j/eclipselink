@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.xml.sax.SAXException;
 
 /**

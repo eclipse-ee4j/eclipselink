@@ -289,7 +289,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     // sure it is non-abstract
                     if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                         // need to throw an exception here
-                        throw DescriptorException.missingClassIndicatorField(unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
                 unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);

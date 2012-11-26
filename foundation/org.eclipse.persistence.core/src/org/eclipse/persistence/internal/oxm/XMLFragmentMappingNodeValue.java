@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.w3c.dom.NamedNodeMap;
@@ -24,14 +25,14 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
  * INTERNAL:
@@ -138,7 +139,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
                 qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
             }
             if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
-                for(Entry<String, String> next:unmarshalRecord.getPrefixesForFragment().entrySet()) {
+                for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {
                     builder.startPrefixMapping(next.getKey(), next.getValue());
                 }
             }            

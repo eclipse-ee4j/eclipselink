@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.oxm.record;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
  * An implementation of UnmarshalContext for handling plain old java objects that

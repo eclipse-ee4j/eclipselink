@@ -19,12 +19,12 @@ import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -357,7 +357,10 @@ public abstract class AbstractNullPolicy {
         }
         return xsiPrefix;
     }
-    
+
+    /**
+     * INTERNAL
+     */
     public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
         Object fieldValue = null;
         if(marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {

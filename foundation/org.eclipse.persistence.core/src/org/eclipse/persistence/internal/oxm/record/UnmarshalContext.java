@@ -15,7 +15,6 @@
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
  * The UnmarshalContext allows mappings to be unmarshalled differently depending 

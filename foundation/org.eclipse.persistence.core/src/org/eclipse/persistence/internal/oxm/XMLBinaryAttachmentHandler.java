@@ -17,13 +17,13 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
  * @author  mmacivor
  */
 
-public class XMLBinaryAttachmentHandler extends UnmarshalRecord {
+public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
     UnmarshalRecord record;
     Mapping mapping;
     String c_id = null;

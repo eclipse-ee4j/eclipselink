@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.oxm;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 
 /**
  * Allow the unmarshal context to be wrapped.  This is necessary so that choice

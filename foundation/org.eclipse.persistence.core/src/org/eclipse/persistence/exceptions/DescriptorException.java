@@ -21,6 +21,7 @@ package org.eclipse.persistence.exceptions;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 import java.lang.reflect.*;
@@ -940,6 +941,17 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException missingClassIndicatorField(AbstractRecord row, ClassDescriptor descriptor) {
+        Object[] args = { row };
+
+        DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_CLASS_INDICATOR_FIELD, args), descriptor);
+        descriptorException.setErrorCode(MISSING_CLASS_INDICATOR_FIELD);
+        return descriptorException;
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    public static DescriptorException missingClassIndicatorField(XMLRecord row, ClassDescriptor descriptor) {
         Object[] args = { row };
 
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, MISSING_CLASS_INDICATOR_FIELD, args), descriptor);

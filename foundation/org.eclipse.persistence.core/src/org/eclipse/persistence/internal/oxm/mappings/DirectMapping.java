@@ -18,8 +18,8 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 
 public interface DirectMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -27,11 +27,12 @@ public interface DirectMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
-    SESSION extends CoreSession> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
+    SESSION extends CoreSession,
+    XML_RECORD extends XMLRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
 
-    public Object getAttributeValue(Object object, ABSTRACT_SESSION session, XMLRecord record);
+    public Object getAttributeValue(Object object, ABSTRACT_SESSION session, XML_RECORD record);
 
-    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XMLRecord record);
+    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XML_RECORD record);
 
     public AbstractNullPolicy getNullPolicy();
 
@@ -42,5 +43,7 @@ public interface DirectMapping<
     public boolean hasConverter();
 
     public boolean isCDATA();
+    
+    public Object valueFromObject(Object object, FIELD field, ABSTRACT_SESSION abstractSession);
 
 }

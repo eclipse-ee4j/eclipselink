@@ -34,15 +34,19 @@ import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -57,12 +61,8 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.w3c.dom.Node;
 
@@ -231,9 +231,9 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     }
                 } else {
                     if (xmlMapping.isAbstractDirectMapping()) {
-                        mappingNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
+                        mappingNodeValue = new XMLDirectMappingNodeValue((DirectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
-                        mappingNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
+                        mappingNodeValue = new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeDirectCollectionMapping()) {
                         DirectCollectionMapping collectionMapping = (DirectCollectionMapping) xmlMapping;
                         mappingNodeValue = new XMLCompositeDirectCollectionMappingNodeValue(collectionMapping);
@@ -400,10 +400,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     @Override
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
-        return buildRow(record, object, session, null, null, writeType);
+        return (AbstractRecord) buildRow((XMLRecord) record, object, session, null, null, writeType);
     }
 
-    public AbstractRecord buildRow(AbstractRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
+    public org.eclipse.persistence.internal.oxm.record.XMLRecord buildRow(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
         lazyInitialize();
         XPathNode textNode = rootXPathNode.getTextNode();
         List<XPathNode> nonAttributeChildren = rootXPathNode.getNonAttributeChildren();
@@ -480,7 +480,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             if (node == null) {
                 // No descriptor for this object, so manually create a MappingNodeValue and marshal it
                 XPathNode n = new XPathNode();
-                XMLCompositeObjectMapping m = new XMLCompositeObjectMapping();
+                CompositeObjectMapping m = new XMLCompositeObjectMapping();
                 m.setXPath(".");
                 XMLCompositeObjectMappingNodeValue nv = new XMLCompositeObjectMappingNodeValue(m);
                 n.setMarshalNodeValue(nv);
@@ -553,7 +553,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
      */
     public AbstractRecord createRecord(AbstractSession session) {
         lazyInitialize();
-        UnmarshalRecord uRec = new UnmarshalRecord(this);
+        org.eclipse.persistence.oxm.record.UnmarshalRecord uRec = new org.eclipse.persistence.oxm.record.UnmarshalRecord(this);
         uRec.setSession(session);
         return uRec;
     }

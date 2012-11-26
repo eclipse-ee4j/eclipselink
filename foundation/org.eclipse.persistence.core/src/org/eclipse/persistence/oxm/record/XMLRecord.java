@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
  * PUBLIC:
  * Provides a Record/Map API on an XML DOM element.
  */
-public abstract class XMLRecord extends AbstractRecord {
+public abstract class XMLRecord extends AbstractRecord implements org.eclipse.persistence.internal.oxm.record.XMLRecord<AbstractSession, DatabaseField> {
     protected XMLMarshaller marshaller;
     protected XMLUnmarshaller unmarshaller;
     private DocumentPreservationPolicy docPresPolicy;
@@ -54,16 +54,7 @@ public abstract class XMLRecord extends AbstractRecord {
      * INTERNAL:
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
-    public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
-
-    /**
-     * INTERNAL:
-     * Nil: This is used to indicate that this field represents xsi:nil="true"
-     */
-    private static class Nil {
-        private Nil() {
-        }
-    }
+    public static final XMLRecord.Nil NIL = org.eclipse.persistence.internal.oxm.record.XMLRecord.NIL;
 
     public XMLRecord() {
         super(null, null, 0);

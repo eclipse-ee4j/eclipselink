@@ -190,7 +190,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, DirectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLNillableMapping {
+public class XMLDirectMapping extends AbstractDirectMapping implements XMLMapping, DirectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLNillableMapping {
    
     AbstractNullPolicy nullPolicy;
     public boolean isCDATA;

@@ -15,8 +15,8 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 import org.eclipse.persistence.internal.oxm.XMLCompositeObjectMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

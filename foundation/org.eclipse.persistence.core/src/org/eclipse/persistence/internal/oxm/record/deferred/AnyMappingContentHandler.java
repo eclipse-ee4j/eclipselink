@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 
 /**

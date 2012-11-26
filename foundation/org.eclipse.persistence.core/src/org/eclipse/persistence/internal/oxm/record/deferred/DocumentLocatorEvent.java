@@ -12,7 +12,7 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.oxm.record.deferred;
 
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 

@@ -22,9 +22,9 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 
 public interface ChoiceObjectMapping<
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
@@ -33,7 +33,8 @@ public interface ChoiceObjectMapping<
     CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
-    SESSION extends CoreSession> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
+    SESSION extends CoreSession,
+    XML_RECORD extends XMLRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
 
     public Map<XMLField, XMLMapping> getChoiceElementMappings();
 
@@ -45,7 +46,7 @@ public interface ChoiceObjectMapping<
 
     public CONVERTER getConverter();
 
-    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XMLRecord marshalRecord);
+    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XML_RECORD marshalRecord);
 
     public List<FIELD> getFields();
 

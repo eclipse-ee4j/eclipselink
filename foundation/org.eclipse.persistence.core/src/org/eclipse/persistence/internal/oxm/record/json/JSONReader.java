@@ -39,6 +39,8 @@ import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
@@ -47,8 +49,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -455,6 +455,7 @@ public class JSONReader extends XMLReaderAdapter {
      * INTERNAL:
      * @since 2.4
      */
+    @Override
     public Object convertValueBasedOnSchemaType(XMLField xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         if (xmlField.getSchemaType() != null) { 
         	if(XMLConstants.QNAME_QNAME.equals(xmlField.getSchemaType())){
@@ -491,6 +492,7 @@ public class JSONReader extends XMLReaderAdapter {
      * The MediaType associated with this reader     
      * @return
      */
+    @Override
     public MediaType getMediaType(){
     	return MediaType.APPLICATION_JSON;
     }

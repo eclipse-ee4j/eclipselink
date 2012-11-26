@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -24,7 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 
 /**

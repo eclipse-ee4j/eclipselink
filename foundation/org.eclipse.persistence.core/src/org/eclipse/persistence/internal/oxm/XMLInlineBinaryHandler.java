@@ -16,13 +16,13 @@ import org.xml.sax.SAXException;
 
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
-public class XMLInlineBinaryHandler extends UnmarshalRecord {
+public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
     NodeValue nodeValue;
     Mapping mapping;
     boolean isCollection = false;

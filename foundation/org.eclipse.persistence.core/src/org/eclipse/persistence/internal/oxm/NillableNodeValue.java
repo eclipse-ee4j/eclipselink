@@ -15,9 +15,9 @@ package org.eclipse.persistence.internal.oxm;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
  * INTERNAL:

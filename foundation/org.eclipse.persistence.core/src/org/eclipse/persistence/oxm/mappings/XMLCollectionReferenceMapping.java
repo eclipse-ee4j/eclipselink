@@ -67,7 +67,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * @see XMLObjectReferenceMapping
  * @see ContainerMapping
  */
-public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping implements CollectionReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, ContainerMapping {
+public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping implements CollectionReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord>, ContainerMapping {
     protected ContainerPolicy containerPolicy; // type of container used to hold the aggregate objects
     private static final String SPACE = " ";
     private DatabaseField field;

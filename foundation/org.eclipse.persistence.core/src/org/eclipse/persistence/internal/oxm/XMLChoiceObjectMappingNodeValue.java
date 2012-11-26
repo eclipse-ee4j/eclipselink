@@ -23,17 +23,16 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;
@@ -108,7 +107,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         if(xmlChoiceMapping.isReadOnly()) {
             return false;
         }
-        Object value = xmlChoiceMapping.getFieldValue(object, (AbstractSession) session, marshalRecord);
+        Object value = xmlChoiceMapping.getFieldValue(object, session, marshalRecord);
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
     }
 

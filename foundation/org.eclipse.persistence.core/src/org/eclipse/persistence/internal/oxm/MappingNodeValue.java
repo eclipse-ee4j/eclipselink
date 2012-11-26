@@ -15,9 +15,9 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 /**
  * A node value corresponding to mapping. 

@@ -18,7 +18,6 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 /**
  * The MarshalContext allows mappings to be marshalled differently depending on 

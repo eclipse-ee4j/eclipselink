@@ -17,7 +17,6 @@ import javax.xml.stream.XMLStreamReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;

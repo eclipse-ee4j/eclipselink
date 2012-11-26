@@ -23,12 +23,12 @@ import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.OptionalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * PUBLIC:
@@ -109,7 +109,11 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
             return super.directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
     }
-    
+
+    /**
+     * INTERNAL
+     */
+    @Override
     public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
         if(!isSet(object)) {
             return;
@@ -118,6 +122,9 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
     }
     
 
+    /**
+     * INTERNAL
+     */
     @Override
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
             Object object, CoreSession session, NamespaceResolver namespaceResolver) {
@@ -129,6 +136,9 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         }
     }
 
+    /**
+     * INTERNAL
+     */
     @Override
     public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, CoreAbstractSession session) {
         if (!isSet(object)) {

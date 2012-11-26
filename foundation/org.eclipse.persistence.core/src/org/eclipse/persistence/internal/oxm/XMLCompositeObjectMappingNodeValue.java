@@ -22,10 +22,13 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -37,13 +40,8 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -75,14 +73,14 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         Mapping textMapping = textMappingNodeValue.getMapping();
         Object childObject = referenceDescriptor.getInstantiationPolicy().buildNewInstance();
         if(textMapping.isAbstractDirectMapping()) {
-            XMLDirectMapping xmlDirectMapping = (XMLDirectMapping) textMappingNodeValue.getMapping();
+            DirectMapping xmlDirectMapping = (DirectMapping) textMappingNodeValue.getMapping();
             XMLField xmlField = (XMLField) xmlDirectMapping.getField();
             Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
             Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
             xmlDirectMapping.setAttributeValueInObject(childObject, convertedValue);
         } else {
             Object oldChildObject = unmarshalRecord.getCurrentObject();
-            XMLCompositeObjectMapping nestedXMLCompositeObjectMapping = (XMLCompositeObjectMapping) textMappingNodeValue.getMapping();
+            CompositeObjectMapping nestedXMLCompositeObjectMapping = (CompositeObjectMapping) textMappingNodeValue.getMapping();
             unmarshalRecord.setCurrentObject(childObject);
             textMappingNodeValue.attribute(unmarshalRecord, namespaceURI, localName, value);
             unmarshalRecord.setCurrentObject(oldChildObject);
@@ -103,7 +101,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
      */
     public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         Object objectValue = xmlCompositeObjectMapping.getAttributeValueFromObject(object);
-        objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshaller);
+        objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
         XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
         if(descriptor != null){
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
@@ -138,7 +136,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshalRecord.getMarshaller());
+        objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
         if (null == objectValue) {
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
@@ -149,8 +147,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) tob.getRootXPathNode().getTextNode().getMarshalNodeValue();
             Mapping textMapping = textMappingNodeValue.getMapping();
             if(textMapping.isAbstractDirectMapping()) {
-                XMLDirectMapping xmlDirectMapping = (XMLDirectMapping) textMapping;
-                Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), (AbstractSession) session), (AbstractSession )session, marshalRecord);
+                DirectMapping xmlDirectMapping = (DirectMapping) textMapping;
+                Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
                 QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
                 marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -225,7 +223,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }
-            QName schemaType = ((XMLField) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue, (AbstractSession) session);
+            QName schemaType = ((XMLField) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue,session);
 
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(schemaType, objectValue, null, false);
@@ -468,7 +466,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(xmlDescriptor != null){
 	            if (xmlDescriptor.hasInheritance()) {
 	                unmarshalRecord.setAttributes(atts);
-	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
+	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow((org.eclipse.persistence.oxm.record.UnmarshalRecord) unmarshalRecord, (AbstractSession) unmarshalRecord.getSession());
 	                if (clazz == null) {
 	                    // no xsi:type attribute - look for type indicator on the default root element
 	                    XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -494,7 +492,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                }
 	            }
 	            TreeObjectBuilder stob2 = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
-	            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord(unmarshalRecord.getSession());
+	            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord((AbstractSession) unmarshalRecord.getSession());
 	            childRecord.setUnmarshaller(unmarshalRecord.getUnmarshaller());
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);

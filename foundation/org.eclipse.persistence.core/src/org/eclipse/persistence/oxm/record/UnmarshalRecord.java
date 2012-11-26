@@ -44,12 +44,12 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.ObjectUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
@@ -63,7 +63,6 @@ import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
-import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -75,7 +74,6 @@ import org.xml.sax.SAXParseException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
-import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.ext.Locator2;
 import org.xml.sax.ext.Locator2Impl;
 
@@ -94,17 +92,17 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler, LexicalHandler {
-    public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
+public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField> {
+    public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = org.eclipse.persistence.internal.oxm.record.UnmarshalRecord.DEFAULT_UNMAPPED_CONTENT_HANDLER;
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
     private XPathNode xPathNode;
     private int levelIndex;
-    private UnmarshalRecord childRecord;
-    protected UnmarshalRecord parentRecord;
+    private org.eclipse.persistence.internal.oxm.record.UnmarshalRecord childRecord;
+    protected org.eclipse.persistence.internal.oxm.record.UnmarshalRecord parentRecord;
     private DOMRecord transformationRecord;
-    private List<UnmarshalRecord> selfRecords;
+    private List<org.eclipse.persistence.internal.oxm.record.UnmarshalRecord> selfRecords;
     private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
     private Object[] containerInstances;
@@ -142,7 +140,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         initialize(treeObjectBuilder);
     }
 
-    protected UnmarshalRecord initialize(TreeObjectBuilder treeObjectBuilder) {
+    public org.eclipse.persistence.internal.oxm.record.UnmarshalRecord initialize(TreeObjectBuilder treeObjectBuilder) {
         this.isBufferCDATA = false;
         this.treeObjectBuilder = treeObjectBuilder;
         if (null != treeObjectBuilder) {
@@ -219,18 +217,18 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
     }
   
-    public UnmarshalRecord getChildRecord() {
+    public org.eclipse.persistence.internal.oxm.record.UnmarshalRecord getChildRecord() {
         return this.childRecord;
     }
 
-    public void setChildRecord(UnmarshalRecord childRecord) {
+    public void setChildRecord(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord childRecord) {
         this.childRecord = childRecord;
         if (null != childRecord) {
             childRecord.setParentRecord(this);
         }
     }
 
-    public UnmarshalRecord getParentRecord() {
+    public org.eclipse.persistence.internal.oxm.record.UnmarshalRecord getParentRecord() {
         return this.parentRecord;
     }
 
@@ -277,7 +275,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         this.rootElementNamespaceUri = uri;
     }
 
-    public void setParentRecord(UnmarshalRecord parentRecord) {
+    public void setParentRecord(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord parentRecord) {
         this.parentRecord = parentRecord;
     }
 
@@ -534,7 +532,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             
             Object parentRecordCurrentObject = null;
             if (null != this.parentRecord) {
-                parentRecordCurrentObject = parentRecord.currentObject;
+                parentRecordCurrentObject = parentRecord.getCurrentObject();
             }
             
             XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
@@ -559,7 +557,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
-                selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
+                selfRecords = new ArrayList<org.eclipse.persistence.internal.oxm.record.UnmarshalRecord>(selfChildrenSize);
                 for (int x = 0; x < selfChildrenSize; x++) {                    
                     NodeValue nv = xPathNode.getSelfChildren().get(x).getNodeValue();
                     if (null != nv) {
@@ -587,7 +585,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
         if (null != selfRecords) {
             for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
-                UnmarshalRecord selfRecord = selfRecords.get(x);
+                org.eclipse.persistence.internal.oxm.record.UnmarshalRecord selfRecord = selfRecords.get(x);
                 if(selfRecord != null){
                     selfRecord.endDocument();
                 }
@@ -762,7 +760,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         try {
             if (null != selfRecords) {
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
-                    UnmarshalRecord selfRecord = selfRecords.get(x);
+                    org.eclipse.persistence.internal.oxm.record.UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord == null){
                         getFragmentBuilder().startElement(namespaceURI, localName, qName, atts);
                     }else{
@@ -863,7 +861,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         //Look for any Self-Mapping nodes that may want this attribute.
                         if (this.selfRecords != null) {
                             for (int j = 0; j < selfRecords.size(); j++) {
-                                UnmarshalRecord nestedRecord = selfRecords.get(j);
+                                org.eclipse.persistence.internal.oxm.record.UnmarshalRecord nestedRecord = selfRecords.get(j);
                                 if(nestedRecord != null){
                                     attributeNodeValue = nestedRecord.getAttributeChildNodeValue(attNamespace, attLocalName);
                                     if (attributeNodeValue != null) {
@@ -973,7 +971,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         try {
             if (null != selfRecords) {
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
-                    UnmarshalRecord selfRecord = selfRecords.get(x);
+                    org.eclipse.persistence.internal.oxm.record.UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
                         selfRecord.endElement(namespaceURI, localName, qName);
                     }else{
@@ -1042,9 +1040,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if ((0 == levelIndex) && (null !=parentRecord) && !isSelfRecord()) {
                 endDocument();
                 // don't endElement on, or pass control to, a 'self' parent
-                UnmarshalRecord pRec = parentRecord;
+                org.eclipse.persistence.internal.oxm.record.UnmarshalRecord pRec = parentRecord;
                 while (pRec.isSelfRecord()) {
-                    pRec = pRec.parentRecord;
+                    pRec = pRec.getParentRecord();
                 }
                 pRec.endElement(namespaceURI, localName, qName);
                 xmlReader.setContentHandler(pRec);
@@ -1067,9 +1065,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         if ((0 == levelIndex) && (null != parentRecord) && !isSelfRecord()) {
             endDocument();
             // don't endElement on, or pass control to, a 'self' parent
-            UnmarshalRecord pRec = parentRecord;
+            org.eclipse.persistence.internal.oxm.record.UnmarshalRecord pRec = parentRecord;
             while (pRec.isSelfRecord()) {
-                pRec = pRec.parentRecord;
+                pRec = pRec.getParentRecord();
             }
             pRec.endElement(namespaceURI, localName, qName);
             xmlReader.setContentHandler(pRec);
@@ -1087,7 +1085,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if (null != selfRecords) {
                 strBufferInitialLength = getStringBuffer().length(); 
                 for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
-                    UnmarshalRecord selfRecord = selfRecords.get(x);
+                    org.eclipse.persistence.internal.oxm.record.UnmarshalRecord selfRecord = selfRecords.get(x);
                     if(selfRecord != null){
                         selfRecord.characters(ch, start, length);
                     } else {
@@ -1261,7 +1259,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public NodeValue getSelfNodeValueForAttribute(String namespace, String localName) {
         if (this.selfRecords != null) {
             for (int i = 0, selfRecordsSize = selfRecords.size(); i < selfRecordsSize; i++) {
-                UnmarshalRecord nestedRecord = selfRecords.get(i);
+                org.eclipse.persistence.internal.oxm.record.UnmarshalRecord nestedRecord = selfRecords.get(i);
                 if(nestedRecord != null){
                     NodeValue node = nestedRecord.getAttributeChildNodeValue(namespace, localName);
                     if (node != null) {
@@ -1386,8 +1384,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         this.unmarshalContext.unmappedContent(this);
     }
 
-    public UnmarshalRecord getChildUnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
-    	if(childRecord != null && !childRecord.isSelfRecord){
+    public org.eclipse.persistence.internal.oxm.record.UnmarshalRecord getChildUnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
+    	if(childRecord != null && !childRecord.isSelfRecord()){
     		childRecord.initialize(treeObjectBuilder);
 	        childRecord.setParentRecord(this);        
 	        return childRecord;
@@ -1434,7 +1432,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     	return xmlReader.getNamespaceSeparator();
     }
 
-    private void setTextWrapperFragment(XPathFragment newTextWrapperFragment) {
+    public void setTextWrapperFragment(XPathFragment newTextWrapperFragment) {
     	textWrapperFragment = newTextWrapperFragment;
     }
     

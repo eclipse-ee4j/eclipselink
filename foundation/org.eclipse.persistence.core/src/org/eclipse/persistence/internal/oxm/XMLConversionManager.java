@@ -41,9 +41,9 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.TimeZoneHolder;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * INTERNAL:

@@ -13,9 +13,9 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 /**
  *  @version $Header: XMLTransformationRecord.java 09-aug-2007.15:35:19 dmccann Exp $
@@ -34,7 +34,7 @@ public class XMLTransformationRecord extends DOMRecord {
     public XMLTransformationRecord(String rootName, UnmarshalRecord owner) {
         super(rootName);
         owningRecord = owner;
-        session = owner.getSession();
+        session = (AbstractSession) owner.getSession();
         resolver = new NamespaceResolver();
         initializeNamespaceMaps();
     }

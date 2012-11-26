@@ -54,7 +54,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public abstract class MarshalRecord extends XMLRecord {
+public abstract class MarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField> {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 

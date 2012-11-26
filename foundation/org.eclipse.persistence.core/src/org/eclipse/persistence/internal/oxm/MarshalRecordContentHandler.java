@@ -13,8 +13,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;

@@ -55,7 +55,7 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * to locate the correct target object instance in the session cache when resolving
  * mapping references.
  */
-public class XMLObjectReferenceMapping extends AggregateMapping implements ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, XMLMapping {
+public class XMLObjectReferenceMapping extends AggregateMapping implements ObjectReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, UnmarshalRecord>, XMLMapping {
     protected HashMap sourceToTargetKeyFieldAssociations;
     protected Vector sourceToTargetKeys; // maintain the order of the keys
     private boolean isWriteOnly;

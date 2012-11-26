@@ -15,7 +15,6 @@ package org.eclipse.persistence.core.descriptors;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -76,6 +75,6 @@ public abstract class CoreInheritancePolicy<
      * INTERNAL:
      * Set the descriptor.
      */
-    public abstract void setDescriptor(ClassDescriptor descriptor);
+    public abstract void setDescriptor(DESCRIPTOR descriptor);
 
 }

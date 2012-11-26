@@ -89,7 +89,7 @@ import javax.xml.namespace.QName;
  * 
  */
 
-public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObjectMapping<AttributeAccessor, AbstractSession, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session>, XMLMapping {
+public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObjectMapping<AttributeAccessor, AbstractSession, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<String, XMLField> classNameToFieldMappings;

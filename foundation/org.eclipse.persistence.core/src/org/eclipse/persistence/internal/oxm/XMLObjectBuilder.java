@@ -477,7 +477,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return row;
     }
 
-   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, XMLRecord row, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
+   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
        QName contextAsQName = xmlRef.getSchemaContextAsQName();
        
        if(contextAsQName == null){
@@ -488,7 +488,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
        }       
    }
    
-   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, XMLRecord row, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver) {
+   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver) {
        if (typeLocal == null){
            return;
        }
@@ -567,7 +567,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         isXMLDescriptor = null;
     }
     
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, org.eclipse.persistence.internal.oxm.record.XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (marshalRecord.hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
             return null;
         }
@@ -631,7 +631,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    public void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, CoreAbstractSession session) {
+    public void removeExtraNamespacesFromNamespaceResolver(org.eclipse.persistence.internal.oxm.record.XMLRecord marshalRecord, List extraNamespaces, CoreAbstractSession session) {
        if (extraNamespaces == null){
          return;
        }
@@ -769,7 +769,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * @param wasXMLRoot boolean if the originalObject was an XMLRoot
      * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
      */
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField,
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField,
         Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
@@ -846,9 +846,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
         if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
-            xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+            xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow((XMLRecord) record);
             return true;
         }
 
@@ -911,7 +911,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))
                        ){
                     if (inheritancePolicy.hasClassExtractor()) {
-                        inheritancePolicy.addClassIndicatorFieldToRow(record);
+                        inheritancePolicy.addClassIndicatorFieldToRow((XMLRecord) record);
                     } else {
                         writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorUri, classIndicatorLocal,classIndicatorPrefix, isRootElement);
                     }

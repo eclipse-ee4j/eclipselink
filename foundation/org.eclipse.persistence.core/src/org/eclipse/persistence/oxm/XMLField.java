@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
-import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 /**
  * TopLink XML mappings make use of XMLFields based on XPath statements to find the relevant

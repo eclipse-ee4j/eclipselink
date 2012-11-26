@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
@@ -24,15 +25,15 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
+import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.oxm.record.MarshalRecord;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -58,7 +59,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             CoreAbstractSession session = unmarshalRecord.getSession();
-            Class classValue = ((CoreInheritancePolicy) xmlDescriptor.getInheritancePolicy()).classFromRow(unmarshalRecord, session);
+            Class classValue = ((CoreInheritancePolicy) xmlDescriptor.getInheritancePolicy()).classFromRow((org.eclipse.persistence.oxm.record.UnmarshalRecord) unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -195,7 +196,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
 
             if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
-                for(Entry<String, String> next:unmarshalRecord.getPrefixesForFragment().entrySet()) {
+                for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {
                     builder.startPrefixMapping(next.getKey(), next.getValue());
                 }
             }

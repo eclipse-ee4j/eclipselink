@@ -553,7 +553,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     // use the reference descriptor -  make sure it is non-abstract
                     if (Modifier.isAbstract(aDescriptor.getJavaClass().getModifiers())) {
                         // throw an exception
-                        throw DescriptorException.missingClassIndicatorField(nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField((org.eclipse.persistence.internal.oxm.record.XMLRecord) nestedRow, aDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
             }

@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -22,7 +21,7 @@ import org.xml.sax.SAXException;
  * INTERNAL:
  * This class delegates all events corresponding to the UnmappedContentHandler.
  */
-public class UnmappedContentHandlerWrapper extends UnmarshalRecord {
+public class UnmappedContentHandlerWrapper extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
     private int depth;
     private UnmappedContentHandler unmappedContentHandler;
 

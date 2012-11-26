@@ -37,4 +37,6 @@ public interface CompositeObjectMapping<
 
     public boolean hasConverter();
 
+    public void setXPath(String string);
+
 }

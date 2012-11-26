@@ -17,12 +17,11 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-public class BinaryDataUnmarshalRecord extends UnmarshalRecord {
+public class BinaryDataUnmarshalRecord extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
 	private BinaryDataMapping xmlBinaryDataMapping;
 	private XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue;
 	private UnmarshalRecord parentRecord;
