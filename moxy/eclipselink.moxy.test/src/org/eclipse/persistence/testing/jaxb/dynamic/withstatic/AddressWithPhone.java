@@ -24,7 +24,9 @@ public class AddressWithPhone {
     public String city;
     
     public Object phone;
-    
+
+    public byte[] picture;
+
     public boolean equals(Object obj) {
        AddressWithPhone address = (AddressWithPhone)obj;
        
