@@ -323,6 +323,11 @@ public class DBWSModelProject extends Project {
             }
         });
 
+        XMLDirectMapping jdbcTypeMapping = new XMLDirectMapping();
+        jdbcTypeMapping.setAttributeName("jdbcType");
+        jdbcTypeMapping.setXPath("@jdbcType");
+        descriptor.addMapping(jdbcTypeMapping);
+
         return descriptor;
     }
 
@@ -496,6 +501,11 @@ public class DBWSModelProject extends Project {
         complexTypeName.setAttributeName("complexTypeName");
         complexTypeName.setXPath("complex-type");
         descriptor.addMapping(complexTypeName);
+
+        XMLDirectMapping jdbcTypeMapping = new XMLDirectMapping();
+        jdbcTypeMapping.setAttributeName("jdbcType");
+        jdbcTypeMapping.setXPath("@jdbcType");
+        descriptor.addMapping(jdbcTypeMapping);
 
         return descriptor;
     }

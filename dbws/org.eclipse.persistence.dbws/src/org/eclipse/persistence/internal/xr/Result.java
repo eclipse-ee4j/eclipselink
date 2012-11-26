@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 /**
  * <p><b>INTERNAL</b>: Sub-component of an {@link Operation}, indicates the type
  * of return value from the database, as well as if there is more than one value
- * and if those value(s) will be handled using binary attachements.
+ * and if those value(s) will be handled using binary attachments.
  *
  * @author Mike Norman - michael.norman@oracle.com
  * @since EclipseLink 1.x
@@ -36,6 +36,7 @@ public class Result {
     protected Attachment attachment;
     protected SimpleXMLFormat simpleXMLFormat;
     protected Boolean isCollection = null;
+    protected Integer jdbcType = null;
 
     public Result() {
     }
@@ -69,5 +70,26 @@ public class Result {
 
     public boolean isCollection () {
         return isCollection == null ? false : isCollection.booleanValue();
+    }
+
+    /**
+     * Indicates if the JDBC type should be set on the call.
+     */
+    public boolean isJdbcTypeSet() {
+        return jdbcType != null;
+    }
+
+    /**
+     * Indicates the JDBC type code to be set on the call.
+     */
+    public int getJdbcType() {
+        return jdbcType;
+    }
+
+    /**
+     * Set the JDBC type code to be set on the call.
+     */
+    public void setJdbcType(int jdbcType) {
+        this.jdbcType = jdbcType;
     }
 }

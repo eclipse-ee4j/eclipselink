@@ -16,6 +16,7 @@ package dbws.testing.types;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -30,6 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
@@ -46,7 +48,6 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class TypesTestSuite extends DBWSTestSuite {
-
     static final String CREATE_PACKAGE_TEST_TYPES =
     	"CREATE OR REPLACE PACKAGE TEST_TYPES AS" +
           "\nFUNCTION ECHO_INTEGER (PINTEGER IN INTEGER) RETURN INTEGER;" +
@@ -160,6 +161,21 @@ public class TypesTestSuite extends DBWSTestSuite {
           "\nEND ECHO_ROWID;" +
         "\nEND;" ;
 
+    static final String CREATE_XMLTYPEDATA_TABLE =
+        "CREATE TABLE XMLTYPEDATA (" +
+            "ID NUMBER(4,0) NOT NULL," +
+            "XMLDATA XMLType," +
+            "PRIMARY KEY (ID)" +
+        ")";
+    
+    static final String[] POPULATE_XMLTYPEDATA_TABLE = new String[] {
+        "INSERT INTO XMLTYPEDATA (ID, XMLDATA) VALUES (666, XMLTYPE('<blah>some blah text</blah>'))",
+        "INSERT INTO XMLTYPEDATA (ID, XMLDATA) VALUES (667, XMLTYPE('<foo>yo fool!</foo>'))",
+    };
+    
+    static final String DROP_XMLTYPEDATA_TABLE =
+        "DROP TABLE XMLTYPEDATA";
+    
     static final String DROP_PACKAGE_TEST_TYPES =
         "DROP PACKAGE TEST_TYPES";
 
@@ -195,6 +211,18 @@ public class TypesTestSuite extends DBWSTestSuite {
         if (ddlCreate) {
             runDdl(conn, CREATE_PACKAGE_TEST_TYPES, ddlDebug);
             runDdl(conn, CREATE_PACKAGE_BODY_TEST_TYPES, ddlDebug);
+            
+            runDdl(conn, CREATE_XMLTYPEDATA_TABLE, ddlDebug);
+            try {
+                Statement stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_XMLTYPEDATA_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_XMLTYPEDATA_TABLE[i]);
+                }
+                stmt.executeBatch();
+            }
+            catch (SQLException e) {
+              //e.printStackTrace();
+            }
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -340,6 +368,12 @@ public class TypesTestSuite extends DBWSTestSuite {
                    "procedurePattern=\"ECHO_ROWID\" " +
                    "isSimpleXMLFormat=\"true\" " +
                 "/>" +
+                "<sql " +
+                    "name=\"selectXMLData\" " +
+                    "isSimpleXMLFormat=\"true\" " +
+                    ">" +
+                    "<text><![CDATA[select * from XMLTYPEDATA]]></text>" +
+                "</sql>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -351,6 +385,7 @@ public class TypesTestSuite extends DBWSTestSuite {
         if ("true".equalsIgnoreCase(ddlDrop)) {
             runDdl(conn, DROP_PACKAGE_BODY_TEST_TYPES, ddlDebug);
             runDdl(conn, DROP_PACKAGE_TEST_TYPES, ddlDebug);
+            runDdl(conn, DROP_XMLTYPEDATA_TABLE, ddlDebug);
         }
     }
 
@@ -831,5 +866,35 @@ public class TypesTestSuite extends DBWSTestSuite {
                  "'AAADL1AABAAACTEAAE'" +
               "</result>" +
            "</simple-xml>" +
+        "</simple-xml-format>";
+
+    @Test
+    public void selectXMLData() throws ParseException {
+        Invocation invocation = new Invocation("selectXMLData");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = null;
+        try {
+            result = op.invoke(xrService, invocation);
+        } catch (NoClassDefFoundError ncdfex) {
+            fail("Test failed unexpectedly.  Please make sure that Oracle's XDB and XMLParser jars are on the test classpath.\nException:\n" + ncdfex);
+        }
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(((XMLRoot)result).getObject(), doc);
+        Document controlDoc = xmlParser.parse(new StringReader(XMLTYPE_XML_2));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String XMLTYPE_XML_2 =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<simple-xml-format>" +
+          "<simple-xml>" +
+            "<ID>666</ID>" +
+            "<XMLDATA>&lt;blah>some blah text&lt;/blah></XMLDATA>" +
+          "</simple-xml>" +
+          "<simple-xml>" +
+            "<ID>667</ID>" +
+            "<XMLDATA>&lt;foo>yo fool!&lt;/foo></XMLDATA>" +
+          "</simple-xml>" +
         "</simple-xml-format>";
 }
