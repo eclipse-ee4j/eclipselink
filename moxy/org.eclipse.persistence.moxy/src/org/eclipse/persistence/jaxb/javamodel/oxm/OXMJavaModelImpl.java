@@ -81,6 +81,9 @@ public class OXMJavaModelImpl extends JavaModelImpl implements JavaModel  {
 
         // try actually finding the class, might be concrete
         try {
+            if (jClass.isArray()) {
+                className = jClass.getName();
+            }
             Class<?> realClass = PrivilegedAccessHelper.getClassForName(className, true, classLoader);
             if (realClass != null) {
                 JavaModelImpl jm = new JavaModelImpl(classLoader);
