@@ -97,6 +97,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.TYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
@@ -106,6 +107,7 @@ import org.eclipse.persistence.tools.oracleddl.parser.ParseException;
 import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.getJDBCTypeForTypeName;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.COLON;
@@ -405,6 +407,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	}
                         }
                     }
+                    // for XMLType, we want the Oracle type code to be 'SQLXML' (2009)
+                    if (arg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+                        pa.setJdbcType(getJDBCTypeForTypeName(ScalarDatabaseTypeEnum.XMLTYPE_TYPE.toString()));
+                    }
                     if (hasComplexArgs && arg.getEnclosedType().isPLSQLType()) {
                         pa.setComplexTypeName(storedProcedure.getCatalogName() + UNDERSCORE + arg.getTypeName());
                         if (paShadow != null) {
@@ -484,6 +490,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     result.setType(getXMLTypeFromJDBCType(rargJdbcType));
                     break;
             }
+        }
+        // for XMLType, we want the type code to be 'OPAQUE' (2007)
+        if (rargDataType == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
+            result.setJdbcType(getJDBCTypeForTypeName(ScalarDatabaseTypeEnum.XMLTYPE_TYPE.toString()));
         }
         return result;
     }

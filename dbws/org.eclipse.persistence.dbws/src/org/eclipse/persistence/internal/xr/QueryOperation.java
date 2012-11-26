@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.xr;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
@@ -44,6 +46,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -84,6 +87,10 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
 @SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
     protected static final String RESULT_STR = "result";
+    public static final String ORACLESQLXML_STR = "oracle.jdbc.driver.OracleSQLXML";
+    public static final String ORACLEOPAQUE_STR = "oracle.sql.OPAQUE";
+    protected static final String XMLTYPEFACTORY_STR = "org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl";
+    protected static final String GETSTRING_METHOD = "getString";
     
     protected Result result;
     protected QueryHandler queryHandler;
@@ -334,8 +341,7 @@ public class QueryOperation extends Operation {
             String argName = (String)queryArguments.get(i);
             executeArguments.add(invocation.getParameter(argName));
         }
-        Object value = xrService.getORSession().getActiveSession().executeQuery(query,
-            executeArguments);
+        Object value = xrService.getORSession().getActiveSession().executeQuery(query, executeArguments);
         if (value != null) {
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
@@ -437,23 +443,39 @@ public class QueryOperation extends Operation {
                 if (fieldValue != null) {
                     if (fieldValue instanceof Calendar) {
                         Calendar cValue = (Calendar)fieldValue;
-                        fieldValue = conversionManager.convertObject(cValue, STRING,
-                          DATE_TIME_QNAME);
+                        fieldValue = conversionManager.convertObject(cValue, STRING, DATE_TIME_QNAME);
                     }
                     if (fieldValue instanceof Date) {
                         Date dValue = (Date)fieldValue;
-                        fieldValue = conversionManager.convertObject(dValue, STRING,
-                          DATE_QNAME);
+                        fieldValue = conversionManager.convertObject(dValue, STRING, DATE_QNAME);
                     } else if (fieldValue instanceof Time) {
                         Time tValue = (Time)fieldValue;
-                        fieldValue = conversionManager.convertObject(tValue, STRING,
-                          TIME_QNAME);
+                        fieldValue = conversionManager.convertObject(tValue, STRING, TIME_QNAME);
                     } else if (fieldValue instanceof Timestamp) {
                         Timestamp tsValue = (Timestamp)fieldValue;
-                        fieldValue = conversionManager.convertObject(tsValue, STRING,
-                          DATE_TIME_QNAME);
+                        fieldValue = conversionManager.convertObject(tsValue, STRING, DATE_TIME_QNAME);
                     } else if (fieldValue instanceof Blob) {
                         fieldValue = conversionManager.convertObject((Blob) fieldValue, ClassConstants.APBYTE);
+                    } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLESQLXML_STR)) {
+                        try {
+                            Class oracleSQLXML = PrivilegedAccessHelper.getClassForName(ORACLESQLXML_STR, false, this.getClass().getClassLoader());
+                            Method getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {});
+                            fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, fieldValue, new Object[] {});
+                        } catch (Exception x) {
+                            // if the required resources are not available there's nothing we can do...
+                        }
+                    } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLEOPAQUE_STR)) {
+                        // handle XMLType case where an oracle.sql.OPAQUE instance was returned
+                        try {
+                            Class oracleOPAQUE = PrivilegedAccessHelper.getClassForName(ORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
+                            Class xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());
+                            Constructor xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
+                            Object xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
+                            Method getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
+                            fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
+                        } catch (Exception x) {
+                            // if the required resources are not available there's nothing we can do...
+                        }
                     }
                     String elementName = sqlToXmlName(field.getName());
                     if (elementName.equals(EMPTY_STRING)) {

@@ -23,14 +23,18 @@ import javax.xml.namespace.QName;
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
+import static org.eclipse.persistence.internal.xr.Util.getTypeNameForJDBCType;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
 
 /**
  * <p><b>INTERNAL:</b> StoredProcedureQueryHandler sets up the StoredProcedureCall
@@ -183,11 +187,23 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             if (!queryOperation.isSimpleXMLFormat() ||
                 (spCall.isStoredFunctionCall() && !isCursorType(xrService, resultType))) {
                 setSingleResult(xrService, spCall, resultType);
+                if (queryOperation.getResult().isJdbcTypeSet()) {
+                    ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(EMPTY_STRING);
+                    field.setSqlType(queryOperation.getResult().getJdbcType());
+                    field.setSqlTypeName(getTypeNameForJDBCType(queryOperation.getResult().getJdbcType()));
+                    // replace the original field with the new one
+                    ((StoredFunctionCall)spCall).getParameters().remove(0);
+                    ((StoredFunctionCall)spCall).getParameters().add(0, field);
+                }
                 // support stored function with out args
                 for (ProcedureOutputArgument arg : getOutArguments()) {
                     // use argument type
                     if (arg.getResultType() == null || !isCursorType(xrService, arg.getResultType())) {
-                        spCall.addNamedOutputArgument(arg.getName());
+                        if (arg.isJdbcTypeSet()) {
+                            spCall.addNamedOutputArgument(arg.getName(), arg.getName(), arg.getJdbcType(), getTypeNameForJDBCType(arg.getJdbcType()));
+                        } else {
+                            spCall.addNamedOutputArgument(arg.getName());
+                        }
                     }
                 }                
             } else {
@@ -204,7 +220,11 @@ public class StoredProcedureQueryHandler extends QueryHandler {
                         if (arg.getResultType() != null && isCursorType(xrService, arg.getResultType())) {
                             spCall.useNamedCursorOutputAsResultSet(arg.getName());
                         } else {
-                            spCall.addNamedOutputArgument(arg.getName());
+                            if (arg.isJdbcTypeSet()) {
+                                spCall.addNamedOutputArgument(arg.getName(), arg.getName(), arg.getJdbcType(), getTypeNameForJDBCType(arg.getJdbcType()));
+                            } else {
+                                spCall.addNamedOutputArgument(arg.getName());
+                            }
                         }
                     }
                 }

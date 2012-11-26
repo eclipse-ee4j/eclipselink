@@ -13,113 +13,44 @@
 package dbws.testing.secondarysql;
 
 //javase imports
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-//java eXtension imports
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.servlet.ServletContext;
-import javax.wsdl.WSDLException;
-import javax.xml.namespace.QName;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.ws.Dispatch;
-import javax.xml.ws.Endpoint;
-import javax.xml.ws.Provider;
-import javax.xml.ws.Service;
-import javax.xml.ws.ServiceMode;
-import javax.xml.ws.WebServiceProvider;
-import javax.xml.ws.soap.SOAPFaultException;
-import static javax.xml.ws.Service.Mode.MESSAGE;
-import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING;
-
-//JUnit4 imports
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
+import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-//EclipseLink imports
-import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.dbws.ProviderHelper;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.xr.ProjectHelper;
-import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
+import java.io.StringReader;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.util.Iterator;
+
+import javax.wsdl.WSDLException;
+
+import org.eclipse.persistence.internal.xr.Invocation;
+import org.eclipse.persistence.internal.xr.Operation;
+import org.eclipse.persistence.internal.xr.XRDynamicEntity_CollectionWrapper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.platform.xml.XMLComparer;
-import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.sessions.DatabaseLogin;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.SQLOperationModel;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
-import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
-import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-//testing imports
-import dbws.testing.AllTests;
-import static dbws.testing.DBWSTestSuite.DATABASE_DRIVER;
-import static dbws.testing.DBWSTestSuite.DATABASE_PLATFORM;
-import static dbws.testing.DBWSTestSuite.DATABASE_PASSWORD_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_URL_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_USERNAME_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_DDL_CREATE_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DEBUG_KEY;
-import static dbws.testing.DBWSTestSuite.DATABASE_DDL_DROP_KEY;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_PASSWORD;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_URL;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_USERNAME;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_CREATE;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DEBUG;
-import static dbws.testing.DBWSTestSuite.DEFAULT_DATABASE_DDL_DROP;
-import static dbws.testing.DBWSTestSuite.REGULAR_XML_HEADER;
-import static dbws.testing.DBWSTestSuite.buildConnection;
-import static dbws.testing.DBWSTestSuite.runDdl;
-import static dbws.testing.DBWSTestSuite.documentToString;
-import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_PORT;
-import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE;
-import static dbws.testing.secondarysql.SecondarySQLTestSuite.SECONDARY_SERVICE_NAMESPACE;
+import dbws.testing.DBWSTestSuite;
 
-@WebServiceProvider(
-    targetNamespace = SECONDARY_SERVICE_NAMESPACE,
-    serviceName = SECONDARY_SERVICE,
-    portName = SECONDARY_PORT
-)
-@ServiceMode(MESSAGE)
-public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+public class SecondarySQLTestSuite extends DBWSTestSuite {
 
     static final String CREATE_SECONDARY_TABLE =
         "CREATE TABLE DBWS_SECONDARY (" +
@@ -162,11 +93,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
 
     static final String NONSENCE_WHERE_SQL = " WHERE 0=1";
     static final String SECONDARY = "secondarySQL";
-    static final String SECONDARY_TEST = SECONDARY + "Test";
-    static final String SECONDARY_SERVICE = SECONDARY + "Service";
-    static final String SECONDARY_NAMESPACE = "urn:" + SECONDARY;
-    static final String SECONDARY_SERVICE_NAMESPACE = "urn:" + SECONDARY_SERVICE;
-    static final String SECONDARY_PORT = SECONDARY_SERVICE + "Port";
     static final String SECONDARY_COUNT_SQL =
         "select count(*) as \"COUNT\", CAST(max(SAL) as NUMBER(7,2)) as \"MAX-Salary\" from DBWS_SECONDARY";
     static final String SECONDARY_COUNT_SCHEMA_TYPE = "secondaryAggregate";
@@ -178,66 +104,6 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         "SELECT CAST(NULL AS NUMERIC(4)) AS EMPNO, " +
             "CAST(NULL AS  VARCHAR(10)) AS  ENAME, " +
             "CAST(NULL AS DATE) AS HIREDATE FROM DUAL";
-    static final String ENDPOINT_ADDRESS = "http://localhost:9999/" + SECONDARY_TEST;
-
-    static final String DBWS_BUILDER_XML_USERNAME =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-        "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-          "<properties>" +
-              "<property name=\"projectName\">" + SECONDARY + "</property>" +
-              "<property name=\"logLevel\">off</property>" +
-              "<property name=\"username\">";
-    static final String DBWS_BUILDER_XML_PASSWORD =
-              "</property><property name=\"password\">";
-    static final String DBWS_BUILDER_XML_URL =
-              "</property><property name=\"url\">";
-    static final String DBWS_BUILDER_XML_DRIVER =
-              "</property><property name=\"driver\">";
-    static final String DBWS_BUILDER_XML_PLATFORM =
-              "</property><property name=\"platformClassname\">";
-    static final String DBWS_BUILDER_XML_MAIN =
-              "</property>" +
-          "</properties>" +
-          "<sql " +
-              "name=\"allSecondary\" " +
-              "isCollection=\"true\" " +
-              "returnType=\"" + SECONDARY_ALL_SCHEMA_TYPE + "\"> " +
-              "<statement><![CDATA[" + SECONDARY_ALL_SQL + "]]></statement>" +
-              "<build-statement><![CDATA[" + SECONDARY_ALL_SQL +
-                  NONSENCE_WHERE_SQL + "]]></build-statement>" +
-          "</sql>" +
-          "<sql " +
-              "name=\"countSecondary\" " +
-              "isCollection=\"false\" " +
-              "returnType=\"" + SECONDARY_COUNT_SCHEMA_TYPE +"\"> " +
-              "<statement><![CDATA[" + SECONDARY_COUNT_SQL + "]]></statement>" +
-              "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL +
-                NONSENCE_WHERE_SQL + "]]></build-statement>" +
-          "</sql>" +
-          "<procedure " +
-              "name=\"getByName\" " +
-              "catalogPattern=\"TOPLEVEL\" " +
-              "procedurePattern=\"" + GET_SECONDARY_BY_NAME + "\" " +
-              "isCollection=\"true\" " +
-              "returnType=\"" + GETBYNAME_SCHEMA_TYPE + "\"> " +
-              "<build-statement><![CDATA[" + GETBYNAME_SCHEMA_SQL + "]]></build-statement>" +
-          "</procedure>" +
-        "</dbws-builder>";
-
-    // JUnit test fixtures
-    static Connection conn = AllTests.conn;
-    static ByteArrayOutputStream DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
-    static ByteArrayOutputStream DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
-    static ByteArrayOutputStream DBWS_OR_STREAM = new ByteArrayOutputStream();
-    static ByteArrayOutputStream DBWS_OX_STREAM = new ByteArrayOutputStream();
-    static ByteArrayOutputStream DBWS_WSDL_STREAM = new ByteArrayOutputStream();
-    static XMLComparer comparer = new XMLComparer();
-    static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-    static XMLParser xmlParser = xmlPlatform.newXMLParser();
-    static Endpoint endpoint = null;
-    static QName portQName = null;
-    static Service testService = null;
-    static DBWSBuilder builder = new DBWSBuilder();
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -279,112 +145,64 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
               //e.printStackTrace();
             }
         }
-        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
-        String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
-            password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
-            DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
-        XMLContext context = new XMLContext(new DBWSBuilderModelProject());
-        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-        DBWSBuilderModel builderModel =
-            (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-        builder.quiet = true;
-        builder.properties = builderModel.properties;
-        builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
-        builder.getTargetNamespace();
-        builder.operations = builderModel.operations;
-        builder.setLogLevel(SessionLog.FINE_LABEL);
-        builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
-            @Override
-            public void start() {
-            }
-        });
-        builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
-            DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
-            __nullStream, __nullStream, __nullStream, null);
-        endpoint = Endpoint.create(new SecondarySQLTestSuite());
-        endpoint.publish(ENDPOINT_ADDRESS);
-        QName serviceQName = new QName(SECONDARY_SERVICE_NAMESPACE, SECONDARY_SERVICE);
-        portQName = new QName(SECONDARY_SERVICE_NAMESPACE, SECONDARY_PORT);
-        testService = Service.create(serviceQName);
-        testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
+    DBWS_BUILDER_XML_USERNAME =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+          "<properties>" +
+              "<property name=\"projectName\">" + SECONDARY + "</property>" +
+              "<property name=\"logLevel\">off</property>" +
+              "<property name=\"username\">";
+    DBWS_BUILDER_XML_PASSWORD =
+              "</property><property name=\"password\">";
+    DBWS_BUILDER_XML_URL =
+              "</property><property name=\"url\">";
+    DBWS_BUILDER_XML_DRIVER =
+              "</property><property name=\"driver\">";
+    DBWS_BUILDER_XML_PLATFORM =
+              "</property><property name=\"platformClassname\">";
+    DBWS_BUILDER_XML_MAIN =
+              "</property>" +
+          "</properties>" +
+          "<sql " +
+              "name=\"allSecondary\" " +
+              "isCollection=\"true\" " +
+              "returnType=\"" + SECONDARY_ALL_SCHEMA_TYPE +"\"> " +
+              ">" +
+              "<statement><![CDATA[" + SECONDARY_ALL_SQL + "]]></statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_ALL_SQL +
+                  NONSENCE_WHERE_SQL + "]]></build-statement>" +
+          "</sql>" +
+          "<sql " +
+              "name=\"countSecondary\" " +
+              "isCollection=\"false\" " +
+              "returnType=\"" + SECONDARY_COUNT_SCHEMA_TYPE +"\"> " +
+              "<statement><![CDATA[" + SECONDARY_COUNT_SQL + "]]></statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL +
+                NONSENCE_WHERE_SQL + "]]></build-statement>" +
+          "</sql>" +
+          "<procedure " +
+              "name=\"getByName\" " +
+              "catalogPattern=\"TOPLEVEL\" " +
+              "procedurePattern=\"" + GET_SECONDARY_BY_NAME + "\" " +
+              "isCollection=\"true\" " +
+              "returnType=\"" + GETBYNAME_SCHEMA_TYPE + "\"> " +
+              "<build-statement><![CDATA[" + GETBYNAME_SCHEMA_SQL + "]]></build-statement>" +
+          "</procedure>" +
+        "</dbws-builder>";
+    
+        builder = new DBWSBuilder();
+        DBWSTestSuite.setUp(".");
     }
 
     @AfterClass
     public static void teardown() {
-        if (endpoint != null) {
-            endpoint.stop();
-        }
         if (ddlDrop) {
             runDdl(conn, DROP_GET_SECONDARY_BY_NAME_PROC, ddlDebug);
             runDdl(conn, DROP_SECONDARY_TABLE, ddlDebug);
         }
     }
 
-    @PreDestroy
-    public void destroy() {
-        super.destroy();
-    }
-
-    @Override
-    protected InputStream initXRServiceStream(ClassLoader parentClassLoader, ServletContext sc) {
-        return new ByteArrayInputStream(DBWS_SERVICE_STREAM.toByteArray());
-    }
-
-    @Override
-    protected InputStream initXRSchemaStream(ClassLoader parentClassLoader, ServletContext sc) {
-        return new ByteArrayInputStream(DBWS_SCHEMA_STREAM.toByteArray());
-    }
-
-    @Override
-    protected InputStream initWSDLInputStream(ClassLoader parentClassLoader, ServletContext sc) {
-        return new ByteArrayInputStream(DBWS_WSDL_STREAM.toByteArray());
-    }
-
-    @PostConstruct
-    public void init() {
-        super.init(new XRDynamicClassLoader(Thread.currentThread().getContextClassLoader()),
-            null, false);
-    }
-
-     @Override
-     public void logoutSessions() {
-         if (xrService.getORSession() != null) {
-             ((DatabaseSession)xrService.getORSession()).logout();
-         }
-         if (xrService.getOXSession() != null) {
-             ((DatabaseSession)xrService.getOXSession()).logout();
-         }
-     }
-
-     @Override
-     public void buildSessions() {
-         Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-             parentClassLoader);
-         ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-         Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-             parentClassLoader);
-         DatasourceLogin login = orProject.getLogin();
-         login.setUserName(builder.getUsername());
-         login.setPassword(builder.getPassword());
-         ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-         ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
-         Platform platform = builder.getDatabasePlatform();
-         ConversionManager cm = platform.getConversionManager();
-         cm.setLoader(parentClassLoader);
-         login.setDatasourcePlatform(platform);
-         ((DatabaseLogin)login).bindAllParameters();
-         orProject.setDatasourceLogin(login);
-         ProjectHelper.fixOROXAccessors(orProject, oxProject);
-         DatabaseSession databaseSession = orProject.createDatabaseSession();
-         databaseSession.dontLogMessages();
-         xrService.setORSession(databaseSession);
-         xrService.setXMLContext(new XMLContext(oxProject));
-         xrService.setOXSession(xrService.getXMLContext().getSession(0));
-     }
-
-     @Test
+    @Test
      public void checkSQLOperationModel() {
          SQLOperationModel sqlModel = (SQLOperationModel)builder.operations.get(0);
          assertEquals(SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL , sqlModel.getBuildSql());
@@ -432,258 +250,188 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          "   <xsd:element name=\"dbws_secondaryType\" type=\"dbws_secondaryType\"/>\n" +
          "</xsd:schema>";
 
-     static final String ALL_CUSTOM_CONTROL_DOC =
-         REGULAR_XML_HEADER +
-         "<all-custom>" +
-         "</all-custom>";
-
-     static final String COUNT_REQUEST_MSG =
-         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-           "<env:Header/>" +
-           "<env:Body>" +
-             "<countSecondary xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\"/>" +
-           "</env:Body>" +
-         "</env:Envelope>";
-
      @Test
-     public void countSecondary() throws SOAPException, SAXException, IOException, TransformerException {
-         MessageFactory factory = MessageFactory.newInstance();
-         SOAPMessage request = factory.createMessage();
-         SOAPPart part = request.getSOAPPart();
-         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-             new InputSource(new StringReader(COUNT_REQUEST_MSG))));
-         part.setContent(domSource);
-         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
-             Service.Mode.MESSAGE);
-         SOAPMessage response = null;
-         try {
-             response = dispatch.invoke(request);
-         }
-         catch (SOAPFaultException sfe) {
-             sfe.printStackTrace();
-             fail("An unexpected exception occurred: " + sfe.getMessage());
-         }
-
-         if (response != null) {
-             Source src = response.getSOAPPart().getContent();
-             TransformerFactory tf = TransformerFactory.newInstance();
-             Transformer transformer = tf.newTransformer();
-             DOMResult result = new DOMResult();
-             transformer.transform(src, result);
-             Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(COUNT_RESPONSE_MSG));
-             assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(resultDoc), comparer.isNodeEqual(controlDoc, resultDoc));
-         } else {
-             fail("Response is null");
-         }
+     public void countSecondary() throws ParseException {
+         Invocation invocation = new Invocation("countSecondary");
+         Operation op = xrService.getOperation(invocation.getName());
+         Object result = op.invoke(xrService, invocation);
+         assertNotNull("result is null", result);
+         Document doc = xmlPlatform.createDocument();
+         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+         marshaller.marshal(result, doc);
+         Document controlDoc = xmlParser.parse(new StringReader(SECONDARY_AGGREGATE_XML));
+         assertTrue("control document not same as instance document", comparer.isNodeEqual(controlDoc, doc));
      }
-     static final String COUNT_RESPONSE_MSG =
-         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-         "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body>" +
-           "<srvc:countSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-                   "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-             "<srvc:result>" +
-               "<secondaryAggregate>" +
-                 "<count>14</count>" +
-                 "<max-salary>5000.99</max-salary>" +
-               "</secondaryAggregate>" +
-             "</srvc:result>" +
-           "</srvc:countSecondaryResponse>" +
-         "</SOAP-ENV:Body>" +
-         "</SOAP-ENV:Envelope>";
-
-     static final String ALL_REQUEST_MSG =
-         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-           "<env:Header/>" +
-           "<env:Body>" +
-             "<allSecondary xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\"/>" +
-           "</env:Body>" +
-         "</env:Envelope>";
+     static final String SECONDARY_AGGREGATE_XML = 
+         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+         "<secondaryAggregate xmlns=\"urn:secondarySQL\">" +
+             "<count>14</count>" +
+             "<max-salary>5000.99</max-salary>" +
+         "</secondaryAggregate>";
+     
+     @SuppressWarnings("rawtypes")
      @Test
-     public void allSecondary() throws SOAPException, SAXException, IOException, TransformerException {
-         MessageFactory factory = MessageFactory.newInstance();
-         SOAPMessage request = factory.createMessage();
-         SOAPPart part = request.getSOAPPart();
-         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-             new InputSource(new StringReader(ALL_REQUEST_MSG))));
-         part.setContent(domSource);
-         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
-             Service.Mode.MESSAGE);
-         SOAPMessage response = null;
-         try {
-             response = dispatch.invoke(request);
+     public void allSecondary() throws ParseException {
+         Invocation invocation = new Invocation("allSecondary");
+         Operation op = xrService.getOperation(invocation.getName());
+         Object result = op.invoke(xrService, invocation);
+         assertNotNull("result is null", result);
+         
+         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+         Document doc = xmlPlatform.createDocument();
+         Element ec = doc.createElement("collection");
+         doc.appendChild(ec);
+         XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
+         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
+             marshaller.marshal(xrIt.next(), ec);
          }
-         catch (SOAPFaultException sfe) {
-             sfe.printStackTrace();
-             fail("An unexpected exception occurred: " + sfe.getMessage());
-         }
-         if (response != null) {
-             Source src = response.getSOAPPart().getContent();
-             TransformerFactory tf = TransformerFactory.newInstance();
-             Transformer transformer = tf.newTransformer();
-             DOMResult result = new DOMResult();
-             transformer.transform(src, result);
-             Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
-             assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(resultDoc), comparer.isNodeEqual(controlDoc, resultDoc));
-         } else {
-             fail("Response is null");
-         }
+         Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
+         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
      }
      static final String ALL_RESPONSE_MSG =
-       "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-         "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body>" +
-           "<srvc:allSecondaryResponse xmlns=\"" + SECONDARY_NAMESPACE +
-               "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-             "<srvc:result>" +
-                "<dbws_secondaryType>" +
-                  "<empno>7369</empno>" +
-                  "<ename>SMITH</ename>" +
-                  "<job>CLERK</job>" +
-                  "<mgr>7902</mgr>" +
-                  "<hiredate>1980-12-17T00:00:00.0</hiredate>" +
-                  "<sal>800.88</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>20</deptno>" +
-                "</dbws_secondaryType>" +
-                "<dbws_secondaryType>" +
-                  "<empno>7499</empno>" +
-                  "<ename>ALLEN</ename>" +
-                  "<job>SALESMAN</job>" +
-                  "<mgr>7698</mgr>" +
-                  "<hiredate>1981-02-20T00:00:00.0</hiredate>" +
-                  "<sal>1600</sal>" +
-                  "<comm>300</comm>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7521</empno>" +
-                  "<ename>WARD</ename>" +
-                  "<job>SALESMAN</job>" +
-                  "<mgr>7698</mgr>" +
-                  "<hiredate>1981-02-22T00:00:00.0</hiredate>" +
-                  "<sal>1250</sal>" +
-                  "<comm>500</comm>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7566</empno>" +
-                  "<ename>JONES</ename>" +
-                  "<job>MANAGER</job>" +
-                  "<mgr>7839</mgr>" +
-                  "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
-                  "<sal>2975</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>20</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7654</empno>" +
-                  "<ename>MARTIN</ename>" +
-                  "<job>SALESMAN</job>" +
-                  "<mgr>7698</mgr>" +
-                  "<hiredate>1981-09-28T00:00:00.0</hiredate>" +
-                  "<sal>1250</sal>" +
-                  "<comm>1400</comm>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7698</empno>" +
-                  "<ename>BLAKE</ename>" +
-                  "<job>MANAGER</job>" +
-                  "<mgr>7839</mgr>" +
-                  "<hiredate>1981-05-01T00:00:00.0</hiredate>" +
-                  "<sal>2850</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7782</empno>" +
-                  "<ename>CLARK</ename>" +
-                  "<job>MANAGER</job>" +
-                  "<mgr>7839</mgr>" +
-                  "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
-                  "<sal>2450</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>10</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7788</empno>" +
-                  "<ename>SCOTT</ename>" +
-                  "<job>ANALYST</job>" +
-                  "<mgr>7566</mgr>" +
-                  "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
-                  "<sal>3000</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>20</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7839</empno>" +
-                  "<ename>KING</ename>" +
-                  "<job>PRESIDENT</job>" +
-                  "<mgr xsi:nil=\"true\"/>" +
-                  "<hiredate>1981-11-17T00:00:00.0</hiredate>" +
-                  "<sal>5000.99</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>10</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7844</empno>" +
-                  "<ename>TURNER</ename>" +
-                  "<job>SALESMAN</job>" +
-                  "<mgr>7698</mgr>" +
-                  "<hiredate>1981-09-08T00:00:00.0</hiredate>" +
-                  "<sal>1500</sal>" +
-                  "<comm>0</comm>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7876</empno>" +
-                  "<ename>ADAMS</ename>" +
-                  "<job>CLERK</job>" +
-                  "<mgr>7788</mgr>" +
-                  "<hiredate>1987-05-23T00:00:00.0</hiredate>" +
-                  "<sal>1100</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>20</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7900</empno>" +
-                  "<ename>JAMES</ename>" +
-                  "<job>CLERK</job>" +
-                  "<mgr>7698</mgr>" +
-                  "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
-                  "<sal>950</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>30</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7902</empno>" +
-                  "<ename>FORD</ename>" +
-                  "<job>ANALYST</job>" +
-                  "<mgr>7566</mgr>" +
-                  "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
-                  "<sal>3000</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>20</deptno>" +
-               "</dbws_secondaryType>" +
-               "<dbws_secondaryType>" +
-                  "<empno>7934</empno>" +
-                  "<ename>MILLER</ename>" +
-                  "<job>CLERK</job>" +
-                  "<mgr>7782</mgr>" +
-                  "<hiredate>1982-01-23T00:00:00.0</hiredate>" +
-                  "<sal>1300</sal>" +
-                  "<comm xsi:nil=\"true\"/>" +
-                  "<deptno>10</deptno>" +
-               "</dbws_secondaryType>" +
-             "</srvc:result>" +
-           "</srvc:allSecondaryResponse>" +
-         "</SOAP-ENV:Body>" +
-       "</SOAP-ENV:Envelope>";
+         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+         "<collection>" +
+            "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7369</empno>" +
+              "<ename>SMITH</ename>" +
+              "<job>CLERK</job>" +
+              "<mgr>7902</mgr>" +
+              "<hiredate>1980-12-17T00:00:00.0</hiredate>" +
+              "<sal>800.88</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>20</deptno>" +
+            "</dbws_secondaryType>" +
+            "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7499</empno>" +
+              "<ename>ALLEN</ename>" +
+              "<job>SALESMAN</job>" +
+              "<mgr>7698</mgr>" +
+              "<hiredate>1981-02-20T00:00:00.0</hiredate>" +
+              "<sal>1600</sal>" +
+              "<comm>300</comm>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7521</empno>" +
+              "<ename>WARD</ename>" +
+              "<job>SALESMAN</job>" +
+              "<mgr>7698</mgr>" +
+              "<hiredate>1981-02-22T00:00:00.0</hiredate>" +
+              "<sal>1250</sal>" +
+              "<comm>500</comm>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7566</empno>" +
+              "<ename>JONES</ename>" +
+              "<job>MANAGER</job>" +
+              "<mgr>7839</mgr>" +
+              "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
+              "<sal>2975</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>20</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7654</empno>" +
+              "<ename>MARTIN</ename>" +
+              "<job>SALESMAN</job>" +
+              "<mgr>7698</mgr>" +
+              "<hiredate>1981-09-28T00:00:00.0</hiredate>" +
+              "<sal>1250</sal>" +
+              "<comm>1400</comm>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7698</empno>" +
+              "<ename>BLAKE</ename>" +
+              "<job>MANAGER</job>" +
+              "<mgr>7839</mgr>" +
+              "<hiredate>1981-05-01T00:00:00.0</hiredate>" +
+              "<sal>2850</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7782</empno>" +
+              "<ename>CLARK</ename>" +
+              "<job>MANAGER</job>" +
+              "<mgr>7839</mgr>" +
+              "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
+              "<sal>2450</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>10</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7788</empno>" +
+              "<ename>SCOTT</ename>" +
+              "<job>ANALYST</job>" +
+              "<mgr>7566</mgr>" +
+              "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
+              "<sal>3000</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>20</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7839</empno>" +
+              "<ename>KING</ename>" +
+              "<job>PRESIDENT</job>" +
+              "<mgr xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<hiredate>1981-11-17T00:00:00.0</hiredate>" +
+              "<sal>5000.99</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>10</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7844</empno>" +
+              "<ename>TURNER</ename>" +
+              "<job>SALESMAN</job>" +
+              "<mgr>7698</mgr>" +
+              "<hiredate>1981-09-08T00:00:00.0</hiredate>" +
+              "<sal>1500</sal>" +
+              "<comm>0</comm>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7876</empno>" +
+              "<ename>ADAMS</ename>" +
+              "<job>CLERK</job>" +
+              "<mgr>7788</mgr>" +
+              "<hiredate>1987-05-23T00:00:00.0</hiredate>" +
+              "<sal>1100</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>20</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7900</empno>" +
+              "<ename>JAMES</ename>" +
+              "<job>CLERK</job>" +
+              "<mgr>7698</mgr>" +
+              "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+              "<sal>950</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>30</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7902</empno>" +
+              "<ename>FORD</ename>" +
+              "<job>ANALYST</job>" +
+              "<mgr>7566</mgr>" +
+              "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+              "<sal>3000</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>20</deptno>" +
+           "</dbws_secondaryType>" +
+           "<dbws_secondaryType xmlns=\"urn:secondarySQL\">" +
+              "<empno>7934</empno>" +
+              "<ename>MILLER</ename>" +
+              "<job>CLERK</job>" +
+              "<mgr>7782</mgr>" +
+              "<hiredate>1982-01-23T00:00:00.0</hiredate>" +
+              "<sal>1300</sal>" +
+              "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+              "<deptno>10</deptno>" +
+           "</dbws_secondaryType>" +
+       "</collection>";
 
      @Test
      public void testForDuplicateColumns() {
@@ -728,68 +476,39 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
         }
      }
 
-     static final String GETBYNAME_REQUEST_MSG =
-         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
-             "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-           "<env:Header/>" +
-           "<env:Body>" +
-             "<getByName xmlns=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-                "<N>J%</N>" +
-             "</getByName>" +
-           "</env:Body>" +
-         "</env:Envelope>";
      static final String GETBYNAME_RESPONSE_MSG =
-         REGULAR_XML_HEADER +
-         "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-         "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body>" +
-             "<srvc:getByNameResponse xmlns=\"urn:secondarySQL\" xmlns:srvc=\"urn:secondarySQLService\">" +
-                 "<srvc:result>" +
-                     "<empType>" +
-                         "<empno>7566</empno>" +
-                         "<ename>JONES</ename>" +
-                         "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
-                     "</empType>" +
-                     "<empType>" +
-                         "<empno>7900</empno>" +
-                         "<ename>JAMES</ename>" +
-                         "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
-                     "</empType>" +
-                 "</srvc:result>" +
-             "</srvc:getByNameResponse>" +
-         "</SOAP-ENV:Body>" +
-         "</SOAP-ENV:Envelope>";
+         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+         "<collection>" +
+             "<empType xmlns=\"urn:secondarySQL\">" +
+                 "<empno>7566</empno>" +
+                 "<ename>JONES</ename>" +
+                 "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
+             "</empType>" +
+             "<empType xmlns=\"urn:secondarySQL\">" +
+                 "<empno>7900</empno>" +
+                 "<ename>JAMES</ename>" +
+                 "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+             "</empType>" +
+         "</collection>";
+
+     @SuppressWarnings("rawtypes")
      @Test
-     public void getByNameTest() throws SOAPException, SAXException, IOException, TransformerException {
-         MessageFactory factory = MessageFactory.newInstance();
-         SOAPMessage request = factory.createMessage();
-         SOAPPart part = request.getSOAPPart();
-         DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-             new InputSource(new StringReader(GETBYNAME_REQUEST_MSG))));
-         part.setContent(domSource);
-         Dispatch<SOAPMessage> dispatch = testService.createDispatch(portQName, SOAPMessage.class,
-             Service.Mode.MESSAGE);
-         SOAPMessage response = null;
-         try {
-             response = dispatch.invoke(request);
+     public void getByNameTest() throws ParseException {
+         Invocation invocation = new Invocation("getByName");
+         invocation.setParameter("N", "J%");
+         Operation op = xrService.getOperation(invocation.getName());
+         Object result = op.invoke(xrService, invocation);
+         assertNotNull("result is null", result);
+         
+         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+         Document doc = xmlPlatform.createDocument();
+         Element ec = doc.createElement("collection");
+         doc.appendChild(ec);
+         XRDynamicEntity_CollectionWrapper xrDynEntityCol = (XRDynamicEntity_CollectionWrapper) result;
+         for (Iterator xrIt = xrDynEntityCol.iterator(); xrIt.hasNext(); ) {
+             marshaller.marshal(xrIt.next(), ec);
          }
-         catch (SOAPFaultException sfe) {
-             sfe.printStackTrace();
-             fail("An unexpected exception occurred: " + sfe.getMessage());
-         }
-         if (response != null) {
-             Source src = response.getSOAPPart().getContent();
-             TransformerFactory tf = TransformerFactory.newInstance();
-             Transformer transformer = tf.newTransformer();
-             DOMResult result = new DOMResult();
-             transformer.transform(src, result);
-             Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(GETBYNAME_RESPONSE_MSG));
-             assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(resultDoc),
-                 comparer.isNodeEqual(controlDoc, resultDoc));
-         }
-         else {
-             fail("Response is null");
-         }
+         Document controlDoc = xmlParser.parse(new StringReader(GETBYNAME_RESPONSE_MSG));
+         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
      }
 }

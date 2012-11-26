@@ -16,6 +16,8 @@ package dbws.testing.simplesf;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+
 import org.w3c.dom.Document;
 
 //java eXtension imports
@@ -27,13 +29,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
+import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLEOPAQUE_STR;
+import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLESQLXML_STR;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -96,12 +102,21 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
             "\nSELECT max(SAL) INTO MAXSAL FROM SIMPLESF2 WHERE DEPTNO = DEPT;" +
             "\nRETURN(MAXSAL);" +
         "\nEND FINDMAXSALFORDEPT;";
+    static final String CREATE_GET_XMLTYPE_FUNC =
+        "CREATE OR REPLACE FUNCTION GET_XMLTYPE(W IN VARCHAR2) RETURN sys.XMLTYPE AS" +
+        "\nX XMLTYPE;" +
+        "\nBEGIN" +
+            "\nX := XMLTYPE(W);" +
+            "\nRETURN X;" +
+        "\nEND GET_XMLTYPE;";
     static final String DROP_SIMPLESF_TABLE =
         "DROP TABLE SIMPLESF2";
     static final String DROP_FINDMAXSAL_FUNC =
         "DROP FUNCTION FINDMAXSAL";
     static final String DROP_FINDMAXSALFORDEPT_FUNC =
         "DROP FUNCTION FINDMAXSALFORDEPT";
+    static final String DROP_GET_XMLTYPE_FUNC =
+        "DROP FUNCTION GET_XMLTYPE";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -133,6 +148,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_SIMPLESF_TABLE, ddlDebug);
             runDdl(conn, CREATE_FINDMAXSAL_FUNC, ddlDebug);
             runDdl(conn, CREATE_FINDMAXSALFORDEPT_FUNC, ddlDebug);
+            runDdl(conn, CREATE_GET_XMLTYPE_FUNC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLESF_TABLE.length; i++) {
@@ -175,6 +191,12 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
                   "isSimpleXMLFormat=\"true\" " +
                   "simpleXMLFormatTag=\"max-sal-for-dept\" " +
               "/>" +
+              "<procedure " +
+                  "name=\"getXMLTypeData\" " +
+                  "procedurePattern=\"GET_XMLTYPE\" " +
+                  "isCollection=\"false\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           OracleHelper builderHelper = new OracleHelper(builder);
@@ -186,6 +208,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         if (ddlDrop) {
             runDdl(conn, DROP_FINDMAXSAL_FUNC, ddlDebug);
+            runDdl(conn, DROP_GET_XMLTYPE_FUNC, ddlDebug);
             runDdl(conn, DROP_FINDMAXSALFORDEPT_FUNC, ddlDebug);
             runDdl(conn, DROP_SIMPLESF_TABLE, ddlDebug);
         }
@@ -231,4 +254,33 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
             "<result>2850</result>" +
           "</simple-xml>" +
         "</max-sal-for-dept>";
+
+    @Test
+    public void getXMLTypeData() throws ParseException {
+        Invocation invocation = new Invocation("getXMLTypeData");
+        invocation.setParameter("W", "<jb><data> jdev testing for 12.1.2 </data></jb>");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(((XMLRoot)result).getObject(), doc);
+        Document controlDoc = xmlParser.parse(new StringReader(XMLTYPE_XML));
+        boolean areDocsEqual = comparer.isNodeEqual(controlDoc, doc);
+        if (!areDocsEqual) {
+            String testDocString = documentToString(doc);
+            String msg = "Control document not same as instance document.";
+            if (testDocString.contains(ORACLEOPAQUE_STR) || testDocString.contains(ORACLESQLXML_STR)) {
+                msg = msg + " Please make sure that Oracle's XDB and XMLParser jars are on the test classpath.";
+            }
+            fail(msg + "\nExpected:\n" + documentToString(controlDoc) + "\nActual:\n" + testDocString);
+        }
+    }
+    public static final String XMLTYPE_XML =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<simple-xml-format>" +
+          "<simple-xml>" +
+            "<result>&lt;jb>&lt;data> jdev testing for 12.1.2 &lt;/data>&lt;/jb></result>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";      
 }

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.internal.xr;
 
 // Javase imports
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -76,6 +77,8 @@ import static org.eclipse.persistence.oxm.XMLConstants.UNSIGNED_SHORT_QNAME;
  */
 @SuppressWarnings("serial")
 public class Util {
+    public static final String XMLTYPE_STR = "XMLTYPE";
+    public static final int OPAQUE = 2007;
 
     /**
      * Convert a SQL name to a valid XML name. Because not all characters that
@@ -441,6 +444,37 @@ public class Util {
             put(UNSIGNED_INT_QNAME, LONG);
             put(UNSIGNED_SHORT_QNAME, INTEGER);
         }};
+    }
+    
+    /**
+     * Return the type name to be used for a given JDBC type.  This will
+     * typically be used when setting the SQL type and type name on a 
+     * stored function/procedure argument.  Currently, the only case 
+     * we need to handle in this manner is oracle.xdb.XMLType - here
+     * we may set 2007 (OPAQUE) or 2009 (SQLXML).
+     * 
+     * In the future this method may be required to return more types.
+     */
+    public static String getTypeNameForJDBCType(int jdbcType) {
+        String typeName = null;
+        switch (jdbcType) {
+        case OPAQUE: 
+        case Types.SQLXML:
+            typeName = XMLTYPE_STR;
+            break;
+        default:
+            break;
+        }
+        return typeName;
+    }
+    
+    public static int getJDBCTypeForTypeName(String typeName) {
+        int typeCode = -1;
+        if (typeName.equals(XMLTYPE_STR)) {
+            // we currently use oracle.sql.OPAQUE for XMLType
+            typeCode = OPAQUE;
+        }
+        return typeCode;                
     }
 
     public static XMLPlatform XML_PLATFORM =

@@ -267,6 +267,9 @@ public class Util {
         }
         else if (typeName.equals(ROWID_STR)) {
             jdbcType = Types.ROWID;
+        } else if (typeName.equalsIgnoreCase("XMLTYPE") ||
+                  (typeName.equalsIgnoreCase("SYS.XMLTYPE"))) {
+            jdbcType = Types.VARCHAR;
         }
         else if (typeName.equals(BOOLEAN_STR)  ||
         		 typeName.equals(INTEGER_STR)  ||

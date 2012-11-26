@@ -17,6 +17,7 @@ package dbws.testing.simplesp;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.Vector;
 
 import org.w3c.dom.Document;
@@ -29,13 +30,18 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLEOPAQUE_STR;
+import static org.eclipse.persistence.internal.xr.QueryOperation.ORACLESQLXML_STR;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
@@ -124,6 +130,11 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             "\nT := CONCAT('barfoo-' , U);" +
             "\nV := V + 1;" +
         "\nEND OUTININOUTARGSSP;";
+    static final String CREATE_GET_XMLTYPE_PROC =
+        "CREATE OR REPLACE PROCEDURE GET_XMLTYPE(W IN VARCHAR2, X OUT XMLTYPE) is" +
+        "\nBEGIN" +
+            "\nX := XMLTYPE(W);" +
+        "\nEND GET_XMLTYPE;";
     static final String DROP_SIMPLESP_TABLE =
         "DROP TABLE SIMPLESP";
     static final String DROP_VARCHARSP_PROC =
@@ -140,6 +151,8 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         "DROP PROCEDURE GETSALARYBYID";
     static final String DROP_OUT_IN_INOUT_ARGSSP_PROC =
         "DROP PROCEDURE OUTININOUTARGSSP";
+    static final String DROP_GET_XMLTYPE_PROC =
+        "DROP PROCEDURE GET_XMLTYPE";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -176,6 +189,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_GETALL_PROC, ddlDebug);
             runDdl(conn, CREATE_GETSALARYBYID_PROC, ddlDebug);
             runDdl(conn, CREATE_OUT_IN_INOUT_ARGSSP_PROC, ddlDebug);
+            runDdl(conn, CREATE_GET_XMLTYPE_PROC, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_SIMPLESP_TABLE.length; i++) {
@@ -256,6 +270,14 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         procOpModel.setIsCollection(true);
         procOpModel.setReturnType("simplespType");
         tableOpModel.addOperation(procOpModel);
+        
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("getXMLTypeData");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("GET_XMLTYPE");
+        procOpModel.setIsSimpleXMLFormat(true);
+        builder.addOperation(procOpModel);
+
         builder.addOperation(tableOpModel);
         setUp(".", false, true);
     }
@@ -271,6 +293,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_GETSALARYBYID_PROC, ddlDebug);
             runDdl(conn, DROP_SIMPLESP_TABLE, ddlDebug);
             runDdl(conn, DROP_OUT_IN_INOUT_ARGSSP_PROC, ddlDebug);
+            runDdl(conn, DROP_GET_XMLTYPE_PROC, ddlDebug);
         }
     }
 
@@ -559,4 +582,34 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
       public static final String SALARY =
       	"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
           "<value>1100</value>";
-      @Test      public void outInInOutTest() {          Invocation invocation = new Invocation("OutInInOutArgsTest");          invocation.setParameter("U", "this is a test");          invocation.setParameter("V", 665);          Operation op = xrService.getOperation(invocation.getName());          Object result = op.invoke(xrService, invocation);          assertNotNull("result is null", result);          Document doc = xmlPlatform.createDocument();          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();          marshaller.marshal(result, doc);          Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));      }            public static final String MULTIPLE_OUT_XML =          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +          "<simple-xml-format>" +          "<simple-xml>" +          "<V>666</V>" +          "<T>barfoo-this is a test</T>" +          "</simple-xml>" +          "</simple-xml-format>";}
+      @Test      public void outInInOutTest() {          Invocation invocation = new Invocation("OutInInOutArgsTest");          invocation.setParameter("U", "this is a test");          invocation.setParameter("V", 665);          Operation op = xrService.getOperation(invocation.getName());          Object result = op.invoke(xrService, invocation);          assertNotNull("result is null", result);          Document doc = xmlPlatform.createDocument();          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();          marshaller.marshal(result, doc);          Document controlDoc = xmlParser.parse(new StringReader(MULTIPLE_OUT_XML));          assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));      }            public static final String MULTIPLE_OUT_XML =          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +          "<simple-xml-format>" +          "<simple-xml>" +          "<V>666</V>" +          "<T>barfoo-this is a test</T>" +          "</simple-xml>" +          "</simple-xml-format>";
+      @Test
+      public void getXMLTypeData() throws ParseException {
+          Invocation invocation = new Invocation("getXMLTypeData");
+          invocation.setParameter("W", "<jb><data> jdev testing for 12.1.2 </data></jb>");
+          Operation op = xrService.getOperation(invocation.getName());
+          Object result = op.invoke(xrService, invocation);
+          assertNotNull("result is null", result);
+          Document doc = xmlPlatform.createDocument();
+          XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+          marshaller.marshal(((XMLRoot)result).getObject(), doc);
+          Document controlDoc = xmlParser.parse(new StringReader(XMLTYPE_XML));
+          boolean areDocsEqual = comparer.isNodeEqual(controlDoc, doc);
+          if (!areDocsEqual) {
+              String testDocString = documentToString(doc);
+              String msg = "Control document not same as instance document.";
+              if (testDocString.contains(ORACLEOPAQUE_STR) || testDocString.contains(ORACLESQLXML_STR)) {
+                  msg = msg + " Please make sure that Oracle's XDB and XMLParser jars are on the test classpath.";
+              }
+              fail(msg + "\nExpected:\n" + documentToString(controlDoc) + "\nActual:\n" + testDocString);
+          }
+
+      }
+      public static final String XMLTYPE_XML =
+          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+          "<simple-xml-format>" +
+          "<simple-xml>" +
+          "<X>&lt;jb>&lt;data> jdev testing for 12.1.2 &lt;/data>&lt;/jb></X>" +
+          "</simple-xml>" +
+          "</simple-xml-format>";      
+}

@@ -24,6 +24,7 @@ public class ProcedureArgument {
     protected String parameterName;
     protected String name;
     protected String complexTypeName;
+    protected Integer jdbcType = null;   
 
     public String getParameterName() {
         return parameterName;
@@ -44,5 +45,27 @@ public class ProcedureArgument {
     }
     public void setComplexTypeName(String complexTypeName) {
         this.complexTypeName = complexTypeName;
+    }
+
+    /**
+     * Indicates if the JDBC type should be set on the call.
+     */
+    public boolean isJdbcTypeSet() {
+        return jdbcType != null;
+    }
+    
+    /**
+     * Indicates the JDBC type code to be set on the call.
+     * 
+     */
+    public int getJdbcType() {
+        return jdbcType;
+    }
+
+    /**
+     * Set the JDBC type code to be set on the call.
+     */
+    public void setJdbcType(int jdbcType) {
+        this.jdbcType = jdbcType;
     }
 }
