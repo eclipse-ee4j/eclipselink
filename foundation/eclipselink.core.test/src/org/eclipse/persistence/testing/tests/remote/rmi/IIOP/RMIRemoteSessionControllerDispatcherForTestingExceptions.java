@@ -64,6 +64,14 @@ public Transporter beginTransaction()
     return handleByMode();
 }
 /**
+ * Begin a transaction on the database.
+ */
+ 
+public Transporter beginEarlyTransaction()
+{
+    return handleByMode();
+}
+/**
  * Remote unit of work after serialization is commited locally.
  */
  

@@ -16,11 +16,13 @@ import java.util.*;
 import java.rmi.server.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -34,15 +36,21 @@ public class RemoteSessionController {
 
     /** Used to resolve transaction treading for client-side nested transaction where server uses many worker threads. */
     protected boolean isInTransaction;
+    
+    /** Used to isolate queries to a unit of work in an early transaction. */
+    protected boolean isInEarlyTransaction;
 
     /** This is a either a database session or a client session depending upon the setup. */
     protected AbstractSession session;
+    
+    /** Use the temporary unit of work to isolate queries after an early transaction. */
+    protected UnitOfWorkImpl unitOfWork;
 
     /** The original remote value holders, before they were serialized; keyed by ID */
-    protected Hashtable remoteValueHolders;
+    protected Map<ObjID, ValueHolderInterface> remoteValueHolders;
 
     /** The original cursor (either CursoredStream or ScrollableCursor, before they were serialized; keyed by ID */
-    protected Hashtable remoteCursors;
+    protected Map<ObjID, Cursor> remoteCursors;
 
     /** This is the Synchronization policy used to synchronize remote caches */
     protected CommandManager commandManager;
@@ -98,6 +106,34 @@ public class RemoteSessionController {
     }
 
     /**
+     * Begin an early unit of work transaction.
+     */
+    public Transporter beginEarlyTransaction() {
+        // Must force concurrency mgrs active thread if in nested transaction.
+        if (isInTransaction()) {
+            getSession().getTransactionMutex().setActiveThread(Thread.currentThread());
+        }
+
+        Transporter transporter = new Transporter();
+
+        try {
+            getSession().beginTransaction();
+            // Must force concurrency mgrs active thread if in nested transaction.
+            if (isInTransaction()) {
+                getSession().getTransactionMutex().setActiveThread(Thread.currentThread());
+            }
+            if (getSession().isInTransaction()) {
+                this.isInTransaction = true;
+                this.isInEarlyTransaction = true;
+            }
+        } catch (RuntimeException exception) {
+            transporter.setException(exception);
+        }
+
+        return transporter;
+    }
+
+    /**
      * build and return an object descriptor to be sent to the client
      */
     protected ObjectDescriptor buildObjectDescriptor(Object object) {
@@ -105,9 +141,9 @@ public class RemoteSessionController {
         ClassDescriptor descriptor = getSession().getDescriptor(object);
         Object key = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(object, getSession());
         objectDescriptor.setKey(key);
-        objectDescriptor.setWriteLockValue(getSession().getIdentityMapAccessorInstance().getWriteLockValue(key, object.getClass(), descriptor));
+        objectDescriptor.setWriteLockValue(getExecutionSession().getIdentityMapAccessorInstance().getWriteLockValue(key, object.getClass(), descriptor));
         objectDescriptor.setObject(object);
-        CacheKey cacheKey = getSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(key, object.getClass(), descriptor);
+        CacheKey cacheKey = getExecutionSession().getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(key, object.getClass(), descriptor);
 
         // Check for null because when there is NoIdentityMap, CacheKey will be null
         if (cacheKey != null) {
@@ -154,6 +190,8 @@ public class RemoteSessionController {
                 remoteUnitOfWork.writeChanges();
             } else {
                 remoteUnitOfWork.commitRootUnitOfWork();
+                this.isInTransaction = false;
+                this.isInEarlyTransaction = false;
             }
             transporter.setObject(remoteUnitOfWork);
         } catch (RuntimeException exception) {
@@ -172,7 +210,8 @@ public class RemoteSessionController {
         try {
             getSession().commitTransaction();
             if (!getSession().isInTransaction()) {
-                setIsInTransaction(false);
+                this.isInTransaction = false;
+                this.isInEarlyTransaction = false;
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -260,12 +299,12 @@ public class RemoteSessionController {
 
         try {
             CursorPolicy policy = (CursorPolicy)remoteTransporter.getObject();
-            if (isInTransaction()) {
-                policy.getQuery().setAccessor(getSession().getAccessor());
-            }
+            // Clear the unit of work, as the client unit of work may have been cleared.
+            this.unitOfWork = null;
+            AbstractSession executionSession = getExecutionSession();
             if (policy.isCursoredStreamPolicy()) {
                 //wrap the cursored stream into a RemoteCursoredStream object and send the object to the client
-                CursoredStream stream = (CursoredStream)getSession().executeQuery(policy.getQuery());
+                CursoredStream stream = (CursoredStream)executionSession.executeQuery(policy.getQuery());
                 RemoteCursoredStream remoteStream = new RemoteCursoredStream(stream);
 
                 // For bug 3452418 prevents reading the initial objects twice.
@@ -277,7 +316,7 @@ public class RemoteSessionController {
                 transporter.setObject(remoteStream);
             } else if (policy.isScrollableCursorPolicy()) {
                 //wrap the scrollable cursor into a RemoteScrollableCursor object and send the object to the client
-                ScrollableCursor stream = (ScrollableCursor)getSession().executeQuery(policy.getQuery());
+                ScrollableCursor stream = (ScrollableCursor)executionSession.executeQuery(policy.getQuery());
                 RemoteScrollableCursor remoteStream = new RemoteScrollableCursor(stream);
                 getRemoteCursors().put(remoteStream.getID(), stream);
                 transporter.setObject(remoteStream);
@@ -298,12 +337,15 @@ public class RemoteSessionController {
         try {
             Object result;
             DatabaseQuery query;
+            // Clear the unit of work, as the client unit of work may have been cleared.
+            this.unitOfWork = null;
+            AbstractSession executionSession = getExecutionSession();
             if (classTransporter.getObject() == null) {
-                result = getSession().executeQuery((String)nameTransporter.getObject(), (Vector)argumentsTransporter.getObject());
-                query = getSession().getQuery((String)nameTransporter.getObject());
+                result = executionSession.executeQuery((String)nameTransporter.getObject(), (Vector)argumentsTransporter.getObject());
+                query = executionSession.getQuery((String)nameTransporter.getObject());
             } else {
-                result = getSession().executeQuery((String)nameTransporter.getObject(), (Class)classTransporter.getObject(), (Vector)argumentsTransporter.getObject());
-                query = getSession().getDescriptor((Class)classTransporter.getObject()).getQueryManager().getQuery((String)nameTransporter.getObject());
+                result = executionSession.executeQuery((String)nameTransporter.getObject(), (Class)classTransporter.getObject(), (Vector)argumentsTransporter.getObject());
+                query = executionSession.getDescriptor((Class)classTransporter.getObject()).getQueryManager().getQuery((String)nameTransporter.getObject());
             }
             transporter.setQuery(query);
             transporter.setObjectDescriptors(query.replaceValueHoldersIn(result, this));
@@ -322,16 +364,16 @@ public class RemoteSessionController {
         Transporter transporter = new Transporter();
 
         try {
-        	AbstractRecord argumentRow = query.getTranslationRow();
+            AbstractRecord argumentRow = query.getTranslationRow();
             query.setTranslationRow(null);
             Object result;
-            if (isInTransaction()) {
-                query.setAccessor(getSession().getAccessor());
-            }
+            // Clear the unit of work, as the client unit of work may have been cleared.
+            this.unitOfWork = null;
+            AbstractSession executionSession = getExecutionSession();
             if (argumentRow == null) {
-                result = getSession().executeQuery(query);
+                result = executionSession.executeQuery(query);
             } else {
-                result = getSession().executeQuery(query, argumentRow);
+                result = executionSession.executeQuery(query, argumentRow);
             }
             transporter.setObjectDescriptors(query.replaceValueHoldersIn(result, this));
             transporter.setObject(result);
@@ -416,15 +458,15 @@ public class RemoteSessionController {
     /**
      * return the pre-remoted cursors
      */
-    protected Hashtable getRemoteCursors() {
+    protected Map<ObjID, Cursor> getRemoteCursors() {
         return remoteCursors;
     }
 
     /**
-     *INTERNAL:
+     * INTERNAL:
      * return the pre-serialized remote value holders
      */
-    public Hashtable getRemoteValueHolders() {
+    public Map<ObjID, ValueHolderInterface> getRemoteValueHolders() {
         return remoteValueHolders;
     }
 
@@ -539,7 +581,7 @@ public class RemoteSessionController {
         }
         DescriptorIterator iterator = new ReplaceValueHoldersIterator(this);
         iterator.setResult(objectDescriptors);
-        iterator.setSession(getSession());
+        iterator.setSession(getExecutionSession());
         iterator.setShouldIterateOnIndirectionObjects(true);// process the value holders themselves
         iterator.setShouldIterateOverIndirectionObjects(false);// but don't go beyond them
         iterator.startIterationOn(object);
@@ -568,7 +610,8 @@ public class RemoteSessionController {
         try {
             getSession().rollbackTransaction();
             if (!getSession().isInTransaction()) {
-                setIsInTransaction(false);
+                this.isInTransaction = false;
+                this.isInEarlyTransaction = false;
             }
         } catch (RuntimeException exception) {
             transporter.setException(exception);
@@ -885,14 +928,14 @@ public class RemoteSessionController {
     /**
      * set the pre-remoted cursors
      */
-    protected void setRemoteCursors(Hashtable remoteCursors) {
+    protected void setRemoteCursors(Map<ObjID, Cursor> remoteCursors) {
         this.remoteCursors = remoteCursors;
     }
 
     /**
      * set the pre-serialized remote value holders
      */
-    protected void setRemoteValueHolders(Hashtable remoteValueHolders) {
+    protected void setRemoteValueHolders(Map<ObjID, ValueHolderInterface> remoteValueHolders) {
         this.remoteValueHolders = remoteValueHolders;
     }
 
@@ -901,5 +944,22 @@ public class RemoteSessionController {
      */
     protected void setSession(AbstractSession session) {
         this.session = session;
+    }
+
+    /**
+     * Return the correct session for the transaction context.
+     * If in an active transaction, a unit of work must be used to avoid putting uncommitted data into the cache,
+     * and to use the correct accessor for the queries.
+     */
+    protected AbstractSession getExecutionSession() {
+        AbstractSession executionSession = this.session;
+        if (this.isInEarlyTransaction) {
+            if (this.unitOfWork == null) {
+                this.unitOfWork = this.session.acquireUnitOfWork();
+                this.unitOfWork.setWasTransactionBegunPrematurely(true);
+            }
+            executionSession = this.unitOfWork;
+        }
+        return executionSession;
     }
 }

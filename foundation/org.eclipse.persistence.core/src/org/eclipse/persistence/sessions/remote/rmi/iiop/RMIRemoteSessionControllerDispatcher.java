@@ -48,6 +48,13 @@ public class RMIRemoteSessionControllerDispatcher extends PortableRemoteObject i
     }
 
     /**
+     * Begin an early unit of work transaction, all further queries must be isolated.
+     */
+    public Transporter beginEarlyTransaction() {
+        return getController().beginEarlyTransaction();
+    }
+
+    /**
      * Begin a transaction on the database.
      */
     public Transporter beginTransaction() {

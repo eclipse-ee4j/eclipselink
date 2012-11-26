@@ -39,6 +39,7 @@ import java.lang.reflect.*;
 
 import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -3154,7 +3155,8 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
         // By default if change policy is not configured set to attribute change tracking if weaved.
         if ((getObjectChangePolicyInternal() == null) && (ChangeTracker.class.isAssignableFrom(getJavaClass()))) {
             // Only auto init if this class "itself" was weaved for change tracking, i.e. not just a superclass.
-            if (Arrays.asList(getJavaClass().getInterfaces()).contains(PersistenceWeavedChangeTracking.class)) {
+            if (Arrays.asList(getJavaClass().getInterfaces()).contains(PersistenceWeavedChangeTracking.class)
+                    || (DynamicEntityImpl.class.isAssignableFrom(getJavaClass()))) {
                 // Must double check that this descriptor support change tracking,
                 // when it was weaved it was not initialized, and may now know that it does not support change tracking.
                 if (supportsChangeTracking(session.getProject())) {

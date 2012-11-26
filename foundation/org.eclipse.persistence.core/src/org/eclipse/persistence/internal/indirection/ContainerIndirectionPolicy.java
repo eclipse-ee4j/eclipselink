@@ -168,7 +168,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
+                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)container.getValueHolder()).getWrappedValueHolderRemoteID());
             }
             return buildContainer(valueHolder);
         } else {

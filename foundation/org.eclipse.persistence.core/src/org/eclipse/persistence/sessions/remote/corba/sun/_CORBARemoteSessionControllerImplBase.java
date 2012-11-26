@@ -61,6 +61,7 @@ public abstract class _CORBARemoteSessionControllerImplBase extends org.omg.CORB
         _methods.put("getDefaultReadOnlyClasses", new java.lang.Integer(56));
         _methods.put("scrollableCursorPreviousObject", new java.lang.Integer(57));
         _methods.put("getDescriptorForAlias", new java.lang.Integer(58));
+        _methods.put("beginEarlyTransaction", new java.lang.Integer(59));
     }
 
     public org.omg.CORBA.portable.OutputStream _invoke(String method, org.omg.CORBA.portable.InputStream in, org.omg.CORBA.portable.ResponseHandler rh) {
@@ -363,6 +364,14 @@ public abstract class _CORBARemoteSessionControllerImplBase extends org.omg.CORB
            org.eclipse.persistence.internal.sessions.remote.Transporter arg0 = org.eclipse.persistence.sessions.remote.corba.sun.TransporterHelper.read(in);
            org.eclipse.persistence.internal.sessions.remote.Transporter __result = null;
            __result = this.getDescriptorForAlias(arg0);
+           out = rh.createReply();
+           org.eclipse.persistence.sessions.remote.corba.sun.TransporterHelper.write(out, __result);
+           break;
+       }
+        case 59:// org/eclipse/persistence/remote/corba/sun/CORBARemoteSessionController/beginEarlyTransaction
+        {
+           org.eclipse.persistence.internal.sessions.remote.Transporter __result = null;
+           __result = this.beginEarlyTransaction();
            out = rh.createReply();
            org.eclipse.persistence.sessions.remote.corba.sun.TransporterHelper.write(out, __result);
            break;

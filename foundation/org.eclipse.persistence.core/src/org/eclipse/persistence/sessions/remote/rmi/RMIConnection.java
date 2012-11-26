@@ -75,6 +75,21 @@ public class RMIConnection extends RemoteConnection {
 
     /**
      * INTERNAL:
+     * Begin an early unit of work transaction.
+     */
+    public void beginEarlyTransaction() {
+        try {
+            Transporter transporter = getRemoteSessionController().beginEarlyTransaction();
+            if (!transporter.wasOperationSuccessful()) {
+                throw transporter.getException();
+            }
+        } catch (RemoteException exception) {
+            throw CommunicationException.errorInInvocation(exception);
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Commit root unit of work from the client side to the server side.
      */
     public RemoteUnitOfWork commitRootUnitOfWork(RemoteUnitOfWork theRemoteUnitOfWork) {

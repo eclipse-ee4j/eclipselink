@@ -58,6 +58,8 @@ public interface CORBARemoteSessionControllerOperations {
     org.eclipse.persistence.internal.sessions.remote.Transporter scrollableCursorIsBeforeFirst(org.eclipse.persistence.internal.sessions.remote.Transporter arg0);
 
     org.eclipse.persistence.internal.sessions.remote.Transporter beginTransaction();
+    
+    org.eclipse.persistence.internal.sessions.remote.Transporter beginEarlyTransaction();
 
     org.eclipse.persistence.internal.sessions.remote.Transporter initializeIdentityMapsOnServerSession();
 

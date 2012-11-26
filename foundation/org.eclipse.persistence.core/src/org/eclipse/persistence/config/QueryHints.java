@@ -818,5 +818,5 @@ public class QueryHints {
      * "" could be used instead of default value HintValues.PERSISTENCE_UNIT_DEFAULT
      * @see org.eclipse.persistence.queries.ModifyQuery#setIsBatchExecutionSupported(boolean)
      */
-    public static final String BATCH_WRITING_SUPPORTED = "eclipselink.jdbc.batch-writing";
+    public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
 }

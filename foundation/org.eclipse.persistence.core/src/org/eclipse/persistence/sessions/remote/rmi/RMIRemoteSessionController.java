@@ -29,6 +29,8 @@ public interface RMIRemoteSessionController extends Remote {
     public Transporter processCommand(Transporter remoteTransporter) throws RemoteException;
 
     public Transporter beginTransaction() throws RemoteException;
+    
+    public Transporter beginEarlyTransaction() throws RemoteException;
 
     /**
      * To commit remote unit of work on the server side.

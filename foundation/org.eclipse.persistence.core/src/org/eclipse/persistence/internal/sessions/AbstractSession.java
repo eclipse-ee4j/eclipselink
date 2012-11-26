@@ -4164,7 +4164,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * method is called after descriptor initialization.
      */
     protected void processJPAQuery(DatabaseQuery jpaQuery) {
-        jpaQuery.checkPrepare(this, null);
+        // This is a hack, to allow the core Session to initialize JPA queries, without have a dependency on JPA.
+        // They need to be initialized after login, as the database platform must be known.
+        jpaQuery.prepareInternal(this);
         DatabaseQuery databaseQuery = (DatabaseQuery) jpaQuery.getProperty("databasequery");
         databaseQuery = (databaseQuery == null)? jpaQuery : databaseQuery;
         addQuery(databaseQuery);

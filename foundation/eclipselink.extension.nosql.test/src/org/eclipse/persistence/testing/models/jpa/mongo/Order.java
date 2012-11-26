@@ -24,6 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -42,6 +43,7 @@ import org.eclipse.persistence.internal.helper.Helper;
  */
 @Entity
 @NoSql(dataFormat=DataFormatType.MAPPED)
+@NamedQuery(name="Order.findAll", query="Select o from Order o")
 public class Order {
     @Id
     @GeneratedValue
@@ -71,7 +73,7 @@ public class Order {
     @OneToOne
     @JoinField(name="customerId", referencedFieldName="_id")
     public Customer customer;
-    @ManyToOne
+    @ManyToOne(optional=false)
     @JoinFields({
         @JoinField(name="buyerId1", referencedFieldName="ID1"),
         @JoinField(name="buyerId2", referencedFieldName="ID2")

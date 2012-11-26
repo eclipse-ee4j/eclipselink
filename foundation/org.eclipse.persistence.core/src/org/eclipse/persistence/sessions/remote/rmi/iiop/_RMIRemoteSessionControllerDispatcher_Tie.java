@@ -161,6 +161,11 @@ public class _RMIRemoteSessionControllerDispatcher_Tie extends ObjectImpl implem
                     org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
                     writeTransporter(result, out);
                     return out;
+                } else if (method.equals("beginEarlyTransaction")) {
+                    Transporter result = target.beginEarlyTransaction();
+                    org.omg.CORBA_2_3.portable.OutputStream out = (org.omg.CORBA_2_3.portable.OutputStream)reply.createReply();
+                    writeTransporter(result, out);
+                    return out;
                 }
             case 22:
                 if (method.equals("cursoredStreamNextPage")) {

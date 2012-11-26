@@ -137,7 +137,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object extractPrimaryKeyForReferenceObject(Object referenceObject, AbstractSession session) {
-        if (objectIsInstantiated(referenceObject)) {
+        if (objectIsEasilyInstantiated(referenceObject)) {
             return super.extractPrimaryKeyForReferenceObject(((ValueHolderInterface)referenceObject).getValue(), session);
         } else {
             return getOneToOneMapping().extractPrimaryKeysForReferenceObjectFromRow(extractReferenceRow(referenceObject));
@@ -230,7 +230,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                     // on the server, the controller should exists, so can lock up in it,
                     // on the client, the id should be enough to create a new remote value holder.
                     if (controller != null) {
-                        valueHolder = (ValueHolderInterface) controller.getRemoteValueHolders().get(id);
+                        valueHolder = controller.getRemoteValueHolders().get(id);
                     } else if (session.isRemoteSession()) {
                         valueHolder = new RemoteValueHolder(id);
                         ((RemoteValueHolder)valueHolder).setSession(session);

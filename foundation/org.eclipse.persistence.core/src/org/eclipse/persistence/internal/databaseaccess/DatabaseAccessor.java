@@ -1528,12 +1528,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public PreparedStatement prepareStatement(String sql, AbstractSession session, boolean callable) throws SQLException {
         PreparedStatement statement = null;
         // Check the cache by sql string, must synchronize check and removal.
-        Map statementCache = getStatementCache();
-        synchronized (statementCache) {
-            statement = (PreparedStatement)statementCache.get(sql);
-            if (statement != null) {
-                // Need to remove to allow concurrent statement execution.
-                statementCache.remove(sql);
+        if (getPlatform().shouldCacheAllStatements()) {
+            Map statementCache = getStatementCache();
+            synchronized (statementCache) {
+                statement = (PreparedStatement)statementCache.get(sql);
+                if (statement != null) {
+                    // Need to remove to allow concurrent statement execution.
+                    statementCache.remove(sql);
+                }
             }
         }
 
@@ -1587,7 +1589,8 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Release the statement through closing it or putting it back in the statement cache.
      */
     public void releaseStatement(Statement statement, String sqlString, DatabaseCall call, AbstractSession session) throws SQLException {
-        if ((call == null) || (call.usesBinding(session) && call.shouldCacheStatement(session))) {
+        if (((call == null) && getPlatform().shouldCacheAllStatements())
+                || ((call != null) && call.usesBinding(session) && call.shouldCacheStatement(session))) {
             Map<String, Statement> statementCache = getStatementCache();
             synchronized (statementCache) {
                 PreparedStatement preparedStatement = (PreparedStatement)statement;

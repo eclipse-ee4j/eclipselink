@@ -583,7 +583,16 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void checkPrepare(AbstractSession session, AbstractRecord translationRow) {
         this.checkPrepare(session, translationRow, false);
     }
-
+    
+    /**
+     * INTERNAL: Call the prepare on the query.
+     */
+    public void prepareInternal(AbstractSession session) {
+        setSession(session);
+        prepare();
+        setSession(null);
+    }
+    
     /**
      * INTERNAL: Check to see if this query needs to be prepare and prepare it.
      * The prepare is done on the original query to ensure that the work is not

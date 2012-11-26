@@ -32,6 +32,11 @@ public interface RMIRemoteSessionController extends Remote {
      * Begin a transaction on the database.
      */
     public Transporter beginTransaction() throws RemoteException;
+    
+    /**
+     * Begin an early unit of work transaction.
+     */
+    public Transporter beginEarlyTransaction() throws RemoteException;
 
     /**
      * To commit remote unit of work on the server side.

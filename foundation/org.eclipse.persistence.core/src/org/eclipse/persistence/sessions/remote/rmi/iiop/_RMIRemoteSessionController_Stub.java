@@ -112,6 +112,43 @@ public class _RMIRemoteSessionController_Stub extends Stub implements RMIRemoteS
         }
     }
 
+    public Transporter beginEarlyTransaction() throws RemoteException {
+        if (!Util.isLocal(this)) {
+            try {
+                org.omg.CORBA_2_3.portable.InputStream in = null;
+                try {
+                    OutputStream out = _request("beginEarlyTransaction", true);
+                    in = (org.omg.CORBA_2_3.portable.InputStream)_invoke(out);
+                    return readTransporter(in);
+                } catch (ApplicationException ex) {
+                    in = (org.omg.CORBA_2_3.portable.InputStream)ex.getInputStream();
+                    String id = in.read_string();
+                    throw new UnexpectedException(id);
+                } catch (RemarshalException ex) {
+                    return beginTransaction();
+                } finally {
+                    _releaseReply(in);
+                }
+            } catch (SystemException ex) {
+                throw Util.mapSystemException(ex);
+            }
+        } else {
+            ServantObject so = _servant_preinvoke("beginEarlyTransaction", RMIRemoteSessionController.class);
+            if (so == null) {
+                return beginEarlyTransaction();
+            }
+            try {
+                Transporter result = ((RMIRemoteSessionController)so.servant).beginTransaction();
+                return (Transporter)Util.copyObject(result, _orb());
+            } catch (Throwable ex) {
+                Throwable exCopy = (Throwable)Util.copyObject(ex, _orb());
+                throw Util.wrapException(exCopy);
+            } finally {
+                _servant_postinvoke(so);
+            }
+        }
+    }
+
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) throws RemoteException {
         if (!Util.isLocal(this)) {
             try {

@@ -414,6 +414,25 @@ public class _CORBARemoteSessionControllerStub extends org.omg.CORBA.portable.Ob
         }
     }
     // beginTransaction
+    
+    public org.eclipse.persistence.internal.sessions.remote.Transporter beginEarlyTransaction() {
+        org.omg.CORBA.portable.InputStream _in = null;
+        try {
+            org.omg.CORBA.portable.OutputStream _out = _request("beginEarlyTransaction", true);
+            _in = _invoke(_out);
+            org.eclipse.persistence.internal.sessions.remote.Transporter __result = org.eclipse.persistence.sessions.remote.corba.sun.TransporterHelper.read(_in);
+            return __result;
+        } catch (org.omg.CORBA.portable.ApplicationException _ex) {
+            _in = _ex.getInputStream();
+            String _id = _ex.getId();
+            throw new org.omg.CORBA.MARSHAL(_id);
+        } catch (org.omg.CORBA.portable.RemarshalException _rm) {
+            return beginTransaction();
+        } finally {
+            _releaseReply(_in);
+        }
+    }
+    // beginEarlyTransaction
 
     public org.eclipse.persistence.internal.sessions.remote.Transporter initializeIdentityMapsOnServerSession() {
         org.omg.CORBA.portable.InputStream _in = null;

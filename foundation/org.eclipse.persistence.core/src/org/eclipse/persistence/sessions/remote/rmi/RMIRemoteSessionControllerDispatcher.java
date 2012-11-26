@@ -55,7 +55,14 @@ public class RMIRemoteSessionControllerDispatcher extends UnicastRemoteObject im
     }
 
     /**
-     * Remote unit of work after serialization is commited locally.
+     * Begin an early unit of work transaction.
+     */
+    public Transporter beginEarlyTransaction() {
+        return getController().beginEarlyTransaction();
+    }
+    
+    /**
+     * Remote unit of work after serialization is committed locally.
      */
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) {
         return getController().commitRootUnitOfWork(remoteUnitOfWork);

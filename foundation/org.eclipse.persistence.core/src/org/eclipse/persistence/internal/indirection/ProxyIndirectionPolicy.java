@@ -255,7 +255,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             if ((valueHolder == null) && session.isRemoteUnitOfWork()) {
                 RemoteSessionController controller = ((RemoteUnitOfWork)session).getParentSessionController();
-                valueHolder = (ValueHolderInterface)controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID());
+                valueHolder = controller.getRemoteValueHolders().get(((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolderRemoteID());
             }
             return valueHolder;
         } else {

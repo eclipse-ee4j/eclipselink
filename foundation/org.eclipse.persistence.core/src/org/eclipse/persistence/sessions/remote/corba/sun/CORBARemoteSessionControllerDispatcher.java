@@ -53,6 +53,13 @@ public class CORBARemoteSessionControllerDispatcher extends _CORBARemoteSessionC
     }
 
     /**
+     * Begin an early unit of work transaction.
+     */
+    public Transporter beginEarlyTransaction() {
+        return getController().beginEarlyTransaction();
+    }
+
+    /**
      * Remote unit of work after serialization is commited locally.
      */
     public Transporter commitRootUnitOfWork(Transporter remoteUnitOfWork) {

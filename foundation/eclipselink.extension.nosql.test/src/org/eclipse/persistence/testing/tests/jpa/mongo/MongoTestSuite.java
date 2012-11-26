@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.tests.jpa.mongo;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +30,18 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.eis.interactions.MappedInteraction;
 import org.eclipse.persistence.eis.interactions.QueryStringInteraction;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnection;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoOperation;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.mongo.Buyer;
 import org.eclipse.persistence.testing.models.jpa.mongo.Customer;
@@ -77,6 +84,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testNativeQuery"));
         suite.addTest(new MongoTestSuite("testExternalFactory"));
         suite.addTest(new MongoTestSuite("testUserPassword"));
+        suite.addTest(new MongoTestSuite("testDynamicEntities"));
         return suite;
     }
     
@@ -733,6 +741,51 @@ public class MongoTestSuite extends JUnitTestCase {
             }
         } finally {
             closeEntityManagerAndTransaction(em);
+        }
+    }
+
+    /**
+     * Test dynamic entities.
+     */
+    public void testDynamicEntities() {
+        Map properties = new HashMap();
+        properties.put("eclipselink.classloader", new DynamicClassLoader(getClass().getClassLoader()));
+        properties.put("eclipselink.logging.level", "finest");
+        EntityManagerFactory factory = Persistence.createEntityManagerFactory("mongo-dynamic", properties);
+        EntityManager em = factory.createEntityManager();
+        beginTransaction(em);
+        try {
+            JPADynamicHelper helper = new JPADynamicHelper(em);
+            DynamicEntity person = helper.newDynamicEntity("Person");
+            person.set("firstname", "Boy");
+            person.set("lastname", "Pelletier");
+            DynamicEntity address = helper.newDynamicEntity("org.eclipse.persistence.testing.models.jpa.nosql.dynamic.Address");
+            address.set("city", "Ottawa");
+            List addresses = new ArrayList();
+            addresses.add(address);
+            person.set("addresses", addresses);
+            em.persist(person);
+            commitTransaction(em);
+            
+            em.createNamedQuery("Person.findAll").getResultList();
+            
+            beginTransaction(em);
+            address = helper.newDynamicEntity("org.eclipse.persistence.testing.models.jpa.nosql.dynamic.Address");
+            address.set("city", "Ottawa2");
+            addresses = person.get("addresses");
+            addresses.add(address);
+            person.set("addresses", addresses);            
+            commitTransaction(em);
+            
+            factory.getCache().evictAll();
+            em.clear();
+            DynamicEntity dbPerson = em.find(helper.getType("Person").getJavaClass(), person.get("id"));
+            if (((Collection)dbPerson.get("addresses")).size() != 2) {
+                fail("Expected 2 addresses: " + dbPerson.get("addresses"));
+            }            
+        } finally {
+            closeEntityManagerAndTransaction(em);
+            factory.close();
         }
     }
     

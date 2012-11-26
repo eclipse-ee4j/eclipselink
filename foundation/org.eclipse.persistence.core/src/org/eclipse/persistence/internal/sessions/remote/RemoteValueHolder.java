@@ -185,7 +185,8 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      */
     public boolean isEasilyInstantiated() {
         // Nothing is easily instantiated when on the client side.
-        return isInstantiated() || ((getWrappedServerValueHolder() != null) && (getWrappedServerValueHolder() instanceof DatabaseValueHolder) && ((DatabaseValueHolder)getWrappedServerValueHolder()).isEasilyInstantiated());
+        return this.isInstantiated || ((this.wrappedServerValueHolder != null)
+                && (!(this.wrappedServerValueHolder instanceof DatabaseValueHolder) || ((DatabaseValueHolder)this.wrappedServerValueHolder).isEasilyInstantiated()));
     }
 
     /**

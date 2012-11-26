@@ -620,7 +620,7 @@ public class QueryHintsHandler {
      */
     protected static class BatchWriteHint extends Hint {
         BatchWriteHint() {
-            super(QueryHints.BATCH_WRITING_SUPPORTED, HintValues.FALSE);
+            super(QueryHints.BATCH_WRITING, HintValues.FALSE);
             valueArray = new Object[][] { 
                     {HintValues.FALSE, Boolean.FALSE},
                     {HintValues.TRUE, Boolean.TRUE}

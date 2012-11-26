@@ -363,6 +363,7 @@ public class EISPlatform extends DatasourcePlatform {
             if (xmlConversionManager == null) {
                 // Clone the default to allow customers to easily override the conversion manager
                 xmlConversionManager = (XMLConversionManager) XMLConversionManager.getDefaultXMLManager().clone();
+                xmlConversionManager.setLoader(super.getConversionManager().getLoader());
             }
             return xmlConversionManager;
         }

@@ -355,7 +355,10 @@ public class DatabaseField extends CoreField implements Cloneable, Serializable 
 
     @Override
     public Class getType() {
-        return type;
+        if ((this.type == null) && (this.typeName != null)) {
+            convertClassNamesToClasses(getClass().getClassLoader());
+        }
+        return this.type;
     }
     
     public String getTypeName() {             

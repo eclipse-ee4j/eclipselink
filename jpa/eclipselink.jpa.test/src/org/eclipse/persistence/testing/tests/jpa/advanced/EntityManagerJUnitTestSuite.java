@@ -6361,7 +6361,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             String createStr = def.buildCreationWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
             Query query = em.createNativeQuery(createStr);
-            query.setHint(QueryHints.BATCH_WRITING_SUPPORTED, false);
+            query.setHint(QueryHints.BATCH_WRITING, false);
             query.executeUpdate();
             commitTransaction(em);
 
@@ -6383,7 +6383,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             String dropStr = def.buildDeletionWriter(ss, new StringWriter()).toString();
             beginTransaction(em);
             Query query = em.createNativeQuery(dropStr);
-            query.setHint(QueryHints.BATCH_WRITING_SUPPORTED, false);
+            query.setHint(QueryHints.BATCH_WRITING, false);
             query.executeUpdate();
             commitTransaction(em);
         }

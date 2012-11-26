@@ -65,6 +65,17 @@ public class CORBAConnection extends RemoteConnection {
 
     /**
      * INTERNAL:
+     * Begin a transaction on the database.
+     */
+    public void beginEarlyTransaction() {
+        Transporter transporter = getRemoteSessionController().beginEarlyTransaction();
+        if (!transporter.wasOperationSuccessful()) {
+            throw transporter.getException();
+        }
+    }
+
+    /**
+     * INTERNAL:
      * Commit root unit of work from the client side to the server side.
      */
     public RemoteUnitOfWork commitRootUnitOfWork(RemoteUnitOfWork theRemoteUnitOfWork) {

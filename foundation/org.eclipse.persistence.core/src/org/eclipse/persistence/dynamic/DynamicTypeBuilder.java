@@ -189,7 +189,6 @@ public class DynamicTypeBuilder {
             }
 
         }
-        descriptor.setObjectChangePolicy(new AttributeChangeTrackingPolicy());
 
         for (int index = 0; index < descriptor.getMappings().size(); index++) {
             addMapping(descriptor.getMappings().get(index));
@@ -221,7 +220,7 @@ public class DynamicTypeBuilder {
             ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
             return frMapping.usesIndirection() || frMapping.isCollectionMapping();
         }
-        if (mapping.isAggregateMapping() && !mapping.isXMLMapping()) {
+        if (mapping.isAggregateObjectMapping() && !mapping.isXMLMapping()) {
             return !((AggregateObjectMapping) mapping).isNullAllowed();
         }
         return false;

@@ -41,6 +41,11 @@ public abstract class RemoteConnection implements java.io.Serializable {
      * Begin a transaction on the database.
      */
     public abstract void beginTransaction();
+    
+    /**
+     * Begin an early unit of work transaction.
+     */
+    public abstract void beginEarlyTransaction();
 
     /**
      * Commit remote unit of work

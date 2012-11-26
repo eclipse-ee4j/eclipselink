@@ -68,6 +68,28 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
     }
 
     /**
+     * PUBLIC:
+     * Tell the unit of work to begin a transaction now.
+     * By default the unit of work will begin a transaction at commit time.
+     * The default is the recommended approach, however sometimes it is
+     * necessary to start the transaction before commit time.  When the
+     * unit of work commits, this transaction will be committed.
+     *
+     * @see #commit()
+     * @see #release()
+     */
+    public void beginEarlyTransaction() throws DatabaseException {
+        // Acquire the mutex so session knows it is in a transaction.
+        getParent().getTransactionMutex().acquire();
+        startOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
+        // This needs a special call for remote, to ensure subsequent queries isolate their data to a unit of work on the server.
+        ((DistributedSession)getParent()).getRemoteConnection().beginEarlyTransaction();
+        endOperationProfile(SessionProfiler.Remote, null, SessionProfiler.ALL);
+        
+        setWasTransactionBegunPrematurely(true);
+    }
+    
+    /**
      * The nested unit of work must also be remote.
      */
     @Override

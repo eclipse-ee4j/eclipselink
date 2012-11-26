@@ -17,6 +17,7 @@ import java.util.*;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.indirection.UnitOfWorkValueHolder;
 
 /**
  * Helper class for RemoteSessionController.
@@ -57,6 +58,8 @@ public class ReplaceValueHoldersIterator extends DescriptorIterator {
 
         if (valueHolder instanceof RemoteValueHolder) {
             remoteValueHolder = (RemoteValueHolder)valueHolder;
+        } else if ((valueHolder instanceof UnitOfWorkValueHolder) && ((UnitOfWorkValueHolder)valueHolder).getWrappedValueHolder() instanceof RemoteValueHolder) {
+            return (RemoteValueHolder)((UnitOfWorkValueHolder)valueHolder).getWrappedValueHolder();
         } else {
             remoteValueHolder = new RemoteValueHolder();
             remoteValueHolder.setWrappedServerValueHolder(valueHolder);
