@@ -319,7 +319,7 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static Object restNamedQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+    public static String restNamedQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
@@ -329,13 +329,7 @@ public class RestUtils {
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
-        String result = response.getEntity(String.class);
-        try {
-            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return null;
+        return response.getEntity(String.class);
     }
 
     /**
@@ -351,7 +345,7 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static Object restNamedSingleResultQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+    public static String restNamedSingleResultQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
         RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
@@ -361,13 +355,7 @@ public class RestUtils {
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
-        String result = response.getEntity(String.class);
-        try {
-            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
-        } catch (JAXBException e) {
-            fail("Exception thrown unmarshalling: " + e);
-        }
-        return null;
+        return response.getEntity(String.class);
     }
 
     /**
@@ -381,7 +369,7 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static Object restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
+    public static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         RestUtils.appendParametersAndHints(resourceURL, parameters, hints);

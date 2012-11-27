@@ -105,11 +105,12 @@ public class PersistenceContext {
      */
     public DatabaseEventListenerFactory eventListenerFactory = null;
 
-    /** This internal property is used to save a change listener on the session for later retreival.**/
+    /** This internal property is used to save a change listener on the session for later retrieval.**/
     public static final String CHANGE_NOTIFICATION_LISTENER = "jpars.change-notification-listener";
 
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
 
+    @SuppressWarnings("rawtypes")
     protected List<XmlAdapter> adapters = null;
 
     /**
@@ -142,6 +143,13 @@ public class PersistenceContext {
     protected PersistenceContext() {
     }
 
+    /**
+     * Instantiates a new persistence context.
+     *
+     * @param emfName the emf name
+     * @param emf the emf
+     * @param defaultURI the default uri
+     */
     public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI) {
         super();
         this.emf = emf;
@@ -173,6 +181,7 @@ public class PersistenceContext {
      * @param persistenceUnitName
      * @param session
      */
+    @SuppressWarnings("rawtypes")
     protected void addDynamicXMLMetadataSources(List<Object> metadataSources, DatabaseSession session) {
         Set<String> packages = new HashSet<String>();
         Iterator<Class> i = session.getDescriptors().keySet().iterator();
@@ -261,6 +270,7 @@ public class PersistenceContext {
      * @return
      * @throws IOException
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Map<String, Object> createJAXBProperties(DatabaseSession session) throws IOException {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         List<Object> metadataLocations = new ArrayList<Object>();
@@ -308,11 +318,21 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Does exist.
+     *
+     * @param tenantId the tenant id
+     * @param entity the entity
+     * @return true, if successful
+     */
     public boolean doesExist(Map<String, String> tenantId, Object entity){
         DatabaseSession session = JpaHelper.getDatabaseSession(getEmf());
         return session.doesObjectExist(entity);
     }
 
+    /**
+     * Finalize.
+     */
     @Override
     public void finalize(){
         this.emf.close();
@@ -362,6 +382,16 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Find attribute.
+     *
+     * @param tenantId the tenant id
+     * @param entityName the entity name
+     * @param id the id
+     * @param properties the properties
+     * @param attribute the attribute
+     * @return the object
+     */
     public Object findAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute) {
         EntityManager em = getEmf().createEntityManager(tenantId);
 
@@ -378,6 +408,18 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Update or add attribute.
+     *
+     * @param tenantId the tenant id
+     * @param entityName the entity name
+     * @param id the id
+     * @param properties the properties
+     * @param attribute the attribute
+     * @param attributeValue the attribute value
+     * @param partner the partner
+     * @return the object
+     */
     public Object updateOrAddAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
         EntityManager em = getEmf().createEntityManager(tenantId);
 
@@ -419,6 +461,18 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Removes the attribute.
+     *
+     * @param tenantId the tenant id
+     * @param entityName the entity name
+     * @param id the id
+     * @param properties the properties
+     * @param attribute the attribute
+     * @param attributeValue the attribute value
+     * @param partner the partner
+     * @return the object
+     */
     public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
         EntityManager em = getEmf().createEntityManager(tenantId);
 
@@ -455,6 +509,7 @@ public class PersistenceContext {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     protected void removeMappingValueFromObject(Object object, Object attributeValue, DatabaseMapping mapping, DatabaseMapping partner){
         if (mapping.isObjectReferenceMapping()){
             Object currentValue = mapping.getRealAttributeValueFromObject(object, (AbstractSession) getJpaSession());
@@ -472,6 +527,11 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Gets the base uri.
+     *
+     * @return the base uri
+     */
     public URI getBaseURI() {
         return baseURI;
     }
@@ -490,6 +550,11 @@ public class PersistenceContext {
         return descriptor.getJavaClass();
     }
 
+    /**
+     * Gets the jpa session.
+     *
+     * @return the jpa session
+     */
     public DatabaseSession getJpaSession() {
         // Fix for bug 390786 - JPA-RS: ClassCastException retrieving metadata for Composite Persistence Unit
         DatabaseSession dbSession = JpaHelper.getDatabaseSession(emf);
@@ -518,6 +583,12 @@ public class PersistenceContext {
         return descriptor;
     }
 
+    /**
+     * Gets the descriptor for class.
+     *
+     * @param clazz the clazz
+     * @return the descriptor for class
+     */
     @SuppressWarnings("rawtypes")
     public ClassDescriptor getDescriptorForClass(Class clazz){
         DatabaseSession session = getJpaSession();
@@ -528,6 +599,12 @@ public class PersistenceContext {
         return descriptor;
     }
 
+    /**
+     * Gets the jAXB descriptor for class.
+     *
+     * @param clazz the clazz
+     * @return the jAXB descriptor for class
+     */
     @SuppressWarnings("rawtypes")
     public ClassDescriptor getJAXBDescriptorForClass(Class clazz) {
         ClassDescriptor descriptor = null;
@@ -541,14 +618,29 @@ public class PersistenceContext {
         return descriptor;
     }
 
+    /**
+     * Gets the emf.
+     *
+     * @return the emf
+     */
     public EntityManagerFactory getEmf() {
         return emf;
     }
 
+    /**
+     * Gets the jAXB context.
+     *
+     * @return the jAXB context
+     */
     public JAXBContext getJAXBContext() {
         return context;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }
@@ -562,6 +654,8 @@ public class PersistenceContext {
      * @param entity
      * @return
      */
+
+    @SuppressWarnings("rawtypes")
     public Object merge(Map<String, String> tenantId, Object entity) {
         EntityManager em = getEmf().createEntityManager(tenantId);
         Object mergedEntity = null;
@@ -618,65 +712,92 @@ public class PersistenceContext {
     }
 
     /**
-     * A part of the facade over the JPA API
-     * Run a query with the given name in JPA and return the result
-     * @param name
-     * @param parameters
-     * @return
+     * Query exceute update.
+     *
+     * @param tenantId the tenant id
+     * @param name the name
+     * @param parameters the parameters
+     * @param hints the hints
+     * @return the object
      */
-    public Object query(Map<String, String> tenantId, String name, Map<?, ?> parameters) {
-        return query(tenantId, name, parameters, null, false, false);
-    }
-
-    /**
-     * A part of the facade over the JPA API
-     * Run a query with the given name in JPA and return the result
-     * @param name
-     * @param parameters
-     * @param hints
-     * @param returnSingleResult
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    public Object query(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints, boolean returnSingleResult, boolean executeUpdate) {
+    public Object queryExecuteUpdate(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
         EntityManager em = getEmf().createEntityManager(tenantId);
-        try{
-            Query query = em.createNamedQuery(name);
-            DatabaseQuery dbQuery = ((EJBQueryImpl<?>)query).getDatabaseQuery();
-            if (parameters != null){
-                Iterator i=parameters.keySet().iterator();
-                while (i.hasNext()){
-                    String key = (String)i.next();
-                    Class parameterClass = null;
-                    int index = dbQuery.getArguments().indexOf(key);
-                    if (index >= 0){
-                        parameterClass = dbQuery.getArgumentTypes().get(index);
-                    }
-                    Object parameter = parameters.get(key);
-                    if (parameterClass != null){
-                        parameter = ConversionManager.getDefaultManager().convertObject(parameter, parameterClass);
-                    }
-                    query.setParameter(key, parameter);
-                }
-            }
-            if (hints != null){
-                for (String key:  hints.keySet()){
-                    query.setHint(key, hints.get(key));
-                }
-            }
-            if (executeUpdate){
-                transaction.beginTransaction(em);
-                Object result = query.executeUpdate();
-                transaction.commitTransaction(em);
-                return result;
-            } else if (returnSingleResult){
-                return query.getSingleResult();
-            } else {
-                return query.getResultList();
-            }
+        try {
+            Query query = constructQuery(em, name, parameters, hints);
+            transaction.beginTransaction(em);
+            Object result = query.executeUpdate();
+            transaction.commitTransaction(em);
+            return result;
         } finally {
             em.close();
         }
+    }
+
+    /**
+     * Query single result.
+     *
+     * @param tenantId the tenant id
+     * @param name the name
+     * @param parameters the parameters
+     * @param hints the hints
+     * @return the object
+     */
+    public Object querySingleResult(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
+        try {
+            Query query = constructQuery(em, name, parameters, hints);
+            return query.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Query multiple results.
+     *
+     * @param tenantId the tenant id
+     * @param name the name
+     * @param parameters the parameters
+     * @param hints the hints
+     * @return the list
+     */
+    @SuppressWarnings("rawtypes")
+    public List queryMultipleResults(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
+        try {
+            Query query = constructQuery(em, name, parameters, hints);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Query constructQuery(EntityManager em, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+        Query query = em.createNamedQuery(name);
+        DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
+        if (parameters != null) {
+            Iterator i = parameters.keySet().iterator();
+            while (i.hasNext()) {
+                String key = (String) i.next();
+                Class parameterClass = null;
+                int index = dbQuery.getArguments().indexOf(key);
+                if (index >= 0) {
+                    parameterClass = dbQuery.getArgumentTypes().get(index);
+                }
+                Object parameter = parameters.get(key);
+                if (parameterClass != null) {
+                    parameter = ConversionManager.getDefaultManager().convertObject(parameter, parameterClass);
+                }
+                query.setParameter(key, parameter);
+            }
+        }
+        if (hints != null) {
+            for (String key : hints.keySet()) {
+                query.setHint(key, hints.get(key));
+            }
+        }
+        return query;
     }
 
     /**
@@ -691,11 +812,17 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Sets the base uri.
+     *
+     * @param baseURI the new base uri
+     */
     public void setBaseURI(URI baseURI) {
         this.baseURI = baseURI;
     }
 
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void setMappingValueInObject(Object object, Object attributeValue, DatabaseMapping mapping, DatabaseMapping partner){
         if (mapping.isObjectReferenceMapping()){
             ((ObjectReferenceMapping)mapping).getIndirectionPolicy().setRealAttributeValueInObject(object, attributeValue, true);
@@ -714,7 +841,7 @@ public class PersistenceContext {
      * Stop the current application instance
      */
     public void stop() {
-        if (emf != null && emf.isOpen()){
+        if (emf != null && emf.isOpen()) {
             emf.close();
         }
         this.emf = null;
@@ -722,14 +849,38 @@ public class PersistenceContext {
     }
 
 
+    /**
+     * To string.
+     *
+     * @return the string
+     */
     public String toString() {
         return "Application(" + getName() + ")::" + System.identityHashCode(this);
     }
 
+    /**
+     * Marshall an entity to either JSON or XML
+     * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
+     * rather than attempting to marshall the data in those relationships
+     * @param object
+     * @param mediaType
+     * @param output
+     * @throws JAXBException
+     */
     public Object unmarshalEntity(String type, MediaType acceptedMedia, InputStream in) throws JAXBException {
         return unmarshalEntity(getClass(type), acceptedMedia, in);
     }
 
+    /**
+     * Marshall an entity to either JSON or XML
+     * @param object
+     * @param mediaType
+     * @param output
+     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending 
+     * the actual objects in the relationships
+     * @throws JAXBException
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object unmarshalEntity(Class type, MediaType acceptedMedia, InputStream in) throws JAXBException {
         Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
@@ -844,6 +995,7 @@ public class PersistenceContext {
      * the actual objects in the relationships
      * @throws JAXBException
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         if (sendRelationships) {
             preMarshallEntity(object);
@@ -888,6 +1040,7 @@ public class PersistenceContext {
      * This method will both single entities and lists of entities
      * @param object
      */
+    @SuppressWarnings("rawtypes")
     protected void preMarshallEntity(Object object){
         if (object instanceof List){
             Iterator i = ((List)object).iterator();
@@ -926,6 +1079,7 @@ public class PersistenceContext {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     protected void postMarshallEntity(Object object){
         if (object instanceof List){
             Iterator i = ((List)object).iterator();
@@ -942,26 +1096,8 @@ public class PersistenceContext {
         }
     }
 
-    /**
-     * Check to see if our weaved list of relationships contains a particular attribute.
-     * This will tell us if an object that has been composed by unmarshalling XML or JSON
-     * has had that relationship fetched.  When the relationship is present in the list of
-     * RelationShipInfo objects, it means it is not fetched.
-     *
-     * @param relationship
-     * @param object
-     * @return
-     */
-    private boolean isRelationshipRepresentedInRelationshipInfo(
-            String relationship, PersistenceWeavedRest object) {
-        for (RelationshipInfo info : object._persistence_getRelationships()) {
-            if (info.getAttributeName().equals(relationship)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List<XmlAdapter> getAdapters() throws JPARSException {
         if (adapters != null) {
             return adapters;

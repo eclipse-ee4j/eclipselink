@@ -24,6 +24,10 @@ import javax.persistence.NamedQuery;
         @NamedQuery(
                 name = "EmployeeAddress.getPicture",
                 query = "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
+        ),
+        @NamedQuery(
+                name = "EmployeeAddress.getById",
+                query = "SELECT u FROM EmployeeAddress u where u.id = :id"
         )
 })
 @Entity

@@ -12,6 +12,7 @@
 package org.eclipse.persistence.jpa.rs;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,8 +24,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -48,7 +49,7 @@ public class QueryResource extends AbstractResource {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.query(getParameterMap(ui, persistenceUnit), name, getParameterMap(ui, name), getHintMap(ui), false, true);
+        Object result = app.queryExecuteUpdate(getParameterMap(ui, persistenceUnit), name, getParameterMap(ui, name), getHintMap(ui));
         return Response.ok(new StreamingOutputMarshaller(app, result.toString(), hh.getAcceptableMediaTypes())).build();
     }
     
@@ -58,13 +59,14 @@ public class QueryResource extends AbstractResource {
         return namedQuery(persistenceUnit, name, hh, ui, ui.getBaseUri());
     }
     
+    @SuppressWarnings({ "rawtypes" })
     protected Response namedQuery(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.query(getParameterMap(ui, persistenceUnit), name, getParameterMap(ui, name), getHintMap(ui), false, false);
+        List result = app.queryMultipleResults(getParameterMap(ui, persistenceUnit), name, getParameterMap(ui, name), getHintMap(ui));
         return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
     }
 }
