@@ -14,14 +14,20 @@ package org.eclipse.persistence.jpars.test.util;
 
 import static org.junit.Assert.fail;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
@@ -39,6 +45,8 @@ public class RestUtils {
     private static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
     private static final String JSON_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/json/";
     private static final String XML_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/xml/";
+    private static final String IMAGE_FOLDER = "org/eclipse/persistence/jpars/test/image/";
+
     private static final Client client = Client.create();
 
     /**
@@ -174,6 +182,7 @@ public class RestUtils {
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
+
         String result = response.getEntity(String.class);
 
         T resultObject = null;
@@ -528,6 +537,39 @@ public class RestUtils {
             return new java.util.Scanner(is).useDelimiter("\\A").next();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public static byte[] convertImageToByteArray(String imageName) throws IOException {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(IMAGE_FOLDER + imageName);
+        BufferedImage originalImage = ImageIO.read(is);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(originalImage, getExtension(new File(imageName)), baos);
+        return baos.toByteArray();
+    }
+
+    private static String getExtension(File f) {
+        String ext = null;
+        String s = f.getName();
+        int i = s.lastIndexOf('.');
+
+        if (i > 0 && i < s.length() - 1) {
+            ext = s.substring(i + 1).toLowerCase();
+        }
+        return ext;
+    }
+
+    @SuppressWarnings("unused")
+    private static void writeToFile(String data) throws IOException {
+        BufferedWriter writer = null;
+        try {
+            String fileName = (System.currentTimeMillis() + ".txt");
+            writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(data);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
         }
     }
 }

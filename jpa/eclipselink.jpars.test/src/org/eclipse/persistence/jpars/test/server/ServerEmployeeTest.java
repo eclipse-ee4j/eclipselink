@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
+import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
@@ -191,14 +193,72 @@ public class ServerEmployeeTest {
         updateEmployeeWithManager(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test update employee with project json.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     * @throws JAXBException the jAXB exception
+     */
     @Ignore
     public void testUpdateEmployeeWithProjectJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
         updateEmployeeWithProject(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test update employee with project xml.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     * @throws JAXBException the jAXB exception
+     */
     @Ignore
     public void testUpdateEmployeeWithProjectXML() throws RestCallFailedException, URISyntaxException, JAXBException {
         updateEmployeeWithProject(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test create employee address with binary map json.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @Test
+    public void testCreateEmployeeAddressWithBinaryMapJSON() throws IOException, RestCallFailedException, URISyntaxException {
+        createEmployeeAddressWithBinaryMap(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    /**
+     * Test create employee address with binary map xml.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @Test
+    public void testCreateEmployeeAddressWithBinaryMapXML() throws IOException, RestCallFailedException, URISyntaxException {
+        createEmployeeAddressWithBinaryMap(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    private void createEmployeeAddressWithBinaryMap(MediaType mediaType) throws IOException, RestCallFailedException, URISyntaxException {
+        EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
+        address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.jpg"));
+
+        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("EmployeeAddress create failed.", address);
+
+        assertNotNull("EmployeeAddress area picture is null", address.getAreaPicture());
+        assertTrue("Newyork City".equals(address.getCity()));
+
+        assertTrue("Newyork City".equals(address.getCity()));
+        assertTrue("USA".equals(address.getCountry()));
+        assertTrue("NY".equals(address.getProvince()));
+        assertTrue("10005".equals(address.getPostalCode()));
+        assertTrue("Wall Street".equals(address.getStreet()));
+
+        // delete employee address
+        RestUtils.restDelete(address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
     }
 
     private void updateEmployeeWithProject(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
