@@ -17,7 +17,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
+@NamedQueries({
+        @NamedQuery(
+                name = "EmployeeAddress.getPicture",
+                query = "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
+        )
+})
 @Entity
 public class EmployeeAddress {
     @Id
@@ -41,6 +49,9 @@ public class EmployeeAddress {
 
     @Basic
     private String street;
+
+    @Lob
+    private byte[] areaPicture;
 
     public EmployeeAddress() {
     }
@@ -101,5 +112,13 @@ public class EmployeeAddress {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    public byte[] getAreaPicture() {
+        return areaPicture;
+    }
+
+    public void setAreaPicture(byte[] areaPicture) {
+        this.areaPicture = areaPicture;
     }
 }
