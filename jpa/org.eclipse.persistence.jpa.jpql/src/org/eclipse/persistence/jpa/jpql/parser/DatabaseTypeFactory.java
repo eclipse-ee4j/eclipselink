@@ -16,12 +16,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class DatabaseTypeFactory extends ExpressionFactory {
+public final class DatabaseTypeFactory extends ExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link DeleteStatementFactory}.

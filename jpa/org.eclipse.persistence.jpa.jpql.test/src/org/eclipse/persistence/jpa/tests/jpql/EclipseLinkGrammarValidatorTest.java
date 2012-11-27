@@ -26,12 +26,12 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * 2.0 and EclipseLink is the persistence provider. The EclipseLink version supported is 2.0, 2.1,
  * 2.2 and 2.3.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
+public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
 
 	/**
 	 * {@inheritDoc}
@@ -68,7 +68,7 @@ public final class EclipseLinkGrammarValidatorTest extends AbstractGrammarValida
 	}
 
 	@Test
-	public final void test_AggregateFunction_WrongClause_5() throws Exception {
+	public void test_AggregateFunction_WrongClause_5() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age)";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -84,7 +84,7 @@ public final class EclipseLinkGrammarValidatorTest extends AbstractGrammarValida
 	}
 
 	@Test
-	public final void test_GroupByClause_GroupByItemIsMissingComma_3() throws Exception {
+	public void test_GroupByClause_GroupByItemIsMissingComma_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age) e.name";
 		int startPosition = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
@@ -122,7 +122,29 @@ public final class EclipseLinkGrammarValidatorTest extends AbstractGrammarValida
 	}
 
 	@Test
-	public final void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
+	public void test_InExpression_InvalidExpression() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+			testHasNoProblems(problems);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e WHERE ".length();
+			int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.salary)".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				InExpression_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) e.name";
 		int startPosition = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();

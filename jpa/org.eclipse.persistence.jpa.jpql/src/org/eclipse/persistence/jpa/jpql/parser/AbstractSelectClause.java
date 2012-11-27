@@ -223,6 +223,14 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean shouldSkipLiteral(AbstractExpression expression) {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 
 		// 'SELECT'

@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_expression, string_expression [, arithmetic_expression])</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -49,7 +49,7 @@ public final class InternalLocateStringExpressionBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(StringPrimaryBNF.ID);
 	}
 }

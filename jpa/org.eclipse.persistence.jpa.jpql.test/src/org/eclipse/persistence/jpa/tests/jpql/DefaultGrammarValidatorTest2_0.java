@@ -20,11 +20,12 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The unit-test class used for testing a JPQL query grammatically when the JPA version is 1.0 and 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -56,7 +57,75 @@ public final class DefaultGrammarValidatorTest2_0 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_InputParameter_WrongClauseDeclaration_1() throws Exception {
+	public void test_InExpression_InvalidExpression() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.age) IN :age";
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.age)".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			InExpression_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_InExpression_ItemInvalidExpression_01() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN ('JPQL', ABS(e.name))";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name IN('JPQL', ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN('JPQL', ABS(e.name)".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			InExpression_ItemInvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_InExpression_ItemInvalidExpression_02() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (ABS(e.name), 'JPQL')";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(ABS(e.name)".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			InExpression_ItemInvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_InExpression_ItemInvalidExpression_03() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN(e.address.street)";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(e.address.street".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			InExpression_ItemInvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_InputParameter_WrongClauseDeclaration_1() throws Exception {
 
 		String query = "SELECT ?1 FROM Employee e";
 
@@ -74,7 +143,7 @@ public final class DefaultGrammarValidatorTest2_0 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_InputParameter_WrongClauseDeclaration_2() throws Exception {
+	public void test_InputParameter_WrongClauseDeclaration_2() throws Exception {
 
 		String query = "SELECT :name FROM Employee e";
 
@@ -88,6 +157,33 @@ public final class DefaultGrammarValidatorTest2_0 extends AbstractGrammarValidat
 			JPQLQueryProblemMessages.InputParameter_WrongClauseDeclaration,
 			startPosition,
 			endPosition
+		);
+	}
+
+	@Test
+	public void test_InvalidQuery_001() throws Exception {
+
+		String jpqlQuery = "Select e from Employee e where (e.id1, e.id2) IN ((:id1, :id2), (:id3, :id4))";
+
+		int startPosition1 = "Select e from Employee e where ".length();
+		int endPosition1   = "Select e from Employee e where (e.id1, e.id2)".length();
+
+		int startPosition2 = "Select e from Employee e where (e.id1, e.id2) IN(".length();
+		int endPosition2   = "Select e from Employee e where (e.id1, e.id2) IN((:id1, :id2)".length();
+
+		int startPosition3 = "Select e from Employee e where (e.id1, e.id2) IN((:id1, :id2), ".length();
+		int endPosition3   = "Select e from Employee e where (e.id1, e.id2) IN((:id1, :id2), (:id3, :id4)".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String [] { JPQLQueryProblemMessages.InExpression_InvalidExpression,
+			                JPQLQueryProblemMessages.InExpression_ItemInvalidExpression,
+			                JPQLQueryProblemMessages.InExpression_ItemInvalidExpression
+			},
+			new int[] { startPosition1, startPosition2, startPosition3 },
+			new int[] { endPosition1,   endPosition2,   endPosition3 }
 		);
 	}
 }

@@ -24,21 +24,20 @@ import org.eclipse.persistence.jpa.jpql.util.filter.NullFilter;
 import org.eclipse.persistence.jpa.jpql.util.iterable.ArrayIterable;
 
 /**
- * This defines a single Backus-Naur Form (BNF) of the JPQL grammar. The Java Persistence functional
- * specifications are:
- * <p>
- * {@link JPQLGrammar1_0}: <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans&trade; version 3.0</a>
- * <br>
- * {@link JPQLGrammar2_0}: <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java&trade; Persistence 2.0</a>
- * <p>
- * {@link JPQLGrammar2_1}: <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java&trade; Persistence 2.1</a>
- * <p>
- * Provisional API: This interface is part of an interim API that is still under development and
+ * <p>This defines a single Backus-Naur Form (BNF) of the JPQL grammar. The Java Persistence functional
+ * specifications are:</p>
+ * <ul>
+ * <li>{@link JPQLGrammar1_0}: <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans&trade; version 3.0</a></li>
+ * <li>{@link JPQLGrammar2_0}: <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java&trade; Persistence 2.0</a></li>
+ * <li>{@link JPQLGrammar2_1}: <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java&trade; Persistence 2.1</a></li>
+ * </ul>
+ *
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -113,6 +112,8 @@ public abstract class JPQLQueryBNF {
 	 * Caches the property since any BNF rule is static.
 	 */
 	private Boolean handleCollection;
+
+	private boolean handleNestedArray;
 
 	/**
 	 * This flag can be used to determine if this BNF handles parsing a sub-expression, i.e. an
@@ -467,12 +468,19 @@ public abstract class JPQLQueryBNF {
 	}
 
 	/**
+	 * @since 2.5
+	 */
+	public boolean handlesNestedArray() {
+		return handleNestedArray;
+	}
+
+	/**
 	 * Determines whether this BNF handles parsing a sub-expression, i.e. parsing an expression
 	 * encapsulated by parenthesis. See {@link #setHandleSubExpression(boolean)} for more details.
 	 *
 	 * @return <code>true</code> if this BNF handles parsing a sub-expression; <code>false</code> otherwise
 	 */
-	public boolean handlesSubExpression() {
+	public boolean handleSubExpression() {
 		return handleSubExpression;
 	}
 
@@ -663,6 +671,18 @@ public abstract class JPQLQueryBNF {
 	}
 
 	/**
+	 * Sets whether this BNF supports nested array or not. A nested array is a sub-expression with
+	 * its child being a collection expression: (item_1, item_2, ..., item_n).
+	 *
+	 * @param handleNestedArray <code>true</code> if the expression represented by this BNF can be
+	 * a nested array; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public void setHandleNestedArray(boolean handleNestedArray) {
+		this.handleNestedArray = handleNestedArray;
+	}
+
+	/**
 	 * Sets whether this BNF handles parsing a sub-expression, i.e. parsing an expression
 	 * encapsulated by parenthesis. Which in fact would be handled by the fallback {@link
 	 * ExpressionFactory}. The default behavior is to not handle it.
@@ -700,8 +720,6 @@ public abstract class JPQLQueryBNF {
 	 * @param handleSubExpression <code>true</code> to let the creation of a sub-expression be
 	 * created by the fallback {@link ExpressionFactory} registered with this BNF; <code>false</code>
 	 * otherwise (which is the default value)
-	 * @return <code>true</code> if the fallback {@link ExpressionFactory} registered with this BNF
-	 * handles parsing a sub-expression; <code>false</code> otherwise
 	 */
 	public void setHandleSubExpression(boolean handleSubExpression) {
 		this.handleSubExpression = handleSubExpression;

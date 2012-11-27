@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see EclipseLinkGrammarValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -106,7 +106,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_BadExpression_InvalidExpression_4() throws Exception {
+	public void test_BadExpression_InvalidExpression_4() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e where e.id in (select table('employee') t from Employee e)";
 		int startPosition = "select e from Employee e where e.id in(select ".length();
@@ -123,7 +123,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_InvalidExpression_1() throws Exception {
+	public void test_CastExpression_InvalidExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -131,7 +131,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_1() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -139,7 +139,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_2() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -147,7 +147,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_3() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName) from Employee e";
 		int startPosition = "Select cast(e.firstName".length();
@@ -164,7 +164,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_4() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName ) from Employee e";
 		int startPosition = "Select cast(e.firstName ".length();
@@ -181,7 +181,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_5() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_5() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as) from Employee e";
 		int startPosition = "Select cast(e.firstName as".length();
@@ -198,7 +198,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_6() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_6() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as ) from Employee e";
 		int startPosition = "Select cast(e.firstName as ".length();
@@ -215,7 +215,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_7() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_7() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName from Employee e";
 		int startPosition = "Select cast(e.firstName ".length();
@@ -232,7 +232,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingDatabaseType_8() throws Exception {
+	public void test_CastExpression_MissingDatabaseType_8() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as from Employee e";
 		int startPosition = "Select cast(e.firstName as ".length();
@@ -249,7 +249,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingExpression_1() throws Exception {
+	public void test_CastExpression_MissingExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -257,7 +257,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingExpression_2() throws Exception {
+	public void test_CastExpression_MissingExpression_2() throws Exception {
 
 		String jpqlQuery = "Select cast(as char) from Employee e";
 		int startPosition = "Select cast(".length();
@@ -274,7 +274,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingLeftParenthesis_1() throws Exception {
+	public void test_CastExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -282,7 +282,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingLeftParenthesis_2() throws Exception {
+	public void test_CastExpression_MissingLeftParenthesis_2() throws Exception {
 
 		String jpqlQuery = "Select cast from Employee e";
 		int startPosition = "Select cast".length();
@@ -299,7 +299,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingLeftParenthesis_3() throws Exception {
+	public void test_CastExpression_MissingLeftParenthesis_3() throws Exception {
 
 		String jpqlQuery = "Select cast e.firstName as char) from Employee e";
 		int startPosition = "Select cast".length();
@@ -316,7 +316,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingLeftParenthesis_4() throws Exception {
+	public void test_CastExpression_MissingLeftParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select cast as from Employee e";
 		int startPosition = "Select cast".length();
@@ -333,7 +333,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingRightParenthesis_1() throws Exception {
+	public void test_CastExpression_MissingRightParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -341,7 +341,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingRightParenthesis_2() throws Exception {
+	public void test_CastExpression_MissingRightParenthesis_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -349,7 +349,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingRightParenthesis_3() throws Exception {
+	public void test_CastExpression_MissingRightParenthesis_3() throws Exception {
 
 		String jpqlQuery  = "Select cast(e.firstName as char(2) from Employee e";
 		int startPosition = "Select cast(e.firstName as char(2)".length();
@@ -366,7 +366,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_CastExpression_MissingRightParenthesis_4() throws Exception {
+	public void test_CastExpression_MissingRightParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char from Employee e";
 		int startPosition = "Select cast(e.firstName as char".length();
@@ -383,7 +383,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidFirstExpression_1() throws Exception {
+	public void test_DatabaseType_InvalidFirstExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -391,7 +391,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidFirstExpression_2() throws Exception {
+	public void test_DatabaseType_InvalidFirstExpression_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -399,7 +399,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidFirstExpression_3() throws Exception {
+	public void test_DatabaseType_InvalidFirstExpression_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, 2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -407,7 +407,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidFirstExpression_4() throws Exception {
+	public void test_DatabaseType_InvalidFirstExpression_4() throws Exception {
 
 		String jpqlQuery  = "Select cast(e.firstName char(avg(e.age), 2)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(".length();
@@ -424,7 +424,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidSecondExpression_1() throws Exception {
+	public void test_DatabaseType_InvalidSecondExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -432,7 +432,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidSecondExpression_2() throws Exception {
+	public void test_DatabaseType_InvalidSecondExpression_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -440,7 +440,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidSecondExpression_3() throws Exception {
+	public void test_DatabaseType_InvalidSecondExpression_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, 2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -448,7 +448,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_InvalidSecondExpression_4() throws Exception {
+	public void test_DatabaseType_InvalidSecondExpression_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, avg(e.age))) from Employee e";
 		int startPosition = "Select cast(e.firstName char(2, ".length();
@@ -465,7 +465,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingComma_1() throws Exception {
+	public void test_DatabaseType_MissingComma_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, 2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -473,7 +473,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingComma_2() throws Exception {
+	public void test_DatabaseType_MissingComma_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -481,7 +481,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingComma_3() throws Exception {
+	public void test_DatabaseType_MissingComma_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2 2)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(2".length();
@@ -498,7 +498,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingFirstExpression_1() throws Exception {
+	public void test_DatabaseType_MissingFirstExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -506,7 +506,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingFirstExpression_2() throws Exception {
+	public void test_DatabaseType_MissingFirstExpression_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -514,7 +514,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingFirstExpression_3() throws Exception {
+	public void test_DatabaseType_MissingFirstExpression_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2,)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -522,7 +522,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingFirstExpression_4() throws Exception {
+	public void test_DatabaseType_MissingFirstExpression_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(, 2)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(".length();
@@ -539,7 +539,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingFirstExpression_5() throws Exception {
+	public void test_DatabaseType_MissingFirstExpression_5() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(,)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(".length();
@@ -556,7 +556,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_1() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -564,7 +564,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_2() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char()) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -572,7 +572,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_3() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(3)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -580,7 +580,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_4() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(3,)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -588,7 +588,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_5() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_5() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(3, )) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery, buildStringFormatter_4());
@@ -596,7 +596,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_6() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_6() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(3, 3)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -604,7 +604,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_7() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_7() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char 3)) from Employee e";
 		int startPosition = "Select cast(e.firstName char".length();
@@ -621,7 +621,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingLeftParenthesis_8() throws Exception {
+	public void test_DatabaseType_MissingLeftParenthesis_8() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char 3, 3)) from Employee e";
 		int startPosition = "Select cast(e.firstName char".length();
@@ -638,7 +638,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingRightParenthesis_1() throws Exception {
+	public void test_DatabaseType_MissingRightParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -646,7 +646,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingRightParenthesis_2() throws Exception {
+	public void test_DatabaseType_MissingRightParenthesis_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char()) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -654,7 +654,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingRightParenthesis_3() throws Exception {
+	public void test_DatabaseType_MissingRightParenthesis_3() throws Exception {
 
 		String jpqlQuery  = "Select cast(e.firstName char(2 from Employee e";
 		int startPosition = "Select cast(e.firstName char(2".length();
@@ -671,7 +671,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingRightParenthesis_4() throws Exception {
+	public void test_DatabaseType_MissingRightParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, from Employee e";
 		int startPosition = "Select cast(e.firstName char(2, ".length();
@@ -688,7 +688,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingRightParenthesis_5() throws Exception {
+	public void test_DatabaseType_MissingRightParenthesis_5() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, 2 from Employee e";
 		int startPosition = "Select cast(e.firstName char(2, 2".length();
@@ -705,7 +705,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_1() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -713,7 +713,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_2() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_2() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, 2)) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -721,7 +721,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_3() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_3() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(, 2)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(".length();
@@ -738,7 +738,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_4() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_4() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2,)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(2,".length();
@@ -755,7 +755,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_5() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_5() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(2, )) from Employee e";
 		int startPosition = "Select cast(e.firstName char(2, ".length();
@@ -772,7 +772,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_DatabaseType_MissingSecondExpression_6() throws Exception {
+	public void test_DatabaseType_MissingSecondExpression_6() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName char(,)) from Employee e";
 		int startPosition = "Select cast(e.firstName char(,".length();
@@ -789,7 +789,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_InvalidExpression_1() throws Exception {
+	public void test_ExtractExpression_InvalidExpression_1() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -797,7 +797,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingDatePart_1() throws Exception {
+	public void test_ExtractExpression_MissingDatePart_1() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -805,7 +805,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingDatePart_2() throws Exception {
+	public void test_ExtractExpression_MissingDatePart_2() throws Exception {
 
 		String jpqlQuery = "Select extract(from e.hiringDate) from Employee e";
 		int startPosition = "Select extract(".length();
@@ -822,7 +822,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingDatePart_3() throws Exception {
+	public void test_ExtractExpression_MissingDatePart_3() throws Exception {
 
 		String jpqlQuery = "Select extract(e.hiringDate) from Employee e";
 		int startPosition = "Select extract(".length();
@@ -839,7 +839,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingDatePart_4() throws Exception {
+	public void test_ExtractExpression_MissingDatePart_4() throws Exception {
 
 		String jpqlQuery = "Select extract( e.hiringDate) from Employee e";
 		int startPosition = "Select extract(".length();
@@ -856,7 +856,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingDatePart_5() throws Exception {
+	public void test_ExtractExpression_MissingDatePart_5() throws Exception {
 
 		String jpqlQuery = "Select extract( from e.hiringDate) from Employee e";
 		int startPosition = "Select extract(".length();
@@ -873,7 +873,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_1() throws Exception {
+	public void test_ExtractExpression_MissingExpression_1() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -881,7 +881,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_2() throws Exception {
+	public void test_ExtractExpression_MissingExpression_2() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -889,7 +889,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_3() throws Exception {
+	public void test_ExtractExpression_MissingExpression_3() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND) from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND".length();
@@ -906,7 +906,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_4() throws Exception {
+	public void test_ExtractExpression_MissingExpression_4() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND ) from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND ".length();
@@ -923,7 +923,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_5() throws Exception {
+	public void test_ExtractExpression_MissingExpression_5() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from) from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND from".length();
@@ -940,7 +940,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_6() throws Exception {
+	public void test_ExtractExpression_MissingExpression_6() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from ) from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND from ".length();
@@ -957,7 +957,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_7() throws Exception {
+	public void test_ExtractExpression_MissingExpression_7() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND ) from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND ".length();
@@ -974,7 +974,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingExpression_8() throws Exception {
+	public void test_ExtractExpression_MissingExpression_8() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND from ".length();
@@ -991,7 +991,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingLeftParenthesis_1() throws Exception {
+	public void test_ExtractExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -999,7 +999,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingLeftParenthesis_2() throws Exception {
+	public void test_ExtractExpression_MissingLeftParenthesis_2() throws Exception {
 
 		String jpqlQuery  = "Select e from Employee e where extract";
 		int startPosition = "Select e from Employee e where extract".length();
@@ -1020,7 +1020,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingLeftParenthesis_3() throws Exception {
+	public void test_ExtractExpression_MissingLeftParenthesis_3() throws Exception {
 
 		String jpqlQuery = "Select extract DAY_MICROSECOND from e.hiringDate) from Employee e";
 		int startPosition = "Select extract".length();
@@ -1038,7 +1038,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
 	@Test
 	@Ignore("TODO: This is partially parsed, find a better way to parse it.")
-	public final void test_ExtractExpression_MissingLeftParenthesis_4() throws Exception {
+	public void test_ExtractExpression_MissingLeftParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select extract from from Employee e";
 		int startPosition = "Select extract".length();
@@ -1055,7 +1055,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingRightParenthesis_1() throws Exception {
+	public void test_ExtractExpression_MissingRightParenthesis_1() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1063,7 +1063,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingRightParenthesis_2() throws Exception {
+	public void test_ExtractExpression_MissingRightParenthesis_2() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND from e.hiringDate) from Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1071,7 +1071,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingRightParenthesis_3() throws Exception {
+	public void test_ExtractExpression_MissingRightParenthesis_3() throws Exception {
 
 		String jpqlQuery  = "Select extract(DAY_MICROSECOND from e.hiringDate from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND from e.hiringDate".length();
@@ -1088,7 +1088,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_ExtractExpression_MissingRightParenthesis_4() throws Exception {
+	public void test_ExtractExpression_MissingRightParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select extract(DAY_MICROSECOND e.hiringDate from Employee e";
 		int startPosition = "Select extract(DAY_MICROSECOND e.hiringDate".length();
@@ -1105,7 +1105,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingFunctionName_1() throws Exception {
+	public void test_FunctionExpression_MissingFunctionName_1() throws Exception {
 
 		String jpqlQuery = "SELECT FUNCTION() FROM Employee e";
 		int startPosition = "SELECT FUNCTION(".length();
@@ -1122,7 +1122,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingFunctionName_2() throws Exception {
+	public void test_FunctionExpression_MissingFunctionName_2() throws Exception {
 
 		String jpqlQuery = "SELECT FUNCTION('sql') FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1130,7 +1130,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingOneExpression_1() throws Exception {
+	public void test_FunctionExpression_MissingOneExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where column('city', e.address) = 'Ottawa'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1142,7 +1142,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingOneExpression_2() throws Exception {
+	public void test_FunctionExpression_MissingOneExpression_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where column('city') = 'Ottawa'";
 		int startPosition = "select e from Employee e where column('city'".length();
@@ -1159,7 +1159,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingOneExpression_3() throws Exception {
+	public void test_FunctionExpression_MissingOneExpression_3() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where column('city',) = 'Ottawa'";
 		int startPosition = "select e from Employee e where column('city',".length();
@@ -1176,7 +1176,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingOneExpression_4() throws Exception {
+	public void test_FunctionExpression_MissingOneExpression_4() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where column('city', ) = 'Ottawa'";
 		int startPosition = "select e from Employee e where column('city', ".length();
@@ -1193,7 +1193,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
+	public void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
 
 		String jpqlQuery = "SELECT FUNCTION('getName', 'String' FROM Employee e";
 		int startPosition = "SELECT FUNCTION('getName', 'String'".length();
@@ -1210,7 +1210,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingRightParenthesis_2() throws Exception {
+	public void test_FunctionExpression_MissingRightParenthesis_2() throws Exception {
 
 		String jpqlQuery = "SELECT FUNCTION('getName', 'String') FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1218,7 +1218,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_FunctionExpression_MoreThanOneExpression_1() throws Exception {
+	public void test_FunctionExpression_MoreThanOneExpression_1() throws Exception {
 
 		String jpqlQuery = "SELECT COLUMN('city', e.name, e.id) FROM Employee e";
 		int startPosition = "SELECT COLUMN('city', ".length();
@@ -1235,7 +1235,29 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_OnClause_InvalidConditionalExpression_1() throws Exception {
+	public void test_InExpression_InvalidExpression() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.age) IN :age";
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.age)".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+			testHasNoProblems(problems);
+		}
+		else {
+			testHasOnlyOneProblem(
+				problems,
+				InExpression_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public void test_OnClause_InvalidConditionalExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e join e.address a on a.id > 2";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1243,7 +1265,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_OnClause_InvalidConditionalExpression_2() throws Exception {
+	public void test_OnClause_InvalidConditionalExpression_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e join e.address a on a.id";
 		int startPosition = "select e from Employee e join e.address a on ".length();
@@ -1260,7 +1282,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_1() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e join e.address a on";
 		int startPosition = "select e from Employee e join e.address a on".length();
@@ -1277,7 +1299,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_2() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e join e.address a on where e.id > 2";
 		int startPosition = "select e from Employee e join e.address a on ".length();
@@ -1294,7 +1316,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_3() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_3() throws Exception {
 
 		String jpqlQuery = "select e from Employee e join e.address a on e.id > 2";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1302,7 +1324,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_InvalidPatternValue_1() throws Exception {
+	public void test_RegexpExpression_InvalidPatternValue_1() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp :regexp'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1310,7 +1332,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_InvalidPatternValue_2() throws Exception {
+	public void test_RegexpExpression_InvalidPatternValue_2() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp '^B.*'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1318,13 +1340,13 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_InvalidPatternValue_3() throws Exception {
+	public void test_RegexpExpression_InvalidPatternValue_3() throws Exception {
 
 		// TODO
 	}
 
 	@Test
-	public final void test_RegexpExpression_InvalidStringExpression_2() throws Exception {
+	public void test_RegexpExpression_InvalidStringExpression_2() throws Exception {
 
 		String jpqlQuery  = "Select e from Employee e where LENGTH(e.name) regexp '^B.*'";
 		int startPosition = "Select e from Employee e where ".length();
@@ -1341,7 +1363,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_MissingPatternValue_1() throws Exception {
+	public void test_RegexpExpression_MissingPatternValue_1() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp '^B.*'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1349,7 +1371,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_MissingPatternValue_2() throws Exception {
+	public void test_RegexpExpression_MissingPatternValue_2() throws Exception {
 
 		String jpqlQuery  = "Select e from Employee e where e.name regexp";
 		int startPosition = "Select e from Employee e where e.name regexp".length();
@@ -1366,7 +1388,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_MissingPatternValue_3() throws Exception {
+	public void test_RegexpExpression_MissingPatternValue_3() throws Exception {
 
 		String jpqlQuery  = "Select e from Employee e where e.name regexp group by e.name";
 		int startPosition = "Select e from Employee e where e.name regexp ".length();
@@ -1383,7 +1405,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_MissingStringExpression_1() throws Exception {
+	public void test_RegexpExpression_MissingStringExpression_1() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp '^B.*'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1391,7 +1413,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_RegexpExpression_MissingStringExpression_2() throws Exception {
+	public void test_RegexpExpression_MissingStringExpression_2() throws Exception {
 
 		String jpqlQuery  = "Select e from Employee e where regexp '^B.*'";
 		int startPosition = "Select e from Employee e where ".length();
@@ -1408,7 +1430,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_InvalidExpression_1() throws Exception {
+	public void test_TableExpression_InvalidExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table(\"EMP\") EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1416,7 +1438,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_InvalidExpression_2() throws Exception {
+	public void test_TableExpression_InvalidExpression_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1424,7 +1446,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_InvalidExpression_3() throws Exception {
+	public void test_TableExpression_InvalidExpression_3() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table(2.2) EMP where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table(".length();
@@ -1441,7 +1463,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingExpression_1() throws Exception {
+	public void test_TableExpression_MissingExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1449,7 +1471,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingExpression_2() throws Exception {
+	public void test_TableExpression_MissingExpression_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table() EMP where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table(".length();
@@ -1466,7 +1488,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingLeftParenthesis_1() throws Exception {
+	public void test_TableExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1474,7 +1496,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingLeftParenthesis_2() throws Exception {
+	public void test_TableExpression_MissingLeftParenthesis_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table 'EMP') EMP where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table".length();
@@ -1491,7 +1513,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingRightParenthesis_1() throws Exception {
+	public void test_TableExpression_MissingRightParenthesis_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1499,7 +1521,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableExpression_MissingRightParenthesis_2() throws Exception {
+	public void test_TableExpression_MissingRightParenthesis_2() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP' EMP where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table('EMP'".length();
@@ -1516,7 +1538,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1524,7 +1546,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_2() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_2() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP') where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table('EMP') ".length();
@@ -1541,7 +1563,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_3() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_3() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP') as where EMP.EMP_ID <> 0";
 		int startPosition = "select e from Employee e, table('EMP') as ".length();
@@ -1558,7 +1580,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_4() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_4() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP')";
 		int startPosition = "select e from Employee e, table('EMP')".length();
@@ -1575,7 +1597,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_5() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_5() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP') ";
 		int startPosition = "select e from Employee e, table('EMP') ".length();
@@ -1592,7 +1614,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_6() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_6() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP') as";
 		int startPosition = "select e from Employee e, table('EMP') as".length();
@@ -1609,7 +1631,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_TableVariableDeclaration_MissingIdentificationVariable_7() throws Exception {
+	public void test_TableVariableDeclaration_MissingIdentificationVariable_7() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e, table('EMP') as ";
 		int startPosition = "select e from Employee e, table('EMP') as ".length();
@@ -1626,7 +1648,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_UnionClause_MissingExpression_1() throws Exception {
+	public void test_UnionClause_MissingExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect all select p from Product p where p.id <> 2";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
@@ -1634,7 +1656,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_UnionClause_MissingExpression_2() throws Exception {
+	public void test_UnionClause_MissingExpression_2() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e intersect";
 		int startPosition = "select e from Employee e intersect".length();
@@ -1651,7 +1673,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_UnionClause_MissingExpression_3() throws Exception {
+	public void test_UnionClause_MissingExpression_3() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e intersect ";
 		int startPosition = "select e from Employee e intersect ".length();
@@ -1668,7 +1690,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_UnionClause_MissingExpression_4() throws Exception {
+	public void test_UnionClause_MissingExpression_4() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e intersect all";
 		int startPosition = "select e from Employee e intersect all".length();
@@ -1685,7 +1707,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 	}
 
 	@Test
-	public final void test_UnionClause_MissingExpression_5() throws Exception {
+	public void test_UnionClause_MissingExpression_5() throws Exception {
 
 		String jpqlQuery  = "select e from Employee e intersect all ";
 		int startPosition = "select e from Employee e intersect all ".length();

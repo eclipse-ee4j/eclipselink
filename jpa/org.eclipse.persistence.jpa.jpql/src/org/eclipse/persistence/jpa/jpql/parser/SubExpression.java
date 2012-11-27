@@ -89,6 +89,14 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean handleCollection(JPQLQueryBNF queryBNF) {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected String parseIdentifier(WordParser wordParser) {
 		return ExpressionTools.EMPTY_STRING;
 	}

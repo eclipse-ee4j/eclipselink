@@ -15,9 +15,8 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
-import org.eclipse.persistence.jpa.jpql.parser.PreLiteralExpressionBNF;
-
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -214,7 +213,7 @@ public class NullComparisonExpressionStateObject extends AbstractStateObject {
 	 * @param path Either a singled-valued path expression or an input parameter
 	 */
 	private void parse(String path) {
-		StateObject stateObject = buildStateObject(path, PreLiteralExpressionBNF.ID);
+		StateObject stateObject = buildStateObject(path, LiteralBNF.ID);
 		setStateObject(stateObject);
 	}
 

@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,7 +43,7 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	 */
 	@Override
 	public final String encapsulatedExpressionBNF() {
-		return PreLiteralExpressionBNF.ID;
+		return IdentificationVariableBNF.ID;
 	}
 
 	/**
@@ -60,12 +60,10 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
 		if (tolerant) {
-			return super.parse(wordParser, queryBNFId, tolerant);
+			return super.parse(wordParser, LiteralBNF.ID, tolerant);
 		}
 
-		String word = wordParser.word();
-
-		IdentificationVariable expression = new IdentificationVariable(this, word);
+		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

@@ -51,7 +51,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"ABSTRACT_FROM_CLAUSE_IDENTIFICATION_VARIABLE_DECLARATION_IS_MISSING_COMMA", "The FROM clause has ''{0}'' and ''{1}'' that are not separated by a comma."},
 			{"ABSTRACT_FROM_CLAUSE_MISSING_IDENTIFICATION_VARIABLE_DECLARATION",          "The FROM clause must defined at least one identification variable declaration."},
 			// AbstractFromClause - Semantic
-			{"ABSTRACT_FROM_CLAUSE_INVALID_FIRST_IDENTIFICATION_VARIABLE_DECLARATION",    "'{0}' cannot be the first declaration of the FROM clause."},
+			{"ABSTRACT_FROM_CLAUSE_INVALID_FIRST_IDENTIFICATION_VARIABLE_DECLARATION",    "''{0}'' cannot be the first declaration of the FROM clause."},
 			{"ABSTRACT_FROM_CLAUSE_WRONG_ORDER_OF_IDENTIFICATION_VARIABLE_DECLARATION",   "The identification variable ''{0}'' is declared after its usage. Identification variables are evaluated from left to right."},
 
 			// AbstractPathExpression - Grammar
@@ -303,13 +303,16 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"INDEX_EXPRESSION_WRONG_VARIABLE",            "The identification variable ''{0}'' does not represent an association or element collection."},
 
 			// InExpression - Grammar
-			{"IN_EXPRESSION_IN_ITEM_ENDS_WITH_COMMA",   "The items cannot end with a comma."},
-			{"IN_EXPRESSION_IN_ITEM_IS_MISSING_COMMA",  "The IN expression has ''{0}'' and ''{1}'' that are not separated by a comma."},
-			{"IN_EXPRESSION_MALFORMED_EXPRESSION",      "The IN expression does not have a valid expression."},
-			{"IN_EXPRESSION_MISSING_IN_ITEMS",          "A least one item must be defined for the IN expression."},
+			{"IN_EXPRESSION_ITEM_ENDS_WITH_COMMA",      "The list of items cannot end with a comma."},
+			{"IN_EXPRESSION_ITEM_INVALID_EXPRESSION",   "The expression at index {0} is not a valid expression."},
+			{"IN_EXPRESSION_ITEM_IS_MISSING_COMMA",     "The IN expression has ''{0}'' and ''{1}'' that are not separated by a comma."},
+			{"IN_EXPRESSION_INVALID_EXPRESSION",        "The IN expression does not have a valid left expression."},
+			{"IN_EXPRESSION_MISSING_EXPRESSION",        "The IN expression is missing the left expression."},
+			{"IN_EXPRESSION_MISSING_IN_ITEMS",          "A least one item must be specified for the IN expression."},
 			{"IN_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the IN expression."},
 			{"IN_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the IN expression."},
-			{"IN_EXPRESSION_MISSING_EXPRESSION",        "A state field path expression or TYPE expression must be defined."},
+			// InExpression - Semantic
+			{"IN_EXPRESSION_INVALID_ITEM_COUNT",        "The number of items in the nested array must match the number of subquery select items."},
 
 			// InputParameter - Grammar
 			{"INPUT_PARAMETER_JAVA_IDENTIFIER",           "The named input parameter ''{0}'' is not following the rules for a Java identifier."},

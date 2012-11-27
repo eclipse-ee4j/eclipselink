@@ -31,6 +31,8 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -55,6 +57,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                                          implements EclipseLinkExpressionVisitor {
 
 	private InExpressionVisitor inExpressionVisitor;
+	private InExpressionWithNestedArrayVisitor inExpressionWithNestedArrayVisitor;
 
 	/**
 	 * Creates a new <code>EclipseLinkGrammarValidator</code>.
@@ -185,6 +188,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		return new InExpressionVisitor();
 	}
 
+	protected InExpressionWithNestedArrayVisitor buildInExpressionWithNestedArrayVisitor() {
+		return new InExpressionWithNestedArrayVisitor();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -254,6 +261,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		return inExpressionVisitor;
 	}
 
+	protected InExpressionWithNestedArrayVisitor getInExpressionWithNestedArray() {
+		if (inExpressionWithNestedArrayVisitor == null) {
+			inExpressionWithNestedArrayVisitor = buildInExpressionWithNestedArrayVisitor();
+		}
+		return inExpressionWithNestedArrayVisitor;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -272,6 +286,25 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	}
 
 	/**
+	 * Determines whether the subquery is part of an <code><b>IN</b></code> expression where the
+	 * left expression is a nested array.
+	 *
+	 * @param expression The {@link SimpleSelectClause} of the subquery
+	 * @return <code>true</code> if the subquery is in an <code><b>IN</b></code> expression and its
+	 * left expression is a nested array
+	 */
+	protected boolean isInExpressionWithNestedArray(SimpleSelectClause expression) {
+		InExpressionWithNestedArrayVisitor visitor = getInExpressionWithNestedArray();
+		try {
+			expression.accept(visitor);
+			return visitor.valid;
+		}
+		finally {
+			visitor.valid = false;
+		}
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -286,6 +319,14 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	protected boolean isJoinFetchIdentifiable() {
 		EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
 		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isMultipleSubquerySelectItemsAllowed(SimpleSelectClause expression) {
+		return isInExpressionWithNestedArray(expression);
 	}
 
 	protected boolean isOwnedByInExpression(Expression expression) {
@@ -635,6 +676,39 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		@Override
 		public void visit(InExpression expression) {
 			this.expression = expression;
+		}
+	}
+
+	protected class InExpressionWithNestedArrayVisitor extends AbstractEclipseLinkExpressionVisitor {
+
+		/**
+		 * Determines whether the left expression of an <code><b>IN</b></code> expression is a nested
+		 * array when the <code><b>IN</b></code> item is a subquery.
+		 */
+		public boolean valid;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(InExpression expression) {
+			valid = isNestedArray(expression.getExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectClause expression) {
+			expression.getParent().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			expression.getParent().accept(this);
 		}
 	}
 }

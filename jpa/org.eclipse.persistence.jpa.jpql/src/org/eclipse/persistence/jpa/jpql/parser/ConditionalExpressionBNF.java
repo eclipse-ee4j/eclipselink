@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_expression ::= conditional_term | conditional_expression OR conditional_term</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,7 +45,7 @@ public final class ConditionalExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleAggregate(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerExpressionFactory(OrExpressionFactory.ID);
 		registerChild(ConditionalTermBNF.ID);
 	}

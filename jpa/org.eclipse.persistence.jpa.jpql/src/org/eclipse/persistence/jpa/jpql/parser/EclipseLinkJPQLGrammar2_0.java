@@ -17,26 +17,21 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>. EclipseLink 2.0
- * does not add any additional support.
- * <p>
+ * does not add any additional support.</p>
+ *
  * The BNFs of the additional support are the following:
  *
- * <pre><code> in_expression ::= { state_field_path_expression |
- *                                 type_discriminator |
- *                                 single_valued_input_parameter |
- *                                 identification_variable
- *                               }
- *                               [NOT] IN { ( in_item {, in_item}* ) |
- *                                          (subquery) |
- *                                          collection_valued_input_parameter
- *                                        }</code></pre>
+ * <pre><code> in_expression ::= in_expression_expression [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }
  *
- * Provisional API: This interface is part of an interim API that is still under development and
+ * in_expression_expression ::= { state_field_path_expression | type_discriminator |
+ *                                single_valued_input_parameter | identification_variable }</code></pre>
+ *
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
  * @version 2.5
  * @since 2.4

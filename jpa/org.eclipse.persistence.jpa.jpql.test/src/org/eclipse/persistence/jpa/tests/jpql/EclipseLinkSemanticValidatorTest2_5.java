@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.junit.Test;
 
 /**
@@ -31,7 +32,7 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidatorTest {
+public class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticValidatorTest {
 
 	/**
 	 * {@inheritDoc}
@@ -75,5 +76,148 @@ public final class EclipseLinkSemanticValidatorTest2_5 extends AbstractSemanticV
 		String jpqlQuery = "FROM Employee e WHERE e.name = 'JPQL'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_NestedArray_01() throws Exception {
+
+		String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, :id4))";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_NestedArray_02() throws Exception {
+
+		String jpqlQuery = "Select e from Employee e where (e.empId, e.empId) IN :arg";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_NestedArray_03() throws Exception {
+
+		String jpqlQuery  = "Select e from Employee e where (e.id, e.empId) IN ((:id1, :id2), (:id3, :id4))";
+		int startPosition = "Select e from Employee e where (".length();
+		int endPosition   = "Select e from Employee e where (e.id".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_04() throws Exception {
+
+		String jpqlQuery  = "Select e from Employee e where (e.empId, e.id) IN ((:id1, :id2), (:id3, :id4))";
+		int startPosition = "Select e from Employee e where (e.empId, ".length();
+		int endPosition   = "Select e from Employee e where (e.empId, e.id".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_05() throws Exception {
+
+		String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((e.id, :id2), (:id3, :id4))";
+		int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((".length();
+		int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((e.id".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_06() throws Exception {
+
+		String jpqlQuery  = "Select e from Employee e where (e.empId, e.empId) IN ((:id1, :id2), (:id3, id4))";
+		int startPosition = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, ".length();
+		int endPosition   = "Select e from Employee e where (e.empId, e.empId) IN((:id1, :id2), (:id3, id4".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.EntityTypeLiteral_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_07() throws Exception {
+
+		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc, d2.role from Dept d2)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_NestedArray_08() throws Exception {
+
+		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role) IN(Select d2.loc from Dept d2)";
+		int startPosition = "Select d from Dept d where ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_09() throws Exception {
+
+		String jpqlQuery  = "Select d from Dept d where d.loc IN(Select d2.loc, d2.role from Dept d2)";
+		int startPosition = "Select d from Dept d where ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_NestedArray_10() throws Exception {
+
+		String jpqlQuery  = "Select d from Dept d where (d.loc, d.role, 'JPQL') IN(Select d2.loc, d2.role from Dept d2)";
+		int startPosition = "Select d from Dept d where ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.InExpression_InvalidItemCount,
+			startPosition,
+			endPosition
+		);
 	}
 }

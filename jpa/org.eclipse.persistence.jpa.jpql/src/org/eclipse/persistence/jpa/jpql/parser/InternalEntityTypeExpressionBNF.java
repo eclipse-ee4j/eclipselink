@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the parameters defined in the type expression.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -41,7 +41,8 @@ public final class InternalEntityTypeExpressionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(IdentificationVariableBNF.ID);
 		registerChild(SingleValuedObjectPathExpressionBNF.ID);
 		registerChild(InputParameterBNF.ID);

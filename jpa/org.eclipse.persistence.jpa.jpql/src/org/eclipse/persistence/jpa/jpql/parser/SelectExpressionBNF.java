@@ -32,7 +32,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     constructor_expression</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -59,7 +59,7 @@ public final class SelectExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(AggregateExpressionBNF.ID);
 		registerChild(SingleValuedPathExpressionBNF.ID);
 		registerChild(IdentificationVariableBNF.ID);

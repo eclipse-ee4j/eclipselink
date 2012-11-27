@@ -47,7 +47,10 @@ public final class EclipseLinkSemanticValidatorTest extends AbstractSemanticVali
 	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
-		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper(), buildSemanticExtension());
+		return new EclipseLinkSemanticValidator(
+			buildSemanticValidatorHelper(),
+			buildSemanticExtension()
+		);
 	}
 
 	/**

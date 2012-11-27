@@ -32,7 +32,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     case_expression |
  *                                                     entity_type_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -58,7 +58,7 @@ public final class ScalarExpressionBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(SimpleArithmeticExpressionBNF.ID);
 		registerChild(StringPrimaryBNF.ID);
 		registerChild(EnumPrimaryBNF.ID);

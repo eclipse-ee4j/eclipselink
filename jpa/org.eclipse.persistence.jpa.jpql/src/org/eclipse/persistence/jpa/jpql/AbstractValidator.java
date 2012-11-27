@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
@@ -91,6 +92,13 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
 	 */
 	private LiteralVisitor literalVisitor;
+
+	/**
+	 *
+	 *
+	 * @since 2.5
+	 */
+	private NestedArrayVisitor nestedArrayVisitor;
 
 	/**
 	 * This visitor is responsible to traverse the parent hierarchy and to retrieve the owning clause
@@ -202,6 +210,17 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @return A new {@link LiteralVisitor}
 	 */
 	protected abstract LiteralVisitor buildLiteralVisitor();
+
+	/**
+	 * Creates the visitor that traverses an {@link Expression} and determines if it's a nested array
+	 * or not.
+	 *
+	 * @return A new {@link NestedArrayVisitor}
+	 * @since 2.5
+	 */
+	protected NestedArrayVisitor buildNestedArrayVisitor() {
+		return new NestedArrayVisitor();
+	}
 
 	/**
 	 * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
@@ -375,6 +394,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the visitor that can determine if an {@link Expression} represents a nested array.
+	 *
+	 * @return A {@link NestedArrayVisitor}
+	 * @since 2.5
+	 */
+	protected NestedArrayVisitor getNestedArrayVisitor() {
+		if (nestedArrayVisitor == null) {
+			nestedArrayVisitor = buildNestedArrayVisitor();
+		}
+		return nestedArrayVisitor;
+	}
+
+	/**
 	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
 	 * the first {@link Expression} that is a clause.
 	 *
@@ -402,6 +434,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the persistence provider name.
+	 *
+	 * @return The name of the persistence provider, <code>null</code> should never be returned
+	 * @since 2.5
+	 */
+	protected String getProvider() {
+		return getGrammar().getProvider();
+	}
+
+	/**
 	 * Returns the version of the persistence provider.
 	 *
 	 * @return The version of the persistence provider, if one is extending the default JPQL grammar
@@ -410,16 +452,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 */
 	protected String getProviderVersion() {
 		return getGrammar().getProviderVersion();
-	}
-
-	/**
-	 * Returns the persistence provider name.
-	 *
-	 * @return The name of the persistence provider, <code>null</code> should never be returned
-	 * @since 2.5
-	 */
-	protected String getProvider() {
-		return getGrammar().getProvider();
 	}
 
 	/**
@@ -437,6 +469,18 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 */
 	protected void initialize() {
 		validators = new HashMap<String, JPQLQueryBNFValidator>();
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} represents a nested array or not. To be a
+	 * nested array, the given {@link Expression} is a {@link SubExpression} and its child is a
+	 * {@link CollectionExpression}.
+	 *
+	 * @return <code>true</code> if the given {@link Expression} is a nested array; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	protected boolean isNestedArray(Expression expression) {
+		return nestedArraySize(expression) > -1;
 	}
 
 	/**
@@ -588,6 +632,26 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		}
 		finally {
 			visitor.literal = ExpressionTools.EMPTY_STRING;
+		}
+	}
+
+	/**
+	 * Returns the number of items in the nested array if the given {@link Expression} represents one.
+	 * To be a nested array, the given {@link Expression} is a {@link SubExpression} and its child is
+	 * a {@link CollectionExpression}.
+	 *
+	 * @return The number of items in the array or -1 if the {@link Expression} is not a nested array
+	 * @since 2.5
+	 */
+	protected int nestedArraySize(Expression expression) {
+		NestedArrayVisitor visitor = getNestedArrayVisitor();
+		try {
+			visitor.nestedArraySize = -1;
+			expression.accept(visitor);
+			return visitor.nestedArraySize;
+		}
+		finally {
+			visitor.nestedArraySize = -1;
 		}
 	}
 
@@ -823,6 +887,15 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		 * {@inheritDoc}
 		 */
 		@Override
+		public void visit(CollectionExpression expression) {
+			// A collection expression is never valid
+			valid = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		protected void visit(Expression expression) {
 			validate(((AbstractExpression) expression).getQueryBNF());
 		}
@@ -852,6 +925,39 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(UnknownExpression expression) {
 			// This is not a valid expression
+		}
+	}
+
+	protected static class NestedArrayVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The number of items contained in the nested array or -1 if the {@link Expression} does not
+		 * represent a nested array.
+		 */
+		public int nestedArraySize;
+
+		/**
+		 * Internal flag used to determine if a sub-expression is traversed, which is required when
+		 * representing a nested array.
+		 */
+		protected boolean subExpression;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			nestedArraySize = subExpression ? expression.childrenSize() : -1;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			subExpression = true;
+			expression.getExpression().accept(this);
+			subExpression = false;
 		}
 	}
 

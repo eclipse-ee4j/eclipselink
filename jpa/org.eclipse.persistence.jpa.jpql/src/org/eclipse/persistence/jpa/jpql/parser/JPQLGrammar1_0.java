@@ -15,14 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
- * href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>.
- * <p>
- * The following is the BNF for the JPQL query version 1.0.
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>.</p>
+ *
+ * The following is the JPQL grammar defined in JPA version 1.0.
  *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
@@ -248,13 +247,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * DATE_STRING ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
  *
- * TIME_STRING ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
- * </code></pre>
- * <p>
- * Provisional API: This interface is part of an interim API that is still under development and
+ * TIME_STRING ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*</code></pre>
+ *
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
  * @version 2.5
  * @since 2.4
@@ -405,7 +403,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new OrderByClauseBNF());
 		registerBNF(new OrderByItemBNF());
 		registerBNF(new PatternValueBNF());
-		registerBNF(new PreLiteralExpressionBNF());
 		registerBNF(new RangeDeclarationBNF());
 		registerBNF(new RangeVariableDeclarationBNF());
 		registerBNF(new ScalarExpressionBNF());
@@ -481,12 +478,10 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerFactory(new ModExpressionFactory());
 		registerFactory(new NotExpressionFactory());
 		registerFactory(new NullComparisonExpressionFactory());
-		registerFactory(new NumericLiteralFactory());
 		registerFactory(new ObjectExpressionFactory());
 		registerFactory(new OrderByClauseFactory());
 		registerFactory(new OrderByItemFactory());
 		registerFactory(new OrExpressionFactory());
-		registerFactory(new PreLiteralExpressionFactory());
 		registerFactory(new RangeDeclarationFactory());
 		registerFactory(new RangeVariableDeclarationFactory());
 		registerFactory(new SelectClauseFactory());

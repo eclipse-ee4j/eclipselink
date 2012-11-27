@@ -25,7 +25,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * @since 2.5
  * @author Pascal Filion
  */
-public class OrderSiblingsByClause extends AbstractOrderByClause {
+public final class OrderSiblingsByClause extends AbstractOrderByClause {
 
 	/**
 	 * Creates a new <code>OrderSiblingsByClause</code>.

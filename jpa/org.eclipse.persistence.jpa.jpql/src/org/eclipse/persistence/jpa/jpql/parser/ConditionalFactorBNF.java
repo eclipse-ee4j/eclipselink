@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_factor ::= [ NOT ] conditional_primary</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -44,7 +44,7 @@ public final class ConditionalFactorBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerExpressionFactory(NotExpressionFactory.ID);
 		registerChild(ConditionalPrimaryBNF.ID);
 	}

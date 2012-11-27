@@ -44,7 +44,7 @@ public final class NewValueBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerExpressionFactory(KeywordExpressionFactory.ID);
 		registerChild(ScalarExpressionBNF.ID);
 		registerChild(SimpleEntityExpressionBNF.ID);

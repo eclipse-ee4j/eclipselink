@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div nowrap><b>BNF:</b> <code>join_association_path_expression ::= join_collection_valued_path_expression |
  * join_single_valued_path_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

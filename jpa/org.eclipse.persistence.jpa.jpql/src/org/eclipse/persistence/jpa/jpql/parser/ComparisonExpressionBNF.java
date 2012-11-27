@@ -34,7 +34,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                         entity_type_expression { = | <> } entity_type_expression}</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -61,7 +61,7 @@ public final class ComparisonExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setCompound(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerExpressionFactory(ComparisonExpressionFactory.ID);
 		registerChild(AllOrAnyExpressionBNF.ID);
 		registerChild(ArithmeticExpressionBNF.ID);

@@ -31,6 +31,10 @@ import org.junit.runners.Suite.SuiteClasses;
 
 	EclipseLinkJPQLParserTests2_5.class,
 
+	// Extended support
+	EclipseLinkInExpressionTest.class,
+
+	// New support
 	AsOfClauseTest.class,
 	ConnectByClauseTest.class,
 	HierarchicalQueryClauseTest.class,

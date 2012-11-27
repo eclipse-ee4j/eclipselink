@@ -15,14 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a> and the additional
- * support provided by EclipseLink 2.1.
- * <p>
+ * support provided by EclipseLink 2.1.</p>
+ *
  * The BNFs of the additional support are the following:
  *
  * <pre><code> join ::= join_spec { join_association_path_expression | join_treat_association_path_expression } [AS] identification_variable
@@ -64,10 +63,10 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)</code></pre>
  *
- * Provisional API: This interface is part of an interim API that is still under development and
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.<p>
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
  * @version 2.5
  * @since 2.4

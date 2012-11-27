@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * @see ExpressionFactory
  * @see JPQLQueryBNF
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -320,6 +320,75 @@ public class ExpressionRegistry {
 		queryBNF.setFallbackExpressionFactoryId(fallbackExpressionFactoryId);
 	}
 
+	/**
+	 * Determines whether the <code>Expression</code> handles a collection of sub-expressions that
+	 * are separated by commas.
+	 *
+	 * @param queryBNF The unique identifier of the {@link JPQLQueryBNF}
+	 * @param handleCollection <code>true</code> if the sub-expression to parse might have several
+	 * sub-expressions separated by commas; <code>false</code> otherwise
+	 */
+	public void setHandleCollection(String queryBNFId, boolean handleCollection) {
+		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
+		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
+		queryBNF.setHandleCollection(handleCollection);
+	}
+
+	/**
+	 * Sets whether the BNF with the given ID supports nested array or not. A nested array is a sub-
+	 * expression with its child being a collection expression: (item_1, item_2, ..., item_n).
+	 *
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF}
+	 * @param handleNestedArray <code>true</code> if the expression represented by this BNF can be
+	 * a nested array; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public void setHandleNestedArray(String queryBNFId, boolean handleNestedArray) {
+		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
+		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
+		queryBNF.setHandleNestedArray(handleNestedArray);
+	}
+
+	/**
+	 * Sets whether the query BNF with the given ID handles parsing a sub-expression, i.e. parsing an
+	 * expression encapsulated by parenthesis. Which in fact would be handled by the fallback {@link
+	 * ExpressionFactory}. The default behavior is to not handle it.
+	 * <p>
+	 * A good example for using this option is when an {@link Expression} cannot use any {@link
+	 * ExpressionFactory} for creating a child object, parsing will use the fallback {@link
+	 * ExpressionFactory}, if one was specified. So when this is set to <code>true</code>, the
+	 * fallback {@link ExpressionFactory} will be immediately invoked.
+	 * <p>
+	 * Let's say we want to parse "SELECT e FROM (SELECT a FROM Address a) e", {@link FromClause}
+	 * cannot use a factory for parsing the entity name (that's what usually the <code>FROM</code>
+	 * clause has) so it uses the fallback factory to create {@link IdentificationVariableDeclaration}.
+	 * Then <code>IdentificationVariableDeclaration</code> also cannot use any factory to create its
+	 * child object so it uses the fallback factory to create {@link RangeVariableDeclaration}.
+	 * By changing the status of for handling the sub-expression for the BNFs for those objects, then
+	 * a subquery can be created by <code>RangeVariableDeclaration</code>.
+	 *
+	 * <pre><code>FromClause
+	 *  |- IdentificationVariableDeclaration
+	 *       |- RangeVariableDeclaration
+	 *            |- SubExpression(subquery)</code></pre>
+	 *
+	 * In order to get this working, the following would have to be done into the grammar:
+	 *
+	 * <pre><code> public class MyJPQLGrammar extends AbstractJPQLGrammar {
+	 *   &#64;Override
+	 *   protected void initializeBNFs() {
+	 *      setHandleSubExpression(InternalFromClauseBNF.ID,                true);
+	 *      setHandleSubExpression(InternalSimpleFromClauseBNF.ID,          true);
+	 *      setHandleSubExpression(IdentificationVariableDeclarationBNF.ID, true);
+	 *      setHandleSubExpression(RangeVariableDeclarationBNF.ID,          true);
+	 *   }
+	 * }</code></pre>
+	 *
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF}
+	 * @param handleSubExpression <code>true</code> to let the creation of a sub-expression be
+	 * created by the fallback {@link ExpressionFactory} registered with this BNF; <code>false</code>
+	 * otherwise (which is the default value)
+	 */
 	public void setHandleSubExpression(String queryBNFId, boolean handleSubExpression) {
 		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
 		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");

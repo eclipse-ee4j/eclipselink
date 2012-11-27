@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                                   VALUE(identification_variable)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -46,7 +46,8 @@ public final class GeneralIdentificationVariableBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerExpressionFactory(IdentificationVariableFactory.ID);
 		registerExpressionFactory(KeyExpressionFactory.ID);
 		registerExpressionFactory(ValueExpressionFactory.ID);

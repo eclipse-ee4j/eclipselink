@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see StateFieldPathExpression
  * @see IdentificationVariable
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

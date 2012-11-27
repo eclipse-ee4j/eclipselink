@@ -21,9 +21,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                             input_parameter |
  *                                             scalar_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
- * @author James
+ * @author James Sutherland
  */
 @SuppressWarnings("nls")
 public final class FunctionItemBNF extends JPQLQueryBNF {
@@ -48,7 +48,7 @@ public final class FunctionItemBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(LiteralBNF.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 		registerChild(InputParameterBNF.ID);

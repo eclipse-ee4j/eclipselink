@@ -52,7 +52,7 @@ public final class InExpressionItemBNF extends JPQLQueryBNF {
 		setHandleAggregate(true); // To support invalid queries
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(LiteralBNF.ID);
 		registerChild(InputParameterBNF.ID);
 		registerChild(SubqueryBNF.ID);

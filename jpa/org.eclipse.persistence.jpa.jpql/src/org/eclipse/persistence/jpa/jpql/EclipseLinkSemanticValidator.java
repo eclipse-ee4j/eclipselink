@@ -15,8 +15,11 @@ package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
+import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
@@ -25,9 +28,13 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.InExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -70,7 +77,12 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	private EclipseLinkSemanticValidatorExtension extension;
 
 	/**
-	 *
+	 * This visitor calculates the number of items the subquery <code><b>SELECT</b></code> clause has.
+	 */
+	private SubquerySelectItemCalculator subquerySelectItemCalculator;
+
+	/**
+	 * This visitor determines if the {@link Expression} being visited is a {@link TableExpression}.
 	 */
 	private TableExpressionVisitor tableExpressionVisitor;
 
@@ -132,6 +144,10 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		return new EclipseLinkGrammarValidator.EclipseLinkOwningClauseVisitor();
 	}
 
+	protected SubquerySelectItemCalculator buildSubquerySelectItemCalculator() {
+		return new SubquerySelectItemCalculator();
+	}
+
 	protected TableExpressionVisitor buildTableExpressionVisitor() {
 		return new TableExpressionVisitor();
 	}
@@ -167,6 +183,13 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		return extension;
 	}
 
+	protected SubquerySelectItemCalculator getSubquerySelectItemCalculator() {
+		if (subquerySelectItemCalculator == null) {
+			subquerySelectItemCalculator = buildSubquerySelectItemCalculator();
+		}
+		return subquerySelectItemCalculator;
+	}
+
 	protected TableExpressionVisitor getTableExpressionVisitor() {
 		if (tableExpressionVisitor == null) {
 			tableExpressionVisitor = buildTableExpressionVisitor();
@@ -193,6 +216,24 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	@Override
 	protected PathType selectClausePathExpressionPathType() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * Retrieves the number of select items the given subquery has.
+	 *
+	 * @param subquery The {@link Expression} to visit, which should represents a subquery
+	 * @return The number of select items or 0 if the subquery is malformed or incomplete
+	 */
+	protected int subquerySelectItemCount(Expression subquery) {
+		SubquerySelectItemCalculator visitor = getSubquerySelectItemCalculator();
+		try {
+			visitor.count = 0;
+			subquery.accept(visitor);
+			return visitor.count;
+		}
+		finally {
+			visitor.count = 0;
+		}
 	}
 
 	/**
@@ -248,6 +289,29 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 						}
 					}
 				}
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateInExpression(InExpression expression) {
+		super.validateInExpression(expression);
+
+		// Make sure the number of items matches if the left expression
+		// is a nested array and the IN items expression is a subquery
+		Expression inItems = expression.getInItems();
+
+		if (isSubquery(inItems)) {
+			int nestedArraySize = nestedArraySize(expression.getExpression());
+			int subquerySelectItemsSize = subquerySelectItemCount(inItems);
+
+			if ((nestedArraySize  > -1) && (subquerySelectItemsSize != nestedArraySize) ||
+			    (nestedArraySize == -1) && (subquerySelectItemsSize  > 1)) {
+
+				addProblem(expression, InExpression_InvalidItemCount);
 			}
 		}
 	}
@@ -455,7 +519,60 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		// Nothing to validate semantically
 	}
 
-	protected class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
+	protected static class SubquerySelectItemCalculator extends AnonymousExpressionVisitor {
+
+		public int count;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(BadExpression expression) {
+			count = 0;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			count = expression.childrenSize();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			count = 1;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			count = 0;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectClause expression) {
+			expression.getSelectExpression().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			expression.getSelectClause().accept(this);
+		}
+	}
+
+	protected static class TableExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		/**
 		 * The {@link Expression} being visited.

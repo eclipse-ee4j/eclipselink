@@ -68,6 +68,7 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
@@ -1244,12 +1245,16 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	@Override
 	public void visit(InExpression expression) {
 
-		// Create the expression for the left expression
-		expression.getExpression().accept(this);
-		Expression leftExpression = queryExpression;
+		// Visit the left expression
+		InExpressionExpressionBuilder visitor1 = new InExpressionExpressionBuilder();
+		expression.getExpression().accept(visitor1);
 
-		// Visit the IN expression
-		visitInExpression(expression, leftExpression);
+		// Visit the IN items
+		InExpressionBuilder visitor2 = new InExpressionBuilder();
+		visitor2.hasNot               = expression.hasNot();
+		visitor2.singleInputParameter = expression.isSingleInputParameter();
+		visitor2.leftExpression       = queryExpression;
+		expression.getInItems().accept(visitor2);
 
 		// Set the expression type
 		type[0] = Boolean.class;
@@ -2112,17 +2117,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		expression.getConditionalExpression().accept(this);
 	}
 
-	private void visitInExpression(InExpression expression, Expression leftExpression) {
-
-		InExpressionBuilder visitor = new InExpressionBuilder();
-
-		visitor.hasNot               = expression.hasNot();
-		visitor.singleInputParameter = expression.isSingleInputParameter();
-		visitor.leftExpression       = leftExpression;
-
-		expression.getInItems().accept(visitor);
-	}
-
 	private void visitPathExpression(AbstractPathExpression expression,
 	                                 boolean nullAllowed,
 	                                 int lastIndex) {
@@ -2196,7 +2190,47 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
-	 * This visitor takes care of creating the <b>IN</b> expression.
+	 * This visitor takes care of creating the left expression of an <code><b>IN</b></code> expression
+	 * and make sure to support nested arrays.
+	 */
+	private class InExpressionExpressionBuilder extends EclipseLinkAnonymousExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+
+			// Assume this is a nested array
+			List<Expression> children = new LinkedList<Expression>();
+
+			for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
+				child.accept(this);
+				children.add(queryExpression);
+			}
+
+			queryExpression = new ConstantExpression(children, queryContext.getBaseExpression());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+			expression.accept(ExpressionBuilderVisitor.this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			expression.getExpression().accept(this);
+		}
+	}
+
+	/**
+	 * This visitor takes care of creating the <code><b>IN</b></code> expression by visiting the items.
 	 */
 	private class InExpressionBuilder extends AnonymousExpressionVisitor {
 
@@ -2312,6 +2346,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				ClassDescriptor descriptor = queryContext.getDescriptor(expression.getVariableName());
 				queryExpression = queryContext.getBaseExpression();
 				queryExpression = new ConstantExpression(descriptor.getJavaClass(), queryExpression);
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void visit(CollectionExpression expression) {
+
+				// Assume this is a nested array
+				List<Expression> children = new LinkedList<Expression>();
+
+				for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
+					child.accept(this);
+					children.add(queryExpression);
+				}
+
+				queryExpression = new ConstantExpression(children, queryContext.getBaseExpression());
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void visit(SubExpression expression) {
+				expression.getExpression().accept(this);
 			}
 
 			/**

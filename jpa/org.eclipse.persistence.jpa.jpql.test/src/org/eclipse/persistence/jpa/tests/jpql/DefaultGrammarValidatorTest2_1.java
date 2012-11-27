@@ -24,12 +24,12 @@ import org.junit.Test;
 /**
  * The unit-test class used for testing a JPQL query grammatically when the JPA version is 2.1.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest {
+public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest {
 
 	/**
 	 * {@inheritDoc}
@@ -53,7 +53,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingFunctionName_1() throws Exception {
+	public void test_FunctionExpression_MissingFunctionName_1() throws Exception {
 
 		String query = "SELECT FUNCTION() FROM Employee e";
 		int startPosition = "SELECT FUNCTION(".length();
@@ -70,7 +70,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingFunctionName_2() throws Exception {
+	public void test_FunctionExpression_MissingFunctionName_2() throws Exception {
 
 		String query = "SELECT FUNCTION('sql') FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -82,7 +82,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
+	public void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT FUNCTION('getName', 'String' FROM Employee e";
 		int startPosition = "SELECT FUNCTION('getName', 'String'".length();
@@ -99,7 +99,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingRightParenthesis_2() throws Exception {
+	public void test_FunctionExpression_MissingRightParenthesis_2() throws Exception {
 
 		String query = "SELECT FUNCTION('getName', 'String') FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -111,7 +111,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_OnClause_InvalidConditionalExpression_1() throws Exception {
+	public void test_OnClause_InvalidConditionalExpression_1() throws Exception {
 
 		String query = "select e from Employee e join e.address a on a.id > 2";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -123,7 +123,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_OnClause_InvalidConditionalExpression_2() throws Exception {
+	public void test_OnClause_InvalidConditionalExpression_2() throws Exception {
 
 		String query = "select e from Employee e join e.address a on a.id";
 		int startPosition = "select e from Employee e join e.address a on ".length();
@@ -140,7 +140,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_1() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_1() throws Exception {
 
 		String query = "select e from Employee e join e.address a on";
 		int startPosition = "select e from Employee e join e.address a on".length();
@@ -157,7 +157,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_2() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_2() throws Exception {
 
 		String query = "select e from Employee e join e.address a on where e.id > 2";
 		int startPosition = "select e from Employee e join e.address a on ".length();
@@ -174,7 +174,7 @@ public final class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidat
 	}
 
 	@Test
-	public final void test_OnClause_MissingConditionalExpression_3() throws Exception {
+	public void test_OnClause_MissingConditionalExpression_3() throws Exception {
 
 		String query = "select e from Employee e join e.address a on e.id > 2";
 		List<JPQLQueryProblem> problems = validate(query);

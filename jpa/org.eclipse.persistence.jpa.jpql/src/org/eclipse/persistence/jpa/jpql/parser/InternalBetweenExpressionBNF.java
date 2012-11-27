@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the lower and upper expressions defined in the between expression.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,7 +42,7 @@ public final class InternalBetweenExpressionBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(ArithmeticExpressionBNF.ID);
 		registerChild(StringExpressionBNF.ID);
 		registerChild(DatetimeExpressionBNF.ID);

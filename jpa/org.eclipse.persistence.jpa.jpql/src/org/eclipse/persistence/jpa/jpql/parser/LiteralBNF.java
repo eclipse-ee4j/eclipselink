@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for literals, which is based on the listing defined in section 4.6.1 of the Java
  * Specification document for JPA 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,11 +42,12 @@ public final class LiteralBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		registerChild(StringLiteralBNF.ID);
-		registerChild(NumericLiteralBNF.ID);
-		registerChild(EnumLiteralBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(BooleanLiteralBNF.ID);
 		registerChild(DateTimeTimestampLiteralBNF.ID);
+		registerChild(EnumLiteralBNF.ID);
+		registerChild(NumericLiteralBNF.ID);
+		registerChild(StringLiteralBNF.ID);
 	}
 }

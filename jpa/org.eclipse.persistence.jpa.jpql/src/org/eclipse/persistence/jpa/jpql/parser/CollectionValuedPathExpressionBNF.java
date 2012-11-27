@@ -22,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * JPA 2.0:
  * <div nowrap><b>BNF:</b> <code>collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

@@ -15,14 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
- * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.
- * <p>
- * The following is the BNF for the JPQL query version 2.0.
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.</p>
+ *
+ * The following is the JPQL grammar defined in JPA version 2.0.
  *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
@@ -149,7 +148,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * conditional_term ::= conditional_factor | conditional_term AND conditional_factor
  *
- * conditional_factor ::= [ NOT ] conditional_primary
+ * conditional_factor ::= [NOT] conditional_primary
  *
  * conditional_primary ::= simple_cond_expression | (conditional_expression)
  *
@@ -325,13 +324,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * date_string ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
  *
- * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
- * </pre></code>
- * <p>
- * Provisional API: This interface is part of an interim API that is still under development and
+ * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*</pre></code>
+ *
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
  * @version 2.5
  * @since 2.4
@@ -457,9 +455,6 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 
 		// Override (internal) select_expression to add support for result variable
 		registerBNF(new ResultVariableBNF());
-
-		// Add support for entity type literal
-		setFallbackExpressionFactoryId(InExpressionItemBNF.ID, EntityTypeLiteralFactory.ID);
 	}
 
 	/**
@@ -479,9 +474,14 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		registerFactory(new TypeExpressionFactory());
 		registerFactory(new ValueExpressionFactory());
 		registerFactory(new WhenClauseFactory());
+		registerFactory(new EntityTypeLiteralFactory());
 
+		// Extend INDEX expression
 		addChildFactory(FunctionsReturningNumericsBNF.ID, IndexExpressionFactory.ID);
-		addChildFactory(InExpressionItemBNF.ID,           EntityTypeLiteralFactory.ID);
+
+		// Add support for entity type literal
+		addChildBNF(InExpressionItemBNF.ID, EntityTypeLiteralBNF.ID);
+		setFallbackExpressionFactoryId(InExpressionItemBNF.ID, EntityTypeLiteralFactory.ID);
 	}
 
 	/**
@@ -490,7 +490,7 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // ???
+		registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // CASE {o} {WHEN x THEN y}* ELSE z END
 		registerIdentifierRole(COALESCE,    IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
 		registerIdentifierRole(ELSE,        IdentifierRole.COMPOUND_FUNCTION);
 		registerIdentifierRole(END,         IdentifierRole.COMPLETEMENT);

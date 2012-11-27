@@ -50,10 +50,6 @@ public final class StateFieldPathExpressionFactory extends AbstractLiteralExpres
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-//		if (tolerant && getExpressionRegistry().isIdentifier(word)) {
-//			return null;
-//		}
-
 		expression = new StateFieldPathExpression(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;

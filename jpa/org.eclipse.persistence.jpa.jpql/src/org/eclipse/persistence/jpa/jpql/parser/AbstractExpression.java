@@ -304,7 +304,7 @@ public abstract class AbstractExpression implements Expression {
 		// actually stop here. Example: BETWEEN 10 20, when parsing 20, it should not be parsed as
 		// part of the lower bound expression
 		if (tolerant &&
-		    (factory.getId() == PreLiteralExpressionFactory.ID) &&
+		    (factory.getId() == LiteralExpressionFactory.ID) &&
 		    shouldSkipLiteral(expression)) {
 
 			return null;
@@ -553,6 +553,19 @@ public abstract class AbstractExpression implements Expression {
 	}
 
 	/**
+	 * Determines whether the given {@link JPQLQueryBNF} handles a collection of sub-expressions that
+	 * are separated by commas.
+	 *
+	 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the parsing should handle
+	 * collection of sub-expressions
+	 * @return <code>true</code> if the sub-expression to parse might have several sub-expressions
+	 * separated by commas; <code>false</code> otherwise
+	 */
+	protected boolean handleCollection(JPQLQueryBNF queryBNF) {
+		return queryBNF.handleCollection();
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean isAncestor(Expression expression) {
@@ -693,8 +706,8 @@ public abstract class AbstractExpression implements Expression {
 		char character = wordParser.character();
 		int count = 0;
 
-		// Parse the string until the position of the cursor is at the end of the
-		// string or until ParserHelper says the parsing is complete
+		// Parse the string until the position of the cursor is at
+		// the end of the string or until the parsing is complete
 		while (!wordParser.isTail()) {
 
 			child = null;
@@ -704,7 +717,7 @@ public abstract class AbstractExpression implements Expression {
 
 				// If the JPQLQueryBNF handles parsing the sub-expression, then delegate the parsing
 				// to its fallback ExpressionFactory
-				if (queryBNF.handlesSubExpression()) {
+				if (queryBNF.handleSubExpression()) {
 					expression = buildExpressionFromFallingBack(
 						wordParser,
 						ExpressionTools.EMPTY_STRING,
@@ -719,7 +732,7 @@ public abstract class AbstractExpression implements Expression {
 
 					// Make sure this is not the root and if the parent handles parsing the sub-
 					// expression, then the Expression needs to be returned without further parsing
-					if ((getParent() != null) && getParent().getQueryBNF().handlesSubExpression()) {
+					if ((getParent() != null) && getParent().getQueryBNF().handleSubExpression()) {
 						return expression;
 					}
 				}
@@ -845,7 +858,7 @@ public abstract class AbstractExpression implements Expression {
 
 				// The current expression does not handle collection, then stop the
 				// parsing here so the parent can continue to parse
-				if (!queryBNF.handleCollection()) {
+				if (!handleCollection(queryBNF)) {
 					break;
 				}
 				else if (isParsingComplete(wordParser, word, expression)) {

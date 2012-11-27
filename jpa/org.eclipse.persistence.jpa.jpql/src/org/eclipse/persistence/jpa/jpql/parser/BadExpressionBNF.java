@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF used for an expression that is invalid.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,6 +43,6 @@ public final class BadExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 	}
 }

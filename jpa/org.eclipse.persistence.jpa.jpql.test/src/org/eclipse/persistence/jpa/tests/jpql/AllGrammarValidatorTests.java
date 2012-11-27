@@ -64,7 +64,7 @@ public final class AllGrammarValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return JPQLGrammarTools.allJPQLGrammars(JPAVersion.VERSION_2_0);
+			return JPQLGrammarTools.allDefaultJPQLGrammars(JPAVersion.VERSION_2_0);
 		}
 	}
 
@@ -84,7 +84,7 @@ public final class AllGrammarValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return JPQLGrammarTools.allJPQLGrammars(JPAVersion.VERSION_2_1);
+			return JPQLGrammarTools.allDefaultJPQLGrammars(JPAVersion.VERSION_2_1);
 		}
 	}
 

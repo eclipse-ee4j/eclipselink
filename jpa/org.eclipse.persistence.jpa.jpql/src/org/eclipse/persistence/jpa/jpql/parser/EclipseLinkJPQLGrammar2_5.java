@@ -18,14 +18,24 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a> and the additional
- * support provided by EclipseLink 2.5.
- * <p>
+ * support provided by EclipseLink 2.5.</p>
+ *
  * The BNFs of the additional support are the following:
  * <pre><code> from_clause = FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*
  *                    [hierarchical_query_clause]
  *                    [asof_clause]
+ *
+ * in_expression ::= { in_expression_expression | nested_array_expression } [NOT] IN { ( in_item {, in_item}* ) | (subquery) | ( nested_array_item {, nested_array_item}+ ) | collection_valued_input_parameter }
+ *
+ * in_expression_expression ::= { state_field_path_expression | type_discriminator |
+ *                                single_valued_input_parameter | identification_variable |
+ *                                scalar_expression }
+ *
+ * nested_array_expression ::= ( in_expression_expression {, in_expression_expression}+ )
+ *
+ * nested_array_item ::= ( in_item {, in_item}+ )
  *
  * hierarchical_query_clause ::= [start_with_clause] connectby_clause [order_siblings_by_clause]
  *
@@ -37,10 +47,10 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * asof_clause ::= AS OF { SCN | TIMESTAMP } expression</code></pre>
  *
- * Provisional API: This interface is part of an interim API that is still under development and
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.<p>
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
  * @version 2.5
  * @since 2.5
@@ -136,6 +146,13 @@ public final class EclipseLinkJPQLGrammar2_5 extends AbstractJPQLGrammar {
 		registerBNF(new HierarchicalQueryClauseBNF());
 		registerBNF(new OrderSiblingsByClauseBNF());
 		registerBNF(new StartWithClauseBNF());
+
+		// Add nested array support to the IN expression
+		setHandleNestedArray(InExpressionExpressionBNF.ID, true);
+		setHandleNestedArray(InExpressionItemBNF.ID,       true);
+
+		// Extend x in 'x IN y'
+		addChildBNF(InExpressionExpressionBNF.ID, ScalarExpressionBNF.ID);
 	}
 
 	/**

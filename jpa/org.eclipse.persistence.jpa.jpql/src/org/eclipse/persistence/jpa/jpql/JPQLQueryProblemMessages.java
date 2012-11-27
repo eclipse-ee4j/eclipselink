@@ -196,9 +196,11 @@ public interface JPQLQueryProblemMessages {
 	String IndexExpression_MissingLeftParenthesis = "INDEX_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String IndexExpression_MissingRightParenthesis = "INDEX_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String IndexExpression_WrongVariable = "INDEX_EXPRESSION_WRONG_VARIABLE";
-	String InExpression_InItemEndsWithComma = "IN_EXPRESSION_IN_ITEM_ENDS_WITH_COMMA";
-	String InExpression_InItemIsMissingComma = "IN_EXPRESSION_IN_ITEM_IS_MISSING_COMMA";
-	String InExpression_InvalidExpression = "IN_EXPRESSION_MALFORMED_EXPRESSION";
+	String InExpression_InvalidExpression = "IN_EXPRESSION_INVALID_EXPRESSION";
+	String InExpression_InvalidItemCount = "IN_EXPRESSION_INVALID_ITEM_COUNT";
+	String InExpression_ItemEndsWithComma = "IN_EXPRESSION_ITEM_ENDS_WITH_COMMA";
+	String InExpression_ItemInvalidExpression = "IN_EXPRESSION_ITEM_INVALID_EXPRESSION";
+	String InExpression_ItemIsMissingComma = "IN_EXPRESSION_ITEM_IS_MISSING_COMMA";
 	String InExpression_MissingExpression = "IN_EXPRESSION_MISSING_EXPRESSION";
 	String InExpression_MissingInItems = "IN_EXPRESSION_MISSING_IN_ITEMS";
 	String InExpression_MissingLeftParenthesis = "IN_EXPRESSION_MISSING_LEFT_PARENTHESIS";

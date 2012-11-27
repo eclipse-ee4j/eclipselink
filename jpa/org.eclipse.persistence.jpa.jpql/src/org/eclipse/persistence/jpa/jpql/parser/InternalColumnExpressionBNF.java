@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>column_expression ::= COLUMN('function' {, [single_valued_object_path_expression | identification_variable]}+)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -44,7 +44,8 @@ public final class InternalColumnExpressionBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setHandleCollection(true); // For invalid queries
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(SingleValuedObjectPathExpressionBNF.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 		registerChild(IdentificationVariableBNF.ID);

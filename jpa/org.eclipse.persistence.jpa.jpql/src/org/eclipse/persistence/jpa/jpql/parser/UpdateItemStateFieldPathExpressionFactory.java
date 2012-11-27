@@ -74,19 +74,13 @@ public final class UpdateItemStateFieldPathExpressionFactory extends ExpressionF
 				return expression;
 			}
 
-			factory = registry.getExpressionFactory(PreLiteralExpressionFactory.ID);
-
-			// Pass on the fallback ExpressionFactory, this will allow PreLiteralExpressionFactory to
-			// give to LiteralExpressionFactory the ExpressionFactory that will be used to create the
-			// right object but will still create the right object when the query is invalid
-			factory.setFallBackExpressionFactory(StateFieldPathExpressionFactory.ID);
-
+			factory = registry.getExpressionFactory(StateFieldPathExpressionFactory.ID);
 			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 		}
-		else {
-			expression = new StateFieldPathExpression(parent, word);
-			expression.parse(wordParser, tolerant);
-			return expression;
-		}
+
+		// Create the state path expression
+		expression = new StateFieldPathExpression(parent, word);
+		expression.parse(wordParser, tolerant);
+		return expression;
 	}
 }

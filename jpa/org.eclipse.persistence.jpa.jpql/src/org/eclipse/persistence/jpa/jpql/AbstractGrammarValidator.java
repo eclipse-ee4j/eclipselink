@@ -130,7 +130,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -145,7 +144,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -307,6 +306,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			public String encapsulatedExpressionMissingKey(CoalesceExpression expression) {
 				return CoalesceExpression_MissingExpression;
 			}
+			@Override
+			protected boolean isEncapsulatedExpressionValid(CoalesceExpression expression) {
+				return isValidWithChildCollectionBypass(expression.getExpression(), expression.encapsulatedExpressionBNF());
+			}
 			public String leftParenthesisMissingKey(CoalesceExpression expression) {
 				return CoalesceExpression_MissingLeftParenthesis;
 			}
@@ -371,6 +374,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				return CountFunction_MissingRightParenthesis;
 			}
 		};
+	}
+
+	protected DateTimeVisitor buildDateTimeVisitor() {
+		return new DateTimeVisitor();
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<EntryExpression> buildEntryExpressionHelper() {
@@ -1089,6 +1096,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		return collectionExpressionVisitor;
 	}
 
+	protected DateTimeVisitor getDateTimeVisitor() {
+		DateTimeVisitor visitor = getHelper(DateTime.CURRENT_TIMESTAMP);
+		if (visitor == null) {
+			visitor = buildDateTimeVisitor();
+			registerHelper(DateTime.CURRENT_TIMESTAMP, visitor);
+		}
+		return visitor;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1153,6 +1169,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		return getCollectionExpression(expression) != null;
 	}
 
+	/**
+	 * Determines whether the given {@link Expression} represents one of the three date constants or not.
+	 *
+	 * @param leftExpression The {@link Expression} to visit
+	 * @return <code>true</code> if the given {@link Expression} represents one of the tree date
+	 * constants; <code>false</code> otherwise
+	 */
+	protected boolean isDateTimeConstant(Expression leftExpression) {
+		DateTimeVisitor visitor = getDateTimeVisitor();
+		try {
+			leftExpression.accept(visitor);
+			return visitor.dateTime;
+		}
+		finally {
+			visitor.dateTime = false;
+		}
+	}
+
 	protected boolean isInputParameterInValidLocation(InputParameter expression) {
 		OwningClauseVisitor visitor = getOwningClauseVisitor();
 		try {
@@ -1202,6 +1236,18 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	protected boolean isJPA2_1() {
 		return getJPAVersion() == JPAVersion.VERSION_2_1;
+	}
+
+	/**
+	 * Determines whether the given subquery <code><b>SELECT</b></code> clause can return more than
+	 * one item or just a single. By default, only one item can be returned.
+	 *
+	 * @param expression The subquery <code><b>SELECT</b></code> clause
+	 * @return <code>true</code> if it can return more than one item; <code>false</code> if it needs
+	 * to return only one item
+	 */
+	protected boolean isMultipleSubquerySelectItemsAllowed(SimpleSelectClause expression) {
+		return false;
 	}
 
 	/**
@@ -3322,12 +3368,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, InExpression_MissingExpression);
 		}
 		else {
-			Expression pathExpression = expression.getExpression();
+			Expression leftExpression = expression.getExpression();
+			JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionExpressionBNF());
 
-			if (!isValid(pathExpression, expression.getExpressionExpressionBNF())) {
+			// First check for nested array support
+			if (isNestedArray(leftExpression)) {
+				if (!queryBNF.handlesNestedArray()) {
+					int startPosition = position(expression);
+					int endPosition   = startPosition + length(leftExpression);
+					addProblem(expression, startPosition, endPosition, InExpression_InvalidExpression);
+				}
+				else {
+					leftExpression.accept(this);
+				}
+			}
+			// Validate the expression
+			else if (!isValid(leftExpression, queryBNF) || isDateTimeConstant(leftExpression)) {
 				int startPosition = position(expression);
-				int endPosition   = startPosition + length(pathExpression);
+				int endPosition   = startPosition + length(leftExpression);
 				addProblem(expression, startPosition, endPosition, InExpression_InvalidExpression);
+			}
+			else {
+				leftExpression.accept(this);
 			}
 		}
 
@@ -3362,11 +3424,54 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 		// Make sure the IN items are separated by commas
 		else if (!singleInputParameter) {
-			validateCollectionSeparatedByComma(
-				expression.getInItems(),
-				InExpression_InItemEndsWithComma,
-				InExpression_InItemIsMissingComma
-			);
+
+			Expression inItems = expression.getInItems();
+			CollectionExpression collectionExpression = getCollectionExpression(inItems);
+
+			// Validate the collection of items
+			if (collectionExpression != null) {
+
+				validateCollectionSeparatedByComma(
+					inItems,
+					InExpression_ItemEndsWithComma,
+					InExpression_ItemIsMissingComma
+				);
+
+				// Validate each item
+				JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionItemBNF());
+				int index = 0;
+
+				for (Expression child : collectionExpression.children()) {
+
+					index++;
+
+					// First check for nested array support
+					if (isNestedArray(child)) {
+						if (!queryBNF.handlesNestedArray()) {
+							addProblem(child, InExpression_ItemInvalidExpression, String.valueOf(index));
+						}
+						else {
+							child.accept(this);
+						}
+					}
+					// Invalid item
+					else if (!isValid(child, queryBNF)) {
+						addProblem(child, InExpression_ItemInvalidExpression, String.valueOf(index));
+					}
+					// Validate the item
+					else {
+						child.accept(this);
+					}
+				}
+			}
+			// The single item is invalid
+			else if (!isValid(inItems, expression.getExpressionItemBNF())) {
+				addProblem(inItems, InExpression_ItemInvalidExpression);
+			}
+			// Validate the single item
+			else {
+				inItems.accept(this);
+			}
 		}
 
 		// Missing ')'
@@ -3385,8 +3490,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 			addProblem(expression, startPosition, InExpression_MissingRightParenthesis);
 		}
-
-		super.visit(expression);
 	}
 
 	/**
@@ -4014,7 +4117,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SimpleSelectClause expression) {
-		validateAbstractSelectClause(expression, false);
+		validateAbstractSelectClause(expression, isMultipleSubquerySelectItemsAllowed(expression));
 	}
 
 	/**
@@ -4674,8 +4777,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		/**
-		 * Returns the message key for the problem describing that the encapsulated expression is
-		 * missing.
+		 * Returns the message key for the problem describing that the encapsulated expression is missing.
 		 *
 		 * @param expression The {@link AbstractSingleEncapsulatedExpression} being validated
 		 * @return The key used to retrieve the localized message
@@ -4932,6 +5034,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		@Override
 		public void visit(ComparisonExpression expression) {
 			this.expression = expression;
+		}
+	}
+
+	protected class DateTimeVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * Determines whether the visited {@link Expression} is {@link DateTime} or not.
+		 */
+		public boolean dateTime;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(DateTime expression) {
+			dateTime = true;
 		}
 	}
 

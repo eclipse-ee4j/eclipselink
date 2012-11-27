@@ -43,7 +43,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                  (subquery)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -69,7 +69,7 @@ public final class StringPrimaryBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 		registerChild(StringLiteralBNF.ID);
 		registerChild(InputParameterBNF.ID);

@@ -25,9 +25,9 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -214,57 +214,6 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
  			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			CoalesceExpression_InvalidJPAVersion,
- 			startPosition,
- 			endPosition
- 		);
-	}
-
-	@Test
-	public void test_EntityTypeLiteral_1() {
-
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (Exempt, 'JPQL')";
- 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
- 		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(Exempt".length();
-
- 		testHasOnlyOneProblem(
- 			jpqlQuery,
- 			DefaultEclipseLinkJPQLGrammar.instance(),
- 			JPQLGrammar1_0.instance(),
- 			EntityTypeLiteral_InvalidJPAVersion,
- 			startPosition,
- 			endPosition
- 		);
-	}
-
-	@Test
-	public void test_EntityTypeLiteral_2() {
-
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (Exempt, 'JPQL')";
- 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
- 		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(Exempt".length();
-
- 		testHasOnlyOneProblem(
- 			jpqlQuery,
- 			JPQLGrammar2_1.instance(),
- 			JPQLGrammar1_0.instance(),
- 			EntityTypeLiteral_InvalidJPAVersion,
- 			startPosition,
- 			endPosition
- 		);
-	}
-
-	@Test
-	public void test_EntityTypeLiteral_3() {
-
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (Exempt, 'JPQL')";
- 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
- 		int endPosition   = "SELECT e FROM Employee e WHERE e.name IN(Exempt".length();
-
- 		testHasOnlyOneProblem(
- 			jpqlQuery,
- 			JPQLGrammar2_0.instance(),
- 			JPQLGrammar1_0.instance(),
- 			EntityTypeLiteral_InvalidJPAVersion,
  			startPosition,
  			endPosition
  		);
@@ -1083,7 +1032,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 	                                          JPQLGrammar parserGrammar,
 	                                          JPQLGrammar validationGrammar) {
 
-		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, parserGrammar);
+		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(jpqlQuery, parserGrammar, false);
  		List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 
  		EclipseLinkGrammarValidator grammarValidator = new EclipseLinkGrammarValidator(validationGrammar);

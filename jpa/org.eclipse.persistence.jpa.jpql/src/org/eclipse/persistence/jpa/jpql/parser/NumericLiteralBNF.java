@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a numeric literal.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,6 +42,6 @@ public final class NumericLiteralBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(NumericLiteralFactory.ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 	}
 }

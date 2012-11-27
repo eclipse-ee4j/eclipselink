@@ -184,6 +184,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new AllOrAnyExpressionTester(ANY, subquery);
 	}
 
+	public static SubExpressionTester array(ExpressionTester... items) {
+		return sub(collection(items));
+	}
+
 	public static AsOfClauseTester asOf(ExpressionTester expression) {
 		return new AsOfClauseTester(null, expression);
 	}
@@ -1017,7 +1021,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
-	                                                                                             String identificationVariable) {
+	                                                                                          String identificationVariable) {
 
 		return new IdentificationVariableDeclarationTester(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -1026,8 +1030,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
-	                                                                                             String identificationVariable,
-	                                                                                             ExpressionTester join) {
+	                                                                                          String identificationVariable,
+	                                                                                          ExpressionTester join) {
 
 		return new IdentificationVariableDeclarationTester(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -1036,8 +1040,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	public static IdentificationVariableDeclarationTester identificationVariableDeclarationAs(String abstractSchemaName,
-	                                                                                             String identificationVariable,
-	                                                                                             ExpressionTester... joins) {
+	                                                                                          String identificationVariable,
+	                                                                                          ExpressionTester... joins) {
 
 		return new IdentificationVariableDeclarationTester(
 			rangeVariableDeclarationAs(abstractSchemaName, identificationVariable),
@@ -1046,19 +1050,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
-	                                       ExpressionTester... inItems) {
+	                                    ExpressionTester... inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, false, collection(inItems));
 	}
 
 	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
-	                                       ExpressionTester inItems) {
+	                                    ExpressionTester inItems) {
 
 		return new InExpressionTester(stateFieldPathExpression, false, inItems);
 	}
 
 	public static InExpressionTester in(ExpressionTester stateFieldPathExpression,
-	                                       String inputParameter) {
+	                                    String inputParameter) {
 
 		InExpressionTester in = in(stateFieldPathExpression, inputParameter(inputParameter));
 		in.hasLeftParenthesis  = false;
@@ -1068,13 +1072,13 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	public static InExpressionTester in(String stateFieldPathExpression,
-	                                       ExpressionTester... inItems) {
+	                                    ExpressionTester... inItems) {
 
 		return in(path(stateFieldPathExpression), inItems);
 	}
 
 	public static InExpressionTester in(String stateFieldPathExpression,
-	                                       ExpressionTester inItem) {
+	                                    ExpressionTester inItem) {
 
 		return in(path(stateFieldPathExpression), inItem);
 	}
@@ -6720,22 +6724,22 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			super();
 			this.stateFieldPathExpression = stateFieldPathExpression;
-			this.hasLeftParenthesis = true;
-			this.hasRightParenthesis = true;
-			this.hasNot = hasNot;
-			this.inItems = inItems;
-			this.hasSpaceAfterIn = !hasLeftParenthesis;
+			this.hasLeftParenthesis       = !inItems.isNull();
+			this.hasRightParenthesis      = !inItems.isNull();
+			this.hasNot                   = hasNot;
+			this.inItems                  = inItems;
+			this.hasSpaceAfterIn          = !hasLeftParenthesis && !inItems.isNull();
 		}
 
 		public void test(Expression expression) {
 			assertInstance(expression, InExpression.class);
 
 			InExpression inExpression = (InExpression) expression;
-			assertEquals(toString(), inExpression.toParsedText());
-			assertEquals(hasLeftParenthesis, inExpression.hasLeftParenthesis());
-			assertEquals(hasRightParenthesis, inExpression.hasRightParenthesis());
-			assertEquals(hasNot, inExpression.hasNot());
-			assertEquals(!inItems.isNull(), inExpression.hasInItems());
+			assertEquals(toString(),                         inExpression.toParsedText());
+			assertEquals(hasLeftParenthesis,                 inExpression.hasLeftParenthesis());
+			assertEquals(hasRightParenthesis,                inExpression.hasRightParenthesis());
+			assertEquals(hasNot,                             inExpression.hasNot());
+			assertEquals(!inItems.isNull(),                  inExpression.hasInItems());
 			assertEquals(!stateFieldPathExpression.isNull(), inExpression.hasExpression());
 
 			stateFieldPathExpression.test(inExpression.getExpression());

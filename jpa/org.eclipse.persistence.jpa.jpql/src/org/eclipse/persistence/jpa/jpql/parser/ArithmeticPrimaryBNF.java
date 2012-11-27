@@ -44,7 +44,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      function_invocation |
  *                                                      (subquery)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -69,10 +69,8 @@ public final class ArithmeticPrimaryBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
-
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 		registerChild(NumericLiteralBNF.ID);
 		registerChild(SimpleArithmeticExpressionBNF.ID);

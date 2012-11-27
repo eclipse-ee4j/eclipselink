@@ -391,7 +391,7 @@ public final class InExpression extends AbstractExpression {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
-		// Parse the in items or sub-query
+		// Parse the items
 		inItems = parse(wordParser, InExpressionItemBNF.ID, tolerant);
 
 		if (hasInItems()) {

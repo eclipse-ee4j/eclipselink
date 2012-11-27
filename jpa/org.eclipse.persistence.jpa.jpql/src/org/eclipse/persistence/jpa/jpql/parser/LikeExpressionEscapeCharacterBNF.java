@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * This BNF is used when parsing an invalid fragment or to extend the default grammar.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -41,6 +41,7 @@ public final class LikeExpressionEscapeCharacterBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 	}
 }

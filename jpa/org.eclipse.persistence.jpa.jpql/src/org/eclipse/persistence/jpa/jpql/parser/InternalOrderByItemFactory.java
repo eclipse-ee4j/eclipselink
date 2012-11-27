@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see OrderByItem
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -60,7 +60,7 @@ public final class InternalOrderByItemFactory extends ExpressionFactory {
 			expression.parse(wordParser, tolerant);
 		}
 		else {
-			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(PreLiteralExpressionFactory.ID);
+			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(LiteralExpressionFactory.ID);
 			expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 		}
 

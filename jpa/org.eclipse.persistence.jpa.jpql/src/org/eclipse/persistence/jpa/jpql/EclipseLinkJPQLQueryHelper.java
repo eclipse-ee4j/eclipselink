@@ -54,7 +54,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -96,6 +96,17 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	@Override
 	protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
 		return new EclipseLinkContentAssistVisitor(queryContext);
+	}
+
+	/**
+	 * Creates a new {@link EclipseLinkSemanticValidatorExtension}, which will provide additional
+	 * support for non-JPA related information.
+	 *
+	 * @return Either a new concrete instance of {@link EclipseLinkSemanticValidatorExtension} or
+	 * {@link EclipseLinkSemanticValidatorExtension#NULL_EXTENSION} if none is required
+	 */
+	protected EclipseLinkSemanticValidatorExtension buildEclipseLinkSemanticValidatorExtension() {
+		return EclipseLinkSemanticValidatorExtension.NULL_EXTENSION;
 	}
 
 	/**
@@ -143,6 +154,9 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	 */
 	@Override
 	protected EclipseLinkSemanticValidator buildSemanticValidator(JPQLQueryContext queryContext) {
-		return new EclipseLinkSemanticValidator(queryContext);
+		return new EclipseLinkSemanticValidator(
+			queryContext,
+			buildEclipseLinkSemanticValidatorExtension()
+		);
 	}
 }
