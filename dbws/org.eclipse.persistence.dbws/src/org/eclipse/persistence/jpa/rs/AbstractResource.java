@@ -8,15 +8,12 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-
 
 /**
  * @author gonural
  *
  */
-public class AbstractResource {
-
+public abstract class AbstractResource {
     protected PersistenceFactoryBase factory;
 
     public void setPersistenceFactory(PersistenceFactoryBase factory) {

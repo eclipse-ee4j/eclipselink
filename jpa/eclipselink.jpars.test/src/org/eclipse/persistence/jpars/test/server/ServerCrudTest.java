@@ -606,7 +606,7 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", 0);
         StaticUser user = (StaticUser)restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
-        assertTrue("user shoudl not have been returned", user == null);
+        assertTrue("user should not have been returned", user == null);
     }
 
     /**

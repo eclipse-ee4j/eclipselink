@@ -610,6 +610,7 @@ public class TestService {
     }
 
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testStaticReportQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
@@ -618,7 +619,7 @@ public class TestService {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
 
-        Long count = (Long)((List)context.query(null, "User.count", null)).get(0);
+        Long count = (Long) ((List) context.queryMultipleResults(null, "User.count", null, null)).get(0);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);

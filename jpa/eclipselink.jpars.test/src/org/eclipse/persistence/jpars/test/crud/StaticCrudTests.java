@@ -115,11 +115,11 @@ public class StaticCrudTests {
         user.setName("Judy");
         user.setId(4);
         persistenceContext.create(null, user);
-        
-        List<StaticUser> users = (List<StaticUser>)persistenceContext.query(null, "User.all", null);
+
+        List<StaticUser> users = (List<StaticUser>) persistenceContext.queryMultipleResults(null, "User.all", null, null);
         assertTrue(users.size() == 3);
     }
-    
+
     @Test
     public void testUpdate(){
         StaticUser user = new StaticUser();
