@@ -402,7 +402,13 @@ public class SchemaManager {
             return new UnaryTableSequenceDefinition(sequence);
         } else if (sequence instanceof NativeSequence || 
                    (sequence instanceof DefaultSequence && ((DefaultSequence)sequence).getDefaultSequence() instanceof NativeSequence)) {
-            if (((NativeSequence)sequence).hasDelegateSequence()) {
+            NativeSequence nativeSequence = null;
+            if (sequence instanceof NativeSequence) {
+                nativeSequence = (NativeSequence)sequence;
+            } else {
+                nativeSequence = (NativeSequence)((DefaultSequence)sequence).getDefaultSequence();
+            }
+            if (nativeSequence.hasDelegateSequence()) {
                 return buildSequenceDefinition(((NativeSequence)sequence).getDelegateSequence());
             }
             return new SequenceObjectDefinition(sequence);

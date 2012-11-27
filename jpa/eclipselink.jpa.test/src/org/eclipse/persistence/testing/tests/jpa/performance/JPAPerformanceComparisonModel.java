@@ -185,6 +185,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
 
         //properties.put("eclipselink.jdbc.batch-writing", "JDBC");
         //properties.put("eclipselink.persistence-context.close-on-commit", "true");
+        properties.put("eclipselink.sequencing.default-sequence-to-table", "true");
         properties.put("eclipselink.logging.level", getSession().getSessionLog().getLevelString());
         // properties.put("eclipselink.jdbc.cache-statements", "true");
         // properties.put("eclipselink.cache.shared.default", "false");

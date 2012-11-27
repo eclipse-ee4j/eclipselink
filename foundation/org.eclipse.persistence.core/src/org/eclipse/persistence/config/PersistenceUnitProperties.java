@@ -1395,6 +1395,15 @@ public class PersistenceUnitProperties {
     public static final String TARGET_SERVER = "eclipselink.target-server";
 
     /**
+     * The <code>"eclipselink.sequencing.default-sequence-to-table"</code> property
+     * determines the default behavior when a GeneratedValue of type SEQUENCE is used
+     * on a database platform that does not support SEQUENCE generation.
+     * By default IDENTITY generation is used if supported.
+     * If this property is set to true, then TABLE sequencing will be used instead.
+     */
+    public static final String SEQUENCING_SEQUENCE_DEFAULT = "eclipselink.sequencing.default-sequence-to-table";
+    
+    /**
      * The <code>"eclipselink.session.customizer"</code> property configures a
      * {@link SessionCustomizer} used to alter the runtime configuration through
      * API.

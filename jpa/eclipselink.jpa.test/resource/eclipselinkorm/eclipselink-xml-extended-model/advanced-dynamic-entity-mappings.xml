@@ -163,7 +163,6 @@
     </entity>
     
     <entity name="DynamicAddress" class="Address">
-        <change-tracking type="DEFERRED"/>
         <table name="DYNAMIC_ADDRESS"/>
         <sequence-generator name="DYNAMIC_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllDynamicAddressesByPostalCode">

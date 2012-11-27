@@ -59,16 +59,33 @@ public class DatasourcePlatform implements Platform {
     protected Map sequences;
     
     /** Delimiter to use for fields and tables using spaces or other special values */
-    protected String startDelimiter = null;
-    protected String endDelimiter = null;
+    protected String startDelimiter;
+    protected String endDelimiter;
     
     /** Ensures that only one thread at a time can add/remove sequences */
     protected Object sequencesLock = new Boolean(true);
+
+    /** If the native sequence type is not supported, if table sequencing should be used. */
+    protected boolean defaultNativeSequenceToTable;
 
     public DatasourcePlatform() {
         this.tableQualifier = "";
         this.startDelimiter = "";
         this.endDelimiter = "";
+    }
+
+    /**
+     * Return if the native sequence type is not supported, if table sequencing should be used.
+     */
+    public boolean getDefaultNativeSequenceToTable() {
+        return defaultNativeSequenceToTable;
+    }
+
+    /**
+     * Set if the native sequence type is not supported, if table sequencing should be used.
+     */
+    public void setDefaultNativeSequenceToTable(boolean defaultNativeSequenceToTable) {
+        this.defaultNativeSequenceToTable = defaultNativeSequenceToTable;
     }
 
     protected void addOperator(ExpressionOperator operator) {
@@ -178,6 +195,7 @@ public class DatasourcePlatform implements Platform {
         }
         datasourcePlatform.setSequences(getSequences());
         datasourcePlatform.sequencesAfterCloneCleanup();
+        datasourcePlatform.defaultNativeSequenceToTable = this.defaultNativeSequenceToTable;
     }
 
     /**

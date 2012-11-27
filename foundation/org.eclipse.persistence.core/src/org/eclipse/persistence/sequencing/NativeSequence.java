@@ -172,9 +172,6 @@ public class NativeSequence extends QuerySequence {
     @Override
     public void onConnect() {
         DatasourcePlatform platform = (DatasourcePlatform)getDatasourcePlatform();
-        if (!platform.supportsNativeSequenceNumbers() && (getSelectQuery() == null)) {
-            throw ValidationException.platformDoesNotSupportSequence(getName(), Helper.getShortClassName(getDatasourcePlatform()), Helper.getShortClassName(this));
-        }
         // Set shouldAcquireValueAfterInsert flag: identity -> true; sequence objects -> false.
         if (platform.supportsIdentity() && shouldUseIdentityIfPlatformSupports()) {
             // identity is both supported by platform and desired by the NativeSequence
@@ -183,7 +180,19 @@ public class NativeSequence extends QuerySequence {
             // sequence objects is both supported by platform and desired by the NativeSequence
             setShouldAcquireValueAfterInsert(false);
         } else {
-            if (platform.supportsNativeSequenceNumbers()) {
+            if (platform.getDefaultNativeSequenceToTable() || !platform.supportsNativeSequenceNumbers()) {
+                // If native sequencing is not supported, or IDENTITY not desire, use TABLE.
+                this.delegateSequence = new TableSequence();
+                this.delegateSequence.setName(getName());
+                this.delegateSequence.onConnect(platform);
+                setShouldUseTransaction(this.delegateSequence.shouldUseTransaction());
+                setShouldAcquireValueAfterInsert(this.delegateSequence.shouldAcquireValueAfterInsert());
+                setShouldSkipUpdate(this.delegateSequence.shouldSkipUpdate());
+                setShouldSelectBeforeUpdate(this.delegateSequence.shouldSelectBeforeUpdate());
+                setUpdateQuery(this.delegateSequence.getUpdateQuery());
+                super.onConnect();
+                return;
+            } else {
                 // platform support contradicts to NativeSequence setting - go with platform supported choice.
                 // platform must support either identity or sequence objects (otherwise ValidationException would've been thrown earlier),
                 // therefore here dbPlatform.supportsIdentity() == !dbPlatform.supportsSequenceObjects().

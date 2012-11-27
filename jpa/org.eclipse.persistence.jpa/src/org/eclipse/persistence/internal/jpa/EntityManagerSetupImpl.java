@@ -2466,6 +2466,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateBatchWritingSetting(m, loader);
     
             updateNativeSQLSetting(m);
+            updateSequencing(m);
             updateAllowNativeSQLQueriesSetting(m);
             updateSQLCastSetting(m);
             updateUppercaseSetting(m);
@@ -2845,6 +2846,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                  session.getProject().getLogin().dontUseNativeSQL();
            }else{
                  session.handleException(ValidationException.invalidBooleanValueForSettingNativeSQL(nativeSQLString));
+           }
+        }
+    }
+
+    /**
+     * Configure sequencing settings.
+     */
+    protected void updateSequencing(Map m){
+        String useTable = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SEQUENCING_SEQUENCE_DEFAULT, m, session);
+        if (useTable != null) {
+           if (useTable.equalsIgnoreCase("true")) {
+               this.session.getPlatform().setDefaultNativeSequenceToTable(true);
+           } else if (useTable.equalsIgnoreCase("false")) {
+               this.session.getPlatform().setDefaultNativeSequenceToTable(false);
+           } else {
+               this.session.handleException(ValidationException.invalidBooleanValueForProperty(useTable, PersistenceUnitProperties.SEQUENCING_SEQUENCE_DEFAULT));
            }
         }
     }
