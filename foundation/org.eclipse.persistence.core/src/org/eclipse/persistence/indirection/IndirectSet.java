@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * IndirectSet is an example implementation of the Set protocol that
@@ -153,7 +154,15 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         this.delegate = null;
         this.valueHolder = new ValueHolder(new HashSet(c));
     }
-
+    
+    protected boolean isRelationshipMaintenanceRequired() {
+        if (this.valueHolder instanceof UnitOfWorkQueryValueHolder) {
+            DatabaseMapping mapping = ((UnitOfWorkQueryValueHolder)this.valueHolder).getMapping();
+            return (mapping != null) && (mapping.getRelationshipPartner() != null);
+        }
+        return false;
+    }
+    
     /**
      * @see java.util.Set#add(java.lang.Object)
      */
@@ -163,7 +172,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         if (shouldAvoidInstantiation()) {
             if (hasRemovedElements() && getRemovedElements().contains(element)) {
                 getRemovedElements().remove(element);
-            } else if (getAddedElements().contains(element)) {
+            } else if (isRelationshipMaintenanceRequired() && getAddedElements().contains(element)) {
                 // Must avoid recursion for relationship maintenance.                
                 return false;
             } else {
@@ -172,7 +181,9 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         } else {
             added = getDelegate().add(element);
         }
-        raiseAddChangeEvent(element);
+        if (added) {
+            raiseAddChangeEvent(element);
+        }
         return added;
     }
 
@@ -578,7 +589,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
         }
     }
@@ -590,7 +601,7 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
         }
     }

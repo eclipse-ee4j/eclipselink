@@ -17,18 +17,18 @@ import java.beans.PropertyChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.descriptors.changetracking.*;
 
 /**
  * IndirectList allows a domain class to take advantage of TopLink indirection
  * without having to declare its instance variable as a ValueHolderInterface.
  * <p>To use an IndirectList:<ul>
- * <li> Declare the appropriate instance variable with type IndirectList (jdk1.1)
- * or Collection/List/Vector (jdk1.2).
+ * <li> Declare the appropriate instance variable with type Collection/List/Vector (jdk1.2).
  * <li> Send the message #useTransparentCollection() to the appropriate
  * CollectionMapping.
  * </ul>
- * TopLink will place an
+ * EclipseLink will place an
  * IndirectList in the instance variable when the containing domain object is read from
  * the datatabase. With the first message sent to the IndirectList, the contents
  * are fetched from the database and normal Collection/List/Vector behavior is resumed.
@@ -150,9 +150,17 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.ADD, index, isSet, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceSet(element, null);
         }
+    }
+    
+    protected boolean isRelationshipMaintenanceRequired() {
+        if (this.valueHolder instanceof UnitOfWorkQueryValueHolder) {
+            DatabaseMapping mapping = ((UnitOfWorkQueryValueHolder)this.valueHolder).getMapping();
+            return (mapping != null) && (mapping.getRelationshipPartner() != null);
+        }
+        return false;
     }
     
     /**
@@ -165,7 +173,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (hasTrackedPropertyChangeListener()) {
             _persistence_getPropertyChangeListener().propertyChange(new CollectionChangeEvent(this, getTrackedAttributeName(), this, element, CollectionChangeEvent.REMOVE, index, isSet, true));
         }
-        if (hasBeenRegistered()) {
+        if (isRelationshipMaintenanceRequired()) {
             ((UnitOfWorkQueryValueHolder)getValueHolder()).updateForeignReferenceRemove(element);
         }
     }
@@ -182,7 +190,7 @@ public class IndirectList extends Vector implements CollectionChangeTracker, Ind
         if (shouldAvoidInstantiation()) {
             if (hasRemovedElements() && getRemovedElements().contains(element)) {
                 getRemovedElements().remove(element);
-            } else if (getAddedElements().contains(element)) {
+            } else if (isRelationshipMaintenanceRequired() && getAddedElements().contains(element)) {
                 // Must avoid recursion for relationship maintenance.
                 return false;
             } else {

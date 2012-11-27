@@ -93,7 +93,9 @@ public class MongoConnectionFactory implements ConnectionFactory {
                 }
                 db = mongo.getDB(connectionSpec.getDB());
                 if ((connectionSpec.getUser() != null) && (connectionSpec.getUser().length() > 0)) {
-                    db.authenticate(connectionSpec.getUser(), connectionSpec.getPassword());
+                    if (!db.authenticate(connectionSpec.getUser(), connectionSpec.getPassword())) {
+                        throw new ResourceException("authenticate failed for user: " + connectionSpec.getUser());
+                    }
                 }
                 if (connectionSpec.getOptions() > 0) {
                     db.setOptions(connectionSpec.getOptions());
