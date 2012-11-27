@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
+import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -91,7 +92,12 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	protected void visit(Expression expression) {
       // Does not select an identification variable
 		// (e.g. projection or aggregate function) => ReportQuery
-		initializeReportQuery();
+	        if (expression instanceof NullExpression) {
+	            // For from clause only JPQL the full object is always selected, so is ReadAllQuery.
+	            initializeReadAllQuery();
+	        } else {
+	            initializeReportQuery();
+	        }
 	}
 
 	/**

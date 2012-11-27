@@ -121,7 +121,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		return declaration;
 	}
 
-	protected final RangeDeclarationTester rangeDeclaration(String entityName,
+	protected final RangeDeclarationTester rangeDeclarationJoin(String entityName,
 	                                                        String variableName,
 	                                                        ExpressionTester declarationExpression,
 	                                                        JoinTester... joins) {
@@ -154,7 +154,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 	                                                        String variableName,
 	                                                        JoinTester... joins) {
 
-		RangeDeclarationTester declaration = rangeDeclaration(entityName, variableName, null, joins);
+		RangeDeclarationTester declaration = rangeDeclarationJoin(entityName, variableName, null, joins);
 		declaration.declarationExpression = identificationVariableDeclaration(declaration.baseExpression, joins);
 		return declaration;
 	}
@@ -236,7 +236,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		testDeclarations(
 			jpqlQuery,
 			tolerant,
-			rangeDeclaration("Employee", "e", join("e.manager", "m")),
+			rangeDeclarationJoin("Employee", "e", join("e.manager", "m")),
 			rangeDeclaration("Address", "a")
 		);
 	}
@@ -471,7 +471,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		testDeclarations(
 			jpqlQuery,
 			tolerant,
-			rangeDeclaration("Employee", "e", updateClause)
+			rangeDeclarationJoin("Employee", "e", updateClause)
 		);
 	}
 

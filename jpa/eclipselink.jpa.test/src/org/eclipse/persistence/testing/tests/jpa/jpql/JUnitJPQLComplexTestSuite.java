@@ -282,6 +282,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
 
+        tests.add("testNestedArrays");
+        tests.add("testNoSelect");
+        tests.add("testHierarchicalClause");
+        
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
@@ -4377,5 +4381,60 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
        Query query = em.createQuery("select e from Employee e join e.projects p where treat(p as LargeProject).budget > 10000");
        query.getResultList();
        closeEntityManager(em);
+    }
+
+    // Test nested arrays.
+    public void testNestedArrays() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testSubselectInSelect is skipped on this platform, , "
+            + "Symfoware doesn't support sub-select. (see rfe 372172)");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN :names");
+        List names = new ArrayList();
+        names.add(new ArrayList(Arrays.asList(new String[]{"Bob", "Smith"})));
+        names.add(new ArrayList(Arrays.asList(new String[]{"John", "Doe"})));
+        query.setParameter("names", names);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN (Select e2.lastName, e2.firstName from Employee e2)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where (e.firstName, e.lastName) IN ((:f1, :l1), (:f2, :l2))");
+        query.setParameter("f1", "Bob");
+        query.setParameter("l1", "Smith");
+        query.setParameter("f2", "John");
+        query.setParameter("l2", "Doe");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Test JPQL with no select clause.
+    public void testNoSelect() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("from Employee e where e.firstName = 'Bob'");
+        query.getResultList();
+        query = em.createQuery("from Employee e join e.address a where a.city = 'Ottawa'");
+        query.getResultList();
+        closeEntityManager(em);
+    }
+
+    // Test Hierarchical selects.
+    public void testHierarchicalClause() {
+        if (!getPlatform().isOracle()) {
+            warning("Hierarchical selects only supported on Oracle.");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e connect by e.manager ");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager");
+        query.getResultList();
+        //query = em.createQuery("Select e from Employee e connect by e.manager order siblings by e.firstName");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e join e.manager m connect by m.manager where e.salary > 100");
+        query.getResultList();
+        //query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager order siblings by e.firstName");
+        query.getResultList();
+        closeEntityManager(em);
     }
 }

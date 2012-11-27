@@ -687,7 +687,7 @@ public class SQLSelectStatement extends SQLStatement {
             }
         }
 
-        if (orderSiblingsBy != null) {
+        if ((orderSiblingsBy != null) && !orderSiblingsBy.isEmpty()) {
             printer.getWriter().write(" ORDER SIBLINGS BY ");
 
             for (Iterator<Expression> iterator = orderSiblingsBy.iterator(); iterator.hasNext(); ) {
