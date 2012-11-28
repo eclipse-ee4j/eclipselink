@@ -12,9 +12,12 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +41,9 @@ import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter;
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter;
@@ -52,7 +57,11 @@ import static javax.persistence.InheritanceType.JOINED;
 @Entity
 @Inheritance(strategy=JOINED)
 @Table(name="JPA21_RUNNER")
-@Convert(attributeName = "age", converter = AgeConverter.class)
+@Converts({
+    @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),
+    @Convert(attributeName = "accomplishments", converter = DateConverter.class),
+    @Convert(attributeName = "age", converter = AgeConverter.class)
+})
 public class Runner extends Athlete {
     @Id
     @GeneratedValue
@@ -120,11 +129,16 @@ public class Runner extends Athlete {
     protected Map<String, String> personalBests;
 
     public Runner() {
+        races = new ArrayList<Race>();
         personalBests = new HashMap<String, String>();
     }
     
     public void addPersonalBest(String distance, String time) {
         personalBests.put(distance, time);
+    }
+    
+    public void addRace(Race race) {
+        races.add(race);
     }
     
     public Gender getGender() { 

@@ -16,6 +16,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -44,8 +46,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRESPONSTable());
         addTableDefinition(buildSALARYTable());
         addTableDefinition(buildRACETable());
+        addTableDefinition(buildORGANIZERTable());
         addTableDefinition(buildRUNNERTable());
         addTableDefinition(buildRUNNER_PBSTable());
+        addTableDefinition(buildRUNNER_ACSTable());
         addTableDefinition(buildRUNNERS_RACESTable());
         addTableDefinition(buildSHOETable());
         addTableDefinition(buildSHOETAGTable());
@@ -53,8 +57,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildENDORSERTable());
         addTableDefinition(buildENDORSEMENTSTable());
         addTableDefinition(buildXMLRACETable());
+        addTableDefinition(buildXMLORGANIZERTable());
         addTableDefinition(buildXMLRUNNERTable());
         addTableDefinition(buildXMLRUNNER_PBSTable());
+        addTableDefinition(buildXMLRUNNER_ACSTable());
         addTableDefinition(buildXMLRUNNERS_RACESTable());
         addTableDefinition(buildXMLSHOETable());
         addTableDefinition(buildXMLSHOETAGTable());
@@ -679,6 +685,44 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildRUNNER_ACSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_RUNNER_ACS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ATHLETE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("ACCOMPLISHMENT");
+        field.setTypeName("VARCHAR");
+        field.setSize(50);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("WHEN");
+        field.setTypeName("NUMERIC");
+        field.setSize(23);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
     public TableDefinition buildRUNNERS_RACESTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_RUNNERS_RACES");
@@ -724,6 +768,64 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
         field = new FieldDefinition();
         field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
+    public TableDefinition buildORGANIZERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_ORGANIZER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RACE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_RACE.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("UNIQUEIDENTIFIER");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DESCRIPTION");
         field.setTypeName("VARCHAR");
         field.setSize(40);
         field.setShouldAllowNull(true);
@@ -1080,6 +1182,64 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildXMLORGANIZERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_ORGANIZER");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("RACE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_RACE.ID");
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("UNIQUEIDENTIFIER");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("DESCRIPTION");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
     public TableDefinition buildXMLRUNNER_PBSTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_XML_RUNNER_PBS");
@@ -1109,6 +1269,44 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setName("TIME");
         field.setTypeName("VARCHAR");
         field.setSize(20);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+            
+        return table;
+    }
+    
+    public TableDefinition buildXMLRUNNER_ACSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_XML_RUNNER_ACS");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ATHLETE_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("ACCOMPLISHMENT");
+        field.setTypeName("VARCHAR");
+        field.setSize(50);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("WHEN");
+        field.setTypeName("NUMERIC");
+        field.setSize(23);
         field.setShouldAllowNull(true);
         field.setIsPrimaryKey(false);
         field.setUnique(false);

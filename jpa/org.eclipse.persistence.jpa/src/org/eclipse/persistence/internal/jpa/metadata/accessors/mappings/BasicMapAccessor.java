@@ -25,6 +25,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -169,17 +171,6 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     @Override
     public String getValueConverter() {
         return m_valueConverter;
-    }
- 
-    /**
-     * INTERNAL:
-     * A BasicMap always has a Convert specified. They are defaulted within
-     * the BasicMap annotation. This will be used to log warning messages when 
-     * ignoring JPA converters for lob, temporal, enumerated and serialized.
-     */
-    @Override
-    protected boolean hasConvert(boolean isForMapKey) {
-        return true;
     }
     
     /**

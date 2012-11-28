@@ -10,17 +10,27 @@
  * Contributors:
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Basic;
+import javax.persistence.Convert;
+import javax.persistence.Converts;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter;
 
 @Entity
 @Table(name="JPA21_RACE")
@@ -28,25 +38,60 @@ public class Race {
     @Id
     @GeneratedValue
     public Integer id;
-    
+
     @Basic
     public String name;
     
     @ManyToMany(mappedBy="races")
     public List<Runner> runners;
+    
+    @OneToMany(mappedBy="race")
+    @Converts({
+        // Add this convert to avoid the auto apply setting to a Long.
+        @Convert(attributeName="key.uniqueIdentifier", disableConversion=true),
+        @Convert(attributeName="key.description", converter=ResponsibilityConverter.class)
+    })  
+    protected Map<Responsibility, Organizer> organizers;
 
-    public Race() {}
+    public Race() {
+        runners = new ArrayList<Runner>();
+        organizers = new HashMap<Responsibility, Organizer>();
+    }
+
+    public void addOrganizer(Organizer organizer, Responsibility responsibility) {
+        organizers.put(responsibility, organizer);
+    }
+    
+    public void addRunner(Runner runner) {
+        runners.add(runner);
+    }
+    
+    public Integer getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
+    }
+    
+    public Map<Responsibility, Organizer> getOrganizers() {
+        return organizers;
     }
     
     public List<Runner> getRunners() {
         return runners;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+    
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setOrganizers(Map<Responsibility, Organizer> organizers) {
+        this.organizers = organizers;
     }
     
     public void setRunners(List<Runner> runners) {

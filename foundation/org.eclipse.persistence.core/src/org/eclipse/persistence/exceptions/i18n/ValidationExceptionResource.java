@@ -29,6 +29,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -344,10 +346,12 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create entity manager factory call."},
                                            { "7347", "The class [{0}] specifies type level convert metadata without specifying an attribute name for each. An attribute name must be provided for all type level convert metadata to ensure the correct application to a super class attribute."},
                                            { "7348", "The embedded mapping [{1}] from [{0}] does not specify an attribute name to which the convert is to be applied. You must specify an attribute name on the Embeddable."},
-                                           { "7349", "You can not specify a 'key' attribute name convert for the attribute [{0}] from class [{1}] since it is not a valid map type mapping." },
                                            { "7350", "The convert attribute name [{3}] from the mapping [{1}] from the class [{0}] was not found on the embeddable class [{2}]. Please ensure the attribute exists and is correctly named." },
                                            { "7351", "The converter class [{2}] specified on the mapping attribute [{1}] from the class [{0}] was not found. Please ensure the converter class name is correct and exists with the persistence unit definition." },
-                                           { "7352", "The converter class [{0}] must implement the JPA javax.persistence.AttributeConverter<X, Y> interface to be a valid converter class." }
+                                           { "7352", "The converter class [{0}] must implement the JPA javax.persistence.AttributeConverter<X, Y> interface to be a valid converter class." },
+                                           { "7353", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert specification." },
+                                           { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
+                                           { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            
  };
     

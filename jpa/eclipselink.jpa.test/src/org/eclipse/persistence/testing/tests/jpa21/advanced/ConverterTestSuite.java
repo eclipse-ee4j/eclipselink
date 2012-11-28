@@ -14,8 +14,13 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/22/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
+
+import java.util.Date;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -32,6 +37,9 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
+import org.eclipse.persistence.testing.models.jpa21.advanced.Organizer;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Race;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Responsibility;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
 import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerStatus;
@@ -96,6 +104,7 @@ public class ConverterTestSuite extends JUnitTestCase {
             runner.setLastName("Day");
             runner.addPersonalBest("10 KM", "47:34");
             runner.addPersonalBest("5", "26:41");
+            runner.addAccomplishment("Ran 100KM without stopping", new Date(System.currentTimeMillis()));
             RunnerInfo runnerInfo = new RunnerInfo();
             runnerInfo.setHealth(Health.H);
             runnerInfo.setLevel(Level.A);
@@ -104,6 +113,22 @@ public class ConverterTestSuite extends JUnitTestCase {
             runnerInfo.setStatus(runnerStatus);
             runner.setInfo(runnerInfo);
             
+            Race race = new Race();
+            race.setName("The Ultimate Marathon");
+            race.addRunner(runner);
+            
+            Organizer organizer = new Organizer();
+            organizer.setName("Joe Organ");
+            organizer.setRace(race);
+            
+            Responsibility responsibility = new Responsibility();
+            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+            responsibility.setDescription("Raise funds");
+            
+            race.addOrganizer(organizer, responsibility);
+            
+            em.persist(race);
+            em.persist(organizer);
             em.persist(runner);
             commitTransaction(em);
                 
@@ -122,6 +147,17 @@ public class ConverterTestSuite extends JUnitTestCase {
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("26:41.0"));
             
+            Race raceRefreshed = em.find(Race.class, race.getId());
+            Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
+            assertFalse("No race organizers returned.", organizers.isEmpty());
+            assertTrue("More than one race organizer returned.", organizers.size() == 1);
+            
+            Responsibility resp = organizers.keySet().iterator().next();
+            assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
+            
+            for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
+                assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
+            }
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

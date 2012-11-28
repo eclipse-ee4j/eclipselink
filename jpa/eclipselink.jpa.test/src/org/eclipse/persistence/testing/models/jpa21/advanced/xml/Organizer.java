@@ -8,51 +8,28 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class Race {
+public class Organizer {
     public Integer id;
     public String name;
-    public List<Runner> runners;
-    protected Map<Responsibility, Organizer> organizers;
-
-    public Race() {
-        runners = new ArrayList<Runner>();
-        organizers = new HashMap<Responsibility, Organizer>();
-    }
+    public Race race;
     
-    public void addOrganizer(Organizer organizer, Responsibility responsibility) {
-        organizers.put(responsibility, organizer);
-    }
-    
-    public void addRunner(Runner runner) {
-        runners.add(runner);
-    }
+    public Organizer() {}
     
     public Integer getId() {
         return id;
     }
-
+    
     public String getName() {
         return name;
     }
-    
-    public Map<Responsibility, Organizer> getOrganizers() {
-        return organizers;
-    }
-    
-    public List<Runner> getRunners() {
-        return runners;
+
+    public Race getRace() {
+        return race;
     }
 
     public void setId(Integer id) {
@@ -63,11 +40,7 @@ public class Race {
         this.name = name;
     }
 
-    public void setOrganizers(Map<Responsibility, Organizer> organizers) {
-        this.organizers = organizers;
-    }
-    
-    public void setRunners(List<Runner> runners) {
-        this.runners = runners;
+    public void setRace(Race race) {
+        this.race = race;
     }
 }

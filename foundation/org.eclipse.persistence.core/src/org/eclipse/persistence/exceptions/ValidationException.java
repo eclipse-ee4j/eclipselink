@@ -29,6 +29,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -449,10 +451,12 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int MISSING_CONVERT_ATTRIBUTE_NAME = 7347;
     public static final int MISSING_MAPPING_CONVERT_ATTRIBUTE_NAME = 7348;
-    public static final int INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT = 7349;
     public static final int EMBEDDABLE_ATTRIBUTE_NAME_FOR_CONVERT_NOT_FOUND = 7350;
     public static final int CONVERTER_CLASS_NOT_FOUND = 7351;
     public static final int CONVERTER_CLASS_MUST_IMPLEMENT_ATTRIBUTE_CONVERTER_INTERFACE = 7352;
+    public static final int INVALID_MAPPING_FOR_CONVERT = 7353;
+    public static final int INVALID_MAPPING_FOR_MAP_KEY_CONVERT = 7354;
+    public static final int INVALID_MAPPING_FOR_CONVERT_WITH_ATTRIBUTE_NAME = 7355;
     
     /**
      * INTERNAL:
@@ -2273,12 +2277,28 @@ public class ValidationException extends EclipseLinkException {
         validationException.setErrorCode(MISSING_MAPPING_CONVERT_ATTRIBUTE_NAME);
         return validationException;
     }
-    
-    public static ValidationException invalidMappingForKeyAttributeNameConvert(String className, String attributeName) {        
+
+    public static ValidationException invalidMappingForConvert(String className, String attributeName) {        
         Object[] args = { className, attributeName };
 
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT, args));
-        validationException.setErrorCode(INVALID_MAPPING_FOR_KEY_ATTRIBUTE_NAME_CONVERT);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_CONVERT, args));
+        validationException.setErrorCode(INVALID_MAPPING_FOR_CONVERT);
+        return validationException;
+    }
+    
+    public static ValidationException invalidMappingForConvertWithAttributeName(String className, String attributeName) {        
+        Object[] args = { className, attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_CONVERT_WITH_ATTRIBUTE_NAME, args));
+        validationException.setErrorCode(INVALID_MAPPING_FOR_CONVERT_WITH_ATTRIBUTE_NAME);
+        return validationException;
+    }
+    
+    public static ValidationException invalidMappingForMapKeyConvert(String className, String attributeName) {        
+        Object[] args = { className, attributeName };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_MAPPING_FOR_MAP_KEY_CONVERT, args));
+        validationException.setErrorCode(INVALID_MAPPING_FOR_MAP_KEY_CONVERT);
         return validationException;
     }
     

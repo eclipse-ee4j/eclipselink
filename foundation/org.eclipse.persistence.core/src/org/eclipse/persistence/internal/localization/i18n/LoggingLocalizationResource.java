@@ -31,6 +31,8 @@
  *                 does not correspond to a valid field on the mapping reference
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -270,10 +272,12 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_override_xml_with_eclipselink_xml", "Ignoring the element [{0}] from [{1}] defined in the mapping file [{2}] since this element was defined in the eclipselink-orm mapping file [{3}]" },
         { "metadata_warning_override_named_xml_with_eclipselink_xml", "Ignoring the element [{0}] named [{1}] defined in the mapping file [{2}] since an element with the same name was defined in the eclipselink-orm mapping file [{3}]" },
 
-        { "metadata_warning_ignore_lob", "Ignoring lob specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
-        { "metadata_warning_ignore_temporal", "Ignoring temporal specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
-        { "metadata_warning_ignore_serialized", "Ignoring default serialization on element [{1}] within entity class [{0}] since a @Convert is specified." },
-        { "metadata_warning_ignore_enumerated", "Ignoring enumerated specification on element [{1}] within entity class [{0}] since a @Convert is specified." },
+        { "metadata_warning_ignore_lob", "Ignoring lob specification on element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
+        { "metadata_warning_ignore_temporal", "Ignoring temporal specification on element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
+        { "metadata_warning_ignore_serialized", "Ignoring default serialization on element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
+        { "metadata_warning_ignore_enumerated", "Ignoring enumerated specification on element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
+        { "metadata_warning_ignore_converts", "Ignoring JPA convert specification on element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
+        { "metadata_warning_ignore_auto_apply_converter", "Ignoring the auto-apply converter for element [{1}] within entity class [{0}] since EclipseLink convert metadata is specified." },
         { "metadata_warning_ignore_version_locking", "Optimistic locking metadata is already defined on the descriptor for the entity [{0}]. Ignoring version specification on element [{1}]." },
 
         { "metadata_warning_ignore_cacheable_false", "Ignoring the explicit cacheable=false set for the entity class [{0}] since a caching type of ALL has been specified in the persistence.xml file." },

@@ -49,9 +49,12 @@
  *       - 379829: NPE Thrown with OneToOne Relationship
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMNS;
@@ -63,6 +66,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
@@ -144,13 +148,17 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
         m_cascade = (annotation == null) ? null : new CascadeMetadata(annotation.getAttributeArray("cascade"), this);
         
-        // Set the join fetch if one is present.                       
+        // Set the join fetch if one is present.
+        // TODO: should make this into its own JoinFetchMetadata and call it in process.
+        // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(JoinFetch.class)) {
             // Get attribute string will return the default ""
             m_joinFetch = (String) getAnnotation(JoinFetch.class).getAttributeString("value");
         }
         
-        // Set the batch fetch if one is present.           
+        // Set the batch fetch if one is present. 
+        // TODO: should make this into its own BatchFetchMetadata and call it in process.
+        // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(BatchFetch.class)) {
             // Get attribute string will return the default ""
             m_batchFetch = (String) getAnnotation(BatchFetch.class).getAttributeString("value");
@@ -681,12 +689,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // non-owning relationship. If so, no processing is required.
         if (! isProcessed()) {
             // If a Column annotation is specified then throw an exception.
-            if (hasColumn()) {
+            if (isAnnotationPresent(JPA_COLUMN)) {
                 throw ValidationException.invalidColumnAnnotationOnRelationship(getJavaClass(), getAttributeName());
             }
                 
             // If a Convert annotation is specified then throw an exception.
-            if (hasConvert(false)) {
+            if (isAnnotationPresent(Convert.class)) {
                 throw ValidationException.invalidMappingForConverter(getJavaClass(), getAttributeName());
             }
         }

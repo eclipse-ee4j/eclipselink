@@ -36,6 +36,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 3746888: JPA 2.1 Converter support
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -109,12 +111,16 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         }
         
         // Set the join fetch if one is present.
+        // TODO: should make this into its own JoinFetchMetadata and call it in process.
+        // Duplicating the work with RelationshipAccessor
         MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);
         if (joinFetch != null) {
             m_joinFetch = (String) joinFetch.getAttribute("value");
         }
         
         // Set the batch fetch if one is present.
+        // TODO: should make this into its own BatchFetchMetadata and call it in process.
+        // Duplicating the work with RelationshipAccessor
         MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);
         if (batchFetch != null) {
             // Get attribute string will return the default ""
@@ -457,7 +463,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // value. If none is found then we'll look for a JPA converter, that 
         // is, Enumerated, Lob and Temporal. With everything falling into 
         // a serialized mapping if no converter whatsoever is found.
-        processMappingValueConverter(mapping, getValueConverter(), getReferenceClass());        
+        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass());        
     }
     
     /**
@@ -489,7 +495,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             }
             
             // Process a converter for the key column of this mapping.
-            processMappingKeyConverter(mapping, getKeyConverter(), getMapKeyReferenceClass());
+            processMappingKeyConverter(mapping, getKeyConverter(), null, getMapKeyReferenceClass());
         }
         
         // Process the value column (we must process this field before the call
@@ -504,7 +510,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         }
         
         // Process a converter for value column of this mapping.
-        processMappingValueConverter(mapping, getValueConverter(), getReferenceClass());
+        processMappingValueConverter(mapping, getValueConverter(), getConverts(), getReferenceClass());
     }
     
     /**

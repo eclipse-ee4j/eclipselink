@@ -93,6 +93,8 @@
  *       - 3746888: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -888,16 +890,20 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void processConvert(ConvertMetadata convert) {
         if (convert.hasAttributeName()) {
-            // We have dot notation.
             if (convert.getAttributeName().indexOf(".") > -1) {
+                // We have a dot notation name.
                 String dotNotationName = convert.getAttributeName();
-                String attributeName = dotNotationName.substring(0, dotNotationName.indexOf("."));
-                String remainder = dotNotationName.substring(dotNotationName.indexOf(".") + 1);
+                int dotIndex = dotNotationName.indexOf(".");
+                String attributeName = dotNotationName.substring(0, dotIndex);
+                String remainder = dotNotationName.substring(dotIndex + 1);
                 // Update the convert attribute name for correct convert processing.
                 convert.setAttributeName(remainder);
                 getDescriptor().addConvert(attributeName, convert);
             } else {
-                getDescriptor().addConvert(convert.getAttributeName(), convert);
+                // Simple single name.
+                String attributeName = convert.getAttributeName();
+                convert.setAttributeName("");
+                getDescriptor().addConvert(attributeName, convert);
             }
         } else {
             throw ValidationException.missingConvertAttributeName(getJavaClassName());

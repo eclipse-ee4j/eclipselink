@@ -35,6 +35,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -61,8 +63,6 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -83,9 +83,9 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public class EmbeddedAccessor extends MappingAccessor {
+    private List<ConvertMetadata> m_converts;
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
 
     /**
      * INTERNAL:
@@ -133,19 +133,19 @@ public class EmbeddedAccessor extends MappingAccessor {
         if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDE)) {
             m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(JPA_ASSOCIATION_OVERRIDE), this));
         }
-        
-        // Set the converts if some are present. 
-        // Process all the join columns first.
-        if (isAnnotationPresent(JPA_CONVERTS)) {
-            for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
-                m_converts.add(new ConvertMetadata((MetadataAnnotation) convert, this));
-            }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses that support key converts need to override this method.
+     */
+    @Override
+    protected void addConvert(ConvertMetadata convert) {
+        if (m_converts == null) {
+            m_converts = new ArrayList<ConvertMetadata>();
         }
         
-        // Process the single convert second.
-        if (isAnnotationPresent(JPA_CONVERT)) {
-            m_converts.add(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
-        }
+        m_converts.add(convert);
     }
     
     /**
@@ -198,7 +198,6 @@ public class EmbeddedAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    @Override
     public List<ConvertMetadata> getConverts() {
         return m_converts;
     }
@@ -251,7 +250,7 @@ public class EmbeddedAccessor extends MappingAccessor {
             processAssociationOverrides(m_associationOverrides, aggregateMapping, getReferenceDescriptor());
             
             // Process converts.
-            processConverts(aggregateMapping, getReferenceClass());
+            processConverts(getConverts(m_converts), aggregateMapping, getReferenceClass(), false);
         } else if (mapping.isAbstractCompositeObjectMapping()) {
             ((AbstractCompositeObjectMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }

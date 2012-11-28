@@ -37,6 +37,8 @@
  *       - 379829: NPE Thrown with OneToOne Relationship
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -222,8 +224,8 @@ public class OneToManyAccessor extends CollectionAccessor {
            } else {
                // Create a 1-M mapping and process common collection mapping 
                // metadata first followed by specific metadata.
-              OneToManyMapping mapping = new OneToManyMapping();
-              process(mapping);
+               OneToManyMapping mapping = new OneToManyMapping();
+               process(mapping);
               
                Map<DatabaseField, DatabaseField> keys = ownerMapping.getSourceToTargetKeyFields();
                for (DatabaseField fkField : keys.keySet()) {
@@ -242,6 +244,7 @@ public class OneToManyAccessor extends CollectionAccessor {
                 
                    mapping.addTargetForeignKeyField(fkField, pkField);
                }
+               
                mapping.setMappedBy(getMappedBy());
            }
        } else {

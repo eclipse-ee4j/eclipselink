@@ -14,6 +14,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -42,6 +44,7 @@ import javax.persistence.AttributeConverter;
  */
 public class ConverterClass implements Converter {
     protected boolean isForMapKey;
+    protected boolean disableConversion;
     protected Class fieldClassification;
     protected String fieldClassificationName;
     protected String attributeConverterClassName;
@@ -53,8 +56,9 @@ public class ConverterClass implements Converter {
      * mapping attribute. The isForMapKey information will need to be known
      * for proper initialization.
      */
-    public ConverterClass(String attributeConverterClassName, boolean isForMapKey, String fieldClassificationName) {
+    public ConverterClass(String attributeConverterClassName, boolean isForMapKey, String fieldClassificationName, boolean disableConversion) {
         this.isForMapKey = isForMapKey;
+        this.disableConversion = disableConversion;
         this.fieldClassificationName = fieldClassificationName;
         this.attributeConverterClassName = attributeConverterClassName;
     }
@@ -80,28 +84,35 @@ public class ConverterClass implements Converter {
      */
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
-        Class attributeConverterClass = null;
-        ClassLoader loader = session.getClass().getClassLoader();    
+        Converter converter;
+        ClassLoader loader = session.getClass().getClassLoader();
         
-        try {        
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, loader));
-                    attributeConverter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
+        if (disableConversion) {
+            converter = null;
+        } else {
+            converter = this;
+            Class attributeConverterClass = null;
+    
+            try {        
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        attributeConverterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeConverterClassName, true, loader));
+                        attributeConverter = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(attributeConverterClass));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception.getException());
+                    }
+                } else {
+                    attributeConverterClass = PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, loader);
+                    attributeConverter = (AttributeConverter) PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);   
                 }
-            } else {
-                attributeConverterClass = PrivilegedAccessHelper.getClassForName(attributeConverterClassName, true, loader);
-                attributeConverter = (AttributeConverter) PrivilegedAccessHelper.newInstanceFromClass(attributeConverterClass);   
-            }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
-        } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-        } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
-        } 
+            } catch (ClassNotFoundException exception) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(attributeConverterClassName, exception);
+            } catch (IllegalAccessException exception) {
+                throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+            } catch (InstantiationException exception) {
+                throw ValidationException.errorInstantiatingClass(attributeConverterClass, exception);
+            } 
+        }
         
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
@@ -120,17 +131,17 @@ public class ConverterClass implements Converter {
         // Ensure the mapping has the correct field classification set.
         if (mapping.isDirectToFieldMapping()) {
             DirectToFieldMapping m = (DirectToFieldMapping) mapping; 
-            m.setConverter(this);
+            m.setConverter(converter);
             m.setFieldClassification(fieldClassification);
             m.setFieldClassificationClassName(fieldClassificationName);
         } else if (mapping.isDirectMapMapping() && isForMapKey) {
             DirectMapMapping m = (DirectMapMapping) mapping;
-            m.setKeyConverter(this);
+            m.setKeyConverter(converter);
             m.setDirectKeyFieldClassification(fieldClassification);
             m.setDirectKeyFieldClassificationName(fieldClassificationName);
         }  else if (mapping.isDirectCollectionMapping()) {
             DirectCollectionMapping m = (DirectCollectionMapping) mapping;
-            m.setValueConverter(this);
+            m.setValueConverter(converter);
             m.setDirectFieldClassification(fieldClassification);
             m.setDirectFieldClassificationName(fieldClassificationName);
         } else {

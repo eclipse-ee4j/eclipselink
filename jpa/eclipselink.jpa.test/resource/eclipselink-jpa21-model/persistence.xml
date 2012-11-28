@@ -19,8 +19,12 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Shoe</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ShoeTag</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Organizer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Responsibility</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter</class>
@@ -28,6 +32,7 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
         
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         

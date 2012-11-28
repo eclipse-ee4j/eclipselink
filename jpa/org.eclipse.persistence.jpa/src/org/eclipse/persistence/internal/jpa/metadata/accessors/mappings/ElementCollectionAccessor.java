@@ -49,6 +49,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support) (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -135,11 +137,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private EnumeratedMetadata m_mapKeyEnumerated;
     private ForeignKeyMetadata m_mapKeyForeignKey;
     
+    private List<ConvertMetadata> m_mapKeyConverts;
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<ConvertMetadata> m_mapKeyConverts = new ArrayList<ConvertMetadata>();
     private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>(); 
     
     private MapKeyMetadata m_mapKey;
@@ -313,6 +315,22 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             
             m_associationOverrides.add(associationOverride);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * A map key convert from an annotation specification. In XML, this list
+     * is populated using the map-key-convert element. In annotations there is
+     * only a single Convert annotation and map key converts are identified
+     * with an attribute name on the convert beginning with "key".
+     */
+    @Override
+    public void addMapKeyConvert(ConvertMetadata convert) {
+        if (m_mapKeyConverts == null) {
+            m_mapKeyConverts = new ArrayList<ConvertMetadata>();
+        }
+        
+        m_mapKeyConverts.add(convert);
     }
     
     /**
@@ -681,18 +699,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             return getMapKeyTemporal();
         } else {
             return super.getTemporal(isForMapKey);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    protected boolean hasConvert(boolean isForMapKey) {
-        if (isForMapKey) {
-            return m_mapKeyConvert != null;
-        } else {
-            return super.hasConvert(isForMapKey);
         }
     }
     

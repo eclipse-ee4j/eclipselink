@@ -29,6 +29,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -46,8 +48,6 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_LOB;
@@ -73,7 +73,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 public abstract class DirectAccessor extends MappingAccessor {
     private Boolean m_optional;
     private EnumeratedMetadata m_enumerated;
-    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
+    private List<ConvertMetadata> m_converts;
     private LobMetadata m_lob;
     
     private String m_fetch;
@@ -109,23 +109,23 @@ public abstract class DirectAccessor extends MappingAccessor {
             m_temporal = new TemporalMetadata(getAnnotation(JPA_TEMPORAL), this);
         }
         
-        // Set the converts if some are present. 
-        // Process all the join columns first.
-        if (isAnnotationPresent(JPA_CONVERTS)) {
-            for (Object convert : getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
-                m_converts.add(new ConvertMetadata((MetadataAnnotation) convert, this));
-            }
-        }
-        
-        // Process the single convert second.
-        if (isAnnotationPresent(JPA_CONVERT)) {
-            m_converts.add(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
-        }
-        
         // Set the convert value if one is present.
         if (isAnnotationPresent(Convert.class)) {
             m_convert = (String) getAnnotation(Convert.class).getAttribute("value");
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses that support key converts need to override this method.
+     */
+    @Override
+    protected void addConvert(ConvertMetadata convert) {
+        if (m_converts == null) {
+            m_converts = new ArrayList<ConvertMetadata>();
+        }
+        
+        m_converts.add(convert);
     }
     
     /**
@@ -173,7 +173,6 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    @Override
     public List<ConvertMetadata> getConverts() {
         return m_converts;
     }
@@ -251,24 +250,6 @@ public abstract class DirectAccessor extends MappingAccessor {
     @Override
     public TemporalMetadata getTemporal(boolean isForMapKey) {
         return getTemporal();
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    @Override
-    protected boolean hasConvert(boolean isForMapKey) {
-        return m_convert != null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if there is JPA convert(s) metadata. Those mapping 
-     * accessors that do support them should override this method.
-     */
-    @Override
-    public boolean hasConverts() {
-        return ! m_converts.isEmpty() || getDescriptor().hasConverts(getAttributeName());
     }
     
     /**

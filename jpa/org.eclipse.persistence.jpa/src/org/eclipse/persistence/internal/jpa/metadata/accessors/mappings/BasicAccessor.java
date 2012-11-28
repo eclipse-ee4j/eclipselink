@@ -39,6 +39,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -407,11 +409,12 @@ public class BasicAccessor extends DirectAccessor {
         // Will check for PROPERTY access.
         setAccessorMethods(mapping);
         
-        // Process a converter for this mapping. We will look for a convert
-        // value first. If none is found then we'll look for a JPA converter, 
-        // that is, Enumerated, Lob and Temporal. With everything falling into 
-        // a serialized mapping if no converter whatsoever is found.
-        processMappingValueConverter(mapping, getConvert(), getReferenceClass());
+        // Process a converter for this mapping. We will look for an eclipselink
+        // convert value first. If none is found then we'll look for a JPA 
+        // converter, that is, Convert, Enumerated, Lob and Temporal. With 
+        // everything falling into a serialized mapping if no converter 
+        // whatsoever is found.
+        processMappingValueConverter(mapping, getConvert(), getConverts(), getReferenceClass());
 
         // Process a mutable setting.
         if (m_mutable != null) {

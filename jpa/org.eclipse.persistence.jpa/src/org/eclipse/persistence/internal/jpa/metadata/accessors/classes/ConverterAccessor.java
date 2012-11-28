@@ -14,6 +14,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     10/30/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support       
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -122,6 +124,14 @@ public class ConverterAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Return the field classificaiton type for this converter accessor.
+     */
+    protected String getClassificationType(boolean disableConversion) {
+        return (disableConversion) ? attributeClassification.getName() : fieldClassification.getName(); 
+    }
+    
+    /**
+     * INTERNAL:
      * To satisfy the abstract getIdentifier() method from ORMetadata.
      */
     @Override
@@ -182,14 +192,28 @@ public class ConverterAccessor extends ORMetadata {
      * Process this converter for the given mapping.
      */
     public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName) {
+        process(mapping, isForMapKey, attributeName, false);
+    }
+    
+    /**
+     * INTERNAL:
+     * Process this converter for the given mapping.
+     */
+    public void process(DatabaseMapping mapping, boolean isForMapKey, String attributeName, boolean disableConversion) {
+        String fieldClassificationName = getClassificationType(disableConversion);
+        ConverterClass converterClass = new ConverterClass(getJavaClassName(), isForMapKey, fieldClassificationName, disableConversion);
+        
         if (mapping.isDirectMapMapping() && isForMapKey) {
-            ((DirectMapMapping) mapping).setKeyConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
+            ((DirectMapMapping) mapping).setKeyConverter(converterClass);
+            ((DirectMapMapping) mapping).setDirectKeyFieldClassificationName(fieldClassificationName);
         } else if (mapping.isDirectCollectionMapping()) {
-            ((DirectCollectionMapping) mapping).setValueConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
+            ((DirectCollectionMapping) mapping).setValueConverter(converterClass);
+            ((DirectCollectionMapping) mapping).setDirectFieldClassificationName(fieldClassificationName);
         } else if (mapping.isDirectToFieldMapping()) {
-            ((AbstractDirectMapping) mapping).setConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()));
+            ((AbstractDirectMapping) mapping).setConverter(converterClass);
+            ((AbstractDirectMapping) mapping).setFieldClassificationClassName(fieldClassificationName);
         } else if (mapping.isAggregateObjectMapping()) {
-            ((AggregateObjectMapping) mapping).addConverter(new ConverterClass(getJavaClassName(), isForMapKey, fieldClassification.getName()), attributeName);
+            ((AggregateObjectMapping) mapping).addConverter(converterClass, attributeName);
         }  else if (mapping.isAggregateCollectionMapping()) {
             // TODO: Be nice to support converters on AggregateCollections keys.
             // For now they are silently ignored.

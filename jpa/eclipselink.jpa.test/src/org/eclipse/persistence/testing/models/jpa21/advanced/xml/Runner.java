@@ -12,14 +12,17 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
-import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 
 public class Runner extends Athlete {
     protected Integer id;
@@ -30,11 +33,16 @@ public class Runner extends Athlete {
     protected Map<String, String> personalBests;
 
     public Runner() {
+        races = new ArrayList<Race>();
         personalBests = new HashMap<String, String>();
     }
     
     public void addPersonalBest(String distance, String time) {
         personalBests.put(distance, time);
+    }
+    
+    public void addRace(Race race) {
+        races.add(race);
     }
     
     public Gender getGender() { 
@@ -51,6 +59,10 @@ public class Runner extends Athlete {
     
     public Map<String, String> getPersonalBests() {
         return personalBests;
+    }
+    
+    public List<Race> getRaces() {
+        return races;
     }
     
     public Map<ShoeTag, Shoe> getShoes() {
@@ -83,6 +95,10 @@ public class Runner extends Athlete {
     
     public void setPersonalBests(Map<String, String> personalBests) {
         this.personalBests = personalBests;
+    }
+    
+    public void setRaces(List<Race> races) {
+        this.races = races;
     }
     
     public void setShoes(Map<ShoeTag, Shoe> shoes) {

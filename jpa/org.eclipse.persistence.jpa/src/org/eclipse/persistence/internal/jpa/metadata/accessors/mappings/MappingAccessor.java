@@ -81,6 +81,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -91,7 +93,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -150,7 +151,8 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 /**
@@ -203,9 +205,21 @@ public abstract class MappingAccessor extends MetadataAccessor {
         initAccess();
 
         // Any mapping type may have a field for EIS/NoSQL data.
-        MetadataAnnotation field = getAnnotation("org.eclipse.persistence.nosql.annotations.Field");
-        if (field != null) {
-            m_field = new ColumnMetadata(field, this);
+        if (isAnnotationPresent("org.eclipse.persistence.nosql.annotations.Field")) {
+            m_field = new ColumnMetadata(getAnnotation("org.eclipse.persistence.nosql.annotations.Field"), this);
+        }
+        
+        // Set the converts if some are present. 
+        // Process all the converts first.
+        if (isAnnotationPresent(JPA_CONVERTS)) {
+            for (Object convert : getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
+                addConvertMetadata(new ConvertMetadata((MetadataAnnotation) convert, this));
+            }
+        }
+        
+        // Process the single convert second.
+        if (isAnnotationPresent(JPA_CONVERT)) {
+            addConvertMetadata(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
         }
     }
     
@@ -214,6 +228,69 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected MappingAccessor(String xmlElement) {
         super(xmlElement);
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses that support converts need to override this method otherwise
+     * an exception will be thrown from those accessors that do not support them
+     * when a user has defined them on that accessor.
+     */
+    protected void addConvert(ConvertMetadata convert) {
+        throw ValidationException.invalidMappingForConvert(getJavaClassName(), getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a JPA convert annotation to the converts list. If it is a map key 
+     * convert, pass it on to the map key converts list.
+     */
+    protected void addConvertMetadata(ConvertMetadata convert) {
+        if (convert.isForMapKey()) {
+            // This isForMapKey call will remove the key prefix when there is one.
+            addMapKeyConvert(convert);
+        } else {
+            addConvert(convert);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process an attribute override for either an embedded object mapping, or
+     * an element collection mapping containing embeddable objects.
+     */
+    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, MappingAccessor aggregatesAccessor) {
+        DatabaseMapping aggregatesMapping = aggregatesAccessor.getMapping();
+        DatabaseField aggregatesMappingField = aggregatesMapping.getField();
+        
+        // If we are specifying an attribute override to an id field that is
+        // within the embeddable we must update the primary key field on the
+        // owning descriptor.
+        if (aggregatesAccessor.isId()) {
+            updatePrimaryKeyField(aggregatesAccessor, overrideField);
+        }
+        
+        if (overrideName.indexOf(".") > -1) {
+            // Set the nested field name translation on the mapping. Nested 
+            // (dot notation) overrides are initialized slightly different then
+            // core field name translations which are based on column names. In
+            // JPA we need to rely and differentiate based on the override
+            // (attribute) name.
+            embeddableMapping.addNestedFieldTranslation(overrideName, overrideField, aggregatesMappingField.getName());
+        } else {
+            // Set the field name translation on the mapping.
+            embeddableMapping.addFieldTranslation(overrideField, aggregatesMappingField.getName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Subclasses that support converts need to override this method otherwise
+     * an exception will be thrown from those accessors that do not support them
+     * when a user has defined them on that accessor.
+     */
+    protected void addMapKeyConvert(ConvertMetadata convert) {
+        throw ValidationException.invalidMappingForMapKeyConvert(getJavaClassName(), getAttributeName());
     }
     
     /**
@@ -249,35 +326,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
         }
         
         return false;
-    }
-    
-    /**
-     * INTERNAL:
-     * Process an attribute override for either an embedded object mapping, or
-     * an element collection mapping containing embeddable objects.
-     */
-    protected void addFieldNameTranslation(EmbeddableMapping embeddableMapping, String overrideName, DatabaseField overrideField, MappingAccessor aggregatesAccessor) {
-        DatabaseMapping aggregatesMapping = aggregatesAccessor.getMapping();
-        DatabaseField aggregatesMappingField = aggregatesMapping.getField();
-        
-        // If we are specifying an attribute override to an id field that is
-        // within the embeddable we must update the primary key field on the
-        // owning descriptor.
-        if (aggregatesAccessor.isId()) {
-            updatePrimaryKeyField(aggregatesAccessor, overrideField);
-        }
-        
-        if (overrideName.indexOf(".") > -1) {
-            // Set the nested field name translation on the mapping. Nested 
-            // (dot notation) overrides are initialized slightly different then
-            // core field name translations which are based on column names. In
-            // JPA we need to rely and differentiate based on the override
-            // (attribute) name.
-            embeddableMapping.addNestedFieldTranslation(overrideName, overrideField, aggregatesMappingField.getName());
-        } else {
-            // Set the field name translation on the mapping.
-            embeddableMapping.addFieldTranslation(overrideField, aggregatesMappingField.getName());
-        }
     }
     
     /**
@@ -462,15 +510,18 @@ public abstract class MappingAccessor extends MetadataAccessor {
     protected ColumnMetadata getColumn(String loggingCtx) {
         return m_field == null ? new ColumnMetadata(this) : m_field;
     }
-    
+
     /**
      * INTERNAL:
-     * Return the list of JPA convert metadata. By default mapping accessors 
-     * don't have convert metadata. Those mapping accessors that do support one 
-     * should override this method.
+     * Given the potential converts return them for processing unless there
+     * are overrides available from the descriptor.
      */
-    public List<ConvertMetadata> getConverts() {
-        return null;
+    protected List<ConvertMetadata> getConverts(List<ConvertMetadata> potentialConverts) {
+        if (getDescriptor().hasConverts(getAttributeName())) {
+            return getDescriptor().getConverts(getAttributeName());
+        } else {
+            return potentialConverts;
+        }
     }
     
     /**
@@ -760,6 +811,19 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Given the potential converts return them for processing unless there
+     * are overrides available from the descriptor.
+     */
+    protected List<ConvertMetadata> getMapKeyConverts(List<ConvertMetadata> potentialMapKeyConverts) {
+        if (getDescriptor().hasMapKeyConverts(getAttributeName())) {
+            return getDescriptor().getMapKeyConverts(getAttributeName());
+        } else {
+            return potentialMapKeyConverts;
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Return the map key reference class for this accessor if applicable. It 
      * will try to extract a reference class from a generic specification.
      * Parameterized generic keys on a MappedSuperclass will return void.class.  
@@ -950,36 +1014,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Method to check if an annotated element has a Column annotation.
-     */
-    protected boolean hasColumn() {
-        return isAnnotationPresent(JPA_COLUMN);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if an annotated element has a convert specified. In XML
-     * we can restrict where converts can be specified.
-     * @see DirectAccessor
-     * @see BasicMapAccessor
-     * @see ElementCollectionAccessor
-     * @see CollectionAccessor
-     */
-    protected boolean hasConvert(boolean isForMapKey) {
-        return isAnnotationPresent(Convert.class);
-    }
-    
-    /**
-     * INTERNAL:
-     * Method to check if there is JPA convert(s) metadata. Those mapping 
-     * accessors that do support them should override this method.
-     */
-    public boolean hasConverts() {
-        return false;
-    }
-    
-    /**
-     * INTERNAL:
      * Return true if this accessor has temporal metadata.
      * @see DirectAccessor
      * @see ElementCollectionAccessor
@@ -1152,17 +1186,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * exists.
      */
     protected boolean isEnumerated(MetadataClass referenceClass, boolean isForMapKey) {
-        if (hasConvert(isForMapKey)) {
-            // If we have an @Enumerated with a @Convert, the @Convert takes
-            // precedence and we will ignore the @Enumerated and log a message.
-            if (hasEnumerated(isForMapKey)) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
-            }
-            
-            return false;
-        } else {
-            return hasEnumerated(isForMapKey) || EnumeratedMetadata.isValidEnumeratedType(referenceClass);
-        }
+        return hasEnumerated(isForMapKey) || EnumeratedMetadata.isValidEnumeratedType(referenceClass);
     }
     
     /**
@@ -1178,17 +1202,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor represents a BLOB/CLOB mapping.
      */
     protected boolean isLob(MetadataClass referenceClass, boolean isForMapKey) {
-        if (hasConvert(isForMapKey)) {
-            // If we have a Lob specified with a Convert, the Convert takes 
-            // precedence and we will ignore the Lob and log a message.
-            if (hasLob(isForMapKey)) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
-            }
-            
-            return false;
-        } else {
-            return hasLob(isForMapKey);
-        }
+        return hasLob(isForMapKey);
     }
     
     /**
@@ -1290,12 +1304,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this accessor represents a serialized mapping.
      */
     public boolean isSerialized(MetadataClass referenceClass, boolean isForMapKey) {
-        if (hasConvert(isForMapKey)) {
-            getLogger().logConfigMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
-            return false;
-        } else {
-            return isValidSerializedType(referenceClass);
-        }
+        return isValidSerializedType(referenceClass);
     }
     
     /**
@@ -1303,18 +1312,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Return true if this represents a temporal type mapping.
      */
     protected boolean isTemporal(MetadataClass referenceClass, boolean isForMapKey) {
-        if (hasConvert(isForMapKey)) {
-            // If we have a Temporal specification with a Convert specification, 
-            // the Convert takes precedence and we will ignore the Temporal and 
-            // log a message.
-            if (hasTemporal(isForMapKey)) {
-                getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
-            }
-            
-            return false;
-        } else {
-            return hasTemporal(isForMapKey) || TemporalMetadata.isValidTemporalType(referenceClass);
-        }
+        return hasTemporal(isForMapKey) || TemporalMetadata.isValidTemporalType(referenceClass);
     }
     
     /**
@@ -1482,23 +1480,49 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * EclipseLink converter (Converter, TypeConverter, ObjectTypeConverter) 
      * to the given mapping.
      */
-    protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey) {
-        // There is no work to do if the converter's name is "none".
-        if (! converterName.equals(CONVERT_NONE)) {
-            if (converterName.equals(CONVERT_SERIALIZED)) {
-                processSerialized(mapping, referenceClass, isForMapKey);
-            } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
-                new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
-            } else {
-                AbstractConverterMetadata converter = getProject().getConverter(converterName);
+    protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey, boolean hasConverts) {
+        if (converterName.equals(CONVERT_SERIALIZED)) {
+            processSerialized(mapping, referenceClass, isForMapKey);
+        } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
+            new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
+        } else {
+            AbstractConverterMetadata converter = getProject().getConverter(converterName);
                 
-                if (converter == null) {
-                    throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
-                } else {
-                    // Process the converter for this mapping.
-                    converter.process(mapping, this, referenceClass, isForMapKey);
-                }
+            if (converter == null) {
+                throw ValidationException.converterNotFound(getJavaClass(), converterName, getAnnotatedElement());
+            } else {
+                // Process the converter for this mapping.
+                converter.process(mapping, this, referenceClass, isForMapKey);
             }
+        }
+        
+        // This was an old requirement from PM, that if an EclipseLink
+        // convert was specified with a JPA converter that we log a warning
+        // message that we're overriding the JPA converter.
+        
+        if (hasEnumerated(isForMapKey)) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_ENUMERATED, getJavaClass(), getAnnotatedElement());
+        }
+        
+        if (hasLob(isForMapKey)) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_LOB, getJavaClass(), getAnnotatedElement());
+        }
+        
+        if (hasTemporal(isForMapKey)) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_TEMPORAL, getJavaClass(), getAnnotatedElement());
+        }
+        
+        if (isValidSerializedType(referenceClass)) {
+            getLogger().logConfigMessage(MetadataLogger.IGNORE_SERIALIZED, getJavaClass(), getAnnotatedElement());
+        }
+        
+        // Check for the new JPA 2.1 convert metadata.
+        if (hasConverts) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_CONVERTS, getJavaClass(), getAnnotatedElement());
+        }
+        
+        if (getProject().hasAutoApplyConverter(referenceClass)) {
+            getLogger().logWarningMessage(MetadataLogger.IGNORE_AUTO_APPLY_CONVERTER, getJavaClass(), getAnnotatedElement());
         }
     }
     
@@ -1506,13 +1530,11 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      * Process the JPA defined convert(s)
      */
-    protected void processConverts(DatabaseMapping mapping, MetadataClass referenceClass) {
-        // If there are converts specified on the descriptor for this
-        // mapping's attribute name, then use those (must override)
-        List<ConvertMetadata> converts = (getDescriptor().hasConverts(getAttributeName())) ? getDescriptor().getConverts(getAttributeName()) : getConverts();
-       
-        for (ConvertMetadata convert : converts) {
-            convert.process(mapping, referenceClass, getClassAccessor());
+    protected void processConverts(List<ConvertMetadata> converts, DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
+        if (converts != null) {
+            for (ConvertMetadata convert : converts) {
+                convert.process(mapping, referenceClass, getClassAccessor(), isForMapKey);
+            }
         }
     }
     
@@ -1531,7 +1553,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
         // Process a convert key or jpa converter for the map key if specified.
-        processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyClass());
+        processMappingKeyConverter(keyMapping, mappedKeyMapAccessor.getMapKeyConvert(), mappedKeyMapAccessor.getMapKeyConverts(), mappedKeyMapAccessor.getMapKeyClass());
         
         return keyMapping;
     }
@@ -1561,6 +1583,9 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         // Process the association overrides for this may key embeddable.
         processAssociationOverrides(mappedKeyMapAccessor.getMapKeyAssociationOverrides(), keyMapping, mapKeyAccessor.getDescriptor());
+        
+        // Process a convert key or jpa converter for the map key if specified.
+        processConverts(getMapKeyConverts(mappedKeyMapAccessor.getMapKeyConverts()), keyMapping, mappedKeyMapAccessor.getMapKeyClass(), true);
         
         keyMapping.setDescriptor(getDescriptor().getClassDescriptor());
         
@@ -1634,49 +1659,6 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process an Enumerated, Lob, Temporal, MapKeyEnumerated, MapKeyTemporal 
-     * specification. Will default a serialized converter if necessary. JPA 
-     * converters can be applied to basics and to map keys/values of a map 
-     * accessor.
-     */
-    protected void processJPAConverters(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
-        if (hasConverts()) {
-            // This method will be called twice for map mappings to support 
-            // eclipselink converters. Processing for JPA converters should 
-            // only be done on the first call.
-            //
-            // NOTE: If any convert is specified then it is the source of truth 
-            // for all parts of the mapping and no auto apply converters will be 
-            // applied. E.g. if we have a map and a convert is specified only 
-            // for the value of the map and there exist an auto apply converter 
-            // for the map key type, that auto-apply convert is not applied. 
-            // The same holds true in the reverse case. The user must 
-            // explicitely specify all parts of the convert at this point.
-            // TODO: check if this flies with the spec ... something tells me no ...
-            if (! isForMapKey) {
-                processConverts(mapping, referenceClass);
-            }
-        } else if (getProject().hasAutoApplyConverter(referenceClass)) {
-            // If no convert is specified and there exist an auto-apply
-            // converter for the reference class, apply it.
-            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, null);
-        } else {
-            // Check for an enum first since it will fall into a serializable 
-            // mapping otherwise (Enums are serialized)
-            if (isEnumerated(referenceClass, isForMapKey)) {
-                processEnumerated(getEnumerated(isForMapKey), mapping, referenceClass, isForMapKey);
-            } else if (isLob(referenceClass, isForMapKey)) {
-                processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
-            } else if (isTemporal(referenceClass, isForMapKey)) {
-                processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
-            } else if (isSerialized(referenceClass, isForMapKey)) {
-                processSerialized(mapping, referenceClass, isForMapKey);
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
      * Process a lob specification. The lob must be specified to process and 
      * create a lob type mapping.
      */
@@ -1724,29 +1706,44 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.     
      */
-    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass, boolean isForMapKey) {
+    protected void processMappingConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass, boolean isForMapKey) {
+        boolean hasConverts = (converts != null && ! converts.isEmpty());
+        
+        // A convert value is an EclipseLink extension and it takes precedence
+        // over all JPA converters so check for it first.
         if (convertValue != null && ! convertValue.equals(CONVERT_NONE)) {
-            processConvert(mapping, convertValue, referenceClass, isForMapKey);
-        } 
-
-        // Regardless if we found a convert or not, look for JPA converters. 
-        // This ensures two things; 
-        // 1 - if no Convert is specified, then any JPA converter that is 
-        // specified will be applied (see BasicMapAccessor's override of the
-        // method hasConvert()). 
-        // 2 - if a convert and a JPA converter are specified, then a log 
-        // warning will be issued stating that we are ignoring the JPA 
-        // converter.
-        processJPAConverters(mapping, referenceClass, isForMapKey);
+            processConvert(mapping, convertValue, referenceClass, isForMapKey, hasConverts);
+        } else if (hasConverts) {
+            // If we have JPA converts, apply them.
+            processConverts(converts, mapping, referenceClass, isForMapKey);
+        } else if (getProject().hasAutoApplyConverter(referenceClass)) {
+            // If no convert is specified and there exist an auto-apply
+            // converter for the reference class, apply it.
+            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey, null);
+        } else {
+            // Check for original JPA converters. Check for an enum first since 
+            // it will fall into a serializable mapping otherwise since enums 
+            // are serialized.
+            if (isEnumerated(referenceClass, isForMapKey)) {
+                processEnumerated(getEnumerated(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isLob(referenceClass, isForMapKey)) {
+                processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isTemporal(referenceClass, isForMapKey)) {
+                processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isSerialized(referenceClass, isForMapKey)) {
+                processSerialized(mapping, referenceClass, isForMapKey);
+            }
+        }
     }
     
     /**
      * INTERNAL:
-     * Process a convert value which specifies the name of an EclipseLink
-     * converter to process with this accessor's mapping key.
+     * Process a mapping key converter either from an EclipseLink convert
+     * specification or a JPA converter specification (map-key-convert, 
+     * map-key-temporal, map-key-enumerated) to be applied to the given mapping.
      */
-    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass) {
-        processMappingConverter(mapping, convertValue, referenceClass, true); 
+    protected void processMappingKeyConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass) {
+        processMappingConverter(mapping, convertValue, getMapKeyConverts(converts), referenceClass, true);
     }
     
     /**
@@ -1754,8 +1751,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Process a convert value which specifies the name of an EclipseLink
      * converter to process with this accessor's mapping.
      */
-    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, MetadataClass referenceClass) {
-        processMappingConverter(mapping, convertValue, referenceClass, false); 
+    protected void processMappingValueConverter(DatabaseMapping mapping, String convertValue, List<ConvertMetadata> converts, MetadataClass referenceClass) {
+        processMappingConverter(mapping, convertValue, getConverts(converts), referenceClass, false);
     }
     
     /**

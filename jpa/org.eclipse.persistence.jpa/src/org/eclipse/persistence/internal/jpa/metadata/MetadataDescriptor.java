@@ -98,6 +98,8 @@
  *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer 
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -206,6 +208,7 @@ public class MetadataDescriptor {
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
     private Map<String, List<ConvertMetadata>> m_converts;
+    private Map<String, List<ConvertMetadata>> m_mapKeyConverts;
     
     private MetadataClass m_pkClass;
     private MetadataClass m_javaClass;
@@ -273,6 +276,7 @@ public class MetadataDescriptor {
         m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
         m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
         m_converts = new HashMap<String, List<ConvertMetadata>>();
+        m_mapKeyConverts = new HashMap<String, List<ConvertMetadata>>();
         
         m_descriptor = new RelationalDescriptor();
         m_descriptor.setAlias("");
@@ -307,13 +311,19 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Add a convert to override a superclass class mapping.
      */
     public void addConvert(String attributeName, ConvertMetadata convert) {
-        if (! m_converts.containsKey(attributeName)) {
-            m_converts.put(attributeName, new ArrayList<ConvertMetadata>());
-        }
+        if (convert.isForMapKey()) {
+            // This isForMapKey call will remove the key prefix when there is one.
+            addMapKeyConvert(attributeName, convert);
+        } else {
+            if (! m_converts.containsKey(attributeName)) {
+                m_converts.put(attributeName, new ArrayList<ConvertMetadata>());
+            }
         
-        m_converts.get(attributeName).add(convert);
+            m_converts.get(attributeName).add(convert);
+        }
     }
     
     /** 
@@ -391,6 +401,18 @@ public class MetadataDescriptor {
         m_idAttributeNames.add(idAttributeName);    
     }
 
+    /**
+     * INTERNAL:
+     * Add a map key convert to override a superclass class mapping.
+     */
+    public void addMapKeyConvert(String attributeName, ConvertMetadata convert) {
+        if (! m_mapKeyConverts.containsKey(attributeName)) {
+            m_mapKeyConverts.put(attributeName, new ArrayList<ConvertMetadata>());
+        }
+
+        m_mapKeyConverts.get(attributeName).add(convert);
+    }
+    
     /**
      * INTERNAL:
      * If the accessor is an IdAccessor we store it in a separate map for use
@@ -789,7 +811,24 @@ public class MetadataDescriptor {
      public MetadataAccessor getBiDirectionalManyToManyAccessor(String className, String attributeName) {
         return m_biDirectionalManyToManyAccessors.get(className).get(attributeName);
     }
-
+    
+    /** 
+     * INTERNAL:
+     * Returns the immediate parent's descriptor in the inheritance hierarchy.
+     */
+    public MetadataDescriptor getInheritanceParentDescriptor() {
+        return m_inheritanceParentDescriptor;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Returns the root descriptor of the inheritance hierarchy, that is, the 
+     * one that defines the inheritance strategy.
+     */
+    public MetadataDescriptor getInheritanceRootDescriptor() {
+        return m_inheritanceRootDescriptor;
+    }
+    
     /**
      * INTERNAL:
      */
@@ -811,21 +850,11 @@ public class MetadataDescriptor {
         return getProject().getLogger();
     }
     
-    /** 
+    /**
      * INTERNAL:
-     * Returns the immediate parent's descriptor in the inheritance hierarchy.
      */
-    public MetadataDescriptor getInheritanceParentDescriptor() {
-        return m_inheritanceParentDescriptor;
-    }
-    
-    /** 
-     * INTERNAL:
-     * Returns the root descriptor of the inheritance hierarchy, that is, the 
-     * one that defines the inheritance strategy.
-     */
-    public MetadataDescriptor getInheritanceRootDescriptor() {
-        return m_inheritanceRootDescriptor;
+    public List<ConvertMetadata> getMapKeyConverts(String attributeName) {
+        return m_mapKeyConverts.get(attributeName);
     }
     
     /**
@@ -1271,6 +1300,15 @@ public class MetadataDescriptor {
      */
     public boolean hasIdAccessor() {
         return ! m_idAccessors.isEmpty();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if there is map key convert metadata for the given attribute 
+     * name.
+     */
+    public boolean hasMapKeyConverts(String attributeName) { 
+        return m_mapKeyConverts.containsKey(attributeName);
     }
     
     /**

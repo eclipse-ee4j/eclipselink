@@ -40,6 +40,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -564,8 +566,10 @@ public abstract class ORMetadata {
      * It is assumed this is a list of ORMetadata
      */
     protected void initXMLObjects(List metadatas, MetadataAccessibleObject accessibleObject) {
-        for (ORMetadata metadata : (List<ORMetadata>) metadatas) {
-            metadata.initXMLObject(accessibleObject, m_entityMappings);
+        if (metadatas != null) {
+            for (ORMetadata metadata : (List<ORMetadata>) metadatas) {
+                metadata.initXMLObject(accessibleObject, m_entityMappings);
+            }
         }
     }
     
@@ -574,12 +578,17 @@ public abstract class ORMetadata {
      * This is to support legacy orm instance docs. In some cases, previous
      * simple text elements may have been changed to a list of ORMetadata 
      * through spec churn. (e.g. <convert>). Method helps support backwards 
-     * compatibility.
+     * compatibility. If the text object is initialized the metadata list is
+     * set to null to ease further processing (logging, warnings, overrides etc.)
      */
     protected String initXMLTextObject(List metadatas) {
-        if (metadatas.size() == 1) {
-            if (((ORMetadata) metadatas.get(0)).hasText()) {
-                return ((ORMetadata) metadatas.get(0)).getText();
+        if (metadatas != null && metadatas.size() == 1) {
+            ORMetadata metadata = ((ORMetadata) metadatas.get(0));
+            
+            if (metadata.hasText()) {
+                String text = metadata.getText();
+                metadatas = null;
+                return text;
             }
         }
         

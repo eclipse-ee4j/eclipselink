@@ -49,6 +49,8 @@
  *                 does not correspond to a valid field on the mapping reference
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -96,6 +98,8 @@ public class MetadataLogger {
     public static final String IGNORE_ENUMERATED = "metadata_warning_ignore_enumerated";
     public static final String IGNORE_SERIALIZED = "metadata_warning_ignore_serialized";
     public static final String IGNORE_TEMPORAL = "metadata_warning_ignore_temporal";
+    public static final String IGNORE_CONVERTS = "metadata_warning_ignore_converts";
+    public static final String IGNORE_AUTO_APPLY_CONVERTER = "metadata_warning_ignore_auto_apply_converter";
     
     public static final String IGNORE_CACHEABLE_FALSE = "metadata_warning_ignore_cacheable_false";
     public static final String IGNORE_CACHEABLE_TRUE = "metadata_warning_ignore_cacheable_true";
@@ -246,6 +250,8 @@ public class MetadataLogger {
         addContextString(IGNORE_TEMPORAL);
         addContextString(IGNORE_ENUMERATED);
         addContextString(IGNORE_SERIALIZED);
+        addContextString(IGNORE_CONVERTS);
+        addContextString(IGNORE_AUTO_APPLY_CONVERTER);
         addContextString(IGNORE_VERSION_LOCKING);
         
         addContextString(IGNORE_CACHEABLE_FALSE);

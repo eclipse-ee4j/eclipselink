@@ -13,6 +13,14 @@
             <basic name="lastName">
                 <column name="L_NAME"/>
             </basic>
+            <element-collection name="accomplishments">
+                <map-key-column name="ACCOMPLISHMENT"/>
+                <column name="WHEN"/>
+                <temporal>DATE</temporal>
+                <collection-table  name="JPA21_XML_RUNNER_ACS">
+                    <join-column name="ATHLETE_ID"/>
+                </collection-table>
+            </element-collection>
             <element-collection name="endorsements">
                 <map-key-join-column name="ENDORSER_ID"/>
                 <map-key-foreign-key name="XMLEndorsements_Key_Foreign_Key" foreign-key-definition="XMLEndorsements_Key_Foreign_Key_Definition"/>
@@ -28,6 +36,8 @@
     <entity name="XMLRunner" class="Runner">
         <table name="JPA21_XML_RUNNER"/>
         <inheritance strategy="JOINED"/>
+        <convert attribute-name="accomplishments.key" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter"/>
+        <convert attribute-name="accomplishments" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter"/>
         <convert attribute-name="age" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
         <attributes>
             <id name="id">
@@ -49,9 +59,9 @@
                 </join-table>
             </many-to-many>
             <element-collection name="personalBests">
+                <map-key-convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
                 <map-key-column name="DISTANCE"/>
                 <column name="TIME"/>
-                <convert attribute-name="key" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
                 <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
                 <collection-table name="JPA21_XML_RUNNER_PBS">
                     <join-column name="RUNNER_ID"/>
@@ -101,6 +111,10 @@
                 <generated-value/>
             </id>
             <basic name="name"/>
+            <one-to-many name="organizers" mapped-by="race">
+                <map-key-convert attribute-name="uniqueIdentifier" disable-conversion="true"/>
+                <map-key-convert attribute-name="description" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter"/>
+            </one-to-many>
             <many-to-many name="runners" mapped-by="races"/>
         </attributes>
     </entity>
@@ -112,6 +126,19 @@
                 <generated-value/>
             </id>
             <basic name="name"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLOrganizer" class="Organizer">
+        <table name="JPA21_XML_ORGANIZER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="race">
+                <join-column name="RACE_ID"/>
+            </many-to-one>
         </attributes>
     </entity>
     
@@ -133,13 +160,24 @@
             </basic>
         </attributes>
     </embeddable>
+    
+    <embeddable class="Responsibility">
+        <attributes>
+            <basic name="uniqueIdentifier"/>
+            <basic name="description"/>
+        </attributes>
+    </embeddable>
 
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter" auto-apply="true"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter"/>
     <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter"/>
-    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>    
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
 
 </entity-mappings>

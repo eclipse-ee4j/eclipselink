@@ -51,6 +51,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support) (foreign key metadata support)
+ *     11/28/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -127,9 +129,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private EnumeratedMetadata m_mapKeyEnumerated;
     private ForeignKeyMetadata m_mapKeyForeignKey;
     
+    private List<ConvertMetadata> m_mapKeyConverts;
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
-    private List<ConvertMetadata> m_mapKeyConverts = new ArrayList<ConvertMetadata>();
     private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
     
     private MapKeyMetadata m_mapKey;
@@ -281,6 +283,22 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
+     * A map key convert from an annotation specification. In XML, this list
+     * is populated using the map-key-convert element. In annotations there is
+     * only a single Convert annotation and map key converts are identified
+     * with an attribute name on the convert beginning with "key".
+     */
+    @Override
+    public void addMapKeyConvert(ConvertMetadata convert) {
+        if (m_mapKeyConverts == null) {
+            m_mapKeyConverts = new ArrayList<ConvertMetadata>();
+        }
+        
+        m_mapKeyConverts.add(convert);
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -323,7 +341,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
                 return false;
             }
             
-            if (! valuesMatch(m_mapKeyConvert, collectionAccessor.getMapKeyConvert())) {
+            if (! valuesMatch(m_mapKeyConverts, collectionAccessor.getMapKeyConverts())) {
                 return false;
             }
             
@@ -550,15 +568,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     /**
      * INTERNAL:
-     * Return true if this accessor has map key convert metadata.
-     */
-    @Override
-    protected boolean hasConvert(boolean isForMapKey) {
-        return (isForMapKey) ? m_mapKeyConvert != null : super.hasConvert(isForMapKey); 
-    }
-    
-    /**
-     * INTERNAL:
      * Return true if this accessor has enumerated metadata.
      */
     @Override
@@ -609,6 +618,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         super.initXMLObject(accessibleObject, entityMappings);
         
         // Init the list of ORMetadata objects.
+        initXMLObjects(m_mapKeyConverts, accessibleObject);
         initXMLObjects(m_mapKeyJoinColumns, accessibleObject);
         initXMLObjects(m_mapKeyAssociationOverrides, accessibleObject);
         initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
@@ -622,6 +632,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Initialize the map key class name we read from XML.
         m_mapKeyClass = initXMLClassName(m_mapKeyClassName);
+        
+        // Initialize a previous text element from a list of elements (legacy)
+        m_mapKeyConvert = initXMLTextObject(m_mapKeyConverts);
     }
     
     /**
