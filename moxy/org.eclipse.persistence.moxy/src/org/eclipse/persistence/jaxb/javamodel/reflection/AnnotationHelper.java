@@ -14,8 +14,7 @@ package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Collection;
-import java.util.HashMap;
+
 
 /**
  * <p><b>Purpose:</b>Provide a class which is responsible for returning Annotations
@@ -26,49 +25,27 @@ import java.util.HashMap;
  *
  */
 public class AnnotationHelper {
-
-    private HashMap<AnnotatedElement, HashMap<Class, Annotation>> allAnnotationsMap =
-            new HashMap<AnnotatedElement, HashMap<Class, Annotation>>();
-
+  
     /**
      * Get an annotation of type annotationClass if it's present on the AnnotatedElement
      * elem.
      */
     public Annotation getAnnotation(AnnotatedElement elem, Class annotationClass) {
-        if (allAnnotationsMap.get(elem) == null) {
-            getAnnotationsFromElement(elem);
-        }
-        return allAnnotationsMap.get(elem).get(annotationClass);
+       return elem.getAnnotation(annotationClass);
     }
 
     /**
      * Get all annotations that exist on the AnnotatedElement elem
      */
     public Annotation[] getAnnotations(AnnotatedElement elem) {
-        if (allAnnotationsMap.get(elem) == null) {
-            getAnnotationsFromElement(elem);
-        }
-        Collection<Annotation> annos = allAnnotationsMap.get(elem).values();
-        return (Annotation[]) annos.toArray(new Annotation[annos.size()]);
+       return elem.getAnnotations();
     }
 
     /**
      * Return true if the annotation annotationClass exists on the annotatedElement elem.
      */
     public boolean isAnnotationPresent(AnnotatedElement elem, Class annotationClass) {
-        if (allAnnotationsMap.get(elem) == null) {
-            getAnnotationsFromElement(elem);
-        }
-        return allAnnotationsMap.get(elem).keySet().contains(annotationClass);
-    }
-
-    private void getAnnotationsFromElement(AnnotatedElement elem) {
-        HashMap<Class, Annotation> annotationsMap = new HashMap<Class, Annotation>();
-        Annotation[] annotations = elem.getAnnotations();
-        for (Annotation annotation : annotations) {
-            annotationsMap.put(annotation.annotationType(), annotation);
-        }
-        allAnnotationsMap.put(elem, annotationsMap);
+        return elem.isAnnotationPresent(annotationClass);
     }
 
 }
