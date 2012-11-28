@@ -4385,9 +4385,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Test nested arrays.
     public void testNestedArrays() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test testSubselectInSelect is skipped on this platform, , "
-            + "Symfoware doesn't support sub-select. (see rfe 372172)");
+        if (!(getPlatform().isOracle() || getPlatform().isMySQL() || getPlatform().isPostgreSQL())) {
+            warning("Nested arrays not supported on this database.");
             return;
         }
         EntityManager em = createEntityManager();
