@@ -2402,7 +2402,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 state = STATE_UNDEPLOYED;
                 removeSessionFromGlobalSessionManager();
                 // remove undeployed emSetupImpl from the map
-                if (EntityManagerFactoryProvider.emSetupImpls.get(sessionName).equals(this)){
+                EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
+                if ((emSetupImpl != null) && (emSetupImpl.equals(this))) {
                     EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
                 }
             }
