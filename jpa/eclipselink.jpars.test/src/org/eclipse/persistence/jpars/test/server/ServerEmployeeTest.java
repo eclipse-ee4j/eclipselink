@@ -23,6 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
@@ -82,7 +83,6 @@ public class ServerEmployeeTest {
      */
     @After
     public void cleanup() {
-        /*
         if (context != null) {
             if (context.getEmf() != null) {
                 EntityManager em = context.getEmf().createEntityManager();
@@ -98,7 +98,6 @@ public class ServerEmployeeTest {
                 }
             }
         }
-        */
     }
 
     /**
