@@ -21,6 +21,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     08/11/2012-2.5 Guy Pelletier  
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+ *     11/29/2012-2.5 Guy Pelletier 
+ *       - 395406: Fix nightly static weave test errors
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -2538,6 +2540,21 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             return null;
         }
         return this.project.getDatasourceLogin();
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the mapped superclass descriptor if one exists for the given
+     * class name. Must check any broker as well.
+     */
+    public ClassDescriptor getMappedSuperclass(String className) {
+        ClassDescriptor desc = getProject().getMappedSuperclass(className);
+        
+        if (desc == null && hasBroker()) {
+            getBroker().getMappedSuperclass(className);
+        }
+
+        return desc;
     }
     
     /**

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     11/29/2012-2.5 Guy Pelletier 
+ *       - 395406: Fix nightly static weave test errors
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
@@ -103,11 +105,7 @@ public class TransformerFactory {
      * class or from a superclass.
      */
     public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
-        // This class has inheritance to a mapped entity rather than a MappedSuperClass
-        if (initialDescriptor.getInheritancePolicyOrNull() != null && initialDescriptor.getInheritancePolicyOrNull().getParentClass() != null){
-            return;
-        }
-
+        // If there are no unmapped attributes left, there is no work left to do.
         if (unMappedAttributes.isEmpty()){
             return;
         }
@@ -116,15 +114,28 @@ public class TransformerFactory {
         if (superClz == null || superClz.isObject()){
             return;
         }
-       
+        
+        // We need to check that the superClz is actually a mapped superclass
+        // and to determine that we will ask the session for the mapped super
+        // class descriptor. If there is no mapped superclass descriptor then
+        // bail. NOTE: it is still possible at this point to have 
+        // unMappedAttributes left however. This will be true in a table per
+        // class scenerio.
+        ClassDescriptor mappedSuperclassDescriptor = ((AbstractSession) session).getMappedSuperclass(superClz.getName());
+        if (mappedSuperclassDescriptor == null) {
+            return;
+        }
+        
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
         List stillUnMappedMappings = null;
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         superClassDetails.setIsMappedSuperClass(true);
-        if (!initialDescriptor.usesPropertyAccessForWeaving()){
+        
+        if (! mappedSuperclassDescriptor.usesPropertyAccessForWeaving()) {
             superClassDetails.useAttributeAccess();
-        }
+        } 
+        
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);
             classDetailsMap.put(superClassDetails.getClassName() ,superClassDetails);

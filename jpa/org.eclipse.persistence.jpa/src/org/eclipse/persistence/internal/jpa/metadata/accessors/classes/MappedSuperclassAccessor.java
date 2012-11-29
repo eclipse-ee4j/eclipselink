@@ -70,6 +70,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     11/29/2012-2.5 Guy Pelletier 
+ *       - 395406: Fix nightly static weave test errors
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -870,6 +872,10 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (explicitAccessType == null) {
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
         }
+        
+        // This access type setting on the class descriptor will be used to
+        // weave the class properly.
+        getDescriptor().setAccessTypeOnClassDescriptor(getAccessType());
     }
     
     /**

@@ -95,6 +95,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     11/29/2012-2.5 Guy Pelletier 
+ *       - 395406: Fix nightly static weave test errors
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -809,7 +811,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             getLogger().logConfigMessage(MetadataLogger.ACCESS_TYPE, defaultAccessType, getJavaClass());
         }
         
-        getDescriptor().setAccessTypeOnClassDescriptor(this.getAccessType());
+        // This access type setting on the class descriptor will be used to
+        // weave the class properly.
+        getDescriptor().setAccessTypeOnClassDescriptor(getAccessType());
     }
     
     /**
