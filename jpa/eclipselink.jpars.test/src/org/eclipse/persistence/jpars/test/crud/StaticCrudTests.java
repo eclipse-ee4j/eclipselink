@@ -55,7 +55,8 @@ public class StaticCrudTests {
         factory = null;
         try{
             factory = new PersistenceFactoryBase();
-            persistenceContext = factory.bootstrapPersistenceContext("auction-static-local", Persistence.createEntityManagerFactory("auction-static-local", properties), new URI("http://localhost:9090/JPA-RS/"), true);
+            persistenceContext = factory.bootstrapPersistenceContext("jpars_auction-static-local", Persistence.createEntityManagerFactory("jpars_auction-static-local", properties), new URI(
+                    "http://localhost:9090/JPA-RS/"), true);
         } catch (Exception e){
             e.printStackTrace();
             fail(e.toString());

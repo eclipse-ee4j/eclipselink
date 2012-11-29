@@ -44,9 +44,9 @@
     <named-query name="User.updateName">
         <query>UPDATE User u SET u.name = :name WHERE u.id = :id</query>
     </named-query>
- 
+
     <entity class="User" access="VIRTUAL">
-        <table name="AUCTION_USER" />
+        <table name="JPARS_AUCTION_USER" />
         <attributes>
             <id name="id" attribute-type="Integer">
                 <column name="ID" />
@@ -62,9 +62,9 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity class="Auction" access="VIRTUAL">
-        <table name="AUCTION_AUCTION" />
+        <table name="JPARS_AUCTION_AUCTION" />
         <attributes>
             <id name="id" attribute-type="Integer">
                 <column name="ID" />
@@ -80,7 +80,7 @@
     </entity>
 
     <entity class="Bid" access="VIRTUAL">
-        <table name="AUCTION_BID" />
+        <table name="JPARS_AUCTION_BID" />
         <attributes>
             <id name="id" attribute-type="Integer">
                 <column name="ID" />
@@ -100,9 +100,9 @@
             </one-to-one>
         </attributes>
     </entity>
-    
+
     <entity class="Address" access="VIRTUAL">
-        <table name="AUCTION_ADDRESS" />
+        <table name="JPARS_AUCTION_ADDRESS" />
         <id-class class="org.eclipse.persistence.jpars.test.model.dynamic.AddressPK"/>
         <attributes>
             <id name="id" attribute-type="Integer">

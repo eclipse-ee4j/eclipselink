@@ -68,7 +68,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 })
 
 @Entity
-@Table(name="ST_AUC_USER")
+@Table(name = "JPARS_ST_AUC_USER")
 public class StaticUser {
 
     @Id

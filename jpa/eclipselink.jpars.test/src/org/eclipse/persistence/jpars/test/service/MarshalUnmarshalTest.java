@@ -33,7 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class MarshalUnmarshalTest {
-    private static final String DEFAULT_PU = "auction-static";
+    private static final String DEFAULT_PU = "jpars_auction-static";
     private static PersistenceContext context = null;
 
     /**
@@ -55,7 +55,7 @@ public class MarshalUnmarshalTest {
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
                 DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("auction-static", emf,
+        context = factory.bootstrapPersistenceContext("jpars_auction-static", emf,
                 RestUtils.getServerURI(), false);
     }
 
@@ -72,14 +72,14 @@ public class MarshalUnmarshalTest {
         // in PU
         em.getTransaction().begin();
 
-        // "href":"http://localhost:9090/JPA-RS/auction-static/entity/StaticBid/1234",
+        // "href":"http://localhost:9090/JPA-RS/jpars_auction-static/entity/StaticBid/1234",
         StaticBid bid1 = new StaticBid();
         bid1.setId(1234);
         bid1.setAmount(110);
         bid1.setTime(System.currentTimeMillis());
         em.persist(bid1);
 
-        // "href":"http://localhost:9090/JPA-RS/auction-static/entity/StaticBid/5678",
+        // "href":"http://localhost:9090/JPA-RS/jpars_auction-static/entity/StaticBid/5678",
         StaticBid bid2 = new StaticBid();
         bid2.setId(5678);
         bid2.setAmount(111);

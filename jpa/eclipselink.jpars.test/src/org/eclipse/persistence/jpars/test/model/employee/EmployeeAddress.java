@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 @NamedQueries({
         @NamedQuery(
@@ -31,6 +32,7 @@ import javax.persistence.NamedQuery;
         )
 })
 @Entity
+@Table(name = "JPARS_EMPLOYEEADDRESS")
 public class EmployeeAddress {
     @Id
     @Column(name = "ADDRESS_ID")

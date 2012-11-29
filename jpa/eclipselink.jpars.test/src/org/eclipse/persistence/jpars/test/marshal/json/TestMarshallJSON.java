@@ -29,7 +29,7 @@ import org.junit.Test;
 public class TestMarshallJSON {
 
     private static final String DEFAULT_SERVER_URI_BASE = "http://localhost:9090";
-    private static final String DEFAULT_PU = "auction-static";
+    private static final String DEFAULT_PU = "jpars_auction-static";
     private static PersistenceContext context = null;
     
     @BeforeClass
@@ -43,7 +43,7 @@ public class TestMarshallJSON {
 
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("auction-static", emf, new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), false);
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, emf, new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), false);
     }
     
     @Test

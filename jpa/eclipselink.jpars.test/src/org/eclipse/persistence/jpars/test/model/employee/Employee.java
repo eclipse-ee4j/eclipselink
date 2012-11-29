@@ -25,7 +25,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -34,6 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.ConversionValue;
@@ -42,15 +42,16 @@ import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 @Entity
-@SecondaryTable(name = "SALARY")
+@Table(name = "JPARS_EMPLOYEE")
+@SecondaryTable(name = "JPARS_SALARY")
 @ObjectTypeConverter(name = "gender", objectType = Gender.class, dataType = String.class, conversionValues = {
         @ConversionValue(dataValue = "M", objectValue = "Male"),
         @ConversionValue(dataValue = "F", objectValue = "Female") })
 public class Employee {
 
     @Id
+    @GeneratedValue
     @Column(name = "EMP_ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
     @Column(name = "F_NAME")
@@ -69,13 +70,13 @@ public class Employee {
     @Column(name = "L_NAME")
     private String lastName;
 
-    @Column(table = "SALARY")
+    @Column(table = "JPARS_SALARY")
     private double salary;
 
     @Version
     private Long version;
     @ManyToMany
-    @JoinTable(joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "PROJ_ID"), name = "PROJ_EMP")
+    @JoinTable(joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "PROJ_ID"), name = "JPARS_PROJ_EMP")
     private List<Project> projects = new ArrayList<Project>();
 
     @ManyToOne
@@ -101,7 +102,7 @@ public class Employee {
     private EmploymentPeriod period;
 
     @ElementCollection
-    @CollectionTable(name = "RESPONS")
+    @CollectionTable(name = "JPARS_RESPONS")
     private List<String> responsibilities = new ArrayList<String>();
 
     public Employee() {

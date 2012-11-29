@@ -79,7 +79,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("auction", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction", RestUtils.getServerURI(), properties);
         return context;
     }
 
@@ -89,7 +89,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("phonebook", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_phonebook", RestUtils.getServerURI(), properties);
         return context;
     }
 
@@ -110,8 +110,8 @@ public class TestService {
 
             getPhoneBookPersistenceContext(properties);
 
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
-            context = factory.bootstrapPersistenceContext("auction-static-local", emf, RestUtils.getServerURI(), false);
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpars_auction-static-local", properties);
+            context = factory.bootstrapPersistenceContext("jpars_auction-static-local", emf, RestUtils.getServerURI(), false);
 
             StaticModelDatabasePopulator.populateDB(emf);
 
@@ -161,7 +161,8 @@ public class TestService {
         entities.add(entity);
         entities.add(entity2);
 
-        StreamingOutput output = (StreamingOutput) resource.update("auction", "User", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), TestService.serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "User", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+                TestService.serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
@@ -215,7 +216,8 @@ public class TestService {
         entities.add(entity);
         entities.add(entity2);
 
-        StreamingOutput output = (StreamingOutput) resource.update("phonebook", "Person", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_phonebook", "Person", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+                serializeListToStream(entities, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
@@ -298,7 +300,7 @@ public class TestService {
         List<String> mediaTypes = new ArrayList<String>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
-        StreamingOutput output = (StreamingOutput) resource.namedQuery("auction", "Auction.all", headers, ui).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction", "Auction.all", headers, ui).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
@@ -333,7 +335,7 @@ public class TestService {
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("Auction.forName", "name", "Computer");
-        StreamingOutput output = (StreamingOutput) resource.namedQuerySingleResult("auction", "Auction.forName", headers, ui).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.namedQuerySingleResult("jpars_auction", "Auction.forName", headers, ui).getEntity();
 
         String resultString = stringifyResults(output);
 
@@ -355,7 +357,8 @@ public class TestService {
         entity1.set("name", "Laptop");
         entity1.set("description", "Speedy");
 
-        StreamingOutput output = (StreamingOutput) resource.update("auction", "Auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(entity1, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+                serializeToStream(entity1, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
 
@@ -387,12 +390,13 @@ public class TestService {
         entity3.set("amount", 201d);
         entity1 = entity3.get("auction");
         entity1.set("name", "Laptop");
-        StreamingOutput output = (StreamingOutput) resource.update("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(),
+                serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
 
         assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
-        String uri = RestUtils.getServerURI() + "auction/entity/Bid/";
+        String uri = RestUtils.getServerURI() + "jpars_auction/entity/Bid/";
         assertTrue("link was not in results.", resultString.replace(" ", "").contains(uri));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
         assertTrue("Laptop was not a link in results.", !resultString.replace(" ","").contains("\"name\":\"Laptop\""));
@@ -410,8 +414,8 @@ public class TestService {
             fail("Exception: " + e);
         }
         String result = stringifyResults(output);
-        assertTrue("auction was not in the results", result.contains("auction"));
-        assertTrue("phonebook was not in the results", result.contains("phonebook"));
+        assertTrue("auction was not in the results", result.contains("jpars_auction"));
+        assertTrue("phonebook was not in the results", result.contains("jpars_phonebook"));
     }
 
     @Test
@@ -419,7 +423,7 @@ public class TestService {
         PersistenceUnitResource resource = new PersistenceUnitResource();
         resource.setPersistenceFactory(factory);
         StreamingOutput output = null;
-        output = (StreamingOutput) resource.getTypes("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
+        output = (StreamingOutput) resource.getTypes("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo()).getEntity();
         String result = stringifyResults(output);
 
         assertTrue("Bid was not in the results", result.contains("Bid"));
@@ -438,7 +442,7 @@ public class TestService {
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
-        resource.delete("auction", "Auction", entity1.get("id").toString(), ui);
+        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui);
 
         entity1 = (DynamicEntity)context.find("Auction", entity1.get("id"));
 
@@ -460,7 +464,7 @@ public class TestService {
         ui.addMatrixParameter("User.updateName", "name", "Robert");
         ui.addMatrixParameter("User.updateName", "id", entity.get("id").toString());
 
-        resource.namedQueryUpdate("auction", "User.updateName", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
+        resource.namedQueryUpdate("jpars_auction", "User.updateName", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
         entity = (DynamicEntity)context.find("User", entity.get("id"));
 
@@ -482,7 +486,8 @@ public class TestService {
         user.set("address", address);
         context.create(null, user);
 
-        Response output = resource.find("auction", "Address", address.get("id") + "+" + address.get("type"), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Response output = resource.find("jpars_auction", "Address", address.get("id") + "+" + address.get("type"), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON),
+                new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         assertTrue("Type was not in the result", result.contains("Home"));
@@ -494,7 +499,8 @@ public class TestService {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
 
-        Response output = resource.find("auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Response output = resource.find("jpars_auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(),
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         assertTrue("home was not in the result", result.contains("home"));
@@ -506,7 +512,8 @@ public class TestService {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);
 
-        Response output = resource.find("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Response output = resource.find("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID),
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         assertTrue("Auction was not in the result", result.contains("\"rel\":\"auction\""));
@@ -519,13 +526,14 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
         StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
 
         try{
-            Response output = resource.setOrAddAttribute("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
+            Response output = resource.setOrAddAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
+                    generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
 
             String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
             context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -545,13 +553,14 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
         StaticUser user = bid.getUser();
 
         try{
-            Response output = resource.removeAttribute("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user, context, MediaType.APPLICATION_JSON_TYPE));
+            Response output = resource.removeAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
+                    generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user, context, MediaType.APPLICATION_JSON_TYPE));
 
             String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
             context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -570,7 +579,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
 
         StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
         StaticBid bid = new StaticBid();
@@ -580,7 +589,8 @@ public class TestService {
 
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("bids", "partner", "auction");
-        resource.setOrAddAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        resource.setOrAddAttribute("jpars_auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids",
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
@@ -596,7 +606,8 @@ public class TestService {
 
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         bid = (StaticBid)context.find("StaticBid", bid.getId());
-        resource.removeAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        resource.removeAttribute("jpars_auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids",
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
@@ -617,7 +628,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
 
         Long count = (Long) ((List) context.queryMultipleResults(null, "User.count", null, null)).get(0);
 
@@ -626,7 +637,7 @@ public class TestService {
         List<String> mediaTypes = new ArrayList<String>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
-        StreamingOutput output = (StreamingOutput) resource.namedQuery("auction-static-local", "User.count", headers, ui).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.namedQuery("jpars_auction-static-local", "User.count", headers, ui).getEntity();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
@@ -649,13 +660,13 @@ public class TestService {
         DynamicEntity entity1 = null;
         DynamicEntity entity2 = null;
         try{
-            entity1 = (DynamicEntity)adapter.unmarshal("http://localhost:9090/JPA-RS/auction/entity/Auction/1");
+            entity1 = (DynamicEntity) adapter.unmarshal("http://localhost:9090/JPA-RS/jpars_auction/entity/Auction/1");
         } catch (Exception e){
             fail(e.toString());
         }
         assertTrue("id for Auction was missing", entity1.get("id").equals(1));
         try{
-            entity2 = (DynamicEntity)adapter.unmarshal("http://localhost:9090/JPA-RS/auction/entity/Address/1+Home");
+            entity2 = (DynamicEntity) adapter.unmarshal("http://localhost:9090/JPA-RS/jpars_auction/entity/Address/1+Home");
         } catch (Exception e){
             fail(e.toString());
         }
@@ -678,9 +689,9 @@ public class TestService {
     public void testMetadataTypes() {
         PersistenceUnitResource resource = new PersistenceUnitResource();
         resource.setPersistenceFactory(factory);
-        resource.getTypes("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
-        resource.getDescriptorMetadata("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
-        resource.getQueriesMetadata("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getTypes("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getDescriptorMetadata("jpars_auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        resource.getQueriesMetadata("jpars_auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     }
 
     @Test
@@ -689,28 +700,31 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
 
         Account account = new Account();
         account.setAccoutNumber("AAA111");
         TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("auction-static-local", "tenant.id", "AcctOwner1");
+        ui.addMatrixParameter("jpars_auction-static-local", "tenant.id", "AcctOwner1");
 
-        StreamingOutput output = (StreamingOutput) resource.update("auction-static-local", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput) resource.update("jpars_auction-static-local", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui,
+                serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String result = stringifyResults(output);
 
         account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
-        output = (StreamingOutput) resource.find("auction-static-local", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
+        output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
         result = stringifyResults(output);
         account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         assertTrue("account is null", account != null);
         TestURIInfo ui2 = new TestURIInfo();
-        ui2.addMatrixParameter("auction-static-local", "tenant.id", "AcctOwner2");
+        ui2.addMatrixParameter("jpars_auction-static-local", "tenant.id", "AcctOwner2");
 
-        output = (StreamingOutput) resource.find("auction-static-local", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
+        output = (StreamingOutput) resource.find("jpars_auction-static-local", "Account", String.valueOf(account.getId()),
+                generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
         assertTrue("output should be null", output == null);
     }
 

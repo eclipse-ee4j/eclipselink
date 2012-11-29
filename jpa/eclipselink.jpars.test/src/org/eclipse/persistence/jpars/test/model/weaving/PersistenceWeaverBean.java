@@ -27,10 +27,10 @@ import javax.persistence.PersistenceUnit;
 public class PersistenceWeaverBean {
 
     @SuppressWarnings("unused")
-    @PersistenceUnit(unitName = "auction-static")
+    @PersistenceUnit(unitName = "jpars_auction-static")
     private EntityManagerFactory emf;
 
     @SuppressWarnings("unused")
-    @PersistenceUnit(unitName = "employee-static")
+    @PersistenceUnit(unitName = "jpars_employee-static")
     private EntityManagerFactory emf2;
 }

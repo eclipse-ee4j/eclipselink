@@ -9,7 +9,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ST_AUC_ADDRESS")
+@Table(name = "JPARS_ST_AUC_ADDRESS")
 @IdClass(org.eclipse.persistence.jpars.test.model.auction.StaticAddressId.class)
 public class StaticAddress {
 

@@ -41,7 +41,7 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
 
 public class ServerCrudTest {
-    private static final String DEFAULT_PU = "auction-static";
+    private static final String DEFAULT_PU = "jpars_auction-static";
     private static Client client = null;
     private static PersistenceContext context = null;
 
@@ -61,8 +61,8 @@ public class ServerCrudTest {
         if (addressId != null){
             json.append("\"id\":" + addressId + ",");
         }
-        json.append("\"postalCode\":\"K1P 1A4\",\"street\":\"Main Street\",\"type\":\"Business\"," + 
-                "\"_relationships\":[\"_link\":{\"href\":\"http://localhost:8080/JPA-RS/auction-static/entity/StaticAddress/123456+Business/user\",\"rel\":\"user\"}]},");
+        json.append("\"postalCode\":\"K1P 1A4\",\"street\":\"Main Street\",\"type\":\"Business\"," +
+                "\"_relationships\":[\"_link\":{\"href\":\"http://localhost:8080/JPA-RS/jpars_auction-static/entity/StaticAddress/123456+Business/user\",\"rel\":\"user\"}]},");
         if (userId != null){
             json.append("\"id\":" + userId + ",");
         }
@@ -370,12 +370,14 @@ public class ServerCrudTest {
         StaticUser user = bid.getUser();
         StaticUser newUser = new StaticUser();
         newUser.setName("Mark");
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
+                MediaType.APPLICATION_JSON_TYPE);
 
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
         newUser = bid.getUser();
-        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
+                MediaType.APPLICATION_JSON_TYPE);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong user.", bid.getUser().getName().equals(bid.getUser().getName()));
         dbDelete(newUser);
@@ -833,11 +835,11 @@ public class ServerCrudTest {
         String result = response.getEntity(String.class);
 
         assertTrue(result != null);
-        assertTrue(result.contains(RestUtils.getServerURI() + "auction/metadata"));
-        assertTrue(result.contains(RestUtils.getServerURI() + "auction-static-local/metadata"));
-        assertTrue(result.contains(RestUtils.getServerURI() + "auction-static/metadata"));
-        assertTrue(result.contains(RestUtils.getServerURI() + "employee-static/metadata"));
-        assertTrue(result.contains(RestUtils.getServerURI() + "phonebook/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static-local/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_employee-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
     private static void dbCreate(Object object) {

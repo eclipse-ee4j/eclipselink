@@ -21,7 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 @Entity
-@Table(name = "LPROJECT")
+@Table(name = "JPARS_LPROJECT")
 @DiscriminatorValue("L")
 public class LargeProject extends Project {
     @Basic
