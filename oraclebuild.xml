@@ -229,12 +229,12 @@ if build=true
         <condition property="clean.target" value="oracle.ext">
             <and>
                 <not> <isset property="oracle.current"/> </not>
-                <isset property="nosql.current"/>  </not>
+                <isset property="nosql.current"/>
             </and>
         </condition>
         <condition property="clean.target" value="oracle.nosql">
             <and>
-                <isset property="oracle.current"/> </not>
+                <isset property="oracle.current"/>
                 <not> <isset property="nosql.current"/>  </not>
             </and>
         </condition>
