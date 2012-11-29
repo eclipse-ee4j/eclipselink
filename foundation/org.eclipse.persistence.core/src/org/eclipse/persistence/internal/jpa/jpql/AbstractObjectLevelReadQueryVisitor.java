@@ -159,22 +159,7 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 	 */
 	@Override
 	public void visit(OrderByItem expression) {
-
-		// Create the order by item expression
-		Expression queryExpression = queryContext.buildExpression(expression.getExpression());
-
-		// Create the ordering item
-		switch (expression.getOrdering()) {
-			case ASC:  queryExpression = queryExpression.ascending();  break;
-			case DESC: queryExpression = queryExpression.descending(); break;
-		}
-
-		// Create the null ordering item
-		switch (expression.getNullOrdering()) {
-			case NULLS_FIRST: queryExpression = queryExpression.nullsFirst(); break;
-			case NULLS_LAST:  queryExpression = queryExpression.nullsLast();  break;
-		}
-
+		Expression queryExpression = queryContext.buildExpression(expression);
 		query.addOrdering(queryExpression);
 	}
 
