@@ -285,7 +285,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testNestedArrays");
         tests.add("testNoSelect");
         tests.add("testHierarchicalClause");
-        
+
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
@@ -4428,11 +4428,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager");
         query.getResultList();
-        //query = em.createQuery("Select e from Employee e connect by e.manager order siblings by e.firstName");
+        query = em.createQuery("Select e from Employee e connect by e.manager order siblings by e.firstName");
         query.getResultList();
         query = em.createQuery("Select e from Employee e join e.manager m connect by m.manager where e.salary > 100");
         query.getResultList();
-        //query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager order siblings by e.firstName");
+        query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager order siblings by e.firstName");
         query.getResultList();
         closeEntityManager(em);
     }

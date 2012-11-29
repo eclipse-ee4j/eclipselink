@@ -48,11 +48,6 @@ import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLToDatabase;
 import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLsToFiles;
 
-import java.rmi.Naming;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.FileWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,6 +57,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.rmi.Naming;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
@@ -74,6 +70,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 import javax.persistence.ValidationMode;
 import javax.persistence.metamodel.Attribute;
@@ -83,54 +80,6 @@ import javax.persistence.spi.ClassTransformer;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.ValidationMode;
-
-import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
-import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
-import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.PropertiesHandler;
-import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.remote.RemoteSession;
-import org.eclipse.persistence.sessions.remote.rmi.RMIConnection;
-import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.ConnectionPool;
-import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
-import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
@@ -149,12 +98,13 @@ import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.EISPlatform;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
-import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
@@ -186,6 +136,7 @@ import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
 import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.jpa.metadata.ProjectCache;
@@ -219,6 +170,9 @@ import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManage
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.remote.rmi.RMIConnection;
+import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
@@ -2698,7 +2652,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 state = STATE_UNDEPLOYED;
                 removeSessionFromGlobalSessionManager();
                 // remove undeployed emSetupImpl from the map
-                if (EntityManagerFactoryProvider.emSetupImpls.get(sessionName).equals(this)){
+                EntityManagerSetupImpl emSetupImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
+                if ((emSetupImpl != null) && (emSetupImpl.equals(this))) {
                     EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
                 }
             }

@@ -95,8 +95,6 @@ public class Helper {
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
 
-    private HashMap<Class, JavaClass> annotationJavaClasses = new HashMap<Class, JavaClass>();
-
     /**
      * INTERNAL:
      * This is the preferred constructor.
@@ -257,14 +255,7 @@ public class Helper {
         if (element == null || annotationClass == null) {
             return false;
         }
-        JavaClass annoJavaClass = annotationJavaClasses.get(annotationClass); 
-        if (annoJavaClass != null) {
-            return (element.getAnnotation(annoJavaClass) != null);
-        } else {
-            annoJavaClass = jModel.getClass(annotationClass);
-            annotationJavaClasses.put(annotationClass, annoJavaClass);
-            return (element.getAnnotation(annoJavaClass) != null);
-        }
+        return (element.getAnnotation(jModel.getClass(annotationClass)) != null);
     }
 
     /**
