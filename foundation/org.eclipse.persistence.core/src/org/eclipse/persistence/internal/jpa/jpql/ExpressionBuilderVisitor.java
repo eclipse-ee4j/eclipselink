@@ -1635,7 +1635,21 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	@Override
 	public void visit(OrderByItem expression) {
-		// Nothing to do
+
+		// Create the item
+		expression.getExpression().accept(this);
+
+		// Create the ordering item
+		switch (expression.getOrdering()) {
+			case ASC:  queryExpression = queryExpression.ascending();  break;
+			case DESC: queryExpression = queryExpression.descending(); break;
+		}
+
+		// Create the null ordering item
+		switch (expression.getNullOrdering()) {
+			case NULLS_FIRST: queryExpression = queryExpression.nullsFirst(); break;
+			case NULLS_LAST:  queryExpression = queryExpression.nullsLast();  break;
+		}
 	}
 
 	/**

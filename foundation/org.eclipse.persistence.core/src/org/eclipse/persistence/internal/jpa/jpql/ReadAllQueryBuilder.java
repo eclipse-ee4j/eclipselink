@@ -29,7 +29,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This visitor visits the select expression in order to create the correct {@link ReadAllQuery},
  * which is either a {@link ReportQuery} or a {@link ReadAllQuery}.
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -92,12 +92,7 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	protected void visit(Expression expression) {
       // Does not select an identification variable
 		// (e.g. projection or aggregate function) => ReportQuery
-	        if (expression instanceof NullExpression) {
-	            // For from clause only JPQL the full object is always selected, so is ReadAllQuery.
-	            initializeReadAllQuery();
-	        } else {
-	            initializeReportQuery();
-	        }
+		initializeReportQuery();
 	}
 
 	/**
@@ -126,6 +121,15 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		else {
 			initializeReportQuery();
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(NullExpression expression) {
+		// For from clause only JPQL the full object is always selected, so is ReadAllQuery.
+		initializeReadAllQuery();
 	}
 
 	/**
