@@ -3682,6 +3682,9 @@ public class AnnotationsProcessor {
      * annotations.
      */
     private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
+        if(elem == null){
+            return false;
+        }
         Collection annotations = elem.getAnnotations();
         if (annotations == null || annotations.size() == 0) {
             return false;
