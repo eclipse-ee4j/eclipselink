@@ -1,6 +1,6 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
-    <persistence-unit name="auction-static" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="jpars_auction-static" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticUser</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAuction</class>
@@ -16,7 +16,7 @@
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="auction-static-local" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="jpars_auction-static-local" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticUser</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAuction</class>
@@ -34,7 +34,7 @@
         </properties>
     </persistence-unit>
 
-    <persistence-unit name="auction" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="jpars_auction" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.User</class>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Auction</class>
@@ -51,7 +51,7 @@
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="phonebook" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="jpars_phonebook" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
         <exclude-unlisted-classes/>
@@ -66,7 +66,7 @@
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="employee-static" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="jpars_employee-static" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.employee.Employee</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress</class>

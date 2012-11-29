@@ -23,7 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="ST_AUC_AUCTION")
+@Table(name = "JPARS_ST_AUC_AUCTION")
 public class StaticAuction {
 
     @Id

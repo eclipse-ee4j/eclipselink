@@ -43,7 +43,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class EmployeeTest {
-    private static final String DEFAULT_PU = "employee-static";
+    private static final String DEFAULT_PU = "jpars_employee-static";
     private static PersistenceContext context = null;
     private static PersistenceFactoryBase factory = null;
 

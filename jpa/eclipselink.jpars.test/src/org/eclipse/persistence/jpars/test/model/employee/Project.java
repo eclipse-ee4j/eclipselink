@@ -22,9 +22,11 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
+@Table(name = "JPARS_PROJECT")
 @Inheritance(strategy = JOINED)
 @DiscriminatorColumn(name = "PROJ_TYPE")
 public abstract class Project {

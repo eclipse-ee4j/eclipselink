@@ -15,7 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "PROJECT")
+@Table(name = "JPARS_SPROJECT")
 @DiscriminatorValue("S")
 public class SmallProject extends Project {
 

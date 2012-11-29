@@ -34,7 +34,7 @@ import javax.persistence.Table;
 })
 
 @Entity
-@Table(name="ST_AUC_BID")
+@Table(name = "JPARS_ST_AUC_BID")
 public class StaticBid {
 
     @Id

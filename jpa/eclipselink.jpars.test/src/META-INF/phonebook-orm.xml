@@ -14,7 +14,7 @@
     </named-query>
  
     <entity class="Person" access="VIRTUAL">
-        <table name="PHONEBOOK_PERSON" />
+        <table name="JPARS_PHONEBOOK_PERSON" />
         <attributes>
             <id name="id" attribute-type="Integer">
                 <column name="ID" />
