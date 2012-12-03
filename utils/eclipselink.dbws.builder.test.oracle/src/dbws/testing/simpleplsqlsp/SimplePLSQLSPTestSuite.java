@@ -30,23 +30,29 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL procedures with simple arguments .
+ * Tests PL/SQL procedures with simple arguments.
  *
  */
 public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
-
+    static final String CREATE_OBJECT_TYPE = 
+        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" + 
+            "\nxmltext VARCHAR2(100)" +
+        ")";
+    
     static final String CREATE_SIMPLEPACKAGE1_PACKAGE =
         "CREATE OR REPLACE PACKAGE SIMPLEPACKAGE1 AS" +
             "\nPROCEDURE NOARGPLSQLSP;" +
             "\nPROCEDURE VARCHARPLSQLSP(X IN VARCHAR);" +
             "\nPROCEDURE INOUTARGSPLSQLSP(T IN VARCHAR, U OUT VARCHAR, V OUT NUMERIC);" +
             "\nPROCEDURE INOUTARGPLSQLSP(T IN OUT VARCHAR);" +
+            "\nPROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE);" +
         "\nEND SIMPLEPACKAGE1;";
     static final String CREATE_SIMPLEPACKAGE1_BODY =
         "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE1 AS" +
@@ -67,10 +73,16 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
             "\nBEGIN" +
                 "\nT := CONCAT('barf-' , T);" +
             "\nEND INOUTARGPLSQLSP;" +
+            "\nPROCEDURE GET_XMLTYPE(W IN DBWS_XML_WRAPPER, X OUT XMLTYPE) AS" +
+            "\nBEGIN" +
+                "\nX := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));" +
+            "\nEND GET_XMLTYPE;" +
         "\nEND SIMPLEPACKAGE1;";
 
     static final String DROP_SIMPLEPACKAGE1_PACKAGE =
         "DROP PACKAGE SIMPLEPACKAGE1";
+    static final String DROP_OBJECT_TYPE =
+        "DROP TYPE DBWS_XML_WRAPPER";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -99,6 +111,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
+            runDdl(conn, CREATE_OBJECT_TYPE, ddlDebug);
             runDdl(conn, CREATE_SIMPLEPACKAGE1_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_SIMPLEPACKAGE1_BODY, ddlDebug);
         }
@@ -142,6 +155,12 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "schemaPattern=\"" + username.toUpperCase() + "\" " +
                   "procedurePattern=\"INOUTARGPLSQLSP\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"XMLTypeTest\" " +
+                  "catalogPattern=\"SIMPLEPACKAGE1\" " +
+                  "procedurePattern=\"GET_XMLTYPE\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -151,6 +170,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         if (ddlDrop) {
             runDdl(conn, DROP_SIMPLEPACKAGE1_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_OBJECT_TYPE, ddlDebug);
         }
     }
 
@@ -167,7 +187,7 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    
+
     @Test
     public void noargsTest() {
         Invocation invocation = new Invocation("NoArgsTest");
@@ -182,11 +202,11 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
     }
     public static final String VALUE_1_XML =
         REGULAR_XML_HEADER +
-    	"<simple-xml-format>" +
-    	   "<simple-xml>" +
-    	      "<result>1</result>" +
-    	   "</simple-xml>" +
-    	"</simple-xml-format>";
+        "<simple-xml-format>" +
+          "<simple-xml>" +
+          	"<result>1</result>" +
+          "</simple-xml>" +
+        "</simple-xml-format>";
 
     @Test
     public void inOutArgsTest() {
@@ -226,4 +246,32 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
     public static final String IN_OUT_ARG_XML =
         REGULAR_XML_HEADER +
         "<value>barf-yuck</value>";
+
+    @Test
+    public void xmlTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object xType = unmarshaller.unmarshal(new StringReader(XMLTYPE_XML));
+        Invocation invocation = new Invocation("XMLTypeTest");
+        invocation.setParameter("W", xType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(XMLTYPE_RESULT));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String XMLTYPE_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_xml_wrapperType xmlns=\"urn:simplePLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<xmltext>This is some xml</xmltext>" +
+        "</dbws_xml_wrapperType>";
+    static String XMLTYPE_RESULT =
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+          "<simple-xml>" +
+            "<result>&lt;some>This is some xml&lt;/some></result>" +
+          "</simple-xml>" +
+    "</simple-xml-format>";
 }

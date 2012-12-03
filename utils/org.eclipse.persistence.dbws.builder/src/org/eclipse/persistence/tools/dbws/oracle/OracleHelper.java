@@ -407,7 +407,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         	}
                         }
                     }
-                    // for XMLType, we want the Oracle type code to be 'SQLXML' (2009)
+                    // for XMLType, we want the type code to be 'OPAQUE' (2007)
                     if (arg.getEnclosedType() == ScalarDatabaseTypeEnum.XMLTYPE_TYPE) {
                         pa.setJdbcType(getJDBCTypeForTypeName(ScalarDatabaseTypeEnum.XMLTYPE_TYPE.toString()));
                     }
