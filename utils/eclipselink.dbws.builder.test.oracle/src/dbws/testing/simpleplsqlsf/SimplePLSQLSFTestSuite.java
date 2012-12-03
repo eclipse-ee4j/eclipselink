@@ -11,7 +11,7 @@
  *     David McCann - Sept. 07, 2011 - 2.4 - Initial implementation
  ******************************************************************************/
 package dbws.testing.simpleplsqlsf;
- 
+
 //javase imports
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
 
@@ -40,6 +41,11 @@ import dbws.testing.DBWSTestSuite;
 
 public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_OBJECT_TYPE = 
+        "CREATE OR REPLACE TYPE DBWS_XML_WRAPPER AS OBJECT (" + 
+            "\nxmltext VARCHAR2(100)" +
+        ")";
+        
     static final String CREATE_SIMPLESF_TABLE =
         "CREATE TABLE SIMPLESF (" +
             "\nEMPNO DECIMAL(4,0) NOT NULL," +
@@ -87,6 +93,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
             "\nFUNCTION FINDPLSQLMAXSAL RETURN DECIMAL;" +
             "\nFUNCTION FINDPLSQLMAXSALFORDEPT(DEPT IN DECIMAL) RETURN DECIMAL;" +
             "\nFUNCTION TEST_MULTI_OUT(P1 IN NUMBER, P2 OUT NUMBER, P3 OUT NUMBER) RETURN NUMBER;" +
+            "\nFUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE;" +
         "\nEND SIMPLEPACKAGE2;";
     static final String CREATE_SIMPLEPACKAGE2_BODY =
         "CREATE OR REPLACE PACKAGE BODY SIMPLEPACKAGE2 AS" +
@@ -108,11 +115,19 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
                 "\nP3 := P2 + 1;" +
                 "\nRETURN 666;" +
             "\nEND TEST_MULTI_OUT;" +
+            "\nFUNCTION GET_XMLTYPE(W IN DBWS_XML_WRAPPER) RETURN XMLTYPE AS" +
+            "\nX XMLTYPE;" + 
+            "\nBEGIN" +
+                "\nX := XMLTYPE(CONCAT(CONCAT('<some>', W.xmltext), '</some>'));" +
+                "\nRETURN X;" +
+            "\nEND GET_XMLTYPE;" +
         "\nEND SIMPLEPACKAGE2;";
     static final String DROP_SIMPLESF_TABLE =
         "DROP TABLE SIMPLESF";
     static final String DROP_SIMPLEPACKAGE2_PACKAGE =
         "DROP PACKAGE SIMPLEPACKAGE2";
+    static final String DROP_OBJECT_TYPE =
+        "DROP TYPE DBWS_XML_WRAPPER";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -141,6 +156,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
+            runDdl(conn, CREATE_OBJECT_TYPE, ddlDebug);
             runDdl(conn, CREATE_SIMPLESF_TABLE, ddlDebug);
             runDdl(conn, CREATE_SIMPLEPACKAGE2_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_SIMPLEPACKAGE2_BODY, ddlDebug);
@@ -159,7 +175,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
             "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
               "<properties>" +
-                  "<property name=\"projectName\">simpleSF</property>" +
+                  "<property name=\"projectName\">simplePLSQLSF</property>" +
                   "<property name=\"logLevel\">off</property>" +
                   "<property name=\"username\">";
           DBWS_BUILDER_XML_PASSWORD =
@@ -193,6 +209,12 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
                   "catalogPattern=\"SIMPLEPACKAGE2\" " +
                   "procedurePattern=\"TEST_MULTI_OUT\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"XMLTypeTest\" " +
+                  "catalogPattern=\"SIMPLEPACKAGE2\" " +
+                  "procedurePattern=\"GET_XMLTYPE\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           OracleHelper builderHelper = new OracleHelper(builder);
@@ -205,6 +227,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
             runDdl(conn, DROP_SIMPLEPACKAGE2_PACKAGE, ddlDebug);
             runDdl(conn, DROP_SIMPLESF_TABLE, ddlDebug);
+            runDdl(conn, DROP_OBJECT_TYPE, ddlDebug);
         }
     }
 
@@ -243,7 +266,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
     }
     public static final String FIND_MAX_SAL_FOR_DEPT_XML =
         REGULAR_XML_HEADER +
-        "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+        "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
           "<simple-xml>" +
             "<result>2850</result>" +
           "</simple-xml>" +
@@ -271,5 +294,33 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
               "<P2>69</P2>" +
               "<P3>70</P3>" +
            "</simple-xml>" +
+        "</simple-xml-format>";
+
+    @Test
+    public void xmlTypeTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object xType = unmarshaller.unmarshal(new StringReader(XMLTYPE_XML));
+        Invocation invocation = new Invocation("XMLTypeTest");
+        invocation.setParameter("W", xType);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(XMLTYPE_RESULT));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    static String XMLTYPE_XML =
+        REGULAR_XML_HEADER +
+        "<dbws_xml_wrapperType xmlns=\"urn:simplePLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<xmltext>This is some xml</xmltext>" +
+        "</dbws_xml_wrapperType>";
+    static String XMLTYPE_RESULT =
+        REGULAR_XML_HEADER +
+        "<simple-xml-format>" +
+          "<simple-xml>" +
+            "<result>&lt;some>This is some xml&lt;/some></result>" +
+          "</simple-xml>" +
         "</simple-xml-format>";
 }

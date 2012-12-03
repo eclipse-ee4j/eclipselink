@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.platform.database.oracle.jdbc;
 
+
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 import java.util.List;

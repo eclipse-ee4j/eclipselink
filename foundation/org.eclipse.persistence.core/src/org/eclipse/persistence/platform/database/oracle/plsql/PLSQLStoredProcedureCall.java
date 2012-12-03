@@ -49,6 +49,7 @@ import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeH
 import static org.eclipse.persistence.internal.helper.Helper.INDENT;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
 import static org.eclipse.persistence.platform.database.jdbc.JDBCTypes.getDatabaseTypeForCode;
+import static org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType.isXMLType;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_IN_CONV;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLType.PLSQLBoolean_OUT_CONV;
 import static org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes.PLSQLBoolean;
@@ -552,7 +553,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             } else {
                 DatabaseType type = outArg.databaseType;
                 if (!type.isComplexDatabaseType()) {
+                    // for XMLType, we need to set type name parameter (will be "XMLTYPE")
+                    if (isXMLType(type.getTypeName())) {
+                        super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), type.getTypeName());
+                    } else {
             		super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
+                    }
                 } else {
                     ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                     if (outArg.outIndex != MIN_VALUE) {
