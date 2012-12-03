@@ -27,7 +27,8 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
 import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
@@ -57,7 +59,6 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
@@ -131,7 +132,7 @@ public class SchemaModelGenerator {
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
+    public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
         Map<String, Schema> schemaForNamespace = generateSchemas(descriptorsToProcess, properties);
         // process any additional global elements
         if (additionalGlobalElements != null) {
@@ -146,7 +147,7 @@ public class SchemaModelGenerator {
                     QName typeAsQName = (QName) XMLConversionManager.getDefaultJavaTypes().get(tClass);
                     if (typeAsQName == null) {
                         // not a built in type - need to get the type via schema reference
-                        XMLDescriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
+                    	Descriptor desc = getDescriptorByClass(tClass, descriptorsToProcess);
                         if (desc == null) {
                             // at this point we can't determine the element type, so don't add anything
                             continue;
@@ -194,14 +195,14 @@ public class SchemaModelGenerator {
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties) throws DescriptorException {
+    public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties) throws DescriptorException {
         HashMap<String, Schema> schemaForNamespace = new HashMap<String, Schema>();
         Schema workingSchema = null;
         if (properties == null) {
             properties = new SchemaModelGeneratorProperties();
         }
         // set up schemas for the descriptors
-        for (XMLDescriptor desc : descriptorsToProcess) {
+        for (Descriptor desc : descriptorsToProcess) {
             String namespace;
             XMLSchemaReference schemaRef = desc.getSchemaReference();
             if (schemaRef != null) {
@@ -211,7 +212,7 @@ public class SchemaModelGenerator {
             } else {
                 // at this point there is no schema reference set, but if a descriptor has a
                 // default root element set we will need to generate a global element for it
-                for (DatabaseTable table : desc.getTables()) {
+                for (DatabaseTable table : (Vector<DatabaseTable>)desc.getTables()) {
                     namespace = getDefaultRootElementAsQName(desc, table.getName()).getNamespaceURI();
                     workingSchema = getSchema(namespace, desc.getNamespaceResolver(), schemaForNamespace, properties);
                     addNamespacesToWorkingSchema(desc.getNamespaceResolver(), workingSchema);
@@ -219,7 +220,7 @@ public class SchemaModelGenerator {
             }
         }
         // process the descriptors
-        for (XMLDescriptor xdesc : descriptorsToProcess) {
+        for (Descriptor xdesc : descriptorsToProcess) {
             processDescriptor(xdesc, schemaForNamespace, workingSchema, properties, descriptorsToProcess);
         }
         // return the generated schema(s)
@@ -238,13 +239,13 @@ public class SchemaModelGenerator {
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
+    public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver, Map<QName, Type> additionalGlobalElements) throws DescriptorException {
         Map<String, Schema> schemas = generateSchemas(descriptorsToProcess, properties, additionalGlobalElements);
         // write out the generates schema(s) via the given output resolver
         Project proj = new SchemaModelProject();
         XMLContext context = new XMLContext(proj);
         XMLMarshaller marshaller = context.createMarshaller();
-        XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
+        Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);
         int schemaCount = 0;
         for (Entry<String, Schema> entry : schemas.entrySet()) {
             Schema schema = entry.getValue();
@@ -273,7 +274,7 @@ public class SchemaModelGenerator {
      * @throws DescriptorException if the reference descriptor for a composite mapping is not in the list of descriptors
      * @see Schema
      */
-    public Map<String, Schema> generateSchemas(List<XMLDescriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
+    public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties, SchemaModelOutputResolver outputResolver) throws DescriptorException {
         return generateSchemas(descriptorsToProcess, properties, outputResolver, null);
     }
     
@@ -287,7 +288,7 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processDescriptor(XMLDescriptor desc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    protected void processDescriptor(Descriptor desc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
     	// determine if a simple type (or complex type with simple content) or complex type is required
     	boolean simple = isSimple(desc);
     	
@@ -301,7 +302,7 @@ public class SchemaModelGenerator {
                 workingSchema.addTopLevelElement(buildElement(desc, schemaForNamespace, workingSchema, properties, descriptors, simple));
             }
 
-            for (DatabaseTable table : desc.getTables()) {
+            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // don't overwrite existing top level elements
                 if (workingSchema.getTopLevelElements().get(localName) != null) {
@@ -324,7 +325,7 @@ public class SchemaModelGenerator {
         } else {
             // here we have a descriptor that does not have a schema reference set, but since 
             // there is a default root element set we need to generate a global element
-            for (DatabaseTable table : desc.getTables()) {
+            for (DatabaseTable table :  (Vector<DatabaseTable>)desc.getTables()) {
                 String localName = getDefaultRootElementAsQName(desc, table.getName()).getLocalPart();
                 // a global element may have been created while generating an element ref
                 if (workingSchema.getTopLevelElements().get(localName) == null) {
@@ -376,7 +377,7 @@ public class SchemaModelGenerator {
      * @param simple
      * @return
      */
-    protected Element buildElement(XMLDescriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, boolean simple) {
+    protected Element buildElement(Descriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean simple) {
         Element element = new Element();
         element.setName(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
         if (simple) {
@@ -399,7 +400,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      * @return
      */
-    protected SimpleType buildSimpleType(XMLDescriptor desc, Schema workingSchema, boolean global) {
+    protected SimpleType buildSimpleType(Descriptor desc, Schema workingSchema, boolean global) {
         SimpleType st;
     	if (global) {
     		st = buildNewSimpleType(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
@@ -407,7 +408,7 @@ public class SchemaModelGenerator {
     		st = new SimpleType();
     	}
 
-        DatabaseMapping mapping = desc.getMappings().get(0);
+        CoreMapping mapping = (CoreMapping)desc.getMappings().get(0);
         QName qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(mapping.getAttributeClassification());
         String baseType = qname.getLocalPart();
 
@@ -450,13 +451,13 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @return
      */
-    protected ComplexType buildComplexType(boolean anonymous, XMLDescriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    protected ComplexType buildComplexType(boolean anonymous, Descriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
         ComplexType ct = new ComplexType();
         if (!anonymous) {
             ct.setName(desc.getSchemaReference().getSchemaContextAsQName(workingSchema.getNamespaceResolver()).getLocalPart());
         }
 
-        InheritancePolicy inheritancePolicy = desc.getInheritancePolicyOrNull();
+        CoreInheritancePolicy inheritancePolicy = desc.getInheritancePolicyOrNull();
         Extension extension = null;
         if (inheritancePolicy != null && inheritancePolicy.getParentClass() != null) {
             extension = new Extension();
@@ -466,7 +467,7 @@ public class SchemaModelGenerator {
             ct.setComplexContent(complexContent);
         }
         Sequence seq = new Sequence();
-        for (DatabaseMapping mapping : desc.getMappings()) {
+        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
             processMapping(mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
         }
         if (extension != null) {
@@ -488,13 +489,13 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @return
      */
-    private ComplexType buildComplexTypeWithSimpleContent(XMLDescriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    private ComplexType buildComplexTypeWithSimpleContent(Descriptor desc,  HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
         ComplexType ct = new ComplexType();
         SimpleContent sc = new SimpleContent();
         Extension extension = new Extension();
         sc.setExtension(extension);
     	ct.setSimpleContent(sc);
-        for (DatabaseMapping mapping : desc.getMappings()) {
+        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
         	XMLField xFld = (XMLField) mapping.getField();
         	if (xFld.getXPath().equals(TEXT)) {
         		extension.setBaseType(getSchemaTypeForDirectMapping((XMLDirectMapping) mapping, workingSchema));
@@ -557,8 +558,8 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @return
      */
-    protected XMLDescriptor getDescriptorByName(String javaClassName, List<XMLDescriptor> descriptors) {
-        for (XMLDescriptor xDesc : descriptors) {
+    protected Descriptor getDescriptorByName(String javaClassName, List<Descriptor> descriptors) {
+        for (Descriptor xDesc : descriptors) {
             if (xDesc.getJavaClassName().equals(javaClassName)) {
                 return xDesc;
             }
@@ -574,8 +575,8 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @return
      */
-    protected XMLDescriptor getDescriptorByClass(Class javaClass, List<XMLDescriptor> descriptors) {
-        for (XMLDescriptor xDesc : descriptors) {
+    protected Descriptor getDescriptorByClass(Class javaClass, List<Descriptor> descriptors) {
+        for (Descriptor xDesc : descriptors) {
             if (xDesc.getJavaClass() != null && xDesc.getJavaClass() == javaClass) {
                 return xDesc;
             }
@@ -818,11 +819,11 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param collection
      */
-    protected void processXMLCompositeMapping(AggregateMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, boolean collection) {
+    protected void processXMLCompositeMapping(AggregateMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean collection) {
         XMLField xmlField = (XMLField) mapping.getField();
         
         String refClassName = mapping.getReferenceClassName();
-        XMLDescriptor refDesc = getDescriptorByName(refClassName, descriptors);
+        Descriptor refDesc = getDescriptorByName(refClassName, descriptors);
         if (refDesc == null) {
             throw DescriptorException.descriptorIsMissing(refClassName, mapping);
         }
@@ -875,7 +876,7 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processXMLChoiceCollectionMapping(XMLChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    protected void processXMLChoiceCollectionMapping(XMLChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
         Map<XMLField, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
@@ -891,7 +892,7 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processXMLChoiceObjectMapping(XMLChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    protected void processXMLChoiceObjectMapping(XMLChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
         Map<XMLField, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
@@ -910,7 +911,7 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param isCollection
      */
-    protected void processChoiceMapping(Map<XMLField, Class> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, boolean isCollection) {
+    protected void processChoiceMapping(Map<XMLField, Class> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         Choice theChoice = new Choice();
         if (isCollection) {
             theChoice.setMaxOccurs(Occurs.UNBOUNDED);
@@ -944,9 +945,9 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param isCollection
      */
-    protected void processXMLObjectReferenceMapping(XMLObjectReferenceMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, boolean isCollection) {
+    protected void processXMLObjectReferenceMapping(XMLObjectReferenceMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         String tgtClassName = mapping.getReferenceClassName();
-        XMLDescriptor tgtDesc = getDescriptorByName(tgtClassName, descriptors);
+        Descriptor tgtDesc = getDescriptorByName(tgtClassName, descriptors);
         if (tgtDesc == null) {
             throw DescriptorException.descriptorIsMissing(tgtClassName, mapping);
         }
@@ -997,7 +998,7 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processMapping(DatabaseMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors) {
+    protected void processMapping(CoreMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
         if (mapping instanceof XMLBinaryDataMapping) {
             processXMLBinaryDataMapping((XMLBinaryDataMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
         } else if (mapping instanceof XMLBinaryDataCollectionMapping) {
@@ -1075,7 +1076,7 @@ public class SchemaModelGenerator {
      * @param ctype
      * @param refDesc
      */
-    protected Element handleFragNamespace(XPathFragment frag, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, Element element, ComplexType ctype, XMLDescriptor refDesc) {
+    protected Element handleFragNamespace(XPathFragment frag, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, Element element, ComplexType ctype, Descriptor refDesc) {
     	String fragUri = frag.getNamespaceURI();
         // may need to add a global element
     	Element globalElement = null; 
@@ -1410,7 +1411,7 @@ public class SchemaModelGenerator {
      * @param qualifiedTableName
      * @return
      */
-    protected QName getDefaultRootElementAsQName(XMLDescriptor desc, String qualifiedTableName) {
+    protected QName getDefaultRootElementAsQName(Descriptor desc, String qualifiedTableName) {
         QName qName = null;
         int idx = qualifiedTableName.indexOf(XMLConstants.COLON);
         String localName = qualifiedTableName.substring(idx + 1);
@@ -1443,7 +1444,7 @@ public class SchemaModelGenerator {
      * @param isCollection
      * @return
      */
-    protected Element processReferenceDescriptor(Element element, XMLDescriptor refDesc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<XMLDescriptor> descriptors, XMLField field, boolean isCollection) {
+    protected Element processReferenceDescriptor(Element element, Descriptor refDesc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, XMLField field, boolean isCollection) {
         ComplexType ctype = null;
         
         if (refDesc.getSchemaReference() == null) {
@@ -1524,9 +1525,9 @@ public class SchemaModelGenerator {
      * @param desc
      * @return
      */
-    protected boolean isSimple(XMLDescriptor desc) {
+    protected boolean isSimple(Descriptor desc) {
     	boolean isSimple = false;
-        for (DatabaseMapping mapping : desc.getMappings()) {
+        for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
         	if (mapping.isDirectToFieldMapping()) {
             	XMLField xFld = (XMLField) mapping.getField();
             	if (xFld.getXPath().equals(TEXT)) {
@@ -1549,7 +1550,7 @@ public class SchemaModelGenerator {
      * @param desc
      * @return
      */
-    protected boolean isComplexTypeWithSimpleContentRequired(XMLDescriptor desc) {
+    protected boolean isComplexTypeWithSimpleContentRequired(Descriptor desc) {
     	return desc.getMappings().size() > 1 ? true : false;  
     }
 

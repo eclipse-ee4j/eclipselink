@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -55,7 +56,7 @@ public class RequiredSchemaTestCases extends GenerateSchemaTestCases {
 
             Project prj = new RequiredTestProject(required);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
 
@@ -79,10 +80,10 @@ public class RequiredSchemaTestCases extends GenerateSchemaTestCases {
         assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));        
     }
     
-    private List<XMLDescriptor> setupDescriptorList(Project prj) {
-        List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("RequiredTestObject"));
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("RequiredTestSubObject"));
+    private List<Descriptor> setupDescriptorList(Project prj) {
+        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("RequiredTestObject"));
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("RequiredTestSubObject"));
         return descriptorsToProcess;
     }
 

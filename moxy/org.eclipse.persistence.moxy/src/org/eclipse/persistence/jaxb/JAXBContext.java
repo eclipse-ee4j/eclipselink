@@ -49,6 +49,7 @@ import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -311,11 +312,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         XMLContext xmlContext = currentJAXBContextState.getXMLContext();
         Generator generator = currentJAXBContextState.getGenerator();
         if (generator == null) {
-            List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
+            List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
             List<Session> sessions = xmlContext.getSessions();
             for (Session session : sessions) {
-                List<XMLDescriptor> descriptors = (List<XMLDescriptor>)(List)session.getProject().getOrderedDescriptors();
-                for (XMLDescriptor xDesc : descriptors) {
+                List<Descriptor> descriptors = (List<Descriptor>)(List)session.getProject().getOrderedDescriptors();
+                for (Descriptor xDesc : descriptors) {
                     descriptorsToProcess.add(xDesc);
                 }
             }

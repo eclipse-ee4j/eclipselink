@@ -112,6 +112,13 @@ public abstract class CoreMapping<
      */
     public abstract boolean isCollectionMapping();
 
+    
+    /**
+     * INTERNAL:
+     * Related mapping should implement this method to return true.
+     */
+    public abstract boolean isDirectToFieldMapping();
+    
     /**
      * INTERNAL:
      * Returns true if mapping is read only else false.

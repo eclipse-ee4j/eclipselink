@@ -28,9 +28,9 @@ import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
@@ -69,7 +69,7 @@ public interface UnmarshalRecord<
 
     public Object getCurrentObject();
 
-    public XMLDescriptor getDescriptor();
+    public Descriptor getDescriptor();
 
     public SAXFragmentBuilder getFragmentBuilder();
 

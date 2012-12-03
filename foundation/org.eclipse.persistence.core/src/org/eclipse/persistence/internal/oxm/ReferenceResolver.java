@@ -31,10 +31,10 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.xml.sax.ErrorHandler;
@@ -287,7 +287,7 @@ public class ReferenceResolver {
         if(null == referenceTargetClass || referenceTargetClass == CoreClassConstants.OBJECT) {
             for(Object entry : session.getDescriptors().values()) {
                 Object value = null;
-                XMLDescriptor targetDescriptor = (XMLDescriptor) entry;
+                Descriptor targetDescriptor = (Descriptor) entry;
                 List pkFields = targetDescriptor.getPrimaryKeyFields();
                 if(null != pkFields && 1 == pkFields.size()) {
                     XMLField pkField = (XMLField) pkFields.get(0);

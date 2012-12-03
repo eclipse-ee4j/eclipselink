@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -61,6 +60,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 
@@ -415,7 +415,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
         
         UnmarshalRecord unmarshalRecord =null;
-        XMLDescriptor xmlDescriptor = null;
+        Descriptor xmlDescriptor = null;
 
         // for XMLObjectReferenceMappings we need a non-shared cache, so
         // try and get a Unit Of Work from the XMLContext
@@ -448,7 +448,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // try and get a Unit Of Work from the XMLContext
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
-            xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
+            xmlDescriptor = (Descriptor)session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
 
             
@@ -523,7 +523,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(DOMReader domReader, Node node, Class clazz) {
         UnmarshalRecord unmarshalRecord = null;
-        XMLDescriptor xmlDescriptor = null;
+        Descriptor xmlDescriptor = null;
 
         CoreAbstractSession session = null;
 
@@ -552,7 +552,7 @@ if(clazz == CoreClassConstants.OBJECT) {
             // try and get a Unit Of Work from the XMLContext
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
-            xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
+            xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
         	}catch(XMLMarshalException xme){
         		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
@@ -771,7 +771,7 @@ if(clazz == CoreClassConstants.OBJECT) {
     
         UnmarshalRecord unmarshalRecord = null;
         boolean isPrimitiveWrapper = false;
-        XMLDescriptor xmlDescriptor = null;
+        Descriptor xmlDescriptor = null;
 
         CoreAbstractSession session = null;
 
@@ -804,7 +804,7 @@ if(clazz == CoreClassConstants.OBJECT) {
             // try and get a Unit Of Work from the XMLContext
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
-            xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
+            xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
         	}catch(XMLMarshalException xme){
         		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
@@ -894,7 +894,7 @@ if(clazz == CoreClassConstants.OBJECT) {
             }
             
             UnmarshalRecord unmarshalRecord = null;
-            XMLDescriptor xmlDescriptor = null;
+            Descriptor xmlDescriptor = null;
 
             CoreAbstractSession session = null;
             boolean isPrimitiveWrapper = false;
@@ -918,7 +918,7 @@ if(clazz == CoreClassConstants.OBJECT) {
                 // try and get a Unit Of Work from the XMLContext
             	try{
                 session = xmlContext.getReadSession(clazz);
-                xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
+                xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
                 unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
             	}catch(XMLMarshalException xme){            		
             		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 

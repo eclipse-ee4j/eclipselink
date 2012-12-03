@@ -14,14 +14,15 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 
 /**
@@ -160,8 +161,8 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
             if(null != targetObject) {
                 XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                 if(null == fkField) {
-                    XMLDescriptor targetDescriptor = (XMLDescriptor) session.getDescriptor(targetObject);
-                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, targetDescriptor.getPrimaryKeyFields().get(0).getName(), targetDescriptor.getNamespaceResolver(), Object.class);
+                	Descriptor targetDescriptor = (Descriptor) session.getDescriptor(targetObject);
+                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, ((CoreField) targetDescriptor.getPrimaryKeyFields().get(0)).getName(), targetDescriptor.getNamespaceResolver(), Object.class);
                 } else {
                     fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
                 }

@@ -23,6 +23,7 @@ import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -32,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
 public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
     // Protected to public
-    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, XMLDescriptor xmlDescriptor, Mapping mapping) throws SAXException {
+    public void processChild(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Descriptor xmlDescriptor, Mapping mapping) throws SAXException {
         if(xmlDescriptor == null){
             //Use the DescriptorNotFoundContentHandler to "look ahead" and determine if this is a simple or complex element
             //if it is complex the exception should be thrown
@@ -73,13 +73,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 }
             }
             if (classValue != null) {
-                xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);
+                xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
             } else {
                 // since there is no xsi:type attribute, use the reference descriptor set
                 // on the mapping -  make sure it is non-abstract
                 if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                     // need to throw an exception here
-                    throw DescriptorException.missingClassIndicatorField(unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                    throw DescriptorException.missingClassIndicatorField(unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                 }
             }
         }
@@ -95,8 +95,8 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         xmlReader.setLexicalHandler(childRecord);
     }
 
-    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
-        XMLDescriptor returnDescriptor = null;
+    protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
+    	Descriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
@@ -149,7 +149,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         return returnDescriptor;
     }
 
-    protected void addTypeAttribute(XMLDescriptor descriptor, MarshalRecord marshalRecord, String schemaContext) {
+    protected void addTypeAttribute(Descriptor descriptor, MarshalRecord marshalRecord, String schemaContext) {
         String typeValue = schemaContext.substring(1);
 
         String xsiPrefix = null;

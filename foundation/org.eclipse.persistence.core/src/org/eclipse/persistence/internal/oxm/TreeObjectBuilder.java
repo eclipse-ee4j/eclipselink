@@ -21,8 +21,8 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentCollectionMapping;
@@ -57,7 +58,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -167,11 +167,11 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
 
     public void initialize(org.eclipse.persistence.internal.sessions.AbstractSession session) {
         super.initialize(session);
-        XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
+        Descriptor xmlDescriptor = (Descriptor)getDescriptor();
 
         // INHERITANCE
         if (xmlDescriptor.hasInheritance()) {
-            InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+            CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
             
             if (!inheritancePolicy.hasClassExtractor()) {
                 XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
@@ -192,7 +192,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             if(initialized) {
                 return;
             }
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
+            Descriptor xmlDescriptor = (Descriptor)getDescriptor();
     
             // MAPPINGS
             Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
@@ -411,7 +411,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             return record;
         }
 
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
+        Descriptor xmlDescriptor = (Descriptor) descriptor;
         XPathNode node = rootXPathNode;
         MarshalRecord marshalRecord = (MarshalRecord) record;
         QName schemaType = null;
@@ -435,7 +435,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                 }
 
                 // Returned object might have a different descriptor
-                xmlDescriptor = (XMLDescriptor) session.getDescriptor(object.getClass());
+                xmlDescriptor = (Descriptor) session.getDescriptor(object.getClass());
                 if (xmlDescriptor != null) {
                     node = ((TreeObjectBuilder) xmlDescriptor.getObjectBuilder()).getRootXPathNode();
                 } else {
@@ -508,7 +508,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session) {
         lazyInitialize();
         boolean hasValue = false;
-        NamespaceResolver namespaceResolver = ((XMLDescriptor)descriptor).getNamespaceResolver();
+        NamespaceResolver namespaceResolver = ((Descriptor)descriptor).getNamespaceResolver();
 
         List<XPathNode> attributeChildren = rootXPathNode.getAttributeChildren();
         if (null != attributeChildren) {
@@ -529,10 +529,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                 if(marshalNodeValue instanceof MappingNodeValue) {
                     Mapping selfMapping = ((MappingNodeValue) marshalNodeValue).getMapping();
                     Object value = selfMapping.getAttributeValueFromObject(object);
-                    XMLDescriptor referenceDescriptor = (XMLDescriptor)selfMapping.getReferenceDescriptor();
-                    XMLDescriptor valueDescriptor;
+                    Descriptor referenceDescriptor = (Descriptor)selfMapping.getReferenceDescriptor();
+                    Descriptor valueDescriptor;
                     if(value != null && (referenceDescriptor == null || referenceDescriptor.hasInheritance())){
-                        valueDescriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
+                        valueDescriptor = (Descriptor)session.getDescriptor(value.getClass());
                     } else {
                         valueDescriptor = referenceDescriptor;
                     }
@@ -587,7 +587,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     @Override
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    protected List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (rootXPathNode.getNonAttributeChildren() == null) {
             return null;
         } else {

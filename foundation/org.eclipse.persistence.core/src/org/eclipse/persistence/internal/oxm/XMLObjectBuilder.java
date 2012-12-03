@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -32,6 +34,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -43,7 +46,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -80,7 +82,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Build the nested row into the parent dom.
      */
     public AbstractRecord buildRow(Object object, AbstractSession session, DatabaseField xmlField, XMLRecord parentRecord) {
-        if (isXmlDescriptor() && ((XMLDescriptor)getDescriptor()).shouldPreserveDocument()) {
+        if (isXmlDescriptor() && ((Descriptor)getDescriptor()).shouldPreserveDocument()) {
             Object pk = extractPrimaryKeyFromObject(object, session);
             if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(object) });
@@ -252,7 +254,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             if ((classValue == null) && isXmlDescriptor()) {
                 // no xsi:type attribute - look for type indicator on the
                 // default root element
-                QName leafElementType = ((XMLDescriptor) concreteDescriptor).getDefaultRootElementType();
+                QName leafElementType = ((Descriptor) concreteDescriptor).getDefaultRootElementType();
 
                 // if we have a user-set type, try to get the class from the
                 // inheritance policy
@@ -289,7 +291,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, false, query.getSession());
-        if (isXmlDescriptor() && ((XMLDescriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
+        if (isXmlDescriptor() && ((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
             Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
             if ((pk != null) && (((CacheId) pk).getPrimaryKey().length > 0)) {
                 DOMRecord domRecord = (DOMRecord) databaseRow;
@@ -437,10 +439,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return buildIntoNestedRow(row, null, object, session, null, null, false);
     }
 
-    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, XMLDescriptor refDesc, XMLField xmlField) {
+    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, Descriptor refDesc, XMLField xmlField) {
         return buildIntoNestedRow(row, null, object, session, refDesc, xmlField, false);
     }
-   public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object originalObject, Object object, AbstractSession session, XMLDescriptor refDesc, XMLField xmlField, boolean wasXMLRoot) {
+   public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object originalObject, Object object, AbstractSession session, Descriptor refDesc, XMLField xmlField, boolean wasXMLRoot) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         XMLRecord record = (XMLRecord)row;
         record.setSession(session);
@@ -452,7 +454,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         List extraNamespaces = null;
         if (isXmlDescriptor()) {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
+            Descriptor xmlDescriptor = (Descriptor)getDescriptor();
             extraNamespaces = addExtraNamespacesToNamespaceResolver(xmlDescriptor, record, session, false, false);
             writeExtraNamespaces(extraNamespaces, record);
             addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, refDesc, xmlField, originalObject, object, wasXMLRoot, false);
@@ -461,7 +463,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         writeOutMappings(record, object, session);
         // If this descriptor is involved in inheritance add the class type.
         if (isXmlDescriptor()) {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)getDescriptor();
+        	Descriptor xmlDescriptor = (Descriptor)getDescriptor();
             removeExtraNamespacesFromNamespaceResolver(record, extraNamespaces, session);
         }
 
@@ -477,7 +479,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return row;
     }
 
-   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
+   protected void writeXsiTypeAttribute(Descriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
        QName contextAsQName = xmlRef.getSchemaContextAsQName();
        
        if(contextAsQName == null){
@@ -488,7 +490,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
        }       
    }
    
-   protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver) {
+   protected void writeXsiTypeAttribute(Descriptor xmlDescriptor, org.eclipse.persistence.internal.oxm.record.XMLRecord row, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver) {
        if (typeLocal == null){
            return;
        }
@@ -539,7 +541,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     public NamespaceResolver getNamespaceResolver() {
         NamespaceResolver namespaceResolver = null;
         if (isXmlDescriptor()) {
-            namespaceResolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
+            namespaceResolver = ((Descriptor)getDescriptor()).getNamespaceResolver();
         } else if (getDescriptor() instanceof org.eclipse.persistence.eis.EISDescriptor) {
             namespaceResolver = ((org.eclipse.persistence.eis.EISDescriptor)getDescriptor()).getNamespaceResolver();
         }
@@ -553,7 +555,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      */
     protected boolean isXmlDescriptor() {
         if (isXMLDescriptor == null) {
-            isXMLDescriptor = getDescriptor() instanceof XMLDescriptor;
+            isXMLDescriptor = getDescriptor() instanceof Descriptor;
         }
         return isXMLDescriptor.booleanValue();
     }
@@ -567,7 +569,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         isXMLDescriptor = null;
     }
     
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, org.eclipse.persistence.internal.oxm.record.XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    protected List addExtraNamespacesToNamespaceResolver(Descriptor desc, org.eclipse.persistence.internal.oxm.record.XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (marshalRecord.hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
             return null;
         }
@@ -769,7 +771,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * @param wasXMLRoot boolean if the originalObject was an XMLRoot
      * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
      */
-    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField,
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, XMLField xmlField,
         Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
@@ -784,7 +786,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 String xmlRootUri = xr.getNamespaceURI();
 
                 XPathQName qName = new XPathQName(xmlRootUri, xmlRootLocalName, record.isNamespaceAware());
-                XMLDescriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
+                Descriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
                     if (writeTypeAttribute) {
@@ -846,7 +848,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
         if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
             xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow((XMLRecord) record);
             return true;
@@ -880,7 +882,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return false;
         }
         if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-            InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+            CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
             XMLField indicatorField = (XMLField) inheritancePolicy.getClassIndicatorField();
             if (indicatorField != null && xsiTypeIndicatorField) {
                 Object classIndicatorValueObject = inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());

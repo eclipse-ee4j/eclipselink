@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -199,7 +199,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
              return SIMPLE_FRAGMENT;
          }
          if(childSession != null){
-	         XMLDescriptor descriptor = (XMLDescriptor) childSession.getDescriptor(value);
+	         Descriptor descriptor = (Descriptor) childSession.getDescriptor(value);
 	         String defaultRootElementString = descriptor.getDefaultRootElement();
 	         if(defaultRootElementString != null){
 	        	 return new XPathFragment(defaultRootElementString);
@@ -216,7 +216,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
 
             //used to only check xsitype when usesXMLRoot was true???
-            XMLDescriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
+            Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
             if (workingDescriptor == null) {         
             	XPathQName qname = new XPathQName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), unmarshalRecord.isNamespaceAware());
                 workingDescriptor = xmlContext.getDescriptor(qname);
@@ -263,7 +263,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 unmarshalRecord.addAttributeValue(this, objectValue);
             } else {
                 Object childObject = childRecord.getCurrentObject();
-                XMLDescriptor workingDescriptor = childRecord.getDescriptor();
+                Descriptor workingDescriptor = childRecord.getDescriptor();
                 if (workingDescriptor != null) {
                     String prefix = xPathFragment.getPrefix();
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
@@ -357,7 +357,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         XPathFragment xmlRootFragment = null;
         Object originalValue = value;
 
-        XMLDescriptor descriptor;
+        Descriptor descriptor;
         TreeObjectBuilder objectBuilder;
         CoreAbstractSession childSession;
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
@@ -384,7 +384,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
                 return true;
             }
-            descriptor = (XMLDescriptor) childSession.getDescriptor(value);
+            descriptor = (Descriptor) childSession.getDescriptor(value);
             objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
             if (wasXMLRoot) {

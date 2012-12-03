@@ -30,6 +30,8 @@ import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -37,6 +39,7 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -64,7 +67,7 @@ import org.eclipse.persistence.queries.DoesExistQuery;
  *
  * @see org.eclipse.persistence.oxm.mappings
  */
-public class XMLDescriptor extends ClassDescriptor {
+public class XMLDescriptor extends ClassDescriptor implements Descriptor<DatabaseMapping, DatabaseField, InheritancePolicy, InstantiationPolicy, ObjectBuilder>{
 
     private static final Vector EMPTY_VECTOR = NonSynchronizedVector.newInstance(1);
 

@@ -30,12 +30,12 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -392,8 +392,8 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     /**
      * INTERNAL: Return the descriptor for the document.
      */
-    protected XMLDescriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
-    	XMLDescriptor xmlDescriptor = null;
+    protected Descriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
+    	Descriptor xmlDescriptor = null;
     	
     	XMLContext xmlContext = xmlUnmarshaller.getXMLContext();        
         // Try to find a descriptor based on the schema type
@@ -402,7 +402,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
             typeFragment.setNamespaceURI(namespaceURI);
-            xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
+            xmlDescriptor =xmlContext.getDescriptorByGlobalType(typeFragment);
         }
                     
         if (null == xmlDescriptor) {
@@ -428,7 +428,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      *             if an error occurred during unmarshalling
      */
     public Object xmlToObject(DOMRecord xmlRecord) throws XMLMarshalException {
-        XMLDescriptor xmlDescriptor = getDescriptor(xmlRecord);
+        Descriptor xmlDescriptor = getDescriptor(xmlRecord);
         return xmlToObject(xmlRecord, xmlDescriptor.getJavaClass());
     }
 
@@ -489,7 +489,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	        // try and get a Unit Of Work from the XMLContext
 	        CoreAbstractSession readSession = xmlContext.getReadSession(referenceClass);
 	
-	        XMLDescriptor descriptor = (XMLDescriptor) readSession.getDescriptor(referenceClass);
+	        Descriptor descriptor = (Descriptor)readSession.getDescriptor(referenceClass);
 	        if (descriptor == null) {
 	            throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
 	        }

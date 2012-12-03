@@ -18,11 +18,11 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 
 public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
@@ -33,8 +33,8 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
 
     public XMLCollectionReferenceMappingMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping) {
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
-        branchNode = new XPathNode();
-        NamespaceResolver namespaceResolver = ((XMLDescriptor) xmlCollectionReferenceMapping.getDescriptor()).getNamespaceResolver();
+        branchNode = new XPathNode();        
+        NamespaceResolver namespaceResolver = ((Descriptor) xmlCollectionReferenceMapping.getDescriptor()).getNamespaceResolver();
         List fkFields = xmlCollectionReferenceMapping.getFields();
         for(int x=0, fkFieldsSize=fkFields.size(); x<fkFieldsSize; x++) {
             XMLField fkField = (XMLField) fkFields.get(x);

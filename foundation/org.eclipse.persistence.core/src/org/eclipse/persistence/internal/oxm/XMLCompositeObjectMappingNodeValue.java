@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
@@ -36,7 +37,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -67,7 +67,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
 
-        XMLDescriptor referenceDescriptor = (XMLDescriptor) getMapping().getReferenceDescriptor();
+        Descriptor referenceDescriptor = (Descriptor) getMapping().getReferenceDescriptor();
         TreeObjectBuilder treeObjectBuilder = (TreeObjectBuilder) referenceDescriptor.getObjectBuilder();
         MappingNodeValue textMappingNodeValue = (MappingNodeValue) treeObjectBuilder.getRootXPathNode().getTextNode().getNodeValue();
         Mapping textMapping = textMappingNodeValue.getMapping();
@@ -102,7 +102,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
         Object objectValue = xmlCompositeObjectMapping.getAttributeValueFromObject(object);
         objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
-        XMLDescriptor descriptor = (XMLDescriptor)session.getDescriptor(objectValue);
+        Descriptor descriptor = (Descriptor)session.getDescriptor(objectValue);
         if(descriptor != null){
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
             return objectBuilder.marshalAttributes(marshalRecord, objectValue, session);
@@ -181,13 +181,13 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 return true;
             }
         }
-        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();  
+        Descriptor descriptor = (Descriptor)xmlCompositeObjectMapping.getReferenceDescriptor();  
         if(descriptor == null){
-        	descriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
+        	descriptor = (Descriptor) session.getDescriptor(objectValue.getClass());
         }else if(descriptor.hasInheritance()){
         	Class objectValueClass = objectValue.getClass();
         	if(!(objectValueClass == descriptor.getJavaClass())){
-        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        		descriptor = (Descriptor) session.getDescriptor(objectValueClass);
         	}
         }
 
@@ -205,7 +205,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }
             if(!isSelfFragment) {
-                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
+                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
             }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment, WriteType.UNDEFINED);
@@ -239,7 +239,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         try {
             unmarshalRecord.removeNullCapableValue(this);
 
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
+            Descriptor xmlDescriptor = (Descriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
             if (null == xmlDescriptor) {
                 xmlDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlCompositeObjectMapping,xmlCompositeObjectMapping.getKeepAsElementPolicy());
 
@@ -254,7 +254,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                             String uri = leafType.getNamespaceURI();
                             if (uri != null && uri.length() > 0) {
                                 frag.setNamespaceURI(uri);
-                                String prefix = ((XMLDescriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
+                                String prefix = ((Descriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                                 if (prefix != null && prefix.length() > 0) {
                                     xpath = prefix + XMLConstants.COLON + xpath;
                                 }
@@ -458,7 +458,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
     public UnmarshalRecord buildSelfRecord(UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
+        	Descriptor xmlDescriptor = (Descriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
             if (null == xmlDescriptor) {
                 xmlDescriptor = findReferenceDescriptor(null, unmarshalRecord, atts, xmlCompositeObjectMapping,xmlCompositeObjectMapping.getKeepAsElementPolicy());
             }
@@ -481,13 +481,13 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                }
 
 	                if (clazz != null) {
-	                    xmlDescriptor = (XMLDescriptor)unmarshalRecord.getSession().getDescriptor(clazz);
+	                    xmlDescriptor = (Descriptor)unmarshalRecord.getSession().getDescriptor(clazz);
 	                } else {
 	                    // since there is no xsi:type attribute, use the reference descriptor set
 	                    // on the mapping -  make sure it is non-abstract
 	                    if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
 	                        // need to throw an exception here
-	                        throw DescriptorException.missingClassIndicatorField(unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
+	                        throw DescriptorException.missingClassIndicatorField(unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
 	                    }
 	                }
 	            }

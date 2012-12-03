@@ -15,9 +15,9 @@ package org.eclipse.persistence.internal.oxm.record.deferred;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLRelationshipMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.xml.sax.Attributes;
@@ -30,9 +30,9 @@ public abstract class CompositeMappingContentHandler extends DeferredContentHand
     protected Attributes attributes;
     protected Mapping mapping;
     protected XPathFragment xPathFragment;
-    protected XMLDescriptor xmlDescriptor;
+    protected Descriptor xmlDescriptor;
 
-    public CompositeMappingContentHandler(UnmarshalRecord parentRecord, Mapping aMapping, Attributes atts, AbstractNullPolicy aNullPolicy, XPathFragment aFragment, XMLDescriptor aDescriptor) {
+    public CompositeMappingContentHandler(UnmarshalRecord parentRecord, Mapping aMapping, Attributes atts, AbstractNullPolicy aNullPolicy, XPathFragment aFragment, Descriptor aDescriptor) {
         super(parentRecord);
         mapping = aMapping;
         nullPolicy = aNullPolicy;

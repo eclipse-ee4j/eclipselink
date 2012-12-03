@@ -27,6 +27,14 @@ public abstract class CoreInheritancePolicy<
 
     /**
      * INTERNAL:
+     * Add abstract class indicator information to the database row.  This is
+     * required when building a row for an insert or an update of a concrete child
+     * descriptor.
+     */
+    public abstract void addClassIndicatorFieldToRow(ABSTRACT_RECORD databaseRow);
+
+    /**
+     * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
     public abstract Class classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
@@ -38,7 +46,7 @@ public abstract class CoreInheritancePolicy<
      * Required for bug 3019934.
      */
     public abstract List<DESCRIPTOR> getAllChildDescriptors();
-
+    
     /**
      * INTERNAL:
      * Returns field that the class type indicator is store when using inheritance.
@@ -46,11 +54,18 @@ public abstract class CoreInheritancePolicy<
     public abstract FIELD getClassIndicatorField();
     
     /**
+     * PUBLIC:
+     * Return the class indicator field name.
+     * This is the name of the field in the table that stores what type of object this is.
+     */
+    public abstract String getClassIndicatorFieldName();
+
+    /**
      * INTERNAL:
      * Return the association of indicators and classes using specified ConversionManager
      */
     public abstract Map getClassIndicatorMapping();
-    
+
     /**
      * INTERNAL:
      * Returns the descriptor which the policy belongs to.
@@ -58,23 +73,39 @@ public abstract class CoreInheritancePolicy<
     public abstract DESCRIPTOR getDescriptor();
 
     /**
+     * PUBLIC:
+     * Return the parent class.
+     */
+    public abstract Class getParentClass();
+    
+    /**
+     * INTERNAL:
+     */
+    public abstract boolean hasClassExtractor();
+    
+    /**
+     * INTERNAL:
+     * Return whether or not is root parent descriptor
+     */
+    public abstract boolean isRootParentDescriptor();
+    
+    /**
      * ADVANCED:
      * To set the class indicator field.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public abstract void setClassIndicatorField(FIELD classIndicatorField);
-
+    
     /**
      * PUBLIC:
      * Set the association of indicators and classes.
      * This may be desired to be used by clients in strange inheritance models.
      */
     public abstract void setClassIndicatorMapping(Map classIndicatorMapping);
-
+    
     /**
      * INTERNAL:
      * Set the descriptor.
      */
     public abstract void setDescriptor(DESCRIPTOR descriptor);
-
 }

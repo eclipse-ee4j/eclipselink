@@ -26,6 +26,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -66,7 +67,7 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             Project prj = xCtx.getSession(0).getProject();
             loginProject(prj);
 
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             
             generatedSchema = generatedSchemas.get(MYNS);
@@ -107,7 +108,7 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             Project prj = xCtx.getSession(0).getProject();
             loginProject(prj);
 
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             
             generatedSchema = generatedSchemas.get(MYNS);
@@ -140,11 +141,11 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
      * @param prj
      * @return
      */
-    private List<XMLDescriptor> setupDescriptorList(Project prj) {
-        List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("Customer"));
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("Address"));
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("PhoneNumber"));
+    private List<Descriptor> setupDescriptorList(Project prj) {
+        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("Customer"));
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("Address"));
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("PhoneNumber"));
         return descriptorsToProcess;
     }
 

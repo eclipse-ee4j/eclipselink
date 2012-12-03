@@ -30,6 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -93,7 +94,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
             
@@ -132,7 +133,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
@@ -169,7 +170,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
 
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
             assertNotNull("No schema was generated for namespace ["+MYNS+"]", generatedSchema);
@@ -203,7 +204,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement, MYNS);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYNS);
         } catch (Exception ex) {
@@ -229,7 +230,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             boolean setDefaultRootElement = true;
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
@@ -272,7 +273,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
@@ -312,7 +313,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
             Map<String, Schema> generatedSchemas = sg.generateSchemas(descriptorsToProcess, props);
             generatedSchema = generatedSchemas.get(MYEMPTYNS);
             assertNotNull("No schema was generated for namespace ["+MYEMPTYNS+"]", generatedSchema);
@@ -342,7 +343,7 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
             boolean setDefaultRootElement = false;
             Project prj = new TestProject(setSchemaContext, setDefaultRootElement);
             loginProject(prj);
-            List<XMLDescriptor> descriptorsToProcess = setupDescriptorList(prj);
+            List<Descriptor> descriptorsToProcess = setupDescriptorList(prj);
 
             SchemaModelGeneratorProperties props = new SchemaModelGeneratorProperties();
             props.addProperty(MYEMPTYNS, SchemaModelGeneratorProperties.ELEMENT_FORM_QUALIFIED_KEY, false);
@@ -363,11 +364,11 @@ public class GenerateSingleSchemaTestCases extends GenerateSchemaTestCases {
      * @param prj
      * @return
      */
-    private List<XMLDescriptor> setupDescriptorList(Project prj) {
-        List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("Employee"));
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("Address"));
-        descriptorsToProcess.add((XMLDescriptor) prj.getDescriptorForAlias("PhoneNumber"));
+    private List<Descriptor> setupDescriptorList(Project prj) {
+        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("Employee"));
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("Address"));
+        descriptorsToProcess.add((Descriptor) prj.getDescriptorForAlias("PhoneNumber"));
         return descriptorsToProcess;
     }
 }

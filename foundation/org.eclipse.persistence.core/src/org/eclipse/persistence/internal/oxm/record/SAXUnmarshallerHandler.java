@@ -26,7 +26,6 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -40,6 +39,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
@@ -64,7 +64,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private XMLContext xmlContext;
     private UnmarshalRecord rootRecord;
     private Object object;
-    private XMLDescriptor descriptor;
+    private Descriptor descriptor;
     private XMLUnmarshaller unmarshaller;
     private CoreAbstractSession session;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
@@ -154,7 +154,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         try {           
-            XMLDescriptor xmlDescriptor = null;
+        	Descriptor xmlDescriptor = null;
             boolean isPrimitiveType = false;
             Class primitiveWrapperClass = null;
             String type = null;
@@ -203,7 +203,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     //check for a cached object and look for descriptor by class
                     Object obj = this.xmlReader.getCurrentObject(session, null);
                     if (obj != null) {
-                        xmlDescriptor = (XMLDescriptor)xmlContext.getSession(obj.getClass()).getDescriptor(obj.getClass());
+                        xmlDescriptor = (Descriptor)xmlContext.getSession(obj.getClass()).getDescriptor(obj.getClass());
                     }
                     if(xmlDescriptor == null) {
                         isPrimitiveType = primitiveWrapperClass != null;
@@ -254,7 +254,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
             session = xmlContext.getReadSession(xmlDescriptor);
-
+            
             UnmarshalRecord unmarshalRecord;
             if (isPrimitiveType) {
                 unmarshalRecord = new XMLRootRecord(primitiveWrapperClass);
@@ -282,14 +282,14 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     }
                 }
                 if (classValue != null) {
-                    xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);
+                    xmlDescriptor = (Descriptor)session.getDescriptor(classValue);
                 } else {
                     // since there is no xsi:type attribute, we'll use the descriptor
                     // that was retrieved based on the rootQName -  we need to make 
                     // sure it is non-abstract
                     if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                         // need to throw an exception here
-                        throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, xmlDescriptor.getInheritancePolicy().getDescriptor());
+                        throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
                 unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);

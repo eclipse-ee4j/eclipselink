@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -33,7 +34,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -104,7 +104,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, objectValue, session, namespaceResolver);
                 return true;
             }
-            XMLDescriptor descriptor = (XMLDescriptor) childSession.getDescriptor(objectValue);
+            Descriptor descriptor = (Descriptor) childSession.getDescriptor(objectValue);
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
@@ -162,7 +162,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            XMLDescriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
+        	Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
 
             UnmarshalKeepAsElementPolicy policy = xmlAnyObjectMapping.getKeepAsElementPolicy();
             if (((workingDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
@@ -195,7 +195,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             Object childObject = childRecord.getCurrentObject();
             // OBJECT VALUE
             if (xmlAnyObjectMapping.usesXMLRoot()) {
-                XMLDescriptor workingDescriptor = childRecord.getDescriptor();
+            	Descriptor workingDescriptor = childRecord.getDescriptor();
                 if (workingDescriptor != null) {
                     String prefix = xPathFragment.getPrefix();
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
@@ -305,12 +305,12 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     @Override
-    protected XMLDescriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
-        XMLDescriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
+    protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
+    	Descriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
         if (referenceDescriptor == null) {
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
             XPathQName xpathQName = new XPathQName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), unmarshalRecord.isNamespaceAware());
-            referenceDescriptor = xmlContext.getDescriptor(xpathQName);
+            referenceDescriptor = (Descriptor) xmlContext.getDescriptor(xpathQName);
             // Check if descriptor is for a wrapper, if it is null it out and let continue
             if (referenceDescriptor != null && referenceDescriptor.isWrapper()) {
                 referenceDescriptor = null;

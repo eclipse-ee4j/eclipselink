@@ -48,6 +48,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGeneratorProperties;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
@@ -617,8 +618,8 @@ public abstract class BaseDBWSBuilderHelper {
     public void buildSchema(NamingConventionTransformer nct) {
         Project oxProject = dbwsBuilder.getOxProject();
         Schema schema = null;
-        List<XMLDescriptor> descriptorsToProcess = new ArrayList<XMLDescriptor>();
-        for (XMLDescriptor desc : (List<XMLDescriptor>)(List)oxProject.getOrderedDescriptors()) {
+        List<Descriptor> descriptorsToProcess = new ArrayList<Descriptor>();
+        for (Descriptor desc : (List<Descriptor>)(List)oxProject.getOrderedDescriptors()) {
             String alias = desc.getAlias();
             if (!DEFAULT_SIMPLE_XML_FORMAT_TAG.equals(alias)) {
                 descriptorsToProcess.add(desc);

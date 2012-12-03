@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -318,7 +319,7 @@ public class XMLContext {
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
      */
-    public AbstractSession getReadSession(XMLDescriptor xmlDescriptor) {
+    public AbstractSession getReadSession(Descriptor xmlDescriptor) {
         return xmlContextState.getReadSession(xmlDescriptor);
     }
 
@@ -1041,7 +1042,7 @@ public class XMLContext {
          * enabled.  This method will typically  be used for unmarshalling
          * when a non-shared cache is desired.
          */
-        private AbstractSession getReadSession(XMLDescriptor xmlDescriptor) {
+        private AbstractSession getReadSession(Descriptor xmlDescriptor) {
             if (null == xmlDescriptor) {
                 return null;
             }

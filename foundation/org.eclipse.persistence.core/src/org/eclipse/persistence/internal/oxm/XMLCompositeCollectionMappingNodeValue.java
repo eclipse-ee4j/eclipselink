@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -93,7 +93,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            XMLDescriptor xmlDescriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
+        	Descriptor xmlDescriptor = (Descriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
             if (xmlDescriptor == null) {
                 xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
@@ -118,14 +118,14 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                             String uri = leafType.getNamespaceURI();
                             if (uri != null && uri.length() > 0) {
                                 frag.setNamespaceURI(uri);
-                                String prefix = ((XMLDescriptor)xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
+                                String prefix = ((Descriptor)xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                                 if (prefix != null && prefix.length() > 0) {
                                     xpath = prefix + XMLConstants.COLON + xpath;
                                 }
                             }
                             frag.setXPath(xpath);     
                             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
-                            xmlDescriptor = xmlContext.getDescriptorByGlobalType(frag);
+                            xmlDescriptor =  xmlContext.getDescriptorByGlobalType(frag);
                         }
                     }
                 } 
@@ -257,13 +257,13 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null == value) {
         	   return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
-        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
+        Descriptor descriptor = (Descriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
         if(descriptor == null){
-        	descriptor = (XMLDescriptor) session.getDescriptor(value.getClass());
+        	descriptor = (Descriptor) session.getDescriptor(value.getClass());
         }else if(descriptor.hasInheritance()){
         	Class objectValueClass = value.getClass();
         	if(!(objectValueClass == descriptor.getJavaClass())){
-        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        		descriptor = (Descriptor) session.getDescriptor(objectValueClass);
         	}
         }
         
@@ -282,7 +282,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
-            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);
+            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);
             
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment, WriteType.UNDEFINED);
             marshalRecord.afterContainmentMarshal(object, value);
