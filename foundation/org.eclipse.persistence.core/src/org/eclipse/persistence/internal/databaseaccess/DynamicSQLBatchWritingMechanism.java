@@ -17,7 +17,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -127,7 +126,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         if (this.sqlStrings.size() == 1) {
             // If only one call, just execute normally.
             try {
-                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session);          
+                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session, false);          
                 if (this.usesOptimisticLocking) {                    
                     if (rowCount != 1) {
                         throw OptimisticLockException.batchStatementExecutionFailure();
