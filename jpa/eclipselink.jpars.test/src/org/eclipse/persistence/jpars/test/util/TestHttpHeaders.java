@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jpars.test.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,6 +72,18 @@ public class TestHttpHeaders implements HttpHeaders {
     @Override
     public MultivaluedMap<String, String> getRequestHeaders() {
         return requestHeaders;
+    }
+
+    public Date getDate() {
+        return null;
+    }
+
+    public String getHeaderString(String arg0) {
+        return null;
+    }
+
+    public int getLength() {
+        return 0;
     }
 
 }

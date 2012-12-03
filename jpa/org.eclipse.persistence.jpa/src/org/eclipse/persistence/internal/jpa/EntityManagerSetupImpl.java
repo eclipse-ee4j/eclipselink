@@ -107,6 +107,7 @@ import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.eis.EISConnectionSpec;
@@ -467,7 +468,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            if (weaveRest){
+                            if (classLoaderToUse instanceof DynamicClassLoader){
                                 processor.createRestInterfaces();
                             }
                             // The project is initially created using class names rather than classes.  This call will make the conversion.

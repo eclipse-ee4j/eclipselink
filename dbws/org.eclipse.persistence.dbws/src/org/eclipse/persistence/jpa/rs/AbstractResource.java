@@ -4,27 +4,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ServiceLoader;
 
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
-
 
 /**
  * @author gonural
  *
  */
-public abstract class AbstractResource {
-    protected PersistenceFactoryBase factory;
 
-    public void setPersistenceFactory(PersistenceFactoryBase factory) {
+public abstract class AbstractResource {
+
+    protected PersistenceContextFactory factory;
+
+    public void setPersistenceFactory(PersistenceContextFactory factory) {
         this.factory = factory;
     }
 
-    public PersistenceFactoryBase getPersistenceFactory() {
+    public PersistenceContextFactory getPersistenceFactory() {
         if (factory == null) {
-            factory = new PersistenceFactoryBase();
+            factory = buildPersistenceContextFactory();
         }
         return factory;
+    }
+    
+    protected PersistenceContextFactory buildPersistenceContextFactory(){
+        ServiceLoader<PersistenceContextFactoryProvider> contextFactoryLoader = ServiceLoader.load(PersistenceContextFactoryProvider.class);
+
+        for (PersistenceContextFactoryProvider provider: contextFactoryLoader){
+            PersistenceContextFactory factory = provider.getPersistenceContextFactory(null);
+            if (factory != null){
+                return factory;
+            }
+        }
+        return null;
     }
 
     /**
