@@ -1367,7 +1367,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         Util.getJDBCTypeFromTypeName(argType.getTypeName()));
                     }
                 }
-            } else if (direction == OUT) {
+            } else if (direction == OUT) { 
             	if (hasPLSQLArgs) {
             	    if (arg.isPLSQLCursorType()) {
             	        ((PLSQLStoredProcedureCall)call).useNamedCursorOutputAsResultSet(arg.getArgumentName(), databaseType);

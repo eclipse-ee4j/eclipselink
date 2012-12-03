@@ -1344,7 +1344,7 @@ public abstract class BaseDBWSBuilderHelper {
             org.eclipse.persistence.internal.helper.DatabaseType theType = OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseType)dType).getTypeName());
             if (theType != null) {
                 return theType;
-            }
+            } 
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));

@@ -37,7 +37,7 @@ import dbws.testing.DBWSTestSuite;
 
 /**
  * Tests PL/SQL procedures with simple arguments.
- *
+ * 
  */
 public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
 

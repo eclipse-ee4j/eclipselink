@@ -1954,7 +1954,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
      	    	PLSQLargument argument = (PLSQLargument)object;
      	    	DatabaseType type = argument.databaseType;
      	    	return wrapType(type);
-     	    }
+     	    } 
 
      	    public void setAttributeValueInObject(Object object, Object value) {
      	    	PLSQLargument argument = (PLSQLargument)object;

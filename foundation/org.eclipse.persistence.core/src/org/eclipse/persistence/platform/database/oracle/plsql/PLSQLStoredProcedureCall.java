@@ -1099,7 +1099,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 return o1.originalIndex - o2.originalIndex;
             }
         });
-        for (PLSQLargument outArg : outArguments) {
+        for (PLSQLargument outArg : outArguments) { 
             outArg.databaseType.buildOutputRow(outArg, outputRow, newOutputRow, outputRowFields, outputRowValues);
         }
         return newOutputRow;
