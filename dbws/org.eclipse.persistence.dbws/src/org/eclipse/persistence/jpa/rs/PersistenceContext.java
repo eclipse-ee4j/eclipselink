@@ -61,9 +61,6 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
-import org.eclipse.persistence.jpa.rs.eventlistener.ChangeListener;
-import org.eclipse.persistence.jpa.rs.eventlistener.DatabaseEventListenerFactory;
-import org.eclipse.persistence.jpa.rs.eventlistener.DescriptorBasedDatabaseEventListener;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
@@ -99,29 +96,10 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class PersistenceContext {
 
-    /** A factory class that will provide listeners for events provided by the database
-     *  Setting this provides a hook to allow applications that are capable of receiving
-     *  events from the database to do so.
-     */
-    public DatabaseEventListenerFactory eventListenerFactory = null;
-
-    /** This internal property is used to save a change listener on the session for later retrieval.**/
-    public static final String CHANGE_NOTIFICATION_LISTENER = "jpars.change-notification-listener";
-
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
 
     @SuppressWarnings("rawtypes")
     protected List<XmlAdapter> adapters = null;
-
-    /**
-     * Static setter for the EVENT_LISTENER_FACTORY
-     * Part of the mechanism for plugging in code that can react to database events
-     * @param eventListenerFactory
-     */
-    public void setEventListenerFactory(
-            DatabaseEventListenerFactory eventListenerFactory) {
-        this.eventListenerFactory = eventListenerFactory;
-    }
 
     /**
      * The name of the persistence context is used to look it up. By default it will be the
@@ -798,18 +776,6 @@ public class PersistenceContext {
             }
         }
         return query;
-    }
-
-    /**
-     * Remove a given change listener.  Used in interacting with an application-provided mechanism for listenig
-     * to database events.
-     * @param listener
-     */
-    public void remove(ChangeListener listener) {
-        DescriptorBasedDatabaseEventListener changeListener = (DescriptorBasedDatabaseEventListener) getJpaSession().getProperty(CHANGE_NOTIFICATION_LISTENER);
-        if (changeListener != null) {
-            changeListener.removeChangeListener(listener);
-        }
     }
 
     /**

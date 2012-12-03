@@ -140,6 +140,7 @@ import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.EISPlatform;
@@ -519,7 +520,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            if (weaveRest){
+                            if (classLoaderToUse instanceof DynamicClassLoader){
                                 processor.createRestInterfaces();
                             }
                             

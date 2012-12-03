@@ -36,7 +36,7 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
  * @author tware
  *
  */
-public class PersistenceFactoryBase {
+public class PersistenceFactoryBase implements PersistenceContextFactory {
     
     private Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
 
