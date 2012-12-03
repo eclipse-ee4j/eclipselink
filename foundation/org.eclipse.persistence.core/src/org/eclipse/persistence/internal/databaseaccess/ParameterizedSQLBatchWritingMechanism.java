@@ -126,8 +126,16 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         }
         if (this.parameters.size() == 1) {
             // If only one call, just execute normally.
-            this.databaseAccessor.basicExecuteCall(this.previousCall, null, session);
-            clear();
+            try {
+                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.previousCall, null, session);          
+                if (this.previousCall.hasOptimisticLock()) {                    
+                    if (rowCount != 1) {
+                        throw OptimisticLockException.batchStatementExecutionFailure();
+                    }
+                }
+            } finally {
+                clear();
+            }
             return;
         }
 

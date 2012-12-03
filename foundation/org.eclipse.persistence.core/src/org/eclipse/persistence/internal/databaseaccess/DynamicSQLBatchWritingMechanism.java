@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -37,7 +38,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
     /**
      * This variable is used to store the SQLStrings that are being batched
      */
-    protected ArrayList sqlStrings;
+    protected List<String> sqlStrings;
     
     /**
      * Stores the statement indexes for statements that are using optimistic locking.  This allows us to check individual
@@ -52,11 +53,13 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
     /**
      * Records if this batch uses optimistic locking.
      */
-     protected boolean usesOptimisticLocking;
+    protected boolean usesOptimisticLocking;
+     
+    protected DatabaseCall lastCallAppended;
 
     public DynamicSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.sqlStrings = new ArrayList(10);
+        this.sqlStrings = new ArrayList();
         this.batchSize = 0;
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
@@ -71,12 +74,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      * being batched.  This call may result in the Mechanism executing the batched statements and
      * possibly, switching out the mechanisms
      */
-    public void appendCall(AbstractSession session, DatabaseCall dbCall) {
-        // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
-    	if (dbCall != null) {
-            cacheQueryTimeout(session, dbCall);
-        }
-    	
+    public void appendCall(AbstractSession session, DatabaseCall dbCall) {    	
         if (!dbCall.hasParameters()) {
             if ((this.batchSize + dbCall.getSQLString().length()) > this.maxBatchSize) {
                 executeBatchedStatements(session);
@@ -85,9 +83,14 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
                 executeBatchedStatements(session);
             }
             this.sqlStrings.add(dbCall.getSQLString());
+            this.lastCallAppended = dbCall;
             this.batchSize += dbCall.getSQLString().length();
             this.usesOptimisticLocking = dbCall.hasOptimisticLock;
             this.statementCount++;
+            // Store the largest queryTimeout on a single call for later use by the single statement in prepareJDK12BatchStatement
+            if (dbCall != null) {
+                cacheQueryTimeout(session, dbCall);
+            }
             // feature for bug 4104613, allows users to force statements to flush on execution
             if (((ModifyQuery) dbCall.getQuery()).forceBatchStatementExecution()) {
               executeBatchedStatements(session);
@@ -105,10 +108,11 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     public void clear() {
         this.sqlStrings.clear();
-        statementCount = executionCount  = 0;
+        this.statementCount = executionCount  = 0;
         this.usesOptimisticLocking = false;
         this.batchSize = 0;
-        clearCacheQueryTimeout();
+        this.queryTimeoutCache = DescriptorQueryManager.NoTimeout;
+        this.lastCallAppended = null;
     }
 
     /**
@@ -120,6 +124,20 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         if (this.sqlStrings.isEmpty()) {
             return;
         }
+        if (this.sqlStrings.size() == 1) {
+            // If only one call, just execute normally.
+            try {
+                int rowCount = (Integer)this.databaseAccessor.basicExecuteCall(this.lastCallAppended, null, session);          
+                if (this.usesOptimisticLocking) {                    
+                    if (rowCount != 1) {
+                        throw OptimisticLockException.batchStatementExecutionFailure();
+                    }
+                }
+            } finally {
+                clear();
+            }
+            return;
+        }
 
         try {
             this.databaseAccessor.writeStatementsCount++;
@@ -127,9 +145,8 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
 
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {
                 session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
-                for (Iterator sqlStringsIterator = this.sqlStrings.iterator();
-                         sqlStringsIterator.hasNext();) {
-                    session.log(SessionLog.FINE, SessionLog.SQL, (String)sqlStringsIterator.next(), null, this.databaseAccessor, false);
+                for (String sql : this.sqlStrings) {
+                    session.log(SessionLog.FINE, SessionLog.SQL, sql, null, this.databaseAccessor, false);
                 }
                 session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
             }
@@ -172,12 +189,11 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
         DatabasePlatform platform = session.getPlatform();
 
         writer.write(platform.getBatchBeginString());
-        for (Iterator sqlStringsIteration = this.sqlStrings.iterator();
-                 sqlStringsIteration.hasNext();) {
+        for (String sql : this.sqlStrings) {
             if (isDelimiterStringNeeded) {
                 writer.write(platform.getBatchDelimiterString());
             }
-            writer.write((String)sqlStringsIteration.next());
+            writer.write(sql);
             isDelimiterStringNeeded = true;
         }
         writer.write(platform.getBatchDelimiterString());
@@ -223,13 +239,12 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
             session.startOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
             try {
                 statement = this.databaseAccessor.getConnection().createStatement();
-                for (Iterator sqlStringsIterator = this.sqlStrings.iterator();
-                         sqlStringsIterator.hasNext();) {
-                    statement.addBatch((String)sqlStringsIterator.next());
+                for (String sql : this.sqlStrings) {
+                    statement.addBatch(sql);
                 }
             	// Set the query timeout that was cached during the multiple calls to appendCall
-                if(queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
-                	statement.setQueryTimeout(queryTimeoutCache);
+                if (this.queryTimeoutCache > DescriptorQueryManager.NoTimeout) {
+                	statement.setQueryTimeout(this.queryTimeoutCache);
                 }
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, null, SessionProfiler.ALL);
