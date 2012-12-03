@@ -2508,6 +2508,16 @@ public class PersistenceUnitProperties {
     public static final String REMOTE_URL = "eclipselink.remote.client.url";
     
     /**
+     * The <code>"eclipselink.remote.server.name"</code> property
+     * configures remote JPA for a server.
+     * This allows JPA to be access over RMI or other protocol from a remote Java client.
+     * The name is the name the server will be registered under in the RMI registry.
+     * 
+     * @see REMOTE_PROTOCOL
+     */
+    public static final String REMOTE_SERVER_NAME = "eclipselink.remote.server.name";
+    
+    /**
      * The <code>"eclipselink.nosql.connection-spec"</code> property.<br>
      * Allows the connection information for an NoSQL or EIS datasource to be specified.
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,

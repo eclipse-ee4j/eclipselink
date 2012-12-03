@@ -24,5 +24,4 @@ package org.eclipse.persistence.config;
  */
 public class RemoteProtocol {
     public static final String RMI = "rmi";
-    public static final String CORBA = "corba";
 }

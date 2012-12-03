@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <!-- This tests mapping static classes that cannot be weaved to test that lazy is reverted when weaving could not occur. -->
+    <entity name="DatabaseField" class="org.eclipse.persistence.internal.helper.DatabaseField" access="FIELD">
+        <attributes>
+            <id name="name"/>
+            <one-to-one name="table" fetch="LAZY"/>
+        </attributes>
+    </entity>
+    <entity name="DatabaseTable" class="org.eclipse.persistence.internal.helper.DatabaseTable" access="FIELD">
+        <attributes>
+            <id name="name"/>
+            <transient name="uniqueConstraints"/>
+            <transient name="indexes"/>
+        </attributes>
+    </entity>
+</entity-mappings>

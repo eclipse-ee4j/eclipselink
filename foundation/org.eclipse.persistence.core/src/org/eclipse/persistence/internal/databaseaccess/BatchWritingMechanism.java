@@ -53,6 +53,14 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
     /** Allow for the batch size to be set as many database have strict limits. **/
     protected int maxBatchSize;
 
+    public int getMaxBatchSize() {
+        return maxBatchSize;
+    }
+
+    public void setMaxBatchSize(int maxBatchSize) {
+        this.maxBatchSize = maxBatchSize;
+    }
+
     /**
      * INTERNAL:
      * This function caches the largest query timeout encountered within all the calls in this batch,

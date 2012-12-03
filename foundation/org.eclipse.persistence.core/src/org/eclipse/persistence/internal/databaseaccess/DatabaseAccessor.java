@@ -217,8 +217,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     *    Begin a transaction on the database. This means toggling the auto-commit option.
+     * Begin a transaction on the database. This means toggling the auto-commit option.
      */
+    @Override
     public void basicBeginTransaction(AbstractSession session) throws DatabaseException {
         try {
             if (getPlatform().supportsAutoCommit()) {
@@ -291,6 +292,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Exceptions are caught and re-thrown as EclipseLink exceptions.
      * Must set the transaction isolation.
      */
+    @Override
     protected void connectInternal(Login login, AbstractSession session) throws DatabaseException {
         super.connectInternal(login, session);
         checkTransactionIsolation(session);
@@ -354,6 +356,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Clone the accessor.
      */
+    @Override
     public Object clone() {
         DatabaseAccessor accessor = (DatabaseAccessor)super.clone();
         accessor.dynamicSQLMechanism = null;
@@ -408,6 +411,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      *    Commit a transaction on the database. First flush any batched statements.
      */
+    @Override
     public void commitTransaction(AbstractSession session) throws DatabaseException {
         this.writesCompleted(session);
         super.commitTransaction(session);
@@ -416,6 +420,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Commit a transaction on the database. This means toggling the auto-commit option.
      */
+    @Override
     public void basicCommitTransaction(AbstractSession session) throws DatabaseException {
         try {
             if (getPlatform().supportsAutoCommit()) {
@@ -472,6 +477,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Close the connection.
      */
+    @Override
     public void closeDatasourceConnection() throws DatabaseException {
         try {
             getConnection().close();
@@ -481,9 +487,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
     }
 
     /**
-     *    Disconnect from the datasource.
-     *  Added for bug 3046465 to ensure the statement cache is cleared
+     * Disconnect from the datasource.
+     * Added for bug 3046465 to ensure the statement cache is cleared.
      */
+    @Override
     public void disconnect(AbstractSession session) throws DatabaseException {
         clearStatementCache(session);
         super.disconnect(session);
@@ -494,6 +501,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * This is used only for external connection pooling
      * when it is intended for the connection to be reconnected in the future.
      */
+    @Override
     public void closeConnection() {
         // Unfortunately do not have the session to pass, fortunately it is not used.
         clearStatementCache(null);
@@ -534,9 +542,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * The row will be empty if there are no parameters.
      * @return depending of the type either the row count, row or vector of rows.
      */
+    @Override
     public Object executeCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
         // Keep complete implementation.
-        return basicExecuteCall(call, translationRow, session);
+        return basicExecuteCall(call, translationRow, session, true);
     }
 
     /**
@@ -546,7 +555,19 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * The row will be empty if there are no parameters.
      * @return depending of the type either the row count, row or vector of rows.
      */
+    @Override
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session) throws DatabaseException {
+        return basicExecuteCall(call, translationRow, session, true);
+    }
+    
+    /**
+     * Execute the call.
+     * The execution can differ slightly depending on the type of call.
+     * The call may be parameterized where the arguments are in the translation row.
+     * The row will be empty if there are no parameters.
+     * @return depending of the type either the row count, row or vector of rows.
+     */
+    public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session, boolean batch) throws DatabaseException {
         Statement statement = null;
         Object result = null;
         DatabaseCall dbCall = null;
@@ -562,7 +583,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
             throw DatabaseException.databaseAccessorNotConnected();
         }
 
-        if (isInBatchWritingMode(session)) {
+        if (batch && isInBatchWritingMode(session)) {
             // if there is nothing returned and we are not using optimistic locking then batch
             //if it is a StoredProcedure with in/out or out parameters then do not batch
             //logic may be weird but we must not batch if we are not using JDBC batchwriting and we have parameters
@@ -597,9 +618,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 return dbCall;
             } else if (dbCall.isNothingReturned()) {
                 result = executeNoSelect(dbCall, statement, session);
-                if (!isInBatchWritingMode(session)) {
-                    this.writeStatementsCount++;
-                }
+                this.writeStatementsCount++;
                 if (dbCall.isLOBLocatorNeeded()) {
                     // add original (insert or update) call to the LOB locator
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
@@ -607,15 +626,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 }
             } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow()))) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
-                if (!isInBatchWritingMode(session)) {
-                    this.storedProcedureStatementsCount++;
-                }
+                this.storedProcedureStatementsCount++;
             } else {
-                resultSet = executeSelect(dbCall, statement, session);
-                
-                if (!isInBatchWritingMode(session)) {
-                    this.readStatementsCount++;
-                }
+                resultSet = executeSelect(dbCall, statement, session);                
+                this.readStatementsCount++;
                 if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
                     resultSet.absolute(dbCall.getFirstResult());
                 }

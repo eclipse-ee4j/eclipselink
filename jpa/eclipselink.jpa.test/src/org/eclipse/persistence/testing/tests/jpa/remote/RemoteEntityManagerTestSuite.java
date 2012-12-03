@@ -14,19 +14,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.remote;
 
-import java.rmi.Naming;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import junit.framework.*;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManager;
-import org.eclipse.persistence.sessions.remote.rmi.RMIServerSessionManagerDispatcher;
-import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.EntityManagerJUnitTestSuite;
 
 /**
@@ -184,94 +181,20 @@ public class RemoteEntityManagerTestSuite extends EntityManagerJUnitTestSuite {
     public String getPersistenceUnitName() {
         return "remote";
     }
-    
-    /*@Override
-    public EntityManager createEntityManager() {
-        RMIConnection connection = createConnection();
-        AbstractSession remoteSession = (AbstractSession)connection.createRemoteSession();
-        remoteSession.setProject(getDatabaseSession().getProject());
-        remoteSession.setProfiler(getDatabaseSession().getProfiler());
-        remoteSession.setSessionLog(getDatabaseSession().getSessionLog());
-        remoteSession.setEventManager((SessionEventManager)getDatabaseSession().getEventManager().clone());
-        remoteSession.setQueries(getDatabaseSession().getQueries());
-        EntityManagerImpl em = (EntityManagerImpl)super.createEntityManager();
-        em.setAbstractSession(remoteSession);
-        return em;
-    }*/
+
+    @Override
+    public Map getPersistenceProperties() {
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, super.getPersistenceProperties().get(PersistenceUnitProperties.LOGGING_LEVEL));
+        return properties;
+    }
     
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        DatabaseSession server = getDatabaseSession("fieldaccess");
-        start(server, "jpa-remote");
+        createEntityManager("remote-server").close();
         super.testSetup();
     }
-
-    public void start(DatabaseSession session, String nameToBind) {
-        RMIServerSessionManager manager = null;
-
-        // Set the security manager
-        try {
-            //System.setSecurityManager(new RMISecurityManager());
-        } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
-        }
-
-        // Make sure RMI registry is started.
-        try {
-            java.rmi.registry.LocateRegistry.createRegistry(1099);
-        } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
-        }
-
-        // Create local instance of the factory
-        try {
-            manager = new RMIServerSessionManagerDispatcher(session);
-        } catch (RemoteException exception) {
-            throw new TestProblemException(exception.toString());
-        }
-
-        // Put the local instance into the Registry
-        try {
-            Naming.unbind(nameToBind);
-        } catch (Exception exception) {
-            System.out.println("Security violation " + exception.toString());
-        }
-
-        // Put the local instance into the Registry
-        try {
-            Naming.rebind(nameToBind, manager);
-        } catch (Exception exception) {
-            throw new TestProblemException(exception.toString());
-        }
-    }
-
-    /*public RMIConnection createConnection() {
-        RMIServerManager serverManager = null;
-
-        // Set the client security manager
-        try {
-            //System.setSecurityManager(new RMISecurityManager());
-        } catch (Exception exception) {
-            throw new TestProblemException("Security manager set failed:", exception);
-        }
-
-        // Get the remote factory object from the Registry
-        try {
-            serverManager = (RMIServerManager)Naming.lookup("jpa/" + getPersistenceUnitName());
-        } catch (Exception exception) {
-            throw new TestProblemException("RMI Lookup failed:", exception);
-        }
-
-        RMIConnection rmiConnection = null;
-        try {
-            rmiConnection = new RMIConnection(serverManager.createRemoteSessionController());
-        } catch (RemoteException exception) {
-            throw new TestProblemException("Create remote session failed:", exception);
-        }
-
-        return rmiConnection;
-    }*/
     
 }

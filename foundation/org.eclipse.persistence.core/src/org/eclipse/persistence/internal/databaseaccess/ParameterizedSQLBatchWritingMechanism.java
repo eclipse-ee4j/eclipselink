@@ -16,8 +16,6 @@ import java.io.StringWriter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -30,32 +28,33 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * INTERNAL:
- *    ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
- *  behavior for batching statements, for write, with parameter binding turned on.<p>
- *    In the future EclipseLink may be modified to control the order of statements passed to the accessor.  This
- *  would prevent checking the last executed statement to ensure that they match.<p>
+ * ParameterizedSQLBatchWritingMechanism is a private class, used by the DatabaseAccessor. it provides the required
+ * behavior for batching statements, for write, with parameter binding turned on.<p>
  *
- *    @since OracleAS TopLink 10<i>g</i> (9.0.4)
+ * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
 public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism {
 
     /**
-     *  This member variable is used to keep track of the last SQL string that was executed
-     *  by this mechanism.  If the current string and previous string match then simply
-     *  bind in the arguments, otherwise end previous batch and start a new batch
+     * This member variable is used to keep track of the last SQL string that was executed
+     * by this mechanism.  If the current string and previous string match then simply
+     * bind in the arguments, otherwise end previous batch and start a new batch
      */
     protected DatabaseCall previousCall;
 
     /**
      * This variable contains a list of the parameters list passed into the query
      */
-    protected ArrayList parameters;
+    protected List<List> parameters;
     protected DatabaseCall lastCallAppended;
     
-
+    public ParameterizedSQLBatchWritingMechanism() {
+        super();
+    }
+    
     public ParameterizedSQLBatchWritingMechanism(DatabaseAccessor databaseAccessor) {
         this.databaseAccessor = databaseAccessor;
-        this.parameters = new ArrayList(10);
+        this.parameters = new ArrayList();
         this.maxBatchSize = this.databaseAccessor.getLogin().getPlatform().getMaxBatchWritingSize();
         if (this.maxBatchSize == 0) {
             // the max size was not set on the platform - use default
@@ -70,11 +69,6 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
      * possibly, switching out the mechanisms
      */
     public void appendCall(AbstractSession session, DatabaseCall dbCall) {
-        // Store the largest queryTimeout on a single call for later use by the single statement in prepareBatchStatements
-    	if(dbCall != null) {
-        	cacheQueryTimeout(session, dbCall);
-        }
-
         if (dbCall.hasParameters()) {
             //make an equality check on the String, because if we are caching statements then
             //we will not have to perform the string comparison multiple times.
@@ -86,8 +80,13 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                     this.parameters.add(dbCall.getParameters());
                 } else {
                     executeBatchedStatements(session);
-                    this.appendCall(session, dbCall);
+                    this.previousCall = dbCall;
+                    this.parameters.add(dbCall.getParameters());
                 }
+            }
+            // Store the largest queryTimeout on a single call for later use by the single statement in prepareBatchStatements
+            if (dbCall != null) {
+                cacheQueryTimeout(session, dbCall);
             }
             this.lastCallAppended = dbCall;
             // feature for bug 4104613, allows users to force statements to flush on execution
@@ -111,7 +110,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         this.parameters.clear();
         this.statementCount = 0;
         this.executionCount  = 0;
-        clearCacheQueryTimeout();
+        this.queryTimeoutCache = DescriptorQueryManager.NoTimeout;
         // bug 229831 : BATCH WRITING CAUSES MEMORY LEAKS WITH UOW
         this.lastCallAppended = null;
     }
@@ -125,6 +124,12 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
         if (this.parameters.isEmpty()) {
             return;
         }
+        if (this.parameters.size() == 1) {
+            // If only one call, just execute normally.
+            this.databaseAccessor.basicExecuteCall(this.previousCall, null, session);
+            clear();
+            return;
+        }
 
         try {
             this.databaseAccessor.incrementCallCount(session);// Decrement occurs in close.
@@ -133,9 +138,9 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 session.log(SessionLog.FINER, SessionLog.SQL, "begin_batch_statements", null, this.databaseAccessor);
                 session.log(SessionLog.FINE, SessionLog.SQL, this.previousCall.getSQLString(), null, this.databaseAccessor, false);
                 // took this logging part from SQLCall
-                for (Iterator iterator = this.parameters.iterator(); iterator.hasNext();) {
+                for (List callParameters : this.parameters) {
                     StringWriter writer = new StringWriter();
-                    DatabaseCall.appendLogParameters((Collection)iterator.next(), this.databaseAccessor, writer, session);                
+                    DatabaseCall.appendLogParameters(callParameters, this.databaseAccessor, writer, session);                
                     session.log(SessionLog.FINE, SessionLog.SQL, writer.toString(), null, this.databaseAccessor, false);
                 }
                 session.log(SessionLog.FINER, SessionLog.SQL, "end_batch_statements", null, this.databaseAccessor);
@@ -188,7 +193,7 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
                 // Iterate over the parameter lists that were batched.
                 int statementSize = this.parameters.size();
                 for (int statementIndex = 0; statementIndex < statementSize; ++statementIndex) {
-                    List parameterList = (List)this.parameters.get(statementIndex);
+                    List parameterList = this.parameters.get(statementIndex);
                     int size = parameterList.size();
                     for (int index = 0; index < size; index++) {
                         platform.setParameterValueInDatabaseCall(parameterList.get(index), statement, index+1, session);
@@ -223,5 +228,29 @@ public class ParameterizedSQLBatchWritingMechanism extends BatchWritingMechanism
             throw exception;
         }
         return statement;
+    }
+
+    public DatabaseCall getPreviousCall() {
+        return previousCall;
+    }
+
+    public void setPreviousCall(DatabaseCall previousCall) {
+        this.previousCall = previousCall;
+    }
+
+    public List<List> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<List> parameters) {
+        this.parameters = parameters;
+    }
+
+    public DatabaseCall getLastCallAppended() {
+        return lastCallAppended;
+    }
+
+    public void setLastCallAppended(DatabaseCall lastCallAppended) {
+        this.lastCallAppended = lastCallAppended;
     }
 }
