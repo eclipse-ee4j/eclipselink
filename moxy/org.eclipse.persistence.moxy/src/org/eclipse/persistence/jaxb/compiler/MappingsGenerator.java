@@ -490,7 +490,7 @@ public class MappingsGenerator {
             // if the value type is something we have a descriptor for, create
             // a composite mapping
             if(property.isChoice()) {
-                if(isCollectionType(property)) {
+                if(helper.isCollectionType(property.getType())) {
                     mapping = generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
                     ((XMLChoiceCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                 } else {
@@ -499,7 +499,7 @@ public class MappingsGenerator {
                 }
             } else if (typeInfo.containsKey(valueType.getQualifiedName())) {
                 TypeInfo reference = typeInfo.get(valueType.getQualifiedName());
-                if (isCollectionType(property)) {
+                if (helper.isCollectionType(property.getType())) {
                     if (reference.isEnumerationType()) {
                         mapping = generateEnumCollectionMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
                         XMLJavaTypeConverter converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
@@ -525,14 +525,14 @@ public class MappingsGenerator {
             } else {
                 // no descriptor for value type
                 if (property.isAny()) {
-                    if (isCollectionType(property)){
+                    if (helper.isCollectionType(property.getType())){
                         mapping = generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
                         ((XMLAnyCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     } else {
                         mapping = generateAnyObjectMapping(property, descriptor, namespaceInfo);
                         ((XMLAnyObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     }
-                } else if (isCollectionType(property) || isArray) {
+                } else if (helper.isCollectionType(property.getType()) || isArray) {
                     if (property.isSwaAttachmentRef() || property.isMtomAttachment()) {
                     	mapping = generateBinaryDataCollectionMapping(property, descriptor, namespaceInfo);
                     	((XMLBinaryDataCollectionMapping) mapping).setValueConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
@@ -569,7 +569,7 @@ public class MappingsGenerator {
             return mapping;
         }
         if (property.isSetXmlJoinNodes()) {
-            if (isCollectionType(property)) {
+            if (helper.isCollectionType(property.getType())) {
                 return generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, property.getActualType());
             }
             return generateXMLObjectReferenceMapping(property, descriptor, namespaceInfo, property.getType());
@@ -578,7 +578,7 @@ public class MappingsGenerator {
             return generateTransformationMapping(property, descriptor, namespaceInfo);
         }
         if (property.isChoice()) {
-            if (this.isCollectionType(property)) {
+            if (helper.isCollectionType(property.getType())) {
                 return generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
             } 
             return generateChoiceMapping(property, descriptor, namespaceInfo);
@@ -587,7 +587,7 @@ public class MappingsGenerator {
             return generateInverseReferenceMapping(property, descriptor, namespaceInfo);
         } 
         if (property.isAny()) {
-            if (isCollectionType(property) || property.getType().isArray()){
+            if (helper.isCollectionType(property.getType()) || property.getType().isArray()){
                 return generateAnyCollectionMapping(property, descriptor, namespaceInfo, property.isMixedContent());
             }
             return generateAnyObjectMapping(property, descriptor, namespaceInfo);
@@ -601,7 +601,7 @@ public class MappingsGenerator {
         	}
         	return generateMapMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
         }
-        if (isCollectionType(property)) {
+        if (helper.isCollectionType(property.getType())) {
             return generateCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
         }
         
@@ -658,8 +658,9 @@ public class MappingsGenerator {
 
     private XMLInverseReferenceMapping generateInverseReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLInverseReferenceMapping invMapping = new XMLInverseReferenceMapping();
-
-        if (isCollectionType(property.getType())) {
+        boolean isCollection = helper.isCollectionType(property.getType());
+        
+        if (isCollection) {
             invMapping.setReferenceClassName(property.getGenericType().getQualifiedName());
         } else {
             invMapping.setReferenceClassName(property.getType().getQualifiedName());
@@ -678,7 +679,7 @@ public class MappingsGenerator {
         }
         invMapping.setMappedBy(property.getInverseReferencePropertyName());
 
-        if (isCollectionType(property.getType())) {
+        if (isCollection) {
             JavaClass collectionType = property.getType();
             collectionType = containerClassImpl(collectionType);
             invMapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
@@ -967,7 +968,7 @@ public class MappingsGenerator {
     }
 
     public DatabaseMapping generateMappingForReferenceProperty(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo)  {
-        boolean isCollection = isCollectionType(property) || property.getType().isArray();
+        boolean isCollection = helper.isCollectionType(property.getType()) || property.getType().isArray();
         if (property.isAny()) {
             return generateAnyCollectionMapping(property, descriptor, namespaceInfo, true);
         }
@@ -1303,7 +1304,7 @@ public class MappingsGenerator {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if (isCollectionType(backPointerPropertyType)) {
+            if (helper.isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -1536,7 +1537,7 @@ public class MappingsGenerator {
 
         JavaClass collectionType = property.getType();
         JavaClass itemType = property.getActualType();
-        if(collectionType != null && isCollectionType(collectionType)){
+        if(collectionType != null && helper.isCollectionType(collectionType)){
             try{
                 Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getQualifiedName(), false, helper.getClassLoader());
                 mapping.setAttributeElementClass(declaredClass);
@@ -2022,7 +2023,7 @@ public class MappingsGenerator {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if (isCollectionType(backPointerPropertyType)) {
+            if (helper.isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -2078,7 +2079,7 @@ public class MappingsGenerator {
                     mapping.setAttributeElementClass(declaredClass);
                 }catch (Exception e) {}
             }
-        } else if (isCollectionType(collectionType)){
+        } else if (helper.isCollectionType(collectionType)){
             Collection args = collectionType.getActualTypeArguments();
         	if (args.size() >0){
         		JavaClass itemType = (JavaClass)args.iterator().next();
@@ -2179,19 +2180,6 @@ public class MappingsGenerator {
         }
         globalNamespaceResolver.put(prefix, URI);
         return prefix;
-    }
-
-    public boolean isCollectionType(Property field) {
-        JavaClass type = field.getType();
-        return isCollectionType(type);
-    }
-    public boolean isCollectionType(JavaClass type) {
-        if (helper.getJavaClass(Collection.class).isAssignableFrom(type)
-                || helper.getJavaClass(List.class).isAssignableFrom(type)
-                || helper.getJavaClass(Set.class).isAssignableFrom(type)) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -2498,7 +2486,7 @@ public class MappingsGenerator {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if (isCollectionType(backPointerPropertyType)) {
+            if (helper.isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -2579,7 +2567,7 @@ public class MappingsGenerator {
                     backPointerPropertyType = backpointerField.getResolvedType();
                 }
             }
-            if (isCollectionType(backPointerPropertyType)) {
+            if (helper.isCollectionType(backPointerPropertyType)) {
                 mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
             }
         }
@@ -2779,11 +2767,6 @@ public class MappingsGenerator {
     public String getSchemaTypeNameForClassName(String className) {
         String typeName = Introspector.decapitalize(className.substring(className.lastIndexOf('.') + 1));
         return typeName;
-    }
-
-    public boolean isMapType(Property property) {
-        JavaClass mapCls = helper.getJavaClass(java.util.Map.class);
-        return mapCls.isAssignableFrom(property.getType());
     }
 
     public void processGlobalElements(Project project) {

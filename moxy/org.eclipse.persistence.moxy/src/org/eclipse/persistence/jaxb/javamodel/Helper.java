@@ -95,6 +95,11 @@ public class Helper {
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
 
+    private static JavaClass COLLECTION_CLASS;
+    private static JavaClass SET_CLASS; 
+    private static JavaClass LIST_CLASS;
+    private static JavaClass MAP_CLASS; 
+    
     /**
      * INTERNAL:
      * This is the preferred constructor.
@@ -108,6 +113,10 @@ public class Helper {
         buildXMLToJavaTypeMap();
         setJavaModel(model);
         setClassLoader(model.getClassLoader());
+        COLLECTION_CLASS = getJavaClass(ClassConstants.Collection_Class);
+        LIST_CLASS = getJavaClass(ClassConstants.List_Class);
+        SET_CLASS = getJavaClass(ClassConstants.Set_Class);
+        MAP_CLASS = getJavaClass(ClassConstants.Map_Class);
     }
 
     /**
@@ -394,5 +403,18 @@ public class Helper {
             return packageName + PKG_SEPARATOR + javaTypeName;
         }
         return javaTypeName;
+    }
+    
+    public boolean isCollectionType(JavaClass type) {
+    	 if (COLLECTION_CLASS.isAssignableFrom(type) 
+    			 || LIST_CLASS.isAssignableFrom(type) 
+    			 || SET_CLASS.isAssignableFrom(type)) {
+             return true;
+         }
+         return false;
+    }
+    
+    public boolean isMapType(JavaClass type) {
+        return MAP_CLASS.isAssignableFrom(type);
     }
 }

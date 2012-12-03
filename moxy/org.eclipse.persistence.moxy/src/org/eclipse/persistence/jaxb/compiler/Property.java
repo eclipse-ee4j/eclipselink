@@ -258,7 +258,7 @@ public class Property implements Cloneable {
         if(parameterType != null) {
             isParamTypeArray = parameterType.isArray() && !parameterType.getRawName().equals("byte[]");
         }
-        if ((isCollectionType(this.getType()) || isArray) && !(isCollectionType(parameterType) || isParamTypeArray)) {
+        if ((helper.isCollectionType(this.getType()) || isArray) && !(helper.isCollectionType(parameterType) || isParamTypeArray)) {
             this.setGenericType(newType);
         } else {
             this.setOriginalType(this.getType());
@@ -306,7 +306,7 @@ public class Property implements Cloneable {
         	return;
         }
     	String clsName= cls.getRawName();
-        if(isCollectionType(cls)){
+        if(helper.isCollectionType(cls)){
             Collection typeArgs =  cls.getActualTypeArguments();
         	if(typeArgs.size() > 0){
       		    genericType = (JavaClass) typeArgs.iterator().next();
@@ -582,16 +582,6 @@ public class Property implements Cloneable {
     public boolean isXmlElementType() {
         return xmlElementType;
     }
-    
-    public boolean isCollectionType(JavaClass type) {
-        if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) 
-                || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) 
-                || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {
-            return true;
-        }
-        return false;
-    }
-    
 
     /**
      * Return the generic type if it was set (collection or array item type) otherwise return the
