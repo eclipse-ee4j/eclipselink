@@ -16,6 +16,8 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
+
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -44,7 +46,7 @@ public class ExceptionMessageGenerator {
             }
         }
 
-        bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n." + shortClassName + "Resource", Locale.getDefault(), ExceptionMessageGenerator.class.getClassLoader());
+        bundle = ResourceBundle.getBundle("org.eclipse.persistence.exceptions.i18n." + shortClassName + "Resource", Locale.getDefault(), ConversionManager.getDefaultManager().getLoader());
 
         try {
             message = bundle.getString(String.valueOf(errorNumber));
