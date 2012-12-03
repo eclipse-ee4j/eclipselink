@@ -406,6 +406,7 @@ public class XMLProcessor {
                 }
             }
         }
+
         // now trigger the annotations processor to process the classes
         ArrayList<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
 
@@ -716,7 +717,7 @@ public class XMLProcessor {
         // set type
         if (!xmlInverseReference.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlInverseReference.getType());
-            if (aProcessor.isCollectionType(oldProperty.getType())) {
+            if (aProcessor.getHelper().isCollectionType(oldProperty.getType())) {
                 oldProperty.setGenericType(pType);
             } else {
                 oldProperty.setType(pType);
@@ -747,7 +748,7 @@ public class XMLProcessor {
         }
         
         // type has to be a java.util.Map
-        if (!aProcessor.isMapType(oldProperty.getType())) {
+        if (!aProcessor.getHelper().isMapType(oldProperty.getType())) {
             if (oldProperty.getType().getClass().getName().contains("OXMJavaClassImpl")) {
                 JavaClass pType = jModelInput.getJavaModel().getClass("java.util.Map");
                 oldProperty.setType(pType);
@@ -938,7 +939,7 @@ public class XMLProcessor {
         // set type
         if (!xmlAttribute.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlAttribute.getType());
-            if (aProcessor.isCollectionType(oldProperty.getType())) {
+            if (aProcessor.getHelper().isCollectionType(oldProperty.getType())) {
                 oldProperty.setGenericType(pType);
             } else {
                 oldProperty.setType(pType);
@@ -1122,7 +1123,7 @@ public class XMLProcessor {
             getLogger().logWarning(JAXBMetadataLogger.INVALID_TYPE_ON_MAP, new Object[] { xmlElement.getName() });
         } else {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlElement.getType());
-            if(aProcessor.isCollectionType(oldProperty.getType())) {
+            if(aProcessor.getHelper().isCollectionType(oldProperty.getType())) {
                 oldProperty.setGenericType(pType);
             } else {
                 oldProperty.setType(pType);
@@ -1153,7 +1154,7 @@ public class XMLProcessor {
         // handle xml-list
         if (xmlElement.isSetXmlList()) {
             // Make sure XmlList annotation is on a collection or array
-            if (!aProcessor.isCollectionType(oldProperty) && !oldProperty.getType().isArray()) {
+            if (!aProcessor.getHelper().isCollectionType(oldProperty.getType()) && !oldProperty.getType().isArray()) {
                 throw JAXBException.invalidList(oldProperty.getPropertyName());
             }
             oldProperty.setIsXmlList(xmlElement.isXmlList());
@@ -1424,7 +1425,7 @@ public class XMLProcessor {
         // set type
         if (!xmlValue.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlValue.getType());
-            if (aProcessor.isCollectionType(oldProperty.getType())) {
+            if (aProcessor.getHelper().isCollectionType(oldProperty.getType())) {
                 oldProperty.setGenericType(pType);
             } else {
                 oldProperty.setType(pType);
@@ -1566,7 +1567,7 @@ public class XMLProcessor {
         // set type
         if (!xmlJoinNodes.getType().equals(DEFAULT)) {
             JavaClass pType = jModelInput.getJavaModel().getClass(xmlJoinNodes.getType());
-            if (aProcessor.isCollectionType(oldProperty.getType())) {
+            if (aProcessor.getHelper().isCollectionType(oldProperty.getType())) {
                 oldProperty.setGenericType(pType);
             } else {
                 oldProperty.setType(pType);

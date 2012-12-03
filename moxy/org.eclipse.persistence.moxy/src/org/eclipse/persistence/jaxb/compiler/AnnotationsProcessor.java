@@ -900,7 +900,7 @@ public class AnnotationsProcessor {
                 }
                 // an XmlElementWrapper can only appear on a Collection or Array
                 if (property.getXmlElementWrapper() != null) {
-                    if (!isCollectionType(property) && !property.getType().isArray()) {
+                    if (!helper.isCollectionType(property.getType()) && !property.getType().isArray()) {
                         throw JAXBException.invalidElementWrapper(property.getPropertyName());
                     }
                 }
@@ -1127,7 +1127,7 @@ public class AnnotationsProcessor {
             generatedClassesToArrayClasses.put(generatedClass, javaClass);
             typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
 
-        } else if (isCollectionType(javaClass)) {
+        } else if (helper.isCollectionType(javaClass)) {
             JavaClass componentClass;
             Collection args = javaClass.getActualTypeArguments();
             if (args.size() >0) {
@@ -1145,7 +1145,7 @@ public class AnnotationsProcessor {
                 extraClasses.add(helper.getJavaClass(generatedClass));
             }
             typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
-        } else if (isMapType(javaClass)) {
+        } else if (helper.isMapType(javaClass)) {
             JavaClass keyClass;
             JavaClass valueClass;
             Collection args = javaClass.getActualTypeArguments();
@@ -1564,7 +1564,7 @@ public class AnnotationsProcessor {
             property.setNillable(element.nillable());
             if (element.type() != XmlElement.DEFAULT.class && !(property.isSwaAttachmentRef())) {
                 property.setOriginalType(property.getType());
-                if (isCollectionType(property.getType())) {
+                if (helper.isCollectionType(property.getType())) {
                     property.setGenericType(helper.getJavaClass(element.type()));
                 } else {
                     property.setType(helper.getJavaClass(element.type()));
@@ -1695,7 +1695,7 @@ public class AnnotationsProcessor {
         if (helper.isBuiltInJavaType(javaClass)) {
             return false;
         }
-        if (isCollectionType(javaClass) || isMapType(javaClass)) {
+        if (helper.isCollectionType(javaClass) || helper.isMapType(javaClass)) {
             return false;
         }
         return true;
@@ -1840,7 +1840,7 @@ public class AnnotationsProcessor {
 
         // if there is a TypeInfo for ptype check it for transient, otherwise
         // check the class        
-        if (isCollectionType(ptype)) {
+        if (helper.isCollectionType(ptype)) {
             JavaClass componentType = helper.getJavaClass(Object.class);;
             
             Collection typeArgs =  ptype.getActualTypeArguments();
@@ -1851,7 +1851,7 @@ public class AnnotationsProcessor {
         }else{
             updatePropertyType(property, ptype, ptype);
         }
-        if((ptype.isArray()  && !areEquals(ptype, byte[].class))  || (property.isCollectionType(ptype) && !helper.isAnnotationPresent(javaHasAnnotations, XmlList.class)) ){
+        if((ptype.isArray()  && !areEquals(ptype, byte[].class))  || (helper.isCollectionType(ptype) && !helper.isAnnotationPresent(javaHasAnnotations, XmlList.class)) ){
         	property.setNillable(true);
         }
         processPropertyAnnotations(info, cls, javaHasAnnotations, property);
@@ -2201,7 +2201,7 @@ public class AnnotationsProcessor {
                     // set type
                     if (!xmlJoinNodes.getType().equals(XMLProcessor.DEFAULT)) {
                         JavaClass pType = helper.getJavaClass(xmlJoinNodes.getType());
-                        if (isCollectionType(choiceProp.getType())) {
+                        if (helper.isCollectionType(choiceProp.getType())) {
                             choiceProp.setGenericType(pType);
                         } else {
                             choiceProp.setType(pType);
@@ -2281,7 +2281,7 @@ public class AnnotationsProcessor {
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
-            if (isCollectionType(property)) {
+            if (helper.isCollectionType(property.getType())) {
                 if (type.hasActualTypeArguments()) {
                     type = property.getGenericType();
                     typeName = type.getQualifiedName();
@@ -2337,7 +2337,7 @@ public class AnnotationsProcessor {
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
-            if (isCollectionType(property)) {
+            if (helper.isCollectionType(property.getType())) {
                 if (type.hasActualTypeArguments()) {
                     type = property.getGenericType();
                     typeName = type.getQualifiedName();
@@ -2436,7 +2436,7 @@ public class AnnotationsProcessor {
             if (info.isSetAnyAttributePropertyName() && !info.getAnyAttributePropertyName().equals(property.getPropertyName())) {
                 throw org.eclipse.persistence.exceptions.JAXBException.multipleAnyAttributeMapping(cls.getName());
             }
-            if (!isMapType(property.getType())) {
+            if (!helper.isMapType(property.getType())) {
                 throw org.eclipse.persistence.exceptions.JAXBException.anyAttributeOnNonMap(property.getPropertyName());
             }
             property.setIsAnyAttribute(true);
@@ -2461,7 +2461,7 @@ public class AnnotationsProcessor {
 
         if (helper.isAnnotationPresent(property.getElement(), XmlList.class)) {
             // Make sure XmlList annotation is on a collection or array
-            if (!isCollectionType(property) && !property.getType().isArray()) {
+            if (!helper.isCollectionType(property.getType()) && !property.getType().isArray()) {
                 throw JAXBException.invalidList(property.getPropertyName());
             }
             property.setIsXmlList(true);
@@ -3108,17 +3108,6 @@ public class AnnotationsProcessor {
         return schemaType;
     }
 
-    public boolean isCollectionType(Property field) {
-        return isCollectionType(field.getType());
-    }
-
-    public boolean isCollectionType(JavaClass type) {
-        if (helper.getJavaClass(java.util.Collection.class).isAssignableFrom(type) || helper.getJavaClass(java.util.List.class).isAssignableFrom(type) || helper.getJavaClass(java.util.Set.class).isAssignableFrom(type)) {
-            return true;
-        }
-        return false;
-    }
-
     public NamespaceInfo processNamespaceInformation(XmlSchema xmlSchema) {
         NamespaceInfo info = new NamespaceInfo();
         info.setNamespaceResolver(new NamespaceResolver());
@@ -3760,10 +3749,6 @@ public class AnnotationsProcessor {
             }
         }
         return false;
-    }
-
-    public boolean isMapType(JavaClass type) {
-        return helper.getJavaClass(java.util.Map.class).isAssignableFrom(type);
     }
 
     private Class generateWrapperForMapClass(JavaClass mapClass, JavaClass keyClass, JavaClass valueClass, TypeMappingInfo typeMappingInfo) {
