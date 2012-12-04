@@ -2775,6 +2775,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
              } else if (batchWritingSettingString == BatchWriting.None) {
                  // Nothing required.
              } else {
+                 if (batchWritingSettingString.equalsIgnoreCase("ExaLogic")) {
+                     batchWritingSettingString = "oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism";
+                 }
                  Class cls = findClassForProperty(batchWritingSettingString, PersistenceUnitProperties.BATCH_WRITING, loader);
                  BatchWritingMechanism mechanism = null;
                  try {

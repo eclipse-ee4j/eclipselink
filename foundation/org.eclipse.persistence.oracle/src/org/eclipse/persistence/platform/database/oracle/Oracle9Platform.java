@@ -162,6 +162,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Overrides the default behavior to specifically return a timestamp.  Added
      * to overcome an issue with the oracle 9.0.1.4 JDBC driver.
      */
+    @Override
     public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         //Bug#3381652 10G Drivers return sql.Date instead of timestamp on DATE field
         if ((type == Types.TIMESTAMP) || (type == Types.DATE)) {
@@ -240,6 +241,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * kept in sync: shouldCustomModifyInDatabaseCall should return true if and only if the field
      * is handled by customModifyInDatabaseCall.
      */
+    @Override
     public boolean shouldUseCustomModifyForCall(DatabaseField field) {
         Class type = field.getType();
         if ((type != null) && isOracle9Specific(type)) {
@@ -252,6 +254,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Allow the use of XMLType operators on this platform.
      */
+    @Override
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         addOperator(ExpressionOperator.extractXml());
@@ -271,6 +274,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Add XMLType as the default database type for org.w3c.dom.Documents.
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
+    @Override
     protected Hashtable buildFieldTypes() {
         Hashtable fieldTypes = super.buildFieldTypes();
         fieldTypes.put(org.w3c.dom.Document.class, new FieldTypeDefinition("sys.XMLType"));
@@ -287,6 +291,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Add TIMESTAMP, TIMESTAMP WITH TIME ZONE and TIMESTAMP WITH LOCAL TIME ZONE
      */
+    @Override
     protected Map<String, Class> buildClassTypes() {
         Map<String, Class> classTypeMapping = super.buildClassTypes();
         classTypeMapping.put("TIMESTAMP", ORACLE_SQL_TIMESTAMP);
@@ -295,6 +300,7 @@ public class Oracle9Platform extends Oracle8Platform {
         return classTypeMapping;
     }
 
+    @Override
     public Object clone() {
         Oracle9Platform clone = (Oracle9Platform)super.clone();
         clone.clearConnectionData();
@@ -305,6 +311,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Allow for conversion from the Oracle type to the Java type.
      */
+    @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException, DatabaseException {
         if ((javaClass == null) || ((sourceObject != null) && (sourceObject.getClass() == javaClass))) {
             return sourceObject;
@@ -382,6 +389,7 @@ public class Oracle9Platform extends Oracle8Platform {
      *    Appends an Oracle specific Timestamp, if usesNativeSQL is true otherwise use the ODBC format.
      *    Native Format: to_timestamp ('1997-11-06 10:35:45.656' , 'yyyy-mm-dd hh:mm:ss.ff')
      */
+    @Override
     protected void appendTimestamp(java.sql.Timestamp timestamp, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_timestamp('");
@@ -400,6 +408,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * (DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR TZD')
      * (non-DST) to_timestamp_tz ('1997-11-06 10:35:45.345 America/Los_Angeles','yyyy-mm-dd hh:mm:ss.ff TZR')
      */
+    @Override
     protected void appendCalendar(Calendar calendar, Writer writer) throws IOException {
         if (usesNativeSQL()) {
             writer.write("to_timestamp_tz('");
@@ -443,7 +452,7 @@ public class Oracle9Platform extends Oracle8Platform {
         this.isConnectionDataInitialized = true;
     }
     
-    public synchronized void clearConnectionData() {
+    public void clearConnectionData() {
         this.driverVersion = null;
         this.isConnectionDataInitialized = false;
     }
@@ -452,6 +461,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Clears both implicit and explicit caches of OracleConnection
      */
+    @Override
     public void clearOracleConnectionCache(Connection conn) {
         if(conn instanceof OracleConnection){
             OracleConnection oracleConnection = (OracleConnection)conn;
@@ -478,6 +488,7 @@ public class Oracle9Platform extends Oracle8Platform {
      *    Binding starts with a 1 not 0, so make sure that index > 0.
      *  Treat Calendar separately. Bind Calendar as TIMESTAMPTZ.
      */
+    @Override
     public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
         if (parameter instanceof Calendar) {
             Calendar calendar = (Calendar)parameter;
@@ -496,6 +507,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Answer the timestamp from the server. Convert TIMESTAMPTZ to Timestamp
      */
+    @Override
     public java.sql.Timestamp getTimestampFromServer(AbstractSession session, String sessionName) {
         if (getTimestampQuery() != null) {
             getTimestampQuery().setSessionName(sessionName);
@@ -510,6 +522,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * This method returns the query to select the SYSTIMESTAMP as TIMESTAMPTZ
      * from the server for Oracle9i.
      */
+    @Override
     public ValueReadQuery getTimestampQuery() {
         if (timestampQuery == null) {
             timestampQuery = new ValueReadQuery();
@@ -523,6 +536,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Return the current SYSTIMESTAMP as TIMESTAMPTZ from the server.
      */
+    @Override
     public String serverTimestampString() {
         return "SYSTIMESTAMP";
     }
@@ -560,6 +574,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * If usesLocatorForLOBWrite is true, locator will be used in case the
      * lob's size is larger than lobValueLimit.
      */
+    @Override
     public int getLobValueLimits() {
         return lobValueLimits;
     }
@@ -570,6 +585,7 @@ public class Oracle9Platform extends Oracle8Platform {
     * If usesLocatorForLOBWrite is true, locator will be used in case the
     * lob's size is larger than lobValueLimit.
     */
+    @Override
     public void setLobValueLimits(int lobValueLimits) {
         this.lobValueLimits = lobValueLimits;
     }    
@@ -587,6 +603,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Used in write LOB method only to identify a CLOB.
      */
+    @Override
     protected boolean isClob(Class type) {
         return NCLOB.equals(type) || super.isClob(type);
     }
@@ -598,6 +615,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * In these special cases the method returns a wrapper object
      * which knows whether it should be bound or appended and knows how to do that.
      */
+    @Override
     public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind) {
         Class type = field.getType();
         if ((type != null) && isOracle9Specific(type)) {
@@ -639,6 +657,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * @param javaClass - the class that is converted from
      * @return - a vector of classes
      */
+    @Override
     public Vector getDataTypesConvertedFrom(Class javaClass) {
         if (dataTypesConvertedFromAClass == null) {
             dataTypesConvertedFromAClass = new Hashtable(5);
@@ -669,6 +688,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * @param javaClass - the class that is converted to
      * @return - a vector of classes
      */
+    @Override
     public Vector getDataTypesConvertedTo(Class javaClass) {
         if (dataTypesConvertedToAClass == null) {
             dataTypesConvertedToAClass = new Hashtable(5);
@@ -707,6 +727,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Return the JDBC type for the Java type.
      * The Oracle driver does not like the OPAQUE type so VARCHAR must be used.
      */
+    @Override
     public int getJDBCType(Class javaType) {
         if (javaType == XMLTYPE) {
             //return OracleTypes.OPAQUE;
@@ -725,10 +746,17 @@ public class Oracle9Platform extends Oracle8Platform {
      * @param isStatementPrepared - flag is set to true if this statement is prepared 
      * @return - number of rows modified/deleted by this statement
      */
-    public int executeBatch(Statement statement,  boolean isStatementPrepared)throws java.sql.SQLException {
-        if (usesNativeBatchWriting() && isStatementPrepared){
-            return((OraclePreparedStatement)statement).sendBatch(); 
-        }else {
+    @Override
+    public int executeBatch(Statement statement,  boolean isStatementPrepared) throws SQLException {
+        if (usesNativeBatchWriting() && isStatementPrepared) {
+            int rowCount = 0;
+            try {
+                rowCount = ((OraclePreparedStatement)statement).sendBatch();
+            } finally {
+                ((OraclePreparedStatement) statement).setExecuteBatch(1);
+            }
+            return rowCount;
+        } else {
             return super.executeBatch(statement, isStatementPrepared);
         }
     }
@@ -741,6 +769,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * 
      * @return - number of rows modified/deleted by this statement if it was executed (0 if it wasn't)
      */
+    @Override
     public int addBatch(PreparedStatement statement) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             return statement.executeUpdate(); 
@@ -755,6 +784,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * 
      * @return - statement to be used for batch writing
      */
+    @Override
     public Statement prepareBatchStatement(Statement statement, int maxBatchWritingSize) throws java.sql.SQLException {
         if (usesNativeBatchWriting()){
             //add max statement setting
@@ -794,6 +824,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * Indicates whether the passed object is an instance of XDBDocument.
      * @return boolean
      */
+    @Override
     public boolean isXDBDocument(Object obj) {
         return getXMLTypeFactory().isXDBDocument(obj);
     }
@@ -802,6 +833,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * Indicates whether this Oracle platform can unwrap Oracle connection.
      */
+    @Override
     public boolean canUnwrapOracleConnection() {
         return true;
     }
@@ -810,6 +842,7 @@ public class Oracle9Platform extends Oracle8Platform {
      * INTERNAL:
      * If can unwrap returns unwrapped Oracle connection, otherwise original connection.
      */
+    @Override
     public Connection unwrapOracleConnection(Connection connection) {
         //Bug#4607977  Use getPhysicalConnection() instead of physicalConnectionWithin() because it's not suppported in 9.2 driver
         if(connection instanceof oracle.jdbc.internal.OracleConnection){
@@ -823,13 +856,15 @@ public class Oracle9Platform extends Oracle8Platform {
      * PUBLIC:
      * Return is this is the Oracle 9 platform. 
      */
+    @Override
     public boolean isOracle9() {
-	   return true;
+        return true;
     }
 
     /**
      * INTERNAL:
      */
+    @Override
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         Object proxyTypeValue = session.getProperty(PersistenceUnitProperties.ORACLE_PROXY_TYPE);
         if (proxyTypeValue == null || ((proxyTypeValue instanceof String) && ((String)proxyTypeValue).length() == 0)) {
