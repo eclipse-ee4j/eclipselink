@@ -371,8 +371,8 @@
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <property name="eclipselink.extension.oracle.nosql.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.trunk}"/>
         <property name="eclipselink.extension.oracle.nosql.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.test.trunk}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
+        <config-compile-path/>
+        <config-run-path/>
     </target>
 
     <!-- Configures paths for Eclipse project checkout. -->
@@ -383,11 +383,12 @@
         <property name="eclipselink.moxy.dir" value="${eclipselink.moxy}"/>
         <property name="eclipselink.moxy.lib.dir" value="${eclipselink.moxy.plugins}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
+        <config-compile-path/>
+        <config-run-path/>
     </target>
 
-    <target name="config-compile-path">
+    <macrodef name="config-compile-path">
+        <sequential>
         <path id="compile.path">
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
@@ -424,7 +425,8 @@
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
-    </target>
+        </sequential>
+    </macrodef>
 
     <!-- Default ant target, compiles and packages test jars, does not run tests. -->
     <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
@@ -1259,7 +1261,8 @@
     <!-- Testing -->
 
     <!-- Classpath used for running tests. -->
-    <target name="config-run-path">
+    <macrodef name="config-run-path">
+        <sequential>
         <path id="run.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
@@ -1357,7 +1360,8 @@
             <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-test.jar"/>
             <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-model.jar"/>
         </path>
-    </target>
+        </sequential>
+    </macrodef>
 
     <!-- Clean all build generated content. -->
     <target name="clean-test" description="Clean the test">
