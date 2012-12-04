@@ -1225,10 +1225,10 @@
             </zipfileset>
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${modelgen.processor.jar}" prefix="eclipselink/jlib/jpa"/>
-            <!-- jpa persistence jar -->
+            <!-- jpa persistence 1.0 jar -->
             <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence10.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
-            <!-- jpa persistence 2.0 jars -->
+            <!-- jpa persistence 2.x jars -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence_2.*.jar" excludes="*preview*" prefix="eclipselink/jlib/jpa"/>
             <!-- JPA RS jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>

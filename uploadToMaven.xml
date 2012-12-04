@@ -87,9 +87,9 @@
     </target>
 
     <target name="discover-static-built-info" depends="discover-init">
-        <property name="jpaapi2.prefix"       value="javax.persistence"/>
-        <property name="jpaapi2.criteria"     value="[2.0.0,2.1.0)"/>
-        <property name="jpaapi2.name"         value="Javax Persistence"/>
+        <property name="jpaapi20.prefix"      value="javax.persistence"/>
+        <property name="jpaapi20.criteria"    value="[2.0.0,2.0.100)"/>
+        <property name="jpaapi20.name"        value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
@@ -112,8 +112,8 @@
         <property name="hermes.criteria"      value="[1.0.0,9.0.0)"/>
         <property name="hermes.name"          value="EclipseLink Hermes JPQL Parser"/>
 
-        <selectbundle basename="${jpaapi2.prefix}"  directory="${maven.2.jpa.plugins.dir}"
-                     criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
+        <selectbundle basename="${jpaapi20.prefix}"  directory="${maven.2.jpa.plugins.dir}"
+                     criterion="${jpaapi20.criteria}" property="jpaapi20.version" versiononly="true"
         />
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                      criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
@@ -137,7 +137,7 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <echo message="jpaapi2.version    = ${jpaapi2.version}"/>
+        <echo message="jpaapi20.version   = ${jpaapi20.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
@@ -226,13 +226,14 @@
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi2.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.persistence2"  value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi20.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}1.0.0.${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}commonj.sdo${dep.art}commonj.sdo${dep.ver}${sdoapi.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
         <!-- * JPA does have a dependency upon javax.persistence, but it is left unstated because while 2.0 functionality -->
         <!--   depends upon javax.persistence_2.0.x jpa 1.0 functionality can run with just javax.persistence_1.0         -->
+        <!--   Also while JPA 2.1 is in preview only the 2.0 jar will be pushed to Maven.                                 -->
         <!-- * The modelgen processor is a jar containing a single data resource used by the compiler to establish a      -->
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
@@ -254,13 +255,13 @@
 
     <target name="upload-static-built-jars" depends="discover-static-built-info">
         <antcall target="upload-release-artifact">
-            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${jpaapi2.prefix}/${jpaapi2.version}"/>
+            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${jpaapi20.prefix}/${jpaapi20.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="${jpaapi2.prefix}"/>
-            <param name="artifactVersion" value="${jpaapi2.version}"/>
-            <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi2.prefix}_${jpaapi2.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi2.prefix}.source_${jpaapi2.version}.jar"/>
-            <param name="artifactName"    value="${jpaapi2.name}"/>
+            <param name="artifactId"      value="${jpaapi20.prefix}"/>
+            <param name="artifactVersion" value="${jpaapi20.version}"/>
+            <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi20.prefix}_${jpaapi20.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi20.prefix}.source_${jpaapi20.version}.jar"/>
+            <param name="artifactName"    value="${jpaapi20.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-release-artifact-no-src">
