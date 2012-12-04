@@ -269,7 +269,6 @@
            (or dropped-in copy of) eclipselink and the persistence jar, while still
            allowing unchanged operation by developers and users to clean all built artifacts. -->
     <target name="clean-runtime-checkedin" description="Clean the runtime projects">
-        <ant antfile="antbuild.xml" dir="${jpa.prototype}"                target="clean"/>
         <!-- Remove Build artifacts, and potential "confict" files  from check-out -->
         <delete failonerror="false">
             <fileset dir="${trunk.build.location}" includes="${eclipselink.jar}*"/>
@@ -405,10 +404,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="jar"/>
-    </target>
-
-    <target name="build-persistence20">
-        <ant antfile="antbuild.xml" dir="${jpa.prototype}" target="build"/>
     </target>
 
     <!-- Compiles all utils components. -->
@@ -926,6 +921,7 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
@@ -948,7 +944,7 @@
             <header><![CDATA[${eclipselink.javadoc.title}]]></header>
 
             <!-- *** include Dependent APIs in Javadoc  *** -->
-            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jpa21/src" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
@@ -1020,6 +1016,7 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
@@ -1042,7 +1039,7 @@
             <header><![CDATA[${eclipselink.javadoc.title}]]></header>
 
             <!-- *** include Dependent APIs in Javadoc  *** -->
-            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jpa21/src" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
@@ -1182,6 +1179,7 @@
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
         <copy file="${eclipselink.plugins}/org.eclipse.persistence.dbws.builder_${version.string}.jar" tofile="${build.dir}/${dbws-util.jar}"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
@@ -1209,7 +1207,7 @@
             <zipfileset dir="./${eclipselink.core.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- jpa XSD files -->
             <zipfileset dir="./${eclipselink.jpa.xsds}" includes="eclipselink*.xsd" prefix="eclipselink/xsds"/>
-            <zipfileset dir="./${jpa.prototype.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
+            <zipfileset dir="${build.dir}/jpa21/src/javax/persistence" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- moxy XSD files -->
             <zipfileset dir="./${eclipselink.moxy.xsds}" includes="*.xsd" prefix="eclipselink/xsds"/>
             <!-- dbws XSD files -->
@@ -1277,7 +1275,7 @@
     </target>
 
     <!-- Build Infrastructure targets -->
-    <target name="Refresh-Plugins" description="populate plugins with dependent jars from specified Orbit repository">
+    <target name="refresh-plugins" description="populate plugins with dependent jars from specified Orbit repository">
         <ant antfile="antbuild.xml" dir="${eclipselink.bldplugins}"  target="build"/>
     </target>
 

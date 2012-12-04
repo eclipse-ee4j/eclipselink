@@ -104,8 +104,8 @@
 
         <!-- Set Compile Path-->
         <path id="asm.compile.path">
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+            <pathelement path="${asm.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${asm.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
         </path>
 
         <!-- Check for BND library -->

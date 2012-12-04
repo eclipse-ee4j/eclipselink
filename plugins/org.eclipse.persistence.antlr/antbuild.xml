@@ -154,8 +154,8 @@
         <!-- Set Compile Path-->
         <path id="antlr.compile.path">
             <pathelement path="${antlr3.lib}"/>
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${jpaproto.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
+            <pathelement path="${antlr.2.common.plugins.dir}/osgi.core.zip"/>
+            <pathelement path="${antlr.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
         </path>
 
         <delete dir="${antlr.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
