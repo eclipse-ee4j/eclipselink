@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.BinaryDataUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Session;
@@ -143,7 +143,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                 c_id = marshaller.getAttachmentMarshaller().addSwaRefAttachment(bytes, 0, bytes.length);
             }
         } else if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
-            XPathFragment lastFrag = ((XMLField) xmlBinaryDataMapping.getField()).getLastXPathFragment();
+            XPathFragment lastFrag = ((Field) xmlBinaryDataMapping.getField()).getLastXPathFragment();
             if(xmlRootFrag != null) {
                 lastFrag = xmlRootFrag;
             }
@@ -176,7 +176,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             if (c_id != null) {
                 marshalRecord.attribute(xPathFragment, namespaceResolver, c_id);
             }else {
-                String value = getValueToWrite(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, session);
+                String value = getValueToWrite(((Field) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, session);
                 marshalRecord.attribute(xPathFragment, namespaceResolver, value);
             }
             marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -187,12 +187,12 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             if(c_id != null) {
                 marshalRecord.characters(c_id);
             } else {
-                marshalRecord.characters(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                marshalRecord.characters(((Field) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataMapping.shouldInlineBinaryData()) {
                 if(c_id == null) {
-                    marshalRecord.characters(((XMLField) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                    marshalRecord.characters(((Field) xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
                     String xopPrefix = null;
                     // If the field's resolver is non-null and has an entry for XOP, 
@@ -225,7 +225,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                     //marshal as an attachment
                 }
             } else {
-                marshalRecord.characters(((XMLField)xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                marshalRecord.characters(((Field)xmlBinaryDataMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         }
         
@@ -239,7 +239,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         try {
             
             unmarshalRecord.removeNullCapableValue(this);
-            XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
+            Field xmlField = (Field) xmlBinaryDataMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
             BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
             String qnameString = xPathFragment.getLocalName();
@@ -265,7 +265,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
+        Field xmlField = (Field) xmlBinaryDataMapping.getField();
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         
         Object fieldValue = null;

@@ -19,11 +19,11 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 
 public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
 
@@ -37,7 +37,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         NamespaceResolver namespaceResolver = ((Descriptor) xmlCollectionReferenceMapping.getDescriptor()).getNamespaceResolver();
         List fkFields = xmlCollectionReferenceMapping.getFields();
         for(int x=0, fkFieldsSize=fkFields.size(); x<fkFieldsSize; x++) {
-            XMLField fkField = (XMLField) fkFields.get(x);
+        	Field fkField = (Field) fkFields.get(x);
             branchNode.addChild(fkField.getXPathFragment(), new XMLCollectionReferenceMappingFKMarshalNodeValue(xmlCollectionReferenceMapping, fkField), namespaceResolver);
         }
     }
@@ -137,9 +137,9 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
     private static class XMLCollectionReferenceMappingFKMarshalNodeValue extends MappingNodeValue {
 
         private CollectionReferenceMapping xmlCollectionReferenceMapping;
-        private XMLField xmlField;
+        private Field xmlField;
 
-        public XMLCollectionReferenceMappingFKMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
+        public XMLCollectionReferenceMappingFKMarshalNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, Field xmlField) {
             this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
             this.xmlField = xmlField;
         }
@@ -161,7 +161,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(value, xmlField, session);
             if (fieldValue == null) {
                 if(null != value) {
-                    XMLField f2 = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+                	Field f2 = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                     fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(value, f2.getXPath(), f2.getNamespaceResolver(), Object.class);
                 }
                 if(null == fieldValue) {

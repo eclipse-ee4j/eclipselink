@@ -37,6 +37,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -502,12 +503,12 @@ public class DOMRecord extends XMLRecord {
 
     }
 
-    private Object getValueFromElement(Element node, Node textChild, XMLField key) {
+    private Object getValueFromElement(Element node, Node textChild, Field key) {
         Object value = textChild.getNodeValue();
         return convertValue(node, key, value);
     }
 
-    private Object convertValue(Element node, XMLField key, Object value) {
+    private Object convertValue(Element node, Field key, Object value) {
         XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
             String schemaType = node.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);

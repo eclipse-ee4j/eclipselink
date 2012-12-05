@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.XMLEntry;
@@ -38,8 +38,11 @@ import org.w3c.dom.NodeList;
  * @since Oracle TopLink 10.1.3
  */
 
-public class UnmarshalXPathEngine {
-    private static UnmarshalXPathEngine instance = null;
+public class UnmarshalXPathEngine <
+     XML_FIELD extends Field
+     > {
+    
+	private static UnmarshalXPathEngine instance = null;
     private XMLPlatform xmlPlatform;
 
     /**
@@ -68,7 +71,7 @@ public class UnmarshalXPathEngine {
      * @return the first node located matching the XPath statement
      * @throws XMLPlatformException
      */
-    public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) throws XMLMarshalException {
+    public Object selectSingleNode(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) throws XMLMarshalException {
         try {
             if (contextNode == null) {
                 return null;
@@ -94,7 +97,7 @@ public class UnmarshalXPathEngine {
         }
     }
 
-    public Object selectSingleNode(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+    public Object selectSingleNode(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         return this.selectSingleNode(contextNode, xmlField, xmlNamespaceResolver, false);
     }
 
@@ -133,11 +136,11 @@ public class UnmarshalXPathEngine {
      * @return a list of nodes matching the XPath statement
      * @throws XMLPlatformException
      */
-    public NodeList selectNodes(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+    public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         return this.selectNodes(contextNode, xmlField, xmlNamespaceResolver, null);
     }
 
-    public NodeList selectNodes(Node contextNode, XMLField xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) throws XMLMarshalException {
+    public NodeList selectNodes(Node contextNode, XML_FIELD xmlField, XMLNamespaceResolver xmlNamespaceResolver, AbstractNullPolicy nullPolicy) throws XMLMarshalException {
         try {
             if (contextNode == null) {
                 return null;
@@ -155,10 +158,10 @@ public class UnmarshalXPathEngine {
         }
     }
 
-    public List<XMLEntry> selectNodes(Node contextNode, List<XMLField> xmlFields, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
+    public List<XMLEntry> selectNodes(Node contextNode, List<XML_FIELD> xmlFields, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
         List<XMLEntry> nodes = new ArrayList<XMLEntry>();
         List<XPathFragment> firstFragments = new ArrayList<XPathFragment>(xmlFields.size());
-        for(XMLField nextField:xmlFields) {
+        for(XML_FIELD nextField:xmlFields) {
             firstFragments.add(nextField.getXPathFragment());
         }
         selectNodes(contextNode, firstFragments, xmlNamespaceResolver, nodes);
@@ -170,7 +173,7 @@ public class UnmarshalXPathEngine {
         for(int i = 0, size = childNodes.getLength(); i < size; i++) {
             Node nextChild = childNodes.item(i);
             List<XPathFragment> matchingFragments = new ArrayList<XPathFragment>();
-            for(XPathFragment nextFragment:xpathFragments) {
+            for(XPathFragment<XML_FIELD> nextFragment:xpathFragments) {
                 if((nextChild.getNodeType() == Node.TEXT_NODE || nextChild.getNodeType() == Node.CDATA_SECTION_NODE) && nextFragment.nameIsText()) {
                     addXMLEntry(nextChild, nextFragment.getXMLField(), entries);
                 } else if(nextChild.getNodeType() == Node.ATTRIBUTE_NODE && nextFragment.isAttribute()) {
@@ -201,7 +204,7 @@ public class UnmarshalXPathEngine {
         }
     }
 
-    private void addXMLEntry(Node entryNode, XMLField xmlField, List<XMLEntry> entries) {
+    private void addXMLEntry(Node entryNode, XML_FIELD xmlField, List<XMLEntry> entries) {
         XMLEntry entry = new XMLEntry();
         entry.setValue(entryNode);
         entry.setXMLField(xmlField);

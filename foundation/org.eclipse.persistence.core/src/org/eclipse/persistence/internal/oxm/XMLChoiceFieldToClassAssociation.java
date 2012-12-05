@@ -13,7 +13,7 @@ package org.eclipse.persistence.internal.oxm;
 * mmacivor - June 19/2008 - 1.0 - Initial implementation
 ******************************************************************************/
 
-import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.mappings.converters.Converter;
 
 /** INTERNAL:
@@ -21,15 +21,18 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * choice mappings from deployment.xml 
  * @author mmacivor
  */
-public class XMLChoiceFieldToClassAssociation {
+public class XMLChoiceFieldToClassAssociation <
+   XML_FIELD extends Field
+>
+{
     protected String className;
-    protected XMLField xmlField;
+    protected XML_FIELD xmlField;
     protected Converter converter;
     
     public XMLChoiceFieldToClassAssociation() {
     }
     
-    public XMLChoiceFieldToClassAssociation(XMLField xmlField, String className) {
+    public XMLChoiceFieldToClassAssociation(XML_FIELD xmlField, String className) {
         this.xmlField = xmlField;
         this.className = className;
     }
@@ -42,11 +45,11 @@ public class XMLChoiceFieldToClassAssociation {
         this.className = name;
     }
     
-    public XMLField getXmlField() {
+    public XML_FIELD getXmlField() {
         return xmlField;
     }
     
-    public void setXmlField(XMLField field) {
+    public void setXmlField(XML_FIELD field) {
         this.xmlField = field;
     }
     

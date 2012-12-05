@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -24,7 +25,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLUnionField;
 
 public class TypeNodeValue extends NodeValue {
@@ -48,7 +48,7 @@ public class TypeNodeValue extends NodeValue {
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
         }
-        XMLField xmlField = (XMLField) directMapping.getField();
+        Field xmlField = (Field) directMapping.getField();
         QName schemaType = getSchemaType(xmlField, fieldValue, session);
         if (null == schemaType) {
             return false;
@@ -87,7 +87,7 @@ public class TypeNodeValue extends NodeValue {
         this.directMapping = directMapping;
     }
 
-    private QName getSchemaType(XMLField xmlField, Object value, CoreAbstractSession session) {
+    private QName getSchemaType(Field xmlField, Object value, CoreAbstractSession session) {
         QName schemaType = null;
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());

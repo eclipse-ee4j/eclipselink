@@ -19,13 +19,13 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
@@ -77,7 +77,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
 
         Object iterator = cp.iteratorFor(collection);
-        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+        Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -153,7 +153,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
-    	XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+    	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         XPathFragment lastXPathFragment = xmlField.getLastXPathFragment();
         if (lastXPathFragment.nameIsText()) {
             String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
@@ -182,7 +182,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-    	XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+    	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         XPathFragment lastXPathFragment = xmlField.getLastXPathFragment();
         if (!lastXPathFragment.nameIsText()) {
             return;
@@ -206,7 +206,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         String value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
-        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+        Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         if (xmlField.usesSingleNode()) {
             StringTokenizer stringTokenizer = new StringTokenizer(value);
             while (stringTokenizer.hasMoreTokens()) {
@@ -227,7 +227,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             value = null;
         }
 
-        XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+        Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
 
         XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
         if (unmarshalRecord.getTypeQName() != null) {
@@ -269,7 +269,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         value = xmlCompositeDirectCollectionMapping.convertObjectValueToDataValue(value, session, marshalRecord.getMarshaller());
 
         if (null != value) {
-            XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
+        	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
             QName schemaType = xmlField.getSchemaTypeForValue(value, session);
             boolean isElementOpen = false;
             if (XMLConstants.QNAME_QNAME.equals(schemaType)) {

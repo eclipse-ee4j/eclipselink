@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -74,7 +74,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         Object childObject = referenceDescriptor.getInstantiationPolicy().buildNewInstance();
         if(textMapping.isAbstractDirectMapping()) {
             DirectMapping xmlDirectMapping = (DirectMapping) textMappingNodeValue.getMapping();
-            XMLField xmlField = (XMLField) xmlDirectMapping.getField();
+            Field xmlField = (Field) xmlDirectMapping.getField();
             Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
             Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, unmarshalRecord.getSession(), unmarshalRecord);
             xmlDirectMapping.setAttributeValueInObject(childObject, convertedValue);
@@ -149,7 +149,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(textMapping.isAbstractDirectMapping()) {
                 DirectMapping xmlDirectMapping = (DirectMapping) textMapping;
                 Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
-                QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
+                QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
                 marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
@@ -205,7 +205,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }
             if(!isSelfFragment) {
-                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
+                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment, WriteType.UNDEFINED);
@@ -223,9 +223,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }
-            QName schemaType = ((XMLField) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue,session);
+            QName schemaType = ((Field) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue,session);
 
-            updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
+            updateNamespaces(schemaType, marshalRecord,((Field)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(schemaType, objectValue, null, false);
 
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
@@ -246,7 +246,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 if(xmlDescriptor == null){
                     if(xmlCompositeObjectMapping.getField() != null){
                         //try leaf element type
-                        QName leafType = ((XMLField)xmlCompositeObjectMapping.getField()).getLastXPathFragment().getLeafElementType();
+                        QName leafType = ((Field)xmlCompositeObjectMapping.getField()).getLastXPathFragment().getLeafElementType();
                         if (leafType != null) {
                             XPathFragment frag = new XPathFragment();
                             frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
@@ -313,7 +313,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
-                    XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();
+                	Field xmlFld = (Field)this.xmlCompositeObjectMapping.getField();
                     if (xmlFld.hasLastXPathFragment()) {
                         unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
                     }
@@ -518,7 +518,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if(xmlCompositeObjectMapping.getAttributeAccessor().isInstanceVariableAttributeAccessor() && !xmlCompositeObjectMapping.hasConverter()) {
             return false;
         }
-        XMLField xmlField = (XMLField)xmlCompositeObjectMapping.getField();
+        Field xmlField = (Field)xmlCompositeObjectMapping.getField();
         if (xmlField.getLastXPathFragment().isSelfFragment) {
             return false;
         }

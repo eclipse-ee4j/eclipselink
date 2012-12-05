@@ -14,10 +14,10 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
 
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -62,7 +62,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.U
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
        //Since we know this was a simple or empty element, we know that we only got a characters event and then this. Process the
        //text.
-       XMLField field = null;
+       Field field = null;
        Object value = this.getCharacters();
 
        Class attributeClassification = null;
@@ -70,12 +70,12 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.U
        boolean isSwaRef = false;
        if(isCollection) {
            isSwaRef = ((XMLBinaryDataCollectionMapping)mapping).isSwaRef();
-           field = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
+           field = (Field)((XMLBinaryDataCollectionMapping)mapping).getField();
            attributeClassification =((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
            nullPolicy =((XMLBinaryDataCollectionMapping)mapping).getNullPolicy();
        } else {
            isSwaRef = ((XMLBinaryDataMapping)mapping).isSwaRef();
-           field = (XMLField)((XMLBinaryDataMapping)mapping).getField();
+           field = (Field)((XMLBinaryDataMapping)mapping).getField();
            attributeClassification =((XMLBinaryDataMapping)mapping).getAttributeClassification();
            nullPolicy =((XMLBinaryDataMapping)mapping).getNullPolicy();
 

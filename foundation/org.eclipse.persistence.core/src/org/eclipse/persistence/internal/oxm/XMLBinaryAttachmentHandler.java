@@ -15,12 +15,12 @@ package org.eclipse.persistence.internal.oxm;
 import javax.activation.DataHandler;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
@@ -81,11 +81,11 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.reco
 
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        	XMLField xmlField = null;
+        	Field xmlField = null;
     	    if(isCollection) {
-                xmlField = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
+                xmlField = (Field)((XMLBinaryDataCollectionMapping)mapping).getField();
               } else {
-                xmlField = (XMLField)((XMLBinaryDataMapping)mapping).getField();
+                xmlField = (Field)((XMLBinaryDataMapping)mapping).getField();
             }
     	    if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
     	    	if(record.isNamespaceAware() && !XMLConstants.XOP_URL.equals(namespaceURI)){

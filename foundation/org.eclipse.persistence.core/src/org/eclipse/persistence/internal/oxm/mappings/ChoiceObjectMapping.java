@@ -22,8 +22,8 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 public interface ChoiceObjectMapping<
@@ -32,22 +32,27 @@ public interface ChoiceObjectMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
-    FIELD extends CoreField,
+    FIELD extends CoreField,    
     SESSION extends CoreSession,
+    XML_FIELD extends Field,
     XML_RECORD extends XMLRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
 
-    public Map<XMLField, XMLMapping> getChoiceElementMappings();
+    public Map<XML_FIELD, XMLMapping> getChoiceElementMappings();
 
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass();
 
-    public Map<Class, XMLField> getClassToFieldMappings();
+    public Map<Class, XML_FIELD> getClassToFieldMappings();
 
-    public Map<Class, List<XMLField>> getClassToSourceFieldsMappings();
+    public Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
 
     public CONVERTER getConverter();
 
     public Object getFieldValue(Object object, ABSTRACT_SESSION session, XML_RECORD marshalRecord);
 
     public List<FIELD> getFields();
+
+    public Map<XML_FIELD, Class> getFieldToClassMappings();
+
+    public List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
 
 }

@@ -20,12 +20,12 @@ import org.xml.sax.Attributes;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -53,7 +53,7 @@ import org.eclipse.persistence.oxm.XMLField;
 
 public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue implements ContainerValue {
     private CollectionReferenceMapping xmlCollectionReferenceMapping;
-    private XMLField xmlField;
+    private Field xmlField;
     private static final String SPACE = " ";
     private int index = -1;
 
@@ -63,7 +63,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      * 
      * @param xmlCollectionReferenceMapping
      */
-    public XMLCollectionReferenceMappingNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, XMLField xmlField) {
+    public XMLCollectionReferenceMappingNodeValue(CollectionReferenceMapping xmlCollectionReferenceMapping, Field xmlField) {
         super();
         this.xmlCollectionReferenceMapping = xmlCollectionReferenceMapping;
         this.xmlField = xmlField;
@@ -190,7 +190,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, session);
                 if (fieldValue == null) {
                     if(null != objectValue) {
-                        XMLField fkField = (XMLField) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+                    	Field fkField = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                         fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(objectValue, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
                     }
                     if(null == fieldValue) {

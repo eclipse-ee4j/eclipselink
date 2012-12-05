@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.oxm;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -32,7 +33,7 @@ import org.eclipse.persistence.oxm.XMLField;
 
 public class FieldTransformerNodeValue extends NodeValue {
     private FieldTransformer fieldTransformer;
-    private XMLField xmlField;
+    private Field xmlField;
 
     public FieldTransformer getFieldTransformer() {
         return fieldTransformer;
@@ -42,11 +43,11 @@ public class FieldTransformerNodeValue extends NodeValue {
         this.fieldTransformer = fieldTransformer;
     }
 
-    public XMLField getXMLField() {
+    public Field getXMLField() {
         return xmlField;
     }
 
-    public void setXMLField(XMLField xmlField) {
+    public void setXMLField(Field xmlField) {
         this.xmlField = xmlField;
     }
 
@@ -88,7 +89,7 @@ public class FieldTransformerNodeValue extends NodeValue {
         Object value = unmarshalRecord.getCharacters().toString();
         boolean isCDATA = unmarshalRecord.isBufferCDATA();
         unmarshalRecord.resetStringBuffer();
-        XMLField toWrite = xmlField;
+        Field toWrite = xmlField;
         if(xmlField.isCDATA() != isCDATA) {
             toWrite = new XMLField(xmlField.getName());
             toWrite.setNamespaceResolver(xmlField.getNamespaceResolver());

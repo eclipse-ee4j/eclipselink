@@ -21,19 +21,20 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLField;
 
 public interface CollectionReferenceMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
     DESCRIPTOR extends CoreDescriptor,
-    FIELD extends CoreField,
-    UNMARSHAL_RECORD extends UnmarshalRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLContainerMapping {
+    FIELD extends CoreField,    
+    UNMARSHAL_RECORD extends UnmarshalRecord,
+    XML_FIELD extends Field
+    > extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLContainerMapping {
 
-    public Object buildFieldValue(Object targetObject, XMLField xmlField, ABSTRACT_SESSION session);
+    public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
 
-    public void buildReference(UNMARSHAL_RECORD unmarshalRecord, XMLField xmlField,
+    public void buildReference(UNMARSHAL_RECORD unmarshalRecord, XML_FIELD xmlField,
             Object value, ABSTRACT_SESSION session, Object container);
 
     public List<FIELD> getFields();

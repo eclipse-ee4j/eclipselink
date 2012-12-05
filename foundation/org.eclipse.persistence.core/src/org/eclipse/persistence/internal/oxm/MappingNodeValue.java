@@ -14,10 +14,10 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * A node value corresponding to mapping. 
@@ -33,7 +33,7 @@ public abstract class MappingNodeValue extends NodeValue {
         return true;
     }
 
-    protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, XMLField xmlField){
+    protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, Field xmlField){
         if (qname != null){        
             if(xmlField != null){
                 if(xmlField.isTypedTextField()){           

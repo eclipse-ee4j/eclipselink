@@ -32,10 +32,10 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -154,8 +154,8 @@ public class ReferenceResolver {
      * contain an entry for the provided field. 
      * @return
      */
-    public Reference getReference(ObjectReferenceMapping mapping, Object sourceObject, XMLField xmlField) {
-        XMLField targetField = (XMLField)mapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+    public Reference getReference(ObjectReferenceMapping mapping, Object sourceObject, Field xmlField) {
+        Field targetField = (Field)mapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXpath = null;
         if(!(mapping.getReferenceClass() == null || mapping.getReferenceClass() == Object.class)) {
             if(targetField != null) {
@@ -290,8 +290,8 @@ public class ReferenceResolver {
                 Descriptor targetDescriptor = (Descriptor) entry;
                 List pkFields = targetDescriptor.getPrimaryKeyFields();
                 if(null != pkFields && 1 == pkFields.size()) {
-                    XMLField pkField = (XMLField) pkFields.get(0);
-                    pkField = (XMLField) targetDescriptor.getTypedField(pkField);
+                    Field pkField = (Field) pkFields.get(0);
+                    pkField = (Field) targetDescriptor.getTypedField(pkField);
                     Class targetType = pkField.getType();
                     if(targetType == CoreClassConstants.STRING || targetType == CoreClassConstants.OBJECT) {
                     	value = getValue(targetDescriptor.getJavaClass(), primaryKey);

@@ -22,13 +22,13 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -50,9 +50,9 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     //The first node value of the choice will be registered as a null capable value. If any
     //of the choice elements get hit, this needs to be removed as a null value.
     private XMLChoiceObjectMappingNodeValue nullCapableNodeValue;
-    private XMLField xmlField;
+    private Field xmlField;
     
-    public XMLChoiceObjectMappingNodeValue(ChoiceObjectMapping mapping, XMLField xmlField) {
+    public XMLChoiceObjectMappingNodeValue(ChoiceObjectMapping mapping, Field xmlField) {
         this.xmlChoiceMapping = mapping;
         this.xmlField = xmlField;
         initializeNodeValue();
@@ -67,7 +67,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         choiceElementNodeValue = getNodeValueForMapping(xmlMapping);
         //check for mappings to other classes with the same field
         for(Entry<Class, XMLMapping> entry: ((Map<Class, XMLMapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
-            XMLField field = (XMLField) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
+        	Field field = (Field) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
             if(field != null && field.equals(this.xmlField)) {
                 XMLMapping mappingForClass = entry.getValue();
                 if(mappingForClass != xmlMapping) {
@@ -116,7 +116,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         if (value instanceof XMLRoot) {
             XMLRoot root = (XMLRoot)value;
             for(CoreField next: (List<CoreField>) this.xmlChoiceMapping.getFields()) {
-                XPathFragment fragment = ((XMLField)next).getXPathFragment();
+                XPathFragment fragment = ((Field)next).getXPathFragment();
                 while(fragment != null && !fragment.nameIsText) {
                     if(fragment.getNextFragment() == null || fragment.getHasText()) {
                         if(fragment.getLocalName().equals(root.getLocalName())) {
@@ -141,10 +141,10 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
             if(valueClass == null) {
                 valueClass = value.getClass();
             }
-            XMLField fieldForClass = null;
+            Field fieldForClass = null;
             Class theClass = valueClass;
             while(theClass != null) {
-                fieldForClass = (XMLField) xmlChoiceMapping.getClassToFieldMappings().get(valueClass);
+                fieldForClass = (Field) xmlChoiceMapping.getClassToFieldMappings().get(valueClass);
                 if(fieldForClass != null) {
                     break;
                 }
@@ -159,10 +159,10 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
                 }
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
-            List<XMLField> sourceFields = null;
+            List<Field> sourceFields = null;
             theClass = valueClass;
             while(theClass != null) {
-                sourceFields = (List<XMLField>) xmlChoiceMapping.getClassToSourceFieldsMappings().get(theClass);
+                sourceFields = (List<Field>) xmlChoiceMapping.getClassToSourceFieldsMappings().get(theClass);
                 if(sourceFields != null) {
                     break;
                 }

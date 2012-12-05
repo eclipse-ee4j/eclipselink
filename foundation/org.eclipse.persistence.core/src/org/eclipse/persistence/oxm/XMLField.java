@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 /**
@@ -286,7 +287,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
  * </table>
  * @see org.eclipse.persistence.oxm.XMLUnionField
  */
-public class XMLField extends DatabaseField {
+public class XMLField extends DatabaseField implements Field {
     private NamespaceResolver namespaceResolver;
     private QName schemaType;
     private XPathFragment xPathFragment;

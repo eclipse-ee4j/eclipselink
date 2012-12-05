@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -31,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 
 /**
@@ -155,7 +155,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.removeNullCapableValue(this);
-        XPathFragment lastFrag = ((XMLField)xmlFragmentMapping.getField()).getLastXPathFragment();
+        XPathFragment lastFrag = ((Field)xmlFragmentMapping.getField()).getLastXPathFragment();
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         if (lastFrag.nameIsText()) {
             Object attributeValue = builder.buildTextNode(unmarshalRecord.getCharacters().toString());

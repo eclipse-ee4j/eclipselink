@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
@@ -174,7 +175,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
             
             if (!inheritancePolicy.hasClassExtractor()) {
-                XMLField classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
+                Field classIndicatorField = new XMLField(inheritancePolicy.getClassIndicatorFieldName());
                 classIndicatorField.setNamespaceResolver(xmlDescriptor.getNamespaceResolver());
             }
         }
@@ -208,7 +209,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             TypeNodeValue typeNodeValue;
     
             NodeValue mappingNodeValue = null;
-            XMLField xmlField;
+            Field xmlField;
             while (mappingIterator.hasNext()) {
                 xmlMapping = (Mapping)mappingIterator.next();
                 
@@ -216,7 +217,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     continue;
                 }
                 
-                xmlField = (XMLField)xmlMapping.getField();
+                xmlField = (Field)xmlMapping.getField();
                 if (xmlMapping.isTransformationMapping()) {
                     transformationMapping = (AbstractTransformationMapping)xmlMapping;
                     addTransformationMapping(transformationMapping);
@@ -224,7 +225,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     while (fieldTransformerIterator.hasNext()) {
                         fieldTransformerNodeValue = new FieldTransformerNodeValue();
                         nextFieldToTransformer = (Object[])fieldTransformerIterator.next();
-                        xmlField = (XMLField)nextFieldToTransformer[0];
+                        xmlField = (Field)nextFieldToTransformer[0];
                         fieldTransformerNodeValue.setXMLField(xmlField);
                         fieldTransformerNodeValue.setFieldTransformer((FieldTransformer)nextFieldToTransformer[1]);
                         addChild(xmlField.getXPathFragment(), fieldTransformerNodeValue, xmlDescriptor.getNamespaceResolver());
@@ -264,7 +265,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         CollectionReferenceMapping xmlColMapping = (CollectionReferenceMapping)xmlMapping;
                         
                         List fields = xmlColMapping.getFields();
-                        XMLField xmlColMappingField = (XMLField) xmlColMapping.getField();
+                        Field xmlColMappingField = (Field) xmlColMapping.getField();
                         XPathNode branchNode;
                         if(null == xmlColMappingField) {
                             if(fields.size() > 1 && !xmlColMapping.usesSingleNode()) {                                
@@ -272,12 +273,12 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             }
                             branchNode = rootXPathNode;
                         } else {
-                            branchNode = addChild(((XMLField) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
+                            branchNode = addChild(((Field) xmlColMapping.getField()).getXPathFragment(), new XMLCollectionReferenceMappingMarshalNodeValue(xmlColMapping), xmlDescriptor.getNamespaceResolver());
                         }                        
                     
                         int containerIndex = -1;
                         for (int i = 0, size = fields.size(); i < size; i++) {
-                            XMLField xmlFld = (XMLField)fields.get(i);
+                        	Field xmlFld = (Field)fields.get(i);
                             mappingNodeValue = new XMLCollectionReferenceMappingNodeValue(xmlColMapping, xmlFld);
                             if(i == 0){
                                 addContainerValue((ContainerValue)mappingNodeValue);
@@ -297,7 +298,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         ObjectReferenceMapping xmlORMapping = (ObjectReferenceMapping)xmlMapping;
                         Iterator fieldIt = xmlORMapping.getFields().iterator();
                         while (fieldIt.hasNext()) {
-                            XMLField xmlFld = (XMLField)fieldIt.next();
+                        	Field xmlFld = (Field)fieldIt.next();
                             mappingNodeValue = new XMLObjectReferenceMappingNodeValue(xmlORMapping, xmlFld);
                             if (mappingNodeValue.isContainerValue()) {
                                 addContainerValue((ContainerValue)mappingNodeValue);
@@ -311,13 +312,13 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if (xmlMapping instanceof ChoiceObjectMapping) {
                         ChoiceObjectMapping xmlChoiceMapping = (ChoiceObjectMapping)xmlMapping;
                         Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                        XMLField firstField = (XMLField)fields.next();
+                        Field firstField = (Field)fields.next();
                         XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
                         firstNodeValue.setNullCapableNodeValue(firstNodeValue);
                         this.addNullCapableValue(firstNodeValue);
                         addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
-                            XMLField next = (XMLField)fields.next();
+                        	Field next = (Field)fields.next();
                             XMLChoiceObjectMappingNodeValue nodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, next);
                             nodeValue.setNullCapableNodeValue(firstNodeValue);
                             addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
@@ -326,14 +327,14 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if(xmlMapping instanceof ChoiceCollectionMapping) {
                         ChoiceCollectionMapping xmlChoiceMapping = (ChoiceCollectionMapping)xmlMapping;
 
-                        Iterator<Entry<XMLField, XMLMapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
-                        Entry<XMLField, XMLMapping> firstEntry = fields.next();
-                        XMLField firstField = firstEntry.getKey();
+                        Iterator<Entry<Field, XMLMapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
+                        Entry<Field, XMLMapping> firstEntry = fields.next();
+                        Field firstField = firstEntry.getKey();
 
                         XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
                         XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
 
-                        HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
+                        HashMap<Field, NodeValue> fieldToNodeValues = new HashMap<Field, NodeValue>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
                         if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == firstEntry.getValue())) {
@@ -346,8 +347,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
                         addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
-                            Entry<XMLField, XMLMapping> nextEntry = fields.next();
-                            XMLField nextField = nextEntry.getKey();
+                            Entry<Field, XMLMapping> nextEntry = fields.next();
+                            Field nextField = nextEntry.getKey();
                             XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, nextField);
                             nodeValue.setContainerNodeValue(unmarshalValue);
                             nodeValue.setIndex(unmarshalValue.getIndex());
@@ -379,7 +380,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                             typeXPathStringBuilder.append(nextFragment.getXPath());
                             nextFragment = nextFragment.getNextFragment();
                         }
-                        XMLField typeField = new XMLField();
+                        Field typeField = new XMLField();
                         if(typeXPathStringBuilder.length() > 0) {
                             typeXPathStringBuilder.append('/');
                         }
@@ -537,7 +538,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         valueDescriptor = referenceDescriptor;
                     }
                     if(null != valueDescriptor) {
-                    	((XMLObjectBuilder)valueDescriptor.getObjectBuilder()).addXsiTypeAndClassIndicatorIfRequired(marshalRecord, valueDescriptor, referenceDescriptor, (XMLField) selfMapping.getField(), false);
+                    	((XMLObjectBuilder)valueDescriptor.getObjectBuilder()).addXsiTypeAndClassIndicatorIfRequired(marshalRecord, valueDescriptor, referenceDescriptor, (Field) selfMapping.getField(), false);
                     }
                 }
                 selfXPathNode.marshalSelfAttributes(marshalRecord, object, session, namespaceResolver, marshalRecord.getMarshaller());

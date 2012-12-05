@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
@@ -32,7 +33,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -109,7 +109,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     }
                     if(xmlCompositeCollectionMapping.getField() != null){
                         //try leaf element type
-                        QName leafType = ((XMLField)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
+                        QName leafType = ((Field)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
                         if (leafType != null) {
                             XPathFragment frag = new XPathFragment();
                             frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
@@ -164,7 +164,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             } else if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             } else {
-                XMLField xmlFld = (XMLField) this.xmlCompositeCollectionMapping.getField();
+            	Field xmlFld = (Field) this.xmlCompositeCollectionMapping.getField();
                 if (xmlFld.hasLastXPathFragment()) {
                     unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
                 }
@@ -282,7 +282,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
-            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);
+            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (Field)xmlCompositeCollectionMapping.getField(), false);
             
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment, WriteType.UNDEFINED);
             marshalRecord.afterContainmentMarshal(object, value);
@@ -295,8 +295,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             }
             xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
-            QName schemaType = ((XMLField) xmlCompositeCollectionMapping.getField()).getSchemaTypeForValue(value, session);
-            updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeCollectionMapping.getField()));
+            QName schemaType = ((Field) xmlCompositeCollectionMapping.getField()).getSchemaTypeForValue(value, session);
+            updateNamespaces(schemaType, marshalRecord,((Field)xmlCompositeCollectionMapping.getField()));
             marshalRecord.characters(schemaType, value, null, false);            
             marshalRecord.endElement(xPathFragment, namespaceResolver);
         }

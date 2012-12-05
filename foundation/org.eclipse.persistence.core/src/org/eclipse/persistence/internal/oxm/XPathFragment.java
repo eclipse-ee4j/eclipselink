@@ -16,8 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -31,14 +31,16 @@ import org.eclipse.persistence.oxm.XMLField;
  * b[2] would have an index value of 2.</li>
  * </ul>
  */
-public class XPathFragment {
+public class XPathFragment <
+  XML_FIELD extends Field
+>{
     public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(XMLConstants.TEXT);
     public static final String SELF_XPATH = ".";
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
     public static final XPathFragment ANY_FRAGMENT = null;
 
     private XPathFragment nextFragment;
-    private XMLField xmlField;
+    private XML_FIELD xmlField;
     private String xpath;
     protected boolean hasAttribute = false;
     private boolean hasText = false;
@@ -391,11 +393,11 @@ public class XPathFragment {
         return generatedPrefix;
     }
     
-    public XMLField getXMLField() {
+    public XML_FIELD getXMLField() {
         return this.xmlField;
     }
     
-    public void setXMLField(XMLField field) {
+    public void setXMLField(XML_FIELD field) {
         this.xmlField = field;
     }
     

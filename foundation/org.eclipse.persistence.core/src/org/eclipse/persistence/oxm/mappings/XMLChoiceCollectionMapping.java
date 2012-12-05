@@ -40,6 +40,7 @@ import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.XMLContainerMapping;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -95,7 +96,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * 
  */
 
-public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session>, XMLMapping {
+public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, XMLField>, XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;
@@ -244,7 +245,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
        List<XMLEntry> values = ((DOMRecord)row).getValuesIndicatingNoEntry(this.getFields());
        Object container = getContainerPolicy().containerInstance(values.size());
        for(XMLEntry next:values) {
-           XMLField valueField = next.getXMLField();
+           Field valueField = next.getXMLField();
            DatabaseMapping nextMapping = (DatabaseMapping)this.choiceElementMappings.get(valueField);
            if(nextMapping.isAbstractCompositeCollectionMapping()) {
                XMLCompositeCollectionMapping xmlMapping = (XMLCompositeCollectionMapping)nextMapping;
@@ -705,7 +706,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     public void setChoiceFieldToClassAssociations(ArrayList associations) {
         if(associations.size() > 0) {
             for(Object next:associations) {
-                XMLChoiceFieldToClassAssociation association = (XMLChoiceFieldToClassAssociation)next;
+                XMLChoiceFieldToClassAssociation<XMLField> association = (XMLChoiceFieldToClassAssociation)next;
                 this.addChoiceElement(association.getXmlField(), association.getClassName());
                 if(association.getConverter() != null) {
                     this.addConverter(association.getXmlField(), association.getConverter());

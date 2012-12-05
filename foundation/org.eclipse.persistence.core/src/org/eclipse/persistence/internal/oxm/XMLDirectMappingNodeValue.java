@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -26,7 +27,6 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -69,7 +69,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             // Perform marshal operations based on the null policy
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         } else {            
-            QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
+            QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
             XPathFragment groupingFragment = null;    
             boolean isQName = false;
             if(XMLConstants.QNAME_QNAME.equals(schemaType)) {
@@ -101,7 +101,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     private XPathFragment getLastGroupingFragment() {
-        XPathFragment fragment = ((XMLField)this.getMapping().getField()).getXPathFragment();
+        XPathFragment fragment = ((Field)this.getMapping().getField()).getXPathFragment();
         if(fragment.hasAttribute || fragment.nameIsText) {
             return null;
         }
@@ -147,7 +147,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField) xmlDirectMapping.getField();
+        Field xmlField = (Field) xmlDirectMapping.getField();
         CoreAbstractSession session = unmarshalRecord.getSession();        
         Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 
@@ -163,7 +163,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         }        
         
         unmarshalRecord.removeNullCapableValue(this);
-        XMLField xmlField = (XMLField) xmlDirectMapping.getField();
+        Field xmlField = (Field) xmlDirectMapping.getField();
         if (!xmlField.getLastXPathFragment().nameIsText) {
             return;
         }

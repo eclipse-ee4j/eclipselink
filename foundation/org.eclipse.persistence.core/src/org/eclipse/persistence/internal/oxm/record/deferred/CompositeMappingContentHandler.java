@@ -16,9 +16,9 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLRelationshipMappingNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -54,7 +54,7 @@ public abstract class CompositeMappingContentHandler extends DeferredContentHand
     protected void createEmptyObject() {
         try {
             // Instantiate a new object
-            XMLField xmlFld = (XMLField)mapping.getField();
+        	Field xmlFld = (Field)mapping.getField();
             if (xmlFld.hasLastXPathFragment()) {
                 getParent().setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
             }

@@ -17,13 +17,13 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.*;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMapping;
 import org.eclipse.persistence.mappings.structures.ArrayCollectionMappingHelper;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -497,8 +497,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * @param True if the items in the collection are in a single node or false if each of the items in the collection is in its own node
      */
     public void setUsesSingleNode(boolean usesSingleNode) {
-        if (getField() instanceof XMLField) {
-            ((XMLField)getField()).setUsesSingleNode(usesSingleNode);
+        if (getField() instanceof Field) {
+            ((Field)getField()).setUsesSingleNode(usesSingleNode);
         }
     }
 
@@ -509,8 +509,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
     * @returns True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
     */
     public boolean usesSingleNode() {
-        if (getField() instanceof XMLField) {
-            return ((XMLField)getField()).usesSingleNode();
+        if (getField() instanceof Field) {
+            return ((Field)getField()).usesSingleNode();
         }
         return false;
     }

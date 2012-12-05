@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -46,7 +47,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -96,7 +96,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 return buildIntoNestedRow(nestedRecord, object, session);
             }
         }
-        Element newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), (XMLField)xmlField);
+        Element newNode = XPathEngine.getInstance().createUnownedElement(parentRecord.getDOM(), (Field)xmlField);
         XMLRecord nestedRecord = new DOMRecord(newNode);
         nestedRecord.setNamespaceResolver(parentRecord.getNamespaceResolver());
         nestedRecord.setMarshaller(parentRecord.getMarshaller());
@@ -155,7 +155,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return xmlRec;
     }
 
-    public AbstractRecord createRecordFor(Object attributeValue, XMLField xmlField, XMLRecord parentRecord, XMLMapping mapping) {
+    public AbstractRecord createRecordFor(Object attributeValue, Field xmlField, XMLRecord parentRecord, XMLMapping mapping) {
         DocumentPreservationPolicy policy = parentRecord.getDocPresPolicy();
         Element newNode = null;
         if(policy != null) {
@@ -439,10 +439,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return buildIntoNestedRow(row, null, object, session, null, null, false);
     }
 
-    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, Descriptor refDesc, XMLField xmlField) {
+    public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object object, AbstractSession session, Descriptor refDesc, Field xmlField) {
         return buildIntoNestedRow(row, null, object, session, refDesc, xmlField, false);
     }
-   public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object originalObject, Object object, AbstractSession session, Descriptor refDesc, XMLField xmlField, boolean wasXMLRoot) {
+   public AbstractRecord buildIntoNestedRow(AbstractRecord row, Object originalObject, Object object, AbstractSession session, Descriptor refDesc, Field xmlField, boolean wasXMLRoot) {
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         XMLRecord record = (XMLRecord)row;
         record.setSession(session);
@@ -746,7 +746,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         
         
         if (descriptor.hasInheritance() ) {
-            XMLField indicatorField = (XMLField) descriptor.getInheritancePolicy().getClassIndicatorField();
+        	Field indicatorField = (Field) descriptor.getInheritancePolicy().getClassIndicatorField();
             if(indicatorField != null){
                if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
                         && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
@@ -771,7 +771,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * @param wasXMLRoot boolean if the originalObject was an XMLRoot
      * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
      */
-    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, XMLField xmlField,
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField,
         Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement) {
         if (wasXMLRoot) {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
@@ -848,7 +848,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
     }
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, XMLField xmlField, boolean isRootElement) {
+    public boolean addXsiTypeAndClassIndicatorIfRequired(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement) {
         if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
             xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow((XMLRecord) record);
             return true;
@@ -883,7 +883,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
             CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
-            XMLField indicatorField = (XMLField) inheritancePolicy.getClassIndicatorField();
+            Field indicatorField = (Field) inheritancePolicy.getClassIndicatorField();
             if (indicatorField != null && xsiTypeIndicatorField) {
                 Object classIndicatorValueObject = inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
                 String classIndicatorUri = null;

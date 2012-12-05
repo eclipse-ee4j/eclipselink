@@ -23,12 +23,12 @@ import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 import org.xml.sax.Attributes;
@@ -44,20 +44,20 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private NodeValue choiceElementMarshalNodeValue;
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private XMLMapping nestedMapping;
-    private Map<XMLField, NodeValue> fieldToNodeValues;
-    private XMLField xmlField;
+    private Map<Field, NodeValue> fieldToNodeValues;
+    private Field xmlField;
     private ContainerValue containerNodeValue;
     private boolean isMixedNodeValue;
     private int index = -1;
 
-    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField) {
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         this.nestedMapping = (XMLMapping) mapping.getChoiceElementMappings().get(xmlField);
         initializeNodeValue();
     }
     
-    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField, XMLMapping nestedMapping) {
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField, XMLMapping nestedMapping) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         this.nestedMapping = nestedMapping;
@@ -172,7 +172,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
         return getMapping().getReuseContainer();
     }
 
-    public void setFieldToNodeValues(Map<XMLField, NodeValue> fieldToNodeValues) {
+    public void setFieldToNodeValues(Map<Field, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
     }    
     

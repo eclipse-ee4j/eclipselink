@@ -26,13 +26,13 @@ import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -42,14 +42,14 @@ import java.util.Iterator;
 
 public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
-    private Map<XMLField, NodeValue> fieldToNodeValues;
+    private Map<Field, NodeValue> fieldToNodeValues;
     private Map<Class, NodeValue> classToNodeValues;
     private NodeValue choiceElementNodeValue;
-    private XMLField xmlField;
+    private Field xmlField;
     private boolean isMixedNodeValue;
     private int index = -1;
 
-    public XMLChoiceCollectionMappingMarshalNodeValue(ChoiceCollectionMapping mapping, XMLField xmlField) {
+    public XMLChoiceCollectionMappingMarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         initializeNodeValue();
@@ -66,11 +66,11 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         return choiceElementNodeValue.isOwningNode(xPathFragment);
     }
 
-    public void setFieldToNodeValues(Map<XMLField, NodeValue> fieldToNodeValues) {
+    public void setFieldToNodeValues(Map<Field, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
         this.classToNodeValues = new HashMap<Class, NodeValue>();
-        for(XMLField nextField:fieldToNodeValues.keySet()) {
-            Class associatedClass = ((Map<XMLField, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
+        for(Field nextField:fieldToNodeValues.keySet()) {
+            Class associatedClass = ((Map<Field, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
             this.classToNodeValues.put(associatedClass, fieldToNodeValues.get(nextField));
         }
         
@@ -78,7 +78,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         for(Class nextClass:((Map<Class, XMLMapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
-                XMLField field = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
+            	Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
                 NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (XMLMapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
                 this.classToNodeValues.put(nextClass, nodeValue);
                 NodeValue nodeValueForField = fieldToNodeValues.get(field);
@@ -266,7 +266,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		return null;
     	}
     	
-    	XMLField associatedField = null;
+    	Field associatedField = null;
     	NodeValue nodeValue = null;
     	if(value instanceof XMLRoot) {
     		XMLRoot rootValue = (XMLRoot)value;
@@ -277,7 +277,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		if(associatedField == null) {
     		    Class theClass = fieldValue.getClass();
     		    while(associatedField == null) {
-                    associatedField = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                    associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                     if(theClass.getSuperclass() != null) {
                         theClass = theClass.getSuperclass();
                     } else {
@@ -291,7 +291,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	} else {
             Class theClass = value.getClass();
             while(associatedField == null) {
-                associatedField = (XMLField) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                associatedField = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
                 nodeValue = classToNodeValues.get(theClass);
                 if(theClass.getSuperclass() != null) {
                     theClass = theClass.getSuperclass();
@@ -302,10 +302,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	}
     	if(associatedField == null) {
     	    //check the field associations
-    	    List<XMLField> sourceFields = null;
+    	    List<Field> sourceFields = null;
     	    Class theClass = value.getClass();
     	    while(theClass != null) {
-    	        sourceFields = (List<XMLField>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
+    	        sourceFields = (List<Field>) xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
     	        if(sourceFields != null) {
     	            break;
     	        }
@@ -344,10 +344,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         record.characters(value);
     }
 
-    private XMLField getFieldForName(String localName, String namespaceUri) {
-    	Iterator<XMLField> fields = fieldToNodeValues.keySet().iterator(); 
+    private Field getFieldForName(String localName, String namespaceUri) {
+    	Iterator<Field> fields = fieldToNodeValues.keySet().iterator(); 
     	while(fields.hasNext()) {
-    		XMLField nextField = fields.next();
+    		Field nextField = fields.next();
     		XPathFragment fragment = nextField.getXPathFragment();
     		while(fragment != null && (!fragment.nameIsText())) {
     			if(fragment.getNextFragment() == null || fragment.getHasText()) {

@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
@@ -47,7 +48,6 @@ import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandl
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.xml.sax.ErrorHandler;
@@ -456,7 +456,7 @@ public class JSONReader extends XMLReaderAdapter {
      * @since 2.4
      */
     @Override
-    public Object convertValueBasedOnSchemaType(XMLField xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         if (xmlField.getSchemaType() != null) { 
         	if(XMLConstants.QNAME_QNAME.equals(xmlField.getSchemaType())){
         		String stringValue = (String)value;

@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -29,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -104,7 +104,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
 
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            XMLField xmlField = (XMLField)xmlBinaryDataCollectionMapping.getField();
+        	Field xmlField = (Field)xmlBinaryDataCollectionMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
             if(!lastFragment.isAttribute()) {
                  //set a new content handler to deal with the Include element's event.
@@ -205,11 +205,11 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             if(c_id != null) {
                 marshalRecord.characters(c_id);
             } else {
-                marshalRecord.characters(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                marshalRecord.characters(((Field) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         } else {
             if (marshalRecord.isXOPPackage() && !xmlBinaryDataCollectionMapping.shouldInlineBinaryData()) {
-                XPathFragment lastFrag = ((XMLField) xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
+                XPathFragment lastFrag = ((Field) xmlBinaryDataCollectionMapping.getField()).getLastXPathFragment();
                 String c_id = XMLConstants.EMPTY_STRING;
                 byte[] bytes = null;
                 if (objectValue.getClass() == CoreClassConstants.APBYTE) {
@@ -225,7 +225,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                             data.getMimeType(), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 }
                 if(c_id == null) {
-                    marshalRecord.characters(((XMLField) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                    marshalRecord.characters(((Field) xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
                 } else {
                 	
                     boolean addDeclaration = false;
@@ -257,7 +257,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     }
                 }
             } else {
-                marshalRecord.characters(((XMLField)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
+                marshalRecord.characters(((Field)xmlBinaryDataCollectionMapping.getField()).getSchemaType(), objectValue, mimeType, false);
             }
         }
         marshalRecord.endElement(xPathFragment, namespaceResolver);

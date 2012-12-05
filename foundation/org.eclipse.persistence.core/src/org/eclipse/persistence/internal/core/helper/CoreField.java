@@ -12,25 +12,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.core.helper;
 
-public abstract class CoreField {
+public interface CoreField {
 
     /**
      * Return the unqualified name of the field.
      */
-    public abstract String getName();
+    public String getName();
 
-    public abstract Class getType();
+    public Class getType();
 
     /**
      * Set the unqualified name of the field.
      */
-    public abstract void setName(String name);
+    public void setName(String name);
     
     /**
      * Set the Java class type that corresponds to the field.
      * The JDBC type is determined from the class type,
      * this is used to optimize performance, and for binding.
      */
-    public abstract void setType(Class type);
+    public void setType(Class type);
 
 }

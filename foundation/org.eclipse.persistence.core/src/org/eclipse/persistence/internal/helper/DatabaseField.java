@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
  * </ul>
  * @see DatabaseTable
  */
-public class DatabaseField extends CoreField implements Cloneable, Serializable {
+public class DatabaseField implements Cloneable, Serializable, CoreField  {
     /** Variables used for generating DDL **/
     protected int scale;
     protected int length;

@@ -17,13 +17,13 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * INTERNAL:
@@ -49,7 +49,7 @@ import org.eclipse.persistence.oxm.XMLField;
 
 public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
     private ObjectReferenceMapping xmlObjectReferenceMapping;
-    private XMLField xmlField;
+    private Field xmlField;
 
     /**
      * This constructor sets the XMLObjectReferenceMapping member to the provided 
@@ -69,7 +69,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
      * @param xmlObjectReferenceMapping
      * @param xmlField
      */
-    public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping, XMLField xmlField) {
+    public XMLObjectReferenceMappingNodeValue(ObjectReferenceMapping xmlObjectReferenceMapping, Field xmlField) {
         super();
         this.xmlObjectReferenceMapping = xmlObjectReferenceMapping;
         this.xmlField = xmlField;
@@ -159,7 +159,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         Object fieldValue = xmlObjectReferenceMapping.buildFieldValue(targetObject, xmlField, session);
         if (fieldValue == null) {
             if(null != targetObject) {
-                XMLField fkField = (XMLField) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
+            	Field fkField = (Field) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                 if(null == fkField) {
                 	Descriptor targetDescriptor = (Descriptor) session.getDescriptor(targetObject);
                     fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, ((CoreField) targetDescriptor.getPrimaryKeyFields().get(0)).getName(), targetDescriptor.getNamespaceResolver(), Object.class);

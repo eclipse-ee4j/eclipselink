@@ -12,7 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
-import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 
 /**
  * INTERNAL:
@@ -24,13 +24,13 @@ import org.eclipse.persistence.oxm.XMLField;
  */
 public class XMLEntry {
     private Object value;
-    private XMLField xmlField;
+    private Field xmlField;
     
     public Object getValue() {
         return value;
     }
     
-    public XMLField getXMLField() {
+    public Field getXMLField() {
         return xmlField;
     }
     
@@ -38,7 +38,7 @@ public class XMLEntry {
         this.value = value;
     }
     
-    public void setXMLField(XMLField xmlField) {
+    public void setXMLField(Field xmlField) {
         this.xmlField = xmlField;
     }
 

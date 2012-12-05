@@ -22,7 +22,7 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 public interface ChoiceCollectionMapping<
@@ -31,23 +31,29 @@ public interface ChoiceCollectionMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
-    FIELD extends CoreField,
-    SESSION extends CoreSession> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLContainerMapping, XMLConverterMapping<SESSION> {
+    FIELD extends CoreField,    
+    SESSION extends CoreSession,
+    XML_FIELD extends Field
+    > extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLContainerMapping, XMLConverterMapping<SESSION> {
 
-    public Map<XMLField, XMLMapping> getChoiceElementMappings();
+    public Map<XML_FIELD, XMLMapping> getChoiceElementMappings();
 
     public Map<Class, XMLMapping> getChoiceElementMappingsByClass();
 
-    public Map<Class, XMLField> getClassToFieldMappings();
+    public List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
+    
+    public Map<Class, XML_FIELD> getClassToFieldMappings();
 
-    public Map<Class, List<XMLField>> getClassToSourceFieldsMappings();
+    public Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
 
     public CONVERTER getConverter();
 
-    public Map<XMLField, Class> getFieldToClassMappings();
-
-    public boolean isMixedContent();
-
+    public Map<XML_FIELD, Class> getFieldToClassMappings();
+    
     public XMLMapping getMixedContentMapping();
+    
+    public boolean isMixedContent();
+    
+
 
 }

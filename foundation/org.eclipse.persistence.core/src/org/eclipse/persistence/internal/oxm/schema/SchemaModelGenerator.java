@@ -36,7 +36,10 @@ import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
 import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
@@ -59,7 +62,6 @@ import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
 import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
@@ -496,7 +498,7 @@ public class SchemaModelGenerator {
         sc.setExtension(extension);
     	ct.setSimpleContent(sc);
         for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
-        	XMLField xFld = (XMLField) mapping.getField();
+        	Field xFld = (Field) mapping.getField();
         	if (xFld.getXPath().equals(TEXT)) {
         		extension.setBaseType(getSchemaTypeForDirectMapping((XMLDirectMapping) mapping, workingSchema));
         	} else if (xFld.getXPathFragment().isAttribute()) {
@@ -518,7 +520,7 @@ public class SchemaModelGenerator {
      * @return
      */
     protected String getSchemaTypeForDirectMapping(XMLDirectMapping mapping, Schema workingSchema) {
-        return getSchemaTypeForElement((XMLField) mapping.getField(), mapping.getAttributeClassification(), workingSchema);
+        return getSchemaTypeForElement((Field) mapping.getField(), mapping.getAttributeClassification(), workingSchema);
     }
 
     /**
@@ -531,7 +533,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      * @return
      */
-    protected String getSchemaTypeForElement(XMLField xmlField, Class attrClass, Schema workingSchema) {
+    protected String getSchemaTypeForElement(Field xmlField, Class attrClass, Schema workingSchema) {
         String schemaTypeString = null;
         QName schemaType = xmlField.getSchemaType();
         if (schemaType != null) {
@@ -612,7 +614,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLBinaryDataMapping(XMLBinaryDataMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XMLField xmlField = (XMLField) mapping.getField();
+    	Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
         
         String schemaTypeString;
@@ -658,7 +660,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLBinaryDataCollectionMapping(XMLBinaryDataCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XMLField xmlField = (XMLField) mapping.getField();
+    	Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
         
         String schemaTypeString;
@@ -701,7 +703,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLDirectMapping(XMLDirectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XMLField xmlField = (XMLField) mapping.getField();
+    	Field xmlField = (Field) mapping.getField();
         
         XPathFragment frag = xmlField.getXPathFragment();
         if (frag.isSelfFragment()) {
@@ -765,7 +767,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      */
     protected void processXMLCompositeDirectCollectionMapping(XMLCompositeDirectCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
-        XMLField xmlField = ((XMLField) (mapping).getField());
+    	Field xmlField = ((Field) (mapping).getField());
 
         XPathFragment frag = xmlField.getXPathFragment();
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
@@ -820,7 +822,7 @@ public class SchemaModelGenerator {
      * @param collection
      */
     protected void processXMLCompositeMapping(AggregateMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean collection) {
-        XMLField xmlField = (XMLField) mapping.getField();
+    	Field xmlField = (Field) mapping.getField();
         
         String refClassName = mapping.getReferenceClassName();
         Descriptor refDesc = getDescriptorByName(refClassName, descriptors);
@@ -876,8 +878,8 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processXMLChoiceCollectionMapping(XMLChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<XMLField, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
+    protected void processXMLChoiceCollectionMapping(ChoiceCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
+        Map<Field, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
     }
@@ -892,8 +894,8 @@ public class SchemaModelGenerator {
      * @param properties
      * @param descriptors
      */
-    protected void processXMLChoiceObjectMapping(XMLChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        Map<XMLField, Class> fieldToClassMap = mapping.getFieldToClassMappings(); 
+    protected void processXMLChoiceObjectMapping(ChoiceObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
+        Map<Field, Class> fieldToClassMap =mapping.getFieldToClassMappings(); 
         List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList = mapping.getChoiceFieldToClassAssociations();
         processChoiceMapping(fieldToClassMap, choiceFieldToClassList, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
     }
@@ -911,13 +913,13 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param isCollection
      */
-    protected void processChoiceMapping(Map<XMLField, Class> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
+    protected void processChoiceMapping(Map<Field, Class> fieldToClassMap, List<XMLChoiceFieldToClassAssociation> choiceFieldToClassList, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         Choice theChoice = new Choice();
         if (isCollection) {
             theChoice.setMaxOccurs(Occurs.UNBOUNDED);
         }
         for (XMLChoiceFieldToClassAssociation next : choiceFieldToClassList) {
-            XMLField field = next.getXmlField();
+        	Field field = next.getXmlField();
             Element element = buildElement(field.getXPathFragment().getShortName(), Occurs.ZERO, null);
             
             QName schemaTypeQName = field.getSchemaType();
@@ -954,16 +956,16 @@ public class SchemaModelGenerator {
 
         // get the target mapping(s) to determine the appropriate type(s)
         String schemaTypeString = null;
-        Map<XMLField, XMLField> associations = mapping.getSourceToTargetKeyFieldAssociations();
-        for (Entry<XMLField, XMLField> entry : associations.entrySet()) {
-            XMLField tgtField = entry.getValue();
+        Map<Field, Field> associations = mapping.getSourceToTargetKeyFieldAssociations();
+        for (Entry<Field, Field> entry : associations.entrySet()) {
+        	Field tgtField = entry.getValue();
             Vector mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
             //schemaTypeString = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
             for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
                 DatabaseMapping dbMapping = (DatabaseMapping) mappingsNum.nextElement();
-                if (dbMapping.getField() != null && dbMapping.getField() instanceof XMLField) {
-                    XMLField xFld = (XMLField) dbMapping.getField();
+                if (dbMapping.getField() != null && dbMapping.getField() instanceof Field) {
+                	Field xFld = (Field) dbMapping.getField();
                     if (xFld == tgtField) {
                         schemaTypeString = getSchemaTypeForElement(tgtField, dbMapping.getAttributeClassification(), workingSchema);
                     }
@@ -1213,7 +1215,7 @@ public class SchemaModelGenerator {
      * @return
      */
     protected Attribute buildAttribute(XMLDirectMapping mapping, String schemaType) {
-        XPathFragment frag = ((XMLField) mapping.getField()).getXPathFragment();
+        XPathFragment frag = ((Field) mapping.getField()).getXPathFragment();
         Attribute attr = new Attribute();
         attr.setName(frag.getShortName());
         attr.setType(schemaType);
@@ -1444,7 +1446,7 @@ public class SchemaModelGenerator {
      * @param isCollection
      * @return
      */
-    protected Element processReferenceDescriptor(Element element, Descriptor refDesc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, XMLField field, boolean isCollection) {
+    protected Element processReferenceDescriptor(Element element, Descriptor refDesc, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, Field field, boolean isCollection) {
         ComplexType ctype = null;
         
         if (refDesc.getSchemaReference() == null) {
@@ -1529,7 +1531,7 @@ public class SchemaModelGenerator {
     	boolean isSimple = false;
         for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
         	if (mapping.isDirectToFieldMapping()) {
-            	XMLField xFld = (XMLField) mapping.getField();
+        		Field xFld = (Field) mapping.getField();
             	if (xFld.getXPath().equals(TEXT)) {
             		isSimple = true;
             		break;
