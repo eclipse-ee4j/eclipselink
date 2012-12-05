@@ -904,7 +904,7 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence20.src.jar}" dest="${build.dir}/jpa21/src"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
@@ -999,7 +999,7 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence20.src.jar}" dest="${build.dir}/jpa21/src"/>
         <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
@@ -1162,7 +1162,7 @@
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
         <copy file="${eclipselink.plugins}/org.eclipse.persistence.dbws.builder_${version.string}.jar" tofile="${build.dir}/${dbws-util.jar}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence20.src.jar}" dest="${build.dir}/jpa21/src"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="." prefix="eclipselink">
