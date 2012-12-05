@@ -15,6 +15,8 @@ package org.eclipse.persistence.internal.oxm;
 import javax.activation.DataHandler;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
@@ -22,8 +24,6 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -83,9 +83,9 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.reco
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         	Field xmlField = null;
     	    if(isCollection) {
-                xmlField = (Field)((XMLBinaryDataCollectionMapping)mapping).getField();
+                xmlField = (Field)((BinaryDataCollectionMapping)mapping).getField();
               } else {
-                xmlField = (Field)((XMLBinaryDataMapping)mapping).getField();
+                xmlField = (Field)((BinaryDataMapping)mapping).getField();
             }
     	    if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
     	    	if(record.isNamespaceAware() && !XMLConstants.XOP_URL.equals(namespaceURI)){
@@ -96,7 +96,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.reco
                 Object data = null;
                 Class attributeClassification = null;
                 if(isCollection) {
-            	    attributeClassification = ((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
+            	    attributeClassification = ((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
                 } else {
                     attributeClassification = mapping.getAttributeClassification();
                 }
