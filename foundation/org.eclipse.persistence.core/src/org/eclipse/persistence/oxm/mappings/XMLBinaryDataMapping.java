@@ -76,7 +76,7 @@ import org.eclipse.persistence.sessions.Session;
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
  *  @since   TopLink 11.1.1.0.0g
  */
-public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session> {
+public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord> {
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;

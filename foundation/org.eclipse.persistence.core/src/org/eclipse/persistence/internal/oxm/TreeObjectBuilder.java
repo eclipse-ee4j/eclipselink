@@ -62,7 +62,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.w3c.dom.Node;
@@ -327,8 +326,8 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else if(xmlMapping instanceof ChoiceCollectionMapping) {
                         ChoiceCollectionMapping xmlChoiceMapping = (ChoiceCollectionMapping)xmlMapping;
 
-                        Iterator<Entry<Field, XMLMapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
-                        Entry<Field, XMLMapping> firstEntry = fields.next();
+                        Iterator<Entry<Field, Mapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
+                        Entry<Field, Mapping> firstEntry = fields.next();
                         Field firstField = firstEntry.getKey();
 
                         XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
@@ -347,7 +346,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
                         addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
-                            Entry<Field, XMLMapping> nextEntry = fields.next();
+                            Entry<Field, Mapping> nextEntry = fields.next();
                             Field nextField = nextEntry.getKey();
                             XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, nextField);
                             nodeValue.setContainerNodeValue(unmarshalValue);

@@ -13,7 +13,8 @@
 package org.eclipse.persistence.internal.oxm;
 
 import java.util.HashMap;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
+
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
@@ -25,7 +26,7 @@ import org.eclipse.persistence.oxm.sequenced.Setting;
  */
 
 public class Reference {
-	protected XMLMapping mapping;		// mapping associated with this reference
+	protected Mapping mapping;		// mapping associated with this reference
 	protected Object sourceObject;		// the source object instance
 	protected Class targetClass;		// the reference class
 	protected Object primaryKey;		// primary key values for cache lookup - used in single case
@@ -52,7 +53,7 @@ public class Reference {
 	/**
 	 * Constructor typically used in the collection case.
 	 */
-	public Reference(XMLMapping mapping, Object source, Class target, HashMap primaryKeyMap, Object container) {
+	public Reference(Mapping mapping, Object source, Class target, HashMap primaryKeyMap, Object container) {
 		this.mapping = mapping;
 		sourceObject = source;
 		targetClass = target;
@@ -63,7 +64,7 @@ public class Reference {
 	/**
 	 * Constructor typically used in the single case.
 	 */
-	public Reference(XMLMapping mapping, Object source, Class target, Object primaryKey) {
+	public Reference(Mapping mapping, Object source, Class target, Object primaryKey) {
 		this.mapping = mapping;
 		sourceObject = source;
 		targetClass = target;
@@ -75,7 +76,7 @@ public class Reference {
 	 * 
 	 * @return
 	 */
-	public XMLMapping getMapping() {
+	public Mapping getMapping() {
 		return mapping;
 	}
 

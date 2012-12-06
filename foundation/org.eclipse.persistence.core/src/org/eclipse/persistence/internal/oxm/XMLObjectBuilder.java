@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -50,7 +51,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -155,7 +155,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return xmlRec;
     }
 
-    public AbstractRecord createRecordFor(Object attributeValue, Field xmlField, XMLRecord parentRecord, XMLMapping mapping) {
+    public AbstractRecord createRecordFor(Object attributeValue, Field xmlField, XMLRecord parentRecord, Mapping mapping) {
         DocumentPreservationPolicy policy = parentRecord.getDocPresPolicy();
         Element newNode = null;
         if(policy != null) {

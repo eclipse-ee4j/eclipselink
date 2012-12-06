@@ -155,7 +155,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements CompositeCollectionMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLMapping, XMLNillableMapping {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements CompositeCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private AbstractNullPolicy wrapperNullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;

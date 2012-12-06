@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -73,7 +74,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * ...<br>
  * </code>
  */
-public class XMLInverseReferenceMapping extends AggregateMapping implements InverseReferenceMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, ContainerMapping {
+public class XMLInverseReferenceMapping extends AggregateMapping implements InverseReferenceMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord>, ContainerMapping {
 
     private String mappedBy;
     private ContainerPolicy containerPolicy;
@@ -242,6 +243,10 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Inve
 
     public void useMapClassName(String concreteClass, String methodName) {
         this.containerPolicy = new MapContainerPolicy(concreteClass);
+    }
+
+    @Override
+    public void writeSingleValue(Object value, Object object, XMLRecord record, AbstractSession session) {
     }
 
 }

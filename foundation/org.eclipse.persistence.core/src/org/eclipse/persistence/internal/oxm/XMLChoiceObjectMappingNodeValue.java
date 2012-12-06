@@ -22,17 +22,17 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;
@@ -63,13 +63,13 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
     
     public void initializeNodeValue() {
-        XMLMapping xmlMapping = (XMLMapping) xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
+        Mapping xmlMapping = (Mapping) xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
         choiceElementNodeValue = getNodeValueForMapping(xmlMapping);
         //check for mappings to other classes with the same field
-        for(Entry<Class, XMLMapping> entry: ((Map<Class, XMLMapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
+        for(Entry<Class, Mapping> entry: ((Map<Class, Mapping>)xmlChoiceMapping.getChoiceElementMappingsByClass()).entrySet()) {
         	Field field = (Field) xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
             if(field != null && field.equals(this.xmlField)) {
-                XMLMapping mappingForClass = entry.getValue();
+                Mapping mappingForClass = entry.getValue();
                 if(mappingForClass != xmlMapping) {
                     if(this.choiceElementNodeValues == null) {
                         choiceElementNodeValues = new HashMap<Class, NodeValue>();
@@ -80,15 +80,15 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
         }
     }
     
-    private NodeValue getNodeValueForMapping(XMLMapping xmlMapping) {
+    private NodeValue getNodeValueForMapping(Mapping xmlMapping) {
         if(xmlMapping instanceof BinaryDataMapping){
             return new XMLBinaryDataMappingNodeValue((BinaryDataMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLDirectMapping) {
-            return new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLObjectReferenceMapping) {
-            return new XMLObjectReferenceMappingNodeValue((XMLObjectReferenceMapping)xmlMapping, xmlField);
+        } else if(xmlMapping instanceof DirectMapping) {
+            return new XMLDirectMappingNodeValue((DirectMapping)xmlMapping);
+        } else if(xmlMapping instanceof ObjectReferenceMapping) {
+            return new XMLObjectReferenceMappingNodeValue((ObjectReferenceMapping)xmlMapping, xmlField);
         } else {
-            return new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
+            return new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping);
         }
     }
     public void setNullCapableNodeValue(XMLChoiceObjectMappingNodeValue nodeValue) {

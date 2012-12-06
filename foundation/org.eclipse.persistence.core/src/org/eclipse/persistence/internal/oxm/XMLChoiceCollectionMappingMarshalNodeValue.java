@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -75,11 +74,11 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         }
         
         Collection classes = this.classToNodeValues.keySet();
-        for(Class nextClass:((Map<Class, XMLMapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
+        for(Class nextClass:((Map<Class, Mapping>)this.xmlChoiceCollectionMapping.getChoiceElementMappingsByClass()).keySet()) {
             //Create node values for any classes that aren't already processed
             if(!(classes.contains(nextClass))) {
             	Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
-                NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (XMLMapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
+                NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
                 this.classToNodeValues.put(nextClass, nodeValue);
                 NodeValue nodeValueForField = fieldToNodeValues.get(field);
                 nodeValue.setXPathNode(nodeValueForField.getXPathNode());
@@ -88,7 +87,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     private void initializeNodeValue() {
-        XMLMapping xmlMapping = (XMLMapping) xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
+        Mapping xmlMapping = (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
         if(xmlMapping instanceof BinaryDataCollectionMapping) {
             choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
         } else if(xmlMapping instanceof DirectCollectionMapping) {

@@ -61,7 +61,7 @@ import org.w3c.dom.Text;
 * </pre>
 * </code>
 */
-public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session> {
+public class XMLFragmentMapping extends XMLDirectMapping implements FragmentMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord> {
 
     /**
      * INTERNAL:

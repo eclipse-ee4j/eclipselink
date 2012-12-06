@@ -12,7 +12,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.mappings;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 /**
  * INTERNAL
@@ -21,7 +26,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
  *
  *@see org.eclipse.persistence.oxm.mappings
  */
-public interface XMLMapping {
+public interface XMLMapping extends Mapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord> {
     
     public void convertClassNamesToClasses(ClassLoader classLoader);
 

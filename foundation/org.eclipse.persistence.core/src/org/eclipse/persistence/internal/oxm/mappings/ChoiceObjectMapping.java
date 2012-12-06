@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 public interface ChoiceObjectMapping<
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
@@ -35,11 +34,12 @@ public interface ChoiceObjectMapping<
     FIELD extends CoreField,    
     SESSION extends CoreSession,
     XML_FIELD extends Field,
-    XML_RECORD extends XMLRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
+    XML_MAPPING extends Mapping,
+    XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<SESSION> {
 
-    public Map<XML_FIELD, XMLMapping> getChoiceElementMappings();
+    public Map<XML_FIELD, XML_MAPPING> getChoiceElementMappings();
 
-    public Map<Class, XMLMapping> getChoiceElementMappingsByClass();
+    public Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
 
     public Map<Class, XML_FIELD> getClassToFieldMappings();
 

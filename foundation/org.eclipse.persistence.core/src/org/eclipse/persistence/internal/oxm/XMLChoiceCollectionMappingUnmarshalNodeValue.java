@@ -24,12 +24,12 @@ import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 import org.xml.sax.Attributes;
 
@@ -43,7 +43,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     private NodeValue choiceElementNodeValue;
     private NodeValue choiceElementMarshalNodeValue;
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
-    private XMLMapping nestedMapping;
+    private Mapping nestedMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
     private Field xmlField;
     private ContainerValue containerNodeValue;
@@ -53,11 +53,11 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
-        this.nestedMapping = (XMLMapping) mapping.getChoiceElementMappings().get(xmlField);
+        this.nestedMapping = (Mapping) mapping.getChoiceElementMappings().get(xmlField);
         initializeNodeValue();
     }
     
-    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField, XMLMapping nestedMapping) {
+    public XMLChoiceCollectionMappingUnmarshalNodeValue(ChoiceCollectionMapping mapping, Field xmlField, Mapping nestedMapping) {
         this.xmlChoiceCollectionMapping = mapping;
         this.xmlField = xmlField;
         this.nestedMapping = nestedMapping;
@@ -76,7 +76,7 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
     }
     
     private void initializeNodeValue() {
-        XMLMapping xmlMapping = this.nestedMapping;
+        Mapping xmlMapping = this.nestedMapping;
         if(xmlMapping instanceof BinaryDataCollectionMapping) {
             choiceElementNodeValue = new XMLBinaryDataCollectionMappingNodeValue((BinaryDataCollectionMapping)xmlMapping);
             choiceElementMarshalNodeValue = choiceElementNodeValue;

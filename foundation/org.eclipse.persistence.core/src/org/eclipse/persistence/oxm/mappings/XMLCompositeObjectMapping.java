@@ -200,7 +200,7 @@ import org.eclipse.persistence.sessions.Session;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, CompositeObjectMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLNillableMapping {
+public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping implements XMLMapping, CompositeObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private XMLInverseReferenceMapping inverseReferenceMapping;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;

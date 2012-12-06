@@ -71,7 +71,7 @@ import org.w3c.dom.Text;
  * </pre>
  * </code>
  */
-public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements FragmentCollectionMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLMapping {
+public class XMLFragmentCollectionMapping extends AbstractCompositeDirectCollectionMapping implements FragmentCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLMapping {
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
     private boolean isWriteOnly;
     private boolean reuseContainer;

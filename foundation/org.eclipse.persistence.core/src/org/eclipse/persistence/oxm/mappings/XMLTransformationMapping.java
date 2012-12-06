@@ -126,7 +126,7 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
- public class XMLTransformationMapping extends AbstractTransformationMapping implements TransformationMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField>, XMLMapping {
+ public class XMLTransformationMapping extends AbstractTransformationMapping implements TransformationMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord>, XMLMapping {
     public XMLTransformationMapping() {
         super();
     }

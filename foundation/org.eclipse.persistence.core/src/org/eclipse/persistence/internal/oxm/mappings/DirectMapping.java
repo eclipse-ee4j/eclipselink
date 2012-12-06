@@ -28,7 +28,7 @@ public interface DirectMapping<
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
-    XML_RECORD extends XMLRecord> extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD>, XMLConverterMapping<SESSION> {
+    XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<SESSION> {
 
     public Object getAttributeValue(Object object, ABSTRACT_SESSION session, XML_RECORD record);
 

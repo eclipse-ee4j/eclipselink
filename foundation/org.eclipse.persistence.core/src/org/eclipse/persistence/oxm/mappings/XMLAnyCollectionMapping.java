@@ -165,7 +165,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements AnyCollectionMapping<AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session>, XMLMapping, ContainerMapping {
+public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements AnyCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord>, XMLMapping, ContainerMapping {
     private XMLField field;
     private ContainerPolicy containerPolicy;
     private boolean defaultEmptyContainer = XMLContainerMapping.EMPTY_CONTAINER_DEFAULT;
