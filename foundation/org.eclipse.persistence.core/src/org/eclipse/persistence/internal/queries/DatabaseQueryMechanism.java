@@ -1022,8 +1022,8 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         // For a user defined update in the uow to row must be built twice to check if any update is required.
         writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRowForUpdateWithChangeSet(writeQuery));
             
-    	Boolean shouldModifyVersionField = changeSet.shouldModifyVersionField();
-        if (!getModifyRow().isEmpty() || (shouldModifyVersionField != null) || changeSet.hasCmpPolicyForcedUpdate()) {
+        Boolean shouldModifyVersionField = changeSet.shouldModifyVersionField();
+        if (!getModifyRow().isEmpty() || shouldModifyVersionField != null || changeSet.hasCmpPolicyForcedUpdate()) {
             // If user defined the entire row is required. Must not be built until change is known.
             if (writeQuery.isUserDefined() || writeQuery.isCallQuery()) {
                 writeQuery.setModifyRow(descriptor.getObjectBuilder().buildRow(object, session, WriteType.UNDEFINED));
@@ -1033,11 +1033,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // Update the write lock field if required.
             if (lockingPolicy != null) {
                 lockingPolicy.addLockValuesToTranslationRow(writeQuery);
-
-                if (!getModifyRow().isEmpty() || shouldModifyVersionField.booleanValue()) {
+                // update the row and object if shouldModifyVersionField is non null and has a value of true (a forced update),
+                // or if there is no forced update and modifyRow has modifications
+                if ((shouldModifyVersionField != null && shouldModifyVersionField) || (shouldModifyVersionField == null && !getModifyRow().isEmpty())) {
                     // Update the row with newer lock value.
                     lockingPolicy.updateRowAndObjectForUpdate(writeQuery, object);
-                } else if (!shouldModifyVersionField.booleanValue() && (lockingPolicy instanceof VersionLockingPolicy)) {
+                } else if (!shouldModifyVersionField && (lockingPolicy instanceof VersionLockingPolicy)) {
                     // Add the existing write lock value to the for a "read" lock (requires something to update).
                     ((VersionLockingPolicy)lockingPolicy).writeLockValueIntoRow(writeQuery, object);
                 }
