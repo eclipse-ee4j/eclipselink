@@ -197,6 +197,7 @@
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">
             <pathelement path="${resource.dir}"/>
+            <pathelement path="${src.dir}"/>
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${asm.lib}"/>
@@ -245,7 +246,7 @@
 
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
-    <property name="SERVER_URL" value="http://localhost:8080"/>
+        <property name="SERVER_URL" value="http://localhost:8080"/>
         <echo message="Server url is ${SERVER_URL}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
     </target>
@@ -270,7 +271,7 @@
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/" includes="*.class"/>
         </copy>
-    	<copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/dynamic" includes="*.class"/>
         </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/auction">
@@ -300,8 +301,8 @@
     <macrodef name="run_jpars_tests">
         <attribute name="runpathref"/>
         <sequential>
-        	<delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
-        	<mkdir dir="${report.dir}"/>
+            <delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
+            <mkdir dir="${report.dir}"/>
             <mkdir dir="${jparstest.build.location}/${classes.dir}/META-INF"/>
             <copy todir="${jparstest.build.location}/${classes.dir}/META-INF">
                 <fileset dir="${jparstest.build.location}/${src.dir}/META-INF" includes="**"/>
@@ -323,7 +324,7 @@
                 <sysproperty key="useDeploymentXML" value="false"/>
                 <sysproperty key="test.properties" value="${jparstest.build.location}/test.properties"/>
                 <sysproperty key="jpars.xmlfile.directory" value="META-INF/xmldocs/"/>
-		<sysproperty key="server.uri.base" value="${SERVER_URL}"/>
+        <sysproperty key="server.uri.base" value="${SERVER_URL}"/>
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
                         <include name="${jpars.test.class}"/>
