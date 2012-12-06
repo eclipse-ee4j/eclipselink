@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
@@ -61,6 +60,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 
@@ -81,6 +81,25 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private static final String SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
     private static final String SCHEMA_SOURCE = "http://java.sun.com/xml/jaxp/properties/schemaSource";
     private static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+    private static final UnmarshalKeepAsElementPolicy KEEP_UNKNOWN_AS_ELEMENT = new UnmarshalKeepAsElementPolicy() {
+
+        @Override
+        public boolean isKeepAllAsElement() {
+            return false;
+        }
+
+        @Override
+        public boolean isKeepNoneAsElement() {
+            return false;
+        }
+
+        @Override
+        public boolean isKeepUnknownAsElement() {
+            return true;
+        }
+
+    };
+
     private int validationMode = XMLParser.NONVALIDATING;
     private Schema schema;
     private Object[] schemas;
@@ -431,7 +450,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-                saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
                 setContentHandler(xmlReader, saxUnmarshallerHandler);
                 xmlReader.parse(inputSource);
             
@@ -536,7 +555,7 @@ if(clazz == CoreClassConstants.OBJECT) {
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(domReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-            saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);          
+            saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
             setContentHandler(domReader, saxUnmarshallerHandler);
             try{
                 domReader.parse(node);
@@ -786,7 +805,7 @@ if(clazz == CoreClassConstants.OBJECT) {
                 XMLReader xmlReader = getXMLReader(clazz);
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-                saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
                 setContentHandler(xmlReader, saxUnmarshallerHandler);
                 xmlReader.parse(systemId);
             } catch (IOException e) {
@@ -906,7 +925,7 @@ if(clazz == CoreClassConstants.OBJECT) {
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
                 saxUnmarshallerHandler.setXMLReader((XMLReader)xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
-                saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                saxUnmarshallerHandler.setKeepAsElementPolicy(KEEP_UNKNOWN_AS_ELEMENT);
                 xmlReader.setContentHandler(saxUnmarshallerHandler);
                 xmlReader.parse(inputSource);
 

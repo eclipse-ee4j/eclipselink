@@ -23,6 +23,23 @@ package org.eclipse.persistence.oxm.mappings;
  * 
  */
 
-public enum UnmarshalKeepAsElementPolicy {
-    KEEP_ALL_AS_ELEMENT, KEEP_NONE_AS_ELEMENT, KEEP_UNKNOWN_AS_ELEMENT
+public enum UnmarshalKeepAsElementPolicy implements org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy {
+
+    KEEP_ALL_AS_ELEMENT, KEEP_NONE_AS_ELEMENT, KEEP_UNKNOWN_AS_ELEMENT;
+
+    @Override
+    public boolean isKeepAllAsElement() {
+        return this == KEEP_ALL_AS_ELEMENT;
+    }
+
+    @Override
+    public boolean isKeepNoneAsElement() {
+        return this == KEEP_NONE_AS_ELEMENT;
+    }
+
+    @Override
+    public boolean isKeepUnknownAsElement() {
+        return this == KEEP_UNKNOWN_AS_ELEMENT;
+    }
+
 }

@@ -25,6 +25,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
@@ -33,7 +34,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -136,7 +136,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                     }
                     returnDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                     if(returnDescriptor == null){
-                        if(policy ==null || (policy != null && policy != UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT && policy != UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)){
+                        if(policy == null || (!policy.isKeepUnknownAsElement() && !policy.isKeepAllAsElement())){
                             Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(qname);
                             if(theClass == null){
                                 throw XMLMarshalException.unknownXsiTypeValue(schemaType, mapping);

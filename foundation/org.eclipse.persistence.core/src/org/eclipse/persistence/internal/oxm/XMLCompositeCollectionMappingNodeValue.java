@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
@@ -131,7 +131,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 } 
                     
                 UnmarshalKeepAsElementPolicy policy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
-                if (((xmlDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+                if (policy != null && ((xmlDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
                     if(unmarshalRecord.getTypeQName() != null){
                         Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                         if(theClass == null){
@@ -190,7 +190,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
                UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();        
                               
-               if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
+               if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() > 1) {
                    if(unmarshalRecord.getTypeQName() != null){
                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                        if(theClass != null){
@@ -268,7 +268,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         }
         
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
-        if (((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) && value instanceof org.w3c.dom.Node) {
+        if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && value instanceof org.w3c.dom.Node) {
             marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
             return true;
         }

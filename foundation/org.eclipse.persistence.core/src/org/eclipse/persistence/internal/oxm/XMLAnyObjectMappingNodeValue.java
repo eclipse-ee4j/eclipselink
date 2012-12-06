@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -165,7 +165,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         	Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyObjectMapping, xmlAnyObjectMapping.getKeepAsElementPolicy());
 
             UnmarshalKeepAsElementPolicy policy = xmlAnyObjectMapping.getKeepAsElementPolicy();
-            if (((workingDescriptor == null) && (policy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT)) || (policy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT)) {
+            if (null != policy && ((workingDescriptor == null && policy.isKeepUnknownAsElement()) || policy.isKeepAllAsElement())) {
                 setupHandlerForKeepAsElementPolicy(unmarshalRecord, xPathFragment, atts);
             }else if (workingDescriptor != null) {
                 processChild(xPathFragment, unmarshalRecord, atts, workingDescriptor, xmlAnyObjectMapping);
@@ -212,7 +212,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
 
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlAnyObjectMapping.getKeepAsElementPolicy();
 
-            if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
+            if (null != keepAsElementPolicy && (keepAsElementPolicy.isKeepUnknownAsElement() || keepAsElementPolicy.isKeepAllAsElement()) && builder.getNodes().size() > 1) {
                 setOrAddAttributeValueForKeepAsElement(builder, xmlAnyObjectMapping, xmlAnyObjectMapping, unmarshalRecord, false, null);
             } else {
                 // TEXT VALUE   

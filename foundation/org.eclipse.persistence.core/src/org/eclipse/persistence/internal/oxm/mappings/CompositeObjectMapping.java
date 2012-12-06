@@ -19,7 +19,6 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public interface CompositeObjectMapping<
@@ -29,11 +28,12 @@ public interface CompositeObjectMapping<
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
+    UNMARSHAL_KEEP_AS_ELEMENT_POLICY extends UnmarshalKeepAsElementPolicy,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<SESSION> {
     
     public InverseReferenceMapping getInverseReferenceMapping();
 
-    public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy();
+    public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
 
     public AbstractNullPolicy getNullPolicy();
 

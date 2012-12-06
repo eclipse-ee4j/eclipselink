@@ -28,7 +28,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -41,6 +40,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.Locator2;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
@@ -68,7 +68,24 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private XMLUnmarshaller unmarshaller;
     private CoreAbstractSession session;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
-    private UnmarshalKeepAsElementPolicy keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
+    private UnmarshalKeepAsElementPolicy keepAsElementPolicy = new UnmarshalKeepAsElementPolicy() {
+
+        @Override
+        public boolean isKeepAllAsElement() {
+            return false;
+        }
+
+        @Override
+        public boolean isKeepNoneAsElement() {
+            return true;
+        }
+
+        @Override
+        public boolean isKeepUnknownAsElement() {
+            return false;
+        }
+
+    };
     private SAXDocumentBuilder documentBuilder;
     private Locator2 locator;
     
@@ -210,7 +227,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     }
                 }
                 if (null == xmlDescriptor && !isPrimitiveType) {
-                    if(this.keepAsElementPolicy != UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT) {
+                    if(!this.keepAsElementPolicy.isKeepNoneAsElement()) {
                         this.documentBuilder = new SAXDocumentBuilder();
                         documentBuilder.startDocument();
                         //start any prefixes that have already been started
