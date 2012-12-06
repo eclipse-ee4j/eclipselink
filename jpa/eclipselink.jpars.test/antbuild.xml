@@ -197,7 +197,6 @@
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">
             <pathelement path="${resource.dir}"/>
-            <pathelement path="${src.dir}"/>
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${asm.lib}"/>
