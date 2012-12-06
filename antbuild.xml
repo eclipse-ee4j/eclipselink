@@ -572,8 +572,9 @@
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
-        <mkdir dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence20.jar}" dest="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
+        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
+        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence21.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
         <jar jarfile="${eclipselink.jar}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
@@ -598,9 +599,9 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
-            <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
+            <!-- JPA 2.0/2.1 concurrent dev solution: New classes from javax.persistence 2.0 & 2.1 -->
             <fileset
-                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
+                dir="${build.dir}/javax.persistence/${classes.dir}"
                 includes="
                     javax/persistence/Access.class,
                     javax/persistence/AccessType.class,

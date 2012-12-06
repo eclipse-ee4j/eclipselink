@@ -93,7 +93,7 @@
         <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
 
         <!-- dependency properties -->
-        <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence21.jar}"/>
         <property name="core.lib"             value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="jpa.lib"              value="${modelgen.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
 
