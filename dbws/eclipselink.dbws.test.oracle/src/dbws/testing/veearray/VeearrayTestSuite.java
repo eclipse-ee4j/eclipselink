@@ -25,8 +25,16 @@ import org.w3c.dom.Element;
 //java eXtension imports
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DEBUG_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DROP_KEY;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -66,11 +74,53 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
+
+import dbws.testing.AllTests;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
 public class VeearrayTestSuite {
 
+    static final String CREATE_DDL = 
+        "CREATE TYPE XR_VEE_ARRAY_PHONE AS OBJECT (" +
+        "    AREACODE VARCHAR2(3)," +
+        "    PHONENUMBER VARCHAR2(20)," +
+        "    PHONETYPE VARCHAR2(20)" +
+        ")|" +
+        "CREATE TYPE XR_VEE_ARRAY_PHONES AS VARRAY(2) OF XR_VEE_ARRAY_PHONE|" +
+        "CREATE TABLE XR_VEE_ARRAY_EMP (" +
+        "    EMPNO NUMBER(4) NOT NULL," +
+        "    FNAME VARCHAR2(40)," +
+        "    LNAME VARCHAR2(40)," +
+        "    PHONES XR_VEE_ARRAY_PHONES," +
+        "    PRIMARY KEY (EMPNO)" +
+        ")|" +
+        "INSERT INTO XR_VEE_ARRAY_EMP (EMPNO, FNAME, LNAME, PHONES) VALUES (1, 'Mike', 'Norman', XR_VEE_ARRAY_PHONES(XR_VEE_ARRAY_PHONE('613','288-4638','Work'), XR_VEE_ARRAY_PHONE('613','228-1808','Home')))|" +
+        "INSERT INTO XR_VEE_ARRAY_EMP (EMPNO, FNAME, LNAME, PHONES) VALUES (2, 'Rick', 'Barkhouse', XR_VEE_ARRAY_PHONES(XR_VEE_ARRAY_PHONE('613','288-zzzz','Work'), XR_VEE_ARRAY_PHONE('613','aaa-bbbb','Home')))|" +
+        "CREATE PROCEDURE GET_VEE_ARRAY_EMP(X IN NUMBER, Y OUT SYS_REFCURSOR) AS " +
+        "BEGIN" +
+        "    OPEN Y FOR SELECT * FROM XR_VEE_ARRAY_EMP WHERE EMPNO=X;" +
+        "END;" +
+        "|" +
+        "CREATE PROCEDURE GET_VEE_ARRAY_EMPS(X OUT SYS_REFCURSOR) AS " +
+        "BEGIN" +
+        "    OPEN X FOR SELECT * FROM XR_VEE_ARRAY_EMP;" +
+        "END;" +
+        "|" +
+        "CREATE PROCEDURE UPDATE_VEE_ARRAY_PHS(X IN NUMBER, Y IN XR_VEE_ARRAY_PHONES) AS " +
+        "BEGIN" +
+        "    UPDATE XR_VEE_ARRAY_EMP SET PHONES=Y WHERE EMPNO=X;" +
+        "END;" +
+        "|" ;
+
+    static final String DROP_DDL =
+        "DROP TABLE XR_VEE_ARRAY_EMP|" +
+        "DROP TYPE XR_VEE_ARRAY_PHONES|" +
+        "DROP TYPE XR_VEE_ARRAY_PHONE|" +
+        "DROP PROCEDURE GET_VEE_ARRAY_EMP|" +
+        "DROP PROCEDURE GET_VEE_ARRAY_EMPS|" +
+        "DROP PROCEDURE UPDATE_VEE_ARRAY_PHS|" ;
+       
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
     static final String DATABASE_URL_KEY = "db.url";
@@ -156,8 +206,25 @@ public class VeearrayTestSuite {
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
     public static XRServiceAdapter xrService = null;
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
     public static void setUp() {
+        final String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        final String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        final String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+
         String username = System.getProperty(DATABASE_USERNAME_KEY);
         if (username == null) {
             fail("error retrieving database username");
@@ -369,6 +436,25 @@ public class VeearrayTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(VEEARRAY_XRMODEL));
         xrService = factory.buildService(model);
+        
+        if (ddlCreate) {
+            try {
+                AllTests.runDdl(CREATE_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (ddlDrop) {
+            try {
+                AllTests.runDdl(DROP_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -452,25 +538,25 @@ public class VeearrayTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
         assertTrue("control document not same as XRService instance document",
             comparer.isNodeEqual(controlDoc, doc));
+        
+        // validate update
+        invocation = new Invocation("getVeeArrayEmployee");
+        invocation.setParameter("X", 2);
+        op = xrService.getOperation(invocation.getName());
+        result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        doc = xmlPlatform.createDocument();
+        marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        controlDoc = xmlParser.parse(new StringReader(UPDATED_EMPLOYEE_XML));
+        assertTrue("control document not same as XRService instance document",
+            comparer.isNodeEqual(controlDoc, doc));
+
     }
     public static final String VALUE_1_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<value>1</value>";
 
-    @Test
-    public void checkUpdatedVeeArrayPhones() {
-        Invocation invocation = new Invocation("getVeeArrayEmployee");
-        invocation.setParameter("X", 2);
-        Operation op = xrService.getOperation(invocation.getName());
-        Object result = op.invoke(xrService, invocation);
-        assertNotNull("result is null", result);
-        Document doc = xmlPlatform.createDocument();
-        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-        marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(UPDATED_EMPLOYEE_XML));
-        assertTrue("control document not same as XRService instance document",
-            comparer.isNodeEqual(controlDoc, doc));
-    }
     public static final String UPDATED_EMPLOYEE_XML =
     "<?xml version = '1.0' encoding = 'UTF-8'?>" +
     "<employee id=\"2\" xmlns=\"urn:veearray\">" +

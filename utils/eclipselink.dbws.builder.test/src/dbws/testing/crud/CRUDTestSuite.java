@@ -141,11 +141,10 @@ public class CRUDTestSuite extends DBWSTestSuite {
         }
     }
 
-    // hokey naming convention for test methods to assure order-of-operations
-    // w.r.t. insert/update/delete
-
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public void test1_readOne() {
+    public void testCRUDLifecycle() {
+        // test findByPK
         Invocation invocation = new Invocation("findByPrimaryKey_crud_tableType");
         invocation.setParameter("id", 1);
         Operation op = xrService.getOperation(invocation.getName());
@@ -155,34 +154,80 @@ public class CRUDTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(CRUD1_CONTROL_DOC));
-        assertTrue("control document not same as instance document",
+        assertTrue("findByPK failed:  control document not same as instance document",
             comparer.isNodeEqual(controlDoc, doc));
+        // test findAll
+        invocation = new Invocation("findAll_crud_tableType");
+        op = xrService.getOperation(invocation.getName());
+        result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        marshaller = xrService.getXMLContext().createMarshaller();
+        doc = xmlPlatform.createDocument();
+        Element ec = doc.createElement("all");
+        doc.appendChild(ec);
+        for (Object r : (Vector)result) {
+            marshaller.marshal(r, ec);
+        }
+        controlDoc = xmlParser.parse(new StringReader(FIND_ALL_CONTROL_DOC));
+        assertTrue("findAll failed:  control document not same as instance document",
+            comparer.isNodeEqual(controlDoc, doc));
+        // test findByName
+        invocation = new Invocation("findByName");
+        op = xrService.getOperation(invocation.getName());
+        result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        marshaller = xrService.getXMLContext().createMarshaller();
+        doc = xmlPlatform.createDocument();
+        ec = doc.createElement("some");
+        doc.appendChild(ec);
+        for (Object r : (Vector)result) {
+            marshaller.marshal(r, ec);
+        }
+        controlDoc = xmlParser.parse(new StringReader(FIND_BY_NAME_CONTROL_DOC));
+        assertTrue("findByName failed:  control document not same as instance document",
+            comparer.isNodeEqual(controlDoc, doc));
+        // test update
+        XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
+        Reader reader = new StringReader(CRUD1_CONTROL_DOC);
+        InputSource inputSource = new InputSource(reader);
+        XRDynamicEntity firstEmp = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
+        firstEmp.set("name", "some other name");
+        invocation = new Invocation("update_crud_tableType");
+        invocation.setParameter("theInstance", firstEmp);
+        op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);
+        // test delete
+        invocation = new Invocation("findAll_crud_tableType");
+        op = xrService.getOperation(invocation.getName());
+        Vector<XRDynamicEntity> result1 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
+        firstEmp = result1.firstElement();
+        Invocation invocation2 = new Invocation("delete_crud_tableType");
+        invocation2.setParameter("id", firstEmp.get("id"));
+        Operation op2 = xrService.getOperation(invocation2.getName());
+        op2.invoke(xrService, invocation2);
+        Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
+        assertTrue("Delete failed:  wrong number of employees", result2.size() == 2);
+        // test create
+        unMarshaller = xrService.getXMLContext().createUnmarshaller();
+        reader = new StringReader(CRUD1_CONTROL_DOC);
+        inputSource = new InputSource(reader);
+        XRDynamicEntity anotherEmployee = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
+        invocation = new Invocation("create_crud_tableType");
+        invocation.setParameter("theInstance", anotherEmployee);
+        op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);
+        invocation2 = new Invocation("findAll_crud_tableType");
+        op2 = xrService.getOperation(invocation2.getName());
+        Vector<XRDynamicEntity> result3 = (Vector<XRDynamicEntity>)op2.invoke(xrService, invocation2);
+        assertTrue("Create failed:  wrong number of employees", result3.size() == 3);
     }
+    
     public static final String CRUD1_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<crud_tableType xmlns=\"urn:crud\">" +
           "<id>1</id>" +
           "<name>crud1</name>" +
         "</crud_tableType>";
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Test
-    public void test2_readAll() {
-        Invocation invocation = new Invocation("findAll_crud_tableType");
-        Operation op = xrService.getOperation(invocation.getName());
-        Object result = op.invoke(xrService, invocation);
-        assertNotNull("result is null", result);
-        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-        Document doc = xmlPlatform.createDocument();
-        Element ec = doc.createElement("all");
-        doc.appendChild(ec);
-        for (Object r : (Vector)result) {
-            marshaller.marshal(r, ec);
-        }
-        Document controlDoc = xmlParser.parse(new StringReader(FIND_ALL_CONTROL_DOC));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(controlDoc, doc));
-    }
     public static final String FIND_ALL_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<all>" +
@@ -199,25 +244,6 @@ public class CRUDTestSuite extends DBWSTestSuite {
             "<name>other</name>" +
           "</crud_tableType>" +
         "</all>";
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Test
-    public void test3_findByName() {
-        Invocation invocation = new Invocation("findByName");
-        Operation op = xrService.getOperation(invocation.getName());
-        Object result = op.invoke(xrService, invocation);
-        assertNotNull("result is null", result);
-        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
-        Document doc = xmlPlatform.createDocument();
-        Element ec = doc.createElement("some");
-        doc.appendChild(ec);
-        for (Object r : (Vector)result) {
-            marshaller.marshal(r, ec);
-        }
-        Document controlDoc = xmlParser.parse(new StringReader(FIND_BY_NAME_CONTROL_DOC));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(controlDoc, doc));
-    }
     public static final String FIND_BY_NAME_CONTROL_DOC =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
         "<some>" +
@@ -230,49 +256,4 @@ public class CRUDTestSuite extends DBWSTestSuite {
             "<name>crud2</name>" +
           "</crud_tableType>" +
         "</some>";
-
-    @Test
-    public void test4_update() {
-        XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
-        Reader reader = new StringReader(CRUD1_CONTROL_DOC);
-        InputSource inputSource = new InputSource(reader);
-        XRDynamicEntity firstEmp = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
-        firstEmp.set("name", "some other name");
-        Invocation invocation = new Invocation("update_crud_tableType");
-        invocation.setParameter("theInstance", firstEmp);
-        Operation op = xrService.getOperation(invocation.getName());
-        op.invoke(xrService, invocation);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void test5_delete() {
-        Invocation invocation = new Invocation("findAll_crud_tableType");
-        Operation op = xrService.getOperation(invocation.getName());
-        Vector<XRDynamicEntity> result = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
-        XRDynamicEntity firstEmp = result.firstElement();
-        Invocation invocation2 = new Invocation("delete_crud_tableType");
-        invocation2.setParameter("id", firstEmp.get("id"));
-        Operation op2 = xrService.getOperation(invocation2.getName());
-        op2.invoke(xrService, invocation2);
-        Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op.invoke(xrService, invocation);
-        assertTrue("Wrong number of employees", result2.size() == 2);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void test6_create() {
-        XMLUnmarshaller unMarshaller = xrService.getXMLContext().createUnmarshaller();
-        Reader reader = new StringReader(CRUD1_CONTROL_DOC);
-        InputSource inputSource = new InputSource(reader);
-        XRDynamicEntity anotherEmployee = (XRDynamicEntity)unMarshaller.unmarshal(inputSource);
-        Invocation invocation = new Invocation("create_crud_tableType");
-        invocation.setParameter("theInstance", anotherEmployee);
-        Operation op = xrService.getOperation(invocation.getName());
-        op.invoke(xrService, invocation);
-        Invocation invocation2 = new Invocation("findAll_crud_tableType");
-        Operation op2 = xrService.getOperation(invocation2.getName());
-        Vector<XRDynamicEntity> result2 = (Vector<XRDynamicEntity>)op2.invoke(xrService, invocation2);
-        assertTrue("Wrong number of employees", result2.size() == 3);
-    }
 }

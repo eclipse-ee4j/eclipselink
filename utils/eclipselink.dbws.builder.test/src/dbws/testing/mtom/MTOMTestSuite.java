@@ -317,8 +317,7 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         portQName = new QName(MTOM_SERVICE_NAMESPACE, MTOM_PORT);
         testService = Service.create(serviceQName);
         testService.addPort(portQName, SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
-        dispatch = testService.createDispatch(portQName, SOAPMessage.class,
-            MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
+        dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
     }
 
     @AfterClass
@@ -402,18 +401,17 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
         xrService.setOXSession(xrService.getXMLContext().getSession(0));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void mtomTest_create() {
+    public void testCreateFindRemove() {
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
-            DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(LOREM_IPSUM.getBytes(),
-                "application/octet-stream"));
+            DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(LOREM_IPSUM.getBytes(), "application/octet-stream"));
             for (int i = 1; i <= NUM_CREATE; i ++) {
+                dispatch = testService.createDispatch(portQName, SOAPMessage.class, MESSAGE, new WebServiceFeature[]{new MTOMFeature(100)});
                 SOAPMessage request = factory.createMessage();
                 SOAPPart part = request.getSOAPPart();
-                DOMSource domSource = new DOMSource(getDocumentBuilder().parse(
-                    new InputSource(new StringReader(SOAP_CREATE_REQUEST_ID + i +
-                        SOAP_CREATE_REQUEST_END))));
+                DOMSource domSource = new DOMSource(getDocumentBuilder().parse(new InputSource(new StringReader(SOAP_CREATE_REQUEST_ID + i + SOAP_CREATE_REQUEST_END))));
                 part.setContent(domSource);
                 AttachmentPart attachmentPart1 = request.createAttachmentPart(dataHandler);
                 attachmentPart1.setContentId("LOREM");
@@ -422,14 +420,10 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
                 request.saveChanges();
                 dispatch.invoke(request);
             }
+        } catch (Exception e) {
+            fail("Create failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void mtomTest_findByPK() {
+        // test findByPK
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             SOAPMessage request = factory.createMessage();
@@ -451,18 +445,13 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             baos.close();
             inputStream.close();
             String responseString = baos.toString();
-            assertTrue("incorrect number of bytes returned from database",
+            assertTrue("findByPK failed:  incorrect number of bytes returned from database",
                 responseString.length() == 5000);
-            assertEquals("incorrect content from database", LOREM_IPSUM, responseString);
+            assertEquals("findByPK failed:  incorrect content from database", LOREM_IPSUM, responseString);
+        } catch (Exception e) {
+            fail("FindByPK failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mtomTest_findAll() {
+        // test findAll
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             SOAPMessage request = factory.createMessage();
@@ -472,10 +461,8 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
             part.setContent(domSource);
             SOAPMessage response = null;
             response = dispatch.invoke(request);
-            assertTrue("incorrect number of attachments",
-                response.countAttachments() == 3);
-            for (Iterator<AttachmentPart> attachmentsIterator =
-                response.getAttachments(); attachmentsIterator.hasNext();) {
+            assertTrue("findAll failed:  incorrect number of attachments", response.countAttachments() == 3);
+            for (Iterator<AttachmentPart> attachmentsIterator = response.getAttachments(); attachmentsIterator.hasNext();) {
                 AttachmentPart aPart = attachmentsIterator.next();
                 DataHandler dh = aPart.getDataHandler();
                 InputStream inputStream = dh.getInputStream();
@@ -488,18 +475,13 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
                 baos.close();
                 inputStream.close();
                 String responseString = baos.toString();
-                assertTrue("incorrect number of bytes returned from database",
-                    responseString.length() == 5000);
-                assertEquals("incorrect content from database", LOREM_IPSUM, responseString);
+                assertTrue("findAll failed:  incorrect number of bytes returned from database", responseString.length() == 5000);
+                assertEquals("findAll failed:  incorrect content from database", LOREM_IPSUM, responseString);
             }
+        } catch (Exception e) {
+            fail("FindAll failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void mtomTest_removeAll() {
+        // test remove
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             for (int i = 1; i <= NUM_CREATE; i ++) {
@@ -511,9 +493,8 @@ public class MTOMTestSuite extends ProviderHelper implements Provider<SOAPMessag
                 part.setContent(domSource);
                 dispatch.invoke(request);
             }
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
+        } catch (Exception e) {
+            fail("Remove failed:  " + e.getMessage());
         }
     }
 }

@@ -406,8 +406,10 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
         xrService.setOXSession(xrService.getXMLContext().getSession(0));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    public void mtomTest_create() {
+    public void testCreateFindRemove() {
+        // test create
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(LOREM_IPSUM.getBytes(),
@@ -426,14 +428,10 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
                 request.saveChanges();
                 dispatch.invoke(request);
             }
+        } catch (Exception e) {
+            fail("Create failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void mtomTest_findByPK() {
+        // test findByPK
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             SOAPMessage request = factory.createMessage();
@@ -455,18 +453,13 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
             baos.close();
             inputStream.close();
             String responseString = baos.toString();
-            assertTrue("incorrect number of bytes returned from database",
+            assertTrue("findByPK failed:  incorrect number of bytes returned from database",
                 responseString.length() == 5000);
-            assertEquals("incorrect content from database", LOREM_IPSUM, responseString);
+            assertEquals("findByPK failed:  incorrect content from database", LOREM_IPSUM, responseString);
+        } catch (Exception e) {
+            fail("FindByPK failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void mtomTest_findAll() {
+        // testFindAll
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             SOAPMessage request = factory.createMessage();
@@ -476,10 +469,9 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
             part.setContent(domSource);
             SOAPMessage response = null;
             response = dispatch.invoke(request);
-            assertTrue("incorrect number of attachments",
+            assertTrue("findAll failed:  incorrect number of attachments",
                 response.countAttachments() == 3);
-            for (Iterator<AttachmentPart> attachmentsIterator =
-                response.getAttachments(); attachmentsIterator.hasNext();) {
+            for (Iterator<AttachmentPart> attachmentsIterator = response.getAttachments(); attachmentsIterator.hasNext();) {
                 AttachmentPart aPart = attachmentsIterator.next();
                 DataHandler dh = aPart.getDataHandler();
                 InputStream inputStream = dh.getInputStream();
@@ -492,18 +484,14 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
                 baos.close();
                 inputStream.close();
                 String responseString = baos.toString();
-                assertTrue("incorrect number of bytes returned from database",
+                assertTrue("findAll failed:  incorrect number of bytes returned from database",
                     responseString.length() == 5000);
-                assertEquals("incorrect content from database", LOREM_IPSUM, responseString);
+                assertEquals("findAll failed:  incorrect content from database", LOREM_IPSUM, responseString);
             }
+        } catch (Exception e) {
+            fail("FindAll failed:  " + e.getMessage());
         }
-        catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void mtomTest_removeAll() {
+        // test remove
         try {
             MessageFactory factory = ((SOAPBinding)dispatch.getBinding()).getMessageFactory();
             for (int i = 1; i <= NUM_CREATE; i ++) {
@@ -515,9 +503,8 @@ public class SOAP12TestSuite extends ProviderHelper implements Provider<SOAPMess
                 part.setContent(domSource);
                 dispatch.invoke(request);
             }
-        }
-        catch (Exception e) {
-            fail(e.getMessage());
+        } catch (Exception e) {
+            fail("Remove failed:  " + e.getMessage());
         }
     }
 }

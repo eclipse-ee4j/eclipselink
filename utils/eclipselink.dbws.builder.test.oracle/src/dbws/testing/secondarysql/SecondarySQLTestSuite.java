@@ -169,16 +169,14 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "returnType=\"" + SECONDARY_ALL_SCHEMA_TYPE +"\"> " +
               ">" +
               "<statement><![CDATA[" + SECONDARY_ALL_SQL + "]]></statement>" +
-              "<build-statement><![CDATA[" + SECONDARY_ALL_SQL +
-                  NONSENCE_WHERE_SQL + "]]></build-statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_ALL_SQL + NONSENCE_WHERE_SQL + "]]></build-statement>" +
           "</sql>" +
           "<sql " +
               "name=\"countSecondary\" " +
               "isCollection=\"false\" " +
               "returnType=\"" + SECONDARY_COUNT_SCHEMA_TYPE +"\"> " +
               "<statement><![CDATA[" + SECONDARY_COUNT_SQL + "]]></statement>" +
-              "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL +
-                NONSENCE_WHERE_SQL + "]]></build-statement>" +
+              "<build-statement><![CDATA[" + SECONDARY_COUNT_SQL + NONSENCE_WHERE_SQL + "]]></build-statement>" +
           "</sql>" +
           "<procedure " +
               "name=\"getByName\" " +
@@ -454,26 +452,26 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
          XMLUnmarshaller unmarshaller = context.createUnmarshaller();
          DBWSBuilderModel builderModel =
              (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-         builder = new DBWSBuilder();
-         builder.quiet = true;
-         builder.properties = builderModel.properties;
-         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
-         builder.getTargetNamespace();
-         builder.operations = builderModel.operations;
-         builder.setLogLevel(SessionLog.FINE_LABEL);
-         builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
+         DBWSBuilder builder2 = new DBWSBuilder();
+         builder2.quiet = true;
+         builder2.properties = builderModel.properties;
+         builder2.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
+         builder2.getTargetNamespace();
+         builder2.operations = builderModel.operations;
+         builder2.setLogLevel(SessionLog.FINE_LABEL);
+         builder2.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
              @Override
              public void start() {
              }
          });
          try {
-            builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+            builder2.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
                  DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
                  __nullStream, __nullStream, __nullStream, null);
-        }
-        catch (Exception e) {
-            assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
-        }
+         }
+         catch (Exception e) {
+             assertEquals("Duplicate ResultSet columns not supported", e.getMessage());
+         }
      }
 
      static final String GETBYNAME_RESPONSE_MSG =

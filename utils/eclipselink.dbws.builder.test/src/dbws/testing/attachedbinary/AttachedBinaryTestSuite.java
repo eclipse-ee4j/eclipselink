@@ -160,7 +160,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void findAll() {
+    public void findAll() throws IOException {
         Invocation invocation = new Invocation("findAll_attachedbinaryType");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -187,29 +187,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
         Document testXSD = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
         removeEmptyTextNodes(testXSD);
         assertTrue("Control XSD not same as instance document.\n Expected:\n" + documentToString(controlXSD) + "\nActual:\n" + documentToString(testXSD), comparer.isNodeEqual(controlXSD, testXSD));
-    }
-    public static final String ATTACHED_BINARY_COLLECTION_XML =
-        "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
-        "<attachedbinary-collection>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
-                "<id>1</id>" +
-                "<name>one</name>" +
-                "<b>cid:ref1</b>" +
-            "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
-                "<id>2</id>" +
-                "<name>two</name>" +
-                "<b>cid:ref2</b>" +
-            "</attachedbinaryType>" +
-            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
-                "<id>3</id>" +
-                "<name>three</name>" +
-                "<b>cid:ref3</b>" +
-            "</attachedbinaryType>" +
-        "</attachedbinary-collection>";
-
-    @Test
-    public void getAttachments() throws IOException {
+        
         DataHandler dataHandler = attachmentHandler.getAttachments().get("cid:ref1");
         ByteArrayInputStream bais = (ByteArrayInputStream)dataHandler.getInputStream();
         byte[] ref = new byte[bais.available()];
@@ -235,6 +213,25 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
             assertTrue("wrong byte value returned", 3 == ref[i]);
         }
     }
+    public static final String ATTACHED_BINARY_COLLECTION_XML =
+        "<?xml version = \"1.0\" encoding = \"UTF-8\"?>" +
+        "<attachedbinary-collection>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>1</id>" +
+                "<name>one</name>" +
+                "<b>cid:ref1</b>" +
+            "</attachedbinaryType>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>2</id>" +
+                "<name>two</name>" +
+                "<b>cid:ref2</b>" +
+            "</attachedbinaryType>" +
+            "<attachedbinaryType xmlns=\"urn:attachedbinary\">" +
+                "<id>3</id>" +
+                "<name>three</name>" +
+                "<b>cid:ref3</b>" +
+            "</attachedbinaryType>" +
+        "</attachedbinary-collection>";
 
     @Test
     public void getBLOBById() throws IOException {
