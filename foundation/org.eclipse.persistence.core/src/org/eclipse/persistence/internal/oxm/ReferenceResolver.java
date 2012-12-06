@@ -34,9 +34,9 @@ import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -364,9 +364,9 @@ public class ReferenceResolver {
 
     private class ReferenceKey {
         private Object sourceObject;
-        private XMLMapping mapping;
+        private Mapping mapping;
 
-        public ReferenceKey(Object sourceObject, XMLMapping mapping) {
+        public ReferenceKey(Object sourceObject, Mapping mapping) {
             this.sourceObject = sourceObject;
             this.mapping = mapping;
         }
@@ -375,7 +375,7 @@ public class ReferenceResolver {
             return sourceObject;
         }
         
-        public XMLMapping getMapping() {
+        public Mapping getMapping() {
             return mapping;
         }
         
@@ -383,7 +383,7 @@ public class ReferenceResolver {
             this.sourceObject = obj;
         }
         
-        public void setMapping(XMLMapping mapping) {
+        public void setMapping(Mapping mapping) {
             this.mapping = mapping;
         }
         

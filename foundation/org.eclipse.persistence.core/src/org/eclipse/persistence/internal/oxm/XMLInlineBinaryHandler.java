@@ -14,12 +14,12 @@ package org.eclipse.persistence.internal.oxm;
 
 import org.xml.sax.SAXException;
 
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
@@ -69,15 +69,15 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.U
        AbstractNullPolicy nullPolicy;
        boolean isSwaRef = false;
        if(isCollection) {
-           isSwaRef = ((XMLBinaryDataCollectionMapping)mapping).isSwaRef();
-           field = (Field)((XMLBinaryDataCollectionMapping)mapping).getField();
-           attributeClassification =((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
-           nullPolicy =((XMLBinaryDataCollectionMapping)mapping).getNullPolicy();
+           isSwaRef = ((BinaryDataCollectionMapping)mapping).isSwaRef();
+           field = (Field)((BinaryDataCollectionMapping)mapping).getField();
+           attributeClassification =((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
+           nullPolicy =((BinaryDataCollectionMapping)mapping).getNullPolicy();
        } else {
-           isSwaRef = ((XMLBinaryDataMapping)mapping).isSwaRef();
-           field = (Field)((XMLBinaryDataMapping)mapping).getField();
-           attributeClassification =((XMLBinaryDataMapping)mapping).getAttributeClassification();
-           nullPolicy =((XMLBinaryDataMapping)mapping).getNullPolicy();
+           isSwaRef = ((BinaryDataMapping)mapping).isSwaRef();
+           field = (Field)((BinaryDataMapping)mapping).getField();
+           attributeClassification =((BinaryDataMapping)mapping).getAttributeClassification();
+           nullPolicy =((BinaryDataMapping)mapping).getNullPolicy();
 
        }
            

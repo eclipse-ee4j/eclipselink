@@ -16,12 +16,18 @@ import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 public interface Mapping<
+    ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
     DESCRIPTOR extends CoreDescriptor,
-    FIELD extends CoreField> {
+    FIELD extends CoreField,
+    XML_RECORD extends XMLRecord> {
+
+    public void convertClassNamesToClasses(ClassLoader classLoader);
 
     public ATTRIBUTE_ACCESSOR getAttributeAccessor();
 
@@ -80,5 +86,8 @@ public interface Mapping<
     public abstract boolean isTransformationMapping();
 
     public void setAttributeValueInObject(Object object, Object value);
+
+    public void writeSingleValue(Object value, Object object, XML_RECORD record, ABSTRACT_SESSION session);
+
 
 }

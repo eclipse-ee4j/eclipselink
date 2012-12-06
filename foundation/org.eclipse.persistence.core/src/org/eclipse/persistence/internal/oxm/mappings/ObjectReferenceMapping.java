@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 public interface ObjectReferenceMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -29,8 +30,9 @@ public interface ObjectReferenceMapping<
     DESCRIPTOR extends CoreDescriptor, 
     FIELD extends CoreField,    
     UNMARSHAL_RECORD extends UnmarshalRecord,
-    XML_FIELD extends Field
-    > extends Mapping<ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD> {
+    XML_FIELD extends Field,
+    XML_RECORD extends XMLRecord
+    > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
 
     public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
 

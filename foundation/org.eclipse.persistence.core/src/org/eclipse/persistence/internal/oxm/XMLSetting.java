@@ -12,8 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
-
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 
 /**
  * INTERNAL:
@@ -34,7 +33,7 @@ public interface XMLSetting {
     /**
      * @return The TopLink OXM mapping associated with this setting
      */
-    public XMLMapping getMapping();
+    public Mapping getMapping();
     
     /**
      * Gets the value to be marshalled using the specified mapping.

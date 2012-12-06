@@ -96,7 +96,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * 
  */
 
-public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, XMLField>, XMLMapping {
+public class XMLChoiceCollectionMapping extends DatabaseMapping implements ChoiceCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, XMLField, XMLMapping, XMLRecord>, XMLMapping {
     private Map<XMLField, Class> fieldToClassMappings;
     private Map<Class, XMLField> classToFieldMappings;
     private Map<Class, List<XMLField>> classToSourceFieldsMappings;

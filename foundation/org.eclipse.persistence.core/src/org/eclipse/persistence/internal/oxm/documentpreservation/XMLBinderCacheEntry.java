@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.oxm.documentpreservation;
 import java.util.HashMap;
 
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 
 /**
  * INTERNAL:
@@ -51,13 +50,6 @@ public class XMLBinderCacheEntry {
         selfMappingObjects.put(mapping, obj);
     }
 
-    public void addSelfMappingObject(XMLMapping mapping, Object obj) {
-        if(selfMappingObjects == null) {
-            selfMappingObjects = new HashMap();
-        }
-        selfMappingObjects.put(mapping, obj);
-    }
-
     /**
      * @since EclipseLink 2.5.0
      */
@@ -68,12 +60,4 @@ public class XMLBinderCacheEntry {
         return null;
     }
 
-    public Object getSelfMappingObject(XMLMapping mapping) {
-        if(selfMappingObjects != null) {
-            return selfMappingObjects.get(mapping);
-        }
-        return null;
-    }
-   
 }
-

@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -155,7 +156,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         return xmlRec;
     }
 
-    public AbstractRecord createRecordFor(Object attributeValue, Field xmlField, XMLRecord parentRecord, XMLMapping mapping) {
+    public AbstractRecord createRecordFor(Object attributeValue, Field xmlField, XMLRecord parentRecord, Mapping mapping) {
         DocumentPreservationPolicy policy = parentRecord.getDocPresPolicy();
         Element newNode = null;
         if(policy != null) {
