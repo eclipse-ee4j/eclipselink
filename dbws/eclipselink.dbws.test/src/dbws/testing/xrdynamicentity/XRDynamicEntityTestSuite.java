@@ -114,39 +114,38 @@ public class XRDynamicEntityTestSuite {
         assertSame(dynamicClass, dynamicClass2);
     }
 
-    //stupid naming convention to get tests run in order
-
     @Test
-    public void test1() {
+    public void testEntityOps() {
+        // test #1
         Object field = entity1.get(FIELD_1);
         assertNull(FIELD_1 + " should be null", field);
         assertFalse(FIELD_2 + " shouldn't be set", entity1.isSet(FIELD_2));
-    }
-
-    @Test
-    public void test2() {
+        // test #2
         DynamicEntity e = entity1.set(FIELD_1, TEST_STRING);
         assertSame(e, entity1);
         e = entity1.set(FIELD_2, Integer.valueOf(17));
         assertSame(e, entity1);
-    }
-
-    @Test
-    public void test3() {
+        // test #3
         String test = entity1.<String>get(FIELD_1);
         assertEquals(FIELD_1 + " incorrect value", test, TEST_STRING);
         Integer i = entity1.<Integer>get(FIELD_2);
         assertEquals(FIELD_2 + " incorrect value", i, Integer.valueOf(17));
-    }
-
-    @Test(expected=ClassCastException.class)
-    public void test4() {
-        String s = entity1.<String>get("field2");
-        System.identityHashCode(s);
-    }
-
-    @Test(expected=DynamicException.class)
-    public void test5() {
-        entity1.<String>get("field3");
+        // test #4
+        boolean expectedExceptionOccurred = false;
+        try {
+            String s = entity1.<String>get("field2");
+            System.identityHashCode(s);
+        } catch (ClassCastException cce) {
+            expectedExceptionOccurred = true;
+        }
+        assertTrue("The expected ClassCastException did not occur", expectedExceptionOccurred);
+        // test #5
+        expectedExceptionOccurred = false;
+        try {
+            entity1.<String>get("field3");
+        } catch (DynamicException de) {
+            expectedExceptionOccurred = true;
+        }
+        assertTrue("The expected DynamicException did not occur", expectedExceptionOccurred);
     }
 }

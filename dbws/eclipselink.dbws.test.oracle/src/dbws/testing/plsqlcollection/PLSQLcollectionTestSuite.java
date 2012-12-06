@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Dave McCann - May 2008, created DBWS test package
+ ******************************************************************************/
+
 package dbws.testing.plsqlcollection;
 
 //javase imports
@@ -45,7 +58,36 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 
+import dbws.testing.AllTests;
+
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DEBUG_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DROP_KEY;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
+
 public class PLSQLcollectionTestSuite {
+    
+    static final String CREATE_DDL =
+        "CREATE OR REPLACE PACKAGE SOMEPACKAGE AS" +
+        "    TYPE TBL1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
+        "    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2);" +
+        "END SOMEPACKAGE;" +
+        "|" +
+        "CREATE OR REPLACE PACKAGE BODY SOMEPACKAGE AS" +
+        "    PROCEDURE P1(SIMPLARRAY IN TBL1, FOO IN VARCHAR2) AS" +
+        "    BEGIN" +
+        "        NULL;" +
+        "    END P1;" +
+        "END SOMEPACKAGE;" +
+        "|" +
+        "CREATE OR REPLACE TYPE SOMEPACKAGE_TBL1 AS TABLE OF VARCHAR2(111)|" ;
+    
+    static final String DROP_DDL =
+        "DROP PACKAGE BODY SOMEPACKAGE|" +
+        "DROP PACKAGE SOMEPACKAGE|" +
+        "DROP TYPE SOMEPACKAGE_TBL1|";
 
     static final String CONSTANT_PROJECT_BUILD_VERSION =
         "Eclipse Persistence Services - some version (some build date)";
@@ -64,9 +106,25 @@ public class PLSQLcollectionTestSuite {
     static String username = null;
     static String password = null;
     static String url = null;
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
 
     @BeforeClass
     public static void setUpProject() {
+        final String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        final String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        final String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+
         username = System.getProperty(DATABASE_USERNAME_KEY);
         if (username == null) {
             fail("error retrieving database username");
@@ -100,12 +158,24 @@ public class PLSQLcollectionTestSuite {
         query.addArgument("FOO", String.class);
         query.setCall(call);
         t1Descriptor.getQueryManager().addQuery(QUERY_NAME, query);
+        
+        if (ddlCreate) {
+            try {
+                AllTests.runDdl(CREATE_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+        }
     }
 
     @AfterClass
     public static void tearDown() {
-        if (session != null) {
-            ((DatabaseSession)session).logout();
+        if (ddlDrop) {
+            try {
+                AllTests.runDdl(DROP_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
         }
     }
 
@@ -213,14 +283,10 @@ public class PLSQLcollectionTestSuite {
         DatabaseQuery query = t1Descriptor.getQueryManager().getQuery(QUERY_NAME);
         assertTrue(QUERY_NAME + " is wrong type of query: " + query.getClass().getSimpleName(),
             query.isDataModifyQuery());
-        project = projectFromXML;
-    }
-
-    @Test
-    public void testTbl1() {
-        session = project.createDatabaseSession();
+        
+        session = projectFromXML.createDatabaseSession();
         session.dontLogMessages();
-        ClassDescriptor t1Descriptor = session.getDescriptorForAlias("T1");
+        t1Descriptor = session.getDescriptorForAlias("T1");
         Class<?> t1Clz = t1Descriptor.getJavaClass();
         ((DatabaseSession)session).login();
         String[] elements = {"first string", "second string", "third string"};
@@ -237,5 +303,6 @@ public class PLSQLcollectionTestSuite {
             msg = e.getMessage();
         }
         assertTrue("invocation somePackage.p1 failed: " + msg, worked);
+        
     }
 }

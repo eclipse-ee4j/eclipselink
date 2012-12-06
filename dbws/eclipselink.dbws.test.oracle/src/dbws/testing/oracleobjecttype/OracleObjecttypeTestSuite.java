@@ -34,6 +34,7 @@ import javax.xml.transform.stream.StreamResult;
 //java eXtension imports
 
 //JUnit4 imports
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
@@ -79,13 +80,47 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+
+import dbws.testing.AllTests;
 import static org.eclipse.persistence.oxm.XMLConstants.INT_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.STRING_QNAME;
 
 import static dbws.testing.DBWSTestHelper.CONSTANT_PROJECT_BUILD_VERSION;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_CREATE_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DEBUG_KEY;
+import static dbws.testing.DBWSTestHelper.DATABASE_DDL_DROP_KEY;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_CREATE;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DEBUG;
+import static dbws.testing.DBWSTestHelper.DEFAULT_DATABASE_DDL_DROP;
 
 public class OracleObjecttypeTestSuite {
-
+    static final String CREATE_DDL =
+        "CREATE TYPE XR_ADDRESS_TYPE AS OBJECT (" +
+        "    STREET VARCHAR2(40)," +
+        "    CITY VARCHAR2(40)," +
+        "    PROV VARCHAR2(40)" +
+        ")|" +
+        "CREATE TABLE XR_EMP_ADDR (" +
+        "    EMPNO NUMBER(4) NOT NULL," +
+        "    FNAME VARCHAR2(40)," +
+        "    LNAME VARCHAR2(40)," +
+        "    ADDRESS XR_ADDRESS_TYPE," +
+        "    PRIMARY KEY (EMPNO)" +
+        ")|" +
+        "CREATE PROCEDURE GET_EMPLOYEES_BY_PROV(X IN XR_ADDRESS_TYPE, Y OUT SYS_REFCURSOR) AS" +
+        "    BEGIN" +
+        "        OPEN Y FOR SELECT * FROM XR_EMP_ADDR xrea WHERE xrea.ADDRESS.PROV LIKE X.PROV;" +
+        "    END;" +
+        "|" +
+        "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (1, 'Mike', 'Norman', XR_ADDRESS_TYPE('Pinetrail','Nepean','Ont'))|" +
+        "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (2, 'Rick', 'Barkhouse', XR_ADDRESS_TYPE('Davis Side Rd','Carleton Place','Ont'))|" +
+        "INSERT INTO XR_EMP_ADDR (EMPNO, FNAME, LNAME, ADDRESS) VALUES (3, 'Merrick', 'Schincariol', XR_ADDRESS_TYPE('do','not','know'))|";
+    
+    static final String DROP_DDL =
+        "DROP TABLE XR_EMP_ADDR|" +
+        "DROP TYPE XR_ADDRESS_TYPE|" +
+        "DROP PROCEDURE GET_EMPLOYEES_BY_PROV|";
+    
     static final String DATABASE_USERNAME_KEY = "db.user";
     static final String DATABASE_PASSWORD_KEY = "db.pwd";
     static final String DATABASE_URL_KEY = "db.url";
@@ -380,9 +415,25 @@ public class OracleObjecttypeTestSuite {
     public static XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
     public static XMLParser xmlParser = xmlPlatform.newXMLParser();
     public static XRServiceAdapter xrService = null;
+    static boolean ddlCreate = false;
+    static boolean ddlDrop = false;
+    static boolean ddlDebug = false;
+
     @BeforeClass
-    public static void setUp() throws SecurityException, NoSuchFieldException,
-        IllegalArgumentException, IllegalAccessException {
+    public static void setUp() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        final String ddlCreateProp = System.getProperty(DATABASE_DDL_CREATE_KEY, DEFAULT_DATABASE_DDL_CREATE);
+        if ("true".equalsIgnoreCase(ddlCreateProp)) {
+            ddlCreate = true;
+        }
+        final String ddlDropProp = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
+        if ("true".equalsIgnoreCase(ddlDropProp)) {
+            ddlDrop = true;
+        }
+        final String ddlDebugProp = System.getProperty(DATABASE_DDL_DEBUG_KEY, DEFAULT_DATABASE_DDL_DEBUG);
+        if ("true".equalsIgnoreCase(ddlDebugProp)) {
+            ddlDebug = true;
+        }
+
         final String username = System.getProperty(DATABASE_USERNAME_KEY);
         if (username == null) {
             fail("error retrieving database username");
@@ -596,6 +647,25 @@ public class OracleObjecttypeTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(OBJECTTYPE_XRMODEL));
         xrService = factory.buildService(model);
+        
+        if (ddlCreate) {
+            try {
+                AllTests.runDdl(CREATE_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+        }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        if (ddlDrop) {
+            try {
+                AllTests.runDdl(DROP_DDL, ddlDebug);
+            } catch (Exception e) {
+                // e.printStackTrace();
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

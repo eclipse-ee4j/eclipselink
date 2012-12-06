@@ -32,13 +32,19 @@ public class DBWSTestHelper {
     public final static String DATABASE_URL_KEY = "db.url";
     public final static String DATABASE_DRIVER_KEY = "db.driver";
     public final static String DATABASE_PLATFORM_KEY = "db.platform";
-    public final static String DEFAULT_DATABASE_USERNAME = "MNORMAN";
+    public final static String DEFAULT_DATABASE_USERNAME = "user";
     public final static String DEFAULT_DATABASE_PASSWORD = "password";
-    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://tlsvrdb4.ca.oracle.com/" +
+    public final static String DEFAULT_DATABASE_URL = "jdbc:mysql://localhost:3306/test" +
         DEFAULT_DATABASE_USERNAME;
     public final static String DEFAULT_DATABASE_DRIVER = "com.mysql.jdbc.Driver";
     public final static String DEFAULT_DATABASE_PLATFORM =
         "org.eclipse.persistence.platform.database.MySQLPlatform";
+    public final static String DATABASE_DDL_CREATE_KEY = "db.ddl.create";
+    public final static String DATABASE_DDL_DROP_KEY = "db.ddl.drop";
+    public final static String DATABASE_DDL_DEBUG_KEY = "db.ddl.debug";
+    public final static String DEFAULT_DATABASE_DDL_CREATE = "false";
+    public final static String DEFAULT_DATABASE_DDL_DROP = "false";
+    public final static String DEFAULT_DATABASE_DDL_DEBUG = "false";
 
     public static String documentToString(Document doc) {
         DOMSource domSource = new DOMSource(doc);
