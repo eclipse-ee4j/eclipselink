@@ -1307,7 +1307,7 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
+            depends="test-core-srg, test-jpa-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="test-core, test-jpa, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
