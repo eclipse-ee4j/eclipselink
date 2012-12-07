@@ -43,6 +43,28 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimpleTableServiceTestSuite extends DBWSTestSuite {
+    public static final String JDK7_PK_HEADER = "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+    public static final String JDK6_AND_EARLIER_PK_HEADER = "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">";
+    public static String PK_HEADER;
+    public static final String JDK7_ALL_HEADER = "<srvc:findAll_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+    public static final String JDK6_AND_EARLIER_ALL_HEADER = "<srvc:findAll_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">";
+    public static String ALL_HEADER;
+
+    public static final String JDK7_SIMPLESQL = "<simple-sql xsi:type=\"simple-xml-format\">";
+    public static final String JDK6_AND_EARLIER_SIMPLESQL = "<simple-sql xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">";
+    public static String SIMPLESQL;
+
+    static {
+        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
+            PK_HEADER = JDK7_PK_HEADER;
+            ALL_HEADER = JDK7_ALL_HEADER;
+            SIMPLESQL = JDK7_SIMPLESQL;
+        } else {
+            PK_HEADER = JDK6_AND_EARLIER_PK_HEADER;
+            ALL_HEADER = JDK6_AND_EARLIER_ALL_HEADER;
+            SIMPLESQL = JDK6_AND_EARLIER_SIMPLESQL;
+        }
+    }
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
@@ -110,7 +132,7 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
 
 	static final String SOAP_FINDBYPK_RESPONSE = 
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        PK_HEADER +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +
@@ -121,7 +143,7 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
         "</srvc:findByPrimaryKey_simpletableTypeResponse>";
     static final String SOAP_FINDALL_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findAll_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        ALL_HEADER +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +
@@ -144,7 +166,7 @@ public class SimpleTableServiceTestSuite extends DBWSTestSuite {
         "update_simpletableTypeResponse";
     static final String SOAP_FINDBYPK_AFTERUPDATE_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:findByPrimaryKey_simpletableTypeResponse xmlns=\"urn:simpletable\" xmlns:srvc=\"urn:simpletableService\">" +
+        PK_HEADER +
             "<srvc:result>" +
                 "<simpletableType>" +
                     "<id>1</id>" +

@@ -43,6 +43,22 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
+    public static final String JDK7_HEADER = "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\">";
+    public static String HEADER;
+    public static final String JDK7_SIMPLESQL = "<simple-sql xsi:type=\"simple-xml-format\">";
+    public static final String JDK6_AND_EARLIER_SIMPLESQL = "<simple-sql xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">";
+    public static String SIMPLESQL;
+
+    static {
+        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
+            HEADER = JDK7_HEADER;
+            SIMPLESQL = JDK7_SIMPLESQL;
+        } else {
+            HEADER = JDK6_AND_EARLIER_HEADER;
+            SIMPLESQL = JDK6_AND_EARLIER_SIMPLESQL;
+        }
+    }
     static final String SOAP_COUNTINFO_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
@@ -52,9 +68,9 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
 
     static final String SOAP_COUNTINFO_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\">" +
+        HEADER +
           "<srvc:result>" +
-            "<simple-sql xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
+            SIMPLESQL +
               "<count-info>" +
                 "<COUNT>3</COUNT>" +
               "</count-info>" +
