@@ -140,6 +140,39 @@ public class RestUtils {
     }
 
     /**
+     * Rest read.
+     *
+     * @param context the context
+     * @param id the id
+     * @param type the type
+     * @param persistenceUnit the persistence unit
+     * @param tenantId the tenant id
+     * @param outputMediaType the output media type
+     * @return the string
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public static String restRead(PersistenceContext context, Object id, String type, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType)
+            throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type + "/" + id);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        return result;
+    }
+
+    /**
      * Rest update.
      *
      * @param <T> the generic type
