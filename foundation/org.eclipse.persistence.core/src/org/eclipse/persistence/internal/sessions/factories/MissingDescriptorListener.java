@@ -19,7 +19,6 @@ import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.eis.EISObjectPersistenceXMLProject;
-import org.eclipse.persistence.internal.oxm.OXMObjectPersistenceRuntimeXMLProject;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
