@@ -15,6 +15,8 @@
  *                       instead of throwing NPE during deploy validation.
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -151,11 +153,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /** This is a way (after cloning) to force the initialization of the selection criteria */
     protected boolean forceInitializationOfSelectionCriteria;
-    
-    /** JPA 2.1 Foreign key specification data */
-    protected String foreignKeyDefinition;
-    protected String foreignKeyName;
-    protected boolean disableForeignKey;
     
     /**
      * Indicates whether and how pessimistic lock scope should be extended 
@@ -1006,24 +1003,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public Collection getFieldsForTranslationInAggregate() {
         return new NonSynchronizedVector(0);
     }
-
-    /**
-     * INTERNAL:
-     * JPA 2.1 Return the foreign key definition that is to be used during
-     * DDL generation of this mapping.
-     */
-    public String getForeignKeyDefinition() {
-        return foreignKeyDefinition;
-    }
-
-    /**
-     * INTERNAL:
-     * JPA 2.1 Return the foreign key name that is to be used during
-     * DDL generation of this mapping.
-     */
-    public String getForeignKeyName() {
-        return foreignKeyName;
-    }
     
     /**
      * INTERNAL:
@@ -1365,15 +1344,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public boolean isCascadeRemove() {
         return this.cascadeRemove;
     }
-
-    /**
-     * INTERNAL:
-     * JPA 2.1 Return true if no foreign key should be created for this mapping
-     * during DDL generation.
-     */
-    public boolean isDisableForeignKey() {
-        return disableForeignKey;
-    }
     
     /**
      * INTERNAL:
@@ -1383,7 +1353,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public boolean hasDependency() {
         return isPrivateOwned() || isCascadeRemove();
     }
-
+    
     /**
      * INTERNAL:
      */
@@ -1587,15 +1557,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         setSelectionQuery(query);
         setHasCustomSelectionQuery(true);
     }
-
-    /**
-     * INTERNAL:
-     * JPA 2.1 Set this value to determine if a foreign key should be created 
-     * for this mapping during DDL generation.
-     */
-    public void setDisableForeignKey(boolean disableForeignKey) {
-        this.disableForeignKey = disableForeignKey;
-    }
     
     protected void setHasCustomSelectionQuery(boolean bool) {
         hasCustomSelectionQuery = bool;
@@ -1607,24 +1568,6 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      */
     public void setForceInitializationOfSelectionCriteria(boolean bool) {
         forceInitializationOfSelectionCriteria = bool;
-    }
-    
-    /**
-     * INTERNAL:
-     * JPA 2.1 Set the foreign key definition that is to be used during DDL 
-     * generation of this mapping.
-     */
-    public void setForeignKeyDefinition(String foreignKeyDefinition) {
-        this.foreignKeyDefinition = foreignKeyDefinition;
-    }
-
-    /**
-     * INTERNAL:
-     * JPA 2.1 Set the foreign key name that is to be used during DDL generation 
-     * of this mapping.
-     */
-    public void setForeignKeyName(String foreignKeyName) {
-        this.foreignKeyName = foreignKeyName;
     }
     
     /**

@@ -8,15 +8,13 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -24,61 +22,46 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="JPA21_SHOE")
-public class Shoe {
+@Table(name="JPA21_DDL_ORGANIZER")
+public class Organizer {
     @Id
     @GeneratedValue
-    protected Integer id;
-    
-    @Column(name="SIZZE")
-    protected Integer size;
-    
-    protected String brand;
-    protected String model;
+    public Integer id;
+    public String name;
     
     @ManyToOne
-    @JoinColumn(name="RUNNER_ID")
-    protected Runner runner;
+    @JoinColumn(
+        name="RACE_ID",
+        foreignKey=@ForeignKey(
+            name="Organizer_Race_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_DDL_RACE (ID)"      
+        )
+    )
+    public Race race;
     
-    public Shoe() {}
-
-    public String getBrand() {
-        return brand;
-    }
+    public Organizer() {}
     
     public Integer getId() {
         return id;
     }
     
-    public String getModel() {
-        return model;
+    public String getName() {
+        return name;
     }
-    
-    public Runner getRunner() {
-        return runner;
+
+    public Race getRace() {
+        return race;
     }
-    
-    public Integer getSize() {
-        return size;
-    }    
-    
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-    
+
     public void setId(Integer id) {
         this.id = id;
     }
     
-    public void setModel(String model) {
-        this.model = model;
+    public void setName(String name) {
+        this.name = name;
     }
-    
-    public void setRunner(Runner runner) {
-        this.runner = runner;
-    }
-    
-    public void setSize(Integer size) {
-        this.size = size;
+
+    public void setRace(Race race) {
+        this.race = race;
     }
 }

@@ -17,6 +17,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -157,7 +159,7 @@ public class SecondaryTableMetadata extends TableMetadata {
     @Override
     public void processForeignKey() {
         if (m_primaryKeyForeignKey != null) {
-            m_primaryKeyForeignKey.process(getDatabaseTable());
+            getDatabaseTable().addForeignKeyConstraint(m_primaryKeyForeignKey.process());
         }
     }
 

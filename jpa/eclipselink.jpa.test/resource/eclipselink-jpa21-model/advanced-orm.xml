@@ -23,11 +23,9 @@
             </element-collection>
             <element-collection name="endorsements">
                 <map-key-join-column name="ENDORSER_ID"/>
-                <map-key-foreign-key name="XMLEndorsements_Key_Foreign_Key" foreign-key-definition="XMLEndorsements_Key_Foreign_Key_Definition"/>
                 <column name="ENDORSEMENT"/>
                 <collection-table name="JPA21_XML_ENDORSEMENTS">
                     <join-column name="ATHLETE_ID"/>
-                    <foreign-key name="XMLEndorsements_Foreign_Key" foreign-key-definition="XMLEndorsements_Foreign_Key_Definition"/>
                 </collection-table>
             </element-collection>
         </attributes>
@@ -48,14 +46,11 @@
             </basic>
             <one-to-many name="shoes" mapped-by="runner">
                 <map-key-join-column name="TAG_IG"/>
-                <map-key-foreign-key name="XMLRunner_ShoeTag_Foreign_Key" foreign-key-definition="XMLRunner_ShoeTag_Foreign_Key_Definition"/>
             </one-to-many>
             <many-to-many name="races">
                 <join-table name="RUNNERS_RACES">
                     <join-column name="RUNNER_ID" referenced-column-name="ID"/>
-                    <foreign-key name="XMLRunners_Races_Foreign_Key" foreign-key-definition="XMLRunners_Races_Foreign_Key_Definition"/>
                     <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
-                    <inverse-foreign-key name="XMLRunners_Races_Inverse_Foreign_Key" foreign-key-definition="XMLRunners_Races_Inverse_Foreign_Key_Definition"/>
                 </join-table>
             </many-to-many>
             <element-collection name="personalBests">
@@ -65,7 +60,6 @@
                 <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
                 <collection-table name="JPA21_XML_RUNNER_PBS">
                     <join-column name="RUNNER_ID"/>
-                    <foreign-key name="XML_Runner_PBS_Foreign_Key" foreign-key-definition="XML_Runner_PBS_Foreign_Key_Definition"/>
                 </collection-table>
             </element-collection>
             <embedded name="info">
@@ -79,7 +73,6 @@
     <entity name="XMLSprinter" class="Sprinter">
         <table name="JPA21_XML_SPRINTER"/>
         <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
-        <primary-key-foreign-key name="XML_Sprinter_Foreign_Key" foreign-key-definition="XML_Sprinter_Foreign_Key_Definition"/>
     </entity>
     
     <entity name="XMLShoe" class="Shoe">
@@ -90,7 +83,6 @@
             </id>
             <many-to-one name="runner">
                 <join-column name="RUNNER_ID"/>
-                <foreign-key name="XMLShoes_Runner_Foreign_Key" foreign-key-definition="XMLShoes_Runner_Foreign_Key_Definition"/>
             </many-to-one>
         </attributes>
     </entity>

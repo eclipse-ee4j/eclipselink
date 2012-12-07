@@ -10,14 +10,15 @@
  * Contributors:
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 
 /**
  * INTERNAL:
@@ -103,7 +104,7 @@ public class ForeignKeyMetadata extends ORMetadata {
         
         return false;
     }
-
+    
     /**
      * INTERNAL
      */
@@ -136,36 +137,15 @@ public class ForeignKeyMetadata extends ORMetadata {
     }
     
     /**
-     * INTERNAL
-     */
-    public void process(DatabaseTable table) {
-        process(table, false);
-    }
-    
-    /**
      * INTERNAL:
-     * Set the foreign key metadata on the table.
+     * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
      */
-    public void process(DatabaseTable table, boolean inverse) {
-        if (inverse) {
-            table.setInverseForeignKeyName(getName());
-            table.setInverseForeignKeyDefinition(getForeignKeyDefinition());
-            table.setInverseDisableForeignKey(disableForeignKey());
-        } else {
-            table.setForeignKeyName(getName());
-            table.setForeignKeyDefinition(getForeignKeyDefinition());
-            table.setDisableForeignKey(disableForeignKey());
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Set the foreign key metadata on the mapping.
-     */
-    public void process(ForeignReferenceMapping mapping) {
-        mapping.setForeignKeyName(getName());
-        mapping.setForeignKeyDefinition(getForeignKeyDefinition());
-        mapping.setDisableForeignKey(disableForeignKey());
+    public ForeignKeyConstraint process() {
+        ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint();
+        foreignKeyConstraint.setName(getName());
+        foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
+        foreignKeyConstraint.setDisableForeignKey(disableForeignKey());
+        return foreignKeyConstraint;
     }
     
     /**

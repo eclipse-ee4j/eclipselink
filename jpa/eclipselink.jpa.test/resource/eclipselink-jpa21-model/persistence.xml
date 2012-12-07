@@ -53,6 +53,28 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Fork</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.ForkUser</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Utensil</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Runner</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.RunnerInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.RunnerStatus</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Shoe</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.ShoeTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Sprinter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Responsibility</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Organizer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Athlete</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
         
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         

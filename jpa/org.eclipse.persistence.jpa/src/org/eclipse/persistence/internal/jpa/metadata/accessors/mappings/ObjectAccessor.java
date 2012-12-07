@@ -57,6 +57,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -697,7 +699,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // Process the primary key foreign key metadata if specified for this
         // accessor.
         if (m_primaryKeyForeignKey != null) {
-            m_primaryKeyForeignKey.process(mapping);
+            getDescriptor().getPrimaryKeyTable().addForeignKeyConstraint(m_primaryKeyForeignKey.process());
         }
     }
     

@@ -10,6 +10,8 @@
  * Contributors:
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
 
@@ -135,7 +137,7 @@ public class RelationalTableMetadata extends TableMetadata {
     @Override
     public void processForeignKey() {
         if (m_foreignKey != null) {
-            m_foreignKey.process(getDatabaseTable());
+            getDatabaseTable().addForeignKeyConstraint(m_foreignKey.process());
         }
     }
     

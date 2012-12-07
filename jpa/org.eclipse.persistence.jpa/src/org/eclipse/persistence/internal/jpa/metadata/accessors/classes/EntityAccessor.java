@@ -97,6 +97,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     11/29/2012-2.5 Guy Pelletier 
  *       - 395406: Fix nightly static weave test errors
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1114,7 +1116,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the primary key foreign key.
         if (m_primaryKeyForeignKey != null) {
-            m_primaryKeyForeignKey.process(getDescriptor().getPrimaryTable());
+            getDescriptor().getPrimaryTable().addForeignKeyConstraint(m_primaryKeyForeignKey.process());
         }
     }
     

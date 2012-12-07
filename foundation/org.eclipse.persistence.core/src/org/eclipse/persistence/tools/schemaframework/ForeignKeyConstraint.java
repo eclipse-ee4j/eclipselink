@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -28,6 +30,9 @@ public class ForeignKeyConstraint implements Serializable {
     protected List<String> targetFields;
     protected String targetTable;
     protected boolean shouldCascadeOnDelete;
+    
+    protected String foreignKeyDefinition;
+    protected boolean disableForeignKey;
 
     public ForeignKeyConstraint() {
         this.name = "";
@@ -59,25 +64,29 @@ public class ForeignKeyConstraint implements Serializable {
      */
     public void appendDBString(Writer writer, AbstractSession session) {
         try {
-            writer.write("FOREIGN KEY (");
-            for (Iterator iterator = getSourceFields().iterator(); iterator.hasNext();) {
-                writer.write((String)iterator.next());
-                if (iterator.hasNext()) {
-                    writer.write(", ");
+            if (hasForeignKeyDefinition()) {
+                writer.write(getForeignKeyDefinition());
+            } else {
+                writer.write("FOREIGN KEY (");
+                for (Iterator iterator = getSourceFields().iterator(); iterator.hasNext();) {
+                    writer.write((String)iterator.next());
+                    if (iterator.hasNext()) {
+                        writer.write(", ");
+                    }
                 }
-            }
-            writer.write(") REFERENCES ");
-            writer.write(getTargetTable());
-            writer.write(" (");
-            for (Iterator iterator = getTargetFields().iterator(); iterator.hasNext();) {
-                writer.write((String)iterator.next());
-                if (iterator.hasNext()) {
-                    writer.write(", ");
+                writer.write(") REFERENCES ");
+                writer.write(getTargetTable());
+                writer.write(" (");
+                for (Iterator iterator = getTargetFields().iterator(); iterator.hasNext();) {
+                    writer.write((String)iterator.next());
+                    if (iterator.hasNext()) {
+                        writer.write(", ");
+                    }
                 }
-            }
-            writer.write(")");
-            if (shouldCascadeOnDelete() && session.getPlatform().supportsDeleteOnCascade()) {
-                writer.write(" ON DELETE CASCADE");
+                writer.write(")");
+                if (shouldCascadeOnDelete() && session.getPlatform().supportsDeleteOnCascade()) {
+                    writer.write(" ON DELETE CASCADE");
+                }
             }
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
@@ -93,6 +102,10 @@ public class ForeignKeyConstraint implements Serializable {
         setShouldCascadeOnDelete(true);
     }
 
+    public boolean disableForeignKey() {
+        return this.disableForeignKey;
+    }
+    
     /**
      * PUBLIC:
      * Disables delete cascading on the database, this is the default.
@@ -101,6 +114,10 @@ public class ForeignKeyConstraint implements Serializable {
         setShouldCascadeOnDelete(false);
     }
 
+    public String getForeignKeyDefinition() {
+        return foreignKeyDefinition;
+    }
+    
     public String getName() {
         return name;
     }
@@ -117,6 +134,22 @@ public class ForeignKeyConstraint implements Serializable {
         return targetTable;
     }
 
+    public boolean hasForeignKeyDefinition() {
+        return foreignKeyDefinition != null;
+    }
+    
+    public boolean isDisableForeignKey() {
+        return disableForeignKey;
+    }
+
+    public void setDisableForeignKey(boolean disableForeignKey) {
+        this.disableForeignKey = disableForeignKey;
+    }
+    
+    public void setForeignKeyDefinition(String foreignKeyDefinition) {
+        this.foreignKeyDefinition = foreignKeyDefinition;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

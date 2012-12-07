@@ -8,16 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     10/25/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/28/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
  *     12/07/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support))
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +25,7 @@ import javax.persistence.Converts;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -57,7 +52,7 @@ import static javax.persistence.InheritanceType.JOINED;
 
 @Entity
 @Inheritance(strategy=JOINED)
-@Table(name="JPA21_RUNNER")
+@Table(name="JPA21_DDL_RUNNER")
 @Converts({
     @Convert(attributeName = "accomplishments.key", converter = AccomplishmentConverter.class),
     @Convert(attributeName = "accomplishments", converter = DateConverter.class),
@@ -80,19 +75,33 @@ public class Runner extends Athlete {
     protected RunnerInfo info;
     
     @OneToMany(mappedBy="runner")
-    @MapKeyJoinColumn(name="TAG_ID")
+    @MapKeyJoinColumn(
+        name="TAG_ID",
+        foreignKey=@ForeignKey(
+            name="Runner_ShoeTag_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (TAG_ID) REFERENCES JPA21_DDL_SHOE_TAG (ID)"      
+        ) 
+    )
     protected Map<ShoeTag, Shoe> shoes;
 
     @ManyToMany
     @JoinTable(
-        name="JPA21_RUNNERS_RACES",
+        name="JPA21_DDL_RUNNERS_RACES",
         joinColumns=@JoinColumn(
             name="RUNNER_ID",
-            referencedColumnName="ID"
+            referencedColumnName="ID",
+            foreignKey=@ForeignKey(
+                name="Runners_Races_Foreign_Key",
+                foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
+            )    
         ),
         inverseJoinColumns=@JoinColumn(
             name="RACE_ID",
-            referencedColumnName="ID"
+            referencedColumnName="ID",
+            foreignKey=@ForeignKey(
+                name="Runners_Races_Inverse_Foreign_Key",
+                foreignKeyDefinition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_DDL_RACE (ID)"      
+            )
         )
     )
     protected List<Race> races;
@@ -101,8 +110,13 @@ public class Runner extends Athlete {
     @Column(name="TIME")
     @MapKeyColumn(name="DISTANCE")
     @CollectionTable(
-        name="JPA21_RUNNER_PBS",
-        joinColumns=@JoinColumn(name="RUNNER_ID")
+        name="JPA21_DDL_RUNNER_PBS",
+        joinColumns=@JoinColumn(
+                name="RUNNER_ID",
+                foreignKey=@ForeignKey(
+                  name="Runner_PBS_Foreign_Key",
+                  foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"
+                ))
     )
     @Converts({
         @Convert(attributeName="key", converter = DistanceConverter.class),

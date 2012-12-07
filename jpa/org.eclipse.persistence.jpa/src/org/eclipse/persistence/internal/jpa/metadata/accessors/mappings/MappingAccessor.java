@@ -83,6 +83,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -1785,10 +1787,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
             if (! fkField.hasTableName()) {
                 fkField.setTable(defaultFKTable);
             }
-        
+            
             fields.put(fkField, pkField);
             allReadOnly = allReadOnly && fkField.isReadOnly();
         }
+        
+        DatabaseTable foreignKeyTable = null;
         
         // Apply the fields to the mapping based on what we found.
         for (DatabaseField fkField : fields.keySet()) {
@@ -1804,14 +1808,22 @@ public abstract class MappingAccessor extends MetadataAccessor {
                 // field to enable the read-only functionality
                 mapping.addTargetForeignKeyField(pkField, fkField);
             }
+            
+            // Set the foreign key table to the first fk's table.
+            if (foreignKeyTable == null) {
+                foreignKeyTable = fkField.getTable();
+            }
         }
         
         // If all the join columns are read-only then set the mapping as read only.
         mapping.setIsReadOnly(allReadOnly);
         
-        // Process the foreign key if one is provided
+        // Process the foreign key if one is provided. Right now this assumes
+        // and supports the foreign keys all being on the same table. It covers
+        // the spec case (on the source table) and our extended support when 
+        // the fk's are on the target table as well.
         if (foreignKey != null) {
-            foreignKey.process(mapping);
+            foreignKeyTable.addForeignKeyConstraint(foreignKey.process());
         }
     }
     

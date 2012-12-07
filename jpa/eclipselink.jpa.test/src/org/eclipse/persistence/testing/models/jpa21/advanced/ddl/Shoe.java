@@ -8,15 +8,14 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -24,7 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="JPA21_SHOE")
+@Table(name="JPA21_DDL_SHOE")
 public class Shoe {
     @Id
     @GeneratedValue
@@ -37,7 +36,13 @@ public class Shoe {
     protected String model;
     
     @ManyToOne
-    @JoinColumn(name="RUNNER_ID")
+    @JoinColumn(
+        name="RUNNER_ID",
+        foreignKey=@ForeignKey(
+            name="Shoes_Runner_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
+        ) 
+    )
     protected Runner runner;
     
     public Shoe() {}

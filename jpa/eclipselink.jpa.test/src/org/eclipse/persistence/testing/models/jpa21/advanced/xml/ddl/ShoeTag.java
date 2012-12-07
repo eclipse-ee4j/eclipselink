@@ -8,25 +8,30 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl;
 
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="JPA21_SPRINTER")
-@PrimaryKeyJoinColumn(
-    name="SPRINTER_ID", 
-    referencedColumnName="ID"
-)
-public class Sprinter extends Runner {
-
-    public Sprinter() {}
+public class ShoeTag {
+    protected Integer id;
+    protected String tag;
     
+    public ShoeTag() {}
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+    
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 }

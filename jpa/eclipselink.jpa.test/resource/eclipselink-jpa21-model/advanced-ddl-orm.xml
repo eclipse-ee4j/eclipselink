@@ -4,6 +4,184 @@
     
     <package>org.eclipse.persistence.testing.models.jpa21.advanced.xml.ddl</package>
     
+    <mapped-superclass class="Athlete">
+        <attributes>
+            <basic name="age"/>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <element-collection name="accomplishments">
+                <map-key-column name="ACCOMPLISHMENT"/>
+                <column name="WHEN"/>
+                <temporal>DATE</temporal>
+                <collection-table  name="JPA21_XML_DDL_RUNNER_ACS">
+                    <join-column name="ATHLETE_ID"/>
+                    <foreign-key name="XMLAccomplistments_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="endorsements">
+                <map-key-join-column name="ENDORSER_ID"/>
+                <map-key-foreign-key name="XMLEndorsements_Key_Foreign_Key" foreign-key-definition="FOREIGN KEY (ENDORSER_ID) REFERENCES JPA_XML_DDL_ENDORSER (ID)"/>
+                <column name="ENDORSEMENT"/>
+                <collection-table name="JPA21_XML_DDL_ENDORSEMENTS">
+                    <join-column name="ATHLETE_ID"/>
+                    <foreign-key name="XMLEndorsements_Foreign_Key" foreign-key-definition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </mapped-superclass>
+    
+    <entity name="XMLRunner" class="Runner">
+        <table name="JPA21_XML_DLL_RUNNER"/>
+        <inheritance strategy="JOINED"/>
+        <convert attribute-name="accomplishments.key" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter"/>
+        <convert attribute-name="accomplishments" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter"/>
+        <convert attribute-name="age" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="gender">
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
+            </basic>
+            <one-to-many name="shoes" mapped-by="runner">
+                <map-key-join-column name="TAG_IG"/>
+                <map-key-foreign-key name="XMLRunner_ShoeTag_Foreign_Key" foreign-key-definition="FOREIGN KEY (TAG_ID) REFERENCES JPA21_XML_DDL_SHOE_TAG (ID)"/>
+            </one-to-many>
+            <many-to-many name="races">
+                <join-table name="DDL_RUNNERS_RACES">
+                    <join-column name="RUNNER_ID" referenced-column-name="ID"/>
+                    <foreign-key name="XMLRunners_Races_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                    <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
+                    <inverse-foreign-key name="XMLRunners_Races_Inverse_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
+                </join-table>
+            </many-to-many>
+            <element-collection name="personalBests">
+                <map-key-convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
+                <map-key-column name="DISTANCE"/>
+                <column name="TIME"/>
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
+                <collection-table name="JPA21_XML_DDL_RUNNER_PBS">
+                    <join-column name="RUNNER_ID"/>
+                    <foreign-key name="XML_Runner_PBS_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="info">
+                <convert attribute-name="level" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
+                <convert attribute-name="health" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
+                <convert attribute-name="status.runningStatus" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter"/>
+            </embedded>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLSprinter" class="Sprinter">
+        <table name="JPA21_XML_DDL_SPRINTER"/>
+        <primary-key-join-column name="SPRINTER_ID" referenced-column-name="ID"/>
+        <primary-key-foreign-key name="XML_Sprinter_Foreign_Key" foreign-key-definition="FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+    </entity>
+    
+    <entity name="XMLShoe" class="Shoe">
+        <table name="JPA21_XML_DDL_SHOE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <many-to-one name="runner">
+                <join-column name="RUNNER_ID"/>
+                <foreign-key name="XMLShoes_Runner_Foreign_Key" foreign-key-definition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLShoeTag" class="ShoeTag">
+        <table name="JPA21_XML_DDL_SHOE_TAG"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLRace" class="Race">
+        <table name="JPA21_XML_DDL_RACE"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="organizers" mapped-by="race">
+                <map-key-convert attribute-name="uniqueIdentifier" disable-conversion="true"/>
+                <map-key-convert attribute-name="description" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter"/>
+            </one-to-many>
+            <many-to-many name="runners" mapped-by="races"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLEndorser" class="Endorser">
+        <table name="JPA21_XML_DDL_ENDORSER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLOrganizer" class="Organizer">
+        <table name="JPA21_XML_DDL_ORGANIZER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <many-to-one name="race">
+                <join-column name="RACE_ID"/>
+                <foreign-key name="XMLOrganizer_Race_Foreign_Key" foreign-key-definition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_XML_DDL_RACE (ID)"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    
+    <embeddable class="RunnerInfo">
+        <attributes>
+            <basic name="level">
+                <column name="R_LEVEL"/>
+            </basic>
+            <basic name="health">
+                <column name="R_HEALTH"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    
+    <embeddable class="RunnerStatus">
+        <attributes>
+            <basic name="runningStatus">
+                <column name="R_STATUS"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    
+    <embeddable class="Responsibility">
+        <attributes>
+            <basic name="uniqueIdentifier"/>
+            <basic name="description"/>
+        </attributes>
+    </embeddable>
+
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter" auto-apply="true"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter"/>
+    <converter class="org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter"/>
+    
     <mapped-superclass class="Utensil">
         <attributes>
             <id name="id">

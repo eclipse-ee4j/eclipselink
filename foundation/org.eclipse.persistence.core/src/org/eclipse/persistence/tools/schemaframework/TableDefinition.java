@@ -15,6 +15,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -57,9 +59,11 @@ public class TableDefinition extends DatabaseObjectDefinition {
     private String tenantFieldName;
     //holds onto the name and delimiting info.
     protected DatabaseTable table;
+    protected boolean hasUserDefinedForeignKeyConstraints;
 
     public TableDefinition() {
         createVPDCalls = false;
+        hasUserDefinedForeignKeyConstraints = false;
         this.fields = new ArrayList<FieldDefinition>();
         this.indexes = new ArrayList<IndexDefinition>();
         this.foreignKeyMap = new HashMap<String, ForeignKeyConstraint>();
@@ -171,8 +175,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * If there is a same name foreign key constraint already, nothing will happen.
      */
     public void addForeignKeyConstraint(ForeignKeyConstraint foreignKey) {
-        if (!foreignKeyMap.containsKey(foreignKey.getName())) {
-            foreignKeyMap.put(foreignKey.getName(), foreignKey);
+        if (! hasUserDefinedForeignKeyConstraints) {
+            if (!foreignKeyMap.containsKey(foreignKey.getName())) {
+                foreignKeyMap.put(foreignKey.getName(), foreignKey);
+            }
         }
     }
     
@@ -250,19 +256,22 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This is done separately from the create because of dependencies.
      */
     public Writer buildConstraintCreationWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
-        try {
-            writer.write("ALTER TABLE " + getFullName());
-            writer.write(" ADD CONSTRAINT ");
-            if (!session.getPlatform().shouldPrintConstraintNameAfter()) {
-                writer.write(foreignKey.getName() + " ");
+        if (! foreignKey.disableForeignKey()) {
+            try {
+                writer.write("ALTER TABLE " + getFullName());
+                writer.write(" ADD CONSTRAINT ");
+                if (!session.getPlatform().shouldPrintConstraintNameAfter()) {
+                    writer.write(foreignKey.getName() + " ");
+                }
+                foreignKey.appendDBString(writer, session);
+                if (session.getPlatform().shouldPrintConstraintNameAfter()) {
+                    writer.write(" CONSTRAINT " + foreignKey.getName());
+                }
+            } catch (IOException ioException) {
+                throw ValidationException.fileError(ioException);
             }
-            foreignKey.appendDBString(writer, session);
-            if (session.getPlatform().shouldPrintConstraintNameAfter()) {
-                writer.write(" CONSTRAINT " + foreignKey.getName());
-            }
-        } catch (IOException ioException) {
-            throw ValidationException.fileError(ioException);
         }
+        
         return writer;
     }
 
@@ -1167,6 +1176,15 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public void setUniqueKeys(List<UniqueKeyConstraint> uniqueKeys) {
         this.uniqueKeys = uniqueKeys;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the foreign key constraints for this table.
+     */
+    public void setUserDefinedForeignKeyConstraints(Map<String, ForeignKeyConstraint> foreignKeyConstraints) {
+        foreignKeyMap = foreignKeyConstraints;
+        hasUserDefinedForeignKeyConstraints = true;
     }
     
     /**

@@ -14,6 +14,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/22/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -25,6 +27,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.IndexDefinition;
 
 /**
@@ -42,13 +45,7 @@ public class DatabaseTable implements Cloneable, Serializable {
     protected String qualifiedName;
     
     /** JPA 2.1 Foreign key specification data */
-    protected String foreignKeyDefinition;
-    protected String foreignKeyName;
-    protected boolean disableForeignKey;
-    
-    protected String inverseForeignKeyDefinition;
-    protected String inverseForeignKeyName;
-    protected boolean inverseDisableForeignKey;
+    protected Map<String, ForeignKeyConstraint> foreignKeyConstraints;
     
     /**
      * Contains the user specified unique constraints. JPA 2.0 introduced 
@@ -97,6 +94,14 @@ public class DatabaseTable implements Cloneable, Serializable {
         this.useDelimiters = useDelimiters;
     }
 
+    public void addForeignKeyConstraint(ForeignKeyConstraint foreignKeyConstraint) {
+        if (foreignKeyConstraints == null) {
+            foreignKeyConstraints = new HashMap<String, ForeignKeyConstraint>();
+        }
+        
+        foreignKeyConstraints.put(foreignKeyConstraint.getName(), foreignKeyConstraint);
+    }
+    
     /**
      * Add an index definition to this table.
      */
@@ -173,7 +178,26 @@ public class DatabaseTable implements Cloneable, Serializable {
      */
     public String getCreationSuffix() {
         return creationSuffix;
-   }
+    }
+    
+    public ForeignKeyConstraint getForeignKeyConstraint(String name) {
+        return foreignKeyConstraints.get(name);
+    }
+    
+    public Map<String, ForeignKeyConstraint> getForeignKeyConstraints() {
+        return foreignKeyConstraints;
+    }
+
+    /**
+     * Return a list of index definitions.
+     * Used for DDL generation.
+     */
+    public List<IndexDefinition> getIndexes() {
+        if (this.indexes == null) {
+            this.indexes = new ArrayList<IndexDefinition>();
+        }
+        return this.indexes;
+    }
 
     /** 
      * Get method for table name.
@@ -243,19 +267,19 @@ public class DatabaseTable implements Cloneable, Serializable {
         return (this.uniqueConstraints != null) && (!this.uniqueConstraints.isEmpty());
     }
     
-    public boolean hasIndexes() {
-        return (this.indexes != null) && (!this.indexes.isEmpty());
+    public boolean hasForeignKeyConstraints() {
+        return foreignKeyConstraints != null;
     }
     
-    /**
-     * Return a list of index definitions.
-     * Used for DDL generation.
+    /** 
+     * Return the hashcode of the name, because it is fairly unique.
      */
-    public List<IndexDefinition> getIndexes() {
-        if (this.indexes == null) {
-            this.indexes = new ArrayList<IndexDefinition>();
-        }
-        return this.indexes;
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+    public boolean hasIndexes() {
+        return (this.indexes != null) && (!this.indexes.isEmpty());
     }
     
     /**
@@ -267,13 +291,6 @@ public class DatabaseTable implements Cloneable, Serializable {
             this.uniqueConstraints = new HashMap<String, List<List<String>>>();
         }
         return this.uniqueConstraints;
-    }
-
-    /** 
-     * Return the hashcode of the name, because it is fairly unique.
-     */
-    public int hashCode() {
-        return getName().hashCode();
     }
 
     /**
@@ -392,53 +409,5 @@ public class DatabaseTable implements Cloneable, Serializable {
     
     public boolean shouldUseDelimiters() {
         return useDelimiters;
-    }
-    
-    public String getForeignKeyDefinition() {
-        return foreignKeyDefinition;
-    }
-
-    public void setForeignKeyDefinition(String foreignKeyDefinition) {
-        this.foreignKeyDefinition = foreignKeyDefinition;
-    }
-
-    public String getForeignKeyName() {
-        return foreignKeyName;
-    }
-
-    public void setForeignKeyName(String foreignKeyName) {
-        this.foreignKeyName = foreignKeyName;
-    }
-
-    public boolean isDisableForeignKey() {
-        return disableForeignKey;
-    }
-
-    public void setDisableForeignKey(boolean disableForeignKey) {
-        this.disableForeignKey = disableForeignKey;
-    }
-
-    public String getInverseForeignKeyDefinition() {
-        return inverseForeignKeyDefinition;
-    }
-
-    public void setInverseForeignKeyDefinition(String inverseForeignKeyDefinition) {
-        this.inverseForeignKeyDefinition = inverseForeignKeyDefinition;
-    }
-
-    public String getInverseForeignKeyName() {
-        return inverseForeignKeyName;
-    }
-
-    public void setInverseForeignKeyName(String inverseForeignKeyName) {
-        this.inverseForeignKeyName = inverseForeignKeyName;
-    }
-
-    public boolean isInverseDisableForeignKey() {
-        return inverseDisableForeignKey;
-    }
-
-    public void setInverseDisableForeignKey(boolean inverseDisableForeignKey) {
-        this.inverseDisableForeignKey = inverseDisableForeignKey;
     }
 }

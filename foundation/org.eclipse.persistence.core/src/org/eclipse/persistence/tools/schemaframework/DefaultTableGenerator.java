@@ -22,6 +22,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -709,6 +711,12 @@ public class DefaultTableGenerator {
             if (databaseTable.getCreationSuffix() !=null){
                 tableDefinition.setCreationSuffix(databaseTable.getCreationSuffix());
             }
+            
+            // Add the foreign key constraints that were set on the table.
+            if (databaseTable.hasForeignKeyConstraints()) {
+                tableDefinition.setUserDefinedForeignKeyConstraints(databaseTable.getForeignKeyConstraints());
+            }
+            
             tableMap.put(databaseTable.getName(), tableDefinition);
         }
 
