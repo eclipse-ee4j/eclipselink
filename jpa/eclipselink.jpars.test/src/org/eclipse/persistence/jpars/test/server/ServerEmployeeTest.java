@@ -75,6 +75,7 @@ public class ServerEmployeeTest {
      */
     @AfterClass
     public static void tearDown() {
+        cleanResources();
     }
 
 
@@ -83,6 +84,10 @@ public class ServerEmployeeTest {
      */
     @After
     public void cleanup() {
+        cleanResources();
+    }
+
+    public static void cleanResources() {
         if (context != null) {
             if (context.getEmf() != null) {
                 EntityManager em = context.getEmf().createEntityManager();
@@ -90,7 +95,7 @@ public class ServerEmployeeTest {
                     em.getTransaction().begin();
                     em.createQuery("delete from EmployeeAddress a").executeUpdate();
                     em.createQuery("delete from PhoneNumber b").executeUpdate();
-                    //em.createQuery("delete from Project c").executeUpdate();
+                    em.createQuery("delete from Project c").executeUpdate();
                     em.createQuery("delete from LargeProject c").executeUpdate();
                     em.createQuery("delete from SmallProject d").executeUpdate();
                     em.createQuery("delete from Employee e").executeUpdate();
@@ -259,6 +264,39 @@ public class ServerEmployeeTest {
     public void testExecuteSingleResultQueryJSON() throws IOException, RestCallFailedException, URISyntaxException {
         executeSingleResultQuery(MediaType.APPLICATION_JSON_TYPE);
     }
+
+    @Test
+    public void testReadEmployeeWithResponsibilitiesXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+        readEmployeeWithResponsibilities(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    @Test
+    public void testReadEmployeeWithResponsibilitiesJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+        readEmployeeWithResponsibilities(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    private void readEmployeeWithResponsibilities(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(1002);
+        employee.setFirstName("Miles");
+        employee.setLastName("Davis");
+
+        employee.addResponsibility("team lead");
+        employee.addResponsibility("standard lead");
+        employee.addResponsibility("er team member");
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        employee = RestUtils.restRead(context, new Integer(1002), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
+        assertNotNull(employee.getResponsibilities());
+        assertTrue(employee.getResponsibilities().size() == 3);
+
+        // delete employee
+        RestUtils.restDelete(new Integer(1002), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
 
     @SuppressWarnings("unused")
     private void executeNamedQueryWithBinaryData(MediaType mediaType) throws URISyntaxException, IOException {
@@ -463,27 +501,52 @@ public class ServerEmployeeTest {
         employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
-        // create a phone number
+        // create a cell phone number for this employee
         PhoneNumber cell = new PhoneNumber();
         cell.setId(employee.getId());
         cell.setNumber("123-123 1234");
         cell.setType("cell");
         cell.setEmployee(employee);
-
         cell = RestUtils.restCreate(context, cell, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Phone number create failed.", cell);
+        assertTrue("123-123 1234".equals(cell.getNumber()));
 
-        // read cell phone number and verify that it belongs to the right employee 
-        Object cellId = new String(employee.getId() + "+" + cell.getType());
-        cell = RestUtils.restRead(context, cellId, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType);
-        assertNotNull("Phone Number read failed.", cell);
-        assertNotNull("Phone number does not have employee.", cell.getEmployee());
-        assertTrue("Phone Number has wrong employee id", cell.getEmployee().getId() == employee.getId());
+        // update employee with cell number
+        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", cell, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
 
-        // delete phone number
-        RestUtils.restDelete(cellId, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, null, mediaType);
+        // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90909+cell";
+        assertTrue(result.contains(cellLinkHref));
 
-        // delete employee
+        // create a work phone number
+        PhoneNumber workPhone = new PhoneNumber();
+        workPhone.setId(employee.getId());
+        workPhone.setNumber("987-654 1234");
+        workPhone.setType("work");
+        workPhone.setEmployee(employee);
+        workPhone = RestUtils.restCreate(context, workPhone, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", workPhone);
+        assertTrue("987-654 1234".equals(workPhone.getNumber()));
+
+        // update employee with work phone number
+        result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", workPhone, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
+        // make sure that response from restUpdateBidirectionalRelationship contains work phone number AND cell number in employee object
+        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90909+work";
+        assertTrue(result.contains(workPhoneLinkHref));
+        assertTrue(result.contains(cellLinkHref));
+
+        // read employee with phone numbers
+        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(90909), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
+        // make sure employee has 2 phone numbers 
+        assertTrue(employeeWithPhoneNumbers.contains(workPhoneLinkHref));
+        assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
+
+        // delete employee (cascade deletes phone numbers)
         RestUtils.restDelete(new Integer(90909), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
