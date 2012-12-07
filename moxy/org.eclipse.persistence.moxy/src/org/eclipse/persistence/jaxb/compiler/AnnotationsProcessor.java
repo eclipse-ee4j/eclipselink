@@ -1568,7 +1568,7 @@ public class AnnotationsProcessor {
             property.setNillable(element.nillable());
             if (element.type() != XmlElement.DEFAULT.class && !(property.isSwaAttachmentRef())) {
                 property.setOriginalType(property.getType());
-                if (helper.isCollectionType(property.getType())) {
+                if (helper.isCollectionType(property.getType()) || property.getType().isArray()) {
                     property.setGenericType(helper.getJavaClass(element.type()));
                 } else {
                     property.setType(helper.getJavaClass(element.type()));
