@@ -35,10 +35,16 @@ public abstract class CoreInheritancePolicy<
 
     /**
      * INTERNAL:
+     * Add the class name reference by class name, used by the MW.
+     */
+    public abstract void addClassNameIndicator(String childClassName, Object typeValue);
+
+    /**
+     * INTERNAL:
      * This method is invoked only for the abstract descriptors.
      */
     public abstract Class classFromRow(ABSTRACT_RECORD record, ABSTRACT_SESSION session);
-
+    
     /**
      * INTERNAL:
      * Returns all the child descriptors, even descriptors for subclasses of
@@ -52,7 +58,7 @@ public abstract class CoreInheritancePolicy<
      * Returns field that the class type indicator is store when using inheritance.
      */
     public abstract FIELD getClassIndicatorField();
-    
+
     /**
      * PUBLIC:
      * Return the class indicator field name.
@@ -68,10 +74,16 @@ public abstract class CoreInheritancePolicy<
 
     /**
      * INTERNAL:
+     * Return the mapping from class name to indicator, used by MW.
+     */
+    public abstract Map getClassNameIndicatorMapping();
+    
+    /**
+     * INTERNAL:
      * Returns the descriptor which the policy belongs to.
      */
     public abstract DESCRIPTOR getDescriptor();
-
+    
     /**
      * PUBLIC:
      * Return the parent class.
@@ -88,6 +100,16 @@ public abstract class CoreInheritancePolicy<
      * Return whether or not is root parent descriptor
      */
     public abstract boolean isRootParentDescriptor();
+    
+    /**
+     * ADVANCED:
+     * Set the class extractor class name. At descriptor initialize time this
+     * class will be converted to a Class and set as the ClassExtractor. This
+     * method is called from JPA.
+     * 
+     * @see setClassExtractor for more information on the ClassExtractor class.
+     */
+    public abstract void setClassExtractorName(String classExtractorName);
     
     /**
      * ADVANCED:
@@ -108,4 +130,20 @@ public abstract class CoreInheritancePolicy<
      * Set the descriptor.
      */
     public abstract void setDescriptor(DESCRIPTOR descriptor);
+    
+
+    /**
+     * INTERNAL:
+     * Set the parent class name, used by MW to avoid referencing the real class for
+     * deployment XML generation.
+     */
+    public abstract void setParentClassName(String parentClassName);
+    
+    /**
+     * INTERNAL:
+     * Set the descriptor to read instance of itself and its subclasses when queried.
+     * This is used with inheritance to configure the result of queries.
+     * By default this is true for root inheritance descriptors, and false for all others.
+     */
+    public abstract void setShouldReadSubclasses(Boolean shouldReadSubclasses);
 }

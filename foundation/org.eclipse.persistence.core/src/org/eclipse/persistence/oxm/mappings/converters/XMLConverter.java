@@ -17,7 +17,6 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 
-
 /**
  * <p><b>Purpose</b>: Conversion interface to allow conversion between object and data types.
  * This can be used in any mapping to convert between the object and data types without requiring code

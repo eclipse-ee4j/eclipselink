@@ -89,6 +89,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
@@ -1859,7 +1860,7 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
             XmlPath xmlPath = (XmlPath) helper.getAnnotation(javaHasAnnotations, XmlPath.class);
             property.setXmlPath(xmlPath.value()); 
-            XMLField tempField = new XMLField(xmlPath.value());
+            Field tempField = new XMLField(xmlPath.value());
             boolean isAttribute = tempField.getLastXPathFragment().isAttribute();
             property.setIsAttribute(isAttribute);
             // set schema name

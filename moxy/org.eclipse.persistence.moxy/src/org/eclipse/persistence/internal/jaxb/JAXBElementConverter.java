@@ -16,37 +16,38 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.sessions.Session;
 
 public class JAXBElementConverter implements XMLConverter {
 
     private XPathFragment rootFragment;
-    private XMLField associatedField;
-    private DatabaseMapping mapping;
-    private Converter nestedConverter;
+    private Field associatedField;
+    private CoreMapping mapping;
+    private CoreConverter nestedConverter;
     private Class declaredType;
     private Class scope;
 
-    public JAXBElementConverter(XMLField associatedField, Class declaredType, Class scope) {
+    public JAXBElementConverter(Field associatedField, Class declaredType, Class scope) {
         this.associatedField = associatedField;
         this.declaredType = declaredType;
         this.scope = scope;
     }
 
-    public Converter getNestedConverter() {
+    public CoreConverter getNestedConverter() {
         return nestedConverter;
     }
 
-    public void setNestedConverter(Converter nestedConverter) {
+    public void setNestedConverter(CoreConverter nestedConverter) {
         this.nestedConverter = nestedConverter;
     }
 
@@ -101,7 +102,7 @@ public class JAXBElementConverter implements XMLConverter {
         return objectValue;
     }
 
-    public void initialize(DatabaseMapping mapping, Session session) {
+     public void initialize(DatabaseMapping mapping, Session session) {
         if(null != nestedConverter) {
             nestedConverter.initialize(mapping, session);
         }

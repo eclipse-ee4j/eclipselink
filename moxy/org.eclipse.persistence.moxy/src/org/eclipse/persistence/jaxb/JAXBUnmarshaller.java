@@ -52,15 +52,15 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -233,7 +233,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // to == the root element - here we need to create a JAXBElement
         // instance using information from the returned object
         org.eclipse.persistence.sessions.Session sess = xmlUnmarshaller.getXMLContext().getSession(obj);
-        XMLDescriptor desc = (XMLDescriptor) sess.getClassDescriptor(obj);
+        Descriptor desc = (Descriptor) sess.getClassDescriptor(obj);
 
         // here we are assuming that if we've gotten this far, there
         // must be a default root element set on the descriptor.  if
@@ -460,14 +460,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
      */
     public JAXBElement unmarshal(XMLStreamReader streamReader, TypeMappingInfo type) throws JAXBException {
         try {
-            XMLDescriptor xmlDescriptor = type.getXmlDescriptor();
+            Descriptor xmlDescriptor = type.getXmlDescriptor();
 
             if (type.getType() instanceof Class) {
                 Class javaClass = (Class) type.getType();
                 Class componentClass = javaClass.getComponentType();
                 if (javaClass.isArray() && javaClass != ClassConstants.APBYTE && javaClass != ClassConstants.ABYTE && XMLConversionManager.getDefaultJavaTypes().get(componentClass) != null) {
                     // Top-level array.  Descriptor will be for an EL-generated class, containing one DirectCollection mapping.
-                    XMLCompositeDirectCollectionMapping mapping = (XMLCompositeDirectCollectionMapping) xmlDescriptor.getMappings().get(0);
+                    DirectCollectionMapping mapping = (DirectCollectionMapping) xmlDescriptor.getMappings().get(0);
 
                     XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                     staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());

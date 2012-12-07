@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.mappings;
 
+import java.util.Map;
+
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
@@ -85,9 +87,49 @@ public interface Mapping<
      */
     public abstract boolean isTransformationMapping();
 
+    /**
+     * ADVANCED:
+     * Set the attributeAccessor.
+     * The attribute accessor is responsible for setting and retrieving the attribute value
+     * from the object for this mapping.
+     * This can be set to an implementor of AttributeAccessor if the attribute
+     * requires advanced conversion of the mapping value, or a real attribute does not exist.
+     */    
+    public void setAttributeAccessor(ATTRIBUTE_ACCESSOR attributeAccessor);
+    
+    
+    /**
+     * Sets the name of the attribute in the mapping.
+     */    
+    public void setAttributeName(String attributeName);
+    
     public void setAttributeValueInObject(Object object, Object value);
 
     public void writeSingleValue(Object value, Object object, XML_RECORD record, ABSTRACT_SESSION session);
+    /**
+     * This method is invoked reflectively on the reference object to return the value of the
+     * attribute in the object. This method sets the name of the getMethodName.
+     */
+    public void setGetMethodName(String methodName);
+    
+    /**
+     * Set this mapping to be read only.
+     * Read-only mappings can be used if two attributes map to the same field.
+     * Read-only mappings cannot be used for the primary key or other required fields.
+     */
+    public void setIsReadOnly(boolean aBoolean);
+    
 
+    
+    /**
+     * INTERNAL:
+     * Allow user defined properties.
+     */
+    public void setProperties(Map properties);
+    
+    /**
+     * Set the methodName used to set the value for the mapping's attribute into the object.
+     */
+    public void setSetMethodName(String methodName);
 
 }

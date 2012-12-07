@@ -16,9 +16,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 
@@ -28,14 +29,14 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 */
 public class MapValueAttributeAccessor extends AttributeAccessor {
 
-    private AttributeAccessor nestedAccessor;
+    private CoreAttributeAccessor nestedAccessor;
     private String mapClassName;
     private Class mapClass;
-    private ContainerPolicy containerPolicy;
+    private CoreContainerPolicy containerPolicy;
     private Class generatedEntryClass;
     private ClassLoader classLoader;
     
-    public MapValueAttributeAccessor(AttributeAccessor nestedAccessor, ContainerPolicy cp, Class generatedEntryClass, String mapClassName, ClassLoader classLoader) {
+    public MapValueAttributeAccessor(CoreAttributeAccessor nestedAccessor, CoreContainerPolicy cp, Class generatedEntryClass, String mapClassName, ClassLoader classLoader) {
         this.nestedAccessor = nestedAccessor;
         this.mapClassName = mapClassName;
         this.containerPolicy = cp;

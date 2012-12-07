@@ -19,6 +19,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.Property;
@@ -69,7 +70,7 @@ public class PropertyTypeTestCases extends JAXBWithJSONTestCases {
         JaxbClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
         Generator generator = new Generator(new JavaModelInputImpl(new Class[] { TestObject.class }, new JavaModelImpl(this.classLoader)));
 
-        Project proj = generator.generateProject();
+        CoreProject proj = generator.generateProject();
         TypeInfo info = generator.getAnnotationsProcessor().getTypeInfo().get("org.eclipse.persistence.testing.jaxb.annotations.TestObject");
 
         Property booleanProp = info.getProperties().get("booleanTest");

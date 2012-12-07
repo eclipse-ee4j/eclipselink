@@ -147,5 +147,5 @@ public abstract class CoreDescriptor<
      * @see #addPrimaryKeyFieldName(String)
      */
     public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields);
-
+      
 }

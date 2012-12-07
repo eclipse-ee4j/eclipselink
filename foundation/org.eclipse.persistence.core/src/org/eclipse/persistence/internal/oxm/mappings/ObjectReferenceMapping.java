@@ -33,6 +33,13 @@ public interface ObjectReferenceMapping<
     XML_FIELD extends Field,
     XML_RECORD extends XMLRecord
     > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
+    /**
+     * Add a source-target xpath pair to the map.
+     * 
+     * @param srcXPath
+     * @param tgtXPath
+     */
+    public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
 
     public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
 
@@ -48,5 +55,8 @@ public interface ObjectReferenceMapping<
      * Return a list of source-target xmlfield pairs.
      */
     public Map getSourceToTargetKeyFieldAssociations();
-
+    
+    public void setIsWriteOnly(boolean b);
+    
+    public void setReferenceClassName(String aClassName);
 }

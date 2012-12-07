@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.core.mappings;
 
+import org.eclipse.persistence.exceptions.DescriptorException;
+
 public interface CoreAttributeAccessor {
 
     /**
@@ -19,12 +21,26 @@ public interface CoreAttributeAccessor {
      */
     public abstract Object getAttributeValueFromObject(Object object);
 
+    /**
+     * Allow any initialization to be performed with the descriptor class.
+     */
+    public void initializeAttributes(Class descriptorClass) throws DescriptorException;
+
     public abstract boolean isInstanceVariableAttributeAccessor();
+    
+    public boolean isMethodAttributeAccessor();
 
     /**
      * Set the attribute value into the object.
      */
     public void setAttributeValueInObject(Object object, Object value);
-
+    
+    /**
+     * INTERNAL
+     * @param aBoolean
+     */
+    public void setIsReadOnly(boolean aBoolean);
+    
+    public void setIsWriteOnly(boolean aBoolean);
 
 }

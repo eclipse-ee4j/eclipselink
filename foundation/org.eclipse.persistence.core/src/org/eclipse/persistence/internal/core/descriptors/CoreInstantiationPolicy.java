@@ -19,4 +19,5 @@ public abstract class CoreInstantiationPolicy {
      */
     public abstract Object buildNewInstance();
 
+    public abstract void useFactoryInstantiationPolicy(String factoryClassName, String methodName);
 }

@@ -30,5 +30,21 @@ public interface AnyAttributeMapping<
     public boolean isNamespaceDeclarationIncluded();
 
     public boolean isSchemaInstanceIncluded();
-
+    
+    public void setField(FIELD field);
+    
+    public void setIsWriteOnly(boolean b);
+    
+    public void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded);
+    
+    public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded);
+    
+    /**
+     * INTERNAL:
+     * Indicates the name of the Map class to be used.
+     *
+     * @param concreteMapClassName
+     */
+    public void useMapClassName(String concreteMapClassName);
 }
+    

@@ -20,12 +20,12 @@ import java.util.Map;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
 
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
@@ -61,7 +61,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
  */
 
 public class TypeInfo {
-    private XMLDescriptor descriptor;
+    private Descriptor descriptor;
     private String javaClassName;
     private ComplexType complexType;
     private boolean hasRootElement;
@@ -144,7 +144,7 @@ public class TypeInfo {
      * 
      * @return the XmlDescriptor set on this TypeInfo, or null if none
      */
-    public XMLDescriptor getDescriptor() {
+    public Descriptor getDescriptor() {
         return descriptor;
     }
 
@@ -153,7 +153,7 @@ public class TypeInfo {
      * 
      * @param desc
      */
-    public void setDescriptor(XMLDescriptor desc) {
+    public void setDescriptor(Descriptor desc) {
     	descriptor = desc;
     }
 

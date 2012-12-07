@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.jaxb;
 
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 

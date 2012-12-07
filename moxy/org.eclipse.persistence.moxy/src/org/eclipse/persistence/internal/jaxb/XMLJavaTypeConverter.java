@@ -15,23 +15,24 @@ package org.eclipse.persistence.internal.jaxb;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
+
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Session;
 
 import java.lang.reflect.Method;
@@ -51,7 +52,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     protected XmlAdapter xmlAdapter;
     protected QName schemaType;
     protected DatabaseMapping mapping;
-    protected Converter nestedConverter;
+    protected CoreConverter nestedConverter;
 
     /**
      * The default constructor.  This constructor should be used
@@ -134,7 +135,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 toConvert = nestedConverter.convertDataValueToObjectValue(toConvert, session);
             } else {
                 if ((dataValue != null) && !(dataValue.getClass() == this.valueType)) {
-                    if (this.mapping instanceof XMLBinaryDataMapping) {
+                    if (this.mapping instanceof BinaryDataMapping) {
                         toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session);
                     } else {
                         if (getSchemaType() != null) {
@@ -311,7 +312,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     /**
      * Get the nested converter to that is used in conjunction with the adapter.
      */
-    public Converter getNestedConverter() {
+    public CoreConverter getNestedConverter() {
         return nestedConverter;
     }
 
@@ -320,7 +321,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      * the nested converter is invoked after the adapter. On umarshal it is invoked before.
      * Primarily used to support enumerations with adapters. 
      */
-    public void setNestedConverter(Converter nestedConverter) {
+    public void setNestedConverter(CoreConverter nestedConverter) {
         this.nestedConverter = nestedConverter;
     }    
 }

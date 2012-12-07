@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -25,6 +26,7 @@ public interface CompositeObjectMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
+    CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
@@ -41,6 +43,22 @@ public interface CompositeObjectMapping<
 
     public boolean hasConverter();
 
+    public void setConverter(CONVERTER converter);
+    
+    public void setIsWriteOnly(boolean b);
+
+    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
+    
+    /**
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
+     */
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
+    
+    public void setReferenceClassName(String aClassName);
+    
     public void setXPath(String string);
 
 }

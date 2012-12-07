@@ -67,7 +67,7 @@ import org.eclipse.persistence.queries.DoesExistQuery;
  *
  * @see org.eclipse.persistence.oxm.mappings
  */
-public class XMLDescriptor extends ClassDescriptor implements Descriptor<DatabaseMapping, DatabaseField, InheritancePolicy, InstantiationPolicy, ObjectBuilder>{
+public class XMLDescriptor extends ClassDescriptor implements Descriptor<DatabaseMapping, DatabaseField, InheritancePolicy, InstantiationPolicy, ObjectBuilder, AttributeAccessor>{
 
     private static final Vector EMPTY_VECTOR = NonSynchronizedVector.newInstance(1);
 

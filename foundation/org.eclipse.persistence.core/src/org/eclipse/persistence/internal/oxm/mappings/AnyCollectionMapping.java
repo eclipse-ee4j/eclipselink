@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -24,6 +25,7 @@ public interface AnyCollectionMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
+    CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
@@ -36,8 +38,28 @@ public interface AnyCollectionMapping<
 
     public boolean isWhitespacePreservedForMixedContent();
 
+    public void setConverter(CONVERTER conv);
+
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
 
+    public void setField(FIELD field);
+    
+    public void setIsWriteOnly(boolean b);
+        
+    public void setMixedContent(boolean mixed);
+    
+    public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace);
+    
+    public void setUseXMLRoot(boolean useXMLRoot);
+    
+    /**
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects.
+     * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
+     * <p>jdk1.1.x: The container class must be a subclass of Vector.
+     */
+    public void useCollectionClass(Class concreteContainerClass);
+    
     public boolean usesXMLRoot();
 
 }

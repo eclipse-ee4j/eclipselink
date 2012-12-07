@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.schema.model.All;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
@@ -1549,7 +1550,7 @@ public class SchemaGenerator {
             return null;
         }
         // create the XPathFragment(s) for the path
-        XMLField xfld = new XMLField(property.getXmlPath());
+        Field xfld = new XMLField(property.getXmlPath());
         xfld.setNamespaceResolver(schema.getNamespaceResolver());
         xfld.initialize();
         AddToSchemaResult result = new AddToSchemaResult(compositor, schema);
@@ -2200,7 +2201,7 @@ public class SchemaGenerator {
     private void addXmlJoinNodesToSchema(Property property, TypeDefParticle compositor, Schema schema, ComplexType type) {
         for (XmlJoinNode xmlJoinNode : property.getXmlJoinNodes().getXmlJoinNode()) {
             // create the XPathFragment(s) for the path
-            XMLField xfld = new XMLField(xmlJoinNode.getXmlPath());
+            Field xfld = new XMLField(xmlJoinNode.getXmlPath());
             xfld.setNamespaceResolver(schema.getNamespaceResolver());
             xfld.initialize();
             

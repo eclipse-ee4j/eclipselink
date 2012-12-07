@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -76,7 +77,7 @@ import org.eclipse.persistence.sessions.Session;
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
  *  @since   TopLink 11.1.1.0.0g
  */
-public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, XMLRecord> {
+public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, XMLRecord> {
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;

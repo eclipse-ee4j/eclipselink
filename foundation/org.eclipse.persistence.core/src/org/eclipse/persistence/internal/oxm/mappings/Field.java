@@ -96,6 +96,9 @@ public interface Field extends CoreField{
       */
      public boolean hasLastXPathFragment();
      
+     
+     public void initialize();
+    	
      /**
      * INTERNAL:
      * @return
@@ -138,11 +141,18 @@ public interface Field extends CoreField{
       */
       public boolean isUnionField();
     
+  /**
+    * INTERNAL:
+    *@param CDATA
+    */
+    public void setIsCDATA(boolean CDATA);
+    
     /**
-	     * INTERNAL:
-	     * @param CDATA
-	     */
-	    public void setIsCDATA(boolean CDATA);
+      * Set if the field is a typed text field
+      * True when we should base conversions on the "type" attribute on elements
+      * @param value The boolean value specifiy if  this is a typed text field
+      */
+     public void setIsTypedTextField(boolean value);
     
     /**
      * Set the NamespaceResolver associated with this XMLField
@@ -151,21 +161,35 @@ public interface Field extends CoreField{
      */
     public void setNamespaceResolver(NamespaceResolver newNamespaceResolver);
     
-    /**
-    * PUBLIC:
+   /**
+  * Set whether this XMLField represents a "required" XML element or attribute
+  * ([minOccurs="1"] for elements, [use="required"] for attributes).  NOTE: This
+  * API is used only for Schema Generation.
+  * 
+  * @see org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator
+  */
+ public void setRequired(boolean isRequired);
+	
+	/**
+      * Sets the schematype associated with this XMLField
+      * This is an optional setting; when set the schema type will be used to format the XML appropriately
+      * @param value QName to be added to the list of schema types
+      */
+     public void setSchemaType(QName value);
+     
+     /**
     * Sets whether the mapping uses a single node.
     * @param usesSingleNode True if the items in the collection are in a single node or false if each of the items in the collection is in its own node
     */
     public void setUsesSingleNode(boolean usesSingleNode);
-    
-   /**
- * Set the xpath statment for this XMLField.
- * @param xPath The xpath statement to be associated with this XMLField
- */
-public void setXPath(String xPath);
-	
-	/**
-     * PUBLIC:
+     
+     /**
+	    * Set the xpath statment for this XMLField.
+	    * @param xPath The xpath statement to be associated with this XMLField
+	    */
+	    public void setXPath(String xPath);
+     
+     /**
      * Checks whether the mapping uses a single node.
      *
      * @return True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.

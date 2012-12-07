@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -34,7 +36,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
 
@@ -182,9 +183,9 @@ public class Generator {
         return annotationsProcessor.addClass(javaClass);
     }
 
-    public Project generateProject() throws Exception {
+    public CoreProject generateProject() throws Exception {
         mappingsGenerator.getClassToGeneratedClasses().putAll(annotationsProcessor.getArrayClassesToGeneratedClasses());
-        Project p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
+        CoreProject p = mappingsGenerator.generateProject(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getLocalElements(), annotationsProcessor.getTypeMappingInfoToGeneratedClasses(), annotationsProcessor.getTypeMappingInfoToAdapterClasses(),annotationsProcessor.isDefaultNamespaceAllowed());
         annotationsProcessor.getArrayClassesToGeneratedClasses().putAll(mappingsGenerator.getClassToGeneratedClasses());
         return p;
     }
@@ -199,10 +200,10 @@ public class Generator {
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
 
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses());
-        Project proj = new SchemaModelProject();
-        XMLContext context = new XMLContext(proj);
+        CoreProject proj = new SchemaModelProject();
+        XMLContext context = new XMLContext((Project)proj);
         XMLMarshaller marshaller = context.createMarshaller();
-        XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
+        Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
         for(Schema schema : schemas) {
@@ -220,11 +221,11 @@ public class Generator {
         processAdditionalElements(additionalGlobalElements, annotationsProcessor);
         
         schemaGenerator.generateSchema(annotationsProcessor.getTypeInfoClasses(), annotationsProcessor.getTypeInfo(), annotationsProcessor.getUserDefinedSchemaTypes(), annotationsProcessor.getPackageToPackageInfoMappings(), annotationsProcessor.getGlobalElements(), annotationsProcessor.getArrayClassesToGeneratedClasses(), outputResolver);
-        Project proj = new SchemaModelProject();
-        XMLContext context = new XMLContext(proj);
+        CoreProject proj = new SchemaModelProject();
+        XMLContext context = new XMLContext((Project)proj);
         XMLMarshaller marshaller = context.createMarshaller();
 
-        XMLDescriptor schemaDescriptor = (XMLDescriptor)proj.getDescriptor(Schema.class);
+        Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
         for(Schema schema : schemas) {

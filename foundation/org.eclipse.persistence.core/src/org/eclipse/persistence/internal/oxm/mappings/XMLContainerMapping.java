@@ -27,6 +27,18 @@ public interface XMLContainerMapping {
     static final boolean EMPTY_CONTAINER_DEFAULT = true; 
 
     /**
+     * Return true if a pre-initialized container already set on the 
+     * field/property should be used.  If false a new container will always be 
+     * created.
+     */
+    boolean getReuseContainer();
+
+    /**
+     * Get the Wrapper NullPolicy from the Mapping.
+     */
+    public AbstractNullPolicy getWrapperNullPolicy();
+
+    /**
      * Return true if an empty container should be set on the object if there
      * is no presence of the collection in the XML document.
      */
@@ -39,21 +51,9 @@ public interface XMLContainerMapping {
     void setDefaultEmptyContainer(boolean defaultEmptyContainer);
 
     /**
-     * Return true if a pre-initialized container already set on the 
-     * field/property should be used.  If false a new container will always be 
-     * created.
-     */
-    boolean getReuseContainer();
-
-    /**
      * Specify if a pre-existing container on the field/property should be used.
      */
     void setReuseContainer(boolean reuseContainer);
-
-    /**
-     * Get the Wrapper NullPolicy from the Mapping.
-     */
-    public AbstractNullPolicy getWrapperNullPolicy();
 
     /**
      * Set the Wrapper NullPolicy on the Mapping.

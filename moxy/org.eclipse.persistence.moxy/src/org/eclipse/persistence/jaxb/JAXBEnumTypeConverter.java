@@ -19,6 +19,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
@@ -40,8 +41,8 @@ public class JAXBEnumTypeConverter extends ObjectTypeConverter {
     /**
      * PUBLIC:
      */
-    public JAXBEnumTypeConverter(DatabaseMapping mapping, String enumClassName, boolean usesOrdinalValues) {
-        super(mapping);
+    public JAXBEnumTypeConverter(Mapping mapping, String enumClassName, boolean usesOrdinalValues) {
+        super((DatabaseMapping)mapping);
 
         m_enumClassName = enumClassName;
 		m_usesOrdinalValues = usesOrdinalValues;

@@ -18,6 +18,7 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 public interface InverseReferenceMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -26,5 +27,17 @@ public interface InverseReferenceMapping<
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
+	/**
+     * This method is invoked reflectively on the reference object to return the value of the
+     * attribute in the object. This method returns the name of the getMethodName or null if not using method access.
+     */
+    public String getGetMethodName();
+	
+    public void setContainerPolicy(ContainerPolicy containerPolicy);
+	
+    public void setMappedBy(String mappedBy);
 
+    public void setReferenceClassName(String aClassName);
+	
+    public void useCollectionClass(Class concreteClass);
 }

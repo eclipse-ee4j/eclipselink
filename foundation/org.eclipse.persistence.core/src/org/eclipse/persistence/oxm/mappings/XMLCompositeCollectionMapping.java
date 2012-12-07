@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -155,7 +156,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements CompositeCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, Session, UnmarshalKeepAsElementPolicy, XMLRecord>, XMLMapping, XMLNillableMapping {
+public class XMLCompositeCollectionMapping extends AbstractCompositeCollectionMapping implements CompositeCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, Session, UnmarshalKeepAsElementPolicy, XMLRecord>, XMLMapping, XMLNillableMapping {
     AbstractNullPolicy nullPolicy;
     private AbstractNullPolicy wrapperNullPolicy;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy;

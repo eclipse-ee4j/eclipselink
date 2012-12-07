@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -24,6 +25,7 @@ public interface AnyObjectMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
+    CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
@@ -34,7 +36,17 @@ public interface AnyObjectMapping<
 
     public boolean isMixedContent();
 
+    public void setConverter(CONVERTER converter);
+
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
+
+    public void setField(FIELD field);
+    
+    public void setIsWriteOnly(boolean b);
+    
+    public void setMixedContent(boolean mixed);
+    
+    public void setUseXMLRoot(boolean useXMLRoot);
     
     public boolean usesXMLRoot();
 

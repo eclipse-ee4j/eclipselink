@@ -43,6 +43,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -729,7 +730,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
         try {
             ClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
             Generator generator = new Generator(new JavaModelInputImpl(classes, new JavaModelImpl(classLoader)));
-            Project proj = generator.generateProject();
+            CoreProject proj = generator.generateProject();
             ConversionManager manager = new ConversionManager();
             manager.setLoader(classLoader);
             for (Iterator<ClassDescriptor> descriptorIt = proj.getOrderedDescriptors().iterator(); descriptorIt.hasNext(); ) {
@@ -738,7 +739,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
                     descriptor.setJavaClass(manager.convertClassNameToClass(descriptor.getJavaClassName()));
                 }
             }
-            return new XMLContext(proj, classLoader);
+            return new XMLContext((Project)proj, classLoader);
         } catch (Exception e) {
             e.printStackTrace();
             fail("XmlContext creation failed");

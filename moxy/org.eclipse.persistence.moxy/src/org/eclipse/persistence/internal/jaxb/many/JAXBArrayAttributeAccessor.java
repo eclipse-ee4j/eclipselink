@@ -17,7 +17,9 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.AttributeAccessor;
@@ -28,15 +30,15 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
 */
 public class JAXBArrayAttributeAccessor extends AttributeAccessor {
 
-    private AttributeAccessor nestedAccessor;
-    private ContainerPolicy containerPolicy;
+    private CoreAttributeAccessor nestedAccessor;
+    private CoreContainerPolicy containerPolicy;
     private String componentClassName;
     private Class componentClass;
     private String adaptedClassName;
     private Class<? extends ManyValue> adaptedClass;
     private ClassLoader classLoader;
 
-    public JAXBArrayAttributeAccessor(AttributeAccessor nestedAccessor, ContainerPolicy containerPolicy, ClassLoader classLoader) {
+    public JAXBArrayAttributeAccessor(CoreAttributeAccessor nestedAccessor, CoreContainerPolicy containerPolicy, ClassLoader classLoader) {
         this.nestedAccessor = nestedAccessor;
         this.containerPolicy = containerPolicy;
         this.classLoader = classLoader;

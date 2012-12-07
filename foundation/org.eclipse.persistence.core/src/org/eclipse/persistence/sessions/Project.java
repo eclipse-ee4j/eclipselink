@@ -65,7 +65,7 @@ import org.eclipse.persistence.sessions.server.*;
  *
  * @see DatabaseLogin
  */
-public class Project extends CoreProject implements Serializable, Cloneable {
+public class Project extends CoreProject<ClassDescriptor> implements Serializable, Cloneable {
     protected String name;
     protected Login datasourceLogin;
     protected Map<Class, ClassDescriptor> descriptors;

@@ -26,5 +26,43 @@ public interface TransformationMapping<
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
-
+    /**
+     * Add the name of field and the name of the method
+     * that returns the value to be placed in said field
+     * when the object is written to the database.
+     * The method may take zero arguments, or it may
+     * take a single argument of type
+     * <code>org.eclipse.persistence.sessions.Session</code>.
+     */
+    public void addFieldTransformation(String fieldName, String methodName);
+    
+    /**
+     * INTERNAL:
+     * Add the name of a field and the name of a class which implements
+     * the FieldTransformer interface. When the object is written, the transform
+     * method will be called on the FieldTransformer to acquire the value to put
+     * in the field.
+     */
+    public void addFieldTransformerClassName(String fieldName, String className);
+    
+    /**
+     * To set the attribute method name. The method is invoked internally by TopLink
+     * to retrieve the value to store in the domain object. The method receives Record
+     * as its parameter and optionally Session, and should extract the value from the
+     * record to set into the object, but should not set the value on the object, only return it.
+     */
+    public void setAttributeTransformation(String methodName);
+    
+    /**
+     * INTERNAL:
+     * Set the Attribute Transformer Class Name
+     * @param className
+     */
+    public void setAttributeTransformerClassName(String className);
+    
+    /**
+     * Used to specify whether the value of this mapping may be null.
+     * This is used when generating DDL.
+     */
+    public void setIsOptional(boolean isOptional);
 }

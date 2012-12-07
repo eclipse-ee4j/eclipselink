@@ -141,5 +141,13 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * handles wrapped objects.
      */
     public Vector vectorFor(Object container, ABSTRACT_SESSION session);
+    
+    /**
+     * INTERNAL:
+     * Return an instance of the container class with the specified initial capacity.
+     * Null should never be returned.
+     * A ValidationException is thrown on error.
+     */
+    public Object containerInstance(int initialCapacity);
 
 }

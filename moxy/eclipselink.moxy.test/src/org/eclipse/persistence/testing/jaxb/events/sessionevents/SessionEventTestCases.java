@@ -17,6 +17,7 @@ import java.util.Iterator;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -83,7 +84,8 @@ public class SessionEventTestCases extends TestCase {
         try {
             Generator generator = new Generator(new JavaModelInputImpl(classesToBeBound, new JavaModelImpl(loader)));
                 
-            Project proj = generator.generateProject();
+            CoreProject proj = generator.generateProject();
+
             ConversionManager conversionManager = null;
             conversionManager = new ConversionManager();
             conversionManager.setLoader(loader);
@@ -96,7 +98,7 @@ public class SessionEventTestCases extends TestCase {
                 }
             }
             
-            xmlContext = new XMLContext(proj, loader, sel);
+            xmlContext = new XMLContext((Project)proj, loader, sel);
             jaxbContext = new org.eclipse.persistence.jaxb.JAXBContext(xmlContext, generator, classesToBeBound);
         } catch (Exception ex) {
             throw ex;

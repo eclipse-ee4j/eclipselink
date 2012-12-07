@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.*;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
@@ -234,7 +235,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
 
             Generator g = new Generator(oxmMetadata.getJavaModelInput(), oxmMetadata.getBindings(), classLoader, null, false);
 
-            Project p = null;
+            CoreProject p = null;
             Project dp = null;
             try {
                 p = g.generateProject();
@@ -249,7 +250,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                         classDescriptor.setInstantiationPolicy(new InstantiationPolicy());
                     }
                 }
-                dp = DynamicTypeBuilder.loadDynamicProject(p, null, (DynamicClassLoader) classLoader);
+                dp = DynamicTypeBuilder.loadDynamicProject((Project)p, null, (DynamicClassLoader) classLoader);
             } catch (Exception e) {
                 throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
@@ -318,7 +319,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
             Project p = null;
             Project dp = null;
             try {
-                p = g.generateProject();
+                p = (Project) g.generateProject();
                 // Clear out InstantiationPolicy because it refers to ObjectFactory, which we won't be using
                 List<ClassDescriptor> descriptors = p.getOrderedDescriptors();
                 for (ClassDescriptor classDescriptor : descriptors) {

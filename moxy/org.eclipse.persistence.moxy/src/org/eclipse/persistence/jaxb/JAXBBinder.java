@@ -27,9 +27,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+
 import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 
@@ -159,7 +160,7 @@ public class JAXBBinder extends Binder {
             
             boolean shouldWrapInJAXBElement = true;
             
-            XMLDescriptor desc = (XMLDescriptor) xmlBinder.getMarshaller().getXMLContext().getSession(0).getClassDescriptor(updatedObj);
+            Descriptor desc = (Descriptor) xmlBinder.getMarshaller().getXMLContext().getSession(0).getClassDescriptor(updatedObj);
             
             if (desc == null) {
                 return updatedObj;

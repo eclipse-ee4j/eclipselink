@@ -41,6 +41,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -49,7 +50,10 @@ import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -67,11 +71,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -800,7 +801,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, Type[] typesToBeBound, Map properties) throws Exception {
-            Project proj = generator.generateProject();
+            CoreProject proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
                 conversionManager = new ConversionManager();
@@ -821,7 +822,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext(proj, loader, sessionEventListeners());
+            XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
 
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
@@ -943,7 +944,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private JAXBContextState createContextState(Generator generator, JaxbClassLoader loader, TypeMappingInfo[] typesToBeBound, Map properties) throws Exception {
-            Project proj = generator.generateProject();
+        	CoreProject proj = generator.generateProject();
             ConversionManager conversionManager = null;
             if (classLoader != null) {
                 conversionManager = new ConversionManager();
@@ -963,7 +964,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext(proj, loader, sessionEventListeners());
+            XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
 
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
@@ -979,7 +980,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                     }
                 }                 
                 if(classToLookup != null && classToLookup.getClass() == Class.class){
-                    XMLDescriptor xmlDescriptor = (XMLDescriptor) proj.getClassDescriptor((Class) classToLookup);
+                    Descriptor xmlDescriptor = (Descriptor) proj.getDescriptor((Class) classToLookup);
                     typeMappingInfo.setXmlDescriptor(xmlDescriptor);
                 }
             }
@@ -1124,8 +1125,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         	Iterator iter = descriptors.iterator();
         	
         	while(iter.hasNext()){
-        	   XMLDescriptor desc = (XMLDescriptor)iter.next();
-        	   processXMLDescriptor(new  ArrayList<XMLDescriptor>(), desc, desc.getNonNullNamespaceResolver());
+        	   Descriptor desc = (Descriptor)iter.next();
+        	   processXMLDescriptor(new  ArrayList<Descriptor>(), desc, desc.getNonNullNamespaceResolver());
         	}
     	
         }
@@ -1135,13 +1136,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 Iterator iter = refClasses.iterator();
                 while(iter.hasNext()){
                     Class nextClass = (Class) iter.next();
-                    XMLDescriptor desc = (XMLDescriptor) xmlContext.getSession(0).getProject().getDescriptor(nextClass);
+                    Descriptor desc = (Descriptor) xmlContext.getSession(0).getProject().getDescriptor(nextClass);
                     processXMLDescriptor(processed, desc, nr);
                 }
             }
         }
 
-        private void processXMLDescriptor(List<XMLDescriptor> processed, XMLDescriptor desc, NamespaceResolver nr){
+        private void processXMLDescriptor(List<Descriptor> processed, Descriptor desc, NamespaceResolver nr){
             if(desc == null || processed.contains(desc)){
                 return;
             }
@@ -1153,16 +1154,16 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 DatabaseMapping nextMapping = (DatabaseMapping) mappings.get(i);
                 Vector fields = nextMapping.getFields();
                 updateResolverForFields(fields, nr);
-                XMLDescriptor refDesc = (XMLDescriptor) ((DatabaseMapping)nextMapping).getReferenceDescriptor();
+                Descriptor refDesc = (Descriptor) ((DatabaseMapping)nextMapping).getReferenceDescriptor();
                 if(refDesc != null && !processed.contains(refDesc)){    				
                     processXMLDescriptor(processed, refDesc, nr); 
 	            }    
     			
-                if(nextMapping instanceof XMLChoiceObjectMapping){    				    			
-                    Set refClasses = ((XMLChoiceObjectMapping)nextMapping).getClassToFieldMappings().keySet();
+                if(nextMapping instanceof ChoiceObjectMapping){    				    			
+                    Set refClasses = ((ChoiceObjectMapping)nextMapping).getClassToFieldMappings().keySet();
                     processRefClasses(processed, refClasses, nr);    				
-                } else if(nextMapping instanceof XMLChoiceCollectionMapping){    				    			
-                    Set refClasses = ((XMLChoiceCollectionMapping)nextMapping).getClassToFieldMappings().keySet();
+                } else if(nextMapping instanceof ChoiceCollectionMapping){    				    			
+                    Set refClasses = ((ChoiceCollectionMapping)nextMapping).getClassToFieldMappings().keySet();
                     processRefClasses(processed, refClasses, nr);
                 }    			
             }    		
@@ -1171,7 +1172,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         private void updateResolverForFields(Collection fields, NamespaceResolver nr){
             Iterator fieldIter = fields.iterator();
             while (fieldIter.hasNext()) {
-                XMLField field = (XMLField) fieldIter.next();
+                Field field = (XMLField) fieldIter.next();
                 XPathFragment currentFragment = field.getXPathFragment();
 
                 while (currentFragment != null) {
@@ -1275,7 +1276,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             //Add schema types generated for mapped domain classes
             while (descriptors.hasNext()) {
-                XMLDescriptor next = (XMLDescriptor)descriptors.next();
+                Descriptor next = (Descriptor)descriptors.next();
                 Class javaClass = next.getJavaClass();
 
                 if (next.getSchemaReference() != null){

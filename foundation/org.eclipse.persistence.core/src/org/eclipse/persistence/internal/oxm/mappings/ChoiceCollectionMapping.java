@@ -38,22 +38,62 @@ public interface ChoiceCollectionMapping<
     XML_RECORD extends XMLRecord
     > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<SESSION> {
 
+    public void addChoiceElement(List<XML_FIELD> srcFields, String elementTypeName, List<XML_FIELD> tgtFields);
+
+    public void addChoiceElement(String xpath, String elementTypeName);
+
+    public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath);
+    
+    public void addChoiceElement(XML_FIELD field, String elementTypeName);
+
+    public void addConverter(XML_FIELD field, CONVERTER converter);
+    
     public Map<XML_FIELD, XML_MAPPING> getChoiceElementMappings();
 
     public Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
 
     public List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
     
+    public Map<String, XML_FIELD> getClassNameToFieldMappings();
+    
     public Map<Class, XML_FIELD> getClassToFieldMappings();
 
     public Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
-
+    
     public CONVERTER getConverter();
-
+    
+    public CONVERTER getConverter(XML_FIELD field);
+    
     public Map<XML_FIELD, Class> getFieldToClassMappings();
     
     public XML_MAPPING getMixedContentMapping();
     
     public boolean isMixedContent();
+    
+    /**
+     * Set the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public void setConverter(CONVERTER converter);
+    
+    public void setIsWriteOnly(boolean b);
+
+    /**
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
+     * any of the elements in the choice. 
+     * @since EclipseLink 2.3.1
+     */
+    public void setMixedContent(boolean mixed);
+    
+    /**
+     * Allows the user to indicate that this mapping should also allow for mixed content in addition to 
+     * any of the elements in the choice. The grouping element parameter is used in the case that there is
+     * a common grouping element to all the other elements in this choice. If so, that grouping element can
+     * be specified here to allow the mixed content to be written/detected inside the wrapper element.
+     * @since EclipseLink 2.3.1
+     */
+    public void setMixedContent(String groupingElement);
+    
+    public void useCollectionClassName(String concreteContainerClassName);
 
 }

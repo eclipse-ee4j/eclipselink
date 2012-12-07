@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
@@ -25,6 +26,7 @@ public interface CompositeCollectionMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     CONTAINER_POLICY extends CoreContainerPolicy,
+    CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     SESSION extends CoreSession,
@@ -38,5 +40,49 @@ public interface CompositeCollectionMapping<
     public AbstractNullPolicy getNullPolicy();
 
     public Object getReferenceClassName();
+    
+    /**
+     * Set the converter on the mapping.
+     * A converter can be used to convert between the object's value and database value of the attribute.
+     */
+    public void setConverter(CONVERTER converter);
+    
+    public void setIsWriteOnly(boolean b);
+
+    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
+	
+    /**
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
+     */
+	public void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
+    
+    /**
+     * This is a reference class whose instances this mapping will store in the domain objects.
+     */
+    public void setReferenceClass(Class aClass);
+    
+    public void setReferenceClassName(String aClassName);
+    
+    /**
+     * Set the Mapping field name attribute to the given XPath String
+     *
+     * @param xpathString String
+     *
+     */
+    public void setXPath(String xpathString);
+    
+    /**
+     * Configure the mapping to use an instance of the specified container class
+     * to hold the target objects.
+     * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
+     * <p>jdk1.1.x: The container class must be a subclass of Vector.
+     */
+    public void useCollectionClass(Class concreteContainerClass);
+    
+    public void useCollectionClassName(String concreteContainerClassName);
+
 
 }

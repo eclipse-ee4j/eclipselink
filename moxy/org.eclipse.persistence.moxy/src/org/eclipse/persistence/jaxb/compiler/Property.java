@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+
 import org.eclipse.persistence.oxm.XMLField;
 
 /**
@@ -967,7 +969,7 @@ public class Property implements Cloneable {
         if (getXmlPath() == null) {
             return false;
         }
-        XMLField field = new XMLField(getXmlPath());
+        Field field = new XMLField(getXmlPath());
         XPathFragment frag = field.getXPathFragment();
         // loop until we have the last non-null, non-attribute, non-text fragment
         while (true) {

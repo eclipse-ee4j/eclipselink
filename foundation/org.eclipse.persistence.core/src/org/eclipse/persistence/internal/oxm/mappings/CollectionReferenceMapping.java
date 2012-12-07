@@ -33,6 +33,14 @@ public interface CollectionReferenceMapping<
     XML_FIELD extends Field,
     XML_RECORD extends XMLRecord
     > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping {
+    /**
+     * PUBLIC:
+     * Add a source-target xpath pair to the map.
+     * 
+     * @param srcXPath
+     * @param tgtXPath
+     */
+    public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
 
     public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
 
@@ -49,7 +57,20 @@ public interface CollectionReferenceMapping<
     public Map getSourceToTargetKeyFieldAssociations();
 
     public boolean isWriteOnly();
-
+    
+    public void setIsWriteOnly(boolean b);
+    
+    public void setReferenceClassName(String aClassName);
+    
+    public void setUsesSingleNode(boolean useSingleNode);
+    
+    public void useCollectionClassName(String concreteContainerClassName);
+    
+    /**
+     * For the purpose of XMLCollectionReferenceMappings, 'usesSingleNode' 
+     * refers to the fact that the source key xpath fields should all be written as
+     * space-separated lists. Would be used for mapping to an IDREFS field in a schema
+     */
     public boolean usesSingleNode();
 
 }

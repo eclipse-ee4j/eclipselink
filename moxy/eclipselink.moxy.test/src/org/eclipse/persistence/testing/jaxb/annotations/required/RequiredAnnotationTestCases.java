@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.required;
 
 import junit.framework.TestCase;
 
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.jaxb.compiler.Generator;
@@ -30,7 +31,8 @@ public class RequiredAnnotationTestCases extends TestCase {
             JaxbClassLoader classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
             Generator generator = new Generator(new JavaModelInputImpl(new Class[] { RequiredTestObject.class, RequiredTestSubObject.class }, new JavaModelImpl(classLoader)));
             
-            Project proj = generator.generateProject();
+            Project proj = (Project)generator.generateProject();
+            
 
             ClassDescriptor descriptor = proj.getDescriptorForAlias("RequiredTestObject");
             DatabaseMapping mapping = descriptor.getMappingForAttributeName("direct");
