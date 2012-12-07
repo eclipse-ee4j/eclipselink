@@ -40,6 +40,18 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimpleSPServiceTestSuite extends DBWSTestSuite {
+    public static final String JDK7_HEADER = "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\">";
+    public static String HEADER;
+
+    static {
+        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
+            HEADER = JDK7_HEADER;
+        } else {
+            HEADER = JDK6_AND_EARLIER_HEADER;
+        }
+    }
+
     static final String SOAP_SIMPLESP_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
@@ -52,7 +64,7 @@ public class SimpleSPServiceTestSuite extends DBWSTestSuite {
 
     static final String SOAP_SIMPLESP_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\">" +
+        HEADER +
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +

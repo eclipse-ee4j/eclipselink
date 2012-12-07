@@ -91,6 +91,8 @@ public class DBWSTestSuite {
         "<?xml version = '1.0' encoding = 'UTF-8'?>";
     public static final String STANDALONE_XML_HEADER =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
+    public static final String JAVA_VERSION_STR = "java.version";
+    public static final String JDK7_VERSION_STR = "1.7.";
 
     //shared JUnit fixtures
     protected static Connection conn;

@@ -48,6 +48,18 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
 	public static final String SERVICE_NAMESPACE = "urn:simpleplsqlService";
 	public static final String SERVICE_PORT = "simpleplsqlServicePort";
 
+	public static final String JDK7_HEADER = "<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\">";
+    public static String HEADER;
+
+    static {
+        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
+            HEADER = JDK7_HEADER;
+        } else {
+            HEADER = JDK6_AND_EARLIER_HEADER;
+        }
+    }
+
     static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
@@ -59,7 +71,7 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
         "</env:Envelope>";
 
     static final String RESPONSE_MSG =
-		"<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\"" + ">" +
+        HEADER +
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +
