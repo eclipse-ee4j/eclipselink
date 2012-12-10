@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
-import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
