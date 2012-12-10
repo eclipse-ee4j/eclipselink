@@ -216,7 +216,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // element of the object being marshalled to - need to create a
         // JAXBElement from the returned XMLRoot object
         if (obj instanceof XMLRoot) {
-            JAXBElement jaxbElement = createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
+            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
             if(((XMLRoot)obj).isNil()) {
                 jaxbElement.setNil(((XMLRoot)obj).isNil());
                 jaxbElement.setValue(null);
@@ -241,7 +241,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // exception
         String rootName = desc.getDefaultRootElement();
         if (rootName == null) {
-            return createJAXBElement(new QName(""), obj.getClass(), obj);
+            return jaxbContext.createJAXBElement(new QName(""), obj.getClass(), obj);
         }
         String rootNamespaceUri = null;
         int idx = rootName.indexOf(":");
@@ -257,9 +257,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             qname = new QName(rootNamespaceUri, rootName);
         }
         if(declaredClass != null){
-        	return createJAXBElement(qname, declaredClass, obj);
+        	return jaxbContext.createJAXBElement(qname, declaredClass, obj);
         }else{
-        	return createJAXBElement(qname, obj.getClass(), obj);
+        	return jaxbContext.createJAXBElement(qname, obj.getClass(), obj);
         }
     }
 
@@ -910,65 +910,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     private Object createJAXBElementOrUnwrapIfRequired(Object value){
         if(value instanceof XMLRoot){
-            JAXBElement jaxbElement = createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
+            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
             jaxbElement.setNil(((XMLRoot) value).isNil());
             return jaxbElement;
         } else if(value instanceof WrappedValue) {
             return ((WrappedValue)value).getValue();
         }
         return value;
-    }
-
-    private JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot, Class declaredType){
-        Object value = xmlRoot.getObject();
-
-        if(value instanceof List){
-		    List theList = (List)value;
-		    for(int i=0;i<theList.size(); i++){
-		    	Object next = theList.get(i);
-			    if(next instanceof XMLRoot){
-			    	theList.set(i, createJAXBElementFromXMLRoot((XMLRoot)next, declaredType));
-			    }    				
-			}    		
-	    } else if (value instanceof WrappedValue){
-            QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-            return new JAXBElement(qname, ((WrappedValue)value).getDeclaredType(), ((WrappedValue)value).getValue());
-        } else if(value instanceof JAXBElement) {
-           return (JAXBElement) value;
-        } else if (value instanceof ManyValue){
-            value = ((ManyValue)value).getItem();
-        }
-        
-        QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-                
-        Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
-        if(qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() >0){
-        	Class declaredClass = qNamesToDeclaredClasses.get(qname);    
-            if(declaredClass != null){
-                return createJAXBElement(qname, declaredClass, value);
-            }
-        }
-
-        Class xmlRootDeclaredType = xmlRoot.getDeclaredType();
-        if(xmlRootDeclaredType != null){
-        	return createJAXBElement(qname, xmlRootDeclaredType, value);
-        }
-        return createJAXBElement(qname, declaredType, value);
-    }
-  
-    private JAXBElement createJAXBElement(QName qname, Class theClass, Object value){
-
-        if(theClass == null){
-            return new JAXBElement(qname, Object.class, value);
-        }
-
-        if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
-            theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-        }else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
-            theClass = ClassConstants.DURATION;
-        }
-
-        return new JAXBElement(qname, theClass, value);
     }
 
     public JAXBContext getJaxbContext() {

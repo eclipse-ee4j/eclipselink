@@ -1251,7 +1251,7 @@ public class XMLMarshaller implements Cloneable {
         if (!isFragment() ) {
             marshalRecord.endDocument();
         }
-        marshalRecord.afterContainmentMarshal(null, object);
+        marshalRecord.afterContainmentMarshal(null, isXMLRoot ? root : object);
     }
 
     private XPathFragment buildRootFragment(Object object, XMLDescriptor descriptor, boolean isXMLRoot, MarshalRecord marshalRecord) {
