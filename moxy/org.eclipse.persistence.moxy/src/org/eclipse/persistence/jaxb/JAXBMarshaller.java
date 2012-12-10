@@ -666,7 +666,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public void setListener(Marshaller.Listener listener) {
         if(xmlMarshaller.getMarshalListener() == null) {
-            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(this));
+            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(jaxbContext, this));
         }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setListener(listener);
     }
@@ -676,7 +676,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return;
         }
         if(xmlMarshaller.getMarshalListener() == null) {
-            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(this));
+            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(jaxbContext, this));
         }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setClassBasedMarshalEvents(callbacks);
     }

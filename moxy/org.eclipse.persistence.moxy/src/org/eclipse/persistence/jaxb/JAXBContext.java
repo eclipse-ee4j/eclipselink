@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.Map.Entry;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.ValidationEvent;
@@ -48,6 +49,8 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
@@ -73,6 +76,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -614,6 +618,57 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
 
+    protected JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot, Class declaredType) {
+        Object value = xmlRoot.getObject();
+
+        if (value instanceof List) {
+            List theList = (List) value;
+            for (int i = 0; i < theList.size(); i++) {
+                Object next = theList.get(i);
+                if (next instanceof XMLRoot) {
+                    theList.set(i, createJAXBElementFromXMLRoot((XMLRoot) next, declaredType));
+                }
+            }
+        } else if (value instanceof WrappedValue) {
+            QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
+            return new JAXBElement(qname, ((WrappedValue) value).getDeclaredType(), ((WrappedValue) value).getValue());
+        } else if (value instanceof JAXBElement) {
+            return (JAXBElement) value;
+        } else if (value instanceof ManyValue) {
+            value = ((ManyValue) value).getItem();
+        }
+
+        QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
+
+        Map<QName, Class> qNamesToDeclaredClasses = getQNamesToDeclaredClasses();
+        if (qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() > 0) {
+            Class declaredClass = qNamesToDeclaredClasses.get(qname);
+            if (declaredClass != null) {
+                return createJAXBElement(qname, declaredClass, value);
+            }
+        }
+
+        Class xmlRootDeclaredType = xmlRoot.getDeclaredType();
+        if (xmlRootDeclaredType != null) {
+            return createJAXBElement(qname, xmlRootDeclaredType, value);
+        }
+        return createJAXBElement(qname, declaredType, value);
+    }
+
+    protected JAXBElement createJAXBElement(QName qname, Class theClass, Object value) {
+        if (theClass == null) {
+            return new JAXBElement(qname, Object.class, value);
+        }
+
+        if (ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)) {
+            theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
+        } else if (ClassConstants.DURATION.isAssignableFrom(theClass)) {
+            theClass = ClassConstants.DURATION;
+        }
+
+        return new JAXBElement(qname, theClass, value);
+    }
+    
     /**
      * Returns true if any Object in this context contains a property annotated with an XmlAttachmentRef
      * annotation.
@@ -1361,6 +1416,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
             JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), new JAXBIntrospector(xmlContext));
+            marshaller.setJaxbContext(jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
                 // initialize each callback in the map
                 for (Iterator callIt = generator.getMarshalCallbacks().keySet().iterator(); callIt.hasNext(); ) {
@@ -1369,7 +1425,6 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
                 marshaller.setMarshalCallbacks(generator.getMarshalCallbacks());
             }
-            marshaller.setJaxbContext(jaxbContext);
             if(properties != null){
             	setPropertyOnMarshaller(JAXBContextProperties.MEDIA_TYPE, marshaller);
             	setPropertyOnMarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, marshaller);
