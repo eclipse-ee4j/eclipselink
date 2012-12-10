@@ -152,6 +152,7 @@ public class DBWSTestSuite {
     	setUp(stageDir, false);
     }
     public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
+        comparer.setIgnoreOrder(true);
         if (builder == null) {
             builder = new DBWSBuilder();
         }

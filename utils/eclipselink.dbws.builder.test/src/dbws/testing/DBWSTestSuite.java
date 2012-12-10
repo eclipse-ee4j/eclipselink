@@ -193,6 +193,7 @@ public class DBWSTestSuite {
      * @throws WSDLException
      */
     public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
+        comparer.setIgnoreOrder(true);
         if (builder == null) {
             builder = new DBWSBuilder();
         }

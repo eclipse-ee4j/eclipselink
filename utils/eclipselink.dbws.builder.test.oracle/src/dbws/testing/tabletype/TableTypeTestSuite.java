@@ -441,8 +441,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_tabletype2TypeRequestType\"/>\n" +
                 "<xsd:complexType name=\"findAll_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"findAll_tabletype2TypeRequestType\"/>\n" +
                 "<xsd:complexType name=\"delete_tabletype2TypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
