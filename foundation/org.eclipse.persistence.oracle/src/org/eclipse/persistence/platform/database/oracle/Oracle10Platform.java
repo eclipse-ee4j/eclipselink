@@ -44,10 +44,17 @@ public class Oracle10Platform extends Oracle9Platform  {
      * @param isStatementPrepared - flag is set to true if this statement is prepared 
      * @return - number of rows modified/deleted by this statement
      */
+    @Override
     public int executeBatch(Statement statement, boolean isStatementPrepared) throws java.sql.SQLException {
-        if (usesNativeBatchWriting() && isStatementPrepared){
-            return((OraclePreparedStatement)statement).sendBatch(); 
-        }else {
+        if (usesNativeBatchWriting() && isStatementPrepared) {
+            int rowCount = 0;
+            try {
+                rowCount = ((OraclePreparedStatement)statement).sendBatch();
+            } finally {
+                ((OraclePreparedStatement) statement).setExecuteBatch(1);
+            }
+            return rowCount;
+        } else {
             @SuppressWarnings("unused")
             int[] results = statement.executeBatch();
             return statement.getUpdateCount();
@@ -61,6 +68,7 @@ public class Oracle10Platform extends Oracle9Platform  {
      * No need to unwrap connection because 
      * writeLob method doesn't use oracle proprietary classes.
      */
+    @Override
     public boolean isNativeConnectionRequiredForLobLocator() {
         return false;
     }
@@ -92,6 +100,7 @@ public class Oracle10Platform extends Oracle9Platform  {
      * INTERNAL:
      * Supports Batch Writing with Optimistic Locking.
      */
+    @Override
     public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call){
         return true;//usesNativeBatchWriting || !call.hasParameters();
     }
