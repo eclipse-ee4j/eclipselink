@@ -22,9 +22,7 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 
 /**
  * INTERNAL:
@@ -337,7 +335,7 @@ public class XPathNode {
         return this.hasPredicateSiblings;
     }
 
-    public boolean marshal(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
+    public boolean marshal(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
         if ((null == marshalNodeValue) || isMarshalOnlyNodeValue) {
             marshalRecord.addGroupingElement(this);
 
@@ -413,7 +411,7 @@ public class XPathNode {
      * @param marshaller
      * @return
      */
-    public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshalSelfAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
         if (marshalNodeValue == null) {
             return false;
         }

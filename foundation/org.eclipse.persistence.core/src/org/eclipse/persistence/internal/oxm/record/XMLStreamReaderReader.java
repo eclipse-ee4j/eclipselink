@@ -14,9 +14,9 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.stream.XMLStreamReader;
 
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -39,7 +39,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         indexedAttributeList = new XMLStreamReaderAttributes();
     }
 
-    public XMLStreamReaderReader(XMLUnmarshaller xmlUnmarshaller) {
+    public XMLStreamReaderReader(Unmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
         indexedAttributeList = new XMLStreamReaderAttributes();

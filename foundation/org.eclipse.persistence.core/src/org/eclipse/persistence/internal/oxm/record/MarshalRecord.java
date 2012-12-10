@@ -18,17 +18,21 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
 import org.w3c.dom.Node;
 
 public interface MarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
-    FIELD extends CoreField> extends XMLRecord<ABSTRACT_SESSION, FIELD> {
+    FIELD extends CoreField,
+    MARSHALLER extends Marshaller,
+    NAMESPACE_RESOLVER extends NamespaceResolver,
+    UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER> {
 
     public void add(FIELD field, Object value);
 
@@ -40,11 +44,11 @@ public interface MarshalRecord<
             String qualifiedName, String value);
 
     public void attribute(XPathFragment nextFragment,
-            NamespaceResolver namespaceResolver, Object fieldValue,
+            NAMESPACE_RESOLVER namespaceResolver, Object fieldValue,
             QName schemaType);
 
     public void attribute(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver, String value);
+            NAMESPACE_RESOLVER namespaceResolver, String value);
 
     public void attributeWithoutQName(String schemaInstanceUrl,
             String schemaTypeAttribute, String xsiPrefix, String typeValue);
@@ -63,20 +67,20 @@ public interface MarshalRecord<
     public void closeStartGroupingElements(XPathFragment groupingFragment);
 
     public void emptyAttribute(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
     public boolean emptyCollection(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver, boolean b);
+            NAMESPACE_RESOLVER namespaceResolver, boolean b);
 
     public void emptyComplex(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
-    public void emptySimple(NamespaceResolver namespaceResolver);
+    public void emptySimple(NAMESPACE_RESOLVER namespaceResolver);
 
     public void endCollection();
 
     public void endElement(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
     public void endPrefixMapping(String prefix);
 
@@ -96,20 +100,20 @@ public interface MarshalRecord<
     public void namespaceDeclaration(String generatedPrefix, String namespaceURI);
 
     public void nilComplex(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
-    public void nilSimple(NamespaceResolver namespaceResolver);
+    public void nilSimple(NAMESPACE_RESOLVER namespaceResolver);
 
-    public void node(Node item, NamespaceResolver namespaceResolver);
+    public void node(Node item, NAMESPACE_RESOLVER namespaceResolver);
 
     public void openStartElement(XPathFragment xPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
     public XPathFragment openStartGroupingElements(
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
     public void predicateAttribute(XPathFragment anXPathFragment,
-            NamespaceResolver namespaceResolver);
+            NAMESPACE_RESOLVER namespaceResolver);
 
     public void removeGroupingElement(XPathNode holderXPathNode);
 
@@ -117,7 +121,7 @@ public interface MarshalRecord<
 
     public void setLeafElementType(QName defaultRootElementType);
 
-    public void setMarshaller(XMLMarshaller marshaller);
+    public void setMarshaller(MARSHALLER marshaller);
 
     public void startCollection();
 

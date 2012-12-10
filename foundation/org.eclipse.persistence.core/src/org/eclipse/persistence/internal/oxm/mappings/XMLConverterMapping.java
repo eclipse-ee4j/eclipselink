@@ -13,13 +13,16 @@
 package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 
-public interface XMLConverterMapping<SESSION extends CoreSession> {
+public interface XMLConverterMapping<
+    MARSHALLER extends Marshaller,
+    SESSION extends CoreSession,
+    UNMARSHALLER extends Unmarshaller> {
 
-    Object convertDataValueToObjectValue(Object fieldValue, SESSION session, XMLUnmarshaller unmarshaller);
+    Object convertDataValueToObjectValue(Object fieldValue, SESSION session, UNMARSHALLER unmarshaller);
 
-    Object convertObjectValueToDataValue(Object value, SESSION session, XMLMarshaller marshaller);
+    Object convertObjectValueToDataValue(Object value, SESSION session, MARSHALLER marshaller);
 
 }

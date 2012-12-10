@@ -33,10 +33,7 @@ import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHan
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -73,7 +70,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
         XPathFragment rootFragment = null;
 
-        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        Marshaller marshaller = marshalRecord.getMarshaller();
         objectValue = xmlAnyObjectMapping.convertObjectValueToDataValue(objectValue, session, marshalRecord.getMarshaller());
 
         if (null == objectValue) {
@@ -308,7 +305,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
     	Descriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
         if (referenceDescriptor == null) {
-            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
             XPathQName xpathQName = new XPathQName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), unmarshalRecord.isNamespaceAware());
             referenceDescriptor = (Descriptor) xmlContext.getDescriptor(xpathQName);
             // Check if descriptor is for a wrapper, if it is null it out and let continue

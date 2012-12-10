@@ -32,6 +32,7 @@ import javax.xml.validation.Schema;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
+import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -95,7 +96,7 @@ import org.xml.sax.ext.LexicalHandler;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller implements Cloneable {
+public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     private final static String DEFAULT_XML_VERSION = "1.0";
     private String schemaLocation;
     private String noNamespaceSchemaLocation;

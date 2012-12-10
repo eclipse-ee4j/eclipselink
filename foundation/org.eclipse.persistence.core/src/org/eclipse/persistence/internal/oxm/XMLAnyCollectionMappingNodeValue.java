@@ -35,10 +35,7 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -153,7 +150,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         }
     }
 
-    private XPathFragment getXPathFragmentForValue(Object value, MarshalRecord marshalRecord, XMLMarshaller marshaller){
+    private XPathFragment getXPathFragmentForValue(Object value, MarshalRecord marshalRecord, Marshaller marshaller){
     	 if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof XMLRoot)) {
 
              XMLRoot xmlRootValue = (XMLRoot)value;
@@ -213,7 +210,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             // Mixed Content
             Object collection = unmarshalRecord.getContainerInstance(this);
             startElementProcessText(unmarshalRecord, collection);
-            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
 
             //used to only check xsitype when usesXMLRoot was true???
             Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
@@ -360,7 +357,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         Descriptor descriptor;
         ObjectBuilder objectBuilder;
         CoreAbstractSession childSession;
-        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        Marshaller marshaller = marshalRecord.getMarshaller();
         XPathFragment rootFragment;
 
         if (xmlAnyCollectionMapping.usesXMLRoot() && (value instanceof XMLRoot)) {

@@ -31,10 +31,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeCollectionMappingContentHandler;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
@@ -124,7 +121,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                                 }
                             }
                             frag.setXPath(xpath);     
-                            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+                            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
                             xmlDescriptor =  xmlContext.getDescriptorByGlobalType(frag);
                         }
                     }
@@ -251,7 +248,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     
 	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
       
-        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        Marshaller marshaller = marshalRecord.getMarshaller();
         // convert the value - if necessary
         value = xmlCompositeCollectionMapping.convertObjectValueToDataValue(value, session, marshaller);
         if (null == value) {

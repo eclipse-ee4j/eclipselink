@@ -483,7 +483,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
        QName contextAsQName = xmlRef.getSchemaContextAsQName();
        
        if(contextAsQName == null){
-           contextAsQName = xmlRef.getSchemaContextAsQName(row.getNamespaceResolver());          
+           contextAsQName = xmlRef.getSchemaContextAsQName((NamespaceResolver) row.getNamespaceResolver());          
        }
        if (contextAsQName != null) {
            writeXsiTypeAttribute(xmlDescriptor, row, contextAsQName.getNamespaceURI(), contextAsQName.getLocalPart(), null, addToNamespaceResolver);
@@ -523,7 +523,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
        
        String xsiPrefix = null;
        if(row.isNamespaceAware()){
-           NamespaceResolver nr = row.getNamespaceResolver();
+           NamespaceResolver nr = (NamespaceResolver) row.getNamespaceResolver();
            xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
            if (xsiPrefix == null) {
                xsiPrefix =     nr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
@@ -583,7 +583,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return null;
         }
         List returnList = new ArrayList(prefixesToNamespaces.size());
-        NamespaceResolver marshalRecordNamespaceResolver = marshalRecord.getNamespaceResolver();
+        NamespaceResolver marshalRecordNamespaceResolver = (NamespaceResolver) marshalRecord.getNamespaceResolver();
         for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
 
             //if isn't already on a parentadd namespace to this element

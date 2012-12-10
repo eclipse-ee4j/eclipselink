@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -99,7 +98,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     	Descriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
-            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
             String schemaType = null;
             if(unmarshalRecord.isNamespaceAware()){                
             	schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);

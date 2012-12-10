@@ -14,14 +14,17 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.w3c.dom.Node;
 
 public interface XMLRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
-    FIELD extends CoreField> {
+    FIELD extends CoreField,
+    MARSHALLER extends Marshaller,
+    NAMESPACE_RESOLVER extends NamespaceResolver,
+    UNMARSHALLER extends Unmarshaller> {
 
     /**
      * Nil: This is used to indicate that this field represents xsi:nil="true"
@@ -41,15 +44,15 @@ public interface XMLRecord<
 
     public Node getDOM();
 
-    public XMLMarshaller getMarshaller();
+    public MARSHALLER getMarshaller();
 
-    public NamespaceResolver getNamespaceResolver();
+    public NAMESPACE_RESOLVER getNamespaceResolver();
 
     public char getNamespaceSeparator();
 
     public ABSTRACT_SESSION getSession();
 
-    public XMLUnmarshaller getUnmarshaller();
+    public UNMARSHALLER getUnmarshaller();
 
     public boolean hasCustomNamespaceMapper();
 

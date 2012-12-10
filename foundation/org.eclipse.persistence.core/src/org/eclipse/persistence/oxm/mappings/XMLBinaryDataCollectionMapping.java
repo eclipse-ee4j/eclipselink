@@ -79,7 +79,7 @@ import org.eclipse.persistence.sessions.Session;
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
  *  @since   TopLink 11.1.1.0.0g
  */
-public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollectionMapping implements BinaryDataCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, MimeTypePolicy, Session, XMLRecord> {
+public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollectionMapping implements BinaryDataCollectionMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, MimeTypePolicy, Session, XMLUnmarshaller, XMLRecord> {
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;

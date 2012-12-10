@@ -35,7 +35,7 @@ import org.w3c.dom.Node;
  * PUBLIC:
  * Provides a Record/Map API on an XML DOM element.
  */
-public abstract class XMLRecord extends AbstractRecord implements org.eclipse.persistence.internal.oxm.record.XMLRecord<AbstractSession, DatabaseField> {
+public abstract class XMLRecord extends AbstractRecord implements org.eclipse.persistence.internal.oxm.record.XMLRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver, XMLUnmarshaller> {
     protected XMLMarshaller marshaller;
     protected XMLUnmarshaller unmarshaller;
     private DocumentPreservationPolicy docPresPolicy;

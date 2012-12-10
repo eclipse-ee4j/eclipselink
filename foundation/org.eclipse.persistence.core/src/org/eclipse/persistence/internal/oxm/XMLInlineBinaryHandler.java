@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
@@ -37,7 +38,7 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.U
         this.mapping = mapping;
         this.parent = parent;
         this.converter = converter;
-        this.setUnmarshaller(parent.getUnmarshaller());
+        this.setUnmarshaller((XMLUnmarshaller) parent.getUnmarshaller());
     }
 
     @Override

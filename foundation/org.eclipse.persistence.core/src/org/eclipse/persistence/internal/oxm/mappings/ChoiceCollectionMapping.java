@@ -22,6 +22,8 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
@@ -31,12 +33,14 @@ public interface ChoiceCollectionMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
-    FIELD extends CoreField,    
+    FIELD extends CoreField,
+    MARSHALLER extends Marshaller,
     SESSION extends CoreSession,
+    UNMARSHALLER extends Unmarshaller,
     XML_FIELD extends Field,
     XML_MAPPING extends Mapping,
     XML_RECORD extends XMLRecord
-    > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<SESSION> {
+    > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
     public void addChoiceElement(List<XML_FIELD> srcFields, String elementTypeName, List<XML_FIELD> tgtFields);
 

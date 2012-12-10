@@ -14,8 +14,8 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -42,7 +42,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
     	super();
     }
 
-    public XMLReaderAdapter(XMLUnmarshaller xmlUnmarshaller) {
+    public XMLReaderAdapter(Unmarshaller xmlUnmarshaller) {
     	super();
         if(null != xmlUnmarshaller) {
             Schema schema = xmlUnmarshaller.getSchema();

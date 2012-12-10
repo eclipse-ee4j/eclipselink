@@ -36,7 +36,9 @@ import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -54,7 +56,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public abstract class MarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField> {
+public abstract class MarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver, XMLUnmarshaller> {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 

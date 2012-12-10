@@ -21,11 +21,11 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 
 public interface ObjectBuilder<
     ABSTRACT_RECORD extends CoreAbstractRecord,
-    ABSTRACT_SESSION extends CoreAbstractSession> {
+    ABSTRACT_SESSION extends CoreAbstractSession,
+    MARSHALLER extends Marshaller> {
 
     public List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
 
@@ -34,7 +34,7 @@ public interface ObjectBuilder<
         public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField,
             Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
 
-    public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType);
+    public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment, WriteType writeType);
 
     public ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
     

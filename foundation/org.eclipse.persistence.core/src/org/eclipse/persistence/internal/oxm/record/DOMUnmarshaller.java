@@ -27,6 +27,7 @@ import javax.xml.validation.Schema;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -395,7 +396,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     protected Descriptor getDescriptor(DOMRecord xmlRecord) throws XMLMarshalException {
     	Descriptor xmlDescriptor = null;
     	
-    	XMLContext xmlContext = xmlUnmarshaller.getXMLContext();        
+    	Context xmlContext = xmlUnmarshaller.getXMLContext();        
         // Try to find a descriptor based on the schema type
         String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
         if (null != type) {

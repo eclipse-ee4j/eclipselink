@@ -76,7 +76,7 @@ import org.w3c.dom.Node;
  * <li>Create records appropriate to this implementation of ObjectBuilder.</li>
  * </ul>
  */
-public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder<AbstractRecord, AbstractSession> {
+public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder<AbstractRecord, AbstractSession, XMLMarshaller> {
     private XPathNode rootXPathNode;
     private List transformationMappings;
     private List containerValues;

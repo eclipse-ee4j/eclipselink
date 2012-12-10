@@ -18,13 +18,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
 import org.w3c.dom.Attr;
@@ -59,7 +59,7 @@ public class DOMReader extends XMLReaderAdapter {
         super();
     }
 
-    public DOMReader(XMLUnmarshaller xmlUnmarshaller) {
+    public DOMReader(Unmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
     }
 

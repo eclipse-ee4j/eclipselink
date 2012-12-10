@@ -39,18 +39,17 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
 import org.w3c.dom.Node;
@@ -108,14 +107,14 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     private SAXParser saxParser;
     private XMLReader xmlReader;
-    private XMLUnmarshaller xmlUnmarshaller;
+    private Unmarshaller xmlUnmarshaller;
     private XMLParser xmlParser;
     private boolean isResultAlwaysXMLRoot, isWhitespacePreserving;
     private SAXParserFactory saxParserFactory;
     private String systemId = null;
     private Map<String, Boolean> parserFeatures;
 
-    public SAXUnmarshaller(XMLUnmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
+    public SAXUnmarshaller(Unmarshaller xmlUnmarshaller, Map<String, Boolean> parserFeatures) throws XMLMarshalException {
         super();
         this.parserFeatures = parserFeatures;
         try {
@@ -870,7 +869,7 @@ if(clazz == CoreClassConstants.OBJECT) {
 
     public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource) {
         try {
-            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+            Context xmlContext = xmlUnmarshaller.getXMLContext();
             if (xmlContext.hasDocumentPreservation()) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
@@ -903,7 +902,7 @@ if(clazz == CoreClassConstants.OBJECT) {
 
     public Object unmarshal(org.xml.sax.XMLReader xmlReader, InputSource inputSource, Class clazz) {
         try {
-            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+            Context xmlContext = xmlUnmarshaller.getXMLContext();
 
             if (xmlContext.hasDocumentPreservation()) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();

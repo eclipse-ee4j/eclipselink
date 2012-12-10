@@ -25,19 +25,21 @@ import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+//import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public interface Descriptor <
-      CORE_MAPPING extends CoreMapping,      
-      FIELD extends CoreField,      
-      INHERITANCE_POLICY extends CoreInheritancePolicy,
-      INSTANTIATION_POLICY extends CoreInstantiationPolicy,
-      OBJECT_BUILDER extends CoreObjectBuilder,  
-      ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor
-      > {    
+    ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
+    CORE_MAPPING extends CoreMapping,
+    FIELD extends CoreField,
+    INHERITANCE_POLICY extends CoreInheritancePolicy,
+    INSTANTIATION_POLICY extends CoreInstantiationPolicy,
+    OBJECT_BUILDER extends CoreObjectBuilder,
+    UNMARSHAL_RECORD extends UnmarshalRecord,
+    UNMARSHALLER extends Unmarshaller> {
 	
 	/**
 	 * Add a database mapping to the receiver. Perform any required
@@ -273,12 +275,12 @@ public interface Descriptor <
 		  * @param elementPrefix
 		  * @return object
 		  */
-		public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller xmlUnmarshaller);
+		public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, UNMARSHALLER xmlUnmarshaller);
         
         /**
 		 * INTERNAL:
 		 */
-		public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller unmarshaller);
+		public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, UNMARSHALLER unmarshaller);
         
         /**
 		  * INTERNAL:
@@ -292,6 +294,6 @@ public interface Descriptor <
 		  * @param unmarshalRecord
 		  * @return object
 		  */
-		 public Object wrapObjectInXMLRoot(UnmarshalRecord unmarshalRecord, boolean forceWrap);
+		 public Object wrapObjectInXMLRoot(UNMARSHAL_RECORD unmarshalRecord, boolean forceWrap);
         
 }

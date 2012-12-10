@@ -30,9 +30,7 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Session;
 
@@ -92,7 +90,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         }
 
-        XMLMarshaller marshaller = marshalRecord.getMarshaller();
+        Marshaller marshaller = marshalRecord.getMarshaller();
         objectValue = xmlBinaryDataMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshaller);
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         if(xPathFragment.isAttribute()){
@@ -210,7 +208,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
                     if (xopPrefix == null || namespaceResolver == null) {
                         addDeclaration = true;
                         xopPrefix = XMLConstants.XOP_PREFIX;
-                        namespaceResolver = new NamespaceResolver();
+                        namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
                         namespaceResolver.put(xopPrefix, XMLConstants.XOP_URL);
                     }
                     XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");

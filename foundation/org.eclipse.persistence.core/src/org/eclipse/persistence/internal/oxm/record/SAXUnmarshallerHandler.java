@@ -18,17 +18,17 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -61,11 +61,11 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespace
  */
 public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private XMLReader xmlReader;
-    private XMLContext xmlContext;
+    private Context xmlContext;
     private UnmarshalRecord rootRecord;
     private Object object;
     private Descriptor descriptor;
-    private XMLUnmarshaller unmarshaller;
+    private Unmarshaller unmarshaller;
     private CoreAbstractSession session;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy = new UnmarshalKeepAsElementPolicy() {
@@ -89,7 +89,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private SAXDocumentBuilder documentBuilder;
     private Locator2 locator;
     
-    public SAXUnmarshallerHandler(XMLContext xmlContext) {
+    public SAXUnmarshallerHandler(Context xmlContext) {
         super();
         this.xmlContext = xmlContext;
         unmarshalNamespaceResolver = new StackUnmarshalNamespaceResolver();
@@ -278,13 +278,13 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 unmarshalRecord.setSession((AbstractSession) unmarshaller.getXMLContext().getSession(0));
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             } else if (xmlDescriptor.hasInheritance()) {
-                unmarshalRecord = new UnmarshalRecord(null);
+                unmarshalRecord = new org.eclipse.persistence.oxm.record.UnmarshalRecord(null);
                 unmarshalRecord.setUnmarshaller(unmarshaller);
                 unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
                 unmarshalRecord.setXMLReader(this.getXMLReader());
                 unmarshalRecord.setAttributes(atts);
                 
-                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, (AbstractSession) session);
+                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) unmarshalRecord, (CoreAbstractSession) session);
                 
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the default root element
@@ -366,11 +366,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public void skippedEntity(String name) throws SAXException {
     }
 
-    public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
+    public void setUnmarshaller(Unmarshaller unmarshaller) {
         this.unmarshaller = unmarshaller;
     }
 
-    public XMLUnmarshaller getUnmarshaller() {
+    public Unmarshaller getUnmarshaller() {
         return this.unmarshaller;
     }
     

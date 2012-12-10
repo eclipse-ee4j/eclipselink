@@ -26,6 +26,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
@@ -83,7 +84,7 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *  @see org.eclipse.persistence.oxm.XMLValidator
  *
  */
-public class XMLContext {
+public class XMLContext extends Context<AbstractSession, XMLDescriptor, DatabaseSession> {
 
     private volatile XMLContextState xmlContextState;
 
@@ -319,7 +320,7 @@ public class XMLContext {
      * enabled.  This method will typically  be used for unmarshalling
      * when a non-shared cache is desired.
      */
-    public AbstractSession getReadSession(Descriptor xmlDescriptor) {
+    public AbstractSession getReadSession(XMLDescriptor xmlDescriptor) {
         return xmlContextState.getReadSession(xmlDescriptor);
     }
 

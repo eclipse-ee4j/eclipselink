@@ -38,7 +38,6 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 
 public class XMLBinaryDataHelper {
     protected static XMLBinaryDataHelper binaryDataHelper;
@@ -97,7 +96,7 @@ public class XMLBinaryDataHelper {
         return new EncodedData(output.toByteArray(), handler.getContentType());
     }
 
-    public EncodedData getBytesForBinaryValue(Object attributeValue, XMLMarshaller marshaller, String mimeType) {
+    public EncodedData getBytesForBinaryValue(Object attributeValue, Marshaller marshaller, String mimeType) {
         if (attributeValue instanceof DataHandler) {
             return getBytesFromDataHandler((DataHandler) attributeValue);
         } else if (attributeValue instanceof Image) {
@@ -115,7 +114,7 @@ public class XMLBinaryDataHelper {
         return new EncodedData(new byte[0], null);
     }
 
-    public EncodedData getBytesFromMultipart(MimeMultipart value, XMLMarshaller marshaller) {
+    public EncodedData getBytesFromMultipart(MimeMultipart value, Marshaller marshaller) {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         try {
             ContentType contentType = new ContentType(value.getContentType());
@@ -135,7 +134,7 @@ public class XMLBinaryDataHelper {
         return new EncodedData(output.toByteArray(), value.getContentType());
     }
 
-    public EncodedData getBytesFromSource(Source source, XMLMarshaller marshaller, String mimeType) {
+    public EncodedData getBytesFromSource(Source source, Marshaller marshaller, String mimeType) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         StreamResult result = new StreamResult(out);
         marshaller.getTransformer().transform(source, result);

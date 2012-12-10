@@ -36,10 +36,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -99,7 +96,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
      * @param marshaller
      * @return
      */
-    public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    @Override
+    public boolean marshalSelfAttributes(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
         Object objectValue = xmlCompositeObjectMapping.getAttributeValueFromObject(object);
         objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
         Descriptor descriptor = (Descriptor)session.getDescriptor(objectValue);
@@ -261,7 +259,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                                 }
                             }
                             frag.setXPath(xpath);
-                            XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+                            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
                             xmlDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                         }
                     }

@@ -30,9 +30,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 
 /**
  * INTERNAL:
@@ -76,7 +74,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     }
 
     @Override
-    public boolean marshalSelfAttributes(XPathFragment pathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller) {
+    public boolean marshalSelfAttributes(XPathFragment pathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller) {
         Node node = (Node) xmlFragmentMapping.getAttributeValueFromObject(object);
         NamedNodeMap attributes = node.getAttributes();
         if(null != attributes) {

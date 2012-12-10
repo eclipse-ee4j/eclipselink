@@ -159,7 +159,7 @@ import org.w3c.dom.Text;
  *
  * @since Oracle TopLink 10<i>g</i> Release 2 (10.1.3)
  */
-public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMapping, AnyObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, XMLConverter, ClassDescriptor, DatabaseField, Session, UnmarshalKeepAsElementPolicy, XMLRecord> {
+public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMapping, AnyObjectMapping<AbstractSession, AttributeAccessor, ContainerPolicy, XMLConverter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, UnmarshalKeepAsElementPolicy, XMLUnmarshaller, XMLRecord> {
     private XMLField field;
     private boolean useXMLRoot;
     private boolean areOtherMappingInThisContext = true;

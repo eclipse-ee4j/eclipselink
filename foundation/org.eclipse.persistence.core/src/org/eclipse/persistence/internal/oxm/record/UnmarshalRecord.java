@@ -20,18 +20,21 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -42,7 +45,10 @@ import org.xml.sax.ext.LexicalHandler;
 public interface UnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
-    TREE_OBJECT_BUILDER extends ObjectBuilder> extends XMLRecord<ABSTRACT_SESSION, FIELD>, ExtendedContentHandler, LexicalHandler {
+    MARSHALLER extends Marshaller,
+    NAMESPACE_RESOLVER extends NamespaceResolver,
+    TREE_OBJECT_BUILDER extends ObjectBuilder,
+    UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
@@ -123,6 +129,8 @@ public interface UnmarshalRecord<
 
     public String resolveNamespaceUri(String namespaceURI);
 
+    public void resolveReferences(ABSTRACT_SESSION session, IDResolver idResolver);
+
     public void setAttributes(Attributes atts);
 
     public void setAttributeValue(Object childObject,
@@ -140,6 +148,8 @@ public interface UnmarshalRecord<
 
     public void setLocalName(String object);
 
+    public void setNil(boolean b);
+
     public void setParentRecord(UnmarshalRecord unmarshalRecord);
 
     public void setReferenceResolver(ReferenceResolver referenceResolver);
@@ -147,6 +157,8 @@ public interface UnmarshalRecord<
     public void setRootElementName(String object);
 
     public void setSelfRecord(boolean b);
+
+    public void setSession(ABSTRACT_SESSION session);
 
     public void setTextWrapperFragment(XPathFragment textWrapperFragment);
 
@@ -156,7 +168,7 @@ public interface UnmarshalRecord<
 
     public void setUnmarshalContext(UnmarshalContext unmarshalContext);
 
-    public void setUnmarshaller(XMLUnmarshaller unmarshaller);
+    public void setUnmarshaller(UNMARSHALLER unmarshaller);
 
     public void setUnmarshalNamespaceResolver(
             UnmarshalNamespaceResolver unmarshalNamespaceResolver);

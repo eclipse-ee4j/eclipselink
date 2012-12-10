@@ -26,7 +26,6 @@ import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -59,6 +58,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -92,7 +92,7 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, TreeObjectBuilder> {
+public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver, TreeObjectBuilder, XMLUnmarshaller> {
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = org.eclipse.persistence.internal.oxm.record.UnmarshalRecord.DEFAULT_UNMAPPED_CONTENT_HANDLER;
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
@@ -1455,7 +1455,7 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
      * references.
      * @since EclipseLink 2.5.0
      */
-    public void resolveReferences(CoreAbstractSession abstractSession, IDResolver idResolver) {
+    public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
         if(null != referenceResolver) {
             referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }
