@@ -30,8 +30,8 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
  * INTERNAL:
  * <p><b>Purpose</b>:  XPathNodes are used together to build a tree.  The tree
  * is built from all of the XPath statements specified in the mapping metadata 
- * (mappings and policies).  This tree is then navigated by the 
- * TreeObjectBuilder to perform marshal and unmarshal operations.</p>
+ * (mappings and policies).  This tree is then navigated by an 
+ * EventObjectBuilder to perform marshal and unmarshal operations.</p>
  * <p>The XPaths "a/b" and "a/c" would result in a tree with the root "a" and 
  * two child nodes "b" and "c".</p>
  * <p><b>Responsibilities</b>:<ul>
@@ -375,7 +375,7 @@ public class XPathNode {
         }
     }
 
-    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, TreeObjectBuilder compositeObjectBuilder, Object compositeObject) {    
+    public boolean startElement(MarshalRecord marshalRecord, XPathFragment anXPathFragment, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, ObjectBuilder compositeObjectBuilder, Object compositeObject) {    
         if (null == anXPathFragment) {
             return false;
         }

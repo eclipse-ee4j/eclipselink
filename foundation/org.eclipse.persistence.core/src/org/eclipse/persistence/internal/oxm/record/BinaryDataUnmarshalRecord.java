@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataMappingNodeValue;
@@ -28,8 +29,8 @@ public class BinaryDataUnmarshalRecord extends org.eclipse.persistence.oxm.recor
 	private BinaryMappingContentHandler handler;
 	private ContentHandler activeContentHandler;
 
-	public BinaryDataUnmarshalRecord(TreeObjectBuilder treeObjectBuilder, UnmarshalRecord parentRecord, XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue, BinaryDataMapping xmlBinaryDataMapping) {
-		super(treeObjectBuilder);
+	public BinaryDataUnmarshalRecord(ObjectBuilder treeObjectBuilder, UnmarshalRecord parentRecord, XMLBinaryDataMappingNodeValue xmlBinaryDataMappingNodeValue, BinaryDataMapping xmlBinaryDataMapping) {
+		super((TreeObjectBuilder) treeObjectBuilder);
 		this.parentRecord = parentRecord;
 		this.xmlBinaryDataMappingNodeValue = xmlBinaryDataMappingNodeValue;
 		this.xmlBinaryDataMapping = xmlBinaryDataMapping;

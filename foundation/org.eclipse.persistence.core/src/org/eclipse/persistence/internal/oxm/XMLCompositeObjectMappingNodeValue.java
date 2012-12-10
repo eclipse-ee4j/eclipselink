@@ -68,7 +68,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         unmarshalRecord.removeNullCapableValue(this);
 
         Descriptor referenceDescriptor = (Descriptor) getMapping().getReferenceDescriptor();
-        TreeObjectBuilder treeObjectBuilder = (TreeObjectBuilder) referenceDescriptor.getObjectBuilder();
+        ObjectBuilder treeObjectBuilder = (ObjectBuilder) referenceDescriptor.getObjectBuilder();
         MappingNodeValue textMappingNodeValue = (MappingNodeValue) treeObjectBuilder.getRootXPathNode().getTextNode().getNodeValue();
         Mapping textMapping = textMappingNodeValue.getMapping();
         Object childObject = referenceDescriptor.getInstantiationPolicy().buildNewInstance();
@@ -104,7 +104,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         objectValue = xmlCompositeObjectMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
         Descriptor descriptor = (Descriptor)session.getDescriptor(objectValue);
         if(descriptor != null){
-            TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+            ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
             return objectBuilder.marshalAttributes(marshalRecord, objectValue, session);
         } else {
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = getMapping().getKeepAsElementPolicy();
@@ -144,7 +144,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         if(xPathFragment.hasAttribute) {
-            TreeObjectBuilder tob = (TreeObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
+            ObjectBuilder tob = (ObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) tob.getRootXPathNode().getTextNode().getMarshalNodeValue();
             Mapping textMapping = textMappingNodeValue.getMapping();
             if(textMapping.isAbstractDirectMapping()) {
@@ -194,7 +194,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
         if(descriptor != null){
             marshalRecord.beforeContainmentMarshal(objectValue);
-            TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+            ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
 
             if (!(isSelfFragment || xPathFragment.nameIsText)) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
@@ -492,8 +492,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                    }
 	                }
 	            }
-	            TreeObjectBuilder stob2 = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
-	            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord((AbstractSession) unmarshalRecord.getSession());
+	            ObjectBuilder stob2 = (ObjectBuilder)xmlDescriptor.getObjectBuilder();
+	            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord(unmarshalRecord.getSession());
 	            childRecord.setUnmarshaller(unmarshalRecord.getUnmarshaller());
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);

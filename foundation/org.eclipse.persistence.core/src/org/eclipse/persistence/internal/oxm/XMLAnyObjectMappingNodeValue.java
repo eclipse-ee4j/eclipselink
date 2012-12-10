@@ -105,7 +105,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 return true;
             }
             Descriptor descriptor = (Descriptor) childSession.getDescriptor(objectValue);
-            TreeObjectBuilder objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
+            ObjectBuilder objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
             if (wasXMLRoot) {

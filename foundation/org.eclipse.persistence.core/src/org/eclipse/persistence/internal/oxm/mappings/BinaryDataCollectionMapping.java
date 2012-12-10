@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.mappings.MimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public interface BinaryDataCollectionMapping<
@@ -30,6 +29,7 @@ public interface BinaryDataCollectionMapping<
     CONVERTER extends CoreConverter,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
+    MIME_TYPE_POLICY extends MimeTypePolicy,
     SESSION extends CoreSession,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<SESSION> {
 
@@ -37,7 +37,7 @@ public interface BinaryDataCollectionMapping<
 
     public String getMimeType(Object object);
 
-    public MimeTypePolicy getMimeTypePolicy();
+    public MIME_TYPE_POLICY getMimeTypePolicy();
 
     public AbstractNullPolicy getNullPolicy();
 
@@ -65,7 +65,7 @@ public interface BinaryDataCollectionMapping<
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
-    public void setMimeTypePolicy(MimeTypePolicy mimeTypePolicy);
+    public void setMimeTypePolicy(MIME_TYPE_POLICY mimeTypePolicy);
     
     public void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
     

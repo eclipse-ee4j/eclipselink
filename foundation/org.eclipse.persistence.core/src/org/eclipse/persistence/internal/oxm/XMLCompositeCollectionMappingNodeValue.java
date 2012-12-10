@@ -276,7 +276,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if(descriptor != null){                    
             marshalRecord.beforeContainmentMarshal(value);
 
-            TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
+            ObjectBuilder objectBuilder = (ObjectBuilder)descriptor.getObjectBuilder();
             xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
 
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);

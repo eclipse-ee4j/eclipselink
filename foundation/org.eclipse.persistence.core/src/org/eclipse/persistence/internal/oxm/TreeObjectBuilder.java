@@ -76,7 +76,7 @@ import org.w3c.dom.Node;
  * <li>Create records appropriate to this implementation of ObjectBuilder.</li>
  * </ul>
  */
-public class TreeObjectBuilder extends XMLObjectBuilder {
+public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder<AbstractRecord, AbstractSession> {
     private XPathNode rootXPathNode;
     private List transformationMappings;
     private List containerValues;
@@ -587,7 +587,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     }
 
     @Override
-    protected List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    public List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (rootXPathNode.getNonAttributeChildren() == null) {
             return null;
         } else {

@@ -358,7 +358,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         Object originalValue = value;
 
         Descriptor descriptor;
-        TreeObjectBuilder objectBuilder;
+        ObjectBuilder objectBuilder;
         CoreAbstractSession childSession;
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         XPathFragment rootFragment;
@@ -385,7 +385,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 return true;
             }
             descriptor = (Descriptor) childSession.getDescriptor(value);
-            objectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();
+            objectBuilder = (ObjectBuilder) descriptor.getObjectBuilder();
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, true);
             if (wasXMLRoot) {
                 Namespace generatedNamespace = setupFragment(((XMLRoot) originalValue), xmlRootFragment, marshalRecord);

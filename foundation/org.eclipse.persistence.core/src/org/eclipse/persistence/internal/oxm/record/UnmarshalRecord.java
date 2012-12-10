@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
@@ -41,7 +42,8 @@ import org.xml.sax.ext.LexicalHandler;
 
 public interface UnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
-    FIELD extends CoreField> extends XMLRecord<ABSTRACT_SESSION, FIELD>, ExtendedContentHandler, LexicalHandler {
+    FIELD extends CoreField,
+    TREE_OBJECT_BUILDER extends ObjectBuilder> extends XMLRecord<ABSTRACT_SESSION, FIELD>, ExtendedContentHandler, LexicalHandler {
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
@@ -60,7 +62,7 @@ public interface UnmarshalRecord<
 
     public  UnmarshalRecord getChildRecord();
 
-    public UnmarshalRecord getChildUnmarshalRecord(TreeObjectBuilder targetObjectBuilder);
+    public UnmarshalRecord getChildUnmarshalRecord(TREE_OBJECT_BUILDER targetObjectBuilder);
 
     public Object getContainerInstance(
             ContainerValue xmlAnyAttributeMappingNodeValue);
@@ -105,7 +107,7 @@ public interface UnmarshalRecord<
 
     public XPathNode getXPathNode();
 
-    public UnmarshalRecord initialize(TreeObjectBuilder treeObjectBuilder);
+    public UnmarshalRecord initialize(TREE_OBJECT_BUILDER treeObjectBuilder);
 
     public void initializeRecord(Mapping mapping) throws SAXException;
 

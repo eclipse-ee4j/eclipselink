@@ -22,7 +22,7 @@ package org.eclipse.persistence.oxm.mappings;
  * @see FixedMimeTypePolicy
  *
  */
-public interface MimeTypePolicy {
+public interface MimeTypePolicy extends org.eclipse.persistence.internal.oxm.mappings.MimeTypePolicy {
 	/**
 	 * return a MIME type string
 	 * @param anObject - fixed non-dynamic implementors will ignore this parameter
