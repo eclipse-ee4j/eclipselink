@@ -173,8 +173,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, this));
             }
             
-            // Set the foreign key metadata.
-            setForeignKey(new ForeignKeyMetadata((MetadataAnnotation) joinColumns.getAttribute("foreignKey"), this));
+            // Set the foreign key metadata if one is specified.
+            MetadataAnnotation foreignKey = (MetadataAnnotation) joinColumns.getAttribute("foreignKey");
+            if (foreignKey != null) {
+                setForeignKey(new ForeignKeyMetadata(foreignKey, this));
+            }
         }
         
         // Process the single key join column second.

@@ -1095,8 +1095,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
                 }
                 
-                // Set the primary key foreign key metadata if specified.
-                setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata((MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey"), this));
+                // Set the primary key foreign key metadata if one is specified.
+                MetadataAnnotation foreignKey = (MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey");
+                if (foreignKey != null) {
+                    setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(foreignKey, this));
+                }
             }
             
             // Process the single primary key join column second.

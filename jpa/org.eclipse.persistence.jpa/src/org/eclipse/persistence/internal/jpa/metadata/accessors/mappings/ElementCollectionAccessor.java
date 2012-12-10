@@ -251,8 +251,11 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) mapKeyJoinColumn, this));
             }
             
-            // Set the map key foreign key metadata.
-            setMapKeyForeignKey(new ForeignKeyMetadata((MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey"), this));
+            // Set the map key foreign key metadata if one is specified.
+            MetadataAnnotation foreignKey = (MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey");
+            if (foreignKey != null) {
+                setMapKeyForeignKey(new ForeignKeyMetadata(foreignKey, this));
+            }
         }
         
         // Process the single map key key join column second.
