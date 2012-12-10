@@ -128,6 +128,7 @@ public class DBWSTestSuite {
     	setUp(stageDir, false, false);
     }
     public static void setUp(String stageDir, boolean useLogger, boolean builderIsInitialized) throws WSDLException {
+        comparer.setIgnoreOrder(true);
         DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
         DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
         DBWS_SESSION_STREAM = new ByteArrayOutputStream();
