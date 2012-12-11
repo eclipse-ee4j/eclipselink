@@ -666,20 +666,20 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
          XMLUnmarshaller unmarshaller = context.createUnmarshaller();
          DBWSBuilderModel builderModel =
              (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
-         builder = new DBWSBuilder();
-         builder.quiet = true;
-         builder.properties = builderModel.properties;
-         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
-         builder.getTargetNamespace();
-         builder.operations = builderModel.operations;
-         builder.setLogLevel(SessionLog.FINE_LABEL);
-         builder.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
+         DBWSBuilder builder2 = new DBWSBuilder();
+         builder2.quiet = true;
+         builder2.properties = builderModel.properties;
+         builder2.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
+         builder2.getTargetNamespace();
+         builder2.operations = builderModel.operations;
+         builder2.setLogLevel(SessionLog.FINE_LABEL);
+         builder2.setPackager(new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
              @Override
              public void start() {
              }
          });
          try {
-            builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
+            builder2.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
                  DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM, __nullStream,
                  __nullStream, __nullStream, __nullStream, null);
         }

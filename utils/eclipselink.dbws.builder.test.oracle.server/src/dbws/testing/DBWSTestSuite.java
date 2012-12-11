@@ -91,8 +91,6 @@ public class DBWSTestSuite {
         "<?xml version = '1.0' encoding = 'UTF-8'?>";
     public static final String STANDALONE_XML_HEADER =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
-    public static final String JAVA_VERSION_STR = "java.version";
-    public static final String JDK7_VERSION_STR = "1.7.";
 
     //shared JUnit fixtures
     protected static Connection conn;
@@ -245,6 +243,25 @@ public class DBWSTestSuite {
         String replaceStr = "";
         Matcher matcher = pattern.matcher(inputStr);
         return matcher.replaceAll(replaceStr);
+    }
+
+    /**
+     * Returns the given org.w3c.dom.Document as a String.
+     *
+     */
+    public static String documentToString(Node doc) {
+        DOMSource domSource = new DOMSource(doc);
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty("indent", "yes");
+            transformer.transform(domSource, result);
+            return stringWriter.toString();
+        } catch (Exception e) {
+            // e.printStackTrace();
+            return "<empty/>";
+        }
     }
 
     /**

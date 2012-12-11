@@ -26,6 +26,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import dbws.testing.DBWSTestSuite;
 import static dbws.testing.simplesp.SimpleSPBuilderTestSuite.CREATE_PROCEDURE;
@@ -40,17 +42,6 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimpleSPServiceTestSuite extends DBWSTestSuite {
-    public static final String JDK7_HEADER = "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\">";
-    public static String HEADER;
-
-    static {
-        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
-            HEADER = JDK7_HEADER;
-        } else {
-            HEADER = JDK6_AND_EARLIER_HEADER;
-        }
-    }
 
     static final String SOAP_SIMPLESP_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
@@ -64,7 +55,7 @@ public class SimpleSPServiceTestSuite extends DBWSTestSuite {
 
     static final String SOAP_SIMPLESP_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        HEADER +
+        "<srvc:testEchoResponse xmlns:srvc=\"urn:simplespService\">" +
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +
@@ -108,8 +99,17 @@ public class SimpleSPServiceTestSuite extends DBWSTestSuite {
 
 	        SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
+            
+            NodeList elts = resultDoc.getDocumentElement().getElementsByTagNameNS("urn:simplespService", "result");
+            assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
+            Node testNode = elts.item(0);
+            assertTrue("Didn't find [<srvc:result>] element", testNode.getLocalName().equalsIgnoreCase("result"));
+            
             Document controlDoc = xmlParser.parse(new StringReader(SOAP_SIMPLESP_RESPONSE));
-            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(resultDoc), comparer.isNodeEqual(controlDoc, resultDoc));
+            elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simplespService", "result");
+            Node ctrlNode = elts.item(0);
+            
+            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
     	} catch (Exception x) {
     		fail("Service test failed: " + x.getMessage());
     	}
