@@ -42,15 +42,16 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.SubCapo;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
 
 public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTest { 
-    public static final String MULTI_TENANT_PU_123 = "MulitPU-2";
  
     public AdvancedMultiTenant123JunitTest() {
         super();
     }
+
+    public String getMULTI_TENANT_PU_123() { return "MulitPU-2"; }
     
     public AdvancedMultiTenant123JunitTest(String name) {
         super(name);
-        setPuName(MULTI_TENANT_PU_123);
+        setPuName(getMULTI_TENANT_PU_123());
     }
     
     public void setUp() {}
@@ -74,18 +75,18 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTes
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(MULTI_TENANT_PU_123));
+        new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(getMULTI_TENANT_PU_123()));
     }
 
     public void testWriteProjectCache(){
-        new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading("MulitPU-2");
+        new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading(getMULTI_TENANT_PU_123());
     }
 
     public void testComplexMultitenantQueries() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU_123());
 
         try {
-            clearCache(MULTI_TENANT_PU_123);
+            clearCache(getMULTI_TENANT_PU_123());
             em.clear();
             
             // Try passing in a sub entity as a parameter.
@@ -162,7 +163,7 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTes
             // Try a delete all on single table (Contracts)
             try {
                 beginTransaction(em);
-                this.getServerSession(MULTI_TENANT_PU_123).setLogLevel(0);
+                this.getServerSession(getMULTI_TENANT_PU_123()).setLogLevel(0);
                 int contracts = em.createNamedQuery("FindAllContracts").getResultList().size();                
                 int deletes = em.createNamedQuery("DeleteAllContracts").executeUpdate();
                 assertTrue("Incorrect number of contracts deleted [" + deletes + "], expected [" + contracts + "]", deletes == 2);

@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantTableJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantTableCJunitTest;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import junit.framework.TestSuite;
@@ -30,6 +32,8 @@ public class AdvancedMultiTenantServerTestSuite extends TestSuite {
         suite.setName("Advanced Multitenant ServerTestSuite");
         suite.addTest(AdvancedMultiTenantSharedEMFJunitTest.suite());
         suite.addTest(AdvancedMultiTenant123JunitTest.suite());
+        suite.addTest(AdvancedMultiTenantTableJunitTest.suite());
+        suite.addTest(AdvancedMultiTenantTableCJunitTest.suite());
         return suite;
     }
 }

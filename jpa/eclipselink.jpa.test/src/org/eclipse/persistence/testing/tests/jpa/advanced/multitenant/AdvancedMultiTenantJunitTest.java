@@ -98,12 +98,12 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope;
 
 public class AdvancedMultiTenantJunitTest extends JUnitTestCase { 
-    public static final String MULTI_TENANT_VPD_PU = "multi-tenant-vpd";
-    public static final String MULTI_TENANT_PU = "multi-tenant-shared-emf";
-    public static final String MULTI_TENANT_PU_123 = "multi-tenant-123";
+    public String MULTI_TENANT_VPD_PU;
+    public String MULTI_TENANT_PU;
+    public String MULTI_TENANT_PU_123;
     
-    public static final String MULTI_TENANT_TABLE_PER_TENANT_PU = "multi-tenant-table-per-tenant";
-    public static final String MULTI_TENANT_TABLE_PER_TENANT_C_PU = "multi-tenant-table-per-tenant-C";
+    public String MULTI_TENANT_TABLE_PER_TENANT_PU;
+    public String MULTI_TENANT_TABLE_PER_TENANT_C_PU;
     
     public static long candidateAId;
     public static long supporter1Id;
@@ -164,16 +164,26 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         
         return suite;
     }
+
+    public String getMULTI_TENANT_PU() { return "multi-tenant-shared-emf"; }
+
+    public String getMULTI_TENANT_PU_123() { return "multi-tenant-123"; }
+
+    public String getMULTI_TENANT_VPD_PU() { return "multi-tenant-vpd"; }
+
+    public String getMULTI_TENANT_TABLE_PER_TENANT_PU() { return "multi-tenant-table-per-tenant"; }
+
+    public String getMULTI_TENANT_TABLE_PER_TENANT_C_PU(){ return "multi-tenant-table-per-tenant-C"; }
     
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedMultiTenantTableCreator().replaceTables(((org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(MULTI_TENANT_PU)).getServerSession());
+        new AdvancedMultiTenantTableCreator().replaceTables(((org.eclipse.persistence.jpa.JpaEntityManager) createEntityManager(getMULTI_TENANT_PU())).getServerSession());
     }
     
     public void testTablePerTenantA() {
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_PU());
         
         try {
             beginTransaction(em);
@@ -269,7 +279,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testTablePerTenantAQueries() {
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_PU());
         
         try {
             beginTransaction(em);
@@ -305,7 +315,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testTablePerTenantB() {
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_PU());
         
         try {    
             beginTransaction(em);
@@ -335,7 +345,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             em.clear();
-            clearCache(MULTI_TENANT_TABLE_PER_TENANT_PU);
+            clearCache(getMULTI_TENANT_TABLE_PER_TENANT_PU());
             
             beginTransaction(em);
             
@@ -365,7 +375,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testTablePerTenantBQueries() {
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_PU());
         
         try {
             beginTransaction(em);
@@ -392,7 +402,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testTablePerTenantC() {
         // Tenant is set in the persistence.xml file.
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_C_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_C_PU());
         
         try {
             beginTransaction(em);
@@ -462,7 +472,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testTablePerTenantCQueries() {
-        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_C_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_TABLE_PER_TENANT_C_PU());
         
         try {
             beginTransaction(em);
@@ -486,7 +496,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testCreateMafiaFamily707() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
         
         try {
             beginTransaction(em);
@@ -625,7 +635,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testCreateMafiaFamily007() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
         try {
             beginTransaction(em);
             //on server side, you have to set the em properties after transaction begins
@@ -785,7 +795,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         EntityManager em = null;
         boolean exceptionCaught = false;
         try {
-            em = createEntityManager(MULTI_TENANT_PU_123);
+            em = createEntityManager(getMULTI_TENANT_PU_123());
         } catch (RuntimeException e) {
             exceptionCaught = true;
         } finally {
@@ -793,7 +803,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 closeEntityManager(em);
             }
             
-            closeEntityManagerFactory(MULTI_TENANT_PU_123);
+            closeEntityManagerFactory(getMULTI_TENANT_PU_123());
         }
         
         assertTrue("No exception received on a non shared emf without all tenant properties provided", exceptionCaught);
@@ -801,9 +811,15 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     
     public void testCreateMafiaFamily123() {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(MULTI_TENANT_PU_123));
-        properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
-        EntityManager em = createEntityManager(MULTI_TENANT_PU_123, properties);
+        EntityManager em = null;
+        //properties passed in createEntityManager() won't work on server since server side entity manager is injected, so we have "eclipselink.tenant-id" in server persistence.xml
+        if (! isOnServer()) {
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getMULTI_TENANT_PU_123()));
+            properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
+            em = createEntityManager(getMULTI_TENANT_PU_123(), properties);
+        }else{
+            em = createEntityManager(getMULTI_TENANT_PU_123());
+        }
         
         try {
             beginTransaction(em);
@@ -912,7 +928,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily707() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
 
         try {
             validateMafiaFamily707(em);
@@ -927,7 +943,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily007() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
 
         try {
             validateMafiaFamily007(em);
@@ -942,7 +958,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily707and007WithSameEM() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
 
         try {
             validateMafiaFamily707(em);
@@ -958,10 +974,10 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testValidateMafiaFamily123() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU_123());
 
         try {
-            clearCache(MULTI_TENANT_PU_123);
+            clearCache(getMULTI_TENANT_PU_123());
             em.clear();
             
             MafiaFamily family =  em.find(MafiaFamily.class, family123);
@@ -1022,7 +1038,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
         
     protected void validateMafiaFamily007(EntityManager em) {
-        clearCache(MULTI_TENANT_PU);
+        clearCache(getMULTI_TENANT_PU());
         em.clear();
         beginTransaction(em);
 
@@ -1069,7 +1085,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     protected void validateMafiaFamily707(EntityManager em) {
-        clearCache(MULTI_TENANT_PU);
+        clearCache(getMULTI_TENANT_PU());
         em.clear();
         
         beginTransaction(em);
@@ -1122,8 +1138,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         List soldiers = em.createQuery("SELECT s from Soldier s").getResultList();
         assertTrue("Incorrect number of soldiers were returned [" + soldiers.size() + "], expected [5]",  soldiers.size() == 5);
         
-        if(getServerSession(MULTI_TENANT_PU).getPlatform().isSymfoware()) {
-            getServerSession(MULTI_TENANT_PU).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
+        if(getServerSession(getMULTI_TENANT_PU()).getPlatform().isSymfoware()) {
+            getServerSession(getMULTI_TENANT_PU()).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
                     +"which uses UpdateAll internally to check tenant-id when updating an entity using JOINED inheritance strategy. "
                     +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             commitTransaction(em);
@@ -1140,10 +1156,10 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testComplexMultitenantQueries() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU_123());
 
         try {
-            clearCache(MULTI_TENANT_PU_123);
+            clearCache(getMULTI_TENANT_PU_123());
             em.clear();
             
             // Try passing in a sub entity as a parameter.
@@ -1215,8 +1231,8 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 fail("Exception encountered on delete all query with single table (with tenant discriminator columns): " + e);
             }
             
-            if(getServerSession(MULTI_TENANT_PU).getPlatform().isSymfoware()) {
-                getServerSession(MULTI_TENANT_PU).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
+            if(getServerSession(getMULTI_TENANT_PU()).getPlatform().isSymfoware()) {
+                getServerSession(getMULTI_TENANT_PU()).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
                         +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             } else {
                 // Try a delete all on multiple table (MafiaFamily)
@@ -1234,14 +1250,14 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                     fail("Exception encountered on delete all query with multiple table (with tenant discriminator columns): " + e);
                 }
                 // Some verification of what was deleted.
-                EntityManager em007 = createEntityManager(MULTI_TENANT_PU);
+                EntityManager em007 = createEntityManager(getMULTI_TENANT_PU());
                 
                 try {
                     List<MafiaFamily> families = em007.createNativeQuery("select * from JPA_MAFIA_FAMILY", MafiaFamily.class).getResultList();
                     assertTrue("Incorrect number of families found through SQL [" + families.size() + "], expected [2]", families.size() == 2);     
                     
                     // Clear out the shared cache with what we read through native SQL.
-                    clearCache(MULTI_TENANT_PU);
+                    clearCache(getMULTI_TENANT_PU());
                     em007.clear();
                     
                     beginTransaction(em007);
@@ -1280,10 +1296,10 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         EntityManager em2 = null;
         
         try {
-            em1 = createEntityManager(MULTI_TENANT_VPD_PU);
+            em1 = createEntityManager(getMULTI_TENANT_VPD_PU());
             em1.setProperty("tenant.id", "bsmith@here.com");
             
-            em2 = createEntityManager(MULTI_TENANT_VPD_PU);
+            em2 = createEntityManager(getMULTI_TENANT_VPD_PU());
             em2.setProperty("tenant.id", "gdune@there.ca");
             
             testInsertTask(em1, "blah", false);
@@ -1313,7 +1329,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
                 rollbackTransaction(em2);
             }
             
-            if (! getPlatform(MULTI_TENANT_VPD_PU).isOracle()) {
+            if (! getPlatform(getMULTI_TENANT_VPD_PU()).isOracle()) {
                 warning("VPD tests currently run only on an Oracle platform");
             } else {
                 throw e;
@@ -1330,7 +1346,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testMultitenantPrimaryKeyWithIdClass() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
         
         PhoneNumber number = new PhoneNumber();;
         number.setAreaCode("613");
@@ -1346,7 +1362,10 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             // This should hit the cache.
+            beginTransaction(em);
+            em.setProperty("tenant.id", "707");
             PhoneNumber refreshedNumber = em.find(PhoneNumber.class, number.buildPK());
+            rollbackTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1359,7 +1378,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
     }
     
     public void testMultitenantOneToOneReadObjectRead() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        EntityManager em = createEntityManager(getMULTI_TENANT_PU());
         
         try {
             beginTransaction(em);
@@ -1385,16 +1404,18 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             commitTransaction(em);
             
             em.clear();
-            clearCache(MULTI_TENANT_PU);
+            clearCache(getMULTI_TENANT_PU());
             
             beginTransaction(em);
+            em.setProperty("tenant.id", "371453");
             envelope = em.merge(envelope);
             commitTransaction(em);
             
             em.clear();
-            clearCache(MULTI_TENANT_PU);
+            clearCache(getMULTI_TENANT_PU());
             
             beginTransaction(em);
+            em.setProperty("tenant.id", "371453");
             card = em.merge(card);
             commitTransaction(em);
             
