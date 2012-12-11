@@ -405,7 +405,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("Select employee from Employee employee");
             jpaQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
             jpaQuery.setHint(QueryHints.RESULT_SET_CONCURRENCY, ResultSetConcurrency.ReadOnly);
-            jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.DEFAULT);
+            String resultSetType = ResultSetType.DEFAULT;
+            // HANA supports only TYPE_FORWARD_ONLY, see bug 384116
+            if (getPlatform().isHANA()) {
+                resultSetType = ResultSetType.ForwardOnly;
+            }
+            jpaQuery.setHint(QueryHints.RESULT_SET_TYPE, resultSetType);
             ScrollableCursor scrollableCursor = (ScrollableCursor)jpaQuery.getResultCursor();
             scrollableCursor.next();
             scrollableCursor.close();

@@ -461,7 +461,14 @@ public class QueryFrameworkTestSuite extends TestSuite {
                     TYPE_SCROLL_INSENSITIVE_isSupported = false;
                     CONCUR_UPDATABLE_isSupported = false;
                 }
-                if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+                // HANA supports only TYPE_FORWARD_ONLY and CONCUR_READ_ONLY, see bug 384116
+                if (getSession().getPlatform().isHANA()) {
+                    ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+                    policy.setResultSetType(ScrollableCursorPolicy.TYPE_FORWARD_ONLY);
+                    policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+                    policy.setPageSize(10);
+                    query.useScrollableCursor(policy);
+                } else if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
                     query.useScrollableCursor();
                 } else {
                     ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
