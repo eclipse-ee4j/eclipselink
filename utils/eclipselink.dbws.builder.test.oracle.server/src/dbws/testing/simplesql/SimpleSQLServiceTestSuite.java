@@ -28,6 +28,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import dbws.testing.DBWSTestSuite;
 import static dbws.testing.simplesql.SimpleSQLBuilderTestSuite.CREATE_TABLE;
@@ -43,22 +45,7 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
-    public static final String JDK7_HEADER = "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\">";
-    public static String HEADER;
-    public static final String JDK7_SIMPLESQL = "<simple-sql xsi:type=\"simple-xml-format\">";
-    public static final String JDK6_AND_EARLIER_SIMPLESQL = "<simple-sql xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">";
-    public static String SIMPLESQL;
 
-    static {
-        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
-            HEADER = JDK7_HEADER;
-            SIMPLESQL = JDK7_SIMPLESQL;
-        } else {
-            HEADER = JDK6_AND_EARLIER_HEADER;
-            SIMPLESQL = JDK6_AND_EARLIER_SIMPLESQL;
-        }
-    }
     static final String SOAP_COUNTINFO_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Body>" +
@@ -68,9 +55,9 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
 
     static final String SOAP_COUNTINFO_RESPONSE =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
-        HEADER +
+        "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<srvc:result>" +
-            SIMPLESQL +
+            "<simple-sql xsi:type=\"simple-xml-format\">" +
               "<count-info>" +
                 "<COUNT>3</COUNT>" +
               "</count-info>" +
@@ -121,9 +108,14 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
 	        
             SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
-            resultDoc.normalizeDocument();
+            NodeList elts = resultDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
+            assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
+            Node testNode = elts.item(0);
+            assertTrue("Didn't find [<srvc:result>] element", testNode.getLocalName().equalsIgnoreCase("result"));
             Document controlDoc = xmlParser.parse(new StringReader(SOAP_COUNTINFO_RESPONSE));
-            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(resultDoc), comparer.isNodeEqual(controlDoc, resultDoc));
+            elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
+            Node ctrlNode = elts.item(0);
+            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
     	} catch (Exception x) {
     		fail("Service test failed: " + x.getMessage());
     	}

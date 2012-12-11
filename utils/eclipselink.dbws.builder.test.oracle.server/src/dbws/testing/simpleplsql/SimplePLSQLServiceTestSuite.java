@@ -26,6 +26,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import dbws.testing.DBWSTestSuite;
 import static dbws.testing.simpleplsql.SimplePLSQLBuilderTestSuite.CREATE_PACKAGE;
@@ -48,17 +50,6 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
 	public static final String SERVICE_NAMESPACE = "urn:simpleplsqlService";
 	public static final String SERVICE_PORT = "simpleplsqlServicePort";
 
-	public static final String JDK7_HEADER = "<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\"" + " xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xml=\"http://www.w3.org/XML/1998/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
-    public static final String JDK6_AND_EARLIER_HEADER = "<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\">";
-    public static String HEADER;
-
-    static {
-        if (System.getProperty(JAVA_VERSION_STR).startsWith(JDK7_VERSION_STR)) {
-            HEADER = JDK7_HEADER;
-        } else {
-            HEADER = JDK6_AND_EARLIER_HEADER;
-        }
-    }
     static final String REQUEST_MSG =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
           "<env:Header/>" +
@@ -70,7 +61,7 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
         "</env:Envelope>";
 
     static final String RESPONSE_MSG =
-        HEADER +
+        "<srvc:" + TEST + "Response xmlns:srvc="+ "\"" + SERVICE_NAMESPACE + "\">" +
           "<srvc:result>" +
             "<simple-xml-format>" +
               "<simple-xml>" +
@@ -118,8 +109,14 @@ public class SimplePLSQLServiceTestSuite extends DBWSTestSuite {
 
             SOAPBody responseBody = response.getSOAPPart().getEnvelope().getBody();
             Document resultDoc = responseBody.extractContentAsDocument();
+            NodeList elts = resultDoc.getDocumentElement().getElementsByTagNameNS(SERVICE_NAMESPACE, "result");
+            assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
+            Node testNode = elts.item(0);
+            assertTrue("Didn't find [<srvc:result>] element", testNode.getLocalName().equalsIgnoreCase("result"));
             Document controlDoc = xmlParser.parse(new StringReader(RESPONSE_MSG));
-            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(resultDoc), comparer.isNodeEqual(controlDoc, resultDoc));
+            elts = controlDoc.getDocumentElement().getElementsByTagNameNS(SERVICE_NAMESPACE, "result");
+            Node ctrlNode = elts.item(0);
+            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
     	} catch (Exception x) {
     		fail("Service test failed: " + x.getMessage());
     	}
