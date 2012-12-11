@@ -17,12 +17,12 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
 public abstract class Context<
     ABSTRACT_SESSION extends CoreAbstractSession,
     DESCRIPTOR extends Descriptor,
+    NAMESPACE_RESOLVER extends NamespaceResolver,
     SESSION extends CoreSession> {
 
     /**
@@ -130,7 +130,7 @@ public abstract class Context<
      * @param returnType The return type.
      * @return The object corresponding to the XPath or null if no result was found.
      */
-    public abstract <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType);
+    public abstract <T> T getValueByXPath(Object object, String xPath, NAMESPACE_RESOLVER namespaceResolver, Class<T> returnType);
 
     /**
      * INTERNAL:

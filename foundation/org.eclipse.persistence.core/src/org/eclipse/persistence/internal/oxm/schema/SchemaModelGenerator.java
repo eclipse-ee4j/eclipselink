@@ -33,6 +33,7 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -59,7 +60,6 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -156,7 +156,7 @@ public class SchemaModelGenerator {
                         }
                         // if the schema is null generate a new one and create an import 
                         if (schema == null) {
-                            schema = buildNewSchema(nsKey, new NamespaceResolver(), schemaForNamespace.size(), properties);
+                            schema = buildNewSchema(nsKey, new org.eclipse.persistence.oxm.NamespaceResolver(), schemaForNamespace.size(), properties);
                             schemaForNamespace.put(nsKey, schema);
                             typeAsQName = desc.getSchemaReference().getSchemaContextAsQName();
                             
@@ -173,7 +173,7 @@ public class SchemaModelGenerator {
                         }
                     }
                     if (schema == null) {
-                        schema = buildNewSchema(nsKey, new NamespaceResolver(), schemaForNamespace.size(), properties);
+                        schema = buildNewSchema(nsKey, new org.eclipse.persistence.oxm.NamespaceResolver(), schemaForNamespace.size(), properties);
                         schemaForNamespace.put(nsKey, schema);
                     }
                     Element element = new Element();

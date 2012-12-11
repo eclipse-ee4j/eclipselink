@@ -25,10 +25,9 @@ import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-//import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 
 public interface Descriptor <
@@ -37,6 +36,7 @@ public interface Descriptor <
     FIELD extends CoreField,
     INHERITANCE_POLICY extends CoreInheritancePolicy,
     INSTANTIATION_POLICY extends CoreInstantiationPolicy,
+    NAMESPACE_RESOLVER extends NamespaceResolver,
     OBJECT_BUILDER extends CoreObjectBuilder,
     UNMARSHAL_RECORD extends UnmarshalRecord,
     UNMARSHALLER extends Unmarshaller> {
@@ -235,7 +235,7 @@ public interface Descriptor <
      * @param newNamespaceResolver the NamespaceResolver to associate with this descriptor
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
-     public void setNamespaceResolver(NamespaceResolver newNamespaceResolver);
+     public void setNamespaceResolver(NAMESPACE_RESOLVER newNamespaceResolver);
         
         /**
          * INTERNAL:

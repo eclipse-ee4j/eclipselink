@@ -75,6 +75,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
 import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
@@ -114,7 +115,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransforme
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -204,7 +204,7 @@ public class MappingsGenerator {
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
         classToGeneratedClasses = new HashMap<String, Class>();
-        globalNamespaceResolver = new NamespaceResolver();
+        globalNamespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
         isDefaultNamespaceAllowed = true;
     }
 
@@ -2162,11 +2162,11 @@ public class MappingsGenerator {
         return mapping;
     }
 
-    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix) {
+    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, String suggestedPrefix) {
     	return getPrefixForNamespace(URI, namespaceResolver, suggestedPrefix, true);
     }
     
-    public String getPrefixForNamespace(String URI, org.eclipse.persistence.oxm.NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
+    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
     	String defaultNS = namespaceResolver.getDefaultNamespaceURI();
     	if(defaultNS != null && URI.equals(defaultNS)){
     		return null;
@@ -2243,7 +2243,7 @@ public class MappingsGenerator {
             TypeInfo rootTypeInfo =  typeInfo.get(rootMappedSuperClass.getName());
             Descriptor rootDescriptor = rootTypeInfo.getDescriptor();
             if (rootDescriptor.getNamespaceResolver() == null) {
-                rootDescriptor.setNamespaceResolver(new NamespaceResolver());
+                rootDescriptor.setNamespaceResolver(new org.eclipse.persistence.oxm.NamespaceResolver());
             }
 
             if (rootDescriptor.getInheritancePolicy().getClassIndicatorField() == null) {
@@ -3065,7 +3065,7 @@ public class MappingsGenerator {
 	                  if(namespaceUri.equals("")) {
 	                      desc.setDefaultRootElement(next.getLocalPart());
 	                  } else {
-	                      NamespaceResolver resolver = new NamespaceResolver();
+	                      NamespaceResolver resolver = new org.eclipse.persistence.oxm.NamespaceResolver();
 	                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
 
 	                      desc.setNamespaceResolver(resolver);

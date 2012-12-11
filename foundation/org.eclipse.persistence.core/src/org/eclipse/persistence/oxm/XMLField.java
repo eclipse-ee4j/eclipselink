@@ -287,7 +287,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
  * </table>
  * @see org.eclipse.persistence.oxm.XMLUnionField
  */
-public class XMLField extends DatabaseField implements Field {
+public class XMLField extends DatabaseField implements Field<NamespaceResolver> {
     private NamespaceResolver namespaceResolver;
     private QName schemaType;
     private XPathFragment xPathFragment;

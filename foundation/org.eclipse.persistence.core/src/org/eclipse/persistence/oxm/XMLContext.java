@@ -84,7 +84,7 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *  @see org.eclipse.persistence.oxm.XMLValidator
  *
  */
-public class XMLContext extends Context<AbstractSession, XMLDescriptor, DatabaseSession> {
+public class XMLContext extends Context<AbstractSession, XMLDescriptor, NamespaceResolver, DatabaseSession> {
 
     private volatile XMLContextState xmlContextState;
 

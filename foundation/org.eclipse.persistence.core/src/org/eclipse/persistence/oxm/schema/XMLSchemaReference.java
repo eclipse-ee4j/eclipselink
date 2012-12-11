@@ -16,12 +16,12 @@ import java.net.URL;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import javax.xml.namespace.QName;
@@ -131,7 +131,12 @@ public abstract class XMLSchemaReference implements org.eclipse.persistence.plat
     public QName getSchemaContextAsQName() {
         return schemaContextAsQName;
     }
-    
+
+    /**
+     * INTERNAL:
+     * @param nsResolver
+     * @return
+     */
     public QName getSchemaContextAsQName(NamespaceResolver nsResolver) {
         if (schemaContext == null) {
             return null;

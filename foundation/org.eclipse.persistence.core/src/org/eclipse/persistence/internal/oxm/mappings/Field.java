@@ -16,12 +16,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 
-public interface Field extends CoreField{
+public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends CoreField{
 	
     /**
      * INTERNAL:
@@ -159,7 +159,7 @@ public interface Field extends CoreField{
      * @param newNamespaceResolver The namespaceResolver to be associated with this XMLField
      * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
-    public void setNamespaceResolver(NamespaceResolver newNamespaceResolver);
+    public void setNamespaceResolver(NAMESPACE_RESOLVER newNamespaceResolver);
     
    /**
   * Set whether this XMLField represents a "required" XML element or attribute

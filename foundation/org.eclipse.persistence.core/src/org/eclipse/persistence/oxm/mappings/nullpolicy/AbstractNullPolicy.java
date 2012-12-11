@@ -344,7 +344,7 @@ public abstract class AbstractNullPolicy {
         if (null == namespaceResolver) {
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            namespaceResolver = new NamespaceResolver();
+            namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
             namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);            
       	    marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
         } else {

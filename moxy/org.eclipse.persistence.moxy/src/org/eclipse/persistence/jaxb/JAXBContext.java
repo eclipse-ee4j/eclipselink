@@ -1186,7 +1186,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     	
         }
            
-        private void processRefClasses(List processed, Set refClasses, NamespaceResolver nr){
+        private void processRefClasses(List processed, Set refClasses, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
             if(refClasses != null){
                 Iterator iter = refClasses.iterator();
                 while(iter.hasNext()){
@@ -1197,7 +1197,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        private void processXMLDescriptor(List<Descriptor> processed, Descriptor desc, NamespaceResolver nr){
+        private void processXMLDescriptor(List<Descriptor> processed, Descriptor desc, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
             if(desc == null || processed.contains(desc)){
                 return;
             }
@@ -1224,7 +1224,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }    		
         }
 
-        private void updateResolverForFields(Collection fields, NamespaceResolver nr){
+        private void updateResolverForFields(Collection fields, org.eclipse.persistence.internal.oxm.NamespaceResolver nr){
             Iterator fieldIter = fields.iterator();
             while (fieldIter.hasNext()) {
                 Field field = (XMLField) fieldIter.next();

@@ -48,6 +48,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -541,7 +542,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     public NamespaceResolver getNamespaceResolver() {
         NamespaceResolver namespaceResolver = null;
         if (isXmlDescriptor()) {
-            namespaceResolver = ((Descriptor)getDescriptor()).getNamespaceResolver();
+            namespaceResolver = ((XMLDescriptor)getDescriptor()).getNamespaceResolver();
         } else if (getDescriptor() instanceof org.eclipse.persistence.eis.EISDescriptor) {
             namespaceResolver = ((org.eclipse.persistence.eis.EISDescriptor)getDescriptor()).getNamespaceResolver();
         }
@@ -574,7 +575,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             return null;
         }
 
-        NamespaceResolver descriptorNamespaceResolver = desc.getNamespaceResolver();
+        NamespaceResolver descriptorNamespaceResolver = ((XMLDescriptor) desc).getNamespaceResolver();
         if(null == descriptorNamespaceResolver || !descriptorNamespaceResolver.hasPrefixesToNamespaces()) {
             return null;
         }

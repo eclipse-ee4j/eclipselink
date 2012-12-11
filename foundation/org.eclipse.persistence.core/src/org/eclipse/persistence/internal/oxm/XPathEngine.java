@@ -1141,11 +1141,11 @@ public class XPathEngine <
     }
 
     private NamespaceResolver getNamespaceResolverForField(Field field){
-        NamespaceResolver nr = field.getNamespaceResolver();
+        NamespaceResolver nr = (org.eclipse.persistence.oxm.NamespaceResolver) field.getNamespaceResolver();
         if(nr == null){
             field.setNamespaceResolver(new NamespaceResolver());
         }
-        return field.getNamespaceResolver();
+        return (org.eclipse.persistence.oxm.NamespaceResolver) field.getNamespaceResolver();
     }
     
     private void addXsiNilToElement(Element element, Field xmlField) {
