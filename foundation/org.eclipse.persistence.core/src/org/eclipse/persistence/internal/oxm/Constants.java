@@ -15,47 +15,49 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.namespace.QName;
 
 public class Constants {
-	
-	public static final String ANY_NAMESPACE_ANY = "##any";
-	public static final String ANY_NAMESPACE_OTHER = "##other";
-	public static final Character ATTRIBUTE = '@';
-	public static final String BOOLEAN_STRING_TRUE = "true";
-	public static final String CDATA = "CDATA";    
-	public static final char COLON = ':';
+
+    public static final String ANY_NAMESPACE_ANY = "##any";
+    public static final String ANY_NAMESPACE_OTHER = "##other";
+    public static final Character ATTRIBUTE = '@';
+    public static final String BOOLEAN_STRING_TRUE = "true";
+    public static final String CDATA = "CDATA";
+    public static final char COLON = ':';
     public static final String DEFAULT_XML_ENCODING = "UTF-8";
-    public static final char DOT = '.';		
-	public static final String EMPTY_STRING = "";
-	public static final String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
-	public static final String JAXB_FRAGMENT = "jaxb.fragment";	
-	public static final String JAXB_MARSHALLER = "jaxb.marshaller";
-    public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";	
-	public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
+    public static final char DOT = '.';
+    public static final String EMPTY_STRING = "";
+    public static final String EXPECTED_CONTENT_TYPES = "expectedContentTypes";
+    public static final String JAXB_FRAGMENT = "jaxb.fragment";
+    public static final String JAXB_MARSHALLER = "jaxb.marshaller";
+    public static final String LEXICAL_HANDLER_PROPERTY = "http://xml.org/sax/properties/lexical-handler";
+    public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
     public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
-    public static final String NO_NS_SCHEMA_LOCATION = "noNamespaceSchemaLocation";       
-	public static final Class QNAME_CLASS = QName.class;
-	public static final String REF_PREFIX = "ref";	
+    public static final String NO_NS_SCHEMA_LOCATION = "noNamespaceSchemaLocation";
+    public static final Class QNAME_CLASS = QName.class;
+    public static final String REF_PREFIX = "ref";
     public static final String REF_URL = "http://ws-i.org/profiles/basic/1.1/xsd";
     public static final String SCHEMA_LOCATION = "schemaLocation";
-	public static final String SCHEMA_PREFIX = "xsd";
-	public static final String SCHEMA_INSTANCE_PREFIX = "xsi";
-	public static final String SCHEMA_NIL_ATTRIBUTE = "nil";
-	public static final String SCHEMA_TYPE_ATTRIBUTE = "type";
-    public static final String SWAREF_XSD = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";	
-	public static final String TEXT = "text()";
-	public static final String UNKNOWN_OR_TRANSIENT_CLASS = "UNKNOWN_OR_TRANSIENT_CLASS";
-	public static final Class URI = java.net.URI.class;	
+    public static final String SCHEMA_PREFIX = "xsd";
+    public static final String SCHEMA_INSTANCE_PREFIX = "xsi";
+    public static final String SCHEMA_NIL_ATTRIBUTE = "nil";
+    public static final String SCHEMA_TYPE_ATTRIBUTE = "type";
+    public static final String SWAREF_XSD = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
+    public static final String TEXT = "text()";
+    public static final String UNKNOWN_OR_TRANSIENT_CLASS = "UNKNOWN_OR_TRANSIENT_CLASS";
+    public static final Class URI = java.net.URI.class;
     public static final Class UUID = java.util.UUID.class;
-    public static final String VALUE_WRAPPER = "value";    
-	public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
+    public static final String VALUE_WRAPPER = "value";
+    public static final String XML_MIME_URL = "http://www.w3.org/2005/05/xmlmime";
     public static final String XML_NAMESPACE_SCHEMA_LOCATION = "http://www.w3.org/XML/2001/xml.xsd";
-	public static final String XPATH_SEPARATOR = "/";    
-	public static final String XOP_PREFIX = "xop";
-	public static final String XOP_URL = "http://www.w3.org/2004/08/xop/include";
-	
-	// Schema Special values for Double and Float
+    public static final String XPATH_SEPARATOR = "/";
+    public static final String XPATH_INDEX_OPEN = "[";
+    public static final String XPATH_INDEX_CLOSED = "]";
+    public static final String XOP_PREFIX = "xop";
+    public static final String XOP_URL = "http://www.w3.org/2004/08/xop/include";
+
+    // Schema Special values for Double and Float
     public static final String POSITIVE_INFINITY = "INF";
     public static final String NEGATIVE_INFINITY = "-INF";
-	
+
     // Built-in Schema Types
     public static final String ANY = "any";
     public static final String BASE_64_BINARY = "base64Binary";
@@ -127,7 +129,7 @@ public class Constants {
     public static final QName NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NEGATIVE_INTEGER);
     public static final QName NON_NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_NEGATIVE_INTEGER);
     public static final QName NON_POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_POSITIVE_INTEGER);
-    public static final QName POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, POSITIVE_INTEGER);    
+    public static final QName POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, POSITIVE_INTEGER);
     public static final QName NORMALIZEDSTRING_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NORMALIZED_STRING);
     public static final QName QNAME_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, QNAME);
     public static final QName SHORT_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, SHORT);
@@ -138,4 +140,5 @@ public class Constants {
     public static final QName UNSIGNED_LONG_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, UNSIGNED_LONG);
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
+
 }

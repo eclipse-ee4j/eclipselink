@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
@@ -20,34 +23,120 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 public class GetByXPathTests extends junit.framework.TestCase {
 
+    private JAXBContext eCtx;
+    private TestBean controlObject;
+
     public String getName() {
         return "JAXB Context getByXPath Tests: " + super.getName();
     }
 
-    public void testGetByXPathPositionArray() throws JAXBException {
-        JAXBContext eCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { TestBean.class }, null);
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        eCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { TestBean.class }, null);
+    }
 
-        TestBean t1 = new TestBean();
-        t1.name = new String[3];
-        t1.subBean = new TestBean[2];
-        t1.name[0] = "Alfred"; t1.name[1] = "E"; t1.name[2] = "Newman";
+    private TestBean getControlObject() {
+        if (controlObject == null) {
+            controlObject = TestBean.example();
+        }
+        return controlObject;
+    }
 
-        TestBean t2 = new TestBean();
-        t2.name = new String[3];
-        t2.name[0] = "Franklin"; t2.name[1] = "D"; t2.name[2] = "Roosevelt";
+    // @XmlPath("info/desc/text()") String description;
+    public void testGetDirect() throws JAXBException {
+        String o;
 
-        TestBean t3 = new TestBean();
-        t3.name = new String[3];
-        t3.name[0] = "Malcolm"; t3.name[1] = null; t3.name[2] = "McDowell";
+        o = eCtx.getValueByXPath(getControlObject(), "info/desc/text()", null, String.class);
+        assertEquals(getControlObject().description, o);
 
-        t1.subBean[0] = t2;
-        t1.subBean[1] = t3;
+        o = eCtx.getValueByXPath(getControlObject(), "companion/info/desc/text()", null, String.class);
+        assertEquals(getControlObject().companion.description, o);
 
-        Object o = eCtx.getValueByXPath(t1, "name[1]/text()", null, Object.class);
-        assertEquals("Alfred", o);
-        o = eCtx.getValueByXPath(t1, "subBean[2]/name[1]/text()", null, Object.class);
-        assertEquals("Malcolm", o);
-        o = eCtx.getValueByXPath(t1, "subBean[2]/name[2]/text()", null, Object.class);
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[1]/info/desc/text()", null, String.class);
+        assertEquals(getControlObject().subBean[0].description, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "info/desc", null, String.class);
+        assertNull(o);
+    }
+
+    // @XmlPath("companion") TestBean companion;
+    public void testGetComposite() throws JAXBException {
+        TestBean o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "companion", null, TestBean.class);
+        assertEquals(getControlObject().companion, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/companion", null, TestBean.class);
+        assertEquals(getControlObject().subBean[1].companion, o);
+    }
+
+    // @XmlPath("info/name/text()") String[] name;
+    public void testGetPrimitiveArray() throws JAXBException {
+        String o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "info/name[1]/text()", null, String.class);
+        assertEquals(getControlObject().name[0], o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/info/name[1]/text()", null, String.class);
+        assertEquals(getControlObject().subBean[1].name[0], o);
+    }
+
+    // @XmlPath("info/roles/text()") ArrayList<String> roles;
+    public void testGetPrimitiveList() throws JAXBException {
+        List o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "info/roles/text()", null, List.class);
+        assertEquals(getControlObject().roles, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/info/roles/text()", null, List.class);
+        assertEquals(getControlObject().subBean[1].roles, o);
+    }
+
+    // @XmlPath("sub-bean") TestBean[] subBean;
+    public void testGetArray() throws JAXBException {
+        TestBean o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]", null, TestBean.class);
+        assertEquals(getControlObject().subBean[1], o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[1]/sub-bean[1]", null, TestBean.class);
+        assertEquals(getControlObject().subBean[0].subBean[0], o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[3]", null, TestBean.class);
+        assertNull(o);
+    }
+
+    // @XmlPath("rejected") ArrayList<TestBean> rejected;
+    public void testGetList() throws JAXBException {
+        List o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "rejected", null, List.class);
+        assertEquals(getControlObject().rejected, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/sub-bean[1]/rejected", null, List.class);
+        assertEquals(getControlObject().subBean[1].subBean[0].rejected, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[1]/rejected", null, List.class);
+        assertEquals(Collections.EMPTY_LIST, o);
+    }
+
+    // @XmlPath("info/coords[1]/text()") String lat;
+    // @XmlPath("info/coords[2]/text()") String lon;
+    public void testGetPrimitivePositional() throws JAXBException {
+        String o;
+
+        o = eCtx.getValueByXPath(getControlObject(), "info/coords[1]/text()", null, String.class);
+        assertEquals(getControlObject().lat, o);
+        o = eCtx.getValueByXPath(getControlObject(), "info/coords[2]/text()", null, String.class);
+        assertEquals(getControlObject().lon, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/sub-bean[1]/info/coords[1]/text()", null, String.class);
+        assertEquals(getControlObject().subBean[1].subBean[0].lat, o);
+        o = eCtx.getValueByXPath(getControlObject(), "sub-bean[2]/sub-bean[1]/info/coords[2]/text()", null, String.class);
+        assertEquals(getControlObject().subBean[1].subBean[0].lon, o);
+
+        o = eCtx.getValueByXPath(getControlObject(), "info/coords/text()", null, String.class);
         assertNull(o);
     }
 

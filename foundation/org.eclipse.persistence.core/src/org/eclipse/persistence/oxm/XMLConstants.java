@@ -16,36 +16,23 @@ import org.eclipse.persistence.internal.oxm.Constants;
 
 /**
  * <p>XMLConstants maintains a list of useful XML constants.</p>
- *
- * <p>This includes constants for built-in schema types as well as QNames
- * which represent those built-in schema types.  These QName constants can be used,
- * for example, when adding conversion pairs to XMLFields and when adding
- * schema types to an XMLUnionField.</p>
- *
- * <p><em>Code Sample</em></p>
- *
- * <p><code>
- * XMLUnionField unionField = new XMLUnionField("myElement");<br>
- * unionField.addSchemaType(XMLConstants.INTEGER_QNAME);<br>
- * unionField.addSchemaType(XMLConstants.DATE_QNAME);
- * </code></p>
  */
 public class XMLConstants extends Constants{
-    
-    public static final String SCHEMA_URL = javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;    
+
+    public static final String SCHEMA_URL = javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
     public static final String SCHEMA_INSTANCE_URL = javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
     public static final String TARGET_NAMESPACE_PREFIX = "toplinktn";
-    
+
     public static final String XMLNS = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
     public static final String XMLNS_URL = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
     public static final String XML_NAMESPACE_PREFIX = javax.xml.XMLConstants.XML_NS_PREFIX;
     public static final String XML_NAMESPACE_URL = javax.xml.XMLConstants.XML_NS_URI;
-   
-    public final static String CONTENT_TYPE = "contentType";    
+
+    public static final String CONTENT_TYPE = "contentType";
 
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
     public static final String BOOLEAN_STRING_FALSE = "false";
-    public static final String ANY_NAMESPACE_LOCAL = "##local";    
+    public static final String ANY_NAMESPACE_LOCAL = "##local";
     public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
 
 }

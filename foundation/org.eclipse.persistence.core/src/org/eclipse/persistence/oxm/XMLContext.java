@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -553,86 +554,54 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * @param returnType The return type.
      * @return The object corresponding to the XPath or null if no result was found.
      */
-    public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) { 
-        if(null == xPath) { 
-            return null; 
-         } 
-        if(".".equals(xPath)) { 
-           return (T) object; 
-        } 
-        Session session = this.getSession(object); 
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object); 
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/");
+    public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        if (null == xPath || null == object) {
+            return null;
+        }
+        if (".".equals(xPath)) {
+            return (T) object;
+        }
+        Session session = this.getSession(object);
+        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object);
+        StringTokenizer stringTokenizer = new StringTokenizer(xPath, XMLConstants.XPATH_SEPARATOR);
         T value = getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
-        if(null == value) {
-            DatabaseMapping selfMapping = xmlDescriptor.getObjectBuilder().getMappingForField(new XMLField("."));
-            if(null != selfMapping) {
-                return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(), new StringTokenizer(xPath, "/"), ((XMLDescriptor) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
+        if (null == value) {
+            DatabaseMapping selfMapping = xmlDescriptor.getObjectBuilder().getMappingForField(new XMLField(String.valueOf(XMLConstants.DOT)));
+            if (null != selfMapping) {
+                return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(),
+                        new StringTokenizer(xPath, XMLConstants.XPATH_SEPARATOR), ((XMLDescriptor) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
             }
         }
         return value;
-    } 
- 
+    }
+
     private <T> T getValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        if (null == object) {
-            return null;
-        }
-        String xPath = "";
-        XMLField xmlField = new XMLField();
-        xmlField.setNamespaceResolver(namespaceResolver);
-        while (stringTokenizer.hasMoreElements()) {
-            String nextToken = stringTokenizer.nextToken();
-            xmlField.setXPath(xPath + nextToken);
-            xmlField.initialize();
-            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
-            if (null == mapping) {
-                XPathFragment xPathFragment = new XPathFragment(nextToken);
-                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
-                int fragmentIndex = xPathFragment.getIndexValue();
-                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
-                    int index = xmlFieldIndex - 1;
-                    if (index < 0) {
-                        index = fragmentIndex - 1;
-                    }
-                    String strippedXPath = xmlField.getXPath();
-                    while (strippedXPath.contains("[")) {
-                        int open = strippedXPath.lastIndexOf('[');
-                        int closed = strippedXPath.lastIndexOf(']');
-                        strippedXPath = strippedXPath.substring(0, open) + strippedXPath.substring(closed + 1);
-                    }
-                    xmlField.setXPath(strippedXPath);
-                    xmlField.initialize();
-                    mapping = objectBuilder.getMappingForField(xmlField);
-                    if (null != mapping) {
-                        if (mapping.isCollectionMapping()) {
-                            Object childObject = null;
-                            Object collection = mapping.getAttributeValueFromObject(object);
-                            if (List.class.isAssignableFrom(collection.getClass())) {
-                                List list = (List) collection;
-                                if (index >= list.size()) {
-                                    return null;
-                                }
-                                childObject = list.get(index);
-                            }
-                            if (stringTokenizer.hasMoreElements()) {
-                                ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                                return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
-                            } else {
-                                return (T) childObject;
-                            }
+        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
+        
+        if (null != queryResult) {
+            DatabaseMapping mapping = queryResult.mapping;
+            Object owner = queryResult.owner;
+            Integer index = queryResult.index;
+            
+            if (null != owner) {
+                Object childObject = null;
+                if (mapping.isCollectionMapping()) {
+                    Object collection = mapping.getAttributeValueFromObject(owner);
+                    if (List.class.isAssignableFrom(collection.getClass())) {
+                        List list = (List) collection;
+                        if (null == index) {
+                            return (T) collection;
                         }
+                        if (index >= list.size()) {
+                            return null;
+                        }
+                        childObject = list.get(index);
                     }
-                }
-            } else {
-                if (stringTokenizer.hasMoreElements()) {
-                    Object childObject = mapping.getAttributeValueFromObject(object);
-                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                    return getValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
                 } else {
-                    return (T) mapping.getAttributeValueFromObject(object);
+                    childObject = mapping.getAttributeValueFromObject(owner);
                 }
+                return (T) childObject;
             }
-            xPath = xPath + nextToken + "/";
         }
         return null;
     }
@@ -671,72 +640,48 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
         StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
         setValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, value); 
     } 
- 
-    private void setValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Object value) { 
-        String xPath = ""; 
-        XMLField xmlField = new XMLField(); 
-        xmlField.setNamespaceResolver(namespaceResolver); 
-        while(stringTokenizer.hasMoreElements()) { 
-            String nextToken = stringTokenizer.nextToken();
-            xmlField.setXPath(xPath + nextToken); 
-            xmlField.initialize();
-            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField); 
-            if (null == mapping) {
-                XPathFragment xPathFragment = new XPathFragment(nextToken);
-                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
-                int fragmentIndex = xPathFragment.getIndexValue();
-                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
-                    int index = xmlFieldIndex - 1;
-                    if (index < 0) {
-                        index = fragmentIndex - 1;
-                    }
-                    String strippedXPath = xmlField.getXPath();
-                    while (strippedXPath.contains("[")) {
-                        int open = strippedXPath.lastIndexOf('[');
-                        int closed = strippedXPath.lastIndexOf(']');
-                        strippedXPath = strippedXPath.substring(0, open) + strippedXPath.substring(closed + 1);
-                    }
-                    xmlField.setXPath(strippedXPath);
-                    xmlField.initialize();
-                    mapping = objectBuilder.getMappingForField(xmlField);
-                    if (null != mapping) {
-                        if (mapping.isCollectionMapping()) {
-                            Object childObject = null;
-                            Object collection = mapping.getAttributeValueFromObject(object);
-                            if (List.class.isAssignableFrom(collection.getClass())) {
-                                List list = (List) collection;
-                                if (index >= list.size()) {
-                                    return;
-                                }
-                                childObject = list.get(index);
 
-                                if (stringTokenizer.hasMoreElements()) {
-                                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                                    setValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, value);
-                                    return;
-                                } else {
-                                    list.set(index, value);
-                                    mapping.setAttributeValueInObject(object, list);
-                                    return;
+    private void setValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Object value) {
+        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
+        
+        if (null != queryResult) {
+            DatabaseMapping mapping = queryResult.mapping;
+            Object owner = queryResult.owner;
+            Integer index = queryResult.index;
+
+            if (null != owner) {
+                if (mapping.isCollectionMapping()) {
+                    Object childObject = null;
+                    Object collection = mapping.getAttributeValueFromObject(owner);
+                    if (List.class.isAssignableFrom(collection.getClass())) {
+                        List list = (List) collection;
+                        if (null == index) {
+                            // We are setting the whole collection, not an element in the collection
+                            if (value.getClass().isArray()) {
+                                ArrayList newList = new ArrayList();
+                                int length = Array.getLength(value);
+                                for (int i = 0; i < length; i++) {
+                                    newList.add(Array.get(value, i));
                                 }
+                                value = newList;
                             }
+                            mapping.setAttributeValueInObject(owner, value);
+                            return;
                         }
+                        if (index >= list.size()) {
+                            return;
+                        }
+                        // Set into collection
+                        list.set(index, value);
+                        mapping.setAttributeValueInObject(owner, list);
+                        return;
                     }
+                } else {
+                    mapping.setAttributeValueInObject(owner, value);
                 }
-            } else {
-                if(stringTokenizer.hasMoreElements()) { 
-                    Object childObject = mapping.getAttributeValueFromObject(object); 
-                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder(); 
-                    setValueByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, value); 
-                    return; 
-                } else { 
-                    mapping.setAttributeValueInObject(object, value); 
-                    return; 
-                } 
-            } 
-            xPath = xPath + nextToken + "/"; 
-        } 
-    } 
+            }
+        }
+    }
 
     /**
      * Create a new object instance for a given XML namespace and name.
@@ -799,6 +744,37 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
     }
 
     private <T> T createByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
+        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
+
+        if (null != queryResult.mapping) {
+            ClassDescriptor refDescriptor = queryResult.mapping.getReferenceDescriptor();
+            if (null != refDescriptor) {
+                return (T) refDescriptor.getInstantiationPolicy().buildNewInstance();
+            }
+        }
+        return null;
+    }
+
+    private class XPathQueryResult {
+        /*
+         * Mapping corresponding to the XPath query
+         */
+        private DatabaseMapping mapping;
+
+        /*
+         * Mapping's owning object
+         */
+        private Object owner;
+
+        /*
+         * Index into mapping, from XPath query (may be null)
+         */
+        private Integer index;
+    }
+
+    private XPathQueryResult getMappingForXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver) {
+        XPathQueryResult queryResult = new XPathQueryResult();
+
         String xPath = "";
         XMLField xmlField = new XMLField();
         xmlField.setNamespaceResolver(namespaceResolver);
@@ -808,26 +784,96 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             xmlField.initialize();
             DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
             if (null == mapping) {
+                // XPath might have indexes, while the mapping's XPath may not,
+                // so remove them and look again
                 XPathFragment xPathFragment = new XPathFragment(nextToken);
-                if (xPathFragment.getIndexValue() > 0) {
-                    xmlField.setXPath(xPath + nextToken.substring(0, nextToken.indexOf('[')));
+                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
+                int fragmentIndex = xPathFragment.getIndexValue();
+                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
+                    int index = xmlFieldIndex - 1;
+                    if (index < 0) {
+                        index = fragmentIndex - 1;
+                    }
+                    String xPathNoIndexes = removeIndexesFromXPath(xmlField.getXPath());
+                    xmlField.setXPath(xPathNoIndexes);
                     xmlField.initialize();
                     mapping = objectBuilder.getMappingForField(xmlField);
+                    if (null == mapping) {
+                        // Try adding /text()
+                        xmlField.setXPath(xPathNoIndexes + XMLConstants.XPATH_SEPARATOR + XMLConstants.TEXT);
+                        xmlField.initialize();
+                        mapping = objectBuilder.getMappingForField(xmlField);
+                    }
                     if (null != mapping) {
-                        return (T) mapping.getReferenceDescriptor().getInstantiationPolicy().buildNewInstance();
+                        if (xmlField.getXPath().endsWith(XMLConstants.TEXT) || !stringTokenizer.hasMoreElements()) {
+                            // End of the line, we found a mapping so return it
+                            queryResult.mapping = mapping;
+                            queryResult.owner = object;
+                            queryResult.index = index;
+                            return queryResult;
+                        } else {
+                            // We need to keep looking -- get the mapping value,
+                            // then recurse into getMappingForXPath with new root object
+                            Object childObject = mapping.getAttributeValueFromObject(object);
+                            if (mapping.isCollectionMapping()) {
+                                Object collection = mapping.getAttributeValueFromObject(object);
+                                if (null != collection  && List.class.isAssignableFrom(collection.getClass())) {
+                                    List list = (List) collection;
+                                    if (index >= list.size()) {
+                                        // Index used in query is out of range, no matches
+                                        return null;
+                                    }
+                                    childObject = list.get(index);
+                                }
+                            }
+                            if (null == childObject) {
+                                childObject = mapping.getReferenceDescriptor().getObjectBuilder().buildNewInstance();
+                            }
+                            ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                            return getMappingForXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver);
+                        }
                     }
                 }
             } else {
-                if (stringTokenizer.hasMoreElements()) {
-                    Object childObject = mapping.getAttributeValueFromObject(object);
-                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                    return createByXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver, returnType);
+                if (!stringTokenizer.hasMoreElements()) {
+                    // End of the line, we found a mapping so return it
+                    queryResult.mapping = mapping;
+                    queryResult.owner = object;
+                    return queryResult;
                 } else {
-                    return (T) mapping.getReferenceDescriptor().getInstantiationPolicy().buildNewInstance();
+                    // We need to keep looking -- get the mapping value,
+                    // then recurse into getMappingForXPath with new root object
+                    Object childObject = mapping.getAttributeValueFromObject(object);
+                    if (mapping.isCollectionMapping()) {
+                        Object collection = mapping.getAttributeValueFromObject(object);
+                        if (null != collection && List.class.isAssignableFrom(collection.getClass())) {
+                            List list = (List) collection;
+                            if (0 >= list.size()) {
+                                return null;
+                            }
+                            childObject = list.get(0);
+                        }
+                    }
+                    if (null == childObject) {
+                        childObject = mapping.getReferenceDescriptor().getObjectBuilder().buildNewInstance();
+                    }
+                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
+                    return getMappingForXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver);
                 }
             }
+            xPath = xPath + nextToken + XMLConstants.XPATH_SEPARATOR;
         }
         return null;
+    }
+
+    private String removeIndexesFromXPath(String xpathWithIndexes) {
+        String newXPath = xpathWithIndexes;
+        while (newXPath.contains(XMLConstants.XPATH_INDEX_OPEN)) {
+            int open = newXPath.lastIndexOf(XMLConstants.XPATH_INDEX_OPEN);
+            int closed = newXPath.lastIndexOf(XMLConstants.XPATH_INDEX_CLOSED);
+            newXPath = newXPath.substring(0, open) + newXPath.substring(closed + 1);
+        }
+        return newXPath;
     }
 
     public static class XMLContextState {
