@@ -21,42 +21,38 @@ import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedMultiTenantTableCreator;
 
-public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJunitTest { 
+public class AdvancedMultiTenantTableJunitTest extends AdvancedMultiTenantJunitTest { 
     
-    public AdvancedMultiTenantSharedEMFJunitTest() {
+    public AdvancedMultiTenantTableJunitTest() {
         super();
     }
 
-    public String getMULTI_TENANT_PU() { return "MulitPU-1"; }
+    public String getMULTI_TENANT_TABLE_PER_TENANT_PU() { return "MulitPU-4"; }
     
-    public AdvancedMultiTenantSharedEMFJunitTest(String name) {
+    public AdvancedMultiTenantTableJunitTest(String name) {
         super(name);
-        setPuName(getMULTI_TENANT_PU());
+        setPuName(getMULTI_TENANT_TABLE_PER_TENANT_PU());
     }
     
     public void setUp() {}
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("AdvancedMultiTenantSharedEMFJunitTest");
+        suite.setName("AdvancedMultiTenantTableJunitTest");
         if (! JUnitTestCase.isJPA10()) {
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testSetup"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily707"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily007"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testValidateMafiaFamily707"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testValidateMafiaFamily007"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testValidateMafiaFamily707and007WithSameEM"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testMultitenantOneToOneReadObjectRead"));
-            suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testMultitenantPrimaryKeyWithIdClass"));
+            suite.addTest(new AdvancedMultiTenantTableJunitTest("testSetup"));
+            suite.addTest(new AdvancedMultiTenantTableJunitTest("testTablePerTenantA"));
+            suite.addTest(new AdvancedMultiTenantTableJunitTest("testTablePerTenantB"));
         }
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(getMULTI_TENANT_PU()));
+        new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(getMULTI_TENANT_TABLE_PER_TENANT_PU()));
+        
     }
 
 }
