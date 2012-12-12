@@ -35,7 +35,6 @@ import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -169,7 +168,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     				local = elem.getNodeName();
     			}
     			String prefix = elem.getPrefix();
-    			if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+    			if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
     				frag = new XPathFragment(prefix + marshalRecord.getNamespaceSeparator() + elem.getLocalName(), marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
     			}else{    			
     				frag = new XPathFragment(local, marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
@@ -178,7 +177,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     			Attr  attr = (Attr)n;
     			attr.getLocalName();
     			String prefix = attr.getPrefix();
-    			if(prefix != null && prefix.equals(XMLConstants.EMPTY_STRING)){
+    			if(prefix != null && prefix.equals(Constants.EMPTY_STRING)){
     				frag = new XPathFragment(prefix + marshalRecord.getNamespaceSeparator() + attr.getLocalName(), marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
     			}else{    			
     				frag = new XPathFragment(attr.getLocalName(), marshalRecord.getNamespaceSeparator(), marshalRecord.isNamespaceAware());
@@ -236,7 +235,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyCollectionMapping.usesXMLRoot());
                 String qnameString = xPathFragment.getLocalName();
                 if (xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
+                    qnameString = xPathFragment.getPrefix() + Constants.COLON + qnameString;
                 }
                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
                 XMLReader xmlReader = unmarshalRecord.getXMLReader();
@@ -339,7 +338,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix();
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
             }
-            xpath = prefix + XMLConstants.COLON + xpath;
+            xpath = prefix + Constants.COLON + xpath;
         }
         xmlRootFragment.setXPath(xpath);
         return generatedNamespace;

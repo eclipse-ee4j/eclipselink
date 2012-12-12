@@ -1,12 +1,12 @@
 // Copyright (c) 1998, 2007, Oracle. All rights reserved. 
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
@@ -18,7 +18,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         Setting parentSetting;
         if(null == currentSetting) {
             parentSetting = null;
-        } else if(XMLConstants.TEXT.equals(currentSetting.getName())) {
+        } else if(Constants.TEXT.equals(currentSetting.getName())) {
             parentSetting = null;
         } else {
             parentSetting = currentSetting;
@@ -40,11 +40,11 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
 
     public void characters(UnmarshalRecord unmarshalRecord) {
         if(null == currentSetting || null == currentSetting.getName()) {
-            currentSetting = new Setting(null, XMLConstants.TEXT);
+            currentSetting = new Setting(null, Constants.TEXT);
             ((SequencedObject) unmarshalRecord.getCurrentObject()).getSettings().add(currentSetting);
-        }else if(!XMLConstants.TEXT.equals(currentSetting.getName())) {
+        }else if(!Constants.TEXT.equals(currentSetting.getName())) {
             Setting parentSetting = currentSetting;
-            currentSetting = new Setting(null, XMLConstants.TEXT);
+            currentSetting = new Setting(null, Constants.TEXT);
             if(null != parentSetting) {
                 parentSetting.addChild(currentSetting);
             }
@@ -55,7 +55,7 @@ public class SequencedUnmarshalContext implements UnmarshalContext {
         if(null == currentSetting) {
             return;
         }
-        if(XMLConstants.TEXT.equals(currentSetting.getName())) {
+        if(Constants.TEXT.equals(currentSetting.getName())) {
             if(null == currentSetting.getParent()) {
                 currentSetting = null;
             } else {

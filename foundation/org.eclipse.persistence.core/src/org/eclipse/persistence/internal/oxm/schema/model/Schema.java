@@ -22,7 +22,6 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 public class Schema {
     private String name;//non-persistant, used to give a schema an identifier
@@ -162,7 +161,7 @@ public class Schema {
         while (iter.hasNext()) {
         	Entry nextEntry = iter.next();
             QName key = (QName)nextEntry.getKey();
-            if (key.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) {
+            if (key.getNamespaceURI().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
                 String value = (String)nextEntry.getValue();
                 String prefix = key.getLocalPart();
                 int index = prefix.indexOf(':');

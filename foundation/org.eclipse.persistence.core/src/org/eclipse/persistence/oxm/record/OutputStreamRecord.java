@@ -486,7 +486,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 		Entry<String, String> nextEntry = iter.next();
                         String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
-                        outputStreamWrite(XMLConstants.XMLNS.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                        outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                         if(null != prefix && prefix.length() > 0) {
                             outputStreamWrite((byte)XMLConstants.COLON);
                             outputStreamWrite(prefix.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
@@ -509,7 +509,7 @@ public class OutputStreamRecord extends MarshalRecord {
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
-                if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
+                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));

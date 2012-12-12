@@ -31,7 +31,7 @@ public class TypeAttributeUserTypeProject extends Project {
         descriptor.setJavaClass(Employee.class);
         descriptor.setDefaultRootElement("employee");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         resolver.put("z", "sample/user/namespace");
         descriptor.setNamespaceResolver(resolver);
 

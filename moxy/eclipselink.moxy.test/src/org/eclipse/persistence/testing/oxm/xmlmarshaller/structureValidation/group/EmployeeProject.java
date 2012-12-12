@@ -59,7 +59,7 @@ public class EmployeeProject extends Project {
         startDateMapping.setAttributeName("_StartDate");
         startDateMapping.setGetMethodName("getStartDate");
         startDateMapping.setSetMethodName("setStartDate");
-        QName qname = new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE);
+        QName qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.DATE);
         XMLField field = new XMLField("startDate/text()");
         field.setSchemaType(qname);
         startDateMapping.setField(field);
@@ -69,7 +69,7 @@ public class EmployeeProject extends Project {
         endDateMapping.setAttributeName("_EndDate");
         endDateMapping.setGetMethodName("getEndDate");
         endDateMapping.setSetMethodName("setEndDate");
-        qname = new QName(XMLConstants.SCHEMA_URL, XMLConstants.DATE);
+        qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.DATE);
         field = new XMLField("endDate/text()");
         field.setSchemaType(qname);
         endDateMapping.setField(field);

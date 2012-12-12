@@ -13,10 +13,11 @@
 package org.eclipse.persistence.internal.oxm.schema;
 
 import java.util.ArrayList;
+
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.schema.model.*;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.*;
@@ -32,7 +33,7 @@ public class SchemaModelProject extends Project {
 
     public SchemaModelProject() {
         namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+        namespaceResolver.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
 
         addDescriptor(buildSchemaDescriptor());
         addDescriptor(buildAttributeGroupDescriptor());
@@ -62,19 +63,19 @@ public class SchemaModelProject extends Project {
     private XMLDescriptor buildSchemaDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Schema.class);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":" + "schema");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":" + "schema");
         descriptor.setNamespaceResolver(namespaceResolver);
 
         XMLCompositeCollectionMapping importsMapping = new XMLCompositeCollectionMapping();
         importsMapping.setReferenceClass(Import.class);
         importsMapping.setAttributeName("imports");
-        importsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "import");
+        importsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "import");
         descriptor.addMapping(importsMapping);
 
         XMLCompositeCollectionMapping includesMapping = new XMLCompositeCollectionMapping();
         includesMapping.setReferenceClass(Include.class);
         includesMapping.setAttributeName("includes");
-        includesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "include");
+        includesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "include");
         descriptor.addMapping(includesMapping);
 
         XMLDirectMapping targetNamespaceMapping = new XMLDirectMapping();
@@ -86,7 +87,7 @@ public class SchemaModelProject extends Project {
         defaultNamespaceMapping.setAttributeName("defaultNamespace");
         XMLField xmlField = new XMLField();
         xmlField.setXPath("@xmlns");
-        xmlField.getXPathFragment().setNamespaceURI(XMLConstants.XMLNS_URL);
+        xmlField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
         defaultNamespaceMapping.setField(xmlField);
         descriptor.addMapping(defaultNamespaceMapping);
 
@@ -100,14 +101,14 @@ public class SchemaModelProject extends Project {
         attributeGroupsMapping.setReferenceClass(AttributeGroup.class);
         attributeGroupsMapping.setAttributeName("attributeGroups");
         attributeGroupsMapping.useMapClass(java.util.HashMap.class, "getName");
-        attributeGroupsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "attributeGroup");
+        attributeGroupsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "attributeGroup");
         descriptor.addMapping(attributeGroupsMapping);
 
         XMLCompositeCollectionMapping groupsMapping = new XMLCompositeCollectionMapping();
         groupsMapping.setReferenceClass(Group.class);
         groupsMapping.setAttributeName("groups");
         groupsMapping.useMapClass(java.util.HashMap.class, "getName");
-        groupsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "group");
+        groupsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "group");
         descriptor.addMapping(groupsMapping);
 
         ObjectTypeConverter converter = new ObjectTypeConverter();
@@ -133,34 +134,34 @@ public class SchemaModelProject extends Project {
         topLevelComplexTypesMapping.setReferenceClass(ComplexType.class);
         topLevelComplexTypesMapping.setAttributeName("topLevelComplexTypes");
         topLevelComplexTypesMapping.useMapClass(java.util.HashMap.class, "getName");
-        topLevelComplexTypesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "complexType");
+        topLevelComplexTypesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "complexType");
         descriptor.addMapping(topLevelComplexTypesMapping);
 
         XMLCompositeCollectionMapping topLevelElementsMapping = new XMLCompositeCollectionMapping();
         topLevelElementsMapping.setReferenceClass(Element.class);
         topLevelElementsMapping.setAttributeName("topLevelElements");
         topLevelElementsMapping.useMapClass(java.util.HashMap.class, "getName");
-        topLevelElementsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "element");
+        topLevelElementsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "element");
         descriptor.addMapping(topLevelElementsMapping);
 
         XMLCompositeCollectionMapping topLevelSimpleTypesMapping = new XMLCompositeCollectionMapping();
         topLevelSimpleTypesMapping.setReferenceClass(SimpleType.class);
         topLevelSimpleTypesMapping.setAttributeName("topLevelSimpleTypes");
         topLevelSimpleTypesMapping.useMapClass(java.util.HashMap.class, "getName");
-        topLevelSimpleTypesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "simpleType");
+        topLevelSimpleTypesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "simpleType");
         descriptor.addMapping(topLevelSimpleTypesMapping);
 
         XMLCompositeCollectionMapping topLevelAttributesMapping = new XMLCompositeCollectionMapping();
         topLevelAttributesMapping.setReferenceClass(Attribute.class);
         topLevelAttributesMapping.setAttributeName("topLevelAttributes");
         topLevelAttributesMapping.useMapClass(java.util.HashMap.class, "getName");
-        topLevelAttributesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "attribute");
+        topLevelAttributesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "attribute");
         descriptor.addMapping(topLevelAttributesMapping);
 
               XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         descriptor.setNamespaceResolver(namespaceResolver);
@@ -192,7 +193,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         XMLCompositeObjectMapping sequenceMapping = new XMLCompositeObjectMapping();
@@ -200,7 +201,7 @@ public class SchemaModelProject extends Project {
         sequenceMapping.setAttributeName("sequence");
         sequenceMapping.setSetMethodName("setSequence");
         sequenceMapping.setGetMethodName("getSequence");
-        sequenceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "sequence");
+        sequenceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "sequence");
         descriptor.addMapping(sequenceMapping);
 
         XMLCompositeObjectMapping choiceMapping = new XMLCompositeObjectMapping();
@@ -208,7 +209,7 @@ public class SchemaModelProject extends Project {
         choiceMapping.setAttributeName("choice");
         choiceMapping.setSetMethodName("setChoice");
         choiceMapping.setGetMethodName("getChoice");
-        choiceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "choice");
+        choiceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "choice");
         descriptor.addMapping(choiceMapping);
 
         XMLCompositeObjectMapping allMapping = new XMLCompositeObjectMapping();
@@ -216,7 +217,7 @@ public class SchemaModelProject extends Project {
         allMapping.setAttributeName("all");
         allMapping.setSetMethodName("setAll");
         allMapping.setGetMethodName("getAll");
-        allMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "all");
+        allMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "all");
         descriptor.addMapping(allMapping);
 
         XMLCompositeObjectMapping complextContentMapping = new XMLCompositeObjectMapping();
@@ -225,7 +226,7 @@ public class SchemaModelProject extends Project {
         complextContentMapping.setAttributeName("complexContent");
         complextContentMapping.setGetMethodName("getComplexContent");
         complextContentMapping.setSetMethodName("setComplexContent");
-        complextContentMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":complexContent");
+        complextContentMapping.setXPath(Constants.SCHEMA_PREFIX + ":complexContent");
         descriptor.addMapping(complextContentMapping);
 
         XMLCompositeObjectMapping simpleContentMapping = new XMLCompositeObjectMapping();
@@ -233,13 +234,13 @@ public class SchemaModelProject extends Project {
         simpleContentMapping.setAttributeName("simpleContent");
         simpleContentMapping.setGetMethodName("getSimpleContent");
         simpleContentMapping.setSetMethodName("setSimpleContent");
-        simpleContentMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":simpleContent");
+        simpleContentMapping.setXPath(Constants.SCHEMA_PREFIX + ":simpleContent");
         descriptor.addMapping(simpleContentMapping);
 
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
-        anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
+        anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
 
         XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
@@ -271,7 +272,7 @@ public class SchemaModelProject extends Project {
         restrictionMapping.setReferenceClass(Restriction.class);
         restrictionMapping.setGetMethodName("getRestriction");
         restrictionMapping.setSetMethodName("setRestriction");
-        restrictionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "restriction");
+        restrictionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "restriction");
         descriptor.addMapping(restrictionMapping);
 
         XMLCompositeObjectMapping extensionMapping = new XMLCompositeObjectMapping();
@@ -279,7 +280,7 @@ public class SchemaModelProject extends Project {
         extensionMapping.setReferenceClass(Extension.class);
         extensionMapping.setGetMethodName("getExtension");
         extensionMapping.setSetMethodName("setExtension");
-        extensionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "extension");
+        extensionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "extension");
         descriptor.addMapping(extensionMapping);
         return descriptor;
     }
@@ -294,7 +295,7 @@ public class SchemaModelProject extends Project {
         restrictionMapping.setReferenceClass(Restriction.class);
         restrictionMapping.setGetMethodName("getRestriction");
         restrictionMapping.setSetMethodName("setRestriction");
-        restrictionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "restriction");
+        restrictionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "restriction");
         descriptor.addMapping(restrictionMapping);
 
         XMLCompositeObjectMapping extensionMapping = new XMLCompositeObjectMapping();
@@ -302,7 +303,7 @@ public class SchemaModelProject extends Project {
         extensionMapping.setReferenceClass(Extension.class);
         extensionMapping.setGetMethodName("getExtension");
         extensionMapping.setSetMethodName("setExtension");
-        extensionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "extension");
+        extensionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "extension");
         descriptor.addMapping(extensionMapping);
 
         return descriptor;
@@ -321,7 +322,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         XMLCompositeObjectMapping restrictionMapping = new XMLCompositeObjectMapping();
@@ -329,19 +330,19 @@ public class SchemaModelProject extends Project {
         restrictionMapping.setReferenceClass(Restriction.class);
         restrictionMapping.setGetMethodName("getRestriction");
         restrictionMapping.setSetMethodName("setRestriction");
-        restrictionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "restriction");
+        restrictionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "restriction");
         descriptor.addMapping(restrictionMapping);
 
         XMLCompositeObjectMapping listMapping = new XMLCompositeObjectMapping();
         listMapping.setAttributeName("list");
         listMapping.setReferenceClass(org.eclipse.persistence.internal.oxm.schema.model.List.class);
-        listMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "list");
+        listMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "list");
         descriptor.addMapping(listMapping);
 
         XMLCompositeObjectMapping unionMapping = new XMLCompositeObjectMapping();
         unionMapping.setAttributeName("union");
         unionMapping.setReferenceClass(Union.class);
-        unionMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "union");
+        unionMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "union");
         descriptor.addMapping(unionMapping);
 
         XMLAnyAttributeMapping attributesMapMapping = new XMLAnyAttributeMapping();
@@ -366,7 +367,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping simpleTypeMapping = new XMLCompositeObjectMapping();
         simpleTypeMapping.setReferenceClass(SimpleType.class);
         simpleTypeMapping.setAttributeName("simpleType");
-        simpleTypeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "simpleType");
+        simpleTypeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "simpleType");
         descriptor.addMapping(simpleTypeMapping);
 
         return descriptor;
@@ -386,7 +387,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeCollectionMapping simpleTypesMapping = new XMLCompositeCollectionMapping();
         simpleTypesMapping.setReferenceClass(SimpleType.class);
         simpleTypesMapping.setAttributeName("simpleTypes");
-        simpleTypesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "simpleType");
+        simpleTypesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "simpleType");
         descriptor.addMapping(simpleTypesMapping);
 
         return descriptor;
@@ -407,7 +408,7 @@ public class SchemaModelProject extends Project {
         sequenceMapping.setAttributeName("sequence");
         sequenceMapping.setSetMethodName("setSequence");
         sequenceMapping.setGetMethodName("getSequence");
-        sequenceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "sequence");
+        sequenceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "sequence");
         descriptor.addMapping(sequenceMapping);
 
         XMLCompositeObjectMapping choiceMapping = new XMLCompositeObjectMapping();
@@ -415,7 +416,7 @@ public class SchemaModelProject extends Project {
         choiceMapping.setAttributeName("choice");
         choiceMapping.setSetMethodName("setChoice");
         choiceMapping.setGetMethodName("getChoice");
-        choiceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "choice");
+        choiceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "choice");
         descriptor.addMapping(choiceMapping);
 
         XMLCompositeObjectMapping allMapping = new XMLCompositeObjectMapping();
@@ -423,59 +424,59 @@ public class SchemaModelProject extends Project {
         allMapping.setAttributeName("all");
         allMapping.setSetMethodName("setAll");
         allMapping.setGetMethodName("getAll");
-        allMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "all");
+        allMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "all");
         descriptor.addMapping(allMapping);
 
         XMLCompositeObjectMapping simpleTypeMapping = new XMLCompositeObjectMapping();
         simpleTypeMapping.setReferenceClass(SimpleType.class);
         simpleTypeMapping.setAttributeName("simpleType");
-        simpleTypeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "simpleType");
+        simpleTypeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "simpleType");
         descriptor.addMapping(simpleTypeMapping);
 
         XMLCompositeCollectionMapping attributesMapping = new XMLCompositeCollectionMapping();
         attributesMapping.setReferenceClass(Attribute.class);
         attributesMapping.setAttributeName("attributes");
-        attributesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "attribute");
+        attributesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "attribute");
         descriptor.addMapping(attributesMapping);
 
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
-        anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
+        anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
 
         XMLDirectMapping minInclusiveMapping = new XMLDirectMapping();
         minInclusiveMapping.setAttributeName("minInclusive");
         minInclusiveMapping.setSetMethodName("setMinInclusive");
         minInclusiveMapping.setGetMethodName("getMinInclusive");
-        minInclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":minInclusive/@value");
+        minInclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":minInclusive/@value");
         descriptor.addMapping(minInclusiveMapping);
 
         XMLDirectMapping maxInclusiveMapping = new XMLDirectMapping();
         maxInclusiveMapping.setAttributeName("maxInclusive");
         maxInclusiveMapping.setSetMethodName("setMaxInclusive");
         maxInclusiveMapping.setGetMethodName("getMaxInclusive");
-        maxInclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":maxInclusive/@value");
+        maxInclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":maxInclusive/@value");
         descriptor.addMapping(maxInclusiveMapping);
 
         XMLDirectMapping minExclusiveMapping = new XMLDirectMapping();
         minExclusiveMapping.setAttributeName("minExclusive");
         minExclusiveMapping.setSetMethodName("setMinExclusive");
         minExclusiveMapping.setGetMethodName("getMinExclusive");
-        minExclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":minExclusive/@value");
+        minExclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":minExclusive/@value");
         descriptor.addMapping(minExclusiveMapping);
         
         XMLDirectMapping maxExclusiveMapping = new XMLDirectMapping();
         maxExclusiveMapping.setAttributeName("maxExclusive");
         maxExclusiveMapping.setSetMethodName("setMaxExclusive");
         maxExclusiveMapping.setGetMethodName("getMaxExclusive");
-        maxExclusiveMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":maxExclusive/@value");
+        maxExclusiveMapping.setXPath(Constants.SCHEMA_PREFIX + ":maxExclusive/@value");
         descriptor.addMapping(maxExclusiveMapping);
 
         XMLCompositeDirectCollectionMapping enumerationFacetsMapping = new XMLCompositeDirectCollectionMapping();
         enumerationFacetsMapping.setAttributeName("enumerationFacets");
         enumerationFacetsMapping.useCollectionClass(java.util.ArrayList.class);
-        enumerationFacetsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":enumeration/@value");
+        enumerationFacetsMapping.setXPath(Constants.SCHEMA_PREFIX + ":enumeration/@value");
         descriptor.addMapping(enumerationFacetsMapping);
         return descriptor;
     }
@@ -495,7 +496,7 @@ public class SchemaModelProject extends Project {
         sequenceMapping.setAttributeName("sequence");
         sequenceMapping.setSetMethodName("setSequence");
         sequenceMapping.setGetMethodName("getSequence");
-        sequenceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "sequence");
+        sequenceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "sequence");
         descriptor.addMapping(sequenceMapping);
 
         XMLCompositeObjectMapping choiceMapping = new XMLCompositeObjectMapping();
@@ -503,7 +504,7 @@ public class SchemaModelProject extends Project {
         choiceMapping.setAttributeName("choice");
         choiceMapping.setSetMethodName("setChoice");
         choiceMapping.setGetMethodName("getChoice");
-        choiceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "choice");
+        choiceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "choice");
         descriptor.addMapping(choiceMapping);
 
         XMLCompositeObjectMapping allMapping = new XMLCompositeObjectMapping();
@@ -511,7 +512,7 @@ public class SchemaModelProject extends Project {
         allMapping.setAttributeName("all");
         allMapping.setSetMethodName("setAll");
         allMapping.setGetMethodName("getAll");
-        allMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "all");
+        allMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "all");
         descriptor.addMapping(allMapping);
 
         XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
@@ -521,7 +522,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
-        anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
+        anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
 
         return descriptor;
@@ -531,7 +532,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Element.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":element");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":element");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -593,7 +594,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         XMLCompositeObjectMapping simpleTypeMapping = new XMLCompositeObjectMapping();
@@ -601,7 +602,7 @@ public class SchemaModelProject extends Project {
         simpleTypeMapping.setAttributeName("simpleType");
         simpleTypeMapping.setGetMethodName("getSimpleType");
         simpleTypeMapping.setSetMethodName("setSimpleType");
-        simpleTypeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":simpleType");
+        simpleTypeMapping.setXPath(Constants.SCHEMA_PREFIX + ":simpleType");
         descriptor.addMapping(simpleTypeMapping);
 
         XMLCompositeObjectMapping complexTypeMapping = new XMLCompositeObjectMapping();
@@ -609,7 +610,7 @@ public class SchemaModelProject extends Project {
         complexTypeMapping.setAttributeName("complexType");
         complexTypeMapping.setGetMethodName("getComplexType");
         complexTypeMapping.setSetMethodName("setComplexType");
-        complexTypeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":complexType");
+        complexTypeMapping.setXPath(Constants.SCHEMA_PREFIX + ":complexType");
         descriptor.addMapping(complexTypeMapping);
 
         XMLAnyAttributeMapping attributesMapMapping = new XMLAnyAttributeMapping();
@@ -625,7 +626,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Choice.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":choice");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":choice");
         //descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
@@ -653,7 +654,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(All.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":all");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":all");
         //				descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
@@ -670,7 +671,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeCollectionMapping elementsMapping = new XMLCompositeCollectionMapping();
         elementsMapping.setReferenceClass(Element.class);
         elementsMapping.setAttributeName("elements");
-        elementsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "element");
+        elementsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "element");
         descriptor.addMapping(elementsMapping);
 
         return descriptor;
@@ -681,7 +682,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Sequence.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":sequence");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":sequence");
         //		descriptor.getInheritancePolicy().setParentClass(TypeDefParticle.class);
         XMLDirectMapping minOccursMapping = new XMLDirectMapping();
         minOccursMapping.setAttributeName("minOccurs");
@@ -708,7 +709,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Any.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":any");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":any");
 
         XMLDirectMapping processContentsMapping = new XMLDirectMapping();
         processContentsMapping.setAttributeName("processContents");
@@ -739,7 +740,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Attribute.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":attribute");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":attribute");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -782,13 +783,13 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         XMLCompositeObjectMapping simpleTypeMapping = new XMLCompositeObjectMapping();
         simpleTypeMapping.setReferenceClass(SimpleType.class);
         simpleTypeMapping.setAttributeName("simpleType");
-        simpleTypeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "simpleType");
+        simpleTypeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "simpleType");
         descriptor.addMapping(simpleTypeMapping);
 
         XMLAnyAttributeMapping attributesMapMapping = new XMLAnyAttributeMapping();
@@ -826,7 +827,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath(XMLConstants.ATTRIBUTE+XMLConstants.SCHEMA_LOCATION);
+        schemaLocationMapping.setXPath(Constants.ATTRIBUTE+Constants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -849,7 +850,7 @@ public class SchemaModelProject extends Project {
 
         XMLDirectMapping schemaLocationMapping = new XMLDirectMapping();
         schemaLocationMapping.setAttributeName("schemaLocation");
-        schemaLocationMapping.setXPath(XMLConstants.ATTRIBUTE+XMLConstants.SCHEMA_LOCATION);
+        schemaLocationMapping.setXPath(Constants.ATTRIBUTE+Constants.SCHEMA_LOCATION);
         descriptor.addMapping(schemaLocationMapping);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -868,13 +869,13 @@ public class SchemaModelProject extends Project {
         XMLCompositeDirectCollectionMapping documentationMapping = new XMLCompositeDirectCollectionMapping();
         documentationMapping.setAttributeName("documentation");
         documentationMapping.useCollectionClass(ArrayList.class);
-        documentationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "documentation");
+        documentationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "documentation");
         ((XMLField)documentationMapping.getField()).setUsesSingleNode(false);
         descriptor.addMapping(documentationMapping);
 
         XMLFragmentCollectionMapping appInfoMapping = new XMLFragmentCollectionMapping();
         appInfoMapping.setAttributeName("appInfo");
-        appInfoMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "appinfo");
+        appInfoMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "appinfo");
         appInfoMapping.useCollectionClass(java.util.ArrayList.class);
         descriptor.addMapping(appInfoMapping);
 
@@ -885,7 +886,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Group.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":group");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":group");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -914,7 +915,7 @@ public class SchemaModelProject extends Project {
         XMLCompositeObjectMapping annotationMapping = new XMLCompositeObjectMapping();
         annotationMapping.setReferenceClass(Annotation.class);
         annotationMapping.setAttributeName("annotation");
-        annotationMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "annotation");
+        annotationMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "annotation");
         descriptor.addMapping(annotationMapping);
 
         XMLCompositeObjectMapping sequenceMapping = new XMLCompositeObjectMapping();
@@ -922,7 +923,7 @@ public class SchemaModelProject extends Project {
         sequenceMapping.setAttributeName("sequence");
         sequenceMapping.setSetMethodName("setSequence");
         sequenceMapping.setGetMethodName("getSequence");
-        sequenceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "sequence");
+        sequenceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "sequence");
         descriptor.addMapping(sequenceMapping);
 
         XMLCompositeObjectMapping choiceMapping = new XMLCompositeObjectMapping();
@@ -930,7 +931,7 @@ public class SchemaModelProject extends Project {
         choiceMapping.setAttributeName("choice");
         choiceMapping.setSetMethodName("setChoice");
         choiceMapping.setGetMethodName("getChoice");
-        choiceMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "choice");
+        choiceMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "choice");
         descriptor.addMapping(choiceMapping);
 
         XMLCompositeObjectMapping allMapping = new XMLCompositeObjectMapping();
@@ -938,7 +939,7 @@ public class SchemaModelProject extends Project {
         allMapping.setAttributeName("all");
         allMapping.setSetMethodName("setAll");
         allMapping.setGetMethodName("getAll");
-        allMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "all");
+        allMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "all");
         descriptor.addMapping(allMapping);
 
         return descriptor;
@@ -948,7 +949,7 @@ public class SchemaModelProject extends Project {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(AttributeGroup.class);
         descriptor.setNamespaceResolver(namespaceResolver);
-        descriptor.setDefaultRootElement(XMLConstants.SCHEMA_PREFIX + ":attributeGroup");
+        descriptor.setDefaultRootElement(Constants.SCHEMA_PREFIX + ":attributeGroup");
 
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
@@ -966,13 +967,13 @@ public class SchemaModelProject extends Project {
         attributesMapping.setReferenceClass(Attribute.class);
         attributesMapping.useCollectionClass(ArrayList.class);
         attributesMapping.setAttributeName("attributes");
-        attributesMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "attribute");
+        attributesMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "attribute");
         descriptor.addMapping(attributesMapping);
 
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
-        anyAttributeMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "anyAttribute");
+        anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
 
         return descriptor;
@@ -1006,9 +1007,9 @@ public class SchemaModelProject extends Project {
             descriptor.setNamespaceResolver(namespaceResolver);
 
             ElementNameClassExtractor extractor = new ElementNameClassExtractor();
-            extractor.addElementNameMapping(new QName(XMLConstants.SCHEMA_URL, "sequence"),Sequence.class);
-            extractor.addElementNameMapping(new QName(XMLConstants.SCHEMA_URL, "choice"),Choice.class);
-            extractor.addElementNameMapping(new QName(XMLConstants.SCHEMA_URL, "all"),All.class);
+            extractor.addElementNameMapping(new QName(Constants.SCHEMA_URL, "sequence"),Sequence.class);
+            extractor.addElementNameMapping(new QName(Constants.SCHEMA_URL, "choice"),Choice.class);
+            extractor.addElementNameMapping(new QName(Constants.SCHEMA_URL, "all"),All.class);
             descriptor.getInheritancePolicy().setClassExtractor(extractor);
 
 
@@ -1028,13 +1029,13 @@ public class SchemaModelProject extends Project {
             XMLCompositeObjectMapping anyMapping = new XMLCompositeObjectMapping();
             anyMapping.setReferenceClass(Any.class);
             anyMapping.setAttributeName("any");
-            anyMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "any");
+            anyMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "any");
             descriptor.addMapping(anyMapping);
 
             XMLCompositeCollectionMapping elementsMapping = new XMLCompositeCollectionMapping();
             elementsMapping.setReferenceClass(Element.class);
             elementsMapping.setAttributeName("elements");
-            elementsMapping.setXPath(XMLConstants.SCHEMA_PREFIX + ":" + "element");
+            elementsMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "element");
             descriptor.addMapping(elementsMapping);
 
             return descriptor;

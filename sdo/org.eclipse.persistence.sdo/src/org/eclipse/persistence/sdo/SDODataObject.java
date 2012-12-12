@@ -1918,7 +1918,7 @@ public class SDODataObject implements DataObject, SequencedObject {
         while (iter.hasNext()) {
             QName nextKey = (QName)iter.next();
 
-            if ((!nextKey.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) && (!((nextKey.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) && nextKey.getLocalPart().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)))) {
+            if ((!nextKey.getNamespaceURI().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) && (!((nextKey.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) && nextKey.getLocalPart().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)))) {
                 Object value = openAttributeProperties.get(nextKey);
                 SDOProperty prop = (SDOProperty)aHelperContext.getXSDHelper().getGlobalProperty(nextKey.getNamespaceURI(), nextKey.getLocalPart(), false);
                 if (prop == null) {

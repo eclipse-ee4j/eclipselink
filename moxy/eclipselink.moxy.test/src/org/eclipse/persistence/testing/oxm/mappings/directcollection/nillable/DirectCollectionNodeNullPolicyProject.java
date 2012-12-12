@@ -79,7 +79,7 @@ public class DirectCollectionNodeNullPolicyProject extends Project {
         descriptor.addMapping(lastNameMapping);
 
         NamespaceResolver nsr = new NamespaceResolver();
-        nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        nsr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         descriptor.setNamespaceResolver(nsr);
 
         return descriptor;

@@ -70,6 +70,7 @@ import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
@@ -86,6 +87,7 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -111,7 +113,6 @@ import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
@@ -331,14 +332,14 @@ public class AnnotationsProcessor {
                             if (qname == null) {
                                 if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
                                     if (xmlAttachmentRef) {
-                                        qname = XMLConstants.SWA_REF_QNAME;
+                                        qname = Constants.SWA_REF_QNAME;
                                     } else {
-                                        qname = XMLConstants.BASE_64_BINARY_QNAME;
+                                        qname = Constants.BASE_64_BINARY_QNAME;
                                     }
                                 } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
-                                    qname = XMLConstants.ANY_TYPE_QNAME;
+                                    qname = Constants.ANY_TYPE_QNAME;
                                 } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
-                                    qname = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+                                    qname = Constants.ANY_SIMPLE_TYPE_QNAME;
                                 } else {
                                     Class theClass = helper.getClassForJavaClass(nextClass);
                                     qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);
@@ -381,9 +382,9 @@ public class AnnotationsProcessor {
                             }
                             String rootNamespace = element.getElementName().getNamespaceURI();
                             if (rootNamespace == null) {
-                                rootNamespace = XMLConstants.EMPTY_STRING;
+                                rootNamespace = Constants.EMPTY_STRING;
                             }
-                            if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
+                            if (rootNamespace.equals(Constants.EMPTY_STRING)) {
                                 isDefaultNamespaceAllowed = false;
                             }
                         }
@@ -808,7 +809,7 @@ public class AnnotationsProcessor {
                 continue;
             }
             String[] propOrder = tInfo.getPropOrder();
-            boolean hasPropOrder = propOrder.length > 0 && !(propOrder.length == 1 && propOrder[0].equals(XMLConstants.EMPTY_STRING));                               
+            boolean hasPropOrder = propOrder.length > 0 && !(propOrder.length == 1 && propOrder[0].equals(Constants.EMPTY_STRING));                               
             // If a property is marked transient, ensure it doesn't exist in the propOrder
             List<String> propOrderList = Arrays.asList(tInfo.getPropOrder());
             ArrayList<Property> propsList = tInfo.getPropertyList();
@@ -1689,7 +1690,7 @@ public class AnnotationsProcessor {
         }
         if (javaClass.isArray()) {
             String javaClassName = javaClass.getName();
-            if (!(javaClassName.equals(ClassConstants.APBYTE.getName()))&& !(javaClassName.equals(ClassConstants.ABYTE.getName()))) {
+            if (!(javaClassName.equals(CoreClassConstants.APBYTE.getName()))&& !(javaClassName.equals(CoreClassConstants.ABYTE.getName()))) {
                 return true;
             }
         }
@@ -1888,7 +1889,7 @@ public class AnnotationsProcessor {
                 if(fragment.getPredicate() != null) {
                     //can't append xpath directly since it will contain the predicate
                     String fragmentPath = fragment.getLocalName();
-                    if(fragment.getPrefix() != null && !(XMLConstants.EMPTY_STRING.equals(fragment.getPrefix()))) {
+                    if(fragment.getPrefix() != null && !(Constants.EMPTY_STRING.equals(fragment.getPrefix()))) {
                         fragmentPath = fragment.getPrefix() + ":" + fragmentPath;
                     }
                     currentPath += fragmentPath;
@@ -2402,14 +2403,14 @@ public class AnnotationsProcessor {
         processXmlJavaTypeAdapter(property, info, cls);
         if (helper.isAnnotationPresent(property.getElement(), XmlAttachmentRef.class) && areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
             property.setIsSwaAttachmentRef(true);
-            property.setSchemaType(XMLConstants.SWA_REF_QNAME);
+            property.setSchemaType(Constants.SWA_REF_QNAME);
         }
         processXmlElement(property, info);
 
         // JavaClass ptype = property.getActualType();
         if (!(property.isSwaAttachmentRef()) && isMtomAttachment(property)) {
             property.setIsMtomAttachment(true);
-            property.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            property.setSchemaType(Constants.BASE_64_BINARY_QNAME);
         }
         if (helper.isAnnotationPresent(property.getElement(), XmlMimeType.class)) {
             property.setMimeType(((XmlMimeType) helper.getAnnotation(property.getElement(), XmlMimeType.class)).value());
@@ -2516,7 +2517,7 @@ public class AnnotationsProcessor {
         // Handle XmlLocation
         JavaHasAnnotations elem = property.getElement();
         if (helper.isAnnotationPresent(elem, XmlLocation.class) || helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) || helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS)) {
-            if (!helper.getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(property.getType())) {
+            if (!helper.getJavaClass(Constants.LOCATOR_CLASS).isAssignableFrom(property.getType())) {
                 throw JAXBException.invalidXmlLocation(property.getPropertyName(), property.getType().getName());
             }
             property.setXmlLocation(true);
@@ -3104,7 +3105,7 @@ public class AnnotationsProcessor {
     public QName getSchemaTypeFor(JavaClass javaClass) {
         QName schemaType = getSchemaTypeOrNullFor(javaClass);
         if (schemaType == null) {
-            return XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+            return Constants.ANY_SIMPLE_TYPE_QNAME;
         }
         return schemaType;
     }
@@ -3214,7 +3215,7 @@ public class AnnotationsProcessor {
 
             if (!namespace.equals(XMLProcessor.DEFAULT)) {
                 qName = new QName(namespace, name);
-                if (namespace.equals(XMLConstants.EMPTY_STRING)) {
+                if (namespace.equals(Constants.EMPTY_STRING)) {
                     isDefaultNamespaceAllowed = false;
                 }
             } else {
@@ -3321,10 +3322,10 @@ public class AnnotationsProcessor {
         for(PackageInfo next:this.packageToPackageInfoMappings.values()) {
             String nextUri = next.getNamespace();
             if(nextUri == null) {
-                nextUri = XMLConstants.EMPTY_STRING;
+                nextUri = Constants.EMPTY_STRING;
             }
             if(namespace == null) {
-                namespace = XMLConstants.EMPTY_STRING;
+                namespace = Constants.EMPTY_STRING;
             }
             
             if(nextUri.equals(namespace)) {
@@ -3522,7 +3523,7 @@ public class AnnotationsProcessor {
                     if (XMLProcessor.DEFAULT.equals(url)) {
                         url = packageInfo.getNamespace();
                     }
-                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                    if(Constants.EMPTY_STRING.equals(url)) {
                         isDefaultNamespaceAllowed = false;
                         qname = new QName(localName);
                     }else{
@@ -3622,13 +3623,13 @@ public class AnnotationsProcessor {
                     } else {
                         String rootNS = namespaceInfo.getNamespace();
                         rootElemName = new QName(rootNS, elementName);
-                        if (rootNS.equals(XMLConstants.EMPTY_STRING)) {
+                        if (rootNS.equals(Constants.EMPTY_STRING)) {
                             isDefaultNamespaceAllowed = false;
                         }
                     }
                 } else {
                     rootElemName = new QName(rootNamespace, elementName);
-                    if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
+                    if (rootNamespace.equals(Constants.EMPTY_STRING)) {
                         isDefaultNamespaceAllowed = false;
                     }
                 }

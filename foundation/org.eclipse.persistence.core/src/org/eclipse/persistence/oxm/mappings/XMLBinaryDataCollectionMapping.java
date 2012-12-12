@@ -305,7 +305,7 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
                         Object obj = include.getIndicatingNoEntry(incField);
                         if (obj != null && obj instanceof DOMRecord) {
                             if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                                ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
+                                ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + XMLConstants.XOP_PREFIX, XMLConstants.XOP_URL);
                             }
                         }
                     }

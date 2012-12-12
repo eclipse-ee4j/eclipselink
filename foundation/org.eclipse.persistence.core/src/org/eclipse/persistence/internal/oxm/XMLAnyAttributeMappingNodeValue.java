@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -73,7 +72,7 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                 if (nr != null) {
                     String prefix = nr.resolveNamespaceURI(name.getNamespaceURI());
                     if ((prefix != null) && prefix.length() > 0) {
-                        qualifiedName = prefix + XMLConstants.COLON+ qualifiedName;
+                        qualifiedName = prefix + Constants.COLON+ qualifiedName;
                     } else if (name.getNamespaceURI() != null && name.getNamespaceURI().length() > 0) {
                         String generatedPrefix = nr.generatePrefix();
                         if(marshalRecord.hasCustomNamespaceMapper()) {
@@ -82,14 +81,14 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                                 generatedPrefix = customPrefix;
                             }
                         }
-                        qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
+                        qualifiedName = generatedPrefix + Constants.COLON + qualifiedName;
                         nr.put(generatedPrefix, name.getNamespaceURI());
                         extraNamespaces.add(generatedPrefix);                        
                         marshalRecord.namespaceDeclaration(generatedPrefix, name.getNamespaceURI());
 
                     }
                 }
-                if(XMLConstants.XMLNS_URL.equals(name.getNamespaceURI())){
+                if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(name.getNamespaceURI())){
                     marshalRecord.namespaceDeclaration(name.getLocalPart(), name.getNamespaceURI());
                 }else{
                     marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
@@ -106,9 +105,9 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {        
         boolean includeAttribute = true;
-        if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && XMLConstants.XMLNS_URL.equals(namespaceURI)){
+        if(!xmlAnyAttributeMapping.isNamespaceDeclarationIncluded() && javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)){
             includeAttribute = false;               
-        }else if(!xmlAnyAttributeMapping.isSchemaInstanceIncluded() && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
+        }else if(!xmlAnyAttributeMapping.isSchemaInstanceIncluded() && javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespaceURI)){
             includeAttribute = false;               
         }
                     

@@ -18,7 +18,7 @@ import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
@@ -35,7 +35,7 @@ public abstract class MultiDimensionalCollectionValue<T extends ManyValue<?, Obj
         Class<?> containerClass = containerClass();
         ContainerPolicy containerPolicy;
         if(Modifier.isAbstract(containerClass.getModifiers())) {
-            containerPolicy = ContainerPolicy.buildPolicyFor(ClassConstants.ArrayList_class);
+            containerPolicy = ContainerPolicy.buildPolicyFor(CoreClassConstants.ArrayList_class);
         } else {
             containerPolicy = ContainerPolicy.buildPolicyFor(containerClass());
         }

@@ -166,10 +166,10 @@ public class SDOWrapperType extends SDOType implements Type {
             mapping.addFieldTransformer(XPATH, transformer);
 
             NamespaceResolver nsr = new NamespaceResolver();
-            nsr.setDefaultNamespaceURI(XMLConstants.XMLNS_URL);
+            nsr.setDefaultNamespaceURI(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
             XMLField field = new XMLField();
             field.setNamespaceResolver(nsr);
-            field.setXPath("@" + XMLConstants.XMLNS);
+            field.setXPath("@" + javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
             mapping.addFieldTransformer(field, new NamespaceURITransformer());
 
             mapping.setAttributeAccessor(accessor);

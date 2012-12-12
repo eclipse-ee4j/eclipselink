@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.mappings.MimeTypePolicy;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
@@ -39,14 +40,19 @@ public interface BinaryDataCollectionMapping<
 
     public Class getAttributeElementClass();
 
-    public String getMimeType(Object object);
+    /**
+     * INTERNAL
+     */
+    public String getMimeType();
 
+    public String getMimeType(Object object); 
+    
     public MIME_TYPE_POLICY getMimeTypePolicy();
 
     public AbstractNullPolicy getNullPolicy();
-
+    
     public boolean isSwaRef();
-
+    
     public boolean isWriteOnly();
 
     /**
@@ -59,30 +65,38 @@ public interface BinaryDataCollectionMapping<
     public void setAttributeElementClass(Class attributeElementClass);
 
     /**
-     * Set the field that holds the nested collection.
+     * ADVANCED:
+     * Set the field in the mapping.
+     * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
-    public void setField(FIELD field);
-	
-    public void setIsWriteOnly(boolean b);
+    public void setField(FIELD theField);    
     
+    public void setIsWriteOnly(boolean b);           
+    	
+
     /**
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
-    public void setMimeTypePolicy(MIME_TYPE_POLICY mimeTypePolicy);
+    public void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
+           
+    /**
+     * Set the AbstractNullPolicy on the mapping<br>
+     * The default policy is NullPolicy.<br>
+     *
+     * @param aNullPolicy
+     */
+    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
     
-    public void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
+    public void setShouldInlineBinaryData(boolean b);    
     
-    public void setShouldInlineBinaryData(boolean b);
-    	
-    public void setSwaRef(boolean swaRef);
-	
+    public void setSwaRef(boolean swaRef);    
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the direct collection's object value and database value.
      */
-    public void setValueConverter(CONVERTER valueConverter);
-    
+    public void setValueConverter(CONVERTER valueConverter);       
+        
     public boolean shouldInlineBinaryData();
     
     public void useCollectionClassName(String concreteContainerClassName);

@@ -34,8 +34,8 @@ public class EmployeeProject extends Project {
         xmlDescriptor.setDefaultRootElement("employee");
 
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        namespaceResolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        namespaceResolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         xmlDescriptor.setNamespaceResolver(namespaceResolver);
 
         XMLDirectMapping mapping = new XMLDirectMapping();
@@ -57,8 +57,8 @@ public class EmployeeProject extends Project {
         xmlDescriptor.setJavaClass(Phone.class);
 
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        namespaceResolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        namespaceResolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         xmlDescriptor.setNamespaceResolver(namespaceResolver);
 
         XMLDirectMapping mapping = new XMLDirectMapping();

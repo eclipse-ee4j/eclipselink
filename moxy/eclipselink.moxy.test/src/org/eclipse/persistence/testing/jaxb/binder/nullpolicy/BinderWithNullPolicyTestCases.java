@@ -78,7 +78,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
     
     public void testXsiNilUnmarshalMarshalValue() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + XMLConstants.SCHEMA_INSTANCE_URL + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml";
         Document controlDocument = parser.parse(new File(controlSource));
         

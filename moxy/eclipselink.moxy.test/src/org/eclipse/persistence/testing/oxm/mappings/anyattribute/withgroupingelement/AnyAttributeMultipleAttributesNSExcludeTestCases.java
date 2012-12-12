@@ -52,7 +52,7 @@ public class AnyAttributeMultipleAttributesNSExcludeTestCases extends XMLMapping
         any.put(name, "Matt");        
         name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");                        
-        name = new QName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        name = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         any.put(name, "blah");
         
         root.setAny(any);

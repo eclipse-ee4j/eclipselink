@@ -191,7 +191,7 @@ public class NodeRecord extends MarshalRecord {
                 attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(XMLConstants.XMLNS_URL, XMLConstants.EMPTY_STRING,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLConstants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
@@ -341,12 +341,12 @@ public class NodeRecord extends MarshalRecord {
                     if(null == namespaceDeclarationPrefix || 0 == namespaceDeclarationPrefix.length()) {
                         String namespaceDeclarationURI = entry.getValue();
                         if(null == namespaceDeclarationURI) {
-                            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS , XMLConstants.EMPTY_STRING);
+                            element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , XMLConstants.EMPTY_STRING);
                         } else {
-                            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS , namespaceDeclarationURI);
+                            element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , namespaceDeclarationURI);
                         }
                     } else {
-                        element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + entry.getKey(), entry.getValue());
+                        element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + entry.getKey(), entry.getValue());
                     }
                 }
                 prefixMappings.clear();

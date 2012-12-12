@@ -50,12 +50,12 @@ import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -70,7 +70,7 @@ import org.eclipse.persistence.jaxb.JAXBErrorHandler;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
@@ -399,7 +399,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         try {
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
-            if(XMLConversionManager.getDefaultJavaTypes().get(javaClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(javaClass) ||ClassConstants.DURATION.isAssignableFrom(javaClass)) {
+            if(XMLConversionManager.getDefaultJavaTypes().get(javaClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(javaClass) ||CoreClassConstants.DURATION.isAssignableFrom(javaClass)) {
                 PrimitiveContentHandler primitiveContentHandler = new PrimitiveContentHandler(javaClass);
                 staxReader.setContentHandler(primitiveContentHandler);
                 staxReader.parse(inputSource);
@@ -464,7 +464,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if (type.getType() instanceof Class) {
                 Class javaClass = (Class) type.getType();
                 Class componentClass = javaClass.getComponentType();
-                if (javaClass.isArray() && javaClass != ClassConstants.APBYTE && javaClass != ClassConstants.ABYTE && XMLConversionManager.getDefaultJavaTypes().get(componentClass) != null) {
+                if (javaClass.isArray() && javaClass != CoreClassConstants.APBYTE && javaClass != CoreClassConstants.ABYTE && XMLConversionManager.getDefaultJavaTypes().get(componentClass) != null) {
                     // Top-level array.  Descriptor will be for an EL-generated class, containing one DirectCollection mapping.
                     DirectCollectionMapping mapping = (DirectCollectionMapping) xmlDescriptor.getMappings().get(0);
 
@@ -749,19 +749,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 mType = MediaType.getMediaType((String)value);
             }
             if(mType == null){
-            	throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+            	throw new PropertyException(key, Constants.EMPTY_STRING);
             }
             xmlUnmarshaller.setMediaType(mType);           
         } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)){
         	if(value == null){
-        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	    throw new PropertyException(key, Constants.EMPTY_STRING);
         	}        
         	xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);     
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
         	xmlUnmarshaller.setAttributePrefix((String)value);
         } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
         	if(value == null){
-        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	    throw new PropertyException(key, Constants.EMPTY_STRING);
         	}        
         	xmlUnmarshaller.setIncludeRoot((Boolean)value);            
         } else if (UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
@@ -783,7 +783,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             xmlUnmarshaller.setValueWrapper((String)value);
         } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){  
         	if(value == null){
-        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	    throw new PropertyException(key, Constants.EMPTY_STRING);
         	}
         	xmlUnmarshaller.setNamespaceSeparator((Character)value);            
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
@@ -1007,8 +1007,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(xsiNil) {
                 value = null;
             } else if(null == xsiType) {
-                if (clazz == ClassConstants.ABYTE || clazz == ClassConstants.APBYTE || clazz.getCanonicalName().equals("javax.activation.DataHandler")) {
-                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz, XMLConstants.BASE_64_BINARY_QNAME);
+                if (clazz == CoreClassConstants.ABYTE || clazz == CoreClassConstants.APBYTE || clazz.getCanonicalName().equals("javax.activation.DataHandler")) {
+                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz, Constants.BASE_64_BINARY_QNAME);
                 } else {
                     value = (T) xcm.convertObject(stringBuilder.toString(), clazz);
                 }
@@ -1018,7 +1018,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 String typePrefix;
                 String typeName;
                 if(colonIndex == -1) {
-                    typePrefix = XMLConstants.EMPTY_STRING;
+                    typePrefix = Constants.EMPTY_STRING;
                     typeName = xsiType;
                 } else {
                     typePrefix = xsiType.substring(0, colonIndex);
@@ -1045,13 +1045,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
         @Override
         public void startElement(String namespaceURI, String localName, String qualifiedName, Attributes attributes) throws SAXException {
-            String xsiNilValue = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            String xsiNilValue = attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
             if (xsiNilValue != null) {
-                xsiNil = xsiNilValue.equals(XMLConstants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+                xsiNil = xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
             }
 
             if (!xsiNil) {
-                xsiType = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                xsiType = attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
             }
         }
 
@@ -1095,9 +1095,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 acceptCharacters = true;
             }
 
-            String xsiNilValue = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            String xsiNilValue = attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
             if (xsiNilValue != null) {
-                xsiNil = xsiNilValue.equals(XMLConstants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+                xsiNil = xsiNilValue.equals(Constants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
             }
         }
 

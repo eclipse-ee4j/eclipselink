@@ -25,6 +25,7 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.sessions.Project;
@@ -209,7 +209,7 @@ public class Generator {
         for(Schema schema : schemas) {
             File file = new File(schemaPath + "/" + schema.getName());
             NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
-            schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+            schemaNamespaces.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
             schemaDescriptor.setNamespaceResolver(schemaNamespaces);
             marshaller.marshal(schema, new FileOutputStream(file));
         }
@@ -231,7 +231,7 @@ public class Generator {
         for(Schema schema : schemas) {
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
-                schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+                schemaNamespaces.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
                 schemaDescriptor.setNamespaceResolver(schemaNamespaces);
                 // make sure we don't call into the provided output resolver more than once
                 javax.xml.transform.Result target;

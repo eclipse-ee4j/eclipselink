@@ -39,7 +39,7 @@ public class TypeMappingInfoObjectPrefixTestsCases extends TypeMappingInfoWithJS
 		Map<String, String> namespaces = new HashMap<String, String>();
 		namespaces.put("differentURI", "ns0");
 		namespaces.put("someuri", "ns1");
-		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+		namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
 		jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
 		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 		

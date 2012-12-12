@@ -209,7 +209,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
 	 * @param namespaceURI
 	 */
     public void namespaceDeclaration(String prefix, String namespaceURI){
-        attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespaceURI);
+        attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix, namespaceURI);
     }
     
     /**
@@ -217,7 +217,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
      * @param defaultNamespace
      */
     public void defaultNamespaceDeclaration(String defaultNamespace){
-        attribute(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, XMLConstants.XMLNS, defaultNamespace);
+        attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, defaultNamespace);
     }
 
     /**
@@ -592,7 +592,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
          StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
          qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
          XPathFragment nilFragment = new XPathFragment(qName.toString());
-         nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+         nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
          attribute(nilFragment, namespaceResolver, TRUE);
          closeStartGroupingElements(groupingFragment);
     }
@@ -607,7 +607,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     	 openStartElement(xPathFragment, namespaceResolver);
     	 String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
     	 XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
-    	 nilFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+    	 nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
     	 attribute(nilFragment, namespaceResolver, TRUE);
     	 closeStartElement();
     	 endElement(xPathFragment, namespaceResolver);
@@ -637,14 +637,14 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
-            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);            
-            namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);            
+            namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         } else {
             // find an existing xsi entry in the map
-            xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
                 xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
-                namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }
         return xsiPrefix;

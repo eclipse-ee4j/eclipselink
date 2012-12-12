@@ -69,7 +69,7 @@ public class JAXPPlatform implements XMLPlatform {
 
     public SchemaFactory getSchemaFactory() {
     	if(null == schemaFactory) {
-    		schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+    		schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
     	}
     	return schemaFactory;
     }
@@ -203,7 +203,7 @@ public class JAXPPlatform implements XMLPlatform {
                 namespaceDeclaration = contextElement.getAttributeNode("xmlns:" + namespacePrefix);
             } else {
                 //look for default namespace declaration for null prefix
-                namespaceDeclaration = contextElement.getAttributeNode(XMLConstants.XMLNS);
+                namespaceDeclaration = contextElement.getAttributeNode(javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
             }
             if (null != namespaceDeclaration) {
                 return namespaceDeclaration.getValue();
@@ -248,9 +248,9 @@ public class JAXPPlatform implements XMLPlatform {
         String elementPrefix = next.getPrefix();
         if (elementPrefix != null) {
             //see if this prefix is already declared if yes - do nothing, if no declare
-            Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + elementPrefix);
+            Attr namespaceDeclaration = next.getAttributeNode(javax.xml.XMLConstants.XMLNS_ATTRIBUTE+":" + elementPrefix);
             if ((null == namespaceDeclaration) && !declaredPrefixes.contains(elementPrefix)) {
-                (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + elementPrefix, elementUri);
+                (next).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE+ ":" + elementPrefix, elementUri);
                 declaredPrefixes.add(elementPrefix);
             }
         }
@@ -263,26 +263,26 @@ public class JAXPPlatform implements XMLPlatform {
             String attributePrefix = nextAttribute.getPrefix();
             if (attributePrefix != null) {
                 //if attribute is a namespace declaration add to declared list 
-                if (XMLConstants.XMLNS_URL.equals(nextAttribute.getNamespaceURI())) {
+                if (javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(nextAttribute.getNamespaceURI())) {
                     declaredPrefixes.add(nextAttribute.getLocalName());
                 } else {
-                    Attr namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + attributePrefix);
+                    Attr namespaceDeclaration = next.getAttributeNode(javax.xml.XMLConstants.XMLNS_ATTRIBUTE +":" + attributePrefix);
                     if ((null == namespaceDeclaration) && !declaredPrefixes.contains(attributePrefix)) {
                         String attributeUri = nextAttribute.getNamespaceURI();
-                        (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + attributePrefix, attributeUri);
+                        (next).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + attributePrefix, attributeUri);
                         declaredPrefixes.add(attributePrefix);
                     }
 
                     //if xsi:type declaration deal with that value
-                    if (XMLConstants.SCHEMA_INSTANCE_URL.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                    if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
                         String value = nextAttribute.getValue();
                         int colonIndex = value.indexOf(':');
                         if (colonIndex > -1) {
                             String prefix = value.substring(0, colonIndex);
-                            namespaceDeclaration = next.getAttributeNode(XMLConstants.XMLNS +":" + prefix);
+                            namespaceDeclaration = next.getAttributeNode(javax.xml.XMLConstants.XMLNS_ATTRIBUTE +":" + prefix);
                             if ((null == namespaceDeclaration) && !declaredPrefixes.contains(prefix)) {                                
                                 String uri = XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(next, prefix);
-                                (next).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, uri);
+                                (next).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + prefix, uri);
                                 declaredPrefixes.add(prefix);
                             }
                         }

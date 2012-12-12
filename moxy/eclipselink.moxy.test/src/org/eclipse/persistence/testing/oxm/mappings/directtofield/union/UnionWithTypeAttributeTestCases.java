@@ -34,8 +34,8 @@ public class UnionWithTypeAttributeTestCases extends XMLMappingTestCases {
 
         ((XMLUnionField)p.getDescriptor(Person.class).getMappingForAttributeName("age").getField()).setIsTypedTextField(true);
 
-        QName stringQName = new QName(XMLConstants.SCHEMA_URL, "string");
-        QName integerQName = new QName(XMLConstants.SCHEMA_URL, "integer");
+        QName stringQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "string");
+        QName integerQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "integer");
 
         ArrayList schemaTypes = new ArrayList();
         schemaTypes.add(XMLConstants.DATE_QNAME);

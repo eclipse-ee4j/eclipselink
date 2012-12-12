@@ -63,13 +63,13 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * <p>This is an implementation of <i>MessageBodyReader</i>/<i>MessageBodyWriter
@@ -211,7 +211,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     private boolean includeRoot = false;
     private boolean marshalEmptyCollections = true;
     private Map<String, String> namespacePrefixMapper;
-    private char namespaceSeperator = XMLConstants.DOT;
+    private char namespaceSeperator = Constants.DOT;
     private String valueWrapper;
 
     /**
@@ -385,7 +385,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if(!supportsMediaType(mediaType)) {
             return false;
-        } else if(ClassConstants.APBYTE == type || ClassConstants.STRING == type) {
+        } else if(CoreClassConstants.APBYTE == type || CoreClassConstants.STRING == type) {
             return false;
         } else if(File.class.isAssignableFrom(type)) {
             return false;
@@ -417,7 +417,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         if(!supportsMediaType(mediaType)) {
             return false;
-        } else if(ClassConstants.APBYTE == type || ClassConstants.STRING == type) {
+        } else if(CoreClassConstants.APBYTE == type || CoreClassConstants.STRING == type) {
             return false;
         } else if(File.class.isAssignableFrom(type)) {
             return false;

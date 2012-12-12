@@ -44,7 +44,7 @@ public abstract class LocatorTestCase extends OXTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(XSD_RESOURCE);
         Schema s = sf.newSchema(new StreamSource(schemaStream));
 

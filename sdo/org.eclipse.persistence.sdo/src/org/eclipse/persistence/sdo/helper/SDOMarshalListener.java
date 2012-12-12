@@ -171,7 +171,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 for (int j = 0; j < namespaces.size(); j++) {
                     Namespace next = (Namespace)namespaces.get(j);
                     if (declareNamespace(next.getNamespaceURI(), next.getPrefix(), changeSummary.getRootObject())) {
-                        csNode.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
+                        csNode.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
                     }
                 }
 
@@ -306,15 +306,15 @@ public class SDOMarshalListener implements XMLMarshalListener {
 
                 if (schemaContext != null) {
                     String typeValue = schemaContext.substring(1, schemaContext.length());
-                    String schemaInstancePrefix = ((SDOType)value.getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                    String schemaInstancePrefix = ((SDOType)value.getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
                     //may or may not need the xmlns declaration added.
                     String schemaContextUri = schemaContextQName.getNamespaceURI();
                     String schemaContextPrefix = ((SDOType)value.getType()).getXmlDescriptor().getNonNullNamespaceResolver().resolveNamespaceURI(schemaContextUri);
                     if (schemaContextPrefix != null) {
-                        modifiedElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaContextPrefix, schemaContextQName.getNamespaceURI());
+                        modifiedElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + schemaContextPrefix, schemaContextQName.getNamespaceURI());
                     }
-                    modifiedElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, schemaInstancePrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+                    modifiedElement.setAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, schemaInstancePrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
                 }
             }
         }
@@ -584,13 +584,13 @@ public class SDOMarshalListener implements XMLMarshalListener {
         } else {
             resolver = this.resolver;
         }
-        String xsiPrefix = resolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        String xsiPrefix = resolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         if ((xsiPrefix == null) || xsiPrefix.equals(SDOConstants.EMPTY_STRING)) {
             this.resolver = new NamespaceResolver();
             resolver = this.resolver;
             copyNamespaces(typeHelper.getNamespaceResolver(), resolver);
             xsiPrefix = resolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            resolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            resolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
         String xPath = getXPathForProperty(property, true);
         xPath = xPath + "/@" + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;

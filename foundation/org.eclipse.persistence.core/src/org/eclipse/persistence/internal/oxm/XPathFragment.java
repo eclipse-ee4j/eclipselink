@@ -17,7 +17,6 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -34,7 +33,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 public class XPathFragment <
   XML_FIELD extends Field
 >{
-    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(XMLConstants.TEXT);
+    public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(Constants.TEXT);
     public static final String SELF_XPATH = ".";
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
     public static final XPathFragment ANY_FRAGMENT = null;
@@ -65,11 +64,11 @@ public class XPathFragment <
 
     public XPathFragment() {
         setNamespaceAware(true);     
-        namespaceSeparator = XMLConstants.COLON;    	
+        namespaceSeparator = Constants.COLON;    	
     }
     
     public XPathFragment(String xpathString) {
-    	this(xpathString, XMLConstants.COLON, true);
+    	this(xpathString, Constants.COLON, true);
     }
     
     public XPathFragment(String xpathString, char namespaceSeparator, boolean namespaceAware) {
@@ -142,7 +141,7 @@ public class XPathFragment <
             }
         }
 
-        if (xpathString.equals(XMLConstants.TEXT)) {
+        if (xpathString.equals(Constants.TEXT)) {
             nameIsText = true;
             shortName = xpathString.intern();
             return;
@@ -183,7 +182,7 @@ public class XPathFragment <
     public String getShortName() {
     	if(shortName == null){
     		if(prefix !=null && prefix.length() >0){
-      			shortName = prefix + XMLConstants.COLON + localName;
+      			shortName = prefix + Constants.COLON + localName;
       		}else{
       		    shortName = localName;
       		}
@@ -194,7 +193,7 @@ public class XPathFragment <
     public byte[] getShortNameBytes() {
         if(null == shortNameBytes) {
             try {
-                shortNameBytes = getShortName().getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+                shortNameBytes = getShortName().getBytes(Constants.DEFAULT_XML_ENCODING);
             } catch (UnsupportedEncodingException e) {
             }
         }

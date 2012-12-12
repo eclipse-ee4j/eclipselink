@@ -29,7 +29,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
@@ -165,7 +164,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
                 XPathFragment frag = ((XMLField) getClassIndicatorField()).getXPathFragment();
-                if (frag.getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && frag.getNamespaceURI() != null && frag.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
+                if (frag.getLocalName().equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && frag.getNamespaceURI() != null && frag.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) {
                     usesXsiType = true;
                 }
                 if (key instanceof String) {
@@ -175,7 +174,7 @@ public class QNameInheritancePolicy extends InheritancePolicy {
                     if (!usesXsiType || namespaceResolver == null) {
                         qname = new XPathQName(indicatorValue, true);
                     } else {
-                        int index = indicatorValue.indexOf(XMLConstants.COLON);
+                        int index = indicatorValue.indexOf(Constants.COLON);
                         if (index != -1 && namespaceResolver != null) {
                             String prefix = indicatorValue.substring(0, index);
                             String localPart = indicatorValue.substring(index + 1);
@@ -302,11 +301,11 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware() || ((XMLRecord)databaseRow).hasCustomNamespaceMapper();
             if(value instanceof String){
             	if(namespaceAware){
-            		if(((XMLRecord)databaseRow).getNamespaceSeparator() != XMLConstants.COLON){
-                 	   value= ((String)value).replace(XMLConstants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
+            		if(((XMLRecord)databaseRow).getNamespaceSeparator() != Constants.COLON){
+                 	   value= ((String)value).replace(Constants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
                  	}
             	}else{
-            		 int colonIndex = ((String)value).indexOf(XMLConstants.COLON);
+            		 int colonIndex = ((String)value).indexOf(Constants.COLON);
                      if(colonIndex > -1){
                          value = ((String)value).substring(colonIndex + 1);
              	    }		

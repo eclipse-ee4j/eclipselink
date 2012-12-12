@@ -842,7 +842,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     	return validateAgainstSchema(src, schemaSource, null);
     }
     protected String validateAgainstSchema(InputStream src, Source schemaSource, MyMapStreamSchemaOutputResolver outputResolver) {
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         sFact.setResourceResolver(new ResourceResolver(outputResolver));
 
         Schema theSchema;
@@ -963,7 +963,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     
     protected void validateBindingsFileAgainstSchema(Source src) {
         String result = null;
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
         try {
             InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream(ECLIPSELINK_OXM_XSD);

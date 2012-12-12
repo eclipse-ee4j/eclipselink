@@ -26,6 +26,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
@@ -70,7 +71,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -973,10 +973,10 @@ public class XMLProcessor {
         // handle xml-attachment-ref
         if (xmlAttribute.isXmlAttachmentRef()) {
             oldProperty.setIsSwaAttachmentRef(true);
-            oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+            oldProperty.setSchemaType(Constants.SWA_REF_QNAME);
         } else if (aProcessor.isMtomAttachment(oldProperty)) {
             oldProperty.setIsMtomAttachment(true);
-            oldProperty.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            oldProperty.setSchemaType(Constants.BASE_64_BINARY_QNAME);
         }
 
         // handle xml-schema-type
@@ -1027,7 +1027,7 @@ public class XMLProcessor {
         }
 
         if (xmlElement.isXmlLocation()) {
-            if (!aProcessor.getHelper().getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
+            if (!aProcessor.getHelper().getJavaClass(Constants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
                 throw JAXBException.invalidXmlLocation(oldProperty.getPropertyName(), oldProperty.getType().getName());
             }
             oldProperty.setXmlLocation(true);
@@ -1168,10 +1168,10 @@ public class XMLProcessor {
         // handle xml-attachment-ref
         if (xmlElement.isXmlAttachmentRef()) {
             oldProperty.setIsSwaAttachmentRef(true);
-            oldProperty.setSchemaType(XMLConstants.SWA_REF_QNAME);
+            oldProperty.setSchemaType(Constants.SWA_REF_QNAME);
         } else if (aProcessor.isMtomAttachment(oldProperty)) {
             oldProperty.setIsMtomAttachment(true);
-            oldProperty.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            oldProperty.setSchemaType(Constants.BASE_64_BINARY_QNAME);
         }
 
         // handle xml-schema-type
@@ -1396,7 +1396,7 @@ public class XMLProcessor {
 
     private Property processXmlTransient(XmlTransient xmlTransient, Property oldProperty) {
         if (xmlTransient.isXmlLocation()) {
-            if (!aProcessor.getHelper().getJavaClass(XMLConstants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
+            if (!aProcessor.getHelper().getJavaClass(Constants.LOCATOR_CLASS).isAssignableFrom(oldProperty.getType())) {
                 throw JAXBException.invalidXmlLocation(oldProperty.getPropertyName(), oldProperty.getType().getName());
             }
             oldProperty.setXmlLocation(true);
@@ -1845,7 +1845,7 @@ public class XMLProcessor {
         String path;
         
         // may need to strip off '/text()'
-        int idx = xpath.indexOf(SLASH + XMLConstants.TEXT);
+        int idx = xpath.indexOf(SLASH + Constants.TEXT);
         if (idx >= 0) {
             path = xpath.substring(0, idx);
         } else {
@@ -1868,7 +1868,7 @@ public class XMLProcessor {
         }
         // may need to strip off '@'
         if (isAttribute) {
-            idx = name.indexOf(XMLConstants.ATTRIBUTE);
+            idx = name.indexOf(Constants.ATTRIBUTE);
             if (idx >= 0 && name.length() > 1) {
                 name = name.substring(idx+1);
             }

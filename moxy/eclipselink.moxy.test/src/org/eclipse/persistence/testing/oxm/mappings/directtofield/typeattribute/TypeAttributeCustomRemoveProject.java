@@ -33,8 +33,8 @@ public class TypeAttributeCustomRemoveProject extends Project {
         descriptor.setDefaultRootElement("employee");
 
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        resolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         descriptor.setNamespaceResolver(resolver);
 
         XMLDirectMapping identifierMapping = new XMLDirectMapping();
@@ -42,7 +42,7 @@ public class TypeAttributeCustomRemoveProject extends Project {
         XMLField field = new XMLField();
         field.setIsTypedTextField(true);
         field.setXPath("identifier/text()");
-        QName qname = new QName(XMLConstants.SCHEMA_URL, XMLConstants.DOUBLE);
+        QName qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.DOUBLE);
         field.removeConversion(qname, ClassConstants.DOUBLE);
         identifierMapping.setField(field);
         descriptor.addMapping(identifierMapping);
@@ -51,7 +51,7 @@ public class TypeAttributeCustomRemoveProject extends Project {
         firstNameMapping.setAttributeName("firstName");
         XMLField firstNamefield = new XMLField("first-name/text()");
         field.setIsTypedTextField(true);
-        QName stringQname = new QName(XMLConstants.SCHEMA_URL, XMLConstants.STRING);
+        QName stringQname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.STRING);
         firstNamefield.removeConversion(stringQname, ClassConstants.STRING);
         firstNameMapping.setField(firstNamefield);
         descriptor.addMapping(firstNameMapping);

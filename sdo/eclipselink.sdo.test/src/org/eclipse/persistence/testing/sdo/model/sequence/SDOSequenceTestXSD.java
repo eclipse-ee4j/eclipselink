@@ -251,7 +251,7 @@ public class SDOSequenceTestXSD extends SDOSequenceTestCases {
         itemType.set(prop, getControlRootURI());                
         itemType.set("name", ITEM_TYPENAME);
         
-        Type idType = typeHelper.getType(XMLConstants.SCHEMA_URL, "ID");        
+        Type idType = typeHelper.getType(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "ID");        
         
         addProperty(itemType, "itemID", stringType, false, false, true);        
         addProperty(itemType, "name", stringType, false, false, true);

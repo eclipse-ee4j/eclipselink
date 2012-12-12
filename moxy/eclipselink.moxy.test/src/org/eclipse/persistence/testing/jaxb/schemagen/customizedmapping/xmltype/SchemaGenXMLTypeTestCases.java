@@ -48,7 +48,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
             Class[] jClasses = new Class[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema1.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 
@@ -67,7 +67,7 @@ public class SchemaGenXMLTypeTestCases extends SchemaGenTestCases {
             Class[] jClasses = new Class[] { BaseType001c.class };
             Generator gen = new Generator(new JavaModelInputImpl(jClasses, new JavaModelImpl(Thread.currentThread().getContextClassLoader())));
             gen.generateSchemaFiles(tmpdir, null);
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(new File(tmpdir + "/schema0.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(src)); 

@@ -250,7 +250,7 @@ public abstract class AbstractNullPolicy {
             if(null == attributes) {
                 return false;
             }
-            return attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;            
+            return attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;            
         } else {
             // EMPTY_NODE - Required
             if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
@@ -272,7 +272,7 @@ public abstract class AbstractNullPolicy {
         if (null == element) {
             return true;
         } else {
-            if (isNullRepresentedByXsiNil() && element.hasAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+            if (isNullRepresentedByXsiNil() && element.hasAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
                 return true;
             } else {
                 // EMPTY_NODE - Required
@@ -345,14 +345,14 @@ public abstract class AbstractNullPolicy {
             // add new xsi entry into the properties map
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
-            namespaceResolver.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);            
-      	    marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);            
+      	    marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         } else {
             // find an existing xsi entry in the map
-            xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
                 xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
-                marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }
         return xsiPrefix;

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
 
 /**
  *  This is a complete UnmarshalNamespaceResolver implementation.  This is 
@@ -47,7 +47,7 @@ public class StackUnmarshalNamespaceResolver implements UnmarshalNamespaceResolv
 
     public String getNamespaceURI(String prefix) {
         if(prefix == null) {
-            prefix = XMLConstants.EMPTY_STRING;
+            prefix = Constants.EMPTY_STRING;
         }
 
         List<String> uris = namespaceMap.get(prefix);

@@ -14,9 +14,9 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.stream.XMLStreamReader;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -112,7 +112,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 depth++;
                 String localName = xmlStreamReader.getLocalName();
                 String namespaceURI = xmlStreamReader.getNamespaceURI();
-                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                if(Constants.EMPTY_STRING.equals(namespaceURI)) {
                     namespaceURI = null;
                 }
                 if(qNameAware) {
@@ -120,7 +120,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                     if(null == prefix || prefix.length() == 0) {
                         contentHandler.startElement(namespaceURI, localName, localName, indexedAttributeList.reset());
                     } else {
-                        contentHandler.startElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName, indexedAttributeList.reset());
+                        contentHandler.startElement(namespaceURI, localName, prefix + Constants.COLON + localName, indexedAttributeList.reset());
                     }
                 } else {
                     contentHandler.startElement(namespaceURI, localName, null, indexedAttributeList.reset());
@@ -131,7 +131,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                 depth--;
                 String localName = xmlStreamReader.getLocalName();
                 String namespaceURI = xmlStreamReader.getNamespaceURI();
-                if(XMLConstants.EMPTY_STRING.equals(namespaceURI)) {
+                if(Constants.EMPTY_STRING.equals(namespaceURI)) {
                     namespaceURI = null;
                 }
                 if(qNameAware) {
@@ -139,7 +139,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                     if(null == prefix || prefix.length() == 0) {
                         contentHandler.endElement(namespaceURI, localName, localName);
                     } else {
-                        contentHandler.endElement(namespaceURI, localName, prefix + XMLConstants.COLON + localName);
+                        contentHandler.endElement(namespaceURI, localName, prefix + Constants.COLON + localName);
                     }
                 } else {
                     contentHandler.endElement(namespaceURI, localName, null);
@@ -230,20 +230,20 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         if(null == prefix || prefix.length() == 0) {
                             qName = localName;
                         } else {
-                            qName = prefix + XMLConstants.COLON + localName;
+                            qName = prefix + Constants.COLON + localName;
                         }
                         String value = xmlStreamReader.getAttributeValue(x);
                         attributes[x] = new Attribute(uri, localName, qName, value);
                     }
                     for(int x=0; x<namespaceCount; x++) {
-                        String uri = XMLConstants.XMLNS_URL;
+                        String uri = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                         String localName = xmlStreamReader.getNamespacePrefix(x);
                         String qName;
                         if(null == localName || localName.length() == 0) {
-                            localName = XMLConstants.XMLNS;
-                            qName = XMLConstants.XMLNS;
+                            localName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
+                            qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                         } else {
-                            qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                            qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + localName;
                         }
                         String value = xmlStreamReader.getNamespaceURI(x);
                         attributes[x + attributeCount] = new Attribute(uri, localName, qName, value);
@@ -256,7 +256,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
 
         @Override
         public String getValue(String uri, String localName) {
-            if (XMLConstants.EMPTY_STRING.equals(uri)) {
+            if (Constants.EMPTY_STRING.equals(uri)) {
                 uri = null;
             }
             return xmlStreamReader.getAttributeValue(uri, localName);

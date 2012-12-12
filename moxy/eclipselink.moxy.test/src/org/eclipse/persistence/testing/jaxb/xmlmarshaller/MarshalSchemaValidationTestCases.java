@@ -53,7 +53,7 @@ public class MarshalSchemaValidationTestCases extends OXTestCase {
         JAXBContext jc = JAXBContextFactory.createContext(classes, null);
         marshaller = (JAXBMarshaller) jc.createMarshaller();
 
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         InputStream stream = ClassLoader.getSystemResourceAsStream(SCHEMA);
         Schema schema = sf.newSchema(new StreamSource(stream));
         stream.close();

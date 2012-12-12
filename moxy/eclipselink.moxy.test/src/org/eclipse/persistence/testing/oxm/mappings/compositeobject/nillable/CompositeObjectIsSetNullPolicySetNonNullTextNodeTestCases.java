@@ -51,7 +51,7 @@ public class CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases extends X
         Project aProject = new CompositeObjectNodeNullPolicyTextNodeProject(true);
         XMLDescriptor teamDescriptor = (XMLDescriptor) aProject.getDescriptor(Team2.class);
         //NamespaceResolver namespaceResolver = new NamespaceResolver();
-        //namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        //namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         //teamDescriptor.setNamespaceResolver(namespaceResolver);
         XMLCompositeObjectMapping aMapping = (XMLCompositeObjectMapping) teamDescriptor.getMappingForAttributeName("manager");
         aMapping.setNullPolicy(aNullPolicy);

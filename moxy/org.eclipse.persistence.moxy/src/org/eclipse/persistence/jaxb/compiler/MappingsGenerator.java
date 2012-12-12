@@ -51,11 +51,11 @@ import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.internal.jaxb.CustomAccessorAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
@@ -75,6 +75,8 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.oxm.Constants;
+
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
@@ -115,7 +117,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransforme
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
@@ -348,7 +349,7 @@ public class MappingsGenerator {
             Iterator<Property> i = info.getPropertyList().iterator();
             while (i.hasNext()) {
                 Property p = i.next();
-                if (p.getType().getName().equals(XMLConstants.LOCATOR_CLASS_NAME)) {
+                if (p.getType().getName().equals(Constants.LOCATOR_CLASS_NAME)) {
                     locProp = p;
                 }
             }
@@ -395,7 +396,7 @@ public class MappingsGenerator {
                 BinaryDataMapping mapping = new XMLBinaryDataMapping();
                 mapping.setAttributeName("value");
                 mapping.setXPath(".");
-                ((Field)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                ((Field)mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
                 mapping.setSetMethodName("setValue");
                 mapping.setGetMethodName("getValue");
 
@@ -466,7 +467,7 @@ public class MappingsGenerator {
             } else {
             	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null, false);
             	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));            	
-            	if(generatedPrefix == null || generatedPrefix.equals(XMLConstants.EMPTY_STRING)){
+            	if(generatedPrefix == null || generatedPrefix.equals(Constants.EMPTY_STRING)){
                     schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));            		
             	}else{
                     schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName(), generatedPrefix));
@@ -694,10 +695,10 @@ public class MappingsGenerator {
         String setMethodName = property.getInverseReferencePropertySetMethodName();
         String getMethodName = property.getInverseReferencePropertyGetMethodName();
 
-        if (setMethodName != null && !setMethodName.equals(XMLConstants.EMPTY_STRING)) {
+        if (setMethodName != null && !setMethodName.equals(Constants.EMPTY_STRING)) {
             invMapping.setSetMethodName(setMethodName);
         }
-        if (getMethodName != null && !getMethodName.equals(XMLConstants.EMPTY_STRING)) {
+        if (getMethodName != null && !getMethodName.equals(Constants.EMPTY_STRING)) {
             invMapping.setGetMethodName(getMethodName);
         }
         invMapping.setMappedBy(property.getInverseReferencePropertyName());
@@ -1093,12 +1094,12 @@ public class MappingsGenerator {
 
             Field xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
-            if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == XMLConstants.BASE_64_BINARY_QNAME) {
-                xmlField.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == Constants.BASE_64_BINARY_QNAME) {
+                xmlField.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
             if(areEquals(pType, Object.class)) {
                 xmlField.setIsTypedTextField(true);
-                xmlField.setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+                xmlField.setSchemaType(Constants.ANY_TYPE_QNAME);
             }
             Mapping nestedMapping;
             AbstractNullPolicy nullPolicy = null;
@@ -1298,7 +1299,7 @@ public class MappingsGenerator {
 
         if (referenceClassName == null){
         	((Field)mapping.getField()).setIsTypedTextField(true);
-        	((Field)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+        	((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
         	String defaultValue = property.getDefaultValue();
         	if (null != defaultValue) {
         	    mapping.setConverter(new DefaultElementConverter(defaultValue));
@@ -1307,7 +1308,7 @@ public class MappingsGenerator {
         	mapping.setReferenceClassName(referenceClassName);
         }
             if(property.isTransientType()){
-                mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);
+                mapping.setReferenceClassName(Constants.UNKNOWN_OR_TRANSIENT_CLASS);
             }
 
         if (property.getInverseReferencePropertyName() != null) {
@@ -1420,8 +1421,8 @@ public class MappingsGenerator {
             }
         }
 
-        if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
-            ((Field) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+        if (Constants.QNAME_QNAME.equals(property.getSchemaType())){
+            ((Field) mapping.getField()).setSchemaType(Constants.QNAME_QNAME);
         }
         // handle cdata set via metadata
         if (property.isSetCdata()) {
@@ -1459,12 +1460,12 @@ public class MappingsGenerator {
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
-            ((Field) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
+            ((Field) mapping.getField()).setSchemaType(Constants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
         } else if (property.isMtomAttachment()) {
             Field f = ((Field) mapping.getField());
-            if (!f.getSchemaType().equals(XMLConstants.HEX_BINARY_QNAME)) {
-                f.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            if (!f.getSchemaType().equals(Constants.HEX_BINARY_QNAME)) {
+                f.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
         }
          
@@ -1540,10 +1541,10 @@ public class MappingsGenerator {
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
-            ((Field) mapping.getField()).setSchemaType(XMLConstants.SWA_REF_QNAME);
+            ((Field) mapping.getField()).setSchemaType(Constants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
         } else if (property.isMtomAttachment()) {
-            ((Field) mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+            ((Field) mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
         }
         if (property.isInlineBinaryData()) {
             mapping.setShouldInlineBinaryData(true);
@@ -1920,7 +1921,7 @@ public class MappingsGenerator {
             if(typeIsObject){
             	((CompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             	((Field)((CompositeObjectMapping)mapping).getField()).setIsTypedTextField(true);
-            	((Field)((CompositeObjectMapping)mapping).getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+            	((Field)((CompositeObjectMapping)mapping).getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
             }else{
             	((CompositeObjectMapping)mapping).setReferenceClassName(theType.getQualifiedName());
             }
@@ -2018,12 +2019,12 @@ public class MappingsGenerator {
 
         if (referenceClassName == null){                   
         	((Field)mapping.getField()).setIsTypedTextField(true);
-        	((Field)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+        	((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
         if(property.isTransientType()){
-            mapping.setReferenceClassName(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS);   
+            mapping.setReferenceClassName(Constants.UNKNOWN_OR_TRANSIENT_CLASS);   
         }    
 
         if (property.isRequired()) {
@@ -2126,8 +2127,8 @@ public class MappingsGenerator {
             xmlField.setXPath("text()");
         }
 
-        if (XMLConstants.QNAME_QNAME.equals(property.getSchemaType())){
-            ((Field) mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+        if (Constants.QNAME_QNAME.equals(property.getSchemaType())){
+            ((Field) mapping.getField()).setSchemaType(Constants.QNAME_QNAME);
         }
 
         // handle null policy set via xml metadata
@@ -2179,8 +2180,8 @@ public class MappingsGenerator {
                 return next;
             }
         }
-        if (XMLConstants.XML_NAMESPACE_URL.equals(URI)) {
-        	return XMLConstants.XML_NAMESPACE_PREFIX;
+        if (javax.xml.XMLConstants.XML_NS_URI.equals(URI)) {
+        	return javax.xml.XMLConstants.XML_NS_PREFIX;
         }           
         String prefix = globalNamespaceResolver.resolveNamespaceURI(URI);
         if(prefix == null){
@@ -2252,7 +2253,7 @@ public class MappingsGenerator {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
                     classIndicatorField = new XMLField(ATT + "type");
-                    classIndicatorField.getXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                    classIndicatorField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 }
             	rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
             }
@@ -2638,7 +2639,7 @@ public class MappingsGenerator {
         QName schemaName = property.getSchemaName();
         String namespace = schemaName.getNamespaceURI();
 
-        if (null == namespace || namespace.equals(XMLConstants.EMPTY_STRING)) {
+        if (null == namespace || namespace.equals(Constants.EMPTY_STRING)) {
             return unprefixedXPath;
         }
 
@@ -2647,18 +2648,18 @@ public class MappingsGenerator {
             return unprefixedXPath;
         }
 
-        StringTokenizer st = new StringTokenizer(unprefixedXPath, XMLConstants.XPATH_SEPARATOR);
+        StringTokenizer st = new StringTokenizer(unprefixedXPath, Constants.XPATH_SEPARATOR);
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
                 
             if (st.hasMoreTokens()) {
-                if (nextToken.lastIndexOf(XMLConstants.COLON) != -1) {
+                if (nextToken.lastIndexOf(Constants.COLON) != -1) {
                     // Token already has a user-supplied prefix
                     newXPath += nextToken;
                 } else {
-                    newXPath += prefix + XMLConstants.COLON + nextToken;
+                    newXPath += prefix + Constants.COLON + nextToken;
                 }
-                newXPath += XMLConstants.XPATH_SEPARATOR;
+                newXPath += Constants.XPATH_SEPARATOR;
             } else {
                 // Last token is text()
                 newXPath += nextToken;
@@ -2743,7 +2744,7 @@ public class MappingsGenerator {
                  schemaType = (QName) helper.getXMLToJavaTypeMap().get(propertyActualTypeRawName);
             }
         }
-        if(schemaType !=null && !schemaType.equals (XMLConstants.NORMALIZEDSTRING_QNAME)){
+        if(schemaType !=null && !schemaType.equals (Constants.NORMALIZEDSTRING_QNAME)){
             xmlField.setSchemaType(schemaType);
         }
         return xmlField;
@@ -2751,10 +2752,10 @@ public class MappingsGenerator {
 
     public Field getXPathForElement(String path, QName elementName, NamespaceInfo namespaceInfo, boolean isText) {
         String namespace = "";
-        if (!elementName.getNamespaceURI().equals(XMLConstants.EMPTY_STRING)) {
+        if (!elementName.getNamespaceURI().equals(Constants.EMPTY_STRING)) {
             namespace = elementName.getNamespaceURI();
         }
-        if (namespace.equals(XMLConstants.EMPTY_STRING)) {
+        if (namespace.equals(Constants.EMPTY_STRING)) {
             path += elementName.getLocalPart();
             if (isText) {
                 path += TXT;
@@ -2960,10 +2961,10 @@ public class MappingsGenerator {
 	              }
 
 	              if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-	                 ((Field)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	                 ((Field)mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
 	              }
 	              else if(nextClassName.equals("javax.xml.namespace.QName")){
-	                  ((Field)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+	                  ((Field)mapping.getField()).setSchemaType(Constants.QNAME_QNAME);
 	              }
 	              desc.addMapping((CoreMapping)mapping);
 	          } else{
@@ -2975,13 +2976,13 @@ public class MappingsGenerator {
 	                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
 	                  mapping.setXPath(".");
 	                  ((Field)mapping.getField()).setIsTypedTextField(true);
-	                  ((Field)mapping.getField()).setSchemaType(XMLConstants.ANY_TYPE_QNAME);
+	                  ((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
 	                  desc.addMapping((CoreMapping)mapping);	                 
 	              }else if(isBinaryData(nextElement.getJavaType())){
 	              	  BinaryDataMapping mapping = new XMLBinaryDataMapping();
 	              	  mapping.setAttributeName("value");
 	              	  mapping.setXPath(".");
-	                  ((Field)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	                  ((Field)mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
 	                  mapping.setSetMethodName("setValue");
 	                  mapping.setGetMethodName("getValue");
 	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
@@ -3028,10 +3029,10 @@ public class MappingsGenerator {
 	                      mapping.setConverter(buildJAXBEnumTypeConverter(mapping, (EnumTypeInfo)type));
 	                  }
 	                  if(nextClassName.equals("[B") || nextClassName.equals("[Ljava.lang.Byte;")) {
-	                      ((Field)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+	                      ((Field)mapping.getField()).setSchemaType(Constants.BASE_64_BINARY_QNAME);
 	                  }
 	                  else if(nextClassName.equals("javax.xml.namespace.QName")){
-	                      ((Field)mapping.getField()).setSchemaType(XMLConstants.QNAME_QNAME);
+	                      ((Field)mapping.getField()).setSchemaType(Constants.QNAME_QNAME);
 	                  }
 
 	                  if (nextElement.getJavaTypeAdapterClass() != null) {
@@ -3048,7 +3049,7 @@ public class MappingsGenerator {
 	  				NamespaceResolver resolver = info.getNamespaceResolverForDescriptor();
 	  				
 	  				String prefix = null;
-	  				if(namespaceUri != XMLConstants.EMPTY_STRING){
+	  				if(namespaceUri != Constants.EMPTY_STRING){
 	  				    prefix = resolver.resolveNamespaceURI(namespaceUri);
 	  				    if(prefix == null){
 	  					    prefix = getPrefixForNamespace(namespaceUri, resolver, null);	  					
@@ -3087,7 +3088,7 @@ public class MappingsGenerator {
     	if(prefix == null){
     		return localPart;
     	}
-    	return prefix + XMLConstants.COLON + localPart;
+    	return prefix + Constants.COLON + localPart;
     }
 
     private NamespaceInfo getNamespaceInfoForURI(String namespaceUri) {
@@ -3287,7 +3288,7 @@ public class MappingsGenerator {
     }
     
     private boolean isBinaryData(JavaClass type){
-    	return areEquals(type, ClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
+    	return areEquals(type, CoreClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
 
     /**

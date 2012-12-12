@@ -753,8 +753,8 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
             rootElementLocalName = localName;
             rootElementName = qName;
             rootElementNamespaceUri = namespaceURI;
-            schemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION);
-            noNamespaceSchemaLocation = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
+            schemaLocation = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_LOCATION);
+            noNamespaceSchemaLocation = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.NO_NS_SCHEMA_LOCATION);
         }
 
         try {
@@ -812,7 +812,7 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                String xsiNilValue = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+                String xsiNilValue = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
                 if(xsiNilValue != null){
                     isXsiNil = xsiNilValue.equals(XMLConstants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
                 }
@@ -845,13 +845,13 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
                                     if (idx > 0) {
                                         attLocalName = qname.substring(idx + 1, qnameLength);
                                         String attPrefix = qname.substring(0, idx);
-                                        if (attPrefix.equals(XMLConstants.XMLNS)) {
-                                            attNamespace = XMLConstants.XMLNS_URL;
+                                        if (attPrefix.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
+                                            attNamespace = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                                         }
                                     } else {
                                         attLocalName = qname;
-                                        if (attLocalName.equals(XMLConstants.XMLNS)) {
-                                            attNamespace = XMLConstants.XMLNS_URL;
+                                        if (attLocalName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
+                                            attNamespace = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                                         }
                                     }
                                 }

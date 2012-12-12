@@ -374,7 +374,7 @@ public class XMLAnyCollectionMapping extends XMLAbstractAnyMapping implements An
                         referenceDescriptor = getDescriptor(nestedRecord, session, null);
                         objectValue = buildObjectForNonXMLRoot(referenceDescriptor, getConverter(), query, record, nestedRecord, joinManager, session, next, container, cp);
                     } else {
-                        String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        String schemaType = ((Element) next).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         QName schemaTypeQName = null;
                         XPathFragment frag = new XPathFragment();
                         if ((null != schemaType) && (schemaType.length() > 0)) {

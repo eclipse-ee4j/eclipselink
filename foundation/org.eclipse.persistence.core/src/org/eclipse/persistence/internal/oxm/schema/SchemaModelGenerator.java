@@ -29,18 +29,32 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.core.mappings.CoreMapping;
+import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
+import org.eclipse.persistence.internal.oxm.mappings.AnyCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.AnyObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.AnyAttribute;
 import org.eclipse.persistence.internal.oxm.schema.model.Attribute;
@@ -56,26 +70,10 @@ import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.Sequence;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
-import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
-import org.eclipse.persistence.oxm.mappings.XMLAnyCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLChoiceObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.Project;
 
@@ -116,9 +114,9 @@ public class SchemaModelGenerator {
      */
     public SchemaModelGenerator(boolean customSwaRefSchema) {
     	if (customSwaRefSchema) {
-    		SWAREF_LOCATION = XMLConstants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
+    		SWAREF_LOCATION = Constants.SWA_REF.toLowerCase() + SCHEMA_FILE_EXT;
     	} else {
-    		SWAREF_LOCATION = XMLConstants.SWAREF_XSD;
+    		SWAREF_LOCATION = Constants.SWAREF_XSD;
     	}
     }
     
@@ -253,7 +251,7 @@ public class SchemaModelGenerator {
             Schema schema = entry.getValue();
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();
-                schemaNamespaces.put(XMLConstants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
+                schemaNamespaces.put(Constants.SCHEMA_PREFIX, "http://www.w3.org/2001/XMLSchema");
                 schemaDescriptor.setNamespaceResolver(schemaNamespaces);
                 javax.xml.transform.Result target = outputResolver.createOutput(schema.getTargetNamespace(), schema.getName());
                 marshaller.marshal(schema, target);
@@ -318,7 +316,7 @@ public class SchemaModelGenerator {
                 String elementTypeUri = qname.getNamespaceURI();
                 String elementTypePrefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(elementTypeUri);
                 if (elementTypePrefix != null) {
-                    elementType = elementTypePrefix + XMLConstants.COLON + elementType;
+                    elementType = elementTypePrefix + Constants.COLON + elementType;
                 }
                 
                 topLevelElement.setType(elementType);
@@ -420,7 +418,7 @@ public class SchemaModelGenerator {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix();
                 workingSchema.getNamespaceResolver().put(prefix, qname.getNamespaceURI());
             }
-            baseType = prefix + XMLConstants.COLON + baseType;
+            baseType = prefix + Constants.COLON + baseType;
         }
 
         Restriction restriction = new Restriction();
@@ -500,10 +498,10 @@ public class SchemaModelGenerator {
         for (CoreMapping mapping : (Vector<CoreMapping>)desc.getMappings()) {
         	Field xFld = (Field) mapping.getField();
         	if (xFld.getXPath().equals(TEXT)) {
-        		extension.setBaseType(getSchemaTypeForDirectMapping((XMLDirectMapping) mapping, workingSchema));
+        		extension.setBaseType(getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema));
         	} else if (xFld.getXPathFragment().isAttribute()) {
-                String schemaTypeString = getSchemaTypeForDirectMapping((XMLDirectMapping) mapping, workingSchema);
-                Attribute attr = buildAttribute((XMLDirectMapping) mapping, schemaTypeString);
+                String schemaTypeString = getSchemaTypeForDirectMapping((DirectMapping) mapping, workingSchema);
+                Attribute attr = buildAttribute((DirectMapping) mapping, schemaTypeString);
                 extension.getOrderedAttributes().add(attr);
         	}
         }
@@ -519,7 +517,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      * @return
      */
-    protected String getSchemaTypeForDirectMapping(XMLDirectMapping mapping, Schema workingSchema) {
+    protected String getSchemaTypeForDirectMapping(DirectMapping mapping, Schema workingSchema) {
         return getSchemaTypeForElement((Field) mapping.getField(), mapping.getAttributeClassification(), workingSchema);
     }
 
@@ -546,7 +544,7 @@ public class SchemaModelGenerator {
                 }
             } else {
                 // default to string
-                schemaTypeString = getSchemaTypeString(XMLConstants.STRING_QNAME, workingSchema);
+                schemaTypeString = getSchemaTypeString(Constants.STRING_QNAME, workingSchema);
             }
         }
         return schemaTypeString;
@@ -613,19 +611,19 @@ public class SchemaModelGenerator {
      * @param ct
      * @param workingSchema
      */
-    protected void processXMLBinaryDataMapping(XMLBinaryDataMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+    protected void processXMLBinaryDataMapping(BinaryDataMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
     	Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
         
         String schemaTypeString;
         if (mapping.isSwaRef()) {
-            schemaTypeString = getSchemaTypeString(XMLConstants.SWA_REF_QNAME, workingSchema);
+            schemaTypeString = getSchemaTypeString(Constants.SWA_REF_QNAME, workingSchema);
             Import newImport = new Import();
-            newImport.setNamespace(XMLConstants.REF_URL);
+            newImport.setNamespace(Constants.REF_URL);
             newImport.setSchemaLocation(SWAREF_LOCATION);
             workingSchema.getImports().add(newImport);
         } else {
-            schemaTypeString = getSchemaTypeString(XMLConstants.BASE_64_BINARY_QNAME, workingSchema);
+            schemaTypeString = getSchemaTypeString(Constants.BASE_64_BINARY_QNAME, workingSchema);
         }
         
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
@@ -645,7 +643,7 @@ public class SchemaModelGenerator {
                 elem.setMinOccurs("1");
             }
             if (mapping.getMimeType() != null) {
-                elem.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
+                elem.getAttributesMap().put(Constants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
             }
             seq.addElement(elem);
         }
@@ -659,15 +657,15 @@ public class SchemaModelGenerator {
      * @param ct
      * @param workingSchema
      */
-    protected void processXMLBinaryDataCollectionMapping(XMLBinaryDataCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+    protected void processXMLBinaryDataCollectionMapping(BinaryDataCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
     	Field xmlField = (Field) mapping.getField();
         XPathFragment frag = xmlField.getXPathFragment();
         
         String schemaTypeString;
         if (mapping.isSwaRef()) {
-            schemaTypeString = getSchemaTypeString(XMLConstants.SWA_REF_QNAME, workingSchema);
+            schemaTypeString = getSchemaTypeString(Constants.SWA_REF_QNAME, workingSchema);
         } else {
-            schemaTypeString = getSchemaTypeString(XMLConstants.BASE_64_BINARY_QNAME, workingSchema);
+            schemaTypeString = getSchemaTypeString(Constants.BASE_64_BINARY_QNAME, workingSchema);
         }
         
         seq = buildSchemaComponentsForXPath(frag, seq, schemaForNamespace, workingSchema, properties);
@@ -688,7 +686,7 @@ public class SchemaModelGenerator {
                 elem.setMinOccurs("1");
             }
             if (mapping.getMimeType() != null) {
-                elem.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
+                elem.getAttributesMap().put(Constants.EXPECTED_CONTENT_TYPES_QNAME, mapping.getMimeType());
             }
             seq.addElement(elem);
         }
@@ -702,7 +700,7 @@ public class SchemaModelGenerator {
      * @param ct
      * @param workingSchema
      */
-    protected void processXMLDirectMapping(XMLDirectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+    protected void processXMLDirectMapping(DirectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
     	Field xmlField = (Field) mapping.getField();
         
         XPathFragment frag = xmlField.getXPathFragment();
@@ -715,7 +713,7 @@ public class SchemaModelGenerator {
         boolean isPk = isFragPrimaryKey(frag, mapping);
         String schemaTypeString = null;
         if (isPk) {
-            schemaTypeString = XMLConstants.SCHEMA_PREFIX + XMLConstants.COLON + ID;
+            schemaTypeString = Constants.SCHEMA_PREFIX + Constants.COLON + ID;
         } else {
             schemaTypeString = getSchemaTypeForDirectMapping(mapping, workingSchema);
         }
@@ -723,7 +721,7 @@ public class SchemaModelGenerator {
         // Handle enumerations
         Class attributeClassification = mapping.getAttributeClassification();
         if (attributeClassification != null && Enum.class.isAssignableFrom(attributeClassification)) {
-            Converter converter = mapping.getConverter();
+            CoreConverter converter = mapping.getConverter();
             if (converter != null && converter instanceof EnumTypeConverter) {
                 processEnumeration(schemaTypeString, frag, mapping, seq, ct, workingSchema, converter);
                 return;
@@ -766,7 +764,7 @@ public class SchemaModelGenerator {
      * @param ct
      * @param workingSchema
      */
-    protected void processXMLCompositeDirectCollectionMapping(XMLCompositeDirectCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
+    protected void processXMLCompositeDirectCollectionMapping(DirectCollectionMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties) {
     	Field xmlField = ((Field) (mapping).getField());
 
         XPathFragment frag = xmlField.getXPathFragment();
@@ -780,7 +778,7 @@ public class SchemaModelGenerator {
             org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
 
             if (schemaTypeString == null) {
-                schemaTypeString = getSchemaTypeString(XMLConstants.ANY_SIMPLE_TYPE_QNAME, workingSchema);
+                schemaTypeString = getSchemaTypeString(Constants.ANY_SIMPLE_TYPE_QNAME, workingSchema);
             }
             list.setItemType(schemaTypeString);
             st.setList(list);
@@ -821,13 +819,13 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param collection
      */
-    protected void processXMLCompositeMapping(AggregateMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean collection) {
+    protected void processXMLCompositeMapping(CompositeObjectMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean collection) {
     	Field xmlField = (Field) mapping.getField();
         
         String refClassName = mapping.getReferenceClassName();
         Descriptor refDesc = getDescriptorByName(refClassName, descriptors);
         if (refDesc == null) {
-            throw DescriptorException.descriptorIsMissing(refClassName, mapping);
+            throw DescriptorException.descriptorIsMissing(refClassName, (DatabaseMapping)mapping);
         }
         
         XPathFragment frag = xmlField.getXPathFragment();
@@ -854,9 +852,9 @@ public class SchemaModelGenerator {
         
         boolean isNillable = false;
         if (!collection) {
-            isNillable = ((XMLCompositeObjectMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
+            isNillable = ((CompositeObjectMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
         } else {
-            isNillable = ((XMLCompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();            
+            isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();            
         }
         element.setNillable(isNillable);
 
@@ -947,11 +945,11 @@ public class SchemaModelGenerator {
      * @param descriptors
      * @param isCollection
      */
-    protected void processXMLObjectReferenceMapping(XMLObjectReferenceMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
+    protected void processXMLObjectReferenceMapping(ObjectReferenceMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors, boolean isCollection) {
         String tgtClassName = mapping.getReferenceClassName();
         Descriptor tgtDesc = getDescriptorByName(tgtClassName, descriptors);
-        if (tgtDesc == null) {
-            throw DescriptorException.descriptorIsMissing(tgtClassName, mapping);
+        if (tgtDesc == null) {        	
+            throw DescriptorException.descriptorIsMissing(tgtClassName, (DatabaseMapping)mapping);
         }
 
         // get the target mapping(s) to determine the appropriate type(s)
@@ -961,18 +959,18 @@ public class SchemaModelGenerator {
         	Field tgtField = entry.getValue();
             Vector mappings = tgtDesc.getMappings();
             // Until IDREF support is added, we want the source type to be that of the target
-            //schemaTypeString = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
+            //schemaTypeString = Constants.SCHEMA_PREFIX + COLON + IDREF;
             for (Enumeration mappingsNum = mappings.elements(); mappingsNum.hasMoreElements();) {
-                DatabaseMapping dbMapping = (DatabaseMapping) mappingsNum.nextElement();
-                if (dbMapping.getField() != null && dbMapping.getField() instanceof Field) {
-                	Field xFld = (Field) dbMapping.getField();
+                Mapping nextMapping = (Mapping)mappingsNum.nextElement();
+                if (nextMapping.getField() != null && nextMapping.getField() instanceof Field) {
+                	Field xFld = (Field) nextMapping.getField();
                     if (xFld == tgtField) {
-                        schemaTypeString = getSchemaTypeForElement(tgtField, dbMapping.getAttributeClassification(), workingSchema);
+                        schemaTypeString = getSchemaTypeForElement(tgtField, nextMapping.getAttributeClassification(), workingSchema);
                     }
                 }
             }
             if (schemaTypeString == null) {
-                schemaTypeString = getSchemaTypeString(XMLConstants.STRING_QNAME, workingSchema);
+                schemaTypeString = getSchemaTypeString(Constants.STRING_QNAME, workingSchema);
             }
             
             XPathFragment frag = entry.getKey().getXPathFragment();
@@ -1001,34 +999,34 @@ public class SchemaModelGenerator {
      * @param descriptors
      */
     protected void processMapping(CoreMapping mapping, Sequence seq, ComplexType ct, HashMap<String, Schema> schemaForNamespace, Schema workingSchema, SchemaModelGeneratorProperties properties, List<Descriptor> descriptors) {
-        if (mapping instanceof XMLBinaryDataMapping) {
-            processXMLBinaryDataMapping((XMLBinaryDataMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
-        } else if (mapping instanceof XMLBinaryDataCollectionMapping) {
-            processXMLBinaryDataCollectionMapping((XMLBinaryDataCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
-        } else if (mapping instanceof XMLDirectMapping) {
-            processXMLDirectMapping((XMLDirectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
-        } else if (mapping instanceof XMLCompositeDirectCollectionMapping) {
-            processXMLCompositeDirectCollectionMapping((XMLCompositeDirectCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
-        } else if (mapping instanceof XMLCompositeObjectMapping) {
-            processXMLCompositeMapping((XMLCompositeObjectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
-        } else if (mapping instanceof XMLCompositeCollectionMapping) {
-            processXMLCompositeMapping((XMLCompositeCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
-        } else if (mapping instanceof XMLAnyAttributeMapping) {
+        if (mapping instanceof BinaryDataMapping) {
+            processXMLBinaryDataMapping((BinaryDataMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof BinaryDataCollectionMapping) {
+            processXMLBinaryDataCollectionMapping((BinaryDataCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof DirectMapping) {
+            processXMLDirectMapping((DirectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof DirectCollectionMapping) {
+            processXMLCompositeDirectCollectionMapping((DirectCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties);
+        } else if (mapping instanceof CompositeCollectionMapping) {
+            processXMLCompositeMapping((CompositeCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
+        } else if (mapping instanceof CompositeObjectMapping) {
+            processXMLCompositeMapping((CompositeObjectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
+        } else if (mapping instanceof AnyAttributeMapping) {
             AnyAttribute anyAttribute = new AnyAttribute();
             anyAttribute.setProcessContents(AnyAttribute.LAX);
             ct.setAnyAttribute(anyAttribute);
-        } else if (mapping instanceof XMLAnyObjectMapping) {
+        } else if (mapping instanceof AnyObjectMapping) {
             processAnyMapping(seq, false);
-        } else if (mapping instanceof XMLAnyCollectionMapping) {
+        } else if (mapping instanceof AnyCollectionMapping) {
             processAnyMapping(seq, true);
-        } else if (mapping instanceof XMLChoiceObjectMapping) {
-            processXMLChoiceObjectMapping((XMLChoiceObjectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
-        } else if (mapping instanceof XMLChoiceCollectionMapping) {
-            processXMLChoiceCollectionMapping((XMLChoiceCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
-        } else if (mapping instanceof XMLCollectionReferenceMapping) {
-            processXMLObjectReferenceMapping((XMLCollectionReferenceMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
-        } else if (mapping instanceof XMLObjectReferenceMapping) {
-            processXMLObjectReferenceMapping((XMLObjectReferenceMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
+        } else if (mapping instanceof ChoiceObjectMapping) {
+            processXMLChoiceObjectMapping((ChoiceObjectMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
+        } else if (mapping instanceof ChoiceCollectionMapping) {
+            processXMLChoiceCollectionMapping((ChoiceCollectionMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors);
+        } else if (mapping instanceof CollectionReferenceMapping) {
+            processXMLObjectReferenceMapping((CollectionReferenceMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, true);
+        } else if (mapping instanceof ObjectReferenceMapping) {
+            processXMLObjectReferenceMapping((ObjectReferenceMapping) mapping, seq, ct, schemaForNamespace, workingSchema, properties, descriptors, false);
         }
     }
 
@@ -1214,7 +1212,7 @@ public class SchemaModelGenerator {
      * @param schemaType
      * @return
      */
-    protected Attribute buildAttribute(XMLDirectMapping mapping, String schemaType) {
+    protected Attribute buildAttribute(DirectMapping mapping, String schemaType) {
         XPathFragment frag = ((Field) mapping.getField()).getXPathFragment();
         Attribute attr = new Attribute();
         attr.setName(frag.getShortName());
@@ -1284,9 +1282,9 @@ public class SchemaModelGenerator {
      */
     public boolean areNamespacesEqual(String ns1, String ns2) {
         if (ns1 == null) {
-            return (ns2 == null || ns2.equals(XMLConstants.EMPTY_STRING));
+            return (ns2 == null || ns2.equals(Constants.EMPTY_STRING));
         }
-        return ((ns1.equals(ns2)) || (ns1.equals(XMLConstants.EMPTY_STRING) && ns2 == null));
+        return ((ns1.equals(ns2)) || (ns1.equals(Constants.EMPTY_STRING) && ns2 == null));
     }
     
     /**
@@ -1302,19 +1300,19 @@ public class SchemaModelGenerator {
         String uri = schemaType.getNamespaceURI();
         String prefix = workingSchema.getNamespaceResolver().resolveNamespaceURI(uri);
         if (prefix == null && !areNamespacesEqual(uri, workingSchema.getDefaultNamespace())) {
-            if (uri.equals(XMLConstants.SCHEMA_URL)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
-            } else if (uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            } else if (uri.equals(XMLConstants.REF_URL)) {
-                prefix = workingSchema.getNamespaceResolver().generatePrefix(XMLConstants.REF_PREFIX);
+            if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
+            } else if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) {
+                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
+            } else if (uri.equals(Constants.REF_URL)) {
+                prefix = workingSchema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
             } else {
                 prefix = workingSchema.getNamespaceResolver().generatePrefix();
             }
             workingSchema.getNamespaceResolver().put(prefix, uri);
         }
         if (prefix != null) {
-            schemaTypeString = prefix + XMLConstants.COLON + schemaTypeString;
+            schemaTypeString = prefix + Constants.COLON + schemaTypeString;
         }
         return schemaTypeString;
     }
@@ -1359,7 +1357,7 @@ public class SchemaModelGenerator {
             }
         }
 
-        if (!uri.equals(XMLConstants.EMPTY_STRING)) {
+        if (!uri.equals(Constants.EMPTY_STRING)) {
             schema.setTargetNamespace(uri);
             String prefix = null;
             if (nr != null) {
@@ -1415,7 +1413,7 @@ public class SchemaModelGenerator {
      */
     protected QName getDefaultRootElementAsQName(Descriptor desc, String qualifiedTableName) {
         QName qName = null;
-        int idx = qualifiedTableName.indexOf(XMLConstants.COLON);
+        int idx = qualifiedTableName.indexOf(Constants.COLON);
         String localName = qualifiedTableName.substring(idx + 1);
         NamespaceResolver nsResolver = desc.getNamespaceResolver();
         if (nsResolver == null) {
@@ -1568,7 +1566,7 @@ public class SchemaModelGenerator {
      * @param workingSchema
      * @param converter
      */
-    protected void processEnumeration(String schemaTypeString, XPathFragment frag, XMLDirectMapping mapping, Sequence seq, ComplexType ct, Schema workingSchema, Converter converter) {
+    protected void processEnumeration(String schemaTypeString, XPathFragment frag, DirectMapping mapping, Sequence seq, ComplexType ct, Schema workingSchema, CoreConverter converter) {
         Element elem = null;
         Attribute attr = null;
         if (frag.isAttribute()) {
@@ -1604,7 +1602,7 @@ public class SchemaModelGenerator {
      * @param mapping
      * @return
      */
-    protected boolean isFragPrimaryKey(XPathFragment frag, XMLDirectMapping mapping) {
+    protected boolean isFragPrimaryKey(XPathFragment frag, DirectMapping mapping) {
         /* Uncomment the following when ID support is needed
         Vector<String> pkFieldNames = mapping.getDescriptor().getPrimaryKeyFieldNames();
         if (pkFieldNames != null) {

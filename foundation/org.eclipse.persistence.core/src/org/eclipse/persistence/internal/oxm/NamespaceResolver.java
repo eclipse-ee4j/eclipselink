@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.oxm.Namespace;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
@@ -103,10 +102,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         }
         if(null != uri) {
             return uri;
-        } else if (XMLConstants.XML_NAMESPACE_PREFIX.equals(prefix)) {
-            return XMLConstants.XML_NAMESPACE_URL;
-        } else if (XMLConstants.XMLNS.equals(prefix)) {
-            return XMLConstants.XMLNS_URL;
+        } else if (javax.xml.XMLConstants.XML_NS_PREFIX.equals(prefix)) {
+            return javax.xml.XMLConstants.XML_NS_URI;
+        } else if (javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
+            return javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
         }
         if(dom != null) {
             return XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(dom, prefix);
@@ -130,10 +129,10 @@ public class NamespaceResolver implements XMLNamespaceResolver {
                 }
             }
         }
-        if (uri.equalsIgnoreCase(XMLConstants.XMLNS_URL)) {
-            return XMLConstants.XMLNS;
-        } else if (uri.equalsIgnoreCase(XMLConstants.XML_NAMESPACE_URL)) {
-            return XMLConstants.XML_NAMESPACE_PREFIX;
+        if (uri.equalsIgnoreCase(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
+            return javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
+        } else if (uri.equalsIgnoreCase(javax.xml.XMLConstants.XML_NS_URI)) {
+            return javax.xml.XMLConstants.XML_NS_PREFIX;
         }
         return resolveNamespaceURI(dom, uri);
     }
@@ -154,9 +153,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             int namedNodeMapSize = namedNodeMap.getLength();
             for(int x=0; x<namedNodeMapSize; x++) {
                 Node attr = namedNodeMap.item(x);
-                if(XMLConstants.XMLNS_URL.equals(attr.getNamespaceURI())) {
+                if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI())) {
                     if(uri.equals(attr.getNodeValue())) {
-                        if(attr.getLocalName() != null && (!(attr.getLocalName().equals(XMLConstants.XMLNS)))) {
+                        if(attr.getLocalName() != null && (!(attr.getLocalName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                             return attr.getLocalName();
                         } else {
                             return "";

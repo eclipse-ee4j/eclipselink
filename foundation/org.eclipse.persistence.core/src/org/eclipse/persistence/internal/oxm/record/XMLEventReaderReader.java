@@ -29,8 +29,8 @@ import javax.xml.stream.events.ProcessingInstruction;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -136,7 +136,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 if(null == prefix || prefix.length() == 0) {
                     contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), name.getLocalPart());
                 } else {
-                    contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + XMLConstants.COLON + name.getLocalPart());
+                    contentHandler.endElement(name.getNamespaceURI(), name.getLocalPart(), prefix + Constants.COLON + name.getLocalPart());
                 }
                 if(declaredNs != null) {
                     for(Namespace next : declaredNs) {
@@ -195,7 +195,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 if(null == prefix || prefix.length() == 0) {
                     contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), qName.getLocalPart(), indexedAttributeList);
                 } else {
-                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + XMLConstants.COLON + qName.getLocalPart(), indexedAttributeList);
+                    contentHandler.startElement(qName.getNamespaceURI(), qName.getLocalPart(), prefix + Constants.COLON + qName.getLocalPart(), indexedAttributeList);
                 }
                 break;
             }
@@ -222,14 +222,14 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
 
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();
-                    String uri = XMLConstants.XMLNS_URL;
+                    String uri = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                     String localName = next.getPrefix();
                     String qName;
                     if(null == localName || localName.length() == 0) {
-                        localName = XMLConstants.XMLNS;
-                        qName = XMLConstants.XMLNS;
+                        localName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
+                        qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE;
                     } else {
-                        qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                        qName = javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + localName;
                     }
                     String value = next.getNamespaceURI();
                     attributesList.add(new Attribute(uri, localName, qName, value));
@@ -244,7 +244,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                     if(null == prefix || prefix.length() == 0) {
                         qName = localName;
                     } else {
-                        qName = prefix + XMLConstants.COLON + localName;
+                        qName = prefix + Constants.COLON + localName;
                     }
                     String value = next.getValue();
                     attributesList.add(new Attribute(uri, localName, qName, value));

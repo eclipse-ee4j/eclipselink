@@ -66,7 +66,7 @@ public class SchemaGenXmlElementRefByteArrayTestCases  extends TestCase {
         generateSchema();
 
         try {
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema theSchema = sFact.newSchema(outputResolver.schemaFiles.get(0));
             Validator validator = theSchema.newValidator();
             String src = "org/eclipse/persistence/testing/jaxb/schemagen/customizedmapping/xmlelementref/bytearray.xml";

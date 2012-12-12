@@ -33,16 +33,21 @@ public class Input {
             if(length != compareObject.elements.length){
                 return false;
             }
+            boolean equals = true;
             for(int i=0; i<length; i++){
                 Object next = elements[i];
                 Object nextCompare = compareObject.elements[i];
                 if(next instanceof Node && nextCompare instanceof Node){
                     XMLComparer comparer = new XMLComparer();
-                    return comparer.isNodeEqual((Node)next, (Node)nextCompare);
+                    equals = comparer.isNodeEqual((Node)next, (Node)nextCompare);
+                }else{
+                    equals = next.equals(nextCompare);
                 }
-                return next.equals(nextCompare);
+                if(!equals){
+                	return false;
+                }
             }
-            
+            return equals;
         }
         return false;
     }

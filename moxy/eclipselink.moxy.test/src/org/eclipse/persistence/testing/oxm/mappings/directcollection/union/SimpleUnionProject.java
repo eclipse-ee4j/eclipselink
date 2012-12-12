@@ -31,8 +31,8 @@ public class SimpleUnionProject extends Project {
         descriptor.setJavaClass(Person.class);
         descriptor.setDefaultRootElement("person");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        resolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         descriptor.setNamespaceResolver(resolver);
 
         XMLCompositeDirectCollectionMapping itemsMapping = new XMLCompositeDirectCollectionMapping();
@@ -41,8 +41,8 @@ public class SimpleUnionProject extends Project {
         itemsMapping.setSetMethodName("setItems");
         itemsMapping.useCollectionClass(java.util.ArrayList.class);
         XMLUnionField field = new XMLUnionField("item/text()");
-        QName dateQname = new QName(XMLConstants.SCHEMA_URL, "date");
-        QName integerQName = new QName(XMLConstants.SCHEMA_URL, "integer");
+        QName dateQname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "date");
+        QName integerQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "integer");
         field.addSchemaType(dateQname);
         field.addSchemaType(integerQName);
         itemsMapping.setField(field);

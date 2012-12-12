@@ -72,7 +72,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases 
 			e.printStackTrace();
 		}
         Element elem = doc.createElementNS("rootNamespace", "ns0:root");
-        elem.setAttributeNS(XMLConstants.XMLNS_URL, "xmlns:ns0", "rootNamespace");
+        elem.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:ns0", "rootNamespace");
         elem.setTextContent("25");
         doc.appendChild(elem);
         

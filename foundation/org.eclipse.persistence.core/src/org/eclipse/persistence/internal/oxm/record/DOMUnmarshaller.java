@@ -27,6 +27,7 @@ import javax.xml.validation.Schema;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -398,7 +398,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     	
     	Context xmlContext = xmlUnmarshaller.getXMLContext();        
         // Try to find a descriptor based on the schema type
-        String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "type");
+        String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
         if (null != type) {
             XPathFragment typeFragment = new XPathFragment(type);
             String namespaceURI = xmlRecord.resolveNamespacePrefix(typeFragment.getPrefix());
@@ -496,7 +496,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	        }
 	
 	        Object object = null;
-	        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+	        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
 	            xmlRow.setUnmarshaller(xmlUnmarshaller);
 	            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy((AbstractSession) readSession));
 	            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();

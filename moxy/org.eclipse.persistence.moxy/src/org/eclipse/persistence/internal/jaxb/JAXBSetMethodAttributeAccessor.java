@@ -13,8 +13,8 @@
 package org.eclipse.persistence.internal.jaxb;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 public class JAXBSetMethodAttributeAccessor extends MethodAttributeAccessor {
     String parameterTypeAsString;
     ClassLoader loader;
-    Class attributeClassification = ClassConstants.OBJECT;
+    Class attributeClassification = CoreClassConstants.OBJECT;
 
     /**
      * This constructor sets the set method input parameter type (as string) as

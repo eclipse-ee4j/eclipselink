@@ -44,7 +44,7 @@ public class CompositeCollectionWithGroupingTextTestCases extends XMLMappingTest
         ((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).setReferenceClass(null);
         ((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).setReferenceClassName(null);
         ((XMLField)((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).getField()).setIsTypedTextField(true);
-        ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         
         setProject(p);
     }

@@ -52,9 +52,16 @@ public interface ObjectReferenceMapping<
     public Class getReferenceClass();
 
     /**
+     * INTERNAL:
+     */
+    public String getReferenceClassName();
+
+    /**
      * Return a list of source-target xmlfield pairs.
      */
     public Map getSourceToTargetKeyFieldAssociations();
+    
+    public boolean isWriteOnly();
     
     public void setIsWriteOnly(boolean b);
     

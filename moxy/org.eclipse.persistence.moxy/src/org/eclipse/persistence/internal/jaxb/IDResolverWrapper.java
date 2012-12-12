@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 import javax.xml.bind.ValidationEventHandler;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.IDResolver;
 import org.xml.sax.SAXException;
@@ -39,8 +39,8 @@ public class IDResolverWrapper extends IDResolver {
     private final static String RESOLVE_METHOD_NAME = "resolve";
     private final static String START_DOCUMENT_METHOD_NAME = "startDocument";
     
-    private final static Class[] BIND_PARAMS = new Class[] { ClassConstants.STRING, ClassConstants.OBJECT };
-    private final static Class[] RESOLVE_PARAMS = new Class[] { ClassConstants.STRING, ClassConstants.CLASS };
+    private final static Class[] BIND_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.OBJECT };
+    private final static Class[] RESOLVE_PARAMS = new Class[] { CoreClassConstants.STRING, CoreClassConstants.CLASS };
     private final static Class[] START_DOCUMENT_PARAMS = new Class[] { ValidationEventHandler.class };
 
     private Object resolver;

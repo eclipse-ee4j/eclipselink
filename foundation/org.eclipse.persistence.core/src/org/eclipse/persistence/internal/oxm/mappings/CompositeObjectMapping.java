@@ -43,14 +43,14 @@ public interface CompositeObjectMapping<
 
     public AbstractNullPolicy getNullPolicy();
 
-    public Object getReferenceClassName();
+    public String getReferenceClassName();
 
     public boolean hasConverter();
 
     public void setConverter(CONVERTER converter);
     
     public void setIsWriteOnly(boolean b);
-
+    
     public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
     
     /**
@@ -60,6 +60,11 @@ public interface CompositeObjectMapping<
      * @param aNullPolicy
      */
     public void setNullPolicy(AbstractNullPolicy aNullPolicy);
+    
+    /**
+     * This is a reference class whose instances this mapping will store in the domain objects.
+     */
+    public void setReferenceClass(Class aClass);
     
     public void setReferenceClassName(String aClassName);
     

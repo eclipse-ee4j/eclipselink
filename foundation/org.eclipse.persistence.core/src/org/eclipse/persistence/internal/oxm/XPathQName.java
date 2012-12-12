@@ -14,8 +14,6 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.oxm.XMLConstants;
-
 /**
  * <p>This class represents the pairing of a local name and a namespace uri. 
  * Additionally it can be marked as namespace aware or not.  When an XPathQName is not 
@@ -36,7 +34,7 @@ public class XPathQName {
 	 */
 	public XPathQName(){		
 		isNamespaceAware = true;
-		this.namespaceUri  = XMLConstants.EMPTY_STRING;
+		this.namespaceUri  = Constants.EMPTY_STRING;
 	}
 	
 	/**
@@ -46,7 +44,7 @@ public class XPathQName {
 	 * @param mediaType the mediaType associate with this XPathQName
 	 */
 	public XPathQName(String localName, boolean namespaceAware){				
-		this(XMLConstants.EMPTY_STRING, localName, namespaceAware);
+		this(Constants.EMPTY_STRING, localName, namespaceAware);
 	}
 	
 	/**
@@ -57,7 +55,7 @@ public class XPathQName {
 	 */
 	public XPathQName(String namespaceUri, String localName, boolean namespaceAware){
 		if(namespaceUri == null) {
-            this.namespaceUri = XMLConstants.EMPTY_STRING;
+            this.namespaceUri = Constants.EMPTY_STRING;
 		}else{
 		    this.namespaceUri = namespaceUri;
 		}

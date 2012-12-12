@@ -46,9 +46,9 @@ public class MarshalToNodeTestCases extends OXTestCase {
         Element rootElement = document.createElementNS("http://www.example.org/", "abc:ROOT-ELEMENT");
         document.appendChild(rootElement);        
         Element rootObject = document.createElementNS("http://www.example.org/", "abc:ROOT-OBJECT");
-        rootObject.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        rootObject.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":type", "oxm:person");
-        rootObject.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":oxm", "test");
+        rootObject.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        rootObject.setAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":type", "oxm:person");
+        rootObject.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":oxm", "test");
         rootElement.appendChild(rootObject);
         return document;
     }
@@ -74,7 +74,7 @@ public class MarshalToNodeTestCases extends OXTestCase {
             this.assertXMLIdentical(controlDocument, testDocument);
         } catch(AssertionFailedError e) {
             // Some parser implementations add another namespace declaration for "http://www.example.org/"
-            ((Element)controlDocument.getDocumentElement().getFirstChild()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":abc", "http://www.example.org/");
+            ((Element)controlDocument.getDocumentElement().getFirstChild()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":abc", "http://www.example.org/");
             this.assertXMLIdentical(controlDocument, testDocument);
         }
     }

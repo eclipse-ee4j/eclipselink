@@ -64,7 +64,7 @@ public class SchemaGenImportTestCases extends TestCase {
         gen.generateSchemaFiles(mysor, null);
 
         // validate a valid instance doc against the generated employee schema
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema employeeSchema = null;
         try {
             employeeSchema = sFact.newSchema(mysor.schemaFiles.get(EMPLOYEE_NS));

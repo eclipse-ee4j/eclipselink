@@ -328,7 +328,7 @@ public class XMLAnyObjectMapping extends XMLAbstractAnyMapping implements XMLMap
                     return buildObjectForNonXMLRoot(getDescriptor(nestedRecord, session, null), getConverter(), query, record, nestedRecord, joinManager, session, next, null, null);
                 }
                 // need to wrap the object in an XMLRoot
-                String schemaType = ((Element) next).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                String schemaType = ((Element) next).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                 QName schemaTypeQName = null;
                 XPathFragment frag = new XPathFragment();
                 if ((null != schemaType) && (schemaType.length() > 0)) {

@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -253,7 +252,7 @@ public class XPathNode {
             if (null == nonAttributeChildrenMap) {
                 nonAttributeChildrenMap = new HashMap();
             }
-            if(anXPathFragment !=null && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(anXPathFragment.getLocalName())){
+            if(anXPathFragment !=null && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(anXPathFragment.getLocalName())){
             	hasTypeChild = true;
             }
             children = nonAttributeChildren;

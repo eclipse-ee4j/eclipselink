@@ -39,7 +39,6 @@ import org.eclipse.persistence.sdo.helper.SchemaResolver;
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
 import org.eclipse.persistence.oxm.record.WriterRecord;
@@ -441,7 +440,7 @@ public class SDOXSDHelperDelegate implements SDOXSDHelper {
             for (int i = 0; i < appInfoElements.size(); i++) {
                 Element nextElement = (Element)appInfoElements.get(i);
 
-                if (nextElement.getNamespaceURI().equals(XMLConstants.SCHEMA_URL) && nextElement.getLocalName().equals("appinfo")) {
+                if (nextElement.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI) && nextElement.getLocalName().equals("appinfo")) {
                     String key = nextElement.getAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE);
                     String value = (String)appInfoMap.get(key);
                     StringWriter sw = new StringWriter();

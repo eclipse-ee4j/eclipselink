@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -71,7 +70,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             QName schemaType = ((Field) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
             XPathFragment groupingFragment = null;    
             boolean isQName = false;
-            if(XMLConstants.QNAME_QNAME.equals(schemaType)) {
+            if(Constants.QNAME_QNAME.equals(schemaType)) {
                 //if marshalling a QName, handle grouping elements here in case namespace adjustments need 
                 //to happen
                 groupingFragment = openGroupingElementsForQName((QName)fieldValue, marshalRecord);
@@ -116,14 +115,14 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         XPathFragment xPathFragment = null;
         ArrayList<XPathNode> groupingElements = marshalRecord.getGroupingElements();
         NamespaceResolver namespaceResolver = marshalRecord.getNamespaceResolver();
-        if((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals(XMLConstants.EMPTY_STRING)) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
+        if((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals(Constants.EMPTY_STRING)) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
             //In this case, the last grouping element may need to have a new prefix generated. 
             for (int x = 0, groupingElementsSize = groupingElements.size(); x < groupingElementsSize; x++) {
                 XPathNode xPathNode = groupingElements.get(x);
                 xPathFragment = xPathNode.getXPathFragment();
                 if(x == (groupingElements.size() - 1) && namespaceResolver.getDefaultNamespaceURI().equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
                     String prefix = namespaceResolver.generatePrefix();
-                    String xPath = prefix +  XMLConstants.COLON + xPathFragment.getShortName(); 
+                    String xPath = prefix +  Constants.COLON + xPathFragment.getShortName(); 
                     XPathFragment newFragment = new XPathFragment(xPath);
                     newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
                     marshalRecord.openStartElement(newFragment, namespaceResolver);

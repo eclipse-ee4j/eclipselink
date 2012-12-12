@@ -987,7 +987,7 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
 
         Node info3Node = marshalDoc.getElementsByTagName("write3").item(0);
         assertNotNull("'write3' null policy was not applied during marshal.",
-                info3Node.getAttributes().getNamedItemNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE));
+                info3Node.getAttributes().getNamedItemNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE));
 
         // Now test unmarshal
         InputStream is = ClassLoader.getSystemResourceAsStream(XMLNULLPOLICY_INSTANCE);

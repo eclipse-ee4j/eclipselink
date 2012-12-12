@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.mappings;
 
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
@@ -32,36 +29,10 @@ public interface CollectionReferenceMapping<
     UNMARSHAL_RECORD extends UnmarshalRecord,
     XML_FIELD extends Field,
     XML_RECORD extends XMLRecord
-    > extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping {
-    /**
-     * PUBLIC:
-     * Add a source-target xpath pair to the map.
-     * 
-     * @param srcXPath
-     * @param tgtXPath
-     */
-    public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
+    > extends ObjectReferenceMapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, UNMARSHAL_RECORD, XML_FIELD, XML_RECORD>, XMLContainerMapping {
 
-    public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
-
-    public void buildReference(UNMARSHAL_RECORD unmarshalRecord, XML_FIELD xmlField,
-            Object value, ABSTRACT_SESSION session, Object container);
-
-    public List<FIELD> getFields();
-
-    public InverseReferenceMapping getInverseReferenceMapping();
-
-    /**
-     * Return a list of source-target xmlfield pairs.
-     */
-    public Map getSourceToTargetKeyFieldAssociations();
-
-    public boolean isWriteOnly();
-    
-    public void setIsWriteOnly(boolean b);
-    
-    public void setReferenceClassName(String aClassName);
-    
+    public void buildReference(UNMARSHAL_RECORD unmarshalRecord, XML_FIELD xmlField, Object value, ABSTRACT_SESSION session, Object container);
+    	
     public void setUsesSingleNode(boolean useSingleNode);
     
     public void useCollectionClassName(String concreteContainerClassName);

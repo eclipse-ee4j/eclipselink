@@ -16,8 +16,6 @@ import commonj.sdo.Property;
 import commonj.sdo.Type;
 import commonj.sdo.helper.HelperContext;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -835,7 +833,7 @@ public class SDOSchemaGenerator {
         String prefix = null;
         if (uri.equals(generatedSchema.getTargetNamespace())) {
             return null;
-        } else if (uri.equals(XMLConstants.SCHEMA_URL)) {
+        } else if (uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
             return XMLConstants.SCHEMA_PREFIX;
         } else if (uri.equals(SDOConstants.SDO_URL)) {
             prefix = generatedSchema.getNamespaceResolver().resolveNamespaceURI(uri);

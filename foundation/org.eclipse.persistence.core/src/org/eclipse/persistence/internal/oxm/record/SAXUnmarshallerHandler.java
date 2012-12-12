@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathQName;
@@ -27,7 +28,6 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -176,9 +176,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             Class primitiveWrapperClass = null;
             String type = null;
             if(xmlReader.isNamespaceAware()){
-                type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                type = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
             }else{
-            	type = atts.getValue(XMLConstants.EMPTY_STRING, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            	type = atts.getValue(Constants.EMPTY_STRING, Constants.SCHEMA_TYPE_ATTRIBUTE);
             }
             if (null != type) {
                 XPathFragment typeFragment = new XPathFragment(type, xmlReader.namespaceSeparator, xmlReader.isNamespaceAware());
@@ -190,7 +190,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 if(xmlDescriptor == null) {
                 	QName lookupQName = null;
                 	if(typeFragment.getNamespaceURI() == null){
-                		lookupQName= new QName(XMLConstants.SCHEMA_URL, typeFragment.getLocalName());
+                		lookupQName= new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, typeFragment.getLocalName());
                 	}else{
                 		lookupQName= new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName());
                 	}
@@ -325,7 +325,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             }
             unmarshalRecord.setAttributes(atts);
 
-            if(atts != null && null != atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+            if(atts != null && null != atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
                 unmarshalRecord.setNil(true);
             }
             unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);

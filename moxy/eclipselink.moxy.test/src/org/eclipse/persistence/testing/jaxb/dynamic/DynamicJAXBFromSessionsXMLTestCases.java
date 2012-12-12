@@ -205,7 +205,7 @@ public class DynamicJAXBFromSessionsXMLTestCases extends JAXBTestCases {
     public void testGetSetByXPath() throws Exception {
         NamespaceResolver nsResolver = new NamespaceResolver();
         nsResolver.put("ns0", "myNamespace");
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
         URL url = ClassLoader.getSystemResource(resourceName);
         DynamicEntity docWrapper = (DynamicEntity) jaxbUnmarshaller.unmarshal(url);

@@ -890,7 +890,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
 
                 if (!isXMLRoot) {
                     if ((null == xmlDescriptor.getDefaultRootElement()) && (node.getNodeType() == Node.ELEMENT_NODE) && (xmlDescriptor.getSchemaReference() != null) && (xmlDescriptor.getSchemaReference().getType() == XMLSchemaReference.COMPLEX_TYPE)) {
-                        Attr typeAttr = ((Element) node).getAttributeNodeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        Attr typeAttr = ((Element) node).getAttributeNodeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if (typeAttr == null) {
                             NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
                             String xsiPrefix = null;
@@ -898,7 +898,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                                 namespaceResolver = new NamespaceResolver();
                                 xmlDescriptor.setNamespaceResolver(namespaceResolver);
                             } else {
-                                xsiPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                                xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                             }
 
                             if (null == xsiPrefix) {
@@ -907,8 +907,8 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
 
                             String value = xmlDescriptor.getSchemaReference().getSchemaContext();
 
-                            ((Element) node).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
-                            ((Element) node).setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, value);
+                            ((Element) node).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                            ((Element) node).setAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, value);
 
                         } else {
                             String value = xmlDescriptor.getSchemaReference().getSchemaContext();
@@ -980,7 +980,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         
         Element newElement = targetDoc.createElementNS(namespace, xmlRootQualifiedName);
         if(prefix != null && prefix.length() >0 && targetNR.resolveNamespaceURI(namespace) == null){
-            newElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ':' + prefix, namespace);
+            newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, namespace);
         }
         targetNode.appendChild(newElement);
 
@@ -1005,7 +1005,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         }
         String prefix = sourceNR.resolveNamespaceURI(namespace);
         if(prefix == null){     
-            String defaultNamespace = sourceElement.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+            String defaultNamespace = sourceElement.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
             if(defaultNamespace == null){
                 prefix = sourceNR.generatePrefix();    
             }else if(defaultNamespace != namespace){
@@ -1023,13 +1023,13 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             Attr nextAttr = (Attr) attrs.item(i);
             String name = nextAttr.getLocalName();
             String uri = nextAttr.getNamespaceURI();
-            if(!XMLConstants.XMLNS.equals(name)){
+            if(!javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(name)){
                 String prefix = getPrefix(uri, sourceNR, sourceElement);               
                 if(prefix != null && prefix.length() > 0){
                     name = prefix + ':' +name;
                     //if this is a newly generated prefix it needs to be written out
                     if(targetNR.resolveNamespaceURI(uri) == null){                       
-                        newElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ':' + prefix, uri);
+                        newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, uri);
                     }
                 }
                 
@@ -1165,10 +1165,10 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
            
         String xsiPrefix = null;
         if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation()) || (isNil)) {
-            xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
                 xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-                nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }        
 
@@ -1192,10 +1192,10 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                 marshalRecord.openStartElement(rootFragment, nr);
             }
             if (null != schemaLocation) {
-                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix, schemaLocation);
+                marshalRecord.attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_LOCATION, xsiPrefix, schemaLocation);
             }
             if (null != noNsSchemaLocation) {
-                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix, noNsSchemaLocation);
+                marshalRecord.attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix, noNsSchemaLocation);
             }
             if (isNil) {
                 marshalRecord.nilSimple(nr);
@@ -1224,17 +1224,17 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         	        	
             		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
                       if(type != null) {
-                    	  xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+                    	  xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                           if (null == xsiPrefix) {
                               xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;                        	  
-                        	  marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                        	  marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                           }                    	  
-                    	  marshalRecord.namespaceDeclaration(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+                    	  marshalRecord.namespaceDeclaration(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
                     	  String typeValue = type.getLocalPart();
                     	  if(marshalRecord.isNamespaceAware()){
                     		  typeValue = XMLConstants.SCHEMA_PREFIX + marshalRecord.getNamespaceSeparator() + typeValue;
                     	  }
-                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
+                          marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
                       }
             	 }
             	
@@ -1511,7 +1511,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
                         if (xmlRootPrefix != null) {
-                            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + xmlRootPrefix, xmlRootUri);
+                            ((Element) xmlRow.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + xmlRootPrefix, xmlRootUri);
                         }
                         shouldCallSetAttributeNS = false;
                     }
@@ -1531,7 +1531,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         bldr.addXsiTypeAndClassIndicatorIfRequired(xmlRow, descriptor, null, null, originalObject, object, isXMLRoot, true);
         xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
-            ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+            ((Element) xmlRow.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
         xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
                 
@@ -1546,13 +1546,13 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         Element docElement = document.getDocumentElement();
 
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.XMLNS, XMLConstants.XMLNS_URL);
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        resolver.put(javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
         if ((getSchemaLocation() != null) || (getNoNamespaceSchemaLocation() != null)) {
             XMLField field = new XMLField("@xmlns:xsi");
             field.setNamespaceResolver(resolver);
-            XPathEngine.getInstance().create(field, docElement, XMLConstants.SCHEMA_INSTANCE_URL, session);
+            XPathEngine.getInstance().create(field, docElement, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, session);
         }
         if (getSchemaLocation() != null) {
             XMLField field = new XMLField("@xsi:" + XMLConstants.SCHEMA_LOCATION);

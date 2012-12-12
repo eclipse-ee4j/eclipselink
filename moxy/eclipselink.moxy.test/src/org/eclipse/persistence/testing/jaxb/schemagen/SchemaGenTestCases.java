@@ -118,7 +118,7 @@ public class SchemaGenTestCases extends TestCase {
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, int schemaIndex, MySchemaOutputResolver outputResolver) {
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
         try {
             theSchema = sFact.newSchema(outputResolver.schemaFiles.get(schemaIndex));

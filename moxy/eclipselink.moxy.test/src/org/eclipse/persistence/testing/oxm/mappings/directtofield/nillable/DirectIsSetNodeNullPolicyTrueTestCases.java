@@ -45,7 +45,7 @@ public class DirectIsSetNodeNullPolicyTrueTestCases extends XMLWithJSONMappingTe
         Project aProject = new DirectNodeNullPolicyProject(true);
         XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
-        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         employeeDescriptor.setNamespaceResolver(namespaceResolver);        
         XMLDirectMapping aMapping = (XMLDirectMapping) employeeDescriptor.getMappingForAttributeName("firstName");
         aMapping.setNullPolicy(aNullPolicy);

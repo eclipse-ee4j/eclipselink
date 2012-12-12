@@ -57,7 +57,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -382,7 +381,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
                         if(typeXPathStringBuilder.length() > 0) {
                             typeXPathStringBuilder.append('/');
                         }
-                        typeField.setXPath(typeXPathStringBuilder.toString() + XMLConstants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        typeField.setXPath(typeXPathStringBuilder.toString() + Constants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE);
                         typeNodeValue = new TypeNodeValue();
                         typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
                         addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());
@@ -421,7 +420,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
             }
             if (cycleRecoverableClass.isAssignableFrom(object.getClass())) {
                 try {
-                    Object jaxbMarshaller = marshaller.getProperty(XMLConstants.JAXB_MARSHALLER);
+                    Object jaxbMarshaller = marshaller.getProperty(Constants.JAXB_MARSHALLER);
                     // Create a proxy instance of CycleRecoverable$Context, a parameter to
                     // the onCycleDetected method
                     Object contextProxy = CycleRecoverableContextProxy.getProxy(cycleRecoverableContextClass, jaxbMarshaller);

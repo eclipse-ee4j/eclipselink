@@ -150,8 +150,8 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
             }
             
             // Handle case where prefix/uri are not set on an xmlns prefixed attribute
-            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + ":")) {
-                attributeNamespaceURI = XMLConstants.XMLNS_URL;
+            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":")) {
+                attributeNamespaceURI = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
             }
             
             String value = atts.getValue(x);
@@ -189,11 +189,11 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     }
 
     protected void addNamespaceDeclaration(Element parentElement, String prefix, String uri) {
-        if (prefix.length() == 0 || XMLConstants.XMLNS.equals(prefix)) {
+        if (prefix.length() == 0 || javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
             //handle default/target namespaces
-            parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, uri);
+            parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, uri);
         } else {
-            parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, uri);
+            parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix, uri);
         }
     }
     

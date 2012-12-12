@@ -42,7 +42,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("vehicle");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setClassIndicatorFieldName("@xsi:type");
@@ -66,7 +66,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("car");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setParentClass(Vehicle.class);
@@ -87,7 +87,7 @@ public class RootElementProject extends Project {
         xmlDescriptor.setDefaultRootElement("sports-car");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         xmlDescriptor.setNamespaceResolver(nsResolver);
 
         xmlDescriptor.getInheritancePolicy().setParentClass(Car.class);

@@ -21,8 +21,8 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.mappings.MimeTypePolicy;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.mappings.MimeTypePolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public interface BinaryDataMapping<
@@ -33,6 +33,7 @@ public interface BinaryDataMapping<
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
     MARSHALLER extends Marshaller,
+    MIME_TYPE_POLICY extends MimeTypePolicy,
     SESSION extends CoreSession,
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
@@ -94,7 +95,7 @@ public interface BinaryDataMapping<
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
-    public void setMimeTypePolicy(MimeTypePolicy aPolicy);
+    public void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
     
     /**
      * Set the AbstractNullPolicy on the mapping<br>

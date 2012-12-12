@@ -105,8 +105,8 @@ public class XMLMarshallerNoDefaultRootTestCases extends OXTestCase {
 
             Document document = parser.newDocument();
             Element element = document.createElement("root");
-            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + "xsi", XMLConstants.SCHEMA_INSTANCE_URL);
-            element.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, "xsi:type", "test");
+            element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + "xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            element.setAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi:type", "test");
             log(document);
 
             marshaller.marshal(controlObject, element);

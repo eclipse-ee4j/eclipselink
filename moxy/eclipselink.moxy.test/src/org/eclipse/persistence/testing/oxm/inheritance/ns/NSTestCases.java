@@ -38,7 +38,7 @@ public class NSTestCases extends XMLWithJSONMappingTestCases {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("urn:parent", "parent");
         namespaces.put("urn:child", "child");
-        namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
     	return namespaces;
     }
 

@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -102,7 +101,7 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
             String qName = attrs.getQName(i);
             String uri = attrs.getURI(i);
             attributes.addAttribute(attrs.getLocalName(i), qName, uri, attrs.getType(i), attrs.getValue(i), i);
-            if(!XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && (null != qName && !qName.startsWith(XMLConstants.XMLNS))) {
+            if(!javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(uri) && (null != qName && !qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE))) {
                 attributesOccurred = true;
             }
         }

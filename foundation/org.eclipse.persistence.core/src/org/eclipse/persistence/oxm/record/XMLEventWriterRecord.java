@@ -94,9 +94,9 @@ public class XMLEventWriterRecord extends MarshalRecord {
 
     public void attribute(String namespaceURI, String localName, String name, String value) {
          XMLEvent event;
-         if(XMLConstants.XMLNS_URL.equals(namespaceURI)) {
+         if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)) {
              try {
-                 if(XMLConstants.XMLNS.equals(localName)) {
+                 if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(localName)) {
                      event = xmlEventFactory.createNamespace(value);
                      xmlEventWriter.setDefaultNamespace(value);
                  }  else {

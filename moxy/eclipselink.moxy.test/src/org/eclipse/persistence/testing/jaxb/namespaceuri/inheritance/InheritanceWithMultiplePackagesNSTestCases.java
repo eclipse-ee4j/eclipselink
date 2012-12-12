@@ -35,8 +35,8 @@ public class InheritanceWithMultiplePackagesNSTestCases extends InheritanceWithM
         setClasses(new Class[] {RootComplex.class});
         
         Map namespaces = new HashMap();
-        namespaces.put(XMLConstants.SCHEMA_URL, XMLConstants.SCHEMA_PREFIX);
-        namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX);
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.SCHEMA_PREFIX);
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_INSTANCE_PREFIX);
         namespaces.put("rootNamespace","ns0");
         namespaces.put("someNamespace","ns1");
         namespaces.put("anotherNamespace","ns2");

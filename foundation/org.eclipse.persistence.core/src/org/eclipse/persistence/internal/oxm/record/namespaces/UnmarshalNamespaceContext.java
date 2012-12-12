@@ -17,7 +17,7 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
 
 /**
  *  An UnmarshalNamespaceResolver that delegates all work to a NamespaceContext.
@@ -39,12 +39,12 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
 
     public String getNamespaceURI(String prefix) {
         if(null == prefix) {
-            prefix = XMLConstants.EMPTY_STRING;
+            prefix = Constants.EMPTY_STRING;
         }
         try {
             String namespaceURI = xmlStreamReader.getNamespaceURI(prefix);
             if(null == namespaceURI) {
-                return xmlStreamReader.getAttributeValue(XMLConstants.XMLNS_URL, prefix);
+                return xmlStreamReader.getAttributeValue(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix);
             }
             return namespaceURI;
         } catch(IllegalStateException e) {

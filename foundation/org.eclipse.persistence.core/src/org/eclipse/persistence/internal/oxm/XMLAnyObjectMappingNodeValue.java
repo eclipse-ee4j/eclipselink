@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHan
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -170,7 +169,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 AnyMappingContentHandler handler = new AnyMappingContentHandler(unmarshalRecord, xmlAnyObjectMapping.usesXMLRoot());
                 String qnameString = xPathFragment.getLocalName();
                 if (xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
+                    qnameString = xPathFragment.getPrefix() + Constants.COLON + qnameString;
                 }
                 handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
                 XMLReader xmlReader = unmarshalRecord.getXMLReader();
@@ -255,7 +254,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 prefix = marshalRecord.getNamespaceResolver().generatePrefix("ns0");
                 generatedNamespace = new Namespace(prefix, xmlRootFragment.getNamespaceURI());
             }
-            xpath = prefix + XMLConstants.COLON + xpath;
+            xpath = prefix + Constants.COLON + xpath;
         }
         xmlRootFragment.setXPath(xpath);
         return generatedNamespace;

@@ -434,7 +434,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MySchemaOutputResolver outputResolver) {
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
         try {
             theSchema = sFact.newSchema(outputResolver.schemaFiles.get(namespace));
@@ -458,7 +458,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param schema
      */
     protected String validateAgainstSchema(String src, String schema) {
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
         try {
             theSchema = sFact.newSchema(new File(schema));
@@ -483,7 +483,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      * @param outputResolver contains one or more schemas to validate against
      */
     protected String validateAgainstSchema(String src, String namespace, MyStreamSchemaOutputResolver outputResolver) {
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         sFact.setResourceResolver(new ResourceResolver(outputResolver));
         Schema theSchema;
         try {
@@ -558,7 +558,7 @@ public class ExternalizedMetadataTestCases extends TestCase {
      */
     protected void validateBindingsFileAgainstSchema(InputStream src) {
     	String result = null;
-        SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema theSchema;
         try {
             InputStream bindingsFileXSDInputStream = getClass().getClassLoader().getResourceAsStream("eclipselink_oxm_2_5.xsd");

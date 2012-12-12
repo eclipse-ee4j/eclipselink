@@ -964,7 +964,7 @@ public class SDOTypesGenerator {
         Iterator iter = attributesMap.keySet().iterator();
         while (iter.hasNext()) {
             QName key = (QName) iter.next();
-            if (key.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) {
+            if (key.getNamespaceURI().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI)) {
                 String value = (String) attributesMap.get(key);
                 String prefix = key.getLocalPart();
                 int index = prefix.indexOf(':');
@@ -1525,7 +1525,7 @@ public class SDOTypesGenerator {
 
         QName xsdType = getQNameForString(defaultNamespace, typeName);
 
-        if ((xsdType != null) && xsdType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
+        if ((xsdType != null) && xsdType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
             if (xsdType.getLocalPart().equals(SDOConstants.ID)) {
                 owningType.setInstanceProperty(SDOConstants.ID_PROPERTY, p.getName());
             } else if (xsdType.getLocalPart().equals(SDOConstants.IDREF)) {

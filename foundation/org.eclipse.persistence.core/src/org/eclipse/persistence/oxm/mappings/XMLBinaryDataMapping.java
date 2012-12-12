@@ -77,7 +77,7 @@ import org.eclipse.persistence.sessions.Session;
  *  @see org.eclipse.persistence.oxm.mappings.MimeTypePolicy
  *  @since   TopLink 11.1.1.0.0g
  */
-public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, Session, XMLUnmarshaller, XMLRecord> {
+public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryDataMapping<AbstractSession, AttributeAccessor, ContainerPolicy, Converter, ClassDescriptor, DatabaseField, XMLMarshaller, MimeTypePolicy, Session, XMLUnmarshaller, XMLRecord> {
     private boolean shouldInlineBinaryData;
     private MimeTypePolicy mimeTypePolicy;
     private boolean isSwaRef;
@@ -294,7 +294,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
                 Object obj = record.getIndicatingNoEntry(incField);
                 if (!prefixAlreadyDefined && obj != null && obj instanceof DOMRecord) {
                     if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                        ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, XMLConstants.XOP_URL);
+                        ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix, XMLConstants.XOP_URL);
                     }
                 }
             }

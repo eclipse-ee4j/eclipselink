@@ -511,7 +511,7 @@ public class DOMRecord extends XMLRecord {
     private Object convertValue(Element node, Field key, Object value) {
         XMLConversionManager xmlCnvMgr = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
         if (key.isTypedTextField() && (node != null)) {
-            String schemaType = node.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String schemaType = node.getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             if ((null != schemaType) && (schemaType.length() > 0)) {
                 QName qname = null;
                 int index = schemaType.indexOf(XMLConstants.COLON);

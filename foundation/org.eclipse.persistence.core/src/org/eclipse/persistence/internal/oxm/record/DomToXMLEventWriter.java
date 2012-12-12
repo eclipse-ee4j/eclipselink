@@ -18,8 +18,8 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,7 +50,7 @@ public class DomToXMLEventWriter{
             writeElement((Element)currentNode, uri, name, xew);
         } else if(currentNode.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr)currentNode;
-            if(attribute.getPrefix() != null && attribute.getPrefix().equals(XMLConstants.XMLNS)) {
+            if(attribute.getPrefix() != null && attribute.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                 xew.add(xmlEventFactory.createNamespace(attribute.getLocalName(), attribute.getValue()));
             } else {
                 if(attribute.getPrefix() == null) {
@@ -81,13 +81,13 @@ public class DomToXMLEventWriter{
                 prefix = tempNR.resolveNamespaceURI(namespace);
                 
                 if(prefix == null || prefix.length() == 0){
-                    String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+                    String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                     if(defaultNamespace == null){
                         prefix = tempNR.generatePrefix();    
                     }else if(defaultNamespace != namespace){
                         prefix = tempNR.generatePrefix();
                     }else{
-                        prefix = XMLConstants.EMPTY_STRING;
+                        prefix = Constants.EMPTY_STRING;
                     }      
                 }    
             }
@@ -106,14 +106,14 @@ public class DomToXMLEventWriter{
             }
         } else {            
             if(namespace == null || namespace.length() == 0) {
-                String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                String defaultNamespace = xew.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
                 xew.add(xmlEventFactory.createStartElement("", "", nodeName));
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
-                    xew.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
+                    xew.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                 }
             } else {
-                xew.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, namespace, localName));
+                xew.add(xmlEventFactory.createStartElement(Constants.EMPTY_STRING, namespace, localName));
             }
         }
         NodeList childNodes = elem.getChildNodes();
@@ -125,7 +125,7 @@ public class DomToXMLEventWriter{
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr attribute = next;
-                if(next.getPrefix() != null && next.getPrefix().equals(XMLConstants.XMLNS)) {
+                if(next.getPrefix() != null && next.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     String currentUri = xew.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
                         xew.add(xmlEventFactory.createNamespace(next.getLocalName(), next.getValue()));

@@ -729,11 +729,11 @@ public class SDOProperty implements Property, Serializable {
         mapping.addFieldTransformer(xpath, transformer);
         
         NamespaceResolver nsr = new NamespaceResolver();
-        nsr.put(XMLConstants.XMLNS, XMLConstants.XMLNS_URL);
+        nsr.put(javax.xml.XMLConstants.XMLNS_ATTRIBUTE, javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
 
         XMLField field = new XMLField();
         field.setNamespaceResolver(nsr);
-        field.setXPath(xpathMinusText + "/@" + XMLConstants.XMLNS + ":" + QNameTransformer.QNAME_NAMESPACE_PREFIX);
+        field.setXPath(xpathMinusText + "/@" + javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":" + QNameTransformer.QNAME_NAMESPACE_PREFIX);
         
         mapping.addFieldTransformer(field, new NamespaceURITransformer());
         

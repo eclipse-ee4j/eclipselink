@@ -241,8 +241,8 @@ public class ContentHandlerRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
-        if(namespaceURI == XMLConstants.XMLNS_URL) {
-            if(localName == XMLConstants.XMLNS) {
+        if(namespaceURI == javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI) {
+            if(localName == javax.xml.XMLConstants.XMLNS_ATTRIBUTE) {
                 localName = "";
             }
             this.startPrefixMapping(localName, value);
@@ -349,7 +349,7 @@ public class ContentHandlerRecord extends MarshalRecord {
                 attribute(namespaceURI, localName, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (namespaceURI != null) {
-                    attribute(XMLConstants.XMLNS_URL, localName ,XMLConstants.XMLNS + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, localName , javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }

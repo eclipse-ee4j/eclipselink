@@ -31,7 +31,7 @@ public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTes
 		Map<String, String> namespaces= new HashMap<String, String>();
 		namespaces.put("rootNamespace","ns0");
 		namespaces.put("someNamespace","ns1");
-		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL,"xsi");
+		namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,"xsi");
 		
 		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
@@ -40,7 +40,7 @@ public class JAXBInheritanceSubTypeNoParentRootTestCases extends JAXBWithJSONTes
 		Map<String, String> namespaces= new HashMap<String, String>();
 		namespaces.put("rootNamespace","ns0");
 		namespaces.put("someNamespace","ns1");
-		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL,"xsi");
+		namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,"xsi");
 		
 		JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
 		jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);

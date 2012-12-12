@@ -36,7 +36,7 @@ public class InheritanceProject extends Project {
         descriptor.setDefaultRootElement("employee");
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         descriptor.setNamespaceResolver(nsResolver);
 
         XMLDirectMapping idMapping = new XMLDirectMapping();
@@ -58,7 +58,7 @@ public class InheritanceProject extends Project {
         descriptor.setJavaClass(Address.class);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         descriptor.setNamespaceResolver(nsResolver);
 
         XMLField classIndicatorField = new XMLField("@xsi:type");
@@ -74,7 +74,7 @@ public class InheritanceProject extends Project {
         descriptor.setJavaClass(CanadianAddress.class);
 
         NamespaceResolver nsResolver = new NamespaceResolver();
-        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+        nsResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         descriptor.setNamespaceResolver(nsResolver);
 
         descriptor.getInheritancePolicy().setParentClass(Address.class);

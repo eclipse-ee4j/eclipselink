@@ -47,7 +47,7 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
     	namespaces.put("anotherNamespace", "ns2");
     	namespaces.put("uri3", "ns4");
     	namespaces.put("someNamespace", "ns1");
-    	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+    	namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
     	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
@@ -61,7 +61,7 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
     	namespaces.put("anotherNamespace", "ns2");
     	namespaces.put("uri3", "ns4");
     	namespaces.put("someNamespace", "ns1");
-    	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+    	namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
     	
     	jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     	return jsonMarshaller;

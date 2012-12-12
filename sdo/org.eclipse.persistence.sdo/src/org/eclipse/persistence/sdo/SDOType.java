@@ -679,7 +679,7 @@ public class SDOType implements Type, Serializable {
                     if (nextNR != null) {
                         for (int j = 0, size = nextNR.getNamespaces().size(); j < size; j++) {
                             Namespace nextNamespace = (Namespace)nextNR.getNamespaces().get(j);
-                            if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) &&
+                            if ((!nextNamespace.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) && (!nextNamespace.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) &&
                                 (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
                                 (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
                                 String newPrefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).addNamespace(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
@@ -694,7 +694,7 @@ public class SDOType implements Type, Serializable {
                 String prefix = ((SDOTypeHelper)aHelperContext.getTypeHelper()).getPrefix(getURI());
                 xmlDescriptor.getNamespaceResolver().put(prefix, getURI());
             }
-            xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+            xmlDescriptor.getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
     }
 
@@ -750,7 +750,7 @@ public class SDOType implements Type, Serializable {
                 if (parentNR != null) {
                     for (int i = 0; i < parentNR.getNamespaces().size(); i++) {
                         Namespace nextNamespace = (Namespace)parentNR.getNamespaces().get(i);
-                        if ((!nextNamespace.getPrefix().equals(XMLConstants.XMLNS)) && (!nextNamespace.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) &&
+                        if ((!nextNamespace.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) && (!nextNamespace.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) &&
                             (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) && (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) &&
                             (!nextNamespace.getNamespaceURI().equals(SDOConstants.SDO_URL))) {
                             getXmlDescriptor().getNonNullNamespaceResolver().put(nextNamespace.getPrefix(), nextNamespace.getNamespaceURI());
@@ -775,8 +775,8 @@ public class SDOType implements Type, Serializable {
                     Class parentClass = parentType.getImplClass();
                     getXmlDescriptor().getInheritancePolicy().setParentClass(parentClass);
                     getXmlDescriptor().getInheritancePolicy().setParentDescriptor(parentType.getXmlDescriptor());
-                    parentType.getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-                    getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
+                    parentType.getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+                    getXmlDescriptor().getNamespaceResolver().put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 }
             }
         }

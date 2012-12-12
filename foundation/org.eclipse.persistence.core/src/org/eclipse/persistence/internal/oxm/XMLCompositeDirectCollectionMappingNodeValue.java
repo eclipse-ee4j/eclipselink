@@ -24,7 +24,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLConstants;
+
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
@@ -155,10 +155,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
         XPathFragment lastXPathFragment = xmlField.getLastXPathFragment();
         if (lastXPathFragment.nameIsText()) {
-            String type = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String type = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
             if (null != type) {
                 String namespaceURI = null;
-                int colonIndex = type.indexOf(XMLConstants.COLON);
+                int colonIndex = type.indexOf(Constants.COLON);
                 if (colonIndex > -1) {
                     String prefix = type.substring(0, colonIndex);
                     namespaceURI = unmarshalRecord.resolveNamespacePrefix(prefix);
@@ -170,7 +170,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             if (!xmlField.usesSingleNode()) {
                 String namespaceURI = lastXPathFragment.getNamespaceURI();
                 if (namespaceURI == null) {
-                    namespaceURI = XMLConstants.EMPTY_STRING;
+                    namespaceURI = Constants.EMPTY_STRING;
                 }
                 String value = atts.getValue(namespaceURI, lastXPathFragment.getLocalName());
                 Object collection = unmarshalRecord.getContainerInstance(this);
@@ -222,7 +222,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
       
         if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {            
             value = null;           
-        } else if (!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value)) {
+        } else if (!isWhitespaceAware() && Constants.EMPTY_STRING.equals(value)) {
             value = null;
         }
 
@@ -271,7 +271,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         	Field xmlField = (Field) xmlCompositeDirectCollectionMapping.getField();
             QName schemaType = xmlField.getSchemaTypeForValue(value, session);
             boolean isElementOpen = false;
-            if (XMLConstants.QNAME_QNAME.equals(schemaType)) {
+            if (Constants.QNAME_QNAME.equals(schemaType)) {
                 QName fieldValue = (QName) value;
                 if ((fieldValue.getNamespaceURI() == null || fieldValue.getNamespaceURI().equals("")) && marshalRecord.getNamespaceResolver().getDefaultNamespaceURI() != null) {
                     // In this case, an extra xmlns="" declaration is going to be added. This may
@@ -279,7 +279,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     String defaultNamespaceURI = namespaceResolver.getDefaultNamespaceURI();
                     if (defaultNamespaceURI.equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
                         String prefix = namespaceResolver.generatePrefix();
-                        String xPath = prefix + XMLConstants.COLON + xPathFragment.getShortName();
+                        String xPath = prefix + Constants.COLON + xPathFragment.getShortName();
                         XPathFragment newFragment = new XPathFragment(xPath);
                         newFragment.setNamespaceURI(defaultNamespaceURI);
                         newFragment.setNextFragment(xPathFragment.getNextFragment());

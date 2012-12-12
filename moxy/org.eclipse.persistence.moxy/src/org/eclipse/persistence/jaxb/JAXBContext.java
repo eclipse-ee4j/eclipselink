@@ -45,12 +45,13 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
@@ -72,7 +73,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -660,10 +660,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return new JAXBElement(qname, Object.class, value);
         }
 
-        if (ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)) {
-            theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-        } else if (ClassConstants.DURATION.isAssignableFrom(theClass)) {
-            theClass = ClassConstants.DURATION;
+        if (CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)) {
+            theClass = CoreClassConstants.XML_GREGORIAN_CALENDAR;
+        } else if (CoreClassConstants.DURATION.isAssignableFrom(theClass)) {
+            theClass = CoreClassConstants.DURATION;
         }
 
         return new JAXBElement(qname, theClass, value);
@@ -1302,12 +1302,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 if (name == null) {
                     Class theClass = (Class)type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
-                    if (type == ClassConstants.ABYTE || type == ClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
-                        name = XMLConstants.BASE_64_BINARY_QNAME;
-                    } else if(type == ClassConstants.OBJECT){
-                        name = XMLConstants.ANY_TYPE_QNAME;
-                    } else if(type == ClassConstants.XML_GREGORIAN_CALENDAR) {
-                        name = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler") ) {
+                        name = Constants.BASE_64_BINARY_QNAME;
+                    } else if(type == CoreClassConstants.OBJECT){
+                        name = Constants.ANY_TYPE_QNAME;
+                    } else if(type == CoreClassConstants.XML_GREGORIAN_CALENDAR) {
+                        name = Constants.ANY_SIMPLE_TYPE_QNAME;
                     } else {
                         name = (QName)XMLConversionManager.getDefaultJavaTypes().get(type);
                     }

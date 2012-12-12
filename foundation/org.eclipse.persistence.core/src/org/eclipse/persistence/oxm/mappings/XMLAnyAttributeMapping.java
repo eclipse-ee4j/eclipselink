@@ -275,9 +275,9 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements AnyAttrib
             }
             String namespaceURI = next.getNamespaceURI();
             boolean includeAttribute = true;
-            if (!isNamespaceDeclarationIncluded && XMLConstants.XMLNS_URL.equals(namespaceURI)){
+            if (!isNamespaceDeclarationIncluded && javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(namespaceURI)){
                 includeAttribute = false;
-            } else if (!isSchemaInstanceIncluded && XMLConstants.SCHEMA_INSTANCE_URL.equals(namespaceURI)){
+            } else if (!isSchemaInstanceIncluded && javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespaceURI)){
                 includeAttribute = false;
             }
 

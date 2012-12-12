@@ -119,9 +119,9 @@ public abstract class XMLRecord extends AbstractRecord implements org.eclipse.pe
         
         String existingPrefix = getNamespaceResolver().resolveNamespaceURI(namespaceURI);
         if(existingPrefix == null || (existingPrefix != null && !existingPrefix.equals(XMLConstants.EMPTY_STRING) && !existingPrefix.equals(prefix))){        
-            XMLField xmlField = new XMLField("@" + XMLConstants.XMLNS + XMLConstants.COLON + prefix);
+            XMLField xmlField = new XMLField("@" + javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix);
             xmlField.setNamespaceResolver(getNamespaceResolver());
-            xmlField.getXPathFragment().setNamespaceURI(XMLConstants.XMLNS_URL);
+            xmlField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
             add(xmlField, namespaceURI);
         }
     }

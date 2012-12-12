@@ -31,7 +31,7 @@ public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
 
         map.put("someuri", "newPrefix");
         map.put("extraUri", "ns0");
-        map.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+        map.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         map.put("my.uri", "somePrefix");
         
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);

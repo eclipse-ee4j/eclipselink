@@ -110,7 +110,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         Element keyElement = doc.createElement(KEY);
         keyElement.setAttribute(XMLNS, TYPE_APP_INFO);
         keyElement.appendChild(attElement);
-        aiElement = doc.createElementNS(XMLConstants.SCHEMA_URL, APP_INFO);
+        aiElement = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);
         aiElement.setAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE, TYPE_APP_INFO);
         aiElement.appendChild(keyElement);
         
@@ -125,7 +125,7 @@ public class SDOTypeHelperAppInfoTestCases extends junit.framework.TestCase  {
         Element keyElementProp = doc.createElement(KEY);
         keyElementProp.setAttribute(XMLNS, PROPERTY_APP_INFO);
         keyElementProp.appendChild(attElementProp);
-        aiElementProp = doc.createElementNS(XMLConstants.SCHEMA_URL, APP_INFO);
+        aiElementProp = doc.createElementNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, APP_INFO);
         aiElementProp.setAttribute(SDOConstants.APPINFO_SOURCE_ATTRIBUTE, PROPERTY_APP_INFO);
         aiElementProp.appendChild(keyElementProp);
         

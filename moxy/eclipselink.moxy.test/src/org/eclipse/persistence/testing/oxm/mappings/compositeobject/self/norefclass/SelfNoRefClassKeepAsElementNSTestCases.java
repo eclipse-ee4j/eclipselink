@@ -48,7 +48,7 @@ public class SelfNoRefClassKeepAsElementNSTestCases extends XMLMappingTestCases 
 	    
 	    	Document doc = builder.newDocument();
 	    	Element rootElem = doc.createElementNS("namespace1", "ns0:root");
-	    	rootElem.setAttributeNS(XMLConstants.XMLNS_URL, "xmlns:ns0", "namespace1");	    	
+	    	rootElem.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:ns0", "namespace1");	    	
 	    	doc.appendChild(rootElem);
 	    	
 	    	Element addressElement = doc.createElementNS("namespace1", "ns0:address");

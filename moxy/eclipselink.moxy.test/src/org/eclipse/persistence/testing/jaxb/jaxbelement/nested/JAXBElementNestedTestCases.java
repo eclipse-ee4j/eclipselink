@@ -69,7 +69,7 @@ public class JAXBElementNestedTestCases extends JAXBWithJSONTestCases {
 			doc = builderFactory.newDocumentBuilder().newDocument();
 			
 			Element elem = doc.createElementNS("someuri", "ns0:elem2");
-			elem.setAttributeNS(XMLConstants.XMLNS_URL,XMLConstants.XMLNS + ":ns0", "someuri");
+			elem.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI,javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":ns0", "someuri");
 			
 			QName qname = new QName("someuri", "elem2");
 

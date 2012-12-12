@@ -31,15 +31,15 @@ public class SimpleUnionXMLAttributeProject extends Project {
         descriptor.setJavaClass(Person.class);
         descriptor.setDefaultRootElement("person");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        resolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         descriptor.setNamespaceResolver(resolver);
 
         XMLDirectMapping ageMapping = new XMLDirectMapping();
         ageMapping.setAttributeName("age");
         XMLUnionField field = new XMLUnionField("age-info/@age");
-        QName qname = new QName(XMLConstants.SCHEMA_URL, "date");
-        QName integerQName = new QName(XMLConstants.SCHEMA_URL, "integer");
+        QName qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "date");
+        QName integerQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "integer");
         field.setSchemaType(qname);
         field.addSchemaType(integerQName);
         field.addSchemaType(integerQName);

@@ -290,7 +290,7 @@ public class DefineAndGenerateBidirectionalTestCases extends XSDHelperDefineAndG
         SDOProperty aProp = (SDOProperty)newProperty.getType().getProperty(SDOConstants.SDOXML_NAME);
         newProperty.set(aProp, idPropName);
         aProp = (SDOProperty)newProperty.getType().getProperty("type");
-        Type idType = typeHelper.getType(XMLConstants.SCHEMA_URL, "ID");
+        Type idType = typeHelper.getType(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "ID");
         newProperty.set(aProp, stringType);     // no ID type to set - use string type
         aProp.setXsd(true);
 

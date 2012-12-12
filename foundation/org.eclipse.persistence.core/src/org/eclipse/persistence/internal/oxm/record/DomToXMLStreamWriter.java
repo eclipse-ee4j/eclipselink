@@ -18,8 +18,8 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,7 +41,7 @@ public class DomToXMLStreamWriter{
             writeElement((Element)currentNode, newUri, newName, xsw);
         } else if(currentNode.getNodeType() == Node.ATTRIBUTE_NODE) {
             Attr attribute = (Attr)currentNode;
-            if(attribute.getPrefix() != null && attribute.getPrefix().equals(XMLConstants.XMLNS)) {
+            if(attribute.getPrefix() != null && attribute.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                 xsw.writeNamespace(attribute.getLocalName(), attribute.getValue());
             } else {
                 if(attribute.getPrefix() == null) {
@@ -75,13 +75,13 @@ public class DomToXMLStreamWriter{
                 prefix = tempNR.resolveNamespaceURI(namespace);
                 
                 if(prefix == null || prefix.length() == 0){
-                    String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+                    String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                     if(defaultNamespace == null){
                         prefix = tempNR.generatePrefix();    
                     }else if(defaultNamespace != namespace){
                         prefix = tempNR.generatePrefix();
                     }else{
-                        prefix = XMLConstants.EMPTY_STRING;
+                        prefix = Constants.EMPTY_STRING;
                     }                    
                 }         
                
@@ -102,13 +102,13 @@ public class DomToXMLStreamWriter{
         } else {
             if(namespace == null || namespace.length() == 0) {
                 xsw.writeStartElement(nodeName);                
-                String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                String defaultNamespace = xsw.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
                 if(defaultNamespace != null &&  defaultNamespace.length() >0) {
                     //write default namespace declaration
-                    xsw.writeDefaultNamespace(XMLConstants.EMPTY_STRING);
+                    xsw.writeDefaultNamespace(Constants.EMPTY_STRING);
                 }
             } else {
-                xsw.writeStartElement(XMLConstants.EMPTY_STRING, localName, namespace);
+                xsw.writeStartElement(Constants.EMPTY_STRING, localName, namespace);
             }
         }
         NodeList childNodes = elem.getChildNodes();
@@ -120,14 +120,14 @@ public class DomToXMLStreamWriter{
             Attr next = (Attr)attrs.item(i);
             if(next.getNodeType() == Node.ATTRIBUTE_NODE) {
                 Attr attribute = next;
-                if(next.getPrefix() != null && next.getPrefix().equals(XMLConstants.XMLNS)) {
+                if(next.getPrefix() != null && next.getPrefix().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                     String currentUri = xsw.getNamespaceContext().getNamespaceURI(next.getLocalName());
                     if(currentUri == null || !currentUri.equals(next.getValue())) {
                         xsw.writeNamespace(next.getLocalName(), next.getValue());
                     }
                 } else {
                     // Bug 387464 - Do not add default namespace attribute if repairing namespaces is true.
-                    if (!next.getName().equals(XMLConstants.XMLNS) || 
+                    if (!next.getName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE) || 
                             !((Boolean)xsw.getProperty(javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES)).booleanValue()) {
                         nonNamespaceDeclAttrs.add(attribute);
                     }

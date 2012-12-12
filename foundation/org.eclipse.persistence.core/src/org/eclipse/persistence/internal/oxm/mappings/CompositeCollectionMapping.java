@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
 public interface CompositeCollectionMapping<
     ABSTRACT_SESSION extends CoreAbstractSession,
@@ -35,48 +34,9 @@ public interface CompositeCollectionMapping<
     SESSION extends CoreSession,
     UNMARSHAL_KEEP_AS_ELEMENT_POLICY extends UnmarshalKeepAsElementPolicy,
     UNMARSHALLER extends Unmarshaller,
-    XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
-
-    public InverseReferenceMapping getInverseReferenceMapping();
-
-    public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
-
-    public AbstractNullPolicy getNullPolicy();
-
-    public Object getReferenceClassName();
-    
-    /**
-     * Set the converter on the mapping.
-     * A converter can be used to convert between the object's value and database value of the attribute.
-     */
-    public void setConverter(CONVERTER converter);
-    
-    public void setIsWriteOnly(boolean b);
-
-    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
-	
-    /**
-     * Set the AbstractNullPolicy on the mapping<br>
-     * The default policy is NullPolicy.<br>
-     *
-     * @param aNullPolicy
-     */
-	public void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
-    
-    /**
-     * This is a reference class whose instances this mapping will store in the domain objects.
-     */
-    public void setReferenceClass(Class aClass);
-    
-    public void setReferenceClassName(String aClassName);
-    
-    /**
-     * Set the Mapping field name attribute to the given XPath String
-     *
-     * @param xpathString String
-     *
-     */
-    public void setXPath(String xpathString);
+    XML_RECORD extends XMLRecord> extends CompositeObjectMapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, CONVERTER, DESCRIPTOR, FIELD, MARSHALLER, SESSION, UNMARSHAL_KEEP_AS_ELEMENT_POLICY, UNMARSHALLER, XML_RECORD>,
+     XMLContainerMapping {   
+             	   
     
     /**
      * Configure the mapping to use an instance of the specified container class
@@ -88,5 +48,6 @@ public interface CompositeCollectionMapping<
     
     public void useCollectionClassName(String concreteContainerClassName);
 
+    
 
 }

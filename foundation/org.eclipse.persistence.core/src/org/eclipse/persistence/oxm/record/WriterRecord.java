@@ -452,7 +452,7 @@ public class WriterRecord extends MarshalRecord {
                 		Entry<String, String> nextEntry = iter.next();
                         String prefix = nextEntry.getKey();
                         writer.write(' ');
-                        writer.write(XMLConstants.XMLNS);
+                        writer.write(javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                         if(null != prefix && prefix.length() > 0) {
                             writer.write(XMLConstants.COLON);
                             writer.write(prefix);
@@ -475,7 +475,7 @@ public class WriterRecord extends MarshalRecord {
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
-                if((qName != null && (qName.startsWith(XMLConstants.XMLNS + XMLConstants.COLON) || qName.equals(XMLConstants.XMLNS)))) {
+                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));

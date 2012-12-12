@@ -35,6 +35,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -47,7 +48,6 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
 import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.xml.sax.ErrorHandler;
@@ -72,13 +72,13 @@ public class JSONReader extends XMLReaderAdapter {
 
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
         this.attributePrefix = attrPrefix;
-    	if(attributePrefix == XMLConstants.EMPTY_STRING){
+    	if(attributePrefix == Constants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
     	}
     	namespaces = nr;
     	this.namespaceAware = namespaceAware;
     	if(namespaceSeparator == null){
-            this.namespaceSeparator = XMLConstants.DOT;
+            this.namespaceSeparator = Constants.DOT;
     	}else{
     	    this.namespaceSeparator = namespaceSeparator;
     	}
@@ -159,11 +159,11 @@ public class JSONReader extends XMLReaderAdapter {
     		if(includeRoot){
     			parse((CommonTree) tree.getChild(0));
     		}else{
-    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+    			contentHandler.startElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
     			for(int x=0, size=children; x<size; x++) {
     	           parse((CommonTree) tree.getChild(x));
     	        }
-    			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
+    			contentHandler.endElement(Constants.EMPTY_STRING,Constants.EMPTY_STRING, null);
     		}
     		contentHandler.endDocument();
         } else if(tree.getType() == JSONLexer.ARRAY){
@@ -203,8 +203,8 @@ public class JSONReader extends XMLReaderAdapter {
                 ((SAXUnmarshallerHandler) getContentHandler()).setObject(list);
             } else if(getContentHandler() instanceof UnmarshalRecord) {
                 ((UnmarshalRecord) getContentHandler()).setCurrentObject(list);
-               	((UnmarshalRecord) getContentHandler()).setRootElementName(XMLConstants.EMPTY_STRING);
-               	((UnmarshalRecord) getContentHandler()).setLocalName(XMLConstants.EMPTY_STRING);
+               	((UnmarshalRecord) getContentHandler()).setRootElementName(Constants.EMPTY_STRING);
+               	((UnmarshalRecord) getContentHandler()).setLocalName(Constants.EMPTY_STRING);
                 if(rootContentHandler != null){
                 	rootContentHandler.setObject(list);
                 }
@@ -230,12 +230,12 @@ public class JSONReader extends XMLReaderAdapter {
                 if(attributePrefix != null && qualifiedName.startsWith(attributePrefix)){
                 	break;
                 }
-                String uri = XMLConstants.EMPTY_STRING;
+                String uri = Constants.EMPTY_STRING;
  
                 if(namespaceAware && namespaces != null){
                     if(localName.length() > 2){                        
                         int nsIndex = localName.indexOf(namespaceSeparator, 1);
-                        String prefix = XMLConstants.EMPTY_STRING;
+                        String prefix = Constants.EMPTY_STRING;
                         if(nsIndex > -1){
                             prefix = localName.substring(0, nsIndex);                            
                         }
@@ -245,7 +245,7 @@ public class JSONReader extends XMLReaderAdapter {
                         }else{
                             localName = localName.substring(nsIndex + 1);
                         }
-                        if(localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(XMLConstants.SCHEMA_INSTANCE_URL)){
+                        if(localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && uri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)){
                             break;
                         }   
                     }else{
@@ -255,7 +255,7 @@ public class JSONReader extends XMLReaderAdapter {
                 
                 if(contentHandler instanceof XMLRootRecord || contentHandler instanceof DeferredContentHandler){
                 	//if its not namespaceAware don't report the "type" child as it is will be read by the xsi:type lookup
-                	if(!namespaceAware && localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
+                	if(!namespaceAware && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE)){
                 		break;
                     }
                 	if(textWrapper != null && textWrapper.equals(localName)){
@@ -263,7 +263,7 @@ public class JSONReader extends XMLReaderAdapter {
                     	break;
                     }
                 }else if(contentHandler instanceof UnmarshalRecord && ((UnmarshalRecord)contentHandler).getXPathNode() != null){
-                	if(!namespaceAware && localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && !((UnmarshalRecord)contentHandler).getXPathNode().hasTypeChild()){
+                	if(!namespaceAware && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !((UnmarshalRecord)contentHandler).getXPathNode().hasTypeChild()){
                 		break;
                 	}
                 	boolean isTextValue = isTextValue(localName);
@@ -307,7 +307,7 @@ public class JSONReader extends XMLReaderAdapter {
             	break;
             }
             
-            String uri = XMLConstants.EMPTY_STRING;
+            String uri = Constants.EMPTY_STRING;
             if(namespaceAware && namespaces != null){                
                 if(parentLocalName.length() > 2){
                 	int nsIndex = parentLocalName.indexOf(namespaceSeparator, 1);
@@ -458,7 +458,7 @@ public class JSONReader extends XMLReaderAdapter {
     @Override
     public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         if (xmlField.getSchemaType() != null) { 
-        	if(XMLConstants.QNAME_QNAME.equals(xmlField.getSchemaType())){
+        	if(Constants.QNAME_QNAME.equals(xmlField.getSchemaType())){
         		String stringValue = (String)value;
         		int indexOpen = stringValue.indexOf('{');
         		int indexClose = stringValue.indexOf('}');
@@ -535,7 +535,7 @@ public class JSONReader extends XMLReaderAdapter {
                  break;
              }
              case JSONLexer.NULL: {
-                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, XMLConstants.EMPTY_STRING));
+                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, Constants.EMPTY_STRING));
                  break;
              } 
         	 }
@@ -568,7 +568,7 @@ public class JSONReader extends XMLReaderAdapter {
                 
                 if(tree.getType() == JSONLexer.NULL){
                     attributes = new Attribute[1];
-                    attributes[0] = new Attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+                    attributes[0] = new Attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE, Constants.SCHEMA_NIL_ATTRIBUTE, "true");
                     return attributes;
 
                 }
@@ -586,10 +586,10 @@ public class JSONReader extends XMLReaderAdapter {
                             }
                         }
 
-                        String uri = XMLConstants.EMPTY_STRING;                        
+                        String uri = Constants.EMPTY_STRING;                        
                         if(namespaceAware && namespaces != null){
                             if(attributeLocalName.length() > 2){
-                                String prefix = XMLConstants.EMPTY_STRING;
+                                String prefix = Constants.EMPTY_STRING;
                                 int nsIndex = attributeLocalName.indexOf(namespaceSeparator, 1);
                                 if(nsIndex > -1){
                                     prefix = attributeLocalName.substring(0, nsIndex);                                    

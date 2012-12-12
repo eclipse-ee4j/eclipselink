@@ -163,7 +163,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         if (isNullRepresentedByXsiNil() || marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             XPathFragment xPathFragment = new XPathFragment();
             xPathFragment.setXPath('@' + XMLConstants.SCHEMA_NIL_ATTRIBUTE);
-            xPathFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            xPathFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             NodeValue aNodeValue = new NillableNodeValue(nullCapableValue);
             parentNode.addChild(xPathFragment, aNodeValue, null);
         } else {

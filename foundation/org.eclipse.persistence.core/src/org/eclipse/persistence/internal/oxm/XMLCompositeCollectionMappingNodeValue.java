@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeCollectionMappingContentHandler;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.xml.sax.Attributes;
@@ -117,7 +116,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor)xmlCompositeCollectionMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                                 if (prefix != null && prefix.length() > 0) {
-                                    xpath = prefix + XMLConstants.COLON + xpath;
+                                    xpath = prefix + Constants.COLON + xpath;
                                 }
                             }
                             frag.setXPath(xpath);     
@@ -146,7 +145,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             if(nullPolicy.isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
+                    qnameString = xPathFragment.getPrefix()  + Constants.COLON + qnameString;
                 }
                 if(null != xmlDescriptor) {
                     // Process null capable value
@@ -287,7 +286,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
            
         } else {            
-            if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeCollectionMapping.getReferenceClassName())){                
+            if(Constants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeCollectionMapping.getReferenceClassName())){                
                 throw XMLMarshalException.descriptorNotFoundInProject(value.getClass().getName());                            
             }
             xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);

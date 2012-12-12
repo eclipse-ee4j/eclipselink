@@ -56,7 +56,7 @@ public class XMLMarshallerNoDefaultRootTestProject extends Project {
 
         /*
                 NamespaceResolver try_test = new NamespaceResolver();
-                try_test.put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+                try_test.put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 descriptor.setNamespaceResolver(try_test);*/
         return descriptor;
     }

@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Session;
 
@@ -80,7 +79,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             xmlRootFrag = new XPathFragment();
             if (xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().equals(namespaceResolver.getDefaultNamespaceURI())) {
                 String prefix = namespaceResolver.resolveNamespaceURI(xmlRoot.getNamespaceURI());
-                xmlRootFrag.setXPath(prefix + XMLConstants.COLON + xmlRoot.getLocalName());
+                xmlRootFrag.setXPath(prefix + Constants.COLON + xmlRoot.getLocalName());
                 xmlRootFrag.setNamespaceURI(xmlRoot.getNamespaceURI());
             }else{
             	xmlRootFrag.setXPath(xmlRoot.getLocalName());
@@ -202,21 +201,21 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
 
                     // 20061023: handle NPE on null NSR
                     if (namespaceResolver != null) {
-                        xopPrefix = namespaceResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+                        xopPrefix = namespaceResolver.resolveNamespaceURI(Constants.XOP_URL);
                     }
                     boolean addDeclaration = false;
                     if (xopPrefix == null || namespaceResolver == null) {
                         addDeclaration = true;
-                        xopPrefix = XMLConstants.XOP_PREFIX;
+                        xopPrefix = Constants.XOP_PREFIX;
                         namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
-                        namespaceResolver.put(xopPrefix, XMLConstants.XOP_URL);
+                        namespaceResolver.put(xopPrefix, Constants.XOP_URL);
                     }
                     XPathFragment xopInclude = new XPathFragment(xopPrefix + ":Include");
-                    xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
+                    xopInclude.setNamespaceURI(Constants.XOP_URL);
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
-                    marshalRecord.attribute(XMLConstants.EMPTY_STRING, "href", "href", c_id);
+                    marshalRecord.attribute(Constants.EMPTY_STRING, "href", "href", c_id);
                     if (addDeclaration) {                        
-                        marshalRecord.namespaceDeclaration(xopPrefix,  XMLConstants.XOP_URL);
+                        marshalRecord.namespaceDeclaration(xopPrefix,  Constants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();
                     marshalRecord.endElement(xopInclude, namespaceResolver);
@@ -242,7 +241,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataMapping);
             String qnameString = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
-                qnameString = xPathFragment.getPrefix() + XMLConstants.COLON + qnameString;
+                qnameString = xPathFragment.getPrefix() + Constants.COLON + qnameString;
             }
             handler.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), qnameString, atts);
             XMLReader xmlReader = unmarshalRecord.getXMLReader();

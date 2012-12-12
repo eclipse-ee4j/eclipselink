@@ -42,8 +42,8 @@ public class JAXBEmployeeNSTestCases extends JAXBWithJSONTestCases {
         setClasses(classes);
         
         Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put(XMLConstants.SCHEMA_URL, "xsd");
-        namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "xsd");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
         namespaces.put("examplenamespace", "x");
         jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);

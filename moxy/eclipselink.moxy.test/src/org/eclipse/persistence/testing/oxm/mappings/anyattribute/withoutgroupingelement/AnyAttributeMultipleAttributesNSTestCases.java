@@ -42,9 +42,9 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
         any.put(name, "www.example.com/some-dir/some.xsd");
         name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
-        name = new QName(XMLConstants.XMLNS_URL, "ns0");
-        any.put(name, XMLConstants.SCHEMA_INSTANCE_URL);
-        name = new QName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
+        name = new QName(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "ns0");
+        any.put(name, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        name = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.NO_NS_SCHEMA_LOCATION);
         any.put(name, "someSchema.xsd");
         root.setAny(any);
         return root;
@@ -59,7 +59,7 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
         name = new QName("www.example.com/some-dir/some.xsd", "last-name");
         any.put(name, "MacIvor");
 
-        name = new QName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION);
+        name = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.NO_NS_SCHEMA_LOCATION);
         any.put(name, "someSchema.xsd");
         
         root.setAny(any);

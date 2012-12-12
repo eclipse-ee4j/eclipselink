@@ -14,8 +14,8 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -126,7 +126,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(Constants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             return getLexicalHandler();
         }
         return null;
@@ -134,7 +134,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
     @Override
     public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if(XMLConstants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
+        if(Constants.LEXICAL_HANDLER_PROPERTY.equals(name)) {
             setLexicalHandler((LexicalHandler) value);
         }
     }
@@ -256,15 +256,15 @@ public abstract class XMLReaderAdapter extends XMLReader {
         }
 
         public String getType(int index) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public String getType(String name) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public String getType(String uri, String localName) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public String getURI(int index) {
@@ -307,7 +307,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
         public Attribute(String uri, String localName, String name, String value) {
             this.localName = localName;
             if(uri == null){
-            	this.uri = XMLConstants.EMPTY_STRING;
+            	this.uri = Constants.EMPTY_STRING;
             }else{
                 this.uri = uri;
             }

@@ -16,7 +16,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -105,10 +105,10 @@ public class JAXBElementRootConverter implements XMLConverter {
         if(value != null && value instanceof JAXBElement){
             return (JAXBElement)value;
         }
-        if(ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
-            theClass = ClassConstants.XML_GREGORIAN_CALENDAR;
-        }else if(ClassConstants.DURATION.isAssignableFrom(theClass)){
-            theClass = ClassConstants.DURATION;
+        if(CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(theClass)){
+            theClass = CoreClassConstants.XML_GREGORIAN_CALENDAR;
+        }else if(CoreClassConstants.DURATION.isAssignableFrom(theClass)){
+            theClass = CoreClassConstants.DURATION;
         }
         return new JAXBElement(qname, theClass, value);
     }

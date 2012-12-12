@@ -46,7 +46,6 @@ import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
@@ -54,9 +53,10 @@ import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
@@ -124,7 +124,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setEncoding("UTF-8");
         xmlMarshaller.setFormattedOutput(false);
-        xmlMarshaller.getProperties().put(XMLConstants.JAXB_MARSHALLER, this);
+        xmlMarshaller.getProperties().put(Constants.JAXB_MARSHALLER, this);
     }
 
     /**
@@ -146,13 +146,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(elt.getDeclaredType());
         xmlroot.setNil(elt.isNil());
-        if (elt.getDeclaredType() == ClassConstants.ABYTE || elt.getDeclaredType() == ClassConstants.APBYTE || 
+        if (elt.getDeclaredType() == CoreClassConstants.ABYTE || elt.getDeclaredType() == CoreClassConstants.APBYTE || 
                 elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler") ||
                 elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
             Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
             if(!elt.getDeclaredType().isEnum()) {
-                xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
             if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
                 ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
@@ -257,7 +257,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getSchemaLocation();
         } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
             return xmlMarshaller.getNoNamespaceSchemaLocation();
-        } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
+        } else if (Constants.JAXB_FRAGMENT.equals(key)) {
             return xmlMarshaller.isFragment();
         } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
             return xmlMarshaller.getMediaType();
@@ -575,9 +575,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if(typeMappingInfo != null){
         	xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
         } else if(value != null) {
-            if (value.getClass() == ClassConstants.ABYTE || value.getClass() == ClassConstants.APBYTE || 
+            if (value.getClass() == CoreClassConstants.ABYTE || value.getClass() == CoreClassConstants.APBYTE || 
                     value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
-                xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
+                xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
         }
         return xmlroot;
@@ -690,15 +690,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             if (key == null) {
                 throw new IllegalArgumentException();
-            } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
+            } else if (Constants.JAXB_FRAGMENT.equals(key)) {
             	if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                 }         
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
             	if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }
                 Boolean formattedOutput = (Boolean) value;
                 xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
@@ -737,7 +737,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 }
             } else if (XML_DECLARATION.equals(key)) {
             	if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
@@ -745,7 +745,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setXmlHeader((String) value);
             } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
             	if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }
                 xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
             } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
@@ -756,24 +756,24 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     mType = MediaType.getMediaType((String)value);
                 }
                 if(mType == null){
-                	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                 }                 
                 xmlMarshaller.setMediaType(mType);
             } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
                 xmlMarshaller.setAttributePrefix((String)value);
             } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
             	 if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }    
                 xmlMarshaller.setIncludeRoot((Boolean)value);                
             } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
                 if(value == null || (((String)value).length() == 0)){
-                    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+                    throw new PropertyException(key, Constants.EMPTY_STRING);
                 }                  
                 xmlMarshaller.setValueWrapper((String)value); 
             } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
             	if(value == null){
-                 	throw new PropertyException(key, XMLConstants.EMPTY_STRING);                	
+                 	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }
                 xmlMarshaller.setNamespaceSeparator((Character)value);
             } else {

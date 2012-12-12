@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.Attr;
@@ -109,10 +109,10 @@ public class XMLFragmentReader extends DOMReader {
         // than node's URI, write out the node's URI locally
         String prefix = elem.getPrefix();
         if(prefix == null) {
-           prefix = XMLConstants.EMPTY_STRING;
+           prefix = Constants.EMPTY_STRING;
         }
         String uri = resolveNamespacePrefix(prefix);
-        if(prefix == XMLConstants.EMPTY_STRING && uri == null) {
+        if(prefix == Constants.EMPTY_STRING && uri == null) {
             return;
         }
         if (uri == null || !uri.equals(elem.getNamespaceURI())) {

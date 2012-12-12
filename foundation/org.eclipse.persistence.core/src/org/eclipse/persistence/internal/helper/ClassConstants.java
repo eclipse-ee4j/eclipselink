@@ -32,21 +32,17 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class ClassConstants extends CoreClassConstants {
     // Java classes
-    public static final Class Collection_Class = Collection.class;
     public static final Class Hashtable_Class = Hashtable.class;
     public static final Class Enumeration_Class = Enumeration.class;
     public static final Class JavaSqlTime_Class = java.sql.Time.class;
     public static final Class JavaSqlDate_Class = java.sql.Date.class;
     public static final Class JavaSqlTimestamp_Class = java.sql.Timestamp.class;
-    public static final Class List_Class = List.class;
-    public static final Class Map_Class = Map.class;
-    public static final Class Map_Entry_Class = Map.Entry.class;
-    public static final Class Set_Class = Set.class;
+    public static final Class List_Class = List.class;    
+    public static final Class Map_Entry_Class = Map.Entry.class;    
     public static final Class Object_Class = Object.class;
     public static final Class SortedSet_Class = SortedSet.class;
     public static final Class URL_Class = URL.class;
     public static final Class Vector_class = Vector.class;
-    public static final Class ArrayList_class = ArrayList.class;
     public static final Class HashSet_class = HashSet.class;
     public static final Class Void_Class = void.class;
     public static final Class PropertyChangeEvent_Class = java.beans.PropertyChangeEvent.class;

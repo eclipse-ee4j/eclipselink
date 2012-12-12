@@ -56,7 +56,7 @@ public class CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases exten
         QName qname = new QName("www.example.com/some-dir/mailing.xsd", "addressType");
 
         ((XMLField)((XMLCompositeCollectionMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("mailingAddresses")).getField()).setLeafElementType(qname);
-        ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", XMLConstants.SCHEMA_INSTANCE_URL);
+        ((XMLDescriptor)p.getDescriptor(Employee.class)).getNonNullNamespaceResolver().put("xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
 
         setProject(p);
 

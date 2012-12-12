@@ -61,7 +61,7 @@ public class XmlAnyElementNSTestCases extends JAXBWithJSONTestCases {
     	Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);    	
     	((ArrayList)emp.elements).add(0, objectRemoved);
     	//remove namespace declaration
-    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(XMLConstants.XMLNS_URL, "myns");
+    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "myns");
     	return emp;    
     }
 

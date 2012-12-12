@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -76,13 +75,13 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
         try {
-            String namespaceURI = XMLConstants.EMPTY_STRING;
+            String namespaceURI = Constants.EMPTY_STRING;
             if(xPathFragment.getNamespaceURI() != null) {
                 namespaceURI = xPathFragment.getNamespaceURI();
             }
             String qName = xPathFragment.getLocalName();
             if(xPathFragment.getPrefix() != null) {
-                qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
+                qName = xPathFragment.getPrefix() + Constants.COLON + qName;
             }
             if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
                 for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {

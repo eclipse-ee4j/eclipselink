@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 
 import org.xml.sax.Attributes;
@@ -64,11 +63,11 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.reco
     	
     	if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
     		if(record.isNamespaceAware()){
-    			if(XMLConstants.XOP_URL.equals(namespaceURI)){
-    				this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
+    			if(Constants.XOP_URL.equals(namespaceURI)){
+    				this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);
     			}
     		}else{
-    			this.c_id = atts.getValue(XMLConstants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);	
+    			this.c_id = atts.getValue(Constants.EMPTY_STRING, HREF_ATTRIBUTE_NAME);	
     		}
         } else if(c_id == null ){        	
             //Return control to the UnmarshalRecord
@@ -88,7 +87,7 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.reco
                 xmlField = (Field)((BinaryDataMapping)mapping).getField();
             }
     	    if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
-    	    	if(record.isNamespaceAware() && !XMLConstants.XOP_URL.equals(namespaceURI)){
+    	    	if(record.isNamespaceAware() && !Constants.XOP_URL.equals(namespaceURI)){
     	    		return;
     	    	}
                 //Get the attachment and set it in the object.

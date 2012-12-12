@@ -32,8 +32,9 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
@@ -66,7 +67,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.sessions.Session;
 
@@ -155,7 +155,7 @@ public class SchemaGenerator {
         String myClassName = myClass.getQualifiedName();
         Element rootElement = null;
         TypeInfo info = (TypeInfo) typeInfo.get(myClassName);
-        if (info.isTransient() || info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
+        if (info.isTransient() || info.getClassNamespace().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
             return;
         }
         SchemaTypeInfo schemaTypeInfo = new SchemaTypeInfo();
@@ -237,7 +237,7 @@ public class SchemaGenerator {
             if (info.isEnumerationType()) {
                 restrictionType = ((EnumTypeInfo) info).getRestrictionBase();
                 restriction.setEnumerationFacets(this.getEnumerationFacetsFor((EnumTypeInfo) info));
-                restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + COLON + restrictionType.getLocalPart());
+                restriction.setBaseType(Constants.SCHEMA_PREFIX + COLON + restrictionType.getLocalPart());
                 type.setRestriction(restriction);
             } else {
             	valueField= info.getXmlValueProperty();
@@ -245,8 +245,8 @@ public class SchemaGenerator {
                 QName baseType = getSchemaTypeFor(javaType);
                 String prefix = null;
                 if (baseType.getNamespaceURI() != null && !baseType.getNamespaceURI().equals(EMPTY_STRING)) {
-                    if (baseType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
-                        prefix = XMLConstants.SCHEMA_PREFIX;
+                    if (baseType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                        prefix = Constants.SCHEMA_PREFIX;
                     } else {
                         prefix = getPrefixForNamespace(schema, baseType.getNamespaceURI());
                     }
@@ -292,8 +292,8 @@ public class SchemaGenerator {
             }
             String prefix = null;
             if (extensionType.getNamespaceURI() != null && !extensionType.getNamespaceURI().equals(EMPTY_STRING)) {
-                if (extensionType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
-                    prefix = XMLConstants.SCHEMA_PREFIX;
+                if (extensionType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                    prefix = Constants.SCHEMA_PREFIX;
                 } else {
                     prefix = getPrefixForNamespace(schema, extensionType.getNamespaceURI());
                 }
@@ -453,7 +453,7 @@ public class SchemaGenerator {
                     }
                     if (extSchemaAny && !next.isAttribute()) {
                         if (!extAnyAdded) {
-                            addAnyToSchema(next, compositor, true, XMLConstants.ANY_NAMESPACE_ANY);
+                            addAnyToSchema(next, compositor, true, Constants.ANY_NAMESPACE_ANY);
                             extAnyAdded = true;
                             continue;
                         } else {
@@ -563,9 +563,9 @@ public class SchemaGenerator {
         }
         if (schemaType == null) {
             if (javaClass.getQualifiedName().equals(OBJECT_CLASSNAME)) {
-                return XMLConstants.ANY_TYPE_QNAME;
+                return Constants.ANY_TYPE_QNAME;
             }
-            return XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+            return Constants.ANY_SIMPLE_TYPE_QNAME;
         }
         return schemaType;
     }
@@ -657,7 +657,7 @@ public class SchemaGenerator {
             allSchemas = new ArrayList<Schema>();
         }
         Schema schema = schemaForNamespace.get(namespace);
-        if (schema == null && !XMLConstants.XML_NAMESPACE_URL.equals(namespace)) {
+        if (schema == null && !javax.xml.XMLConstants.XML_NS_URI.equals(namespace)) {
             schema = new Schema();
             String schemaName = SCHEMA + schemaCount + SCHEMA_EXT;
 
@@ -760,10 +760,10 @@ public class SchemaGenerator {
     public String getOrGeneratePrefixForNamespace(String URI, Schema schema) {
         String prefix = schema.getNamespaceResolver().resolveNamespaceURI(URI);
         if (prefix == null) {
-            if (URI.equals(XMLConstants.SCHEMA_URL)) {
-                prefix = schema.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
-            } else if (URI.equals(XMLConstants.REF_URL)) {
-                prefix = schema.getNamespaceResolver().generatePrefix(XMLConstants.REF_PREFIX);
+            if (URI.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                prefix = schema.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
+            } else if (URI.equals(Constants.REF_URL)) {
+                prefix = schema.getNamespaceResolver().generatePrefix(Constants.REF_PREFIX);
                 
                 if(!importExists(schema, SWA_REF_IMPORT)){
                 	 Import schemaImport = new Import();
@@ -801,22 +801,22 @@ public class SchemaGenerator {
                         //First check for built in type
                         QName schemaType = (QName) helper.getXMLToJavaTypeMap().get(javaClass.getRawName());
                         if (schemaType != null) {
-                            element.setType(XMLConstants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
+                            element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
                         } else if (areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, byte[].class) || areEquals(javaClass, Byte[].class) || areEquals(javaClass, Image.class) || areEquals(javaClass, Source.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
-                            schemaType = XMLConstants.BASE_64_BINARY_QNAME;
+                            schemaType = Constants.BASE_64_BINARY_QNAME;
                             if(nextElement.getTypeMappingInfo() != null) {
                                 if(nextElement.isXmlAttachmentRef()) {
-                                    schemaType = XMLConstants.SWA_REF_QNAME;
+                                    schemaType = Constants.SWA_REF_QNAME;
                                 }
                                 if (nextElement.getXmlMimeType() != null) {
-                                    element.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, nextElement.getXmlMimeType());
+                                    element.getAttributesMap().put(Constants.EXPECTED_CONTENT_TYPES_QNAME, nextElement.getXmlMimeType());
                                 }
                             }
                             String prefix = getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), targetSchema);
                             element.setType(prefix + COLON + schemaType.getLocalPart());
-                        } else if (areEquals(javaClass, ClassConstants.XML_GREGORIAN_CALENDAR)) {
-                            schemaType = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
-                            element.setType(XMLConstants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
+                        } else if (areEquals(javaClass, CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
+                            schemaType = Constants.ANY_SIMPLE_TYPE_QNAME;
+                            element.setType(Constants.SCHEMA_PREFIX + COLON + schemaType.getLocalPart());
                         } else {
 
                             TypeInfo type = (TypeInfo) this.typeInfo.get(javaClass.getQualifiedName());
@@ -915,10 +915,10 @@ public class SchemaGenerator {
     }
 
     private boolean addImportIfRequired(Schema sourceSchema, Schema importSchema, String importNamespace) {
-        if (importSchema != sourceSchema && !(importNamespace != null && importNamespace.equals(XMLConstants.SCHEMA_URL))) {
+        if (importSchema != sourceSchema && !(importNamespace != null && importNamespace.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI))) {
             String schemaName = null;
-            if(XMLConstants.XML_NAMESPACE_URL.equals(importNamespace)){
-                schemaName = XMLConstants.XML_NAMESPACE_SCHEMA_LOCATION;
+            if(javax.xml.XMLConstants.XML_NS_URI.equals(importNamespace)){
+                schemaName = Constants.XML_NAMESPACE_SCHEMA_LOCATION;
             }else{           
                 if (importSchema != null) {
                     schemaName = importSchema.getName();
@@ -957,9 +957,9 @@ public class SchemaGenerator {
                 }
                 sourceSchema.getImports().add(schemaImport);
                 if (schemaImport.getNamespace() != null) {
-                    if(schemaImport.getNamespace().equals(XMLConstants.XML_NAMESPACE_URL)) {
+                    if(schemaImport.getNamespace().equals(javax.xml.XMLConstants.XML_NS_URI)) {
                         //make sure xml namespace is in the resolver so it gets declared
-                        sourceSchema.getNamespaceResolver().put(XMLConstants.XML_NAMESPACE_PREFIX, XMLConstants.XML_NAMESPACE_URL);
+                        sourceSchema.getNamespaceResolver().put(javax.xml.XMLConstants.XML_NS_PREFIX, javax.xml.XMLConstants.XML_NS_URI);
                     }
                     String prefix = sourceSchema.getNamespaceResolver().resolveNamespaceURI(importNamespace);
                     //Don't need to generate prefix for default namespace
@@ -1024,7 +1024,7 @@ public class SchemaGenerator {
             }
             return getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), theSchema) + COLON + schemaType.getLocalPart();
         }
-        return XMLConstants.SCHEMA_PREFIX + XMLConstants.COLON + XMLConstants.ANY_SIMPLE_TYPE;
+        return Constants.SCHEMA_PREFIX + Constants.COLON + Constants.ANY_SIMPLE_TYPE;
     }
     
     /**
@@ -1659,10 +1659,10 @@ public class SchemaGenerator {
                 typeName = getTypeName(property, property.getActualType(), schema);                    
             } else {
                 // default to xsd:ID
-                typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+                typeName = Constants.SCHEMA_PREFIX + COLON + ID;
             }
         } else if (property.isXmlIdRef()) {
-            typeName = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
+            typeName = Constants.SCHEMA_PREFIX + COLON + IDREF;
         } else if (info != null && !info.isComplexType()) {
             typeName = info.getSimpleType().getName();
         } else {
@@ -1754,13 +1754,13 @@ public class SchemaGenerator {
 
         if (formQualified && !sameNamespace){
        	    if(simpleComponentNamespace.equals(EMPTY_STRING)){
-    	        sc.setForm(XMLConstants.UNQUALIFIED);	
+    	        sc.setForm(Constants.UNQUALIFIED);	
         	}else{
                addRef = true;
     	    }
         } else if(!formQualified  && !simpleComponentNamespace.equals(EMPTY_STRING)){
     	    if(sameNamespace && isElement){
-    		    sc.setForm(XMLConstants.QUALIFIED);	
+    		    sc.setForm(Constants.QUALIFIED);	
     	    }else{
     		    addRef = true;	
     	    }        	        
@@ -1777,7 +1777,7 @@ public class SchemaGenerator {
     private void addAnyAttributeToSchema(ComplexType type) {
         AnyAttribute anyAttribute = new AnyAttribute();
         anyAttribute.setProcessContents(SKIP);
-        anyAttribute.setNamespace(XMLConstants.ANY_NAMESPACE_OTHER);
+        anyAttribute.setNamespace(Constants.ANY_NAMESPACE_OTHER);
         if (type.getSimpleContent() != null) {
           SimpleContent content = type.getSimpleContent();
             if(content.getExtension() != null){
@@ -1798,7 +1798,7 @@ public class SchemaGenerator {
      * @param compositor the sequence/choice/all to modify
      */
     private void addAnyToSchema(Property property, TypeDefParticle compositor) {
-        addAnyToSchema(property, compositor, isCollectionType(property)|| property.getType().isArray(), XMLConstants.ANY_NAMESPACE_OTHER);
+        addAnyToSchema(property, compositor, isCollectionType(property)|| property.getType().isArray(), Constants.ANY_NAMESPACE_OTHER);
     }
 
     /**
@@ -1810,7 +1810,7 @@ public class SchemaGenerator {
      * @param isCollection if true will be unbounded
      */
     private void addAnyToSchema(Property property, TypeDefParticle compositor, boolean isCollection) {
-        addAnyToSchema(property, compositor, isCollection, XMLConstants.ANY_NAMESPACE_OTHER);
+        addAnyToSchema(property, compositor, isCollection, Constants.ANY_NAMESPACE_OTHER);
     }
     
     /**
@@ -1971,8 +1971,8 @@ public class SchemaGenerator {
                 addImportIfRequired(schema, keyElementSchema, keySchemaType.getNamespaceURI());
             }
             String prefix;
-            if (keySchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
-                prefix = XMLConstants.SCHEMA_PREFIX;
+            if (keySchemaType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                prefix = Constants.SCHEMA_PREFIX;
             } else {
                 prefix = getPrefixForNamespace(schema, keySchemaType.getNamespaceURI());
             }
@@ -1998,8 +1998,8 @@ public class SchemaGenerator {
                 addImportIfRequired(schema, valueElementSchema, valueSchemaType.getNamespaceURI());
             }
             String prefix;
-            if (valueSchemaType.getNamespaceURI().equals(XMLConstants.SCHEMA_URL)) {
-                prefix = XMLConstants.SCHEMA_PREFIX;
+            if (valueSchemaType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                prefix = Constants.SCHEMA_PREFIX;
             } else {
                 prefix = getPrefixForNamespace(schema, valueSchemaType.getNamespaceURI());
             }
@@ -2111,7 +2111,7 @@ public class SchemaGenerator {
         }
         // handle mime-type
         if (property.getMimeType() != null) {
-            element.getAttributesMap().put(XMLConstants.EXPECTED_CONTENT_TYPES_QNAME, property.getMimeType());
+            element.getAttributesMap().put(Constants.EXPECTED_CONTENT_TYPES_QNAME, property.getMimeType());
         }
 
         QName elementName = property.getSchemaName();
@@ -2232,9 +2232,9 @@ public class SchemaGenerator {
 
             // handle Element/Attribute
             if (isAttribute) {
-                addAttributeToSchema(buildAttribute(schemaName, XMLConstants.SCHEMA_PREFIX + COLON + XMLConstants.ANY_SIMPLE_TYPE), schemaName, currentSchema, type);
+                addAttributeToSchema(buildAttribute(schemaName, Constants.SCHEMA_PREFIX + COLON + Constants.ANY_SIMPLE_TYPE), schemaName, currentSchema, type);
             } else {
-                addElementToSchema(buildElement(schemaName.getLocalPart(), XMLConstants.SCHEMA_PREFIX + COLON + XMLConstants.ANY_SIMPLE_TYPE, currentParticle instanceof All), schemaName.getNamespaceURI(), false, currentParticle, currentSchema);
+                addElementToSchema(buildElement(schemaName.getLocalPart(), Constants.SCHEMA_PREFIX + COLON + Constants.ANY_SIMPLE_TYPE, currentParticle instanceof All), schemaName.getNamespaceURI(), false, currentParticle, currentSchema);
             }
         }
     }
@@ -2256,10 +2256,10 @@ public class SchemaGenerator {
                 typeName = getTypeName(property, property.getActualType(), schema);                    
             } else {
                 // default to xsd:ID
-                typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
+                typeName = Constants.SCHEMA_PREFIX + COLON + ID;
             }
         } else if (property.isXmlIdRef()) {
-            typeName = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
+            typeName = Constants.SCHEMA_PREFIX + COLON + IDREF;
         } else {
             TypeInfo info = (TypeInfo) typeInfo.get(javaClass.getQualifiedName());
             if (info != null) {
@@ -2294,8 +2294,8 @@ public class SchemaGenerator {
             // may need to qualify the type
             if (typeName != null && !typeName.contains(COLON)) {
                 String prefix;
-                if (info.getClassNamespace().equals(XMLConstants.SCHEMA_URL)) {
-                    prefix = XMLConstants.SCHEMA_PREFIX;
+                if (info.getClassNamespace().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                    prefix = Constants.SCHEMA_PREFIX;
                 } else {
                     prefix = getPrefixForNamespace(schema, info.getClassNamespace());
                 }

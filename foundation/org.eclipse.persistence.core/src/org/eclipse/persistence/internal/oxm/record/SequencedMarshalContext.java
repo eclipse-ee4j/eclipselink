@@ -15,13 +15,13 @@ package org.eclipse.persistence.internal.oxm.record;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.sequenced.Setting;
 
 /**
@@ -69,7 +69,7 @@ public class SequencedMarshalContext implements MarshalContext {
         if(null == setting.getName()) {
             return xPathNode.getAnyNode();
         } else {
-            if (setting.getName().equals(XMLConstants.TEXT)) {
+            if (setting.getName().equals(Constants.TEXT)) {
                 return xPathNode.getTextNode();
             } else {
                 indexFragment.setLocalName(null);

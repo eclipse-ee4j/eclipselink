@@ -16,9 +16,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Element;
 
 /**
@@ -96,9 +96,9 @@ public class TypeMappingInfo {
     public void setType(Type t) {
         this.type = t;
         if(type instanceof Class){
-            if (((Class)type) == ClassConstants.ABYTE || ((Class)type) == ClassConstants.APBYTE || 
+            if (((Class)type) == CoreClassConstants.ABYTE || ((Class)type) == CoreClassConstants.APBYTE || 
         	   ((Class)type).getCanonicalName().equals("javax.activation.DataHandler")) {
-        	   schemaType = XMLConstants.BASE_64_BINARY_QNAME;
+        	   schemaType = Constants.BASE_64_BINARY_QNAME;
         	}
         }
     }

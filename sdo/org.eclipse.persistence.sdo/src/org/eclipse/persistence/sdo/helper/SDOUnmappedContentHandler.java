@@ -114,7 +114,7 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             String stringValue = atts.getValue(i);
             String uri = atts.getURI(i);
             String attrName = atts.getLocalName(i);
-            if (XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
+            if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
                 int colonIndex = stringValue.indexOf(':');
                 String localPrefix = stringValue.substring(0, colonIndex);
                 String localURI = unmarshalNamespaceResolver.getNamespaceURI(localPrefix);
@@ -139,13 +139,13 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             String uri = atts.getURI(i);
             String attrName = atts.getLocalName(i);
 
-            if ((atts.getQName(i) != null) && atts.getQName(i).startsWith(XMLConstants.XMLNS + ":")) {
+            if ((atts.getQName(i) != null) && atts.getQName(i).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":")) {
                 //namespace declaration - do nothing because namespaces were already handled                             
             } else if (isRoot && XMLConstants.SCHEMA_LOCATION.equals(attrName)) {
                 getXmlDocument().setSchemaLocation(stringValue);
             } else if (isRoot && XMLConstants.NO_NS_SCHEMA_LOCATION.equals(attrName)) {
                 getXmlDocument().setNoNamespaceSchemaLocation(stringValue);
-            } else if (XMLConstants.SCHEMA_INSTANCE_URL.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
+            } else if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(uri) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(attrName)) {
                 //do nothing
             } else if (SDOConstants.CHANGESUMMARY_REF.equals(attrName) && SDOConstants.SDO_URL.equals(uri)) {
                 ((SDODataObject)dataObject)._setSdoRef(stringValue);

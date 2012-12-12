@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.XMLEntry;
@@ -105,9 +104,9 @@ public class UnmarshalXPathEngine <
         Node resultNode = getSingleNode(contextNode, xPathFragment, xmlNamespaceResolver);
         if (checkForXsiNil) {
             // Check for presence of xsi:nil="true"
-            String nil = ((Element) contextNode).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            String nil = ((Element) contextNode).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE);
 
-            if (nil.equals(XMLConstants.BOOLEAN_STRING_TRUE)) {
+            if (nil.equals(Constants.BOOLEAN_STRING_TRUE)) {
                 return XMLRecord.NIL;
             }
         }
@@ -413,7 +412,7 @@ public class UnmarshalXPathEngine <
                     xmlNodeList.add(n);
                 }
             } else {
-                xmlNodeList.add(contextNode.getOwnerDocument().createTextNode(XMLConstants.EMPTY_STRING));
+                xmlNodeList.add(contextNode.getOwnerDocument().createTextNode(Constants.EMPTY_STRING));
             }
         } else {
             if (nullPolicy != null && nullPolicy.isNullRepresentedByXsiNil() && nullPolicy.valueIsNull((Element) contextNode))  {

@@ -47,7 +47,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -358,7 +357,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         Element docElement = document.getDocumentElement();
         if(namespaceResolver.getDefaultNamespaceURI() != null) {
-            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, namespaceResolver.getDefaultNamespaceURI());
+            docElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, namespaceResolver.getDefaultNamespaceURI());
         }
 
         Enumeration prefixes = namespaceResolver.getPrefixes();
@@ -367,7 +366,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         while (prefixes.hasMoreElements()) {
             prefix = (String)prefixes.nextElement();
             namespace = namespaceResolver.resolveNamespacePrefix(prefix);
-            docElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, namespace);
+            docElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + prefix, namespace);
         }
     }
 
@@ -496,16 +495,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
            return;
        }
        String typeValue = typeLocal;
-       if(row.isNamespaceAware() && typeUri != null && !typeUri.equals(XMLConstants.EMPTY_STRING) && !typeUri.equals(row.getNamespaceResolver().getDefaultNamespaceURI())){
+       if(row.isNamespaceAware() && typeUri != null && !typeUri.equals(Constants.EMPTY_STRING) && !typeUri.equals(row.getNamespaceResolver().getDefaultNamespaceURI())){
            String prefix = row.getNamespaceResolver().resolveNamespaceURI(typeUri);
-           if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+           if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
                typeValue = prefix + row.getNamespaceSeparator() + typeValue;
-           } else if (typeUri.equals(XMLConstants.SCHEMA_URL)) {
-               prefix = row.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
+           } else if (typeUri.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+               prefix = row.getNamespaceResolver().generatePrefix(Constants.SCHEMA_PREFIX);
                typeValue = prefix + row.getNamespaceSeparator() + typeValue;
                row.namespaceDeclaration(prefix, typeUri);
             
-           } else if (typePrefix != null && !typePrefix.equals(XMLConstants.EMPTY_STRING)){
+           } else if (typePrefix != null && !typePrefix.equals(Constants.EMPTY_STRING)){
                String existingUri = row.getNamespaceResolver().resolveNamespacePrefix(typePrefix);
                if(existingUri != null){
                    prefix = row.getNamespaceResolver().generatePrefix();
@@ -525,16 +524,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
        String xsiPrefix = null;
        if(row.isNamespaceAware()){
            NamespaceResolver nr = (NamespaceResolver) row.getNamespaceResolver();
-           xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+           xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
            if (xsiPrefix == null) {
-               xsiPrefix =     nr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-               row.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+               xsiPrefix =     nr.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);
+               row.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                if(addToNamespaceResolver){
-                   nr.put(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                   nr.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                }
            }
        }
-       row.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix, typeValue);
+       row.attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix, typeValue);
        }
 
 
@@ -630,7 +629,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
         for (int i = 0; i < extraNamespaces.size(); i++) {
             Namespace next = (Namespace)extraNamespaces.get(i);
-            ((Element)xmlRecord.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + next.getPrefix(), next.getNamespaceURI());
+            ((Element)xmlRecord.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + next.getPrefix(), next.getNamespaceURI());
         }
     }
 
@@ -749,8 +748,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if (descriptor.hasInheritance() ) {
         	Field indicatorField = (Field) descriptor.getInheritancePolicy().getClassIndicatorField();
             if(indicatorField != null){
-               if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)
-                        && indicatorField.getLastXPathFragment().getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
+               if (indicatorField.getLastXPathFragment().getNamespaceURI() != null && indicatorField.getLastXPathFragment().getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)
+                        && indicatorField.getLastXPathFragment().getLocalName().equals(Constants.SCHEMA_TYPE_ATTRIBUTE)){
                      xsiTypeIndicatorField = true;
                }
                
@@ -812,7 +811,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     if (defaultRootQualifiedName != null) {
                         String defaultRootLocalName = null;
                         String defaultRootUri = null;
-                        int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
+                        int colonIndex = defaultRootQualifiedName.indexOf(Constants.COLON);
                         if (colonIndex > 0) {
                             String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
                             defaultRootLocalName = defaultRootQualifiedName.substring(colonIndex + 1);
@@ -897,7 +896,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     classIndicatorPrefix = classIndicatorQName.getPrefix();
                 } else {
                     String classIndicatorValue = (String) inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
-                    int nsindex = classIndicatorValue.indexOf(XMLConstants.COLON);
+                    int nsindex = classIndicatorValue.indexOf(Constants.COLON);
                     String prefix = null;
                     if (nsindex != -1) {
                         classIndicatorLocal = classIndicatorValue.substring(nsindex + 1);

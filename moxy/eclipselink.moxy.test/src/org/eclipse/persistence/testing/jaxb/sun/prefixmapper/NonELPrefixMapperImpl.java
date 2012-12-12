@@ -20,7 +20,7 @@ public class NonELPrefixMapperImpl extends NonELPrefixMapperSuperClass {
         if(arg0.equals("someuri")) {
             return "newPrefix";
         }
-        if(arg0.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
+        if(arg0.equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)) {
             return "xsi";
         }
         return arg1;
@@ -33,7 +33,7 @@ public class NonELPrefixMapperImpl extends NonELPrefixMapperSuperClass {
     
     @Override
     public java.lang.String[] getPreDeclaredNamespaceUris2() {
-        return new String[] {"newPrefix", "someuri", "xsi", XMLConstants.SCHEMA_INSTANCE_URL, "somePrefix", "my.uri"};
+        return new String[] {"newPrefix", "someuri", "xsi", javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "somePrefix", "my.uri"};
     }
 }
 

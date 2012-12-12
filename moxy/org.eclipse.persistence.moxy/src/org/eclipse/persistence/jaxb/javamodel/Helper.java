@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -113,10 +113,10 @@ public class Helper {
         buildXMLToJavaTypeMap();
         setJavaModel(model);
         setClassLoader(model.getClassLoader());
-        COLLECTION_CLASS = getJavaClass(ClassConstants.Collection_Class);
-        LIST_CLASS = getJavaClass(ClassConstants.List_Class);
-        SET_CLASS = getJavaClass(ClassConstants.Set_Class);
-        MAP_CLASS = getJavaClass(ClassConstants.Map_Class);
+        COLLECTION_CLASS = getJavaClass(CoreClassConstants.Collection_Class);
+        LIST_CLASS = getJavaClass(CoreClassConstants.List_Class);
+        SET_CLASS = getJavaClass(CoreClassConstants.Set_Class);
+        MAP_CLASS = getJavaClass(CoreClassConstants.Map_Class);
     }
 
     /**
@@ -127,41 +127,41 @@ public class Helper {
     private HashMap buildXMLToJavaTypeMap() {
         HashMap javaTypes = new HashMap();
         // jaxb 2.0 spec pairs        
-        javaTypes.put(APBYTE, XMLConstants.BASE_64_BINARY_QNAME);
-        javaTypes.put(BIGDECIMAL, XMLConstants.DECIMAL_QNAME);
-        javaTypes.put(BIGINTEGER, XMLConstants.INTEGER_QNAME);
-        javaTypes.put(PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(PBYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(PDOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(PFLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(PINT, XMLConstants.INT_QNAME);
-        javaTypes.put(PLONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(PSHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(QNAME_CLASS, XMLConstants.QNAME_QNAME);
-        javaTypes.put(STRING, XMLConstants.STRING_QNAME);
-        javaTypes.put(CHAR, XMLConstants.STRING_QNAME);
-        javaTypes.put(CHARACTER, XMLConstants.STRING_QNAME);        
+        javaTypes.put(APBYTE, Constants.BASE_64_BINARY_QNAME);
+        javaTypes.put(BIGDECIMAL, Constants.DECIMAL_QNAME);
+        javaTypes.put(BIGINTEGER, Constants.INTEGER_QNAME);
+        javaTypes.put(PBOOLEAN, Constants.BOOLEAN_QNAME);
+        javaTypes.put(PBYTE, Constants.BYTE_QNAME);
+        javaTypes.put(CALENDAR, Constants.DATE_TIME_QNAME);
+        javaTypes.put(PDOUBLE, Constants.DOUBLE_QNAME);
+        javaTypes.put(PFLOAT, Constants.FLOAT_QNAME);
+        javaTypes.put(PINT, Constants.INT_QNAME);
+        javaTypes.put(PLONG, Constants.LONG_QNAME);
+        javaTypes.put(PSHORT, Constants.SHORT_QNAME);
+        javaTypes.put(QNAME_CLASS, Constants.QNAME_QNAME);
+        javaTypes.put(STRING, Constants.STRING_QNAME);
+        javaTypes.put(CHAR, Constants.STRING_QNAME);
+        javaTypes.put(CHARACTER, Constants.STRING_QNAME);        
         // other pairs
-        javaTypes.put(ABYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(BOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(BYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(CLASS, XMLConstants.STRING_QNAME);
-        javaTypes.put(GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(DOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(FLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(INTEGER, XMLConstants.INT_QNAME);
-        javaTypes.put(LONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(OBJECT, XMLConstants.ANY_TYPE_QNAME);
-        javaTypes.put(SHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(UTIL_DATE, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(SQL_DATE, XMLConstants.DATE_QNAME);
-        javaTypes.put(SQL_TIME, XMLConstants.TIME_QNAME);
-        javaTypes.put(SQL_TIMESTAMP, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
-        javaTypes.put(UUID, XMLConstants.STRING_QNAME);
-        javaTypes.put(URI, XMLConstants.STRING_QNAME);
-        javaTypes.put(URL, XMLConstants.ANY_URI_QNAME);
+        javaTypes.put(ABYTE, Constants.BYTE_QNAME);
+        javaTypes.put(BOOLEAN, Constants.BOOLEAN_QNAME);
+        javaTypes.put(BYTE, Constants.BYTE_QNAME);
+        javaTypes.put(CLASS, Constants.STRING_QNAME);
+        javaTypes.put(GREGORIAN_CALENDAR, Constants.DATE_TIME_QNAME);
+        javaTypes.put(DOUBLE, Constants.DOUBLE_QNAME);
+        javaTypes.put(FLOAT, Constants.FLOAT_QNAME);
+        javaTypes.put(INTEGER, Constants.INT_QNAME);
+        javaTypes.put(LONG, Constants.LONG_QNAME);
+        javaTypes.put(OBJECT, Constants.ANY_TYPE_QNAME);
+        javaTypes.put(SHORT, Constants.SHORT_QNAME);
+        javaTypes.put(UTIL_DATE, Constants.DATE_TIME_QNAME);
+        javaTypes.put(SQL_DATE, Constants.DATE_QNAME);
+        javaTypes.put(SQL_TIME, Constants.TIME_QNAME);
+        javaTypes.put(SQL_TIMESTAMP, Constants.DATE_TIME_QNAME);
+        javaTypes.put(DURATION, Constants.DURATION_QNAME);
+        javaTypes.put(UUID, Constants.STRING_QNAME);
+        javaTypes.put(URI, Constants.STRING_QNAME);
+        javaTypes.put(URL, Constants.ANY_URI_QNAME);
         return javaTypes;
     }
     
@@ -302,31 +302,31 @@ public class Helper {
     public Class getClassForJavaClass(JavaClass javaClass){
         String javaClassName = javaClass.getRawName();
         if (javaClass.isPrimitive() || javaClass.isArray() && javaClass.getComponentType().isPrimitive()){
-            if (ClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.APBYTE.getCanonicalName().equals(javaClassName)){
                 return Byte[].class;
             }
-            if (ClassConstants.PBYTE.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PBYTE.getCanonicalName().equals(javaClassName)){
                 return Byte.class;
             }
-            if (ClassConstants.PBOOLEAN.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PBOOLEAN.getCanonicalName().equals(javaClassName)){
                 return Boolean.class;
             }
-            if (ClassConstants.PSHORT.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PSHORT.getCanonicalName().equals(javaClassName)){
                 return Short.class;
             }
-            if (ClassConstants.PFLOAT.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PFLOAT.getCanonicalName().equals(javaClassName)){
                 return Float.class;
             }
-            if (ClassConstants.PCHAR.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PCHAR.getCanonicalName().equals(javaClassName)){
                 return Character.class;
             }
-            if (ClassConstants.PDOUBLE.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PDOUBLE.getCanonicalName().equals(javaClassName)){
                 return Double.class;
             }
-            if (ClassConstants.PINT.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PINT.getCanonicalName().equals(javaClassName)){
                 return Integer.class;
             }
-            if (ClassConstants.PLONG.getCanonicalName().equals(javaClassName)){
+            if (CoreClassConstants.PLONG.getCanonicalName().equals(javaClassName)){
                 return Long.class;
             }
             return null;

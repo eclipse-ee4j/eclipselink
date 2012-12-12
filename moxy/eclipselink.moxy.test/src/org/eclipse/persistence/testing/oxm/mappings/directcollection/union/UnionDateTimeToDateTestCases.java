@@ -37,7 +37,7 @@ public class UnionDateTimeToDateTestCases extends XMLMappingTestCases {
 				XMLCompositeDirectCollectionMapping mapping = (XMLCompositeDirectCollectionMapping) p.getDescriptor(Person.class).getMappingForAttributeName("items");
 				XMLUnionField field = new XMLUnionField("item/text()");
                 
-				QName stringQName = new QName(XMLConstants.SCHEMA_URL, XMLConstants.STRING);
+				QName stringQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.STRING);
 
 	      field.addConversion(XMLConstants.DATE_QNAME, java.util.Date.class);
         field.addConversion(XMLConstants.TIME_QNAME, java.util.Date.class);

@@ -31,15 +31,15 @@ public class TypeAttributeCustomAddProject extends Project {
         descriptor.setJavaClass(Employee.class);
         descriptor.setDefaultRootElement("employee");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        resolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         descriptor.setNamespaceResolver(resolver);
 
         XMLDirectMapping identifierMapping = new XMLDirectMapping();
         identifierMapping.setAttributeName("identifier");
         XMLField field = new XMLField("identifier/text()");
         field.setIsTypedTextField(true);
-        QName intQName = new QName(XMLConstants.SCHEMA_URL, XMLConstants.INT);
+        QName intQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, XMLConstants.INT);
         field.addConversion(intQName, ClassConstants.INTEGER);
         identifierMapping.setField(field);
 

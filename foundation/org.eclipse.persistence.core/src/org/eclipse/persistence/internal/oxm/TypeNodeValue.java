@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnionField;
 
 public class TypeNodeValue extends NodeValue {
@@ -53,7 +52,7 @@ public class TypeNodeValue extends NodeValue {
             return false;
         }
         if(xmlField.getSchemaType() == null){
-            if(schemaType.equals(XMLConstants.STRING_QNAME)){
+            if(schemaType.equals(Constants.STRING_QNAME)){
                 return false;
             }
         }else{
@@ -63,17 +62,17 @@ public class TypeNodeValue extends NodeValue {
         }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        String typeQName = namespaceResolver.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL) + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE;
+        String typeQName = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE;
         String schemaTypePrefix = namespaceResolver.resolveNamespaceURI(schemaType.getNamespaceURI());
         if(schemaTypePrefix == null){
-            if(XMLConstants.SCHEMA_URL.equals(schemaType.getNamespaceURI())){
-                schemaTypePrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_PREFIX);	
+            if(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(schemaType.getNamespaceURI())){
+                schemaTypePrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_PREFIX);	
             }else{
                 schemaTypePrefix = namespaceResolver.generatePrefix();
             }            
             marshalRecord.namespaceDeclaration(schemaTypePrefix, schemaType.getNamespaceURI());
         }
-        marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeQName, schemaTypePrefix + XMLConstants.COLON + schemaType.getLocalPart());
+        marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE, typeQName, schemaTypePrefix + Constants.COLON + schemaType.getLocalPart());
         marshalRecord.closeStartGroupingElements(groupingFragment);
         return true;
     }
@@ -125,7 +124,7 @@ public class TypeNodeValue extends NodeValue {
         //assume this is being called for xsi:type field
         if (value != null) {
             String namespace = null;
-            int colonIndex = value.indexOf(XMLConstants.COLON);
+            int colonIndex = value.indexOf(Constants.COLON);
             if (colonIndex > -1) {
                 String prefix = value.substring(0, colonIndex);
                 namespace = unmarshalRecord.resolveNamespacePrefix(prefix);

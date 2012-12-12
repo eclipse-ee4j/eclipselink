@@ -36,7 +36,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -112,7 +111,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     NamedNodeMap attributes = rootNode.getAttributes();
                     for(int i = 0; i < attributes.getLength(); i++) {
                         Attr next = (Attr)attributes.item(i);
-                        if(!(XMLConstants.XMLNS_URL.equals(next.getNamespaceURI()))) {
+                        if(!(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(next.getNamespaceURI()))) {
                             marshalRecord.node(next, namespaceResolver);
                         }
                     }
@@ -215,7 +214,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
         } else {            
-            if(XMLConstants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeObjectMapping.getReferenceClassName())){
+            if(Constants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeObjectMapping.getReferenceClassName())){
                 throw XMLMarshalException.descriptorNotFoundInProject(objectValue.getClass().getName());
             }
             
@@ -255,7 +254,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                                 frag.setNamespaceURI(uri);
                                 String prefix = ((Descriptor)xmlCompositeObjectMapping.getDescriptor()).getNonNullNamespaceResolver().resolveNamespaceURI(uri);
                                 if (prefix != null && prefix.length() > 0) {
-                                    xpath = prefix + XMLConstants.COLON + xpath;
+                                    xpath = prefix + Constants.COLON + xpath;
                                 }
                             }
                             frag.setXPath(xpath);
@@ -296,7 +295,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(nullPolicy.isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
-                    qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
+                    qnameString = xPathFragment.getPrefix()  + Constants.COLON + qnameString;
                 }
                 if(null != xmlDescriptor) {
                     // Process null capable value
@@ -407,9 +406,9 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 String xsiType = null;
                 if(null != element) {
                 	if(unmarshalRecord.isNamespaceAware()){
-                            xsiType = element.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                            xsiType = element.getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
                 	}else{
-               		    xsiType = element.getAttribute(XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+               		    xsiType = element.getAttribute(Constants.SCHEMA_TYPE_ATTRIBUTE);
                 	}
                 }
                 if(null != xsiType) {
@@ -431,7 +430,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         }
                     }else{
                     	if(!unmarshalRecord.isNamespaceAware()){
-                            QName qName = new QName(XMLConstants.SCHEMA_URL, xsiType);
+                            QName qName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, xsiType);
 
                     		Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
                             if (theClass != null) {

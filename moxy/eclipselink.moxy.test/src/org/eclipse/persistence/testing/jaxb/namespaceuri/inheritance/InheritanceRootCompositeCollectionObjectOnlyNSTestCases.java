@@ -34,8 +34,8 @@ public class InheritanceRootCompositeCollectionObjectOnlyNSTestCases extends JAX
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
         Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
-        namespaces.put(XMLConstants.SCHEMA_URL, "xsd");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "xsi");
+        namespaces.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "xsd");
         namespaces.put("rootNamespace", "ns0");
         namespaces.put("someNamespace", "ns1");
         namespaces.put("anotherNamespace", "ns2");

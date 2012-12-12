@@ -82,7 +82,7 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             assertNotNull("A problem occurred loading the control schema", cDoc);
             assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
             
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             javax.xml.validation.Schema theSchema = sFact.newSchema(new File(TMP_DIR + "generatedSchema.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(XML_RESOURCE)); 
@@ -123,7 +123,7 @@ public class PathbasedMappingTestCases extends GenerateSchemaTestCases {
             assertNotNull("A problem occurred loading the control schema", cDoc);
             assertTrue("Schema comparsion failed", comparer.isSchemaEqual(cDoc, tDoc));
             
-            SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+            SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
             javax.xml.validation.Schema theSchema = sFact.newSchema(new File(TMP_DIR + "generatedSchema.xsd"));
             Validator validator = theSchema.newValidator();
             StreamSource ss = new StreamSource(new File(INVALID_XML_RESOURCE)); 

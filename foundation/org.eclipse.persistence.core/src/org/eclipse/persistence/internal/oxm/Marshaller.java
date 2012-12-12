@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import javax.xml.transform.Result;
+
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
@@ -20,7 +23,7 @@ import org.eclipse.persistence.platform.xml.XMLTransformer;
 public abstract class Marshaller<CONTEXT extends Context> {
 
     public abstract XMLAttachmentMarshaller getAttachmentMarshaller();
-
+    
     /**
      * Get the MediaType for this xmlMarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
@@ -51,5 +54,14 @@ public abstract class Marshaller<CONTEXT extends Context> {
      * Ignored marshalling XML.   
      */
     public abstract boolean isIncludeRoot();
+    
+    /**
+     * PUBLIC:
+     * Convert the given object to XML and update the given result with that XML Document
+     * @param object the object to marshal
+     * @param result the result to marshal the object to
+     * @throws XMLMarshalException if an error occurred during marshalling
+     */
+     public abstract void marshal(Object object, Result result) throws XMLMarshalException;
 
 }

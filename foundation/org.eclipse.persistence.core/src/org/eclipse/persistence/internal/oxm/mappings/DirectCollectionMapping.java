@@ -36,6 +36,15 @@ public interface DirectCollectionMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
+ 	 /**
+     * Return the class each element in the object's
+     * collection should be converted to, before the collection
+     * is inserted into the object.
+     * This is optional - if left null, the elements will be added
+     * to the object's collection unconverted.
+     */
+    public Class getAttributeElementClass();
+    	
     public AbstractNullPolicy getNullPolicy();
     
     /**

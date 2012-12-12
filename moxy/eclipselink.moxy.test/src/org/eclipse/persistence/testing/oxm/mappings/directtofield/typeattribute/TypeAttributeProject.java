@@ -29,8 +29,8 @@ public class TypeAttributeProject extends Project {
         descriptor.setJavaClass(Employee.class);
         descriptor.setDefaultRootElement("employee");
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        resolver.put(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+        resolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+        resolver.put(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         descriptor.setNamespaceResolver(resolver);
 
         XMLDirectMapping identifierMapping = new XMLDirectMapping();

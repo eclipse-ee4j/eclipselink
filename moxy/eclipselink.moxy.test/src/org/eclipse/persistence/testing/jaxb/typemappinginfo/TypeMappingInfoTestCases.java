@@ -558,7 +558,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
      
     protected void validateBindingsFileAgainstSchema(Source src) {
      	String result = null;
-         SchemaFactory sFact = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+         SchemaFactory sFact = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
          Schema theSchema;
          try {
              theSchema = sFact.newSchema(bindingsFileXSDSource);

@@ -772,7 +772,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
         type.setOpen(dataObject.getBoolean("open"));
 
         if (type.isDataType()) {
-            QName typeQName = new QName(XMLConstants.SCHEMA_URL, name);
+            QName typeQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, name);
             if (typeHelper.getWrappersHashMap().get(typeQName) != null) {
                 // In the case of a non-user-defined simple type, we already have built-in
                 // wrappers created, so do not continue on building a new WrapperType.
@@ -789,7 +789,7 @@ public class SDOTypeHelperDelegate implements SDOTypeHelper {
             QName currentTypeQName = null;
             if (type.isSubType()) {
                 SDOType baseType = (SDOType) type.getBaseTypes().get(0);
-                currentTypeQName = new QName(XMLConstants.SCHEMA_URL, baseType.getName());
+                currentTypeQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, baseType.getName());
             }
 
             // Create the new WrapperType

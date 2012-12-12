@@ -521,7 +521,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
                     Node nextNode = children.item(i);
                     if(nextNode.getNodeType() == nextNode.ELEMENT_NODE){
                         //complex child
-                        String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                        String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
                         if(type != null && type.length() > 0) {
                             throw XMLMarshalException.unknownXsiTypeValue(type, (CompositeObjectMapping) this);
                         } else {
@@ -585,7 +585,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
             return toReturn;
     	}
 
-        String type = ((Element) nestedRow.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        String type = ((Element) nestedRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
         if ((null != type) && type.length() > 0) {
             XPathFragment typeFragment = new XPathFragment(type);
@@ -682,7 +682,7 @@ public class XMLCompositeObjectMapping extends AbstractCompositeObjectMapping im
 
         if (returnDescriptor == null) {
             // Try to find a descriptor based on the schema type
-            String type = ((Element) xmlRecord.getDOM()).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String type = ((Element) xmlRecord.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
 
             if ((null != type) && type.length() > 0) {
                 XPathFragment typeFragment = new XPathFragment(type);

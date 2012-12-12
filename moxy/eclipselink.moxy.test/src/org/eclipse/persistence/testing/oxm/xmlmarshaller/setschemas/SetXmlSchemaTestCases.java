@@ -41,7 +41,7 @@ public class SetXmlSchemaTestCases extends OXTestCase {
         xmlUnmarshaller = xmlContext.createUnmarshaller();
         xmlUnmarshaller.setErrorHandler(new MyErrorHandler());
         
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.SCHEMA_URL);
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             schema = schemaFactory.newSchema(new java.io.File(XML_SCHEMA_RESOURCE));
         } catch(SAXException ex) {

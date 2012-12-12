@@ -18,12 +18,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
@@ -126,7 +126,7 @@ public class DOMReader extends XMLReaderAdapter {
                 for (int i=0, length = attrs.getLength(); i < length; i++) {
                     Attr next = (Attr)attrs.item(i);
                     String attrPrefix = next.getPrefix();
-                    if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
+                    if (attrPrefix != null && attrPrefix.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                         contentHandler.startPrefixMapping(next.getLocalName(), next.getValue());
                     }
                 }
@@ -168,7 +168,7 @@ public class DOMReader extends XMLReaderAdapter {
 
                  String prefix = tmpNR.resolveNamespaceURI(namespaceUri);
                  if(prefix == null || prefix.length() == 0){
-                     String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
+                     String defaultNamespace = elem.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
             
                      if(defaultNamespace == null){
                          prefix = tmpNR.generatePrefix();    
@@ -177,12 +177,12 @@ public class DOMReader extends XMLReaderAdapter {
                          prefix = tmpNR.generatePrefix();
                          contentHandler.startPrefixMapping(prefix, namespaceUri);
                      }else{
-                         prefix = XMLConstants.EMPTY_STRING;
+                         prefix = Constants.EMPTY_STRING;
                      }      
                  }                 
                  
                  if(prefix != null && prefix.length() >0){
-                    qname = prefix + XMLConstants.COLON + qname;      
+                    qname = prefix + Constants.COLON + qname;      
                  }
             }
            
@@ -203,7 +203,7 @@ public class DOMReader extends XMLReaderAdapter {
         for (int i = 0, length = attrs.getLength(); i < length; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
-            if(attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
+            if(attrPrefix != null && attrPrefix.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                 contentHandler.startPrefixMapping(next.getLocalName(), next.getValue());
                 // Handle XMLNS prefixed attributes
                 handleXMLNSPrefixedAttribute(elem, next);
@@ -212,11 +212,11 @@ public class DOMReader extends XMLReaderAdapter {
                 if(name == null) {
                     name = next.getNodeName();
                 }
-                if(name != null && name.equals(XMLConstants.XMLNS)) {
-                    contentHandler.startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
+                if(name != null && name.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
+                    contentHandler.startPrefixMapping(Constants.EMPTY_STRING, next.getValue());
                 }
             }
-            if(next.getNamespaceURI() != null && next.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) && next.getLocalName().equals("type")) {
+            if(next.getNamespaceURI() != null && next.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) && next.getLocalName().equals("type")) {
                 handleXsiTypeAttribute(next);
             }
             attributes.addAttribute(next);
@@ -229,15 +229,15 @@ public class DOMReader extends XMLReaderAdapter {
         for(int i = 0, numOfAtts = attrs.getLength(); i < numOfAtts; i++) {
             Attr next = (Attr)attrs.item(i);
             String attrPrefix = next.getPrefix();
-            if (attrPrefix != null && attrPrefix.equals(XMLConstants.XMLNS)) {
+            if (attrPrefix != null && attrPrefix.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)) {
                 contentHandler.endPrefixMapping(next.getLocalName());
             } else if(attrPrefix == null) {
                 String name = next.getLocalName();
                 if(name == null) {
                     name = next.getNodeName();
                 }
-                if(XMLConstants.XMLNS.equals(name)) {
-                    contentHandler.endPrefixMapping(XMLConstants.EMPTY_STRING);
+                if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(name)) {
+                    contentHandler.endPrefixMapping(Constants.EMPTY_STRING);
                 }
             }
         }
@@ -247,7 +247,7 @@ public class DOMReader extends XMLReaderAdapter {
         handlePrefixedAttribute(elem);
         String prefix = elem.getPrefix();
         if (prefix != null && prefix.length() > 0) {
-            String qname = prefix + XMLConstants.COLON + elem.getLocalName();
+            String qname = prefix + Constants.COLON + elem.getLocalName();
             return qname;
         } else {
             return elem.getLocalName();
@@ -395,22 +395,22 @@ public class DOMReader extends XMLReaderAdapter {
                 if (item.getName() != null) {
                     return item.getName();
                 }
-                return XMLConstants.EMPTY_STRING;
+                return Constants.EMPTY_STRING;
             } catch (IndexOutOfBoundsException iobe) {
                 return null;
             }
         }
 
         public String getType(String namespaceUri, String localName) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public String getType(int index) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public String getType(String qname) {
-            return XMLConstants.CDATA;
+            return Constants.CDATA;
         }
 
         public int getIndex(String qname) {
@@ -453,7 +453,7 @@ public class DOMReader extends XMLReaderAdapter {
         public String getURI(int index) {
             String uri = attrs.get(index).getNamespaceURI();
             if(uri == null) {
-                uri = XMLConstants.EMPTY_STRING;
+                uri = Constants.EMPTY_STRING;
             }
             return uri;
         }
@@ -479,7 +479,7 @@ public class DOMReader extends XMLReaderAdapter {
                     String itemNS = item.getNamespaceURI();  
                     // Need to handle null/empty URI
                     if (item.getNamespaceURI() == null) {
-                        itemNS = XMLConstants.EMPTY_STRING;
+                        itemNS = Constants.EMPTY_STRING;
                     }
                     
                     String itemName = item.getLocalName();
@@ -515,11 +515,11 @@ public class DOMReader extends XMLReaderAdapter {
         }
 
         public String getSystemId() {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
 
         public String getPublicId() {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
 
         public String getXMLVersion() {

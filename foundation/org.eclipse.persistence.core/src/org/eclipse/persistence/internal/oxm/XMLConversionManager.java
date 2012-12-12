@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.helper.TimeZoneHolder;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -161,20 +160,20 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
            }else{           
                return convertObjectToString(sourceObject);
            }
-        } else if ((javaClass == XMLConstants.QNAME_CLASS) && (sourceObject != null)) {
+        } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
             return convertObjectToQName(sourceObject);
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
             return convertStringToList(sourceObject);
         } else if ((javaClass == CoreClassConstants.CALENDAR)) {
             return convertObjectToCalendar(sourceObject);
         } else if ((javaClass == CoreClassConstants.UTILDATE)) {
-            return convertObjectToUtilDate(sourceObject, XMLConstants.DATE_TIME_QNAME);
+            return convertObjectToUtilDate(sourceObject, Constants.DATE_TIME_QNAME);
         } else if ((javaClass == CoreClassConstants.SQLDATE)) {
-            return convertObjectToSQLDate(sourceObject, XMLConstants.DATE_QNAME);
+            return convertObjectToSQLDate(sourceObject, Constants.DATE_QNAME);
         } else if ((javaClass == CoreClassConstants.TIME)) {
-            return convertObjectToSQLTime(sourceObject, XMLConstants.TIME_QNAME);
+            return convertObjectToSQLTime(sourceObject, Constants.TIME_QNAME);
         } else if ((javaClass == CoreClassConstants.TIMESTAMP)) {
-            return convertObjectToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
+            return convertObjectToTimestamp(sourceObject, Constants.DATE_TIME_QNAME);
         } else if ((javaClass == java.net.URI.class)) {
             return convertObjectToURI(sourceObject);
         } else if ((javaClass == CoreClassConstants.XML_GREGORIAN_CALENDAR)) {
@@ -214,15 +213,15 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         } else if ((javaClass == CoreClassConstants.CALENDAR) || (javaClass == CoreClassConstants.GREGORIAN_CALENDAR)) {
             return convertObjectToCalendar(sourceObject, schemaTypeQName);
         } else if (javaClass == CoreClassConstants.ABYTE) {
-            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.HEX_BINARY)) {
+            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.HEX_BINARY)) {
                 return super.convertObjectToByteObjectArray(sourceObject);
-            } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
+            } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return convertSchemaBase64ToByteObjectArray(sourceObject);
             }
         } else if (javaClass == CoreClassConstants.APBYTE) {
-            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.HEX_BINARY)) {
+            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.HEX_BINARY)) {
                 return super.convertObjectToByteArray(sourceObject);
-            } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
+            } else if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return convertSchemaBase64ToByteArray(sourceObject);
             }
         } else if ((javaClass == CoreClassConstants.List_Class) && (sourceObject instanceof String)) {
@@ -230,12 +229,12 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         } else if ((javaClass == CoreClassConstants.STRING) && (sourceObject instanceof List)) {
             return convertListToString(sourceObject);
         } else if (sourceObject instanceof byte[]) {
-            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
+            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return buildBase64StringFromBytes((byte[]) sourceObject);
             }
             return Helper.buildHexStringFromBytes((byte[]) sourceObject);
         } else if (sourceObject instanceof Byte[]) {
-            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(XMLConstants.BASE_64_BINARY)) {
+            if (schemaTypeQName.getLocalPart().equalsIgnoreCase(Constants.BASE_64_BINARY)) {
                 return buildBase64StringFromObjectBytes((Byte[]) sourceObject);
             }
             return buildHexStringFromObjectBytes((Byte[]) sourceObject);
@@ -247,7 +246,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertObjectToSQLTime(sourceObject, schemaTypeQName);
         } else if (javaClass ==  CoreClassConstants.TIMESTAMP) {
             return convertObjectToTimestamp(sourceObject, schemaTypeQName);
-        } else if ((javaClass == XMLConstants.QNAME_CLASS) && (sourceObject != null)) {
+        } else if ((javaClass == Constants.QNAME_CLASS) && (sourceObject != null)) {
             return convertObjectToQName(sourceObject);
         } else if (javaClass == CoreClassConstants.STRING) {
             return convertObjectToString(sourceObject, schemaTypeQName);
@@ -325,7 +324,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @param sourceObject
      */
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
-        if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
+        if (sourceObject == null || sourceObject.equals(Constants.EMPTY_STRING)) {
             return (char) 0;
         }
 
@@ -363,7 +362,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return qnameFromString((String) sourceObject);
         }
 
-        throw ConversionException.couldNotBeConverted(sourceObject, XMLConstants.QNAME_CLASS);
+        throw ConversionException.couldNotBeConverted(sourceObject, Constants.QNAME_CLASS);
     }
 
     /**
@@ -374,12 +373,12 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof String) {
             String sourceString = (String) sourceObject;
             if (sourceString.lastIndexOf('T') != -1) {
-                return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_TIME_QNAME);
+                return convertStringToCalendar((String) sourceObject, Constants.DATE_TIME_QNAME);
             } else {
-                if (sourceString.lastIndexOf(XMLConstants.COLON) != -1) {
-                    return convertStringToCalendar((String) sourceObject, XMLConstants.TIME_QNAME);
+                if (sourceString.lastIndexOf(Constants.COLON) != -1) {
+                    return convertStringToCalendar((String) sourceObject, Constants.TIME_QNAME);
                 } else {
-                    return convertStringToCalendar((String) sourceObject, XMLConstants.DATE_QNAME);
+                    return convertStringToCalendar((String) sourceObject, Constants.DATE_QNAME);
                 }
             }
         }
@@ -395,7 +394,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromCalendar((Calendar) sourceObject);
         }
         if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -420,19 +419,19 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if(sourceObject instanceof Double){
             if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
-                return XMLConstants.POSITIVE_INFINITY;
+                return Constants.POSITIVE_INFINITY;
             }
             if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
-                return XMLConstants.NEGATIVE_INFINITY;
+                return Constants.NEGATIVE_INFINITY;
             }
             return ((Double)sourceObject).toString();
         }
         if(sourceObject instanceof Float){
             if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
-                return XMLConstants.POSITIVE_INFINITY;
+                return Constants.POSITIVE_INFINITY;
             }
             if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
-                return XMLConstants.NEGATIVE_INFINITY;
+                return Constants.NEGATIVE_INFINITY;
             }
             return ((Float)sourceObject).toString();
         }
@@ -445,7 +444,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
         if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -470,19 +469,19 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         if(sourceObject instanceof Double){
             if(Double.POSITIVE_INFINITY == ((Double)sourceObject)){
-                return XMLConstants.POSITIVE_INFINITY;
+                return Constants.POSITIVE_INFINITY;
             }
             if(Double.NEGATIVE_INFINITY == ((Double)sourceObject)){
-                return XMLConstants.NEGATIVE_INFINITY;
+                return Constants.NEGATIVE_INFINITY;
             }
             return ((Double)sourceObject).toString();
         }
         if(sourceObject instanceof Float){
             if(Float.POSITIVE_INFINITY == ((Float)sourceObject)){
-                return XMLConstants.POSITIVE_INFINITY;
+                return Constants.POSITIVE_INFINITY;
             }
             if(Float.NEGATIVE_INFINITY == ((Float)sourceObject)){
-                return XMLConstants.NEGATIVE_INFINITY;
+                return Constants.NEGATIVE_INFINITY;
             }
             return ((Float)sourceObject).toString();
         }
@@ -519,9 +518,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        if (sourceObject instanceof String) {
            if(((String) sourceObject).length() == 0) {
                return 0d;
-           }else if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+           }else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return Double.valueOf(Double.POSITIVE_INFINITY);
-           }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+           }else if(Constants.NEGATIVE_INFINITY.equals(sourceObject)){
                return Double.valueOf(Double.NEGATIVE_INFINITY);
            }else{
                return super.convertObjectToDouble(sourceObject);
@@ -541,9 +540,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
        if (sourceObject instanceof String) {
            if(((String) sourceObject).length() == 0) {
                return 0f;
-           } else if(XMLConstants.POSITIVE_INFINITY.equals(sourceObject)){
+           } else if(Constants.POSITIVE_INFINITY.equals(sourceObject)){
                return new Float(Float.POSITIVE_INFINITY);
-           }else if(XMLConstants.NEGATIVE_INFINITY.equals(sourceObject)){
+           }else if(Constants.NEGATIVE_INFINITY.equals(sourceObject)){
                return new Float(Float.NEGATIVE_INFINITY);
            }
        }
@@ -664,7 +663,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
    @Override
    protected Boolean convertObjectToBoolean(Object sourceObject) {
-       if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
+       if (sourceObject == null || sourceObject.equals(Constants.EMPTY_STRING)) {
            return false;
        }
 
@@ -696,21 +695,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         try {
             xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString);
         } catch (Exception ex) {
-             if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
+             if (Constants.DATE_QNAME.equals(schemaTypeQName)) {
                  throw ConversionException.incorrectDateFormat(sourceString);
-             } else if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.TIME_QNAME.equals(schemaTypeQName)) {
                  throw ConversionException.incorrectTimeFormat(sourceString);
-             } else if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.G_DAY_QNAME.equals(schemaTypeQName)) {
                  throw XMLConversionException.incorrectGDayFormat(sourceString);
-             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
                  throw XMLConversionException.incorrectGMonthFormat(sourceString);
-             } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
                  throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-             } else if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.G_YEAR_QNAME.equals(schemaTypeQName)) {
                  throw XMLConversionException.incorrectGYearFormat(sourceString);
-             } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
                  throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-             } else if (XMLConstants.DURATION_QNAME.equals(schemaTypeQName)) {
+             } else if (Constants.DURATION_QNAME.equals(schemaTypeQName)) {
                  throw new IllegalArgumentException();
              } else {
                  throw ConversionException.incorrectDateTimeFormat(sourceString);
@@ -723,8 +722,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             
         QName calendarQName = xmlGregorianCalender.getXMLSchemaType();
 	    if (!calendarQName.equals(schemaTypeQName)) {
-	        if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
-	            if (calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
+	        if (Constants.DATE_QNAME.equals(schemaTypeQName)) {
+	            if (calendarQName.equals(Constants.DATE_TIME_QNAME)) {
 	                //clear out the time portion
 	                xmlGregorianCalender.setHour(DatatypeConstants.FIELD_UNDEFINED);
 	                xmlGregorianCalender.setMinute(DatatypeConstants.FIELD_UNDEFINED);
@@ -734,21 +733,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 	            } else {
 	                throw ConversionException.incorrectDateFormat(sourceString);
 	            }
-	         } else if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.TIME_QNAME.equals(schemaTypeQName)) {
 	             throw ConversionException.incorrectTimeFormat(sourceString);
-	         } else if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.G_DAY_QNAME.equals(schemaTypeQName)) {
 	             throw XMLConversionException.incorrectGDayFormat(sourceString);
-	         } else if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
 	             throw XMLConversionException.incorrectGMonthFormat(sourceString);
-	         } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
 	             throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-	         } else if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.G_YEAR_QNAME.equals(schemaTypeQName)) {
 	             throw XMLConversionException.incorrectGYearFormat(sourceString);
-	         } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
 	             throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-	         } else if (XMLConstants.DURATION_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.DURATION_QNAME.equals(schemaTypeQName)) {
 	             throw new IllegalArgumentException();
-	         } else if (XMLConstants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
+	         } else if (Constants.DATE_TIME_QNAME.equals(schemaTypeQName)) {
 	             throw ConversionException.incorrectDateTimeFormat(sourceString);
 	         }	        
         }
@@ -851,7 +850,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     protected Timestamp convertStringToTimestamp(String sourceObject) {
-        return convertStringToTimestamp(sourceObject, XMLConstants.DATE_TIME_QNAME);
+        return convertStringToTimestamp(sourceObject, Constants.DATE_TIME_QNAME);
     }
 
     protected Timestamp convertObjectToTimestamp(Object sourceObject, QName schemaTypeQName) {
@@ -868,21 +867,21 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString);
         } catch(Exception ex) {
 
-             if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+             if (Constants.DATE_QNAME.equals(schemaType)) {
                  throw ConversionException.incorrectDateFormat(sourceString);
-             }else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+             }else if (Constants.TIME_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+             }else if (Constants.G_DAY_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGDayFormat(sourceString);
-             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+             } else if (Constants.G_MONTH_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGMonthFormat(sourceString);
-             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+             }else if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
-             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+             }else if (Constants.G_YEAR_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGYearFormat(sourceString);
-             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+             }else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
-             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+             }else if (Constants.DURATION_QNAME.equals(schemaType)) {
                  throw new IllegalArgumentException();
              }else{
                  throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
@@ -897,8 +896,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         QName  calendarQName = xmlGregorianCalender.getXMLSchemaType();
         if(!calendarQName.equals(schemaType)){
-            if (XMLConstants.DATE_QNAME.equals(schemaType)){
-                if(calendarQName.equals(XMLConstants.DATE_TIME_QNAME)) {
+            if (Constants.DATE_QNAME.equals(schemaType)){
+                if(calendarQName.equals(Constants.DATE_TIME_QNAME)) {
                     //clear out the time portion
                     cal.clear(Calendar.HOUR_OF_DAY);
                     cal.clear(Calendar.MINUTE);
@@ -909,27 +908,27 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 }else{
                     throw ConversionException.incorrectDateFormat(sourceString);
                 }
-             }else if (XMLConstants.TIME_QNAME.equals(schemaType)){
+             }else if (Constants.TIME_QNAME.equals(schemaType)){
                  throw XMLConversionException.incorrectTimestampTimeFormat(sourceString);
-             }else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+             }else if (Constants.G_DAY_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGDayFormat(sourceString);
 
-             } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+             } else if (Constants.G_MONTH_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGMonthFormat(sourceString);
 
-             }else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+             }else if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGMonthDayFormat(sourceString);
 
-             }else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+             }else if (Constants.G_YEAR_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGYearFormat(sourceString);
 
-             }else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+             }else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
                  throw XMLConversionException.incorrectGYearMonthFormat(sourceString);
 
-             }else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+             }else if (Constants.DURATION_QNAME.equals(schemaType)) {
                  throw new IllegalArgumentException();
 
-             }else if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) { //&& XMLConstants.DATE_QNAME.equals(calendarQName)) {
+             }else if (Constants.DATE_TIME_QNAME.equals(schemaType)) { //&& Constants.DATE_QNAME.equals(calendarQName)) {
                  throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
 
              }
@@ -983,19 +982,19 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
 
         // gDay
-        if (XMLConstants.G_DAY_QNAME.equals(schemaTypeQName)) {
+        if (Constants.G_DAY_QNAME.equals(schemaTypeQName)) {
             xgc.setDay(cal.get(Calendar.DATE));
             return xgc.toXMLFormat();
         }
         // gMonth
-        if (XMLConstants.G_MONTH_QNAME.equals(schemaTypeQName)) {
+        if (Constants.G_MONTH_QNAME.equals(schemaTypeQName)) {
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
             // Note: 'XML Schema:  Datatypes' indicates that the lexical representation is "--MM--"
             // but the truncated representation as described in 5.2.1.3 of ISO 8601:1988 is "--MM".
             // We always want to return the 1.5 syntax ("--MM--") to comply with the JAXB RI.
             String xmlFormat = xgc.toXMLFormat();
             String pre  = xmlFormat.substring(0, 4); // will always be --MM
-            String post = XMLConstants.EMPTY_STRING;
+            String post = Constants.EMPTY_STRING;
 
             // --MM--
             if (xmlFormat.length() == 6) {
@@ -1032,13 +1031,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return pre + post;
         }
         // gMonthDay
-        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
+        if (Constants.G_MONTH_DAY_QNAME.equals(schemaTypeQName)) {
             xgc.setMonth(cal.get(Calendar.MONTH) + 1);
             xgc.setDay(cal.get(Calendar.DATE));
             return xgc.toXMLFormat();
         }
         // gYear
-        if (XMLConstants.G_YEAR_QNAME.equals(schemaTypeQName)) {
+        if (Constants.G_YEAR_QNAME.equals(schemaTypeQName)) {
             if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
             } else {
@@ -1047,7 +1046,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return xgc.toXMLFormat();
         }
         // gYearMonth
-        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
+        if (Constants.G_YEAR_MONTH_QNAME.equals(schemaTypeQName)) {
             if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
             } else {
@@ -1057,7 +1056,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return xgc.toXMLFormat();
         }
         // Date
-        if (XMLConstants.DATE_QNAME.equals(schemaTypeQName)) {
+        if (Constants.DATE_QNAME.equals(schemaTypeQName)) {
             if (cal.get(Calendar.ERA) == GregorianCalendar.BC){
                 xgc.setYear(-cal.get(Calendar.YEAR));
             } else {
@@ -1068,7 +1067,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return xgc.toXMLFormat();
         }
         // Time
-        if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
+        if (Constants.TIME_QNAME.equals(schemaTypeQName)) {
             xgc.setTime(
                     cal.get(Calendar.HOUR_OF_DAY),
                     cal.get(Calendar.MINUTE),
@@ -1106,7 +1105,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         int dotIdx = xmlFormat.indexOf('.');
         if (dotIdx > 0) {
             String pre = xmlFormat.substring(0, dotIdx);
-            String post = XMLConstants.EMPTY_STRING;
+            String post = Constants.EMPTY_STRING;
             if (xmlFormat.length() > (dotIdx + 4)) {
                 post = xmlFormat.substring(dotIdx + 4, xmlFormat.length());
             }
@@ -1130,11 +1129,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     private String stringFromCalendar(Calendar sourceCalendar) {
         if (!(sourceCalendar.isSet(Calendar.HOUR) || sourceCalendar.isSet(Calendar.MINUTE) || sourceCalendar.isSet(Calendar.SECOND) || sourceCalendar.isSet(Calendar.MILLISECOND))) {
-            return stringFromCalendar(sourceCalendar, XMLConstants.DATE_QNAME);
+            return stringFromCalendar(sourceCalendar, Constants.DATE_QNAME);
         } else if (!(sourceCalendar.isSet(Calendar.YEAR) || sourceCalendar.isSet(Calendar.MONTH) || sourceCalendar.isSet(Calendar.DATE))) {
-            return stringFromCalendar(sourceCalendar, XMLConstants.TIME_QNAME);
+            return stringFromCalendar(sourceCalendar, Constants.TIME_QNAME);
         } else {
-            return stringFromCalendar(sourceCalendar, XMLConstants.DATE_TIME_QNAME);
+            return stringFromCalendar(sourceCalendar, Constants.DATE_TIME_QNAME);
         }
     }
 
@@ -1245,7 +1244,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
 
 
-        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+        if (Constants.DATE_QNAME.equals(schemaType)) {
 
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
@@ -1261,7 +1260,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return xgc.toXMLFormat();
 
         }
-        if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+        if (Constants.TIME_QNAME.equals(schemaType)) {
 
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
@@ -1274,13 +1273,13 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             string = appendMillis(string, sourceDate.getTime());
             return appendTimeZone(string, sourceDate);
         }
-        if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+        if (Constants.G_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
             xgc.setDay(cal.get(Calendar.DATE));
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+        if (Constants.G_MONTH_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
 
@@ -1288,14 +1287,14 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return stringFromXMLGregorianCalendar(xgc, schemaType);
         }
-        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+        if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+        if (Constants.G_YEAR_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
@@ -1306,7 +1305,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+        if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setTime(sourceDate);
             if(cal.get(Calendar.ERA) == GregorianCalendar.BC){
@@ -1318,7 +1317,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+        if (Constants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         }
         // default is dateTime
@@ -1353,7 +1352,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromSQLDate(java.sql.Date sourceDate, QName schemaType) {
-        if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
+        if (Constants.DATE_TIME_QNAME.equals(schemaType)) {
 
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1374,7 +1373,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             String string = xgc.toXMLFormat();
             return appendTimeZone(string, sourceDate);
-        } else if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+        } else if (Constants.TIME_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1387,7 +1386,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             String string = xgc.toXMLFormat();
             return appendTimeZone(string, sourceDate);
 
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+        } else if (Constants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
 
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1397,7 +1396,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
             return xgc.toXMLFormat();
 
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+        } else if (Constants.G_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1406,7 +1405,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
             return stringFromXMLGregorianCalendar(xgc, schemaType);
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+        } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1415,7 +1414,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
             return xgc.toXMLFormat();
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+        } else if (Constants.G_YEAR_QNAME.equals(schemaType)) {
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
              GregorianCalendar cal = new GregorianCalendar(getTimeZone());
              cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1426,7 +1425,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 xgc.setYear(cal.get(Calendar.YEAR));
             }
             return xgc.toXMLFormat();
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+        } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1440,7 +1439,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
             return xgc.toXMLFormat();
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+        } else if (Constants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         } else {
             return stringFromSQLDate(sourceDate);
@@ -1463,7 +1462,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     private String stringFromSQLTime(Time sourceTime, QName schemaType) {
-        if (XMLConstants.DATE_TIME_QNAME.equals(schemaType)) {
+        if (Constants.DATE_TIME_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1483,7 +1482,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             String string= xgc.toXMLFormat();
             return appendTimeZone(string, sourceTime);
 
-        } else if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+        } else if (Constants.DATE_QNAME.equals(schemaType)) {
 
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1499,7 +1498,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
 
             return xgc.toXMLFormat();
-        } else if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+        } else if (Constants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1508,7 +1507,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
 
             return xgc.toXMLFormat();
-        } else if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+        } else if (Constants.G_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1517,7 +1516,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
             return stringFromXMLGregorianCalendar(xgc, schemaType);
-        } else if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+        } else if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1528,7 +1527,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
 
-        } else if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+        } else if (Constants.G_YEAR_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1540,7 +1539,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             }
 
             return xgc.toXMLFormat();
-        } else if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+        } else if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1554,7 +1553,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             xgc.setMonth(cal.get(Calendar.MONTH)+1);
 
             return xgc.toXMLFormat();
-        } else if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+        } else if (Constants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         } else {
             return stringFromSQLTime(sourceTime);
@@ -1608,7 +1607,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      */
     private String stringFromTimestamp(Timestamp sourceDate, QName schemaType) {
 
-        if (XMLConstants.DATE_QNAME.equals(schemaType)) {
+        if (Constants.DATE_QNAME.equals(schemaType)) {
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
             cal.setTime(sourceDate);
@@ -1625,7 +1624,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.TIME_QNAME.equals(schemaType)) {
+        if (Constants.TIME_QNAME.equals(schemaType)) {
 
             Calendar cal = Calendar.getInstance(getTimeZone());
             cal.setTimeInMillis(sourceDate.getTime());
@@ -1639,7 +1638,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             string = appendNanos(string, sourceDate);
             return appendTimeZone(string, sourceDate);
         }
-        if (XMLConstants.G_DAY_QNAME.equals(schemaType)) {
+        if (Constants.G_DAY_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1649,7 +1648,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_MONTH_QNAME.equals(schemaType)) {
+        if (Constants.G_MONTH_QNAME.equals(schemaType)) {
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
              GregorianCalendar cal = new GregorianCalendar(getTimeZone());
              cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1659,7 +1658,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return stringFromXMLGregorianCalendar(xgc, schemaType);
         }
-        if (XMLConstants.G_MONTH_DAY_QNAME.equals(schemaType)) {
+        if (Constants.G_MONTH_DAY_QNAME.equals(schemaType)) {
 
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
              GregorianCalendar cal = new GregorianCalendar(getTimeZone());
@@ -1670,7 +1669,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
              xgc.setDay(cal.get(Calendar.DAY_OF_MONTH));
              return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_YEAR_QNAME.equals(schemaType)) {
+        if (Constants.G_YEAR_QNAME.equals(schemaType)) {
              XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
              GregorianCalendar cal = new GregorianCalendar(getTimeZone());
              cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1684,7 +1683,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
+        if (Constants.G_YEAR_MONTH_QNAME.equals(schemaType)) {
             XMLGregorianCalendar xgc = getDatatypeFactory().newXMLGregorianCalendar();
             GregorianCalendar cal = new GregorianCalendar(getTimeZone());
             cal.setGregorianChange(new Date(Long.MIN_VALUE));
@@ -1698,7 +1697,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
             return xgc.toXMLFormat();
         }
-        if (XMLConstants.DURATION_QNAME.equals(schemaType)) {
+        if (Constants.DURATION_QNAME.equals(schemaType)) {
             throw new IllegalArgumentException();
         }
         // default is dateTime
@@ -1879,28 +1878,28 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         HashMap XMLTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
-        XMLTypes.put(XMLConstants.BASE_64_BINARY_QNAME, CoreClassConstants.APBYTE);
-        XMLTypes.put(XMLConstants.BOOLEAN_QNAME, CoreClassConstants.PBOOLEAN);
-        XMLTypes.put(XMLConstants.BYTE_QNAME, CoreClassConstants.PBYTE);
-        XMLTypes.put(XMLConstants.DATE_QNAME, CoreClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.DATE_TIME_QNAME, CoreClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.DECIMAL_QNAME, CoreClassConstants.BIGDECIMAL);
-        XMLTypes.put(XMLConstants.DOUBLE_QNAME, CoreClassConstants.PDOUBLE);
-        XMLTypes.put(XMLConstants.FLOAT_QNAME, CoreClassConstants.PFLOAT);
-        XMLTypes.put(XMLConstants.HEX_BINARY_QNAME, CoreClassConstants.APBYTE);
-        XMLTypes.put(XMLConstants.INT_QNAME, CoreClassConstants.PINT);
-        XMLTypes.put(XMLConstants.INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
-        XMLTypes.put(XMLConstants.LONG_QNAME, CoreClassConstants.PLONG);
-        XMLTypes.put(XMLConstants.QNAME_QNAME, XMLConstants.QNAME_CLASS);
-        XMLTypes.put(XMLConstants.SHORT_QNAME, CoreClassConstants.PSHORT);
-        XMLTypes.put(XMLConstants.STRING_QNAME, CoreClassConstants.STRING);
-        XMLTypes.put(XMLConstants.TIME_QNAME, CoreClassConstants.CALENDAR);
-        XMLTypes.put(XMLConstants.UNSIGNED_BYTE_QNAME, CoreClassConstants.PSHORT);
-        XMLTypes.put(XMLConstants.UNSIGNED_INT_QNAME, CoreClassConstants.PLONG);
-        XMLTypes.put(XMLConstants.UNSIGNED_SHORT_QNAME, CoreClassConstants.PINT);
-        XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NAME_QNAME, CoreClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NCNAME_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(Constants.BASE_64_BINARY_QNAME, CoreClassConstants.APBYTE);
+        XMLTypes.put(Constants.BOOLEAN_QNAME, CoreClassConstants.PBOOLEAN);
+        XMLTypes.put(Constants.BYTE_QNAME, CoreClassConstants.PBYTE);
+        XMLTypes.put(Constants.DATE_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(Constants.DATE_TIME_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(Constants.DECIMAL_QNAME, CoreClassConstants.BIGDECIMAL);
+        XMLTypes.put(Constants.DOUBLE_QNAME, CoreClassConstants.PDOUBLE);
+        XMLTypes.put(Constants.FLOAT_QNAME, CoreClassConstants.PFLOAT);
+        XMLTypes.put(Constants.HEX_BINARY_QNAME, CoreClassConstants.APBYTE);
+        XMLTypes.put(Constants.INT_QNAME, CoreClassConstants.PINT);
+        XMLTypes.put(Constants.INTEGER_QNAME, CoreClassConstants.BIGINTEGER);
+        XMLTypes.put(Constants.LONG_QNAME, CoreClassConstants.PLONG);
+        XMLTypes.put(Constants.QNAME_QNAME, Constants.QNAME_CLASS);
+        XMLTypes.put(Constants.SHORT_QNAME, CoreClassConstants.PSHORT);
+        XMLTypes.put(Constants.STRING_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(Constants.TIME_QNAME, CoreClassConstants.CALENDAR);
+        XMLTypes.put(Constants.UNSIGNED_BYTE_QNAME, CoreClassConstants.PSHORT);
+        XMLTypes.put(Constants.UNSIGNED_INT_QNAME, CoreClassConstants.PLONG);
+        XMLTypes.put(Constants.UNSIGNED_SHORT_QNAME, CoreClassConstants.PINT);
+        XMLTypes.put(Constants.ANY_SIMPLE_TYPE_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(Constants.NAME_QNAME, CoreClassConstants.STRING);
+        XMLTypes.put(Constants.NCNAME_QNAME, CoreClassConstants.STRING);
 
         return XMLTypes;
     }
@@ -1912,38 +1911,38 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         HashMap javaTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
-        javaTypes.put(CoreClassConstants.APBYTE, XMLConstants.HEX_BINARY_QNAME);
-        javaTypes.put(CoreClassConstants.BIGDECIMAL, XMLConstants.DECIMAL_QNAME);
-        javaTypes.put(CoreClassConstants.BIGINTEGER, XMLConstants.INTEGER_QNAME);
-        javaTypes.put(CoreClassConstants.PBOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(CoreClassConstants.PBYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(CoreClassConstants.CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(CoreClassConstants.PDOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(CoreClassConstants.PFLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(CoreClassConstants.PINT, XMLConstants.INT_QNAME);
-        javaTypes.put(CoreClassConstants.PLONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(CoreClassConstants.PSHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(XMLConstants.QNAME_CLASS, XMLConstants.QNAME_QNAME);
-        javaTypes.put(CoreClassConstants.STRING, XMLConstants.STRING_QNAME);
+        javaTypes.put(CoreClassConstants.APBYTE, Constants.HEX_BINARY_QNAME);
+        javaTypes.put(CoreClassConstants.BIGDECIMAL, Constants.DECIMAL_QNAME);
+        javaTypes.put(CoreClassConstants.BIGINTEGER, Constants.INTEGER_QNAME);
+        javaTypes.put(CoreClassConstants.PBOOLEAN, Constants.BOOLEAN_QNAME);
+        javaTypes.put(CoreClassConstants.PBYTE, Constants.BYTE_QNAME);
+        javaTypes.put(CoreClassConstants.CALENDAR, Constants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.PDOUBLE, Constants.DOUBLE_QNAME);
+        javaTypes.put(CoreClassConstants.PFLOAT, Constants.FLOAT_QNAME);
+        javaTypes.put(CoreClassConstants.PINT, Constants.INT_QNAME);
+        javaTypes.put(CoreClassConstants.PLONG, Constants.LONG_QNAME);
+        javaTypes.put(CoreClassConstants.PSHORT, Constants.SHORT_QNAME);
+        javaTypes.put(Constants.QNAME_CLASS, Constants.QNAME_QNAME);
+        javaTypes.put(CoreClassConstants.STRING, Constants.STRING_QNAME);
 
         //other pairs
-        javaTypes.put(CoreClassConstants.ABYTE, XMLConstants.HEX_BINARY_QNAME);
-        javaTypes.put(CoreClassConstants.BOOLEAN, XMLConstants.BOOLEAN_QNAME);
-        javaTypes.put(CoreClassConstants.BYTE, XMLConstants.BYTE_QNAME);
-        javaTypes.put(CoreClassConstants.GREGORIAN_CALENDAR, XMLConstants.DATE_TIME_QNAME);
-        javaTypes.put(CoreClassConstants.DOUBLE, XMLConstants.DOUBLE_QNAME);
-        javaTypes.put(CoreClassConstants.FLOAT, XMLConstants.FLOAT_QNAME);
-        javaTypes.put(CoreClassConstants.INTEGER, XMLConstants.INT_QNAME);
-        javaTypes.put(CoreClassConstants.LONG, XMLConstants.LONG_QNAME);
-        javaTypes.put(CoreClassConstants.SHORT, XMLConstants.SHORT_QNAME);
-        javaTypes.put(CoreClassConstants.UTILDATE, XMLConstants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.ABYTE, Constants.HEX_BINARY_QNAME);
+        javaTypes.put(CoreClassConstants.BOOLEAN, Constants.BOOLEAN_QNAME);
+        javaTypes.put(CoreClassConstants.BYTE, Constants.BYTE_QNAME);
+        javaTypes.put(CoreClassConstants.GREGORIAN_CALENDAR, Constants.DATE_TIME_QNAME);
+        javaTypes.put(CoreClassConstants.DOUBLE, Constants.DOUBLE_QNAME);
+        javaTypes.put(CoreClassConstants.FLOAT, Constants.FLOAT_QNAME);
+        javaTypes.put(CoreClassConstants.INTEGER, Constants.INT_QNAME);
+        javaTypes.put(CoreClassConstants.LONG, Constants.LONG_QNAME);
+        javaTypes.put(CoreClassConstants.SHORT, Constants.SHORT_QNAME);
+        javaTypes.put(CoreClassConstants.UTILDATE, Constants.DATE_TIME_QNAME);
 
-        javaTypes.put(CoreClassConstants.CHAR, XMLConstants.UNSIGNED_INT_QNAME);
-        javaTypes.put(CoreClassConstants.PCHAR, XMLConstants.UNSIGNED_INT_QNAME);
-        javaTypes.put(CoreClassConstants.DURATION, XMLConstants.DURATION_QNAME);
-        javaTypes.put(XMLConstants.UUID, XMLConstants.STRING_QNAME);
-        javaTypes.put(XMLConstants.URI, XMLConstants.STRING_QNAME);
-        javaTypes.put(CoreClassConstants.URL_Class, XMLConstants.ANY_URI_QNAME);
+        javaTypes.put(CoreClassConstants.CHAR, Constants.UNSIGNED_INT_QNAME);
+        javaTypes.put(CoreClassConstants.PCHAR, Constants.UNSIGNED_INT_QNAME);
+        javaTypes.put(CoreClassConstants.DURATION, Constants.DURATION_QNAME);
+        javaTypes.put(Constants.UUID, Constants.STRING_QNAME);
+        javaTypes.put(Constants.URI, Constants.STRING_QNAME);
+        javaTypes.put(CoreClassConstants.URL_Class, Constants.ANY_URI_QNAME);
 
         return javaTypes;
     }
@@ -1974,7 +1973,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             stringBuilder.append('0');
         }
         stringBuilder.append(hourOffset);
-        stringBuilder.append(XMLConstants.COLON);
+        stringBuilder.append(Constants.COLON);
         int minuteOffset = rawMinuteOffset % 60;
         if (minuteOffset < 10) {
             stringBuilder.append('0');
@@ -2034,7 +2033,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     }
 
     public QName buildQNameFromString(String stringValue, XMLRecord record){     
-        int index = stringValue.lastIndexOf(XMLConstants.COLON);
+        int index = stringValue.lastIndexOf(Constants.COLON);
         if(index > -1) {
             String prefix =  stringValue.substring(0, index);
             String localName = stringValue.substring(index + 1);
@@ -2042,7 +2041,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             String namespaceURI = record.resolveNamespacePrefix(prefix);            
             return new QName(namespaceURI, localName, prefix);
         } else {
-            String namespaceURI = record.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
+            String namespaceURI = record.resolveNamespacePrefix(Constants.EMPTY_STRING);
             if(namespaceURI == null){
                 namespaceURI = record.resolveNamespacePrefix(null);
             }

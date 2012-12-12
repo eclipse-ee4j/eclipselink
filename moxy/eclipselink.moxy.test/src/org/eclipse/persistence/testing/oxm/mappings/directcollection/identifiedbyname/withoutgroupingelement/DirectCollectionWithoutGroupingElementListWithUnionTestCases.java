@@ -37,8 +37,8 @@ public class DirectCollectionWithoutGroupingElementListWithUnionTestCases extend
         p.getDescriptor(Employee.class).removeMappingForAttributeName("responsibilities");
 
         XMLUnionField field = new XMLUnionField("responsibility/text()");
-        QName integerQName = new QName(XMLConstants.SCHEMA_URL, "integer");
-        QName qname = new QName(XMLConstants.SCHEMA_URL, "date");
+        QName integerQName = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "integer");
+        QName qname = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, "date");
         field.addSchemaType(integerQName);
         field.addSchemaType(qname);
         field.addConversion(XMLConstants.DATE_QNAME, java.util.Date.class);

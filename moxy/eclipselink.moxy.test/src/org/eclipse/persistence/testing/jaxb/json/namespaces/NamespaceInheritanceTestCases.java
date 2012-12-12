@@ -83,14 +83,14 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
         marshalNamespaceMap.put("namespace1", "bbb");
         marshalNamespaceMap.put("namespace2", "ccc");
         marshalNamespaceMap.put("namespace3", "ddd");
-        marshalNamespaceMap.put(XMLConstants.SCHEMA_INSTANCE_URL, "eee");
+        marshalNamespaceMap.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "eee");
    
 		Map<String, String> unmarshalNamespaceMap = new HashMap<String, String>();	
 		unmarshalNamespaceMap.put("namespace0", "ns0");
 		unmarshalNamespaceMap.put("namespace1", "ns1");
 		unmarshalNamespaceMap.put("namespace2", "ns2");
 		unmarshalNamespaceMap.put("namespace3", "ns3");
-		unmarshalNamespaceMap.put(XMLConstants.SCHEMA_INSTANCE_URL, "ns4");
+		unmarshalNamespaceMap.put(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "ns4");
 	
 		
 		try{

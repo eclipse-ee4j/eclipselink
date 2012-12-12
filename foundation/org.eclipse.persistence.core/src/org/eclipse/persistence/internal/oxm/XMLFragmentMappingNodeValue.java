@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * INTERNAL:
@@ -80,7 +79,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         if(null != attributes) {
             for(int x=0, attributesLength=attributes.getLength(); x<attributesLength; x++) {
                 Node attribute = attributes.item(x);
-                if(XMLConstants.XMLNS_URL.equals(attribute.getNamespaceURI())) {
+                if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI())) {
                     String nsResolverPrefix = namespaceResolver.resolveNamespaceURI(attribute.getNodeValue());;
                     if(attribute.getLocalName().equals(nsResolverPrefix)) {
                         continue;
@@ -128,13 +127,13 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         builder.setOwningRecord(unmarshalRecord);
         try {
-            String namespaceURI = XMLConstants.EMPTY_STRING;
+            String namespaceURI = Constants.EMPTY_STRING;
             if (xPathFragment.getNamespaceURI() != null) {
                 namespaceURI = xPathFragment.getNamespaceURI();
             }
             String qName = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
-                qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
+                qName = xPathFragment.getPrefix() + Constants.COLON + qName;
             }
             if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {
                 for(Entry<String, String> next:((Map<String, String>) unmarshalRecord.getPrefixesForFragment()).entrySet()) {
@@ -173,7 +172,7 @@ public class XMLFragmentMappingNodeValue extends MappingNodeValue implements Nul
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         unmarshalRecord.removeNullCapableValue(this);
         if(namespaceURI == null) {
-            namespaceURI = XMLConstants.EMPTY_STRING;
+            namespaceURI = Constants.EMPTY_STRING;
         }
         SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
         Object attributeValue = builder.buildAttributeNode(namespaceURI, localName, value);

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -63,17 +62,17 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
                 if(owningRecord != null){
                     String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
                     if(prefix != null && prefix.length() > 0){
-                        qName = prefix +XMLConstants.COLON+ qName;
+                        qName = prefix +Constants.COLON+ qName;
                     }
                 }
              }
         }
-        int qNameColonIndex = qName.indexOf(XMLConstants.COLON);
+        int qNameColonIndex = qName.indexOf(Constants.COLON);
         if ((namespaceURI != null) && (qNameColonIndex == -1)) {
             //check for a prefix from the unmarshal record:
             String prefix = owningRecord.resolveNamespaceUri(namespaceURI);
             if (prefix != null && prefix.length() >0){
-                qName = prefix + XMLConstants.COLON + qName;
+                qName = prefix + Constants.COLON + qName;
                 qNameColonIndex = prefix.length();
             }
         }
@@ -113,14 +112,14 @@ public class SAXFragmentBuilder extends SAXDocumentBuilder {
             	attributeNamespaceURI = null;
             }
             // Handle case where prefix/uri are not set on an xmlns prefixed attribute
-            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(XMLConstants.XMLNS + XMLConstants.COLON)) {
-        		attributeNamespaceURI = XMLConstants.XMLNS_URL;
+            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON)) {
+        		attributeNamespaceURI = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
             }
             String value = atts.getValue(x);
             if (attributeNamespaceURI == null) {
                 element.setAttribute(atts.getQName(x), value);
             } else {
-                element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value == null ? XMLConstants.EMPTY_STRING : value);
+                element.setAttributeNS(attributeNamespaceURI, atts.getQName(x), value == null ? Constants.EMPTY_STRING : value);
             }
             if(value != null) {
                 processNamespacesForText(value, element);
