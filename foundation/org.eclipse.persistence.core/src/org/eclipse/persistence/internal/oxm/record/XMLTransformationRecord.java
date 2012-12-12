@@ -12,9 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 
 /**

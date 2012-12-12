@@ -19,7 +19,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamException;
 
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

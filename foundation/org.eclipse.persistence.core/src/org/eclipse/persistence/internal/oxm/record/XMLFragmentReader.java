@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.Attr;
