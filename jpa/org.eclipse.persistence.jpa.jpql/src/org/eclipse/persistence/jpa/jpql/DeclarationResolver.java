@@ -614,12 +614,14 @@ public class DeclarationResolver extends Resolver {
 
 			// Add the non-empty join identification variables
 			for (IdentificationVariable identificationVariable : joins.values()) {
-				String joinVariable = identificationVariable.getText();
-				// Make sure the same variable name but with different case is not added more than once
-				if ((joinVariable.length() > 0) &&
-				    !upperCaseVariables.contains(joinVariable.toUpperCase())) {
+				if (identificationVariable != null) {
+					String joinVariable = identificationVariable.getText();
+					// Make sure the same variable name but with different case is not added more than once
+					if ((joinVariable.length() > 0) &&
+					    !upperCaseVariables.contains(joinVariable.toUpperCase())) {
 
-					variables.add(joinVariable);
+						variables.add(joinVariable);
+					}
 				}
 			}
 

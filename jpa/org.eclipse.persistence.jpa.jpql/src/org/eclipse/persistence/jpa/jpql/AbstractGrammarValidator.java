@@ -145,7 +145,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -371,6 +371,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				return CountFunction_MissingRightParenthesis;
 			}
 		};
+	}
+
+	protected DateTimeVisitor buildDateTimeVisitor() {
+		return new DateTimeVisitor();
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<EntryExpression> buildEntryExpressionHelper() {
@@ -1089,6 +1093,15 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		return collectionExpressionVisitor;
 	}
 
+	protected DateTimeVisitor getDateTimeVisitor() {
+		DateTimeVisitor visitor = getHelper(DateTime.CURRENT_TIMESTAMP);
+		if (visitor == null) {
+			visitor = buildDateTimeVisitor();
+			registerHelper(DateTime.CURRENT_TIMESTAMP, visitor);
+		}
+		return visitor;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1151,6 +1164,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	protected boolean isCollectionExpression(Expression expression) {
 		return getCollectionExpression(expression) != null;
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} represents one of the three date constants or not.
+	 *
+	 * @param leftExpression The {@link Expression} to visit
+	 * @return <code>true</code> if the given {@link Expression} represents one of the tree date
+	 * constants; <code>false</code> otherwise
+	 */
+	protected boolean isDateTimeConstant(Expression leftExpression) {
+		DateTimeVisitor visitor = getDateTimeVisitor();
+		try {
+			leftExpression.accept(visitor);
+			return visitor.dateTime;
+		}
+		finally {
+			visitor.dateTime = false;
+		}
 	}
 
 	protected boolean isInputParameterInValidLocation(InputParameter expression) {
@@ -3322,12 +3353,17 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, InExpression_MissingExpression);
 		}
 		else {
-			Expression pathExpression = expression.getExpression();
+			Expression leftExpression = expression.getExpression();
 
-			if (!isValid(pathExpression, expression.getExpressionExpressionBNF())) {
+			if (!isValid(leftExpression, expression.getExpressionExpressionBNF()) ||
+			    isDateTimeConstant(leftExpression)) {
+
 				int startPosition = position(expression);
-				int endPosition   = startPosition + length(pathExpression);
+				int endPosition   = startPosition + length(leftExpression);
 				addProblem(expression, startPosition, endPosition, InExpression_InvalidExpression);
+			}
+			else {
+				leftExpression.accept(this);
 			}
 		}
 
@@ -4674,8 +4710,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		/**
-		 * Returns the message key for the problem describing that the encapsulated expression is
-		 * missing.
+		 * Returns the message key for the problem describing that the encapsulated expression is missing.
 		 *
 		 * @param expression The {@link AbstractSingleEncapsulatedExpression} being validated
 		 * @return The key used to retrieve the localized message
@@ -4932,6 +4967,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		@Override
 		public void visit(ComparisonExpression expression) {
 			this.expression = expression;
+		}
+	}
+
+	protected class DateTimeVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * Determines whether the visited {@link Expression} is {@link DateTime} or not.
+		 */
+		public boolean dateTime;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(DateTime expression) {
+			dateTime = true;
 		}
 	}
 
