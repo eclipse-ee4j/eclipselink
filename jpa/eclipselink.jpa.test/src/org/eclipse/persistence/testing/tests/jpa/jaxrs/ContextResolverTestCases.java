@@ -27,15 +27,20 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.bind.JAXBContext;
-
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.jaxrs.Address;
 import org.eclipse.persistence.testing.models.jpa.jaxrs.Customer;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.Customers;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.JAXRSPopulator;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.JAXRSTableCreator;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.PhoneNumber;
 
 public class ContextResolverTestCases extends JUnitTestCase {
 
 	private JAXBContext jc;
+	protected DatabaseSession session;
 
 	public ContextResolverTestCases(String name) throws Exception {
 		super(name);
@@ -45,16 +50,34 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		jc = JAXBContext.newInstance(new Class[] { Address.class }, props);
 	}
 
-	protected Address getControlObject() {
+	public JAXRSPopulator setup() {
+		session = JUnitTestCase.getServerSession();
+		//new JAXRSTableCreator().replaceTables(session);
+		JAXRSTableCreator tableCreator = new JAXRSTableCreator();
+		tableCreator.dropTableConstraints(session);
+		tableCreator.replaceTables(session);
+		JAXRSPopulator jaxrsPopulator = new JAXRSPopulator();
+		return jaxrsPopulator;
+	}
+		
+	protected Address getControlObject2() {
 		Address address = new Address();
-		address.setId(1);
-		address.setStreet("1 A Street");
-		address.setCity("Ottawa");
+		address.setId(2);
+		address.setStreet("1111 Moose Rd.");
+		address.setCity("Calgary");
 		return address;
 	}
 
+	protected Address getControlObject11() {
+		Address address = new Address();
+		address.setId(11);
+		address.setStreet("11 Nowhere Drive");
+		address.setCity("Orleans");
+		return address;
+	}
+	
 	protected String getID() {
-		return "1";
+		return "2";
 	}
 
 	protected JAXBContext getJAXBContext() {
@@ -67,12 +90,16 @@ public class ContextResolverTestCases extends JUnitTestCase {
 	 *	glassfish: "http://localhost:8080/CustomerWAR/rest/address_war"
 	 */
 	protected String getURL() {
-		return "http://%%host:port%%/CustomerWAR/rest/address_war";
+		return "http://localhost:7001/CustomerWAR/rest/address_war";
 	}
 
-	/* READ operation */
-	public void testGetAddress() throws Exception {
-		URL url = new URL(getURL() + "/" + getID());
+	/* READ operation  - Uses Customer 2 */
+  	public void testGetAddress() throws Exception {
+		JAXRSPopulator jaxrsPopulator = setup();
+		jaxrsPopulator.buildExamplesCustomer2();
+		jaxrsPopulator.persistExample(session);
+		
+		URL url = new URL(getURL() + "/" + "2");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Accept", "application/xml");
@@ -84,12 +111,16 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		connection.disconnect();
 		
 		assertTrue (( response < 300) && ( response >= 200));
-		assertEquals(getControlObject(), testObject);
-	}
+		assertEquals(getControlObject2(), testObject);
+	}  
 	
-		/* READ operation */
-	public void testGetAddressJSON() throws Exception {
-		URL url = new URL(getURL() + "/" + getID());
+		/* READ operation  - Uses Customer 11 */
+ 	public void testGetAddressJSON() throws Exception {
+		JAXRSPopulator jaxrsPopulator = setup();
+		jaxrsPopulator.buildExamplesCustomer11();
+		jaxrsPopulator.persistExample(session);
+		
+		URL url = new URL(getURL() + "/" + "11");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Accept", "application/json");
@@ -104,7 +135,7 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		connection.disconnect();
 		
 		assertTrue (( response < 300) && ( response >= 200));
-		assertEquals(getControlObject(), testObject);
-	}
+		assertEquals(getControlObject11(), testObject);
+	} 
 
 }
