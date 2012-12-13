@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -473,7 +474,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	            }
 	  
 	            Object obj = ((XMLConversionManager) xmlContext.getSession(0).getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
-	            XMLRoot xmlRoot = new XMLRoot();
+	            Root xmlRoot = new XMLRoot();
 	            xmlRoot.setObject(obj);
 	            String lName = xmlRow.getDOM().getLocalName();
 	            if (lName == null) {

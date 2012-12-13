@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -109,7 +110,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, this.unmarshaller.isResultAlwaysXMLRoot());
             } else if(documentBuilder != null) {
                 Node node = documentBuilder.getDocument().getDocumentElement();
-                XMLRoot root = new XMLRoot();
+                Root root = new XMLRoot();
                 root.setLocalName(node.getLocalName());
                 root.setNamespaceURI(node.getNamespaceURI());
                 root.setObject(node);

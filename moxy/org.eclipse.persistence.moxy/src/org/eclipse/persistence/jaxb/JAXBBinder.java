@@ -27,11 +27,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 
 import org.eclipse.persistence.oxm.XMLBinder;
 import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrderingPolicy;
 
 /**
@@ -67,7 +67,7 @@ public class JAXBBinder extends Binder {
         try {
             if (obj instanceof JAXBElement) {
                 JAXBElement jaxbElem = (JAXBElement) obj;
-                XMLRoot xmlRoot = new XMLRoot();
+                Root xmlRoot = new Root();
                 xmlRoot.setObject(jaxbElem.getValue());
                 xmlRoot.setLocalName(jaxbElem.getName().getLocalPart());
                 xmlRoot.setNamespaceURI(jaxbElem.getName().getNamespaceURI());
@@ -87,8 +87,8 @@ public class JAXBBinder extends Binder {
 
         try {
             Object returnValue = xmlBinder.unmarshal((Node) obj);
-            if (returnValue instanceof XMLRoot) {
-                XMLRoot xmlRoot = (XMLRoot) returnValue;
+            if (returnValue instanceof Root) {
+            	Root xmlRoot = (Root) returnValue;
                 if(xmlRoot.getObject() instanceof JAXBElement) {
                     return xmlRoot.getObject();
                 }
@@ -107,7 +107,7 @@ public class JAXBBinder extends Binder {
         }
 
         try {
-            XMLRoot xmlRoot = (XMLRoot) xmlBinder.unmarshal((Node) obj, javaClass);
+        	Root xmlRoot = (Root) xmlBinder.unmarshal((Node) obj, javaClass);
             return new JAXBElement(new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName()), javaClass, xmlRoot.getObject());
         } catch (Exception e) {
             throw new UnmarshalException(e);

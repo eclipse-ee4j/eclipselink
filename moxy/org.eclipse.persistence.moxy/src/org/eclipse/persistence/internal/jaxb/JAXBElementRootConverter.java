@@ -17,10 +17,10 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.sessions.Session;
@@ -61,8 +61,8 @@ public class JAXBElementRootConverter implements XMLConverter {
         }
         if(dataValue instanceof JAXBElement) {
             return dataValue;
-        } else if(dataValue instanceof XMLRoot) {
-            XMLRoot root = (XMLRoot)dataValue;
+        } else if(dataValue instanceof Root) {
+        	Root root = (Root)dataValue;
             QName name = new QName(root.getNamespaceURI(), root.getLocalName());
             dataValue = root.getObject();
             if(null == dataValue) {
@@ -87,7 +87,7 @@ public class JAXBElementRootConverter implements XMLConverter {
         	ClassDescriptor desc = session.getDescriptor(objectValue);
         	if(desc == null || objectValue instanceof WrappedValue){
                 JAXBElement element = (JAXBElement) objectValue;
-                XMLRoot root = new XMLRoot();
+                Root root = new Root();
                 root.setLocalName(element.getName().getLocalPart());
                 root.setNamespaceURI(element.getName().getNamespaceURI());
                 root.setObject(element.getValue());

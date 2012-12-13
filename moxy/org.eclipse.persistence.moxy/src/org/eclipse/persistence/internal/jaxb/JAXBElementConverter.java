@@ -17,13 +17,13 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.sessions.Session;
@@ -93,8 +93,8 @@ public class JAXBElementConverter implements XMLConverter {
         	if(desc == null || objectValue instanceof WrappedValue){        		
                 objectValue = ((JAXBElement)objectValue).getValue();
         	}
-        } else if(objectValue instanceof XMLRoot) {
-            objectValue = ((XMLRoot) objectValue).getObject();
+        } else if(objectValue instanceof Root) {
+            objectValue = ((Root) objectValue).getObject();
         }
         if(null != nestedConverter) {
             objectValue = nestedConverter.convertObjectValueToDataValue(objectValue, session);

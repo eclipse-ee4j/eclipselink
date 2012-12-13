@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -572,7 +572,10 @@ public class JSONWriterRecord extends MarshalRecord {
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, XMLRoot root, boolean isXMLRoot){
+     /**
+      * INTERNAL:
+      */
+     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, Root root, boolean isXMLRoot){
     	 if(treeObjectBuilder != null){
              treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(this, descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
              treeObjectBuilder.marshalAttributes(this, object, session);

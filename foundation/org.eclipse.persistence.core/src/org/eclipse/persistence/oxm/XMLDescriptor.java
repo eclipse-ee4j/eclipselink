@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
@@ -811,7 +812,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
      * INTERNAL:
      * Determines the appropriate object to return from the unmarshal
      * call.  The method will either return the object created in the
-     * xmlReader.parse() call or an instance of XMLRoot.  An XMLRoot
+     * xmlReader.parse() call or an instance of Root.  An Root
      * instance will be returned if the DOMRecord element being
      * unmarshalled does not equal the descriptor's default root
      * element.
@@ -823,7 +824,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         String elementLocalName = unmarshalRecord.getLocalName();
         String elementNamespaceUri = unmarshalRecord.getRootElementNamespaceUri();
         if (forceWrap || shouldWrapObject(unmarshalRecord.getCurrentObject(), elementNamespaceUri, elementLocalName, null, unmarshalRecord.isNamespaceAware())) {
-            XMLRoot xmlRoot = new XMLRoot();
+            Root xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(unmarshalRecord.getCurrentObject());
@@ -843,7 +844,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
       * INTERNAL:
       * Determines the appropriate object to return from the unmarshal
       * call.  The method will either return the object created in the
-      * xmlReader.parse() call or an instance of XMLRoot.  An XMLRoot
+      * xmlReader.parse() call or an instance of Root.  An Root
       * instance will be returned if the DOMRecord element being
       * unmarshalled does not equal the descriptor's default root
       * element.
@@ -858,8 +859,8 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
-            // root element, create an XMLRoot, populate and return it
-            XMLRoot xmlRoot = new XMLRoot();
+            // root element, create an Root, populate and return it
+            Root xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
@@ -879,7 +880,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
-            XMLRoot xmlRoot = new XMLRoot();
+            Root xmlRoot = new XMLRoot();
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
@@ -893,7 +894,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     }
     
-    private void setDeclaredTypeOnXMLRoot(XMLRoot xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, XMLUnmarshaller unmarshaller){
+    private void setDeclaredTypeOnXMLRoot(Root xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, XMLUnmarshaller unmarshaller){
     	XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
     	XMLDescriptor desc = unmarshaller.getXMLContext().getDescriptor(xpathQName);
     	if(desc != null){

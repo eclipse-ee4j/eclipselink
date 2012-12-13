@@ -23,6 +23,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
@@ -37,7 +38,6 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -239,7 +239,10 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
      */
     public abstract void endDocument();
 
-    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, XMLRoot root, boolean isXMLRoot){    
+    /**
+     * INTERNAL
+     */
+    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, Root root, boolean isXMLRoot){    
     }
     
     /**

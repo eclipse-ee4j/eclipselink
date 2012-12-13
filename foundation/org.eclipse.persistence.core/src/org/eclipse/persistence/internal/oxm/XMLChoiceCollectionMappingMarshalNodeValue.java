@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 import java.util.Iterator;
 
@@ -225,8 +224,8 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     private boolean marshalSingleValueWithNodeValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, NodeValue unwrappedNodeValue) {        
         
     	Object fieldValue = value;
-    	if(value instanceof XMLRoot){
-    		fieldValue = ((XMLRoot)value).getObject();
+    	if(value instanceof Root){
+    		fieldValue = ((Root)value).getObject();
     	}
     	if(unwrappedNodeValue != null){
     	    unwrappedNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, fieldValue, session, namespaceResolver, marshalContext);
@@ -266,8 +265,8 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	
     	Field associatedField = null;
     	NodeValue nodeValue = null;
-    	if(value instanceof XMLRoot) {
-    		XMLRoot rootValue = (XMLRoot)value;
+    	if(value instanceof Root) {
+    		Root rootValue = (Root)value;
     		String localName = rootValue.getLocalName();
     		String namespaceUri = rootValue.getNamespaceURI();
     		Object fieldValue = rootValue.getObject();

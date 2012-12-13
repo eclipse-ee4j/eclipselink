@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -74,8 +73,8 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue,CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext, XPathFragment rootFragment) {
         XPathFragment xmlRootFrag = null;
 
-        if (objectValue instanceof XMLRoot) {
-            XMLRoot xmlRoot = (XMLRoot) objectValue;
+        if (objectValue instanceof Root) {
+        	Root xmlRoot = (Root) objectValue;
             xmlRootFrag = new XPathFragment();
             if (xmlRoot.getNamespaceURI() != null && !xmlRoot.getNamespaceURI().equals(namespaceResolver.getDefaultNamespaceURI())) {
                 String prefix = namespaceResolver.resolveNamespaceURI(xmlRoot.getNamespaceURI());

@@ -52,6 +52,7 @@ import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
@@ -76,7 +77,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
@@ -618,15 +618,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
 
-    protected JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot, Class declaredType) {
+    protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
         Object value = xmlRoot.getObject();
 
         if (value instanceof List) {
             List theList = (List) value;
             for (int i = 0; i < theList.size(); i++) {
                 Object next = theList.get(i);
-                if (next instanceof XMLRoot) {
-                    theList.set(i, createJAXBElementFromXMLRoot((XMLRoot) next, declaredType));
+                if (next instanceof Root) {
+                    theList.set(i, createJAXBElementFromXMLRoot((Root) next, declaredType));
                 }
             }
         } else if (value instanceof WrappedValue) {

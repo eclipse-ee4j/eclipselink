@@ -49,7 +49,6 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
@@ -777,7 +776,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
 
             if (descriptor != null) {
-                XMLRoot xr = (XMLRoot) originalObject;
+            	Root xr = (Root) originalObject;
 
                 if (xmlRef == null) {
                     return false;

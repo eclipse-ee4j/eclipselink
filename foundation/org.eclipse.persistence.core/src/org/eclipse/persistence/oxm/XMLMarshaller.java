@@ -33,6 +33,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
 import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
@@ -344,16 +345,16 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         XMLDescriptor xmlDescriptor = null;
         AbstractSession session = null;
         
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         
         if(isXMLRoot){
             try{
-    	        session = xmlContext.getSession(((XMLRoot)object).getObject());
+    	        session = xmlContext.getSession(((Root)object).getObject());
     	        if(session != null){
-    	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+    	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
            }catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                if (!isSimpleXMLRoot((Root) object)) {
                 	throw marshalException;    
                 }                
             }
@@ -365,7 +366,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
 
        
         //if this is a simple xml root, the session and descriptor will be null
-        if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             if (result instanceof StreamResult) {
                 StreamResult streamResult = (StreamResult) result;
                 Writer writer = streamResult.getWriter();
@@ -438,7 +439,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         try {
             Document document = null;
             if(isXMLRoot && session == null) {
-                document = ((Node)((XMLRoot)object).getObject()).getOwnerDocument();
+                document = ((Node)((Root)object).getObject()).getOwnerDocument();
             } else {
                 document = objectToXML(object, xmlDescriptor, isXMLRoot);
             }
@@ -447,11 +448,11 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
-                    if (((XMLRoot) object).getEncoding() != null) {
-                        transformer.setEncoding(((XMLRoot) object).getEncoding());
+                    if (((Root) object).getEncoding() != null) {
+                        transformer.setEncoding(((Root) object).getEncoding());
                     }
-                    if (((XMLRoot) object).getXMLVersion() != null) {
-                        transformer.setVersion(((XMLRoot) object).getXMLVersion());
+                    if (((Root) object).getXMLVersion() != null) {
+                        transformer.setVersion(((Root) object).getXMLVersion());
                     }
                     transformer.transform(document, fragmentHandler);
                     transformer.setEncoding(oldEncoding);
@@ -466,10 +467,10 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                         String namespace = null;
                         String localName = null;
                         if(isXMLRoot){
-                            XMLRoot xmlRootObject = (XMLRoot)object;
+                        	Root xmlRootObject = (Root)object;
                             if(xmlRootObject.getObject() != null && xmlRootObject.getObject() instanceof Node){
-                                namespace = ((XMLRoot)object).getNamespaceURI();
-                                localName = ((XMLRoot)object).getLocalName();
+                                namespace = ((Root)object).getNamespaceURI();
+                                localName = ((Root)object).getLocalName();
                             }
                         }
                         
@@ -494,11 +495,11 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
-                    if (((XMLRoot) object).getEncoding() != null) {
-                        transformer.setEncoding(((XMLRoot) object).getEncoding());
+                    if (((Root) object).getEncoding() != null) {
+                        transformer.setEncoding(((Root) object).getEncoding());
                     }
-                    if (((XMLRoot) object).getXMLVersion() != null) {
-                        transformer.setVersion(((XMLRoot) object).getXMLVersion());
+                    if (((Root) object).getXMLVersion() != null) {
+                        transformer.setVersion(((Root) object).getXMLVersion());
                     }
                     transformer.transform(document, result);
                     transformer.setEncoding(oldEncoding);
@@ -534,9 +535,9 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             String encoding = getEncoding();
             boolean isXMLRoot = false;
             String version = DEFAULT_XML_VERSION;
-            if (object instanceof XMLRoot) {
+            if (object instanceof Root) {
                 isXMLRoot = true;
-                XMLRoot xroot = (XMLRoot) object;
+                Root xroot = (Root) object;
                 version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
                 encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
             }
@@ -548,12 +549,12 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             	if(session == null || xmlDescriptor == null){             
 	                if(isXMLRoot){
 	                    try{
-	            	        session = xmlContext.getSession(((XMLRoot)object).getObject());
+	            	        session = xmlContext.getSession(((Root)object).getObject());
 	            	        if(session != null){
-	            	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+	            	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
 	                	    }
 	                   }catch (XMLMarshalException marshalException) {
-	                        if (!isSimpleXMLRoot((XMLRoot) object)) {
+	                        if (!isSimpleXMLRoot((Root) object)) {
 	                        	throw marshalException;    
 	                        }                
 	                    }
@@ -574,7 +575,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                 record.setOutputStream(outputStream);
             
                 //if this is a simple xml root, the session and descriptor will be null
-                if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+                if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
                     marshal(object, record, session, xmlDescriptor, isXMLRoot);    
                 } else {
                     try {
@@ -582,9 +583,9 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                         String rootUri = null;
                         String rootLocalName = null;
                         if(isXMLRoot && session == null) {
-                            xmlDocument = (Node)((XMLRoot)object).getObject();
-                            rootUri = ((XMLRoot)object).getNamespaceURI();
-                            rootLocalName = ((XMLRoot)object).getLocalName();
+                            xmlDocument = (Node)((Root)object).getObject();
+                            rootUri = ((Root)object).getNamespaceURI();
+                            rootLocalName = ((Root)object).getLocalName();
                         } else {
                             xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
                         }
@@ -644,9 +645,9 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         	}
         }
         
-        if (object instanceof XMLRoot) {
+        if (object instanceof Root) {
             isXMLRoot = true;
-            XMLRoot xroot = (XMLRoot) object;
+            Root xroot = (Root) object;
             version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
             encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
         }
@@ -674,16 +675,16 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         String rootName = null;
         String rootNamespace = null;
         if(isXMLRoot){
-            rootName = ((XMLRoot)object).getLocalName();
-            rootNamespace = ((XMLRoot)object).getNamespaceURI();
+            rootName = ((Root)object).getLocalName();
+            rootNamespace = ((Root)object).getNamespaceURI();
         	if(session == null || xmlDescriptor == null){
 	            try{
-	                session = xmlContext.getSession(((XMLRoot)object).getObject());
+	                session = xmlContext.getSession(((Root)object).getObject());
 	                if(session != null){
-	                    xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+	                    xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
 	                }
 	            }catch (XMLMarshalException marshalException) {
-	                if (!isSimpleXMLRoot((XMLRoot) object)) {
+	                if (!isSimpleXMLRoot((Root) object)) {
 	                    throw marshalException;
 	                }
 	            }
@@ -723,13 +724,13 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         }
 
         //if this is a simple xml root, the session and descriptor will be null
-        if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             marshal(object, writerRecord, session, xmlDescriptor, isXMLRoot);    
         } else {
             try {
                 Node xmlDocument = null;
                 if(isXMLRoot && session == null) {
-                    xmlDocument = (Node)((XMLRoot)object).getObject();
+                    xmlDocument = (Node)((Root)object).getObject();
                 } else {
                     xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
                 }
@@ -783,18 +784,18 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         if ((object == null) || (contentHandler == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         
         AbstractSession session = null;
         XMLDescriptor xmlDescriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((XMLRoot)object).getObject());        	    
+        	    session = xmlContext.getSession(((Root)object).getObject());        	    
         	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+        	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
         	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                if (!isSimpleXMLRoot((Root) object)) {
                 	throw marshalException;    
                 }                
             }
@@ -805,7 +806,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         }
         
         //if it's a simple xml root then session and descriptor will be null
-        if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();
             contentHandlerRecord.setMarshaller(this);
             contentHandlerRecord.setContentHandler(contentHandler);
@@ -820,9 +821,9 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             String namespace= null;
             if(session == null) {
                 //indicated we're marshalling a node
-                xmlDocument = (Node)((XMLRoot)object).getObject();
-                namespace = ((XMLRoot)object).getNamespaceURI();
-                name = ((XMLRoot)object).getLocalName();
+                xmlDocument = (Node)((Root)object).getObject();
+                namespace = ((Root)object).getNamespaceURI();
+                name = ((Root)object).getLocalName();
             } else {
                 xmlDocument = objectToXML(object, xmlDescriptor, isXMLRoot);
             }
@@ -861,18 +862,18 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             throw XMLMarshalException.nullArgumentException();
         }
         try {           
-            boolean isXMLRoot = (object instanceof XMLRoot);
+            boolean isXMLRoot = (object instanceof Root);
                  
             AbstractSession session = null;
             XMLDescriptor xmlDescriptor = null;
             if(isXMLRoot){
             	try{
-            	    session = xmlContext.getSession(((XMLRoot)object).getObject());
+            	    session = xmlContext.getSession(((Root)object).getObject());
             	    if(session != null){
-            	        xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+            	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
             	    }
             	}catch (XMLMarshalException marshalException) {
-                    if (!isSimpleXMLRoot((XMLRoot) object)) {
+                    if (!isSimpleXMLRoot((Root) object)) {
                     	throw marshalException;    
                     }                
                 }
@@ -884,7 +885,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             
             
             //if this is a simple xml root, descriptor and session will be null
-            if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+            if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
                 NodeRecord nodeRecord = new NodeRecord(node);
                 nodeRecord.setMarshaller(this);
 
@@ -924,13 +925,13 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             //Copy contents of the cached doc to the supplied node.
             Node doc = null;
             if(isXMLRoot && session == null) {
-                doc = (Node)((XMLRoot)object).getObject();
+                doc = (Node)((Root)object).getObject();
             } else {
                 doc = objectToXMLNode(object, node, session, xmlDescriptor, isXMLRoot);
             }
             
              if (isXMLRoot) {
-                 XMLRoot xmlRootObject = (XMLRoot)object;                 
+            	 Root xmlRootObject = (Root)object;                 
                  if(node.getNodeType() == Node.DOCUMENT_NODE){        
                      transformChildren(doc, ((Document)node),((Document)node),xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName() );
                  }else{
@@ -1053,18 +1054,18 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             throw XMLMarshalException.nullArgumentException();
         }
         
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         
         AbstractSession session = null;
         XMLDescriptor xmlDescriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((XMLRoot)object).getObject());
+        	    session = xmlContext.getSession(((Root)object).getObject());
         	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+        	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
         	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                if (!isSimpleXMLRoot((Root) object)) {
                 	throw marshalException;    
                 }                
             }
@@ -1084,7 +1085,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
      * @param marshalRecord the marshalRecord to marshal the object to
      */
     protected void marshal(Object object, AbstractSession session, MarshalRecord marshalRecord) {
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         marshal(object, marshalRecord, session, getDescriptor(object, isXMLRoot), isXMLRoot);
     }
 
@@ -1116,9 +1117,9 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         }
         
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
-        XMLRoot root = null;
+        Root root = null;
         if(isXMLRoot) {
-            root = (XMLRoot)object;
+            root = (Root)object;
         }
         marshalRecord.beforeContainmentMarshal(object);
         if (!isFragment()) {
@@ -1213,8 +1214,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             }
         }else{
         	//no rootfragment
-
-        	marshalRecord.marshalWithoutRootElement(treeObjectBuilder,object, descriptor,root, isXMLRoot);
+        	marshalRecord.marshalWithoutRootElement(treeObjectBuilder,object, descriptor, root, isXMLRoot);
         }
         if (treeObjectBuilder != null && !isNil) {
             treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
@@ -1256,8 +1256,8 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     private XPathFragment buildRootFragment(Object object, XMLDescriptor descriptor, boolean isXMLRoot, MarshalRecord marshalRecord) {
         XPathFragment rootFragment = null;
         if (isXMLRoot) {
-            String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
-            String xmlRootLocalName = ((XMLRoot) object).getLocalName();
+            String xmlRootUri = ((Root) object).getNamespaceURI();
+            String xmlRootLocalName = ((Root) object).getLocalName();
             rootFragment = new XPathFragment();
             rootFragment.setLocalName(xmlRootLocalName);           
             rootFragment.setNamespaceURI(xmlRootUri);
@@ -1295,7 +1295,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         return rootFragment;
     }
     
-    private boolean isSimpleXMLRoot(XMLRoot xmlRoot) {
+    private boolean isSimpleXMLRoot(Root xmlRoot) {
         Class xmlRootObjectClass = xmlRoot.getObject().getClass();
 
         if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || ClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
@@ -1314,7 +1314,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     public Document objectToXML(Object object) throws XMLMarshalException {
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
         return objectToXML(object, xmlDescriptor, isXMLRoot);
     }
@@ -1415,18 +1415,18 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     }
 
     public Document objectToXML(Object object, Node parent, DocumentPreservationPolicy docPresPolicy) {
-        boolean isXMLRoot = (object instanceof XMLRoot);
+        boolean isXMLRoot = (object instanceof Root);
         
         AbstractSession session = null;
         XMLDescriptor descriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((XMLRoot)object).getObject());
+        	    session = xmlContext.getSession(((Root)object).getObject());
         	    if(session != null){
-        	        descriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+        	        descriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
         	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                if (!isSimpleXMLRoot((Root) object)) {
                 	throw marshalException;    
                 }                
             }
@@ -1488,10 +1488,10 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         }
         Object originalObject = object;
         if (isXMLRoot) {
-            String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
+            String xmlRootUri = ((Root) object).getNamespaceURI();
             String xmlRootPrefix = null;
             if (xmlRow == null) {
-                String recordName = ((XMLRoot) object).getLocalName();
+                String recordName = ((Root) object).getLocalName();
                 if (xmlRootUri != null) {
                     xmlRootPrefix = resolver.resolveNamespaceURI(xmlRootUri);
                     if (xmlRootPrefix == null && !(xmlRootUri.equals(resolver.getDefaultNamespaceURI()))) {
@@ -1503,7 +1503,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
                         recordName = xmlRootPrefix + XMLConstants.COLON + recordName;
                     }
                 }
-                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), docPresPolicy, recordName, xmlRootUri);
+                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((Root) object).getObject(), docPresPolicy, recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
                 if (this.attachmentMarshaller != null) {
                     xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
@@ -1521,7 +1521,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
             copyNamespaces(resolver, xmlRow.getNamespaceResolver());
             document = xmlRow.getDocument();
             Element docElement = document.getDocumentElement();
-            object = ((XMLRoot) object).getObject();
+            object = ((Root) object).getObject();
         }
 
         XMLObjectBuilder bldr = (XMLObjectBuilder) descriptor.getObjectBuilder();
@@ -1607,7 +1607,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     
     protected XMLDescriptor getDescriptor(Object object, boolean isXMLRoot) {
         if (isXMLRoot) {
-            return getDescriptor((XMLRoot) object);
+            return getDescriptor((Root) object);
         } else {
             return getDescriptor(object);
         }
@@ -1615,13 +1615,13 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
     
     protected XMLDescriptor getDescriptor(Object object, AbstractSession session, boolean isXMLRoot) {
         if (isXMLRoot) {
-            return getDescriptor((XMLRoot) object, session);
+            return getDescriptor((Root) object, session);
         } else {
             return getDescriptor(object, session);
         }
     }
     
-    protected XMLDescriptor getDescriptor(XMLRoot object) throws XMLMarshalException {
+    protected XMLDescriptor getDescriptor(Root object) throws XMLMarshalException {
         XMLDescriptor descriptor = null;
 
         try {
@@ -1644,7 +1644,7 @@ public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
         return descriptor;
     }
     
-    protected XMLDescriptor getDescriptor(XMLRoot object, AbstractSession session) throws XMLMarshalException {
+    protected XMLDescriptor getDescriptor(Root object, AbstractSession session) throws XMLMarshalException {
         XMLDescriptor descriptor = null;
 
         try {

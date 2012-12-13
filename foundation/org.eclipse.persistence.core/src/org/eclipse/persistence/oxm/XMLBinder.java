@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.internal.oxm.record.DOMReader;
@@ -109,8 +110,8 @@ public class XMLBinder {
      * @param obj
      */
     public void updateXML(Object obj) {
-        if(obj instanceof XMLRoot) {
-            obj = ((XMLRoot)obj).getObject();
+        if(obj instanceof Root) {
+            obj = ((Root)obj).getObject();
         }
         Node associatedNode = documentPreservationPolicy.getNodeForObject(obj);
         if(associatedNode == null) {
@@ -121,9 +122,9 @@ public class XMLBinder {
     
     public void marshal(Object obj, Node node) {
         XMLDescriptor desc = null;
-        boolean isXMLRoot = obj instanceof XMLRoot;
+        boolean isXMLRoot = obj instanceof Root;
         if (isXMLRoot) {
-            Object o = ((XMLRoot) obj).getObject();
+            Object o = ((Root) obj).getObject();
             desc = (XMLDescriptor) context.getSession(o).getDescriptor(o);
         } else {
             desc = (XMLDescriptor) context.getSession(obj).getDescriptor(obj);
@@ -143,11 +144,11 @@ public class XMLBinder {
         if (isXMLRoot) {
             String oldEncoding = transformer.getEncoding();
             String oldVersion = transformer.getVersion();
-            if (((XMLRoot) obj).getEncoding() != null) {
-                transformer.setEncoding(((XMLRoot) obj).getEncoding());
+            if (((Root) obj).getEncoding() != null) {
+                transformer.setEncoding(((Root) obj).getEncoding());
             }
-            if (((XMLRoot) obj).getXMLVersion() != null) {
-                transformer.setVersion(((XMLRoot) obj).getXMLVersion());
+            if (((Root) obj).getXMLVersion() != null) {
+                transformer.setVersion(((Root) obj).getXMLVersion());
             }
             transformer.transform(n, result);
             if(oldEncoding != null){
@@ -163,8 +164,8 @@ public class XMLBinder {
     }
 
     public void updateXML(Object obj, Node associatedNode) {
-        if (obj instanceof XMLRoot) {
-            obj = ((XMLRoot)obj).getObject();
+        if (obj instanceof Root) {
+            obj = ((Root)obj).getObject();
         }
         
         Node objNode = this.getXMLNode(obj); 

@@ -50,12 +50,12 @@ import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -214,10 +214,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         // if an XMLRoot was returned, the root element != the default root
         // element of the object being marshalled to - need to create a
         // JAXBElement from the returned XMLRoot object
-        if (obj instanceof XMLRoot) {
-            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot(((XMLRoot)obj), declaredClass);
-            if(((XMLRoot)obj).isNil()) {
-                jaxbElement.setNil(((XMLRoot)obj).isNil());
+        if (obj instanceof Root) {
+            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot(((Root)obj), declaredClass);
+            if(((Root)obj).isNil()) {
+                jaxbElement.setNil(((Root)obj).isNil());
                 jaxbElement.setValue(null);
             }
             return jaxbElement;
@@ -908,9 +908,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     private Object createJAXBElementOrUnwrapIfRequired(Object value){
-        if(value instanceof XMLRoot){
-            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
-            jaxbElement.setNil(((XMLRoot) value).isNil());
+        if(value instanceof Root){
+            JAXBElement jaxbElement = jaxbContext.createJAXBElementFromXMLRoot((Root)value, Object.class);
+            jaxbElement.setNil(((Root) value).isNil());
             return jaxbElement;
         } else if(value instanceof WrappedValue) {
             return ((WrappedValue)value).getValue();

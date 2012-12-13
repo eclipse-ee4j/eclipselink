@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
@@ -185,8 +186,8 @@ public class JSONReader extends XMLReaderAdapter {
                     UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
                     Object unmarshalledObject = unmarshalRecord.getCurrentObject();
                     if(includeRoot && unmarshalClass != null){
-                        if(!(unmarshalledObject instanceof XMLRoot)) {
-                            XMLRoot xmlRoot = new XMLRoot();
+                        if(!(unmarshalledObject instanceof Root)) {
+                        	Root xmlRoot = new XMLRoot();
                             xmlRoot.setNamespaceURI(unmarshalRecord.getRootElementNamespaceUri());
                             xmlRoot.setLocalName(unmarshalRecord.getLocalName());
                             xmlRoot.setObject(unmarshalledObject);

@@ -19,11 +19,11 @@ import java.util.Map;
 
 import javax.xml.bind.Marshaller;
 
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 /**
  * INTERNAL:
@@ -82,8 +82,8 @@ public class JAXBMarshalListener implements XMLMarshalListener {
             }
         }
         if (listener != null) {
-            if (obj.getClass().equals(XMLRoot.class)) {
-                obj = jaxbContext.createJAXBElementFromXMLRoot((XMLRoot) obj, ((XMLRoot) obj).getDeclaredType());
+            if(obj instanceof Root){
+                obj = jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType());
             }
             listener.beforeMarshal(obj);
         }
@@ -112,8 +112,8 @@ public class JAXBMarshalListener implements XMLMarshalListener {
             }
         }
         if (listener != null) {
-            if (obj.getClass().equals(XMLRoot.class)) {
-                obj = jaxbContext.createJAXBElementFromXMLRoot((XMLRoot) obj, ((XMLRoot) obj).getDeclaredType());
+            if(obj instanceof Root){
+                obj = jaxbContext.createJAXBElementFromXMLRoot((Root) obj, ((Root) obj).getDeclaredType());
             }
             listener.afterMarshal(obj);
         }

@@ -47,7 +47,6 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
@@ -57,6 +56,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.record.CharacterEscapeHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
@@ -136,9 +136,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * @param elt
      * @return
      */
-    private XMLRoot createXMLRootFromJAXBElement(JAXBElement elt) {
+    private Root createXMLRootFromJAXBElement(JAXBElement elt) {
         // create an XMLRoot to hand into the marshaller
-        XMLRoot xmlroot = new XMLRoot();
+    	Root xmlroot = new Root();
         Object objectValue = elt.getValue();
         xmlroot.setObject(objectValue);
         QName qname = elt.getName();
@@ -550,7 +550,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     	}
 
         if (null == wrapperElement) {
-            XMLRoot xmlRoot = new XMLRoot();
+        	Root xmlRoot = new Root();
             QName xmlTagName = typeMappingInfo.getXmlTagName();
             if (null == xmlTagName) {
                 return object;
@@ -564,8 +564,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         return wrapObjectInXMLRoot(wrapperElement, object, typeMappingInfo);
     }
 
-    private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value, TypeMappingInfo typeMappingInfo) {
-        XMLRoot xmlroot = new XMLRoot();
+    private Root wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value, TypeMappingInfo typeMappingInfo) {
+    	Root xmlroot = new Root();
         Object objectValue = value;
         xmlroot.setObject(objectValue);
         QName qname = wrapperElement.getName();

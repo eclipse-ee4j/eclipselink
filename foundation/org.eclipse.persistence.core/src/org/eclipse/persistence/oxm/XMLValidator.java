@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
@@ -89,7 +90,7 @@ public class XMLValidator {
 
             XMLDescriptor descriptor = marshaller.getDescriptor(object);
 
-            XMLRoot root = new XMLRoot();
+            Root root = new Root();
             root.setObject(object);
             root.setLocalName(name);
             

@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;
 
@@ -112,8 +111,8 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         Class valueClass = null;
-        if (value instanceof XMLRoot) {
-            XMLRoot root = (XMLRoot)value;
+        if (value instanceof Root) {
+        	Root root = (Root)value;
             for(CoreField next: (List<CoreField>) this.xmlChoiceMapping.getFields()) {
                 XPathFragment fragment = ((Field)next).getXPathFragment();
                 while(fragment != null && !fragment.nameIsText) {
