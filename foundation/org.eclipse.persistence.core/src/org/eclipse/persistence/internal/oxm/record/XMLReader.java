@@ -29,10 +29,10 @@ import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.MediaType;
 
 /**
  * INTERNAL:
@@ -125,7 +125,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
      *  @return The MediaType associated with this reader  
      */
     public MediaType getMediaType(){
-    	return MediaType.APPLICATION_XML;
+    	return Constants.APPLICATION_XML;
     }
    
     

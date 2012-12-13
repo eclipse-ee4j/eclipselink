@@ -141,4 +141,32 @@ public class Constants {
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
 
+    public static final MediaType APPLICATION_JSON = new MediaType() {
+
+        @Override
+        public boolean isApplicationJSON() {
+            return true;
+        }
+
+        @Override
+        public boolean isApplicationXML() {
+            return false;
+        }
+        
+    };
+
+    public static final MediaType APPLICATION_XML = new MediaType() {
+
+        @Override
+        public boolean isApplicationJSON() {
+            return false;
+        }
+
+        @Override
+        public boolean isApplicationXML() {
+            return true;
+        }
+        
+    };
+
 }

@@ -97,7 +97,7 @@ import org.xml.sax.ext.LexicalHandler;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller extends Marshaller<XMLContext> implements Cloneable {
+public class XMLMarshaller extends Marshaller<XMLContext, MediaType> implements Cloneable {
     private final static String DEFAULT_XML_VERSION = "1.0";
     private String schemaLocation;
     private String noNamespaceSchemaLocation;

@@ -17,10 +17,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -229,7 +229,7 @@ public abstract class XMLRecord extends AbstractRecord implements org.eclipse.pe
             if(marshaller.getNamespacePrefixMapper() != null){
             	namespaceAware = true;             	
             }else{
-            	namespaceAware = mediaType == MediaType.APPLICATION_XML;
+            	namespaceAware = mediaType.isApplicationXML();
             }
         }
     }

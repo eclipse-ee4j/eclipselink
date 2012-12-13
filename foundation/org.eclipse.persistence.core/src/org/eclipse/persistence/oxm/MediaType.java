@@ -16,7 +16,7 @@ package org.eclipse.persistence.oxm;
  * This enum represents the different media types supported by EclipseLink MOXy.
  * @since EclipseLink 2.4
  */
-public enum MediaType {
+public enum MediaType implements org.eclipse.persistence.internal.oxm.MediaType {
 
     APPLICATION_XML("application/xml"), APPLICATION_JSON("application/json");
 
@@ -38,6 +38,16 @@ public enum MediaType {
 
     public String getMediaType() {
         return mediaType;
+    }
+
+    @Override
+    public boolean isApplicationJSON() {
+        return this == APPLICATION_JSON;
+    }
+
+    @Override
+    public boolean isApplicationXML() {
+        return this == APPLICATION_XML;
     }
 
 }

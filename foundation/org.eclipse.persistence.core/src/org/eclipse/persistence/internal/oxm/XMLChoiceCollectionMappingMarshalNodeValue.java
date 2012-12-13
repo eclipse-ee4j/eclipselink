@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 
@@ -128,7 +127,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlChoiceCollectionMapping.getWrapperNullPolicy() != null);
         }
         
-        if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){
+        if(marshalRecord.getMarshaller().getMediaType().isApplicationJSON()){
         	List<NodeValue> nodeValues = new ArrayList();
             List<List> values = new ArrayList<List>();
             

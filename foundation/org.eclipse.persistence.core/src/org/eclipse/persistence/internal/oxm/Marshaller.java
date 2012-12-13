@@ -15,12 +15,13 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.transform.Result;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
-public abstract class Marshaller<CONTEXT extends Context> {
+public abstract class Marshaller<
+    CONTEXT extends Context,
+    MEDIA_TYPE extends MediaType> {
 
     public abstract XMLAttachmentMarshaller getAttachmentMarshaller();
     
@@ -30,7 +31,7 @@ public abstract class Marshaller<CONTEXT extends Context> {
      * If not set the default is MediaType.APPLICATION_XML
      * @return MediaType
      */
-    public abstract MediaType getMediaType();
+    public abstract MEDIA_TYPE getMediaType();
 
     /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)

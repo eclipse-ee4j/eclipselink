@@ -34,7 +34,6 @@ import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHan
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -86,7 +85,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlAnyCollectionMapping.getWrapperNullPolicy() != null);
         }
         
-        if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){
+        if(marshalRecord.getMarshaller().getMediaType().isApplicationJSON()){
             List<XPathFragment> frags = new ArrayList();
             List<List> values = new ArrayList<List>();
             List mixedValues = new ArrayList();

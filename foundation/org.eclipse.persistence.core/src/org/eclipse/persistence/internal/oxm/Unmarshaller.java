@@ -15,12 +15,13 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
 
-public abstract class Unmarshaller<CONTEXT extends Context> {
+public abstract class Unmarshaller<
+    CONTEXT extends Context,
+    MEDIA_TYPE extends MediaType> {
 
     public abstract XMLAttachmentUnmarshaller getAttachmentUnmarshaller();
 
@@ -53,7 +54,7 @@ public abstract class Unmarshaller<CONTEXT extends Context> {
      * @since 2.4
      * @return MediaType
      */
-    public abstract MediaType getMediaType();
+    public abstract MEDIA_TYPE getMediaType();
 
     /**
      * Name of the NamespaceResolver to be used during unmarshal

@@ -53,7 +53,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -907,7 +906,7 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
     }
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if(xmlReader.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords && !isSelfRecord) {
+        if(xmlReader.getMediaType().isApplicationXML() && null == selfRecords && !isSelfRecord) {
             ErrorHandler errorHandler = xmlReader.getErrorHandler();
             if(null != errorHandler) {
                 StringBuilder messageBuilder = new StringBuilder("unexpected element (uri:\"");
@@ -1437,7 +1436,7 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
     }
     
     public XPathFragment getTextWrapperFragment() {
-    	if(xmlReader.getMediaType() == MediaType.APPLICATION_JSON){
+    	if(xmlReader.getMediaType() .isApplicationJSON()){
     		if(textWrapperFragment == null){
     			textWrapperFragment = new XPathFragment();
     			textWrapperFragment.setLocalName(unmarshaller.getValueWrapper());

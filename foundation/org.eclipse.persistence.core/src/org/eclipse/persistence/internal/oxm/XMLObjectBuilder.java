@@ -45,7 +45,6 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -906,7 +905,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     classIndicatorUri = xmlDescriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
                 }
                 if(leafType == null 
-                        || isRootElement && record.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON && !record.getMarshaller().isIncludeRoot() 
+                        || isRootElement && record.getMarshaller().getMediaType().isApplicationJSON() && !record.getMarshaller().isIncludeRoot() 
                         || !(leafType.getLocalPart().equals(classIndicatorLocal))
                         || (classIndicatorUri == null && (leafType.getNamespaceURI() != null && leafType.getNamespaceURI().length() >0))
                         || (classIndicatorUri != null && !classIndicatorUri.equals(leafType.getNamespaceURI()))

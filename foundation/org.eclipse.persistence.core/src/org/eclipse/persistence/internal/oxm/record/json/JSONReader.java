@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -48,7 +49,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.xml.sax.ErrorHandler;
@@ -495,7 +495,7 @@ public class JSONReader extends XMLReaderAdapter {
      */
     @Override
     public MediaType getMediaType(){
-    	return MediaType.APPLICATION_JSON;
+    	return Constants.APPLICATION_JSON;
     }
     
     private static class JSONAttributes extends IndexedAttributeList {

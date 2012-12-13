@@ -39,11 +39,12 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
+import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
@@ -198,7 +199,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     
     private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
               	
-        	if(mediaType == MediaType.APPLICATION_JSON){        	
+        	if(mediaType.isApplicationJSON()){        	
         	 	return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);        	 	
         	}
             try {
@@ -1077,9 +1078,9 @@ if(clazz == CoreClassConstants.OBJECT) {
 		            for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
 		                c = (char) br.read();
 		                if (c == '[' || c == '{') {
-		                    return MediaType.APPLICATION_JSON;
+		                    return Constants.APPLICATION_JSON;
 		                }else if (c == '<'){
-		                	return MediaType.APPLICATION_XML;	
+		                	return Constants.APPLICATION_XML;	
 		                }
 		                
 		            }
