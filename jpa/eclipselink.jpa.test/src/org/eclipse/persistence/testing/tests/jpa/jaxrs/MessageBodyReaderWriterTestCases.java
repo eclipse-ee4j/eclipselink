@@ -20,16 +20,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
-
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.jaxrs.Address;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.Customers;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.JAXRSPopulator;
+import org.eclipse.persistence.testing.models.jpa.jaxrs.JAXRSTableCreator;
 import org.eclipse.persistence.testing.models.jpa.jaxrs.PhoneNumber;
 
 public class MessageBodyReaderWriterTestCases extends JUnitTestCase {
 
 	private JAXBContext jc;
-
+	protected DatabaseSession session;
+	
 	public MessageBodyReaderWriterTestCases(String name) throws Exception {
 		super(name);
 		Map<String, Object> properties = new HashMap<String, Object>(1);
@@ -39,17 +44,27 @@ public class MessageBodyReaderWriterTestCases extends JUnitTestCase {
 		jc = JAXBContext.newInstance(new Class[] { PhoneNumber.class },
 				properties);
 	}
+	
+ 	public JAXRSPopulator setup() {
+		session = JUnitTestCase.getServerSession();
 
+		JAXRSTableCreator tableCreator = new JAXRSTableCreator();
+		tableCreator.dropTableConstraints(session);
+		tableCreator.replaceTables(session);
+		JAXRSPopulator jaxrsPopulator = new JAXRSPopulator();
+		return jaxrsPopulator;
+	}
+	
 	protected PhoneNumber getControlObject() {
 		PhoneNumber phoneNumber = new PhoneNumber();
-		phoneNumber.setId(2);
-		phoneNumber.setType("HOME");
-		phoneNumber.setNum("555-2222");
+		phoneNumber.setId(23);
+		phoneNumber.setType("WORK");
+		phoneNumber.setNum("555-2323");
 		return phoneNumber;
 	}
 
 	protected String getID() {
-		return "2";
+		return "23";
 	}
 
 	protected JAXBContext getJAXBContext() {
@@ -62,11 +77,15 @@ public class MessageBodyReaderWriterTestCases extends JUnitTestCase {
 	 *	glassfish: "http://localhost:8080/CustomerWAR/rest/phonenumber_war"
 	 */
 	protected String getURL() {
-		return "http://%%host:port%%/CustomerWAR/rest/phonenumber_war";
+		return "http://localhost:7001/CustomerWAR/rest/phonenumber_war";
 	}
 
-	/* READ operation */
+	/* READ operation - Uses Customer 12 */
 	public void testGetPhoneNumber() throws Exception {
+ 		JAXRSPopulator jaxrsPopulator = setup();
+		jaxrsPopulator.buildExamplesCustomer12();
+		jaxrsPopulator.persistExample(session);
+		
 		URL url = new URL(getURL() + "/" + getID());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");

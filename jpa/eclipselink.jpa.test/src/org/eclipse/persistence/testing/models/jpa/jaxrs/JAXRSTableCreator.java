@@ -23,7 +23,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class JAXRSTableCreator extends TogglingFastTableCreator {
 	public JAXRSTableCreator() {
 		setName("JAXRSProject");
-		dropTableConstraints(JUnitTestCase.getServerSession());
+//		dropTableConstraints(JUnitTestCase.getServerSession());
 
 		addTableDefinition(buildADDRESSTable());
 		addTableDefinition(buildPHONENUMBERTable());
