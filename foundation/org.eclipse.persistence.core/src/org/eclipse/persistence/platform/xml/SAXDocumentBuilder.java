@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -87,10 +87,10 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
 
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         if(null == prefix) {
-            prefix = XMLConstants.EMPTY_STRING;
+            prefix = Constants.EMPTY_STRING;
         }
         if(null == uri) {
-            uri = XMLConstants.EMPTY_STRING;
+            uri = Constants.EMPTY_STRING;
         }
         if (namespaceDeclarations == null) {
             namespaceDeclarations = new HashMap();
@@ -193,7 +193,7 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
             //handle default/target namespaces
             parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE, uri);
         } else {
-            parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix, uri);
+            parentElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + prefix, uri);
         }
     }
     

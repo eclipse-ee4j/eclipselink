@@ -28,7 +28,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
+
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -274,7 +275,7 @@ public class JAXPPlatform implements XMLPlatform {
                     }
 
                     //if xsi:type declaration deal with that value
-                    if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(nextAttribute.getNamespaceURI()) && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
+                    if (javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(nextAttribute.getNamespaceURI()) && Constants.SCHEMA_TYPE_ATTRIBUTE.equals(nextAttribute.getLocalName())) {                        
                         String value = nextAttribute.getValue();
                         int colonIndex = value.indexOf(':');
                         if (colonIndex > -1) {

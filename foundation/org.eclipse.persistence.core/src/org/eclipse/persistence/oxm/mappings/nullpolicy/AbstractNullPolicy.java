@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
@@ -23,7 +24,6 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -86,8 +86,8 @@ import org.xml.sax.Attributes;
  */
 public abstract class AbstractNullPolicy {
     protected static final String TRUE = "true";
-    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
-    protected static final String XSI_NIL_ATTRIBUTE = XMLConstants.SCHEMA_INSTANCE_PREFIX + COLON_W_SCHEMA_NIL_ATTRIBUTE;
+    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = Constants.COLON + Constants.SCHEMA_NIL_ATTRIBUTE;
+    protected static final String XSI_NIL_ATTRIBUTE = Constants.SCHEMA_INSTANCE_PREFIX + COLON_W_SCHEMA_NIL_ATTRIBUTE;
 
     /**
      * This state flag determines how we unmarshal absent nodes. true =
@@ -250,7 +250,7 @@ public abstract class AbstractNullPolicy {
             if(null == attributes) {
                 return false;
             }
-            return attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;            
+            return attributes.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE) != null;            
         } else {
             // EMPTY_NODE - Required
             if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
@@ -272,7 +272,7 @@ public abstract class AbstractNullPolicy {
         if (null == element) {
             return true;
         } else {
-            if (isNullRepresentedByXsiNil() && element.hasAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
+            if (isNullRepresentedByXsiNil() && element.hasAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
                 return true;
             } else {
                 // EMPTY_NODE - Required
@@ -343,7 +343,7 @@ public abstract class AbstractNullPolicy {
         String xsiPrefix;
         if (null == namespaceResolver) {
             // add new xsi entry into the properties map
-            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+            xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
             namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);            
       	    marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -351,7 +351,7 @@ public abstract class AbstractNullPolicy {
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
+                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);                
                 marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }
@@ -364,7 +364,7 @@ public abstract class AbstractNullPolicy {
     public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
         Object fieldValue = null;
         if(marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
-            fieldValue = XMLConstants.EMPTY_STRING;
+            fieldValue = Constants.EMPTY_STRING;
         } else {
             if(!(((XMLField)field).getLastXPathFragment().isAttribute())) {
                 if(marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {

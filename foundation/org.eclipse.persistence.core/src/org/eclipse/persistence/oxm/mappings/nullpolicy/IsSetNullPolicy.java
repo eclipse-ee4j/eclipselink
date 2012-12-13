@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NillableNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -27,7 +28,6 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 
 /**
@@ -162,7 +162,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         // isset nillable only        
         if (isNullRepresentedByXsiNil() || marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             XPathFragment xPathFragment = new XPathFragment();
-            xPathFragment.setXPath('@' + XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            xPathFragment.setXPath('@' + Constants.SCHEMA_NIL_ATTRIBUTE);
             xPathFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             NodeValue aNodeValue = new NillableNodeValue(nullCapableValue);
             parentNode.addChild(xPathFragment, aNodeValue, null);
