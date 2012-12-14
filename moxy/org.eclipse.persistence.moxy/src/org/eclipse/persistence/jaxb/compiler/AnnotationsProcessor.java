@@ -2135,6 +2135,7 @@ public class AnnotationsProcessor {
             String namespace;
 
             choiceProp.setNillable(next.isNillable());
+            choiceProp.setIsRequired(next.isRequired());
             // handle XmlPath - if xml-path is set, we ignore name/namespace
             if (paths != null && next.getXmlPath() == null) {
                 // Only set the path, if the path hasn't already been set from
