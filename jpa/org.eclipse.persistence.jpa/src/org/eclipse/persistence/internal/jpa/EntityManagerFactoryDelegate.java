@@ -274,17 +274,25 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null);
+        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties);
+        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
     }
 
-    protected EntityManagerImpl createEntityManagerImpl(Map properties) {
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        return createEntityManagerImpl(map, SynchronizationType.SYNCHRONIZED);
+    }
+
+    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+        return createEntityManagerImpl(null, synchronizationType);
+    }
+
+    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
         verifyOpen();
         AbstractSession session = getAbstractSession();
         if (session.isDatabaseSession()) {
@@ -300,7 +308,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 }
             }
         }
-        return new EntityManagerImpl(this, properties);
+        return new EntityManagerImpl(this, properties, syncType);
     }
 
 
@@ -719,13 +727,4 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         throw new RuntimeException("Not implemented ... WIP ...");
     }
 
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
 }

@@ -407,6 +407,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testNestedBatchQueryHints");
         tests.add("testReplaceElementCollection");
         tests.add("testProviderPropertySetting");
+//        if (isJPA21()){
+//            tests.add("testUnsynchronizedPC");
+//        }
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -435,6 +438,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testInheritanceFetchJoinSecondCall");
         }
 
+        
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
@@ -5181,6 +5185,37 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertNull("ExpressionCache has query that references a RWUOW", queryManager.getCachedExpressionQuery(query).getSession());
     }
 
+/*    public void testUnsynchronizedPC(){
+        if (isOnServer()){
+            EntityManager em = createEntityManager(true);
+            beginTransaction(em);
+            EntityManagerImpl emImpl = em.unwrap(EntityManagerImpl.class);
+            emImpl.getAbstractSession(); // force the active PC to be loaded
+            assertTrue("PC was automatically joined to transaction when created. This should not be the case for Unsynchronized", !em.isJoinedToTransaction());
+            List<Employee> result = em.createQuery("select e from employee e").getResultList();
+            result.get(0).setFirstName(System.currentTimeMillis() + "####");
+            List<Employee> secondResult = em.createQuery("select e from employee e where e.firstName LIKE '%####%'").getResultList();
+            assertTrue("Flushed changes to database when em was unjoined", secondResult.isEmpty());
+            assertTrue("PC was automatically joined to transaction when find was issued. This should not be the case for Unsynchronized", !em.isJoinedToTransaction());
+            try{
+                em.flush();
+                fail("flush did not throw txn required exception when em was not joined to transcation");
+            }catch(TransactionRequiredException txr){
+                
+            }
+            em.joinTransaction();
+            assertTrue("PC was not joined to transaction when joinTransaction was called", em.isJoinedToTransaction());
+            try{
+                em.flush();
+            }catch(TransactionRequiredException txr){
+                fail("txn required exception when em was joined to transcation");
+            }
+            rollbackTransaction(em);
+        }
+        
+        
+    }
+*/
     public void testUnWrapClass() {
         EntityManager em = createEntityManager();
         try {

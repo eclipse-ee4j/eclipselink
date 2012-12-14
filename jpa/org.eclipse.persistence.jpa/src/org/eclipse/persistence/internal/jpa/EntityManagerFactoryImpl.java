@@ -280,17 +280,25 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null);
+        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties);
+        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
     }
 
-    protected EntityManagerImpl createEntityManagerImpl(Map properties) {
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        return createEntityManagerImpl(map, synchronizationType);
+    }
+
+    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+        return createEntityManagerImpl(null, synchronizationType);
+    }
+
+    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
         if (setupImpl != null && setupImpl.isMetadataExpired()){
             String sessionName = setupImpl.getSessionName();
@@ -302,7 +310,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
                 delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
             }
         }
-        return delegate.createEntityManagerImpl(properties);
+        return delegate.createEntityManagerImpl(properties, syncType);
     }
 
     /**
@@ -597,16 +605,6 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     public <T> T unwrap(Class<T> cls) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         // TODO: JPA 2.1 functionality
         throw new RuntimeException("Not implemented ... WIP ...");
     }

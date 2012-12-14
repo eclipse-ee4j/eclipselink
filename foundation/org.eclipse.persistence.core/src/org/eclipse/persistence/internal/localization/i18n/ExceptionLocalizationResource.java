@@ -204,7 +204,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa_criteriaapi_invalid_result_type", "Element {0} type {1} is invalid for result {2}."},
                                            { "jpa_criteriaapi_null_literal_value", "Null value passed into CriteriaBuilder.literal().  Please use nullLiteral(Class<T> resultClass) instead."},
                                            { "jpa_criteriaapi_illegal_tuple_or_array_value", "Illegal tuple or array-valued selection item found. Argument found: {0}"},
-                                           { "jpa_criteriaapi_alias_reused", "More than one selection item uses the same alias name.  Duplicate names used were: {0}"}
+                                           { "jpa_criteriaapi_alias_reused", "More than one selection item uses the same alias name.  Duplicate names used were: {0}"},
+                                           { "cannot_read_through_txn_for_unsynced_pc", "The property was set to join this persistence context to the currently active transaction but this is not a SYNCHRONIZED persistence context."}
                                            
                                         };
     /**

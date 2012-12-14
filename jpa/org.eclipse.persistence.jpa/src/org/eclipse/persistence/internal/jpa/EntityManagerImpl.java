@@ -183,6 +183,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected boolean shouldOrderUpdates;
     
     protected boolean commitWithoutPersistRules;
+    
+    /** Tracks if this EntityManager should automatically associate with the transaction or not*/
+    protected SynchronizationType syncType;
         
     abstract static class PropertyProcessor {
         abstract void process(String name, Object value, EntityManagerImpl em);
@@ -299,7 +302,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            existence, or errors with the specified session.
      */
     public EntityManagerImpl(String sessionName) {
-        this(SessionManager.getManager().getSession(sessionName), null);
+        this(SessionManager.getManager().getSession(sessionName), null, SynchronizationType.SYNCHRONIZED);
     }
 
     /** 
@@ -344,8 +347,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @param databaseSession
      *            the databaseSession assigned to this deployment.
      */
-    public EntityManagerImpl(AbstractSession databaseSession) {
-        this(databaseSession, null);
+    public EntityManagerImpl(AbstractSession databaseSession, SynchronizationType syncType) {
+        this(databaseSession, null, syncType);
     }
 
     /**
@@ -358,8 +361,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            passed into this EntityManager, but there are currently no
      *            such properties implemented
      */
-    public EntityManagerImpl(AbstractSession databaseSession, Map properties) {
-        this(new EntityManagerFactoryImpl(databaseSession).unwrap(), properties);
+    public EntityManagerImpl(AbstractSession databaseSession, Map properties, SynchronizationType syncType) {
+        this(new EntityManagerFactoryImpl(databaseSession).unwrap(), properties, syncType);
     }
 
     /**
@@ -372,7 +375,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            to be passed into this EntityManager, but there are currently
      *            no such properties implemented
      */
-    public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map properties) {
+    public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map properties, SynchronizationType syncType) {
         this.factory = factory;
         this.databaseSession = factory.getAbstractSession();
         this.beginEarlyTransaction = factory.getBeginEarlyTransaction();
@@ -386,6 +389,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this.shouldOrderUpdates = factory.shouldOrderUpdates();
         this.isOpen = true;
         this.cacheStoreBypass = false;
+        this.syncType = syncType;
         initialize(properties);
     }
 
@@ -1909,7 +1913,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setShouldOrderUpdates(this.shouldOrderUpdates);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
-            if (txn != null) {
+            if (txn != null  && syncType.equals(SynchronizationType.SYNCHRONIZED)) {
                 // if there is an active txn we must register with it on
                 // creation of PC
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
@@ -1919,6 +1923,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
         }
         if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction()) {
+            if (this.isJoinedToTransaction()){
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_read_through_txn_for_unsynced_pc"));
+            }
             // gf3334, force persistence context early transaction
             this.extendedPersistenceContext.beginEarlyTransaction();
         }
@@ -2814,7 +2821,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     public boolean isJoinedToTransaction() {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        verifyOpen();
+        if(this.hasActivePersistenceContext()) {
+                return transaction.isJoinedToTransaction(this.extendedPersistenceContext);
+        }
+        return false;
     }
 }

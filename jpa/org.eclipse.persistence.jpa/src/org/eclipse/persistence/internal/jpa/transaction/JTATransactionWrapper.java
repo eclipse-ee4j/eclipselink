@@ -90,6 +90,10 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         uow.registerWithTransactionIfRequired();
     }
     
+    public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
+        return uow.getParent().hasExternalTransactionController() && uow.isSynchronized();
+    }
+    
     public void verifyRegisterUnitOfWorkWithTxn(){
     }
     

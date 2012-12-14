@@ -55,6 +55,8 @@ public abstract class TransactionWrapperImpl  {
     
     public abstract void verifyRegisterUnitOfWorkWithTxn();
     
+    public abstract boolean isJoinedToTransaction(UnitOfWorkImpl uow);
+    
     public UnitOfWorkImpl getLocalUnitOfWork(){
         return localUOW;
     }
