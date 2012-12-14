@@ -556,12 +556,12 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 	}
 
 	/*
-	 * antbuild.xml will replace %host:port% with values provided in
+	 * antbuild.xml will replace %%host:port%% with values provided in
 	 * {server}.properties sample URLs: weblogic:
 	 * "http://localhost:7001/CustomerWAR/rest/customer_war" glassfish:
 	 * "http://localhost:8080/CustomerWAR/rest/customer_war"
 	 */
 	protected String getURL() {
-		return "http://localhost:7001/CustomerWAR/rest/customer_war";
+		return "http://%%host:port%%/CustomerWAR/rest/customer_war";
 	}
 }
