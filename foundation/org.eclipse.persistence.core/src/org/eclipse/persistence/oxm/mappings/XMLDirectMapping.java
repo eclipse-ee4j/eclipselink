@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -379,7 +380,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public void writeSingleValue(Object value, Object parent, XMLRecord row, AbstractSession session) {
         Object fieldValue = getFieldValue(value, session, row);
         if(fieldValue == null && getNullPolicy() != null) {
-            getNullPolicy().directMarshal(this.getField(), row, parent);
+            getNullPolicy().directMarshal((Field) this.getField(), row, parent);
         } else {
             writeValueIntoRow(row, getField(), fieldValue);
         }

@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -159,7 +160,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping implements BinaryData
             XMLField field = (XMLField) getField();
 
             if(getNullPolicy() != null && !field.getXPathFragment().isSelfFragment()) {
-               getNullPolicy().directMarshal(this.getField(), (XMLRecord) row, object);
+               getNullPolicy().directMarshal((Field) this.getField(), (XMLRecord) row, object);
             }
             return;            
         }

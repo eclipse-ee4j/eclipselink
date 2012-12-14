@@ -16,8 +16,8 @@ import java.lang.reflect.Method;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NillableNodeValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.oxm.XMLField;
 
 /**
  * PUBLIC:
@@ -114,7 +113,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * INTERNAL
      */
     @Override
-    public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
+    public void directMarshal(Field field, XMLRecord record, Object object) {
         if(!isSet(object)) {
             return;
         }
@@ -140,7 +139,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * INTERNAL
      */
     @Override
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, CoreAbstractSession session) {
+    public boolean compositeObjectMarshal(XMLRecord record, Object object, Field field, CoreAbstractSession session) {
         if (!isSet(object)) {
             return false;
         } else {

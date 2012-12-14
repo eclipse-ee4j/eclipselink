@@ -14,16 +14,15 @@ package org.eclipse.persistence.oxm.mappings.nullpolicy;
 
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -217,7 +216,7 @@ public abstract class AbstractNullPolicy {
      * @param field
      * @return true if this method caused any objects to be marshaled, else false.
      */
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, CoreAbstractSession session) {
+    public boolean compositeObjectMarshal(XMLRecord record, Object object, Field field, CoreAbstractSession session) {
         if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             record.put(field, XMLRecord.NIL);
             return true;
@@ -359,12 +358,12 @@ public abstract class AbstractNullPolicy {
     /**
      * INTERNAL
      */
-    public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
+    public void directMarshal(Field field, XMLRecord record, Object object) {
         Object fieldValue = null;
         if(marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             fieldValue = Constants.EMPTY_STRING;
         } else {
-            if(!(((XMLField)field).getLastXPathFragment().isAttribute())) {
+            if(!field.getLastXPathFragment().isAttribute()) {
                 if(marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
                     fieldValue = XMLRecord.NIL;
                 }
