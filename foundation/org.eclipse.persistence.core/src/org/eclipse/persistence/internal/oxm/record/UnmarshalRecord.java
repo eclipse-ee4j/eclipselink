@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.IDResolver;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.ObjectBuilder;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
-import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.unmapped.DefaultUnmappedContentHandler;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -45,6 +45,7 @@ import org.xml.sax.ext.LexicalHandler;
 public interface UnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
+    ID_RESOLVER extends IDResolver,
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver,
     TREE_OBJECT_BUILDER extends ObjectBuilder,
@@ -129,7 +130,7 @@ public interface UnmarshalRecord<
 
     public String resolveNamespaceUri(String namespaceURI);
 
-    public void resolveReferences(ABSTRACT_SESSION session, IDResolver idResolver);
+    public void resolveReferences(ABSTRACT_SESSION session, ID_RESOLVER idResolver);
 
     public void setAttributes(Attributes atts);
 

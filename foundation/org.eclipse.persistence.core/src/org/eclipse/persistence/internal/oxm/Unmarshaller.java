@@ -15,13 +15,14 @@ package org.eclipse.persistence.internal.oxm;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.oxm.IDResolver;
-import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
 
 public abstract class Unmarshaller<
     CONTEXT extends Context,
-    MEDIA_TYPE extends MediaType> {
+    ID_RESOLVER extends IDResolver,
+    MEDIA_TYPE extends MediaType,
+    UNMARSHALLER_HANDLER extends UnmarshallerHandler> {
 
     public abstract XMLAttachmentUnmarshaller getAttachmentUnmarshaller();
 
@@ -45,7 +46,7 @@ public abstract class Unmarshaller<
      * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
      */
-    public abstract IDResolver getIDResolver();
+    public abstract ID_RESOLVER getIDResolver();
 
     /**
      * Get the MediaType for this xmlUnmarshaller.
@@ -85,7 +86,7 @@ public abstract class Unmarshaller<
      */
     public abstract Class getUnmappedContentHandlerClass();
 
-    public abstract XMLUnmarshallerHandler getUnmarshallerHandler();
+    public abstract UNMARSHALLER_HANDLER getUnmarshallerHandler();
 
     /**
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
@@ -116,5 +117,7 @@ public abstract class Unmarshaller<
     public abstract boolean isIncludeRoot();
 
     public abstract boolean isResultAlwaysXMLRoot();
+    
+    public abstract void setIDResolver(ID_RESOLVER idResolver);
 
 }

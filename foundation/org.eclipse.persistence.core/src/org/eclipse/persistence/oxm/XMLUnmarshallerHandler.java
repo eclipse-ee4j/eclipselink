@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.UnmarshallerHandler;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.w3c.dom.Document;
@@ -49,7 +50,7 @@ import org.xml.sax.SAXException;
  *
  * @see org.eclipse.persistence.oxm.XMLUnmarshaller
  */
-public class XMLUnmarshallerHandler extends SAXDocumentBuilder {
+public class XMLUnmarshallerHandler extends SAXDocumentBuilder implements UnmarshallerHandler {
     private XMLUnmarshaller xmlUnmarshaller;
     private boolean endDocumentTriggered;
 

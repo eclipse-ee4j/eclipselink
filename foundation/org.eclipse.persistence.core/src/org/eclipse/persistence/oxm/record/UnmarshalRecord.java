@@ -91,7 +91,7 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver, TreeObjectBuilder, XMLUnmarshaller> {
+public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, XMLMarshaller, NamespaceResolver, TreeObjectBuilder, XMLUnmarshaller> {
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = org.eclipse.persistence.internal.oxm.record.UnmarshalRecord.DEFAULT_UNMAPPED_CONTENT_HANDLER;
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;

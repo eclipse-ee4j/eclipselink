@@ -43,9 +43,9 @@ import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.UnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.XMLUnmarshallerHandler;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -660,7 +660,7 @@ if(clazz == CoreClassConstants.OBJECT) {
 	                return unmarshal(streamSource.getSystemId());
 	            }
 	        } else {
-	        	XMLUnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
+	        	UnmarshallerHandler handler = this.xmlUnmarshaller.getUnmarshallerHandler();
 	        	XMLTransformer transformer = XMLPlatformFactory.getInstance().getXMLPlatform().newXMLTransformer();
 	        	SAXResult result = new SAXResult(handler);
 	        	transformer.transform(source, result);

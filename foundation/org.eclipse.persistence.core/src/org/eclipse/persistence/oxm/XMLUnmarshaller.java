@@ -71,7 +71,7 @@ import org.eclipse.persistence.oxm.attachment.*;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLUnmarshaller extends Unmarshaller<XMLContext, MediaType> implements Cloneable {
+public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaType, XMLUnmarshallerHandler> implements Cloneable {
     public static final int NONVALIDATING = XMLParser.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = XMLParser.SCHEMA_VALIDATION;
     public static final int DTD_VALIDATION = XMLParser.DTD_VALIDATION;
