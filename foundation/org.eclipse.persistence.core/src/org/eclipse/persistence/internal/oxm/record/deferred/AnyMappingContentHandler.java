@@ -17,8 +17,8 @@ import org.xml.sax.SAXException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 
 /**
  * <p><b>Purpose</b>: Implementation of DeferredContentHandler for XMLAnyCollectionMappings.

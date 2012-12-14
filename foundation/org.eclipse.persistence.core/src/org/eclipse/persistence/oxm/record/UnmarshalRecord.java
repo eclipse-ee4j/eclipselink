@@ -61,7 +61,6 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -73,6 +72,7 @@ import org.xml.sax.SAXParseException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
+import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.ext.Locator2;
 import org.xml.sax.ext.Locator2Impl;
 
@@ -92,7 +92,6 @@ import org.xml.sax.ext.Locator2Impl;
  *
  */
 public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, XMLMarshaller, NamespaceResolver, TreeObjectBuilder, XMLUnmarshaller> {
-    public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = org.eclipse.persistence.internal.oxm.record.UnmarshalRecord.DEFAULT_UNMAPPED_CONTENT_HANDLER;
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;

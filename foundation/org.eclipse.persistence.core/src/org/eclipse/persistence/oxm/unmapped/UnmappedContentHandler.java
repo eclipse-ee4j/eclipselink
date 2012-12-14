@@ -13,18 +13,11 @@
 package org.eclipse.persistence.oxm.unmapped;
 
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.xml.sax.ContentHandler;
 
 /**
  * <p><b>Purpose:</b>Provide an interface that can be implemented for handling
  * unmapped content during unmarshal operations with SAXPlatform.
  */
-public interface UnmappedContentHandler extends ContentHandler {
+public interface UnmappedContentHandler extends org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler <UnmarshalRecord>{
 
-    /**
-     * Set the UnmarshalRecord which gives access to mechanisms used during the
-     * unmarshal process such as an XMLUnmarshaller and a Session.
-     * @param unmarshalRecord
-     */
-    void setUnmarshalRecord(UnmarshalRecord unmarshalRecord);
 }

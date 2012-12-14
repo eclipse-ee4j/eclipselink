@@ -12,8 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.internal.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
