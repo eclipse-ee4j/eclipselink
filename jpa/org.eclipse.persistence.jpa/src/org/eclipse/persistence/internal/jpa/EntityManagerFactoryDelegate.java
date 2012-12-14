@@ -45,7 +45,11 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
 /**
@@ -718,13 +722,25 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
     
     public void addNamedQuery(String name, Query query) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");    
+        DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
+        this.getServerSession().addQuery(name, unwrapped, true);
     }
 
     public <T> T unwrap(Class<T> cls) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
+        if (cls.equals(JpaEntityManagerFactory.class) || cls.equals(EntityManagerFactoryImpl.class)) {
+            return (T) this;
+        }else if (cls.equals(EntityManagerFactoryDelegate.class)) {
+            return (T) this;
+        }else if (cls.equals(Session.class) || cls.equals(AbstractSession.class)) {            
+            return (T) this.getAbstractSession();
+        } else if (cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {            
+            return (T) this.getDatabaseSession();
+        } else if (cls.equals(Server.class) || cls.equals(ServerSession.class)) {            
+            return (T) this.getServerSession();
+        } else if (cls.equals(SessionBroker.class)) {            
+            return (T) this.getSessionBroker();
+        }
+        throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
     }
 
 }

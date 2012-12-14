@@ -526,7 +526,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Add the query to the session queries.
      */
-    protected void addQuery(DatabaseQuery query) {
+    protected synchronized void addQuery(DatabaseQuery query, boolean replace) {
         Vector queriesByName = (Vector)getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
@@ -535,10 +535,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
 
         // Check that we do not already have a query that matched it
-        for (Enumeration enumtr = queriesByName.elements(); enumtr.hasMoreElements();) {
-            DatabaseQuery existingQuery = (DatabaseQuery)enumtr.nextElement();
+        for (Iterator enumtr = queriesByName.iterator(); enumtr.hasNext();) {
+            DatabaseQuery existingQuery = (DatabaseQuery)enumtr.next();
             if (Helper.areTypesAssignable(query.getArgumentTypes(), existingQuery.getArgumentTypes())) {
-                throw ValidationException.existingQueryTypeConflict(query, existingQuery);
+                if (replace){
+                    enumtr.remove();
+                }else{
+                    throw ValidationException.existingQueryTypeConflict(query, existingQuery);
+                }
             }
         }
         queriesByName.add(query);
@@ -551,7 +555,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void addQuery(String name, DatabaseQuery query) {
         query.setName(name);
-        addQuery(query);
+        addQuery(query, false);
+    }
+    
+    /**
+     * PUBLIC:
+     * Add the query to the session queries with the given name.
+     * This allows for common queries to be pre-defined, reused and executed by name.
+     */
+    public void addQuery(String name, DatabaseQuery query, boolean replace) {
+        query.setName(name);
+        addQuery(query, replace);
     }
     
     /**
@@ -4186,7 +4200,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         jpaQuery.prepareInternal(this);
         DatabaseQuery databaseQuery = (DatabaseQuery) jpaQuery.getProperty("databasequery");
         databaseQuery = (databaseQuery == null)? jpaQuery : databaseQuery;
-        addQuery(databaseQuery);
+        addQuery(databaseQuery, false); // this should be true but for backward compatibility it is set to false.
     }
     
     /**
@@ -4801,10 +4815,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                         for( Iterator thisQueriesItr=thisQueries.iterator();thisQueriesItr.hasNext();){
                             DatabaseQuery queryToBeAdded = (DatabaseQuery)thisQueriesItr.next();
                             if (allowSameQueryNameDiffArgsCopyToSession){
-                                addQuery(queryToBeAdded);
+                                addQuery(queryToBeAdded, false);
                             } else {
                                 if (getQuery(queryToBeAdded.getName()) == null){
-                                    addQuery(queryToBeAdded);
+                                    addQuery(queryToBeAdded, false);
                                 } else {
                                     log(SessionLog.WARNING, SessionLog.PROPERTIES, "descriptor_named_query_cannot_be_added", new Object[]{queryToBeAdded,queryToBeAdded.getName(),queryToBeAdded.getArgumentTypes()});
                                 }

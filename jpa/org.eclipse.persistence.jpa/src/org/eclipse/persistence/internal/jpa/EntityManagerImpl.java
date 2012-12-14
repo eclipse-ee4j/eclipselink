@@ -2745,7 +2745,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 }
                 return null;
             }
-            throw new PersistenceException(ExceptionLocalization.buildMessage("Provider-does-not-support-the-call", null));
+            throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManager.class.getName(), cls.getName()}));
 
         } catch (RuntimeException e) {
             throw e;

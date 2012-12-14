@@ -1103,7 +1103,7 @@ public class QueryImpl {
             return (T) getDatabaseQueryInternal();
         }
 
-        throw new PersistenceException("Could not unwrap query to: " + cls);
+        throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{Query.class.getName(), cls.getName()}));
     }
 
     public String toString() {
