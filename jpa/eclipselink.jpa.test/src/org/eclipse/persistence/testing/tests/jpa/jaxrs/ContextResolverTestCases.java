@@ -84,13 +84,13 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		return jc;
 	}
 
-	/* antbuild.xml will replace %host:port% with values provided in {server}.properties
+	/* antbuild.xml will replace %%host:port%% with values provided in {server}.properties
 	 * sample URLs:
 	 * 	weblogic: "http://localhost:7001/CustomerWAR/rest/address_war"
 	 *	glassfish: "http://localhost:8080/CustomerWAR/rest/address_war"
 	 */
 	protected String getURL() {
-		return "http://localhost:7001/CustomerWAR/rest/address_war";
+		return "http://%%host:port%%/CustomerWAR/rest/address_war";
 	}
 
 	/* READ operation  - Uses Customer 2 */

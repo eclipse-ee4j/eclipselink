@@ -71,13 +71,13 @@ public class MessageBodyReaderWriterTestCases extends JUnitTestCase {
 		return jc;
 	}
 
-	/* antbuild.xml will replace %host:port% with values provided in {server}.properties
+	/* antbuild.xml will replace %%host:port%% with values provided in {server}.properties
 	 * sample URLs:
 	 * 	weblogic: "http://localhost:7001/CustomerWAR/rest/phonenumber_war"
 	 *	glassfish: "http://localhost:8080/CustomerWAR/rest/phonenumber_war"
 	 */
 	protected String getURL() {
-		return "http://localhost:7001/CustomerWAR/rest/phonenumber_war";
+		return "http://%%host:port%%/CustomerWAR/rest/phonenumber_war";
 	}
 
 	/* READ operation - Uses Customer 12 */
