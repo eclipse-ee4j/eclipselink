@@ -65,6 +65,19 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
           "</srvc:result>" +
         "</srvc:count-infoResponse>";
 
+    // handle case where the xsi namespace decl is on the result element...
+    static final String SOAP_COUNTINFO_RESPONSE_2 =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "<srvc:count-infoResponse xmlns:srvc=\"urn:simplesqlService\">" +
+          "<srvc:result>" +
+            "<simple-sql xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
+              "<count-info>" +
+                "<COUNT>3</COUNT>" +
+              "</count-info>" +
+            "</simple-sql>" +
+          "</srvc:result>" +
+        "</srvc:count-infoResponse>";
+
     @BeforeClass
     public static void setUp() {
 	    if (conn == null) {
@@ -113,13 +126,22 @@ public class SimpleSQLServiceTestSuite extends DBWSTestSuite {
             assertTrue("The wrong number of elements were returned.", ((elts != null && elts.getLength() > 0) && elts.getLength() == 1));
             Node testNode = elts.item(0);
             assertTrue("Didn't find [<srvc:result>] element", testNode.getLocalName().equalsIgnoreCase("result"));
-            
             Document controlDoc = xmlParser.parse(new StringReader(SOAP_COUNTINFO_RESPONSE));
             elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
             Node ctrlNode = elts.item(0);
             
-            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + "\nbut was:\n" + documentToString(testNode), comparer.isNodeEqual(ctrlNode, testNode));
+            Node ctrlNode2 = null;
+            boolean result = comparer.isNodeEqual(ctrlNode, testNode);
+            if (!result) {
+                // second attempt - depending on the env we sometimes see the xsi namespace decl on the result element
+                controlDoc = xmlParser.parse(new StringReader(SOAP_COUNTINFO_RESPONSE_2));
+                elts = controlDoc.getDocumentElement().getElementsByTagNameNS("urn:simplesqlService", "result");
+                ctrlNode2 = elts.item(0);
+                result = comparer.isNodeEqual(ctrlNode2, testNode);
+            }
+            assertTrue("\nDocument comparison failed.  Expected:\n" + documentToString(ctrlNode) + " OR:\n " + documentToString(ctrlNode2) + "\nbut was:\n" + documentToString(testNode), result);
     	} catch (Exception x) {
+    	    x.printStackTrace();
     		fail("Service test failed: " + x.getMessage());
     	}
 	}
