@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 /**
@@ -45,7 +46,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
  * @see XMLField
  * @see XMLConstants
  */
-public class XMLUnionField extends XMLField {
+public class XMLUnionField extends XMLField implements UnionField<NamespaceResolver> {
     private ArrayList schemaTypes;
 
     /**
@@ -69,6 +70,7 @@ public class XMLUnionField extends XMLField {
     * Return the list of schema types
     * @return the list of types
     */
+    @Override
     public ArrayList getSchemaTypes() {
         return schemaTypes;
     }

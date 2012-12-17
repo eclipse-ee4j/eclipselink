@@ -12,21 +12,21 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.oxm.XMLUnionField;
 
 public class TypeNodeValue extends NodeValue {
-    private AbstractDirectMapping directMapping;
+    private DirectMapping directMapping;
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
         return (null != xPathFragment) && xPathFragment.isAttribute();
@@ -42,7 +42,7 @@ public class TypeNodeValue extends NodeValue {
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = directMapping.getFieldValue(objectValue, (AbstractSession) session);
+        Object fieldValue = directMapping.getFieldValue(objectValue, session, marshalRecord);
         if ((null == fieldValue) || (null == namespaceResolver)) {
             return false;
         }
@@ -77,11 +77,11 @@ public class TypeNodeValue extends NodeValue {
         return true;
     }
 
-    public AbstractDirectMapping getDirectMapping() {
+    public DirectMapping getDirectMapping() {
         return directMapping;
     }
 
-    public void setDirectMapping(AbstractDirectMapping directMapping) {
+    public void setDirectMapping(DirectMapping directMapping) {
         this.directMapping = directMapping;
     }
 
@@ -90,20 +90,20 @@ public class TypeNodeValue extends NodeValue {
         if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
         } else if (xmlField.isUnionField()) {
-            return getSchemaTypeForUnion((XMLUnionField) xmlField, value, session);
+            return getSchemaTypeForUnion((UnionField) xmlField, value, session);
         } else if (xmlField.getSchemaType() != null) {
             schemaType = xmlField.getSchemaType();
         }
         return schemaType;
     }
 
-    private QName getSchemaTypeForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
-        ArrayList schemaTypes = xmlField.getSchemaTypes();
+    private QName getSchemaTypeForUnion(UnionField xmlField, Object value, CoreAbstractSession session) {
+        List schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         QName nextQName;
         Class javaClass;
         for (int i = 0; i < schemaTypes.size(); i++) {
-            nextQName = (QName) (xmlField).getSchemaTypes().get(i);
+            nextQName = (QName) xmlField.getSchemaTypes().get(i);
             try {
                 if (nextQName != null) {
                     javaClass = xmlField.getJavaClass(nextQName);

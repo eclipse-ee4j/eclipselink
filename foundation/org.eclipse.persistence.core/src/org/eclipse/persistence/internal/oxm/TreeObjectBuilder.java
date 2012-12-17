@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.oxm.mappings.FragmentMapping;
 import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -54,8 +55,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
@@ -117,7 +116,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
         return primaryKeyMappings;
     }
 
-    public void addTransformationMapping(AbstractTransformationMapping transformationMapping) {
+    public void addTransformationMapping(TransformationMapping transformationMapping) {
         if (null == this.transformationMappings) {
             this.transformationMappings = new ArrayList();
         }
@@ -198,7 +197,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
             Mapping xmlMapping;
     
             // Transformation Mapping
-            AbstractTransformationMapping transformationMapping;
+            TransformationMapping transformationMapping;
             FieldTransformerNodeValue fieldTransformerNodeValue;
             Object[] nextFieldToTransformer;
     
@@ -216,7 +215,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
                 
                 xmlField = (Field)xmlMapping.getField();
                 if (xmlMapping.isTransformationMapping()) {
-                    transformationMapping = (AbstractTransformationMapping)xmlMapping;
+                    transformationMapping = (TransformationMapping)xmlMapping;
                     addTransformationMapping(transformationMapping);
                     fieldTransformerIterator = transformationMapping.getFieldToTransformers().iterator();
                     while (fieldTransformerIterator.hasNext()) {
@@ -383,7 +382,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
                         }
                         typeField.setXPath(typeXPathStringBuilder.toString() + Constants.ATTRIBUTE + xmlDescriptor.getNonNullNamespaceResolver().resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI) + Constants.COLON + Constants.SCHEMA_TYPE_ATTRIBUTE);
                         typeNodeValue = new TypeNodeValue();
-                        typeNodeValue.setDirectMapping((AbstractDirectMapping)xmlMapping);
+                        typeNodeValue.setDirectMapping((DirectMapping)xmlMapping);
                         addChild(typeField.getXPathFragment(), typeNodeValue, xmlDescriptor.getNamespaceResolver());
                     }
                 }
@@ -398,10 +397,10 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
 
     @Override
     public AbstractRecord buildRow(AbstractRecord record, Object object, org.eclipse.persistence.internal.sessions.AbstractSession session, WriteType writeType) {
-        return (AbstractRecord) buildRow((XMLRecord) record, object, session, null, null, writeType);
+        return (AbstractRecord) buildRow((XMLRecord) record, object, session, null, null);
     }
 
-    public org.eclipse.persistence.internal.oxm.record.XMLRecord buildRow(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment, WriteType writeType) {
+    public org.eclipse.persistence.internal.oxm.record.XMLRecord buildRow(org.eclipse.persistence.internal.oxm.record.XMLRecord record, Object object, CoreAbstractSession session, XMLMarshaller marshaller, XPathFragment rootFragment) {
         lazyInitialize();
         XPathNode textNode = rootXPathNode.getTextNode();
         List<XPathNode> nonAttributeChildren = rootXPathNode.getNonAttributeChildren();

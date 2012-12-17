@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.mappings;
 
+import java.util.List;
+
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.internal.core.helper.CoreField;
@@ -44,7 +46,13 @@ public interface TransformationMapping<
      * in the field.
      */
     public void addFieldTransformerClassName(String fieldName, String className);
-    
+
+    /**
+     * INTERNAL:
+     * @return a vector which stores fields and their respective transformers.
+     */
+    public List<Object[]> getFieldToTransformers();
+
     /**
      * To set the attribute method name. The method is invoked internally by TopLink
      * to retrieve the value to store in the domain object. The method receives Record

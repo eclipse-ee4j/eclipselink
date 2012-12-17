@@ -20,7 +20,6 @@ import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 
 public interface ObjectBuilder<
     ABSTRACT_RECORD extends CoreAbstractRecord,
@@ -34,7 +33,7 @@ public interface ObjectBuilder<
         public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField,
             Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
 
-    public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment, WriteType writeType);
+    public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment);
 
     public ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
     

@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
@@ -426,7 +425,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (Field)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
-                objectBuilder.buildRow(marshalRecord, value, session, marshaller, null, WriteType.UNDEFINED);
+                objectBuilder.buildRow(marshalRecord, value, session, marshaller, null);
                 marshalRecord.afterContainmentMarshal(object, value);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
                 objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);

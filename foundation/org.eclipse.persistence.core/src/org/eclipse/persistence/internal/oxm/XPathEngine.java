@@ -25,10 +25,10 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.XMLBinderPolicy;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.UnionField;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.platform.xml.XMLNodeList;
@@ -260,7 +260,7 @@ public class XPathEngine <
         if(xmlField.getLeafElementType() != null){
             schemaType = xmlField.getLeafElementType();
         }else if (xmlField.isUnionField()) {
-            return getValueToWriteForUnion((XMLUnionField)xmlField, value, session);
+            return getValueToWriteForUnion((UnionField)xmlField, value, session);
         }else if (xmlField.isTypedTextField()) {
             schemaType = xmlField.getXMLType(value.getClass());
         }else if (xmlField.getSchemaType() != null) {
@@ -319,8 +319,8 @@ public class XPathEngine <
         return getNonNodeValueToWrite(value, xmlField, session);
     }
 
-    private String getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
-        ArrayList schemaTypes = xmlField.getSchemaTypes();
+    private String getSingleValueToWriteForUnion(UnionField xmlField, Object value, CoreAbstractSession session) {
+        List schemaTypes = xmlField.getSchemaTypes();
         QName schemaType = null;
         for (int i = 0; i < schemaTypes.size(); i++) {
             QName nextQName = (QName)(xmlField).getSchemaTypes().get(i);
@@ -340,7 +340,7 @@ public class XPathEngine <
         return (String) ((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.STRING, schemaType);
     }
 
-    private Object getValueToWriteForUnion(XMLUnionField xmlField, Object value, CoreAbstractSession session) {
+    private Object getValueToWriteForUnion(UnionField xmlField, Object value, CoreAbstractSession session) {
         if (value instanceof List) {
             if (xmlField.usesSingleNode()) {
                 StringBuilder returnStringBuilder = new StringBuilder();

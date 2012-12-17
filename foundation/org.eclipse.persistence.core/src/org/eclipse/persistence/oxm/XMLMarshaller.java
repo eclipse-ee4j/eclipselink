@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.oxm.record.DOMReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.attachment.*;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
@@ -1217,7 +1216,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         	marshalRecord.marshalWithoutRootElement(treeObjectBuilder,object, descriptor, root, isXMLRoot);
         }
         if (treeObjectBuilder != null && !isNil) {
-            treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
+            treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment);
         } else if (isXMLRoot) {
              if(object != null && !isNil) {
             	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {

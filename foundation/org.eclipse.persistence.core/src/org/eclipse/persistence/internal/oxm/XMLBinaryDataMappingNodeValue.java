@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.BinaryMappingContentHandler;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -89,7 +88,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
 
         Marshaller marshaller = marshalRecord.getMarshaller();
-        objectValue = xmlBinaryDataMapping.convertObjectValueToDataValue(objectValue, (Session) session, marshaller);
+        objectValue = xmlBinaryDataMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         if(xPathFragment.isAttribute()){
             if (objectValue == null) {
@@ -282,7 +281,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     }
 
     public void setNullValue(Object object, CoreSession session) {
-        Object value = xmlBinaryDataMapping.getObjectValue(null, (Session) session);
+        Object value = xmlBinaryDataMapping.getObjectValue(null, session);
         xmlBinaryDataMapping.setAttributeValueInObject(object, value);
     }
 

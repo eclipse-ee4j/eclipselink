@@ -20,6 +20,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -34,8 +35,6 @@ import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.CompositeObjectMappingContentHandler;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -206,7 +205,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
 
-            objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment, WriteType.UNDEFINED);
+            objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment);
             marshalRecord.afterContainmentMarshal(object, objectValue);
 
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
@@ -464,7 +463,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(xmlDescriptor != null){
 	            if (xmlDescriptor.hasInheritance()) {
 	                unmarshalRecord.setAttributes(atts);
-	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow((org.eclipse.persistence.oxm.record.UnmarshalRecord) unmarshalRecord, (AbstractSession) unmarshalRecord.getSession());
+	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) unmarshalRecord, unmarshalRecord.getSession());
 	                if (clazz == null) {
 	                    // no xsi:type attribute - look for type indicator on the default root element
 	                    XPathQName leafElementType = unmarshalRecord.getLeafElementType();
