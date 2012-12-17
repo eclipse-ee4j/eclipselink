@@ -1923,7 +1923,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             }
         }
         if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction()) {
-            if (this.isJoinedToTransaction()){
+            if (!this.isJoinedToTransaction()){
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_read_through_txn_for_unsynced_pc"));
             }
             // gf3334, force persistence context early transaction
