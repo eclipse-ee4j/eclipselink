@@ -3175,7 +3175,18 @@
         </antcall>
     </target>
 
+    <target name="prepare-project-cache-persistence-xml">
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml" tofile="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml.original"/>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml.projectcache" tofile="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml"/>
+    </target>
+
+    <target name="restore-multitenant-persistence-xml">
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml" tofile="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml.projectcache"/>
+        <move file="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml.original" tofile="${eclipselink.jpa.test}/resource/eclipselink-advanced-multitenant-model/server/persistence.xml"/>
+    </target>
+
     <target name="server-test-advanced-multitenantEMF">
+        <antcall target="prepare-project-cache-persistence-xml" inheritRefs="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
@@ -3187,9 +3198,11 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <antcall target="restore-multitenant-persistence-xml" inheritRefs="true"/>
     </target>
 
     <target name="server-test-advanced-multitenant123">
+        <antcall target="prepare-project-cache-persistence-xml" inheritRefs="true"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="default"/>
             <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
@@ -3201,6 +3214,7 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <antcall target="restore-multitenant-persistence-xml" inheritRefs="true"/>
     </target>
 
     <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
