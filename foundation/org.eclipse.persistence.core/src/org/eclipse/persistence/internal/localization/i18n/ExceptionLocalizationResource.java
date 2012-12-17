@@ -206,7 +206,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa_criteriaapi_illegal_tuple_or_array_value", "Illegal tuple or array-valued selection item found. Argument found: {0}"},
                                            { "jpa_criteriaapi_alias_reused", "More than one selection item uses the same alias name.  Duplicate names used were: {0}"},
                                            { "cannot_read_through_txn_for_unsynced_pc", "The property was set to join this persistence context to the currently active transaction but this is not a SYNCHRONIZED persistence context."},
-                                           { "unable_to_unwrap_jpa", "Provider does not support unwrapping {0} to {1}"}
+                                           { "unable_to_unwrap_jpa", "Provider does not support unwrapping {0} to {1}"},
+                                           { "argument_keyed_named_query_with_JPA", "Multiple queries with name: {0} exist but names must be unique when using EntityManagerFactory.addNamedQuery()"}
                                            
                                         };
     /**

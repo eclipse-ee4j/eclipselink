@@ -51,6 +51,7 @@ import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
@@ -526,7 +527,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Add the query to the session queries.
      */
-    protected synchronized void addQuery(DatabaseQuery query, boolean replace) {
+    protected synchronized void addQuery(DatabaseQuery query, boolean nameMustBeUnique) {
         Vector queriesByName = (Vector)getQueries().get(query.getName());
         if (queriesByName == null) {
             // lazily create Vector in Hashtable.
@@ -534,13 +535,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
             getQueries().put(query.getName(), queriesByName);
         }
 
-        // Check that we do not already have a query that matched it
-        for (Iterator enumtr = queriesByName.iterator(); enumtr.hasNext();) {
-            DatabaseQuery existingQuery = (DatabaseQuery)enumtr.next();
-            if (Helper.areTypesAssignable(query.getArgumentTypes(), existingQuery.getArgumentTypes())) {
-                if (replace){
-                    enumtr.remove();
-                }else{
+        if (nameMustBeUnique){ // JPA addNamedQuery
+            if (queriesByName.size() <= 1){
+                queriesByName.clear();
+            }else{
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("argument_keyed_named_query_with_JPA", new Object[]{query.getName()}));
+            }
+        }else{
+            // Check that we do not already have a query that matched it
+            for (Iterator enumtr = queriesByName.iterator(); enumtr.hasNext();) {
+                DatabaseQuery existingQuery = (DatabaseQuery)enumtr.next();
+                if (Helper.areTypesAssignable(query.getArgumentTypes(), existingQuery.getArgumentTypes())) {
                     throw ValidationException.existingQueryTypeConflict(query, existingQuery);
                 }
             }

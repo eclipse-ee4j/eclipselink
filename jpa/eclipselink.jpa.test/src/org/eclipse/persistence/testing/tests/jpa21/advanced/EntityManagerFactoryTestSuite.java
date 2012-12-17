@@ -8,60 +8,24 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls       
- *     07/13/2012-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2013-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/27/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     14/12/2012 -2.5 Gordon Yorke 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
-import static javax.persistence.ParameterMode.INOUT;
-import static javax.persistence.ParameterMode.OUT;
-
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.ParameterMode;
 import javax.persistence.Query;
-import javax.persistence.StoredProcedureParameter;
-import javax.persistence.StoredProcedureQuery;
 
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.queries.ResultSetMappingQuery;
-import org.eclipse.persistence.queries.SQLCall;
-
-import org.eclipse.persistence.testing.models.jpa21.advanced.Address;
-import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeeDetails;
-import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa21.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
-
-import org.eclipse.persistence.queries.ColumnResult;
-import org.eclipse.persistence.queries.ConstructorResult;
-import org.eclipse.persistence.queries.EntityResult;
-import org.eclipse.persistence.queries.FieldResult;
-import org.eclipse.persistence.queries.SQLResultSetMapping;
-import org.eclipse.persistence.queries.StoredProcedureCall;
-
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import junit.framework.TestSuite;
 import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeePopulator;
+
 
 public class EntityManagerFactoryTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
