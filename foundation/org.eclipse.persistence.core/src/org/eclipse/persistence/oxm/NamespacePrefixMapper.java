@@ -17,5 +17,5 @@ package org.eclipse.persistence.oxm;
  * An implementation of this class can be set on an instance of XMLMarshaller to allow for 
  * each instance of XMLMarshaller to use different namespace prefixes. 
  */
-public abstract class NamespacePrefixMapper extends org.eclipse.persistence.internal.oxm.NamespacePrefixMapper {
+public abstract class NamespacePrefixMapper extends org.eclipse.persistence.internal.oxm.NamespacePrefixMapper<MediaType> {
 }

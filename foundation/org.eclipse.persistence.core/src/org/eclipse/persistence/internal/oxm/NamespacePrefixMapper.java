@@ -12,14 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.oxm.MediaType;
-
 /**
  * <p><b>Purpose</b>:Provides a means to customise the namespace prefixes used while marshalling
  * An implementation of this class can be set on an instance of XMLMarshaller to allow for 
  * each instance of XMLMarshaller to use different namespace prefixes. 
  */
-public abstract class NamespacePrefixMapper {
+public abstract class NamespacePrefixMapper<
+    MEDIA_TYPE extends MediaType> {
     
     public abstract String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix);
 
@@ -53,7 +52,7 @@ public abstract class NamespacePrefixMapper {
     /**
      * Return true if this prefix mapper applies to the media type provided.
      */
-    public boolean supportsMediaType(MediaType mediaType) {
+    public boolean supportsMediaType(MEDIA_TYPE mediaType) {
         return true;
     }
 
