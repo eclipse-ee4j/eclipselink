@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.security.AccessController;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
@@ -47,6 +48,12 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -457,22 +464,45 @@ public class QueryOperation extends Operation {
                     } else if (fieldValue instanceof Blob) {
                         fieldValue = conversionManager.convertObject((Blob) fieldValue, ClassConstants.APBYTE);
                     } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLESQLXML_STR)) {
+                        // handle XMLType case where an oracle.jdbc.driver.OracleSQLXML instance was returned
                         try {
-                            Class oracleSQLXML = PrivilegedAccessHelper.getClassForName(ORACLESQLXML_STR, false, this.getClass().getClassLoader());
-                            Method getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {});
-                            fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, fieldValue, new Object[] {});
+                            Class oracleSQLXML;
+                            Method getStringMethod;
+                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                oracleSQLXML = AccessController.doPrivileged(new PrivilegedClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader()));
+                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {}));
+                                fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
+                            } else {
+                                oracleSQLXML = PrivilegedAccessHelper.getClassForName(ORACLESQLXML_STR, true, this.getClass().getClassLoader());
+                                getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(oracleSQLXML, GETSTRING_METHOD, new Class[] {});
+                                fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, fieldValue, new Object[] {});
+                            }
                         } catch (Exception x) {
                             // if the required resources are not available there's nothing we can do...
                         }
                     } else if (fieldValue.getClass().getName().equalsIgnoreCase(ORACLEOPAQUE_STR)) {
                         // handle XMLType case where an oracle.sql.OPAQUE instance was returned
                         try {
-                            Class oracleOPAQUE = PrivilegedAccessHelper.getClassForName(ORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
-                            Class xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());
-                            Constructor xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
-                            Object xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
-                            Method getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
-                            fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
+                            Class oracleOPAQUE;
+                            Class xmlTypeFactoryClass;
+                            Constructor xmlTypeFactoryConstructor;
+                            Object xmlTypeFactory;
+                            Method getStringMethod;
+                            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                                oracleOPAQUE = AccessController.doPrivileged(new PrivilegedClassForName(ORACLEOPAQUE_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryClass = AccessController.doPrivileged(new PrivilegedClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader()));
+                                xmlTypeFactoryConstructor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlTypeFactoryClass, new Class[0], true));
+                                xmlTypeFactory = AccessController.doPrivileged(new PrivilegedInvokeConstructor(xmlTypeFactoryConstructor, new Object[0]));
+                                getStringMethod = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE}));
+                                fieldValue = (String) AccessController.doPrivileged(new PrivilegedMethodInvoker(getStringMethod, fieldValue, new Object[] {}));
+                            } else {
+                                oracleOPAQUE = PrivilegedAccessHelper.getClassForName(ORACLEOPAQUE_STR, false, this.getClass().getClassLoader());
+                                xmlTypeFactoryClass = PrivilegedAccessHelper.getClassForName(XMLTYPEFACTORY_STR, true, this.getClass().getClassLoader());
+                                xmlTypeFactoryConstructor = PrivilegedAccessHelper.getConstructorFor(xmlTypeFactoryClass, new Class[0], true);
+                                xmlTypeFactory = PrivilegedAccessHelper.invokeConstructor(xmlTypeFactoryConstructor, new Object[0]);
+                                getStringMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlTypeFactoryClass, GETSTRING_METHOD, new Class[] {oracleOPAQUE});
+                                fieldValue = (String) PrivilegedAccessHelper.invokeMethod(getStringMethod, xmlTypeFactory, new Object[] {fieldValue});
+                            }
                         } catch (Exception x) {
                             // if the required resources are not available there's nothing we can do...
                         }
