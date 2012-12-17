@@ -13,7 +13,7 @@
 package org.eclipse.persistence.internal.oxm.record.namespaces;
 
 import org.eclipse.persistence.internal.oxm.Namespace;
-import org.eclipse.persistence.oxm.NamespacePrefixMapper;
+import org.eclipse.persistence.internal.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 
 /**
@@ -29,7 +29,7 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
     private NamespacePrefixMapper prefixMapper;
     private NamespaceResolver contextualNamespaces;
     
-    public PrefixMapperNamespaceResolver(org.eclipse.persistence.oxm.NamespacePrefixMapper mapper, NamespaceResolver nestedResolver) {
+    public PrefixMapperNamespaceResolver(NamespacePrefixMapper mapper, NamespaceResolver nestedResolver) {
         prefixMapper = mapper;
         String[] declarations = mapper.getContextualNamespaceDecls();
         

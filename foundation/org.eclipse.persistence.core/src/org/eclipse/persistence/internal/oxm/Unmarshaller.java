@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.validation.Schema;
 
-import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
 

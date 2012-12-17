@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
 public abstract class Marshaller<
     CONTEXT extends Context,
-    MEDIA_TYPE extends MediaType> {
+    MEDIA_TYPE extends MediaType,
+    NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper> {
 
     public abstract XMLAttachmentMarshaller getAttachmentMarshaller();
     
@@ -33,7 +33,7 @@ public abstract class Marshaller<
     /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      */
-    public abstract NamespacePrefixMapper getNamespacePrefixMapper();
+    public abstract NAMESPACE_PREFIX_MAPPER getNamespacePrefixMapper();
 
     /**
      * INTERNAL
