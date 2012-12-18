@@ -14,9 +14,10 @@ package org.eclipse.persistence.oxm;
 
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.DatasourceLogin;
 
 /**
  * In OX, the platform determines which parsing method will be used, DOM vs SAX.
@@ -33,7 +34,7 @@ import org.eclipse.persistence.sessions.*;
  * @see org.eclipse.persistence.oxm.platform.DOMPlatform
  *
  */
-public class XMLLogin extends DatasourceLogin {
+public class XMLLogin extends DatasourceLogin implements Login {
     private boolean equalNamespaceResolvers;
 
     private DocumentPreservationPolicy documentPreservationPolicy;
@@ -72,11 +73,13 @@ public class XMLLogin extends DatasourceLogin {
     public String toString() {
         return Helper.getShortClassName(this) + "(" + this.getUserName() + ")\n\t( " + this.getPlatformClassName() + ")";
     }
-    
+
+    @Override
     public DocumentPreservationPolicy getDocumentPreservationPolicy() {
         return this.documentPreservationPolicy;
     }
-    
+
+    @Override
     public void setDocumentPreservationPolicy(DocumentPreservationPolicy policy) {
         this.documentPreservationPolicy = policy;
     }

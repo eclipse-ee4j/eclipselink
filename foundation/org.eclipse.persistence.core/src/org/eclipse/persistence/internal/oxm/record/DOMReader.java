@@ -21,10 +21,10 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.mappings.Login;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
 import org.w3c.dom.Attr;
@@ -341,7 +341,7 @@ public class DOMReader extends XMLReaderAdapter {
             return null;
         }
         if(docPresPolicy == null) {
-            XMLLogin login = (XMLLogin)session.getDatasourceLogin();
+            Login login = (Login)session.getDatasourceLogin();
             docPresPolicy = login.getDocumentPreservationPolicy();
         }
         return docPresPolicy.getObjectForNode(currentNode, selfRecordMapping);
