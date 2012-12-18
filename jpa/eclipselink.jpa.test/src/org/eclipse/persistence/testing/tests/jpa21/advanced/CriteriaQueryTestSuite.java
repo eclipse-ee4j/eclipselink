@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     09/21/2012-2.5 Chris Delahunt 
+ *     09/21/2012-2.5 Chris Delahunt
  *       - 367452: JPA 2.1 Specification support for joins with ON clause
- *     09/26/2012-2.5 Chris Delahunt 
+ *     09/26/2012-2.5 Chris Delahunt
  *       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
  */
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
@@ -165,16 +165,16 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     /**
-     * This test verifies that the SQL generated for a criteria query with joins and an on clause matches 
+     * This test verifies that the SQL generated for a criteria query with joins and an on clause matches
      * the SQL generated for the equivalent JPQL query, to ensure that excess table joins are not occurring that do
-     * not affect the results.  
+     * not affect the results.
      */
     public void testOnClauseCompareSQL() {
         EntityManager em = createEntityManager();
         JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("Select e from Employee e left join e.manager m left join m.address a on a.city = 'Ottawa' " +
                 "where a.postalCode is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
+        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
@@ -185,7 +185,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         cq.where(qb.isNotNull(address.get("postalCode")));
         EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
 
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
+        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
@@ -217,13 +217,13 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances", 
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
                     nrOfEmps, updated);
             //commitTransaction(em);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
-            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database", 
+            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
@@ -252,19 +252,19 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances", 
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
                     nrOfEmps, updated);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
-            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database", 
+            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
             em.close();
-        } 
+        }
     }
 
     //test ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
@@ -284,7 +284,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         caseExp.when(qb.equal(root.get("firstName"),  "Bob"), "Jones");
         caseExp.when(qb.equal(root.get("firstName"),  "Jill"), "Jones");
         caseExp.otherwise("");
-        cq.set(root.get("lastName"), caseExp);
+        cq.set(root.<String>get("lastName"), caseExp);
 
         beginTransaction(em);
         try {
@@ -299,14 +299,14 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             em.close();
-        } 
+        }
         assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
         for (Employee e : results) {
             assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
         }
 
     }
-    
+
     public void testCriteriaUpdateEmbeddedField() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
@@ -332,20 +332,20 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             clearCache();
 
             int updated = em.createQuery(cq).executeUpdate();
-            assertEquals("testCriteriaUpdateEmbeddedField: wrong number of updated instances", 
+            assertEquals("testCriteriaUpdateEmbeddedField: wrong number of updated instances",
                     nrOfEmps, updated);
 
             // check database changes
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.period.startDate = :startDate")
                     .setParameter("startDate", startDate).getSingleResult()).intValue();
-            assertEquals("testCriteriaUpdateEmbeddedField: unexpected number of changed values in the database", 
+            assertEquals("testCriteriaUpdateEmbeddedField: unexpected number of changed values in the database",
                     nrOfEmps, nr);
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
             em.close();
-        } 
+        }
     }
 
     public void testCriteriaUpdateCompareSQL() {
@@ -357,8 +357,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("UPDATE Employee e SET e.firstName = 'CHANGED' where e.firstName is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
-                new org.eclipse.persistence.sessions.DatabaseRecord());      
+        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
+                new org.eclipse.persistence.sessions.DatabaseRecord());
 
         // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
@@ -368,7 +368,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         cq.where(qb.isNotNull(root.get("firstName")));
         EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
 
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
+        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
@@ -381,7 +381,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
 
     /////DELETE Criteria tests:
-    public void simpleCriteriaDeleteTest() {          
+    public void simpleCriteriaDeleteTest() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
@@ -399,7 +399,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         try {
             Query q = em.createQuery(cq);
             int updated = q.executeUpdate();
-            assertEquals("simpleCriteriaDeleteTest: wrong number of deleted instances"+updated, 
+            assertEquals("simpleCriteriaDeleteTest: wrong number of deleted instances"+updated,
                     nrOfEmps, updated);
 
             // check database changes
@@ -433,7 +433,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             int updated = testQuery.executeUpdate();
-            assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated, 
+            assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated,
                     nrOfEmps, updated);
 
             // check database changes
@@ -448,11 +448,11 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
 
-    public void testCriteriaDeleteCompareSQL() {          
+    public void testCriteriaDeleteCompareSQL() {
         EntityManager em = createEntityManager();
         JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("DELETE FROM PhoneNumber phone where phone.owner.firstName is not null");
-        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
+        String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         // test query "Delete Employee e where e.firstName is not null";
@@ -462,7 +462,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         cq.where(qb.isNotNull(root.get("owner").get("firstName")));
         EJBQueryImpl testQuery = (EJBQueryImpl)jpaEM.createQuery(cq);
 
-        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(), 
+        String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
