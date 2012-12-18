@@ -101,7 +101,7 @@
     </condition>
     <property name="jpatest.2.common.plugins.dir" value="${jpatest.build.location}/${jpatest.2.base.dir}/plugins"/>
     <property name="jpatest.2.modelgentest.dir"   value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
-    <property name="jpatest.2.jpa.dir"            value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
+    <property name="jpatest.2.jpa.plugins.dir"    value="${jpatest.build.location}/${jpatest.2.base.dir}/jpa/plugins"/>
     <property name="jpatest.2.core.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.core"/>
     <property name="jpatest.2.coretest.dir"       value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
     <property name="jpatest.2.oracle.dir"         value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
@@ -370,8 +370,8 @@
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <property name="eclipselink.extension.oracle.nosql.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.trunk}"/>
         <property name="eclipselink.extension.oracle.nosql.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.test.trunk}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
+        <config-compile-path/>
+        <config-run-path/>
     </target>
 
     <!-- Configures paths for Eclipse project checkout. -->
@@ -382,16 +382,17 @@
         <property name="eclipselink.moxy.dir" value="${eclipselink.moxy}"/>
         <property name="eclipselink.moxy.lib.dir" value="${eclipselink.moxy.plugins}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
-        <antcall target="config-compile-path" inheritRefs="true"/>
-        <antcall target="config-run-path" inheritRefs="true"/>
+        <config-compile-path/>
+        <config-run-path/>
     </target>
 
-    <target name="config-compile-path">
+    <macrodef name="config-compile-path">
+        <sequential>
         <path id="compile.path">
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
             <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
-                includes="${eclipselink.jpa.depend}"/>
+                includes="${persistence20.jar}, ${beanvalidation.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
@@ -423,7 +424,8 @@
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
-    </target>
+        </sequential>
+    </macrodef>
 
     <!-- Default ant target, compiles and packages test jars, does not run tests. -->
     <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
@@ -551,30 +553,6 @@
         </javac>
     </target>
 
-    <!-- Prototype only: intended for the time when both jpa2.0 compatability (2.0 compiled), and 2.1 functionality testing (2.1 compiled) will need to be performed -->
-    <target name="compile-jpa21-standard">
-        <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
-               destdir="${eclipselink.jpa.test}/${classes.dir}"
-               debug="${javac.debug}"
-               encoding="UTF-8"
-               debuglevel="${javac.debuglevel}"
-               optimize="${javac.optimize}"
-               source="${javac.version}"
-               target="${javac.version}"
-               deprecation="${javac.deprecation}"
-               failonerror="true">
-            <include name="org/eclipse/persistence/testing/**"/>
-            <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
-            <exclude name="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
-            <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
-            <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
-            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
-            <classpath>
-                <path refid="jpa21.compile.path"/>
-            </classpath>
-        </javac>
-    </target>
-
     <target name="compile-fullregression">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
@@ -649,11 +627,6 @@
                     excludes="org/eclipse/persistence/testing/framework/**/*.class,
                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
-        <!-- commented out because is misleading with no 21 test classes added to jar -->
-        <!-- jar jarfile="${eclipselink.jpa.test}/${jpa21.test.jar}">
-           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                    includes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
-        </jar -->
     </target>
 
     <!-- Copy Spring specified ***spring.xml, appContext.properties and persistence.xml to default build location-->
@@ -1236,7 +1209,8 @@
     <!-- Testing -->
 
     <!-- Classpath used for running tests. -->
-    <target name="config-run-path">
+    <macrodef name="config-run-path">
+        <sequential>
         <path id="run.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
@@ -1333,7 +1307,8 @@
             <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-test.jar"/>
             <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-model.jar"/>
         </path>
-    </target>
+        </sequential>
+    </macrodef>
 
     <!-- Clean all build generated content. -->
     <target name="clean-test" description="Clean the test">
