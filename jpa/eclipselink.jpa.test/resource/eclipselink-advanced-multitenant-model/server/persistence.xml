@@ -76,20 +76,6 @@
     <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
-        <mapping-file>META-INF/multitenant-vpd.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        <properties>
-            <property name="eclipselink.target-server" value="%%server-platform%%"/>
-            <property name="eclipselink.target-database" value="%%database-platform%%"/>
-            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
-            <property name="eclipselink.session-name" value="multi-tenant-vpd"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <!--property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropMultitenantVPD_ddlGeneration.jdbc"/--> 
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
-        </properties>
     </persistence-unit>
     <!--multi-tenant-table-per-tenant PU-->
     <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
