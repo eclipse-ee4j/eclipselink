@@ -27,6 +27,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "exception_marshalling_entity_metadata", "An exception was caught while marshalling the metadata for entity [{0}] in persistence unit [{1}]: [{2}]"},
         { "exception_creating_persistence_context", "An Exception was thrown while creating a JPA persistence context for persistence unit: [{0}]: [{1}]"},
         { "exception_while_updating_attribute", "An Exception was thrown while updating an entity of type [{0}] on persistence unit [{1}]: [{2}]"},
+        { "exception_while_removing_attribute", "An Exception was thrown while removing attribute [{0}] on entity of type [{1}] on persistence unit [{2}]: [{3}]"},
         { "exception_while_unmarhalling_entity", "An Exception was thrown while unmarshalling an entity of type [{0}] in persitence unit [{1}]: [{2}]" },
         { "exception_creating_jaxb_context", "An Exception was thrown while creating a JAXBContext for persistence unit [{0}]: [{1}]"},
         { "exception_thrown_while_creating_dynamic_entity", "An Exception was thrown creating a dynamic entity of type [{0}]: [{1}]"},
@@ -51,7 +52,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
 
     @Override
     protected Object[][] getContents() {
-        // TODO Auto-generated method stub
         return contents;
     }
 

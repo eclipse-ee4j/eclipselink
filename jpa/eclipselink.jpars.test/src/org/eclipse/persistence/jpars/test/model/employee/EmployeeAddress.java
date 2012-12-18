@@ -23,14 +23,23 @@ import javax.persistence.Table;
 
 @NamedQueries({
         @NamedQuery(
-                name = "EmployeeAddress.getPicture",
-                query = "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
+                name = "EmployeeAddress.getRegion",
+                query = "SELECT u.postalCode, u.province, u.street FROM EmployeeAddress u"
         ),
         @NamedQuery(
                 name = "EmployeeAddress.getById",
                 query = "SELECT u FROM EmployeeAddress u where u.id = :id"
+        ),
+        @NamedQuery(
+                name = "EmployeeAddress.updatePostalCode",
+                query = "UPDATE EmployeeAddress u SET u.postalCode = :postalCode where u.id = :id"
+        ),
+        @NamedQuery(
+                name = "EmployeeAddress.getAll",
+                query = "SELECT u FROM EmployeeAddress u"
         )
 })
+
 @Entity
 @Table(name = "JPARS_EMPLOYEEADDRESS")
 public class EmployeeAddress {

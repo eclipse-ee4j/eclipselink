@@ -12,11 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +56,9 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredFields;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
@@ -61,9 +70,11 @@ import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
@@ -267,7 +278,6 @@ public class PersistenceContext {
             } else {
                 metadataLocations.add(passedOXMLocations);
             }
-
         }
 
         metadataLocations.add(new LinkMetadataSource());
@@ -450,41 +460,105 @@ public class PersistenceContext {
      * @param attributeValue the attribute value
      * @param partner the partner
      * @return the object
+     *  
      */
-    public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, String attribute, String listItemId, Object entity, String partner)
+    {
         EntityManager em = getEmf().createEntityManager(tenantId);
+        String fieldName = null;
 
         try {
-            Object object = em.find(getClass(entityName), id, properties);
-            ClassDescriptor descriptor = getJpaSession().getClassDescriptor(getClass(entityName));
+            Class<?> clazz = getClass(entityName);
+            ClassDescriptor descriptor = getJpaSession().getClassDescriptor(clazz);
             DatabaseMapping mapping = descriptor.getMappingForAttributeName(attribute);
-            if (mapping == null){
+            if (mapping == null) {
                 return null;
-            } else if (mapping.isObjectReferenceMapping() || mapping.isCollectionMapping()){
+            } else if (mapping.isObjectReferenceMapping() || mapping.isCollectionMapping()) {
                 DatabaseMapping partnerMapping = null;
-                if (partner != null){
-                    ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                Object originalAttributeValue = null;
+                ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping) mapping).getReferenceDescriptor();
+                if (partner != null) {
                     partnerMapping = referenceDescriptor.getMappingForAttributeName(partner);
-                    if (partnerMapping == null){
+                    if (partnerMapping == null) {
                         return null;
                     }
                 }
-                transaction.beginTransaction(em);
-                try{
-                    attributeValue = em.merge(attributeValue);
-                    removeMappingValueFromObject(object, attributeValue, mapping, partnerMapping);
-                    transaction.commitTransaction(em);
-                } catch (Exception e){
-                    transaction.rollbackTransaction(em);
-                    return null;
+                Field[] fields = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    fields = AccessController.doPrivileged(new PrivilegedGetDeclaredFields(clazz));
+                } else {
+                    fields = PrivilegedAccessHelper.getDeclaredFields(clazz);
                 }
-            } else {
-                return null;
+
+                for (int i = 0; i < fields.length; i++) {
+                    Field field = fields[i];
+                    fieldName = field.getName();
+                    if (fieldName.equals(attribute)) {
+                        try {
+                            // call clear on this collection 
+                            Object attributeValue = getAttribute(entity, attribute);
+                            originalAttributeValue = attributeValue;
+                            if (attributeValue instanceof Collection) {
+                                if (listItemId == null) {
+                                    // no collection member specified in request (listItemId=null) remove entire collection
+                                    ((Collection) attributeValue).clear();
+                                } else {
+                                    Object realListItemId = IdHelper.buildId(this, referenceDescriptor.getAlias(), listItemId);
+                                    Object member = this.find(referenceDescriptor.getAlias(), realListItemId);
+                                    ((Collection) attributeValue).remove(member);
+                                }
+                            } else if (attributeValue instanceof Object) {
+                                attributeValue = null;
+                            } else {
+                                attributeValue = 0;
+                            }
+                            break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+                }
+
+                transaction.beginTransaction(em);
+                entity = em.merge(entity);
+                removeMappingValueFromObject(entity, originalAttributeValue, mapping, partnerMapping);
+                transaction.commitTransaction(em);
+                return entity;
             }
-            return object;
+            return null;
+        } catch (Exception e) {
+            JPARSLogger.fine("exception_while_removing_attribute", new Object[] { fieldName, entityName, getName(), e.toString() });
+            transaction.rollbackTransaction(em);
+            return null;
         } finally {
             em.close();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object getAttribute(Object entity, String propertyName) {
+        try {
+            BeanInfo info = Introspector.getBeanInfo(entity.getClass(), Object.class);
+            PropertyDescriptor[] props = info.getPropertyDescriptors();
+            for (PropertyDescriptor pd : props) {
+                String name = pd.getName();
+                if (propertyName.equals(name)) {
+                    Method getter = pd.getReadMethod();
+                    Object value = null;
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        value = AccessController.doPrivileged(new PrivilegedMethodInvoker(getter, entity));
+                    } else {
+                        value = PrivilegedAccessHelper.invokeMethod(getter, entity);
+                    }
+                    return value;
+                }
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+        return null;
     }
 
     @SuppressWarnings("rawtypes")
@@ -690,20 +764,20 @@ public class PersistenceContext {
     }
 
     /**
-     * Query exceute update.
+     * Query execute update.
      *
      * @param tenantId the tenant id
      * @param name the name
      * @param parameters the parameters
      * @param hints the hints
-     * @return the object
+     * @return the int
      */
-    public Object queryExecuteUpdate(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+    public int queryExecuteUpdate(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
         EntityManager em = getEmf().createEntityManager(tenantId);
         try {
             Query query = constructQuery(em, name, parameters, hints);
             transaction.beginTransaction(em);
-            Object result = query.executeUpdate();
+            int result = query.executeUpdate();
             transaction.commitTransaction(em);
             return result;
         } finally {
@@ -750,8 +824,48 @@ public class PersistenceContext {
         }
     }
 
+    /**
+     * Query multiple results.
+     *
+     * @param query the query
+     * @return the list
+     */
     @SuppressWarnings("rawtypes")
-    private Query constructQuery(EntityManager em, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+    public List queryMultipleResults(Query query) {
+        return query.getResultList();
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected Query constructQuery(EntityManager em, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+        Query query = em.createNamedQuery(name);
+        DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
+        if (parameters != null) {
+            Iterator i = parameters.keySet().iterator();
+            while (i.hasNext()) {
+                String key = (String) i.next();
+                Class parameterClass = null;
+                int index = dbQuery.getArguments().indexOf(key);
+                if (index >= 0) {
+                    parameterClass = dbQuery.getArgumentTypes().get(index);
+                }
+                Object parameter = parameters.get(key);
+                if (parameterClass != null) {
+                    parameter = ConversionManager.getDefaultManager().convertObject(parameter, parameterClass);
+                }
+                query.setParameter(key, parameter);
+            }
+        }
+        if (hints != null) {
+            for (String key : hints.keySet()) {
+                query.setHint(key, hints.get(key));
+            }
+        }
+        return query;
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected Query buildQuery(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
         Query query = em.createNamedQuery(name);
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
         if (parameters != null) {
@@ -961,7 +1075,7 @@ public class PersistenceContext {
      * the actual objects in the relationships
      * @throws JAXBException
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         if (sendRelationships) {
             preMarshallEntity(object);
@@ -978,24 +1092,24 @@ public class PersistenceContext {
             marshaller.setAdapter(adapter);
         }
 
-        if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List){
+        if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List) {
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
             XMLStreamWriter writer = null;
-            try{
+            try {
                 writer = outputFactory.createXMLStreamWriter(output);
                 writer.writeStartDocument();
-                writer.writeStartElement("List");
-                for (Object o: (List<Object>)object){
-                    marshaller.marshal(o, writer);  
+                writer.writeStartElement(ConfigDefaults.JPARS_LIST_GROUPING_NAME);
+                for (Object o : (List<Object>) object) {
+                    marshaller.marshal(o, writer);
                 }
                 writer.writeEndDocument();
                 postMarshallEntity(object);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw new JPARSException(e.toString());
             }
-        } else {       
+        } else {
             marshaller.marshal(object, output);
             postMarshallEntity(object);
         }

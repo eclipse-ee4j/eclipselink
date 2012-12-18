@@ -48,8 +48,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 @Path("/{context}/entity/")
 public class EntityResource extends AbstractResource {
 
-    public static final String RELATIONSHIP_PARTNER = "partner";
-    
     @GET
     @Path("{type}/{key}/{attribute}")
     public Response findAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute,
@@ -67,10 +65,10 @@ public class EntityResource extends AbstractResource {
             }
             return Response.status(Status.NOT_FOUND).build();
         }
-        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
         Object id = IdHelper.buildId(app, type, key);
 
-        Object entity = app.findAttribute(discriminators, type, id, getHintMap(ui), attribute);
+        Object entity = app.findAttribute(discriminators, type, id, getQueryParameters(ui), attribute);
 
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { type, key, attribute, persistenceUnit });
@@ -97,11 +95,11 @@ public class EntityResource extends AbstractResource {
             }
             return Response.status(Status.NOT_FOUND).build();
         }
-        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
 
         Object id = IdHelper.buildId(app, type, key);
 
-        Object entity = app.find(discriminators, type, id, getHintMap(ui));
+        Object entity = app.find(discriminators, type, id, getQueryParameters(ui));
 
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { type, key, persistenceUnit });
@@ -147,7 +145,7 @@ public class EntityResource extends AbstractResource {
             }
         }
 
-        app.create(getParameterMap(uriInfo, persistenceUnit), entity);
+        app.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
         ResponseBuilder rb = Response.status(Status.CREATED);
         rb.entity(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes()));
         return rb.build();
@@ -178,7 +176,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        entity = app.merge(getParameterMap(uriInfo, persistenceUnit), entity);
+        entity = app.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
     
@@ -203,7 +201,7 @@ public class EntityResource extends AbstractResource {
         Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
-        String partner = (String) getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
+        String partner = (String) getMatrixParameters(ui, attribute).get(MatrixParameters.JPARS_RELATIONSHIP_PARTNER);
         try {
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
@@ -217,7 +215,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        Object result = app.updateOrAddAttribute(getParameterMap(ui, persistenceUnit), type, id, getHintMap(ui), attribute, entity, partner);
+        Object result = app.updateOrAddAttribute(getMatrixParameters(ui, persistenceUnit), type, id, getQueryParameters(ui), attribute, entity, partner);
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
@@ -230,39 +228,50 @@ public class EntityResource extends AbstractResource {
     @DELETE
     @Path("{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute,
-            @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
-        return removeAttribute(persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri(), in);
+            @Context HttpHeaders hh, @Context UriInfo ui) {
+        String partner = null;
+        String listItemId = null;
+        // partner should have been a query parameter...however to make this API compatible with other APIs, it is defined as a matrix parameter here for now
+        // See Bug 396791 - https://bugs.eclipse.org/bugs/show_bug.cgi?id=396791
+        Map<String, String> matrixParams = getMatrixParameters(ui, attribute);
+        if ((matrixParams != null) && (!matrixParams.isEmpty())) {
+            partner = (String) matrixParams.get(MatrixParameters.JPARS_RELATIONSHIP_PARTNER);
+        }
+        // listItemId is a predefined keyword, so it is a query parameter by convention
+        Map<String, Object> queryParams = getQueryParameters(ui);
+        if ((queryParams != null) && (!queryParams.isEmpty())) {
+            listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
+        }
+        return removeAttributeInternal(persistenceUnit, type, key, attribute, listItemId, partner, hh, ui);
     }
 
-    protected Response removeAttribute(String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response removeAttributeInternal(String persistenceUnit, String type, String key, String attribute, String listItemId, String partner, HttpHeaders hh, UriInfo ui) {
+        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
+        if ((attribute == null) && (listItemId == null)) {
+            return Response.status(Status.BAD_REQUEST).build();
         }
 
         Object id = IdHelper.buildId(app, type, key);
 
-        Object entity = null;
-        String partner = (String) getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
-        try {
-            ClassDescriptor descriptor = app.getDescriptor(type);
-            DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
-            if (!mapping.isForeignReferenceMapping()) {
-                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-                return Response.status(Status.NOT_FOUND).build();
-            }
-            entity = app.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
-        } catch (JAXBException e) {
-            JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).build();
+        ClassDescriptor descriptor = app.getDescriptor(type);
+        DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
+        if (!mapping.isForeignReferenceMapping()) {
+            JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
+            return Response.status(Status.NOT_FOUND).build();
         }
 
-        Object result = app.removeAttribute(getParameterMap(ui, persistenceUnit), type, id, getHintMap(ui), attribute, entity, partner);
+        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
+        Object entity = app.find(discriminators, type, id, getQueryParameters(ui));
+        Object result = app.removeAttribute(getMatrixParameters(ui, persistenceUnit), type, id, attribute, listItemId, entity, partner);
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
@@ -289,7 +298,7 @@ public class EntityResource extends AbstractResource {
             return Response.status(Status.NOT_FOUND).build();
         }
 
-        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
         Object id = IdHelper.buildId(app, type, key);
         app.delete(discriminators, type, id);
         return Response.ok().build();

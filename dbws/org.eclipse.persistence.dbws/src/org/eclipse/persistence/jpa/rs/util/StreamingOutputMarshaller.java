@@ -34,8 +34,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.response.QueryResultList;
 
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided
@@ -46,6 +49,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceContext;
  * @since EclipseLink 2.4.0
  */
 public class StreamingOutputMarshaller implements StreamingOutput {
+    public static final String NO_ROUTE_JAXB_ELEMENT_LABEL = "result";
     private PersistenceContext context;
     private Object result;
     private MediaType mediaType;
@@ -61,13 +65,28 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     }
 
     public void write(OutputStream output) throws IOException, WebApplicationException {
-        if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
+        if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
             output.write((byte[])result);
         } else if (result instanceof String){
             OutputStreamWriter writer = new OutputStreamWriter(output);
             writer.write((String)result);
             writer.flush();
             writer.close();
+        } else if (result instanceof QueryResultList) {
+            try {
+                Class<?>[] jaxbClasses = new Class[] { QueryResultList.class };
+                JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
+                JAXBContextFactory.createContext(jaxbClasses, null, QueryResultList.class.getClassLoader());
+                Marshaller marshaller = context.createMarshaller();
+                marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
+
+                result = (QueryResultList) result;
+                marshaller.marshal(result, output);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new JPARSException(e.getMessage());
+            }
         } else {
             if (this.context != null && this.context.getJAXBContext() != null && this.result != null && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
@@ -108,16 +127,16 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     }
     
     /**
-     * Identify the preferred {@link MediaType} from the list provided. This
-     * will check for JSON string or {@link MediaType} first then XML.
-     * 
-     * @param types
-     *            List of {@link String} or {@link MediaType} values;
-     * @return selected {@link MediaType}
-     * @throws WebApplicationException
-     *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON or XML
-     *             values are found.
-     */
+    * Identify the preferred {@link MediaType} from the list provided. This
+    * will check for JSON string or {@link MediaType} first then XML.
+    * 
+    * @param types
+    *            List of {@link String} or {@link MediaType} values;
+    * @return selected {@link MediaType}
+    * @throws WebApplicationException
+    *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON or XML
+    *             values are found.
+    */
     public static MediaType mediaType(List<?> types) {
         JPARSLogger.fine("jpars_requested_type", new Object[]{types});
         for (int i=0;i<types.size();i++){
