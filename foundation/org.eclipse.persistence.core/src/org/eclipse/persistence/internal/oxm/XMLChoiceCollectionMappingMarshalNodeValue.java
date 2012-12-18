@@ -28,6 +28,8 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -186,14 +188,18 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
             	   }
                 }
                 if(frag != null){
-                	
-                    marshalRecord.startCollection(); 
-                    
-                    for(int j=0;j<listValue.size(); j++){              	          
+                   int valueSize = listValue.size();
+                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
+                        marshalRecord.startCollection();
 
+                    }
+                    
+                    for(int j=0;j<valueSize; j++){              	          
                     	marshalSingleValueWithNodeValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance(), associatedNodeValue);
                     }
-                    marshalRecord.endCollection();     
+                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
+                        marshalRecord.endCollection();
+                    }
                 }    
             }                   
         }        
