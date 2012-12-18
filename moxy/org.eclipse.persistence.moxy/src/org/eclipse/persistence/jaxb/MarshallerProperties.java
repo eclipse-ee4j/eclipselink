@@ -126,5 +126,13 @@ public class MarshallerProperties {
      * @since 2.4
      */
     public static final String JSON_MARSHAL_EMPTY_COLLECTIONS = "eclipselink.json.marshal-empty-collections";
-
+    
+    /**
+     * The Constant JSON_REDUCE_WILDCARD_ARRAYS.  If true arrays that have just one item in them
+     * will be reduced and marshalled as a single item and not as a collection.  ie: no [ ] in the marshalled JSON
+     * Default is false so all collections (even size 1) will have the [ ] around them.
+     * @since 2.4.2
+     */
+    public static final String JSON_REDUCE_WILDCARD_ARRAYS = "eclipselink.json.reduce-wildcard-arrays";
+   
 }

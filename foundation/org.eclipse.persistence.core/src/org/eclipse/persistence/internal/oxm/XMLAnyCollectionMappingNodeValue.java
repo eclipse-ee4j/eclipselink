@@ -123,13 +123,18 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             	List listValue = values.get(i);            	
             	
                 if(nextFragment != null){
-                    marshalRecord.startCollection();
+                   int valueSize = listValue.size();
+                   if(valueSize > 1 || !marshalRecord.getMarshaller().isReduceWildcardArrays()){
+                        marshalRecord.startCollection();
+                   }
                  
-                    for(int j=0;j<listValue.size(); j++){              	          
+                    for(int j=0;j<valueSize; j++){              	          
                     	marshalSingleValue(nextFragment, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance());
                     }
                 
-                    marshalRecord.endCollection();     
+                    if(valueSize > 1 || !marshalRecord.getMarshaller().isReduceWildcardArrays()){
+                        marshalRecord.endCollection();
+                    }
                 }            
             } 
             

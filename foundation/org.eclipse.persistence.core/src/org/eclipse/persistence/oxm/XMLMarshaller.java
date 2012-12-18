@@ -112,6 +112,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     private String attributePrefix;
     private boolean includeRoot;
     private boolean marshalEmptyCollections;
+    private boolean reduceWildcardArrays;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
     
     private NamespacePrefixMapper mapper;
@@ -185,6 +186,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         marshalProperties = new Properties();
         includeRoot = true;
         marshalEmptyCollections = true;
+        reduceWildcardArrays = false;
         indentString = "   "; // default indent is three spaces
     }
 
@@ -1790,6 +1792,22 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     }
     
     /**
+     * Property to determine if size 1 collections should be treated as collections
+     * Ignored marshalling XML.
+     */
+    public boolean isReduceWildcardArrays() {
+        return reduceWildcardArrays;
+    }
+
+    /**
+     * Property to determine if size 1 collections should be treated as collections
+     * Ignored marshalling XML.
+     */
+    public void setReduceWildcardArrays(boolean reduceWildcardArrays) {
+        this.reduceWildcardArrays = reduceWildcardArrays;
+    }
+
+     /**
      * Determine if the @XMLRootElement should be marshalled when present.  
      * Ignored marshalling XML.   
      * @return

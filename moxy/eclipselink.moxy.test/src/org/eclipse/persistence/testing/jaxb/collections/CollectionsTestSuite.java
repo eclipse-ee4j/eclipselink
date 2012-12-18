@@ -21,6 +21,8 @@ public class CollectionsTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("Collections Test Suite");
         suite.addTestSuite(CollectionHolderTestCases.class);
         suite.addTestSuite(CollectionHolderPopulatedTestCases.class);
+        suite.addTestSuite(CollectionHolderPopulatedSingleItemTestCases.class);
+        suite.addTestSuite(CollectionHolderPopulatedSingleItemReducedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedWithNullsTestCases.class);
         suite.addTestSuite(CollectionHolderNillableTestCases.class);
