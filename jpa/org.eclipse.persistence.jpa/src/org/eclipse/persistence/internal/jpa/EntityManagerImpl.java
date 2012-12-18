@@ -2827,4 +2827,36 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         return false;
     }
+
+    // TODO: JPA 2.1 API
+    
+    public <T> T copy(T entity, EntityGraph<? super T> entityGraph, Map<String, Object> properties) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> EntityGraph<T> createEntityGraph(Class<T> rootType) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public EntityGraph<?> createEntityGraph(String graphName) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> EntityGraph<T> getEntityGraph(String graphName) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public <T> T merge(T entity, EntityGraph<? super T> entityGraph, Map<String, Object> properties) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
 }

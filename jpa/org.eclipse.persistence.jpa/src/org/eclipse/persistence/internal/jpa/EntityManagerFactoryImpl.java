@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Cache;
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
@@ -624,6 +625,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             return (T) this.getSessionBroker();
         }
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
+    }
+
+
+    // TODO: JPA 2.1 API
+    public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 
 }
