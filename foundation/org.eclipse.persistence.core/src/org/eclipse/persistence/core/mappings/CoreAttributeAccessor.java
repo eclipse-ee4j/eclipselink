@@ -17,16 +17,27 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 public interface CoreAttributeAccessor {
 
     /**
+     * Return the class type of the attribute.
+     */
+    public Class getAttributeClass();
+
+    /**
+     * INTERNAL:
+     * Return the attribute name.
+     */
+    public String getAttributeName();
+
+    /**
      * Return the attribute value from the object.
      */
-    public abstract Object getAttributeValueFromObject(Object object);
+    public Object getAttributeValueFromObject(Object object);
 
     /**
      * Allow any initialization to be performed with the descriptor class.
      */
     public void initializeAttributes(Class descriptorClass) throws DescriptorException;
 
-    public abstract boolean isInstanceVariableAttributeAccessor();
+    public boolean isInstanceVariableAttributeAccessor();
     
     public boolean isMethodAttributeAccessor();
 

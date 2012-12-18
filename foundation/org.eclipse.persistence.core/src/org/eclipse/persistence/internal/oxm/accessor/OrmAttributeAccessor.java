@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.oxm.accessor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
@@ -30,11 +31,11 @@ import org.eclipse.persistence.mappings.AttributeAccessor;
  */
 public class OrmAttributeAccessor extends AttributeAccessor {
     private AttributeAccessor ormAccessor;
-    private AttributeAccessor oxmAccessor;
+    private CoreAttributeAccessor oxmAccessor;
     private boolean isValueHolderProperty;
     private boolean isChangeTracking;
 
-    public OrmAttributeAccessor(AttributeAccessor ormAccessor, AttributeAccessor oxmAccessor) {
+    public OrmAttributeAccessor(AttributeAccessor ormAccessor, CoreAttributeAccessor oxmAccessor) {
         this.ormAccessor = ormAccessor;
         this.oxmAccessor = oxmAccessor;
     }
@@ -93,7 +94,7 @@ public class OrmAttributeAccessor extends AttributeAccessor {
         return this.ormAccessor;
     }
     
-    public AttributeAccessor getOxmAccessor() {
+    public CoreAttributeAccessor getOxmAccessor() {
         return this.oxmAccessor;
     }
     

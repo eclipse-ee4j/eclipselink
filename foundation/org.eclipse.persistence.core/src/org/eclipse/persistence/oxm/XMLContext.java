@@ -23,6 +23,7 @@ import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -33,18 +34,18 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
-import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
@@ -456,9 +457,9 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                 Iterator<DatabaseMapping> ormMappings = ormDescriptor.getMappings().iterator();
                 while(ormMappings.hasNext()) {
                     DatabaseMapping ormMapping = ormMappings.next();
-                    DatabaseMapping oxmMapping = oxmDescriptor.getMappingForAttributeName(ormMapping.getAttributeName());
+                    Mapping oxmMapping = (Mapping) oxmDescriptor.getMappingForAttributeName(ormMapping.getAttributeName());
                     if(oxmMapping != null) {
-                        AttributeAccessor oxmAccessor = oxmMapping.getAttributeAccessor();
+                        CoreAttributeAccessor oxmAccessor = oxmMapping.getAttributeAccessor();
                         OrmAttributeAccessor newAccessor = new OrmAttributeAccessor(ormMapping.getAttributeAccessor(), oxmAccessor);
                         if(ormMapping.isOneToOneMapping() && ((OneToOneMapping)ormMapping).usesIndirection()) {
                             newAccessor.setValueHolderProperty(true);
@@ -467,14 +468,14 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                         oxmMapping.setAttributeAccessor(newAccessor);
                         
                         //check to see if we need to deal with containerAccessor
-                        AttributeAccessor containerAccessor = null;
+                        CoreAttributeAccessor containerAccessor = null;
                         Class containerClass = null;
-                        if(oxmMapping instanceof XMLCompositeObjectMapping) {
-                            containerAccessor = ((XMLCompositeObjectMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
-                            containerClass = ((XMLCompositeObjectMapping)oxmMapping).getReferenceClass();
-                        } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
-                            containerAccessor = ((XMLCompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
-                            containerClass = ((XMLCompositeCollectionMapping)oxmMapping).getReferenceClass();
+                        if(oxmMapping.isAbstractCompositeObjectMapping()) {
+                            containerAccessor = ((CompositeObjectMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
+                            containerClass = ((CompositeObjectMapping)oxmMapping).getReferenceClass();
+                        } else if(oxmMapping.isAbstractCompositeCollectionMapping()) {
+                            containerAccessor = ((CompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().getAttributeAccessor();
+                            containerClass = ((CompositeCollectionMapping)oxmMapping).getReferenceClass();
                         }
                         if(containerAccessor != null) {
                             ClassDescriptor containerDescriptor = ormSession.getDescriptor(containerClass);
@@ -485,10 +486,10 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                                     OrmAttributeAccessor ormAccessor = new OrmAttributeAccessor(ormContainerMapping.getAttributeAccessor(), containerAccessor);
                                     ormAccessor.setChangeTracking(containerDescriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy());
                                     ormAccessor.setValueHolderProperty(ormContainerMapping instanceof OneToOneMapping && ((OneToOneMapping)ormContainerMapping).usesIndirection());
-                                    if(oxmMapping instanceof XMLCompositeObjectMapping) {
-                                        ((XMLCompositeObjectMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
-                                    } else if(oxmMapping instanceof XMLCompositeCollectionMapping) {
-                                        ((XMLCompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
+                                    if(oxmMapping.isAbstractCompositeObjectMapping()) {
+                                        ((CompositeObjectMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
+                                    } else if(oxmMapping.isAbstractCompositeCollectionMapping()) {
+                                        ((CompositeCollectionMapping)oxmMapping).getInverseReferenceMapping().setAttributeAccessor(ormAccessor);
                                     }
                                     
                                 }
@@ -502,8 +503,8 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                     //collection as a backpointer, check to see if the container policy
                     //needs to be matched with the ORM project
                     DatabaseMapping nextMapping = oxmMappingsIterator.next();
-                    if(nextMapping instanceof XMLObjectReferenceMapping) {
-                        XMLObjectReferenceMapping refMapping = (XMLObjectReferenceMapping)nextMapping;
+                    if(nextMapping instanceof ObjectReferenceMapping) {
+                        ObjectReferenceMapping refMapping = (ObjectReferenceMapping)nextMapping;
                         if(refMapping.getInverseReferenceMapping().getAttributeAccessor() != null && refMapping.getInverseReferenceMapping().getContainerPolicy() != null) {
                             ClassDescriptor refDescriptor = ormSession.getClassDescriptor(refMapping.getReferenceClass());
                             if(refDescriptor != null) {

@@ -35,9 +35,8 @@ public interface CompositeCollectionMapping<
     UNMARSHAL_KEEP_AS_ELEMENT_POLICY extends UnmarshalKeepAsElementPolicy,
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends CompositeObjectMapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, CONVERTER, DESCRIPTOR, FIELD, MARSHALLER, SESSION, UNMARSHAL_KEEP_AS_ELEMENT_POLICY, UNMARSHALLER, XML_RECORD>,
-     XMLContainerMapping {   
-             	   
-    
+     XMLContainerMapping {
+
     /**
      * Configure the mapping to use an instance of the specified container class
      * to hold the target objects.

@@ -77,7 +77,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
 
     public boolean isListPolicy();
 
-        /**
+    /**
      * INTERNAL:
      * Return an iterator for the given container.
      * This iterator can then be used as a parameter to #hasNext()
@@ -130,18 +130,24 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
 
     /**
      * INTERNAL:
+     * Set the class used for the container.
+     */
+    public void setContainerClass(Class containerClass);
+
+    /**
+     * INTERNAL:
      * Return the size of container.
      */
     public int sizeFor(Object container);
 
-        /**
+    /**
      * INTERNAL:
      * Return a Vector populated with the contents of container.
      * Added for bug 2766379, must implement a version of vectorFor that
      * handles wrapped objects.
      */
     public Vector vectorFor(Object container, ABSTRACT_SESSION session);
-    
+
     /**
      * INTERNAL:
      * Return an instance of the container class with the specified initial capacity.

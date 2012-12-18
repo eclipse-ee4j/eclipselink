@@ -36,12 +36,18 @@ public interface CompositeObjectMapping<
     UNMARSHAL_KEEP_AS_ELEMENT_POLICY extends UnmarshalKeepAsElementPolicy,
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
-    
+
     public InverseReferenceMapping getInverseReferenceMapping();
 
     public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
 
     public AbstractNullPolicy getNullPolicy();
+
+    /**
+     * PUBLIC:
+     * Returns the reference class
+     */
+    public Class getReferenceClass();
 
     public String getReferenceClassName();
 
