@@ -65,9 +65,6 @@
             <pathelement location="${jpatest.build.location_temp}"/>
         </path>
     </pathconvert>
-    <!-- condition property="jpatest.2.base.dir" value="../.." else="..">
-        <contains string="${jpatest.build.location}" substring="jpa/${ant.project.name}"/>
-    </condition -->
     <property name="env" environment="env" value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
@@ -95,29 +92,41 @@
     <property file="${eclipselink.jpa.test}/test.properties"/>
 
     <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <!-- To run from another location be sure to override jpatest.2.base.dir appropriately -->
     <available file="${eclipselink.jpa.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
-    <condition property="jpatest.2.base.dir" value="../.." else="..">
+    <condition property="jpatest.2.base.dir" value="${jpatest.build.location}/../.." else="${jpatest.build.location}/..">
         <isset property="is.trunk"/>
     </condition>
-    <property name="jpatest.2.common.plugins.dir" value="${jpatest.build.location}/${jpatest.2.base.dir}/plugins"/>
-    <property name="jpatest.2.modelgentest.dir"   value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
-    <property name="jpatest.2.jpa.plugins.dir"    value="${jpatest.build.location}/${jpatest.2.base.dir}/jpa/plugins"/>
-    <property name="jpatest.2.core.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.core"/>
-    <property name="jpatest.2.coretest.dir"       value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
-    <property name="jpatest.2.oracle.dir"         value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
-    <property name="jpatest.2.oracletest.dir"     value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
-    <property name="jpatest.2.moxy.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/org.eclipse.persistence.moxy"/>
-    <property name="jpatest.2.moxy.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/plugins"/>
-    <property name="jpatest.2.sdo.plugins.dir"    value="${jpatest.build.location}/${jpatest.2.base.dir}/sdo/plugins"/>
+    <property name="jpatest.2.common.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
+    <property name="jpatest.2.modelgentest.dir"   value="${jpatest.2.base.dir}/jpa/eclipselink.jpa.modelgen.test"/>
+    <property name="jpatest.2.jpa.plugins.dir"    value="${jpatest.2.base.dir}/jpa/plugins"/>
+    <property name="jpatest.2.core.dir"           value="${jpatest.2.base.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="jpatest.2.coretest.dir"       value="${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
+    <property name="jpatest.2.oracle.dir"         value="${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
+    <property name="jpatest.2.oracletest.dir"     value="${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
+    <property name="jpatest.2.moxy.dir"           value="${jpatest.2.base.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="jpatest.2.moxy.plugins.dir"   value="${jpatest.2.base.dir}/moxy/plugins"/>
+    <property name="jpatest.2.sdo.plugins.dir"    value="${jpatest.2.base.dir}/sdo/plugins"/>
 
-    <property name="jpatest.2.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
     <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
-    <echo message="jpatest.build.location='${jpatest.build.location}'"/>
-    <echo message="modelgen.processor.jar='${modelgen.processor.jar}'"/>
-    <property name="projectcache.dir" value="pcfile"/>
+    <property name="projectcache.dir"       value="pcfile"/>
+
+    <echo message="modelgen.processor.jar       ='${modelgen.processor.jar}'"/>
+    <echo message="jpatest.build.location       ='${jpatest.build.location}'"/>
+    <echo message="jpatest.2.base.dir           = '${jpatest.2.base.dir}'"/>
+    <echo message="jpatest.2.common.plugins.dir = '${jpatest.2.common.plugins.dir}'"/>
+    <echo message="jpatest.2.modelgentest.dir   = '${jpatest.2.modelgentest.dir}'"/>
+    <echo message="jpatest.2.jpa.plugins.dir    = '${jpatest.2.jpa.plugins.dir}'"/>
+    <echo message="jpatest.2.core.dir           = '${jpatest.2.core.dir}'"/>
+    <echo message="jpatest.2.coretest.dir       = '${jpatest.2.coretest.dir}'"/>
+    <echo message="jpatest.2.oracle.dir         = '${jpatest.2.oracle.dir}'"/>
+    <echo message="jpatest.2.oracletest.dir     = '${jpatest.2.oracletest.dir}'"/>
+    <echo message="jpatest.2.moxy.dir           = '${jpatest.2.moxy.dir}'"/>
+    <echo message="jpatest.2.moxy.plugins.dir   = '${jpatest.2.moxy.plugins.dir}'"/>
+    <echo message="jpatest.2.sdo.plugins.dir    = '${jpatest.2.sdo.plugins.dir}'"/>
 
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
@@ -148,7 +157,7 @@
         </and>
     </condition>
 
-    <!-- This checks if the Apllication Server is GlassFish -->
+    <!-- This checks if the Application Server is GlassFish -->
     <condition property="is.glassfish">
         <contains string="${server.name}" substring="glassfish"/>
     </condition>
@@ -159,12 +168,12 @@
             <contains string="${server.name}" substring="weblogic"/>
         </or>
     </condition>
-    <!-- This checks if the Apllication Server is JBoss -->
+    <!-- This checks if the Application Server is JBoss -->
     <condition property="is.jboss">
         <contains string="${server.name}" substring="jboss"/>
     </condition>
 
-    <!-- This checks if the Apllication Server is WebSphere -->
+    <!-- This checks if the Application Server is WebSphere -->
     <condition property="is.websphere">
         <contains string="${server.name}" substring="websphere"/>
     </condition>
@@ -325,44 +334,45 @@
             </not>
         </condition>
 
-    <condition property="is.jaxrs.testing">
-        <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-    </condition>
-
-    <condition property="is.jpars.testing">
-        <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
-    </condition>
-
-    <condition property="is.jaxrs.or.jpars.testing">
-        <or>
-                <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-                <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
-        </or>
-    </condition>
-    <condition property="is.jaxrs.testing.on.glassfish">
-        <and>
-            <isset property="is.jaxrs.testing"/>
-            <contains string="${server.name}" substring="glassfish"/>
-        </and>
-    </condition>
-
-    <condition property="is.jaxrs.testing.on.weblogic">
-        <and>
-            <isset property="is.jaxrs.testing"/>
-            <isset property="is.weblogic"/>
-        </and>
+        <condition property="is.jaxrs.testing">
+            <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
         </condition>
-    <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
-            <contains string="${server.name}" substring="weblogic"/>
-    </condition>
 
-    <condition property="jpars.url" value="http://${glassfish.host}:8080">
-            <contains string="${server.name}" substring="glassfish"/>
-    </condition>
+        <condition property="is.jpars.testing">
+            <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+        </condition>
+
+        <condition property="is.jaxrs.or.jpars.testing">
+            <or>
+                    <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
+                    <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+            </or>
+        </condition>
+        <condition property="is.jaxrs.testing.on.glassfish">
+            <and>
+                <isset property="is.jaxrs.testing"/>
+                <contains string="${server.name}" substring="glassfish"/>
+            </and>
+        </condition>
+
+        <condition property="is.jaxrs.testing.on.weblogic">
+            <and>
+                <isset property="is.jaxrs.testing"/>
+                <isset property="is.weblogic"/>
+            </and>
+        </condition>
+        <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
+                <contains string="${server.name}" substring="weblogic"/>
+        </condition>
+
+        <condition property="jpars.url" value="http://${glassfish.host}:8080">
+                <contains string="${server.name}" substring="glassfish"/>
+        </condition>
     </target>
 
     <!-- Configures paths for trunk checkout. -->
     <target name="config-trunk" if="is.trunk">
+        <echo message="Confuguring paths for TRUNK configuration..."/>
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.test}/${eclipselink.core.test.trunk}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.plugins.trunk}"/>
@@ -377,6 +387,7 @@
 
     <!-- Configures paths for Eclipse project checkout. -->
     <target name="config-flat" unless="is.trunk">
+        <echo message="Confuguring paths for FLAT configuration..."/>
         <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
@@ -416,34 +427,15 @@
             </fileset-->
         </path>
         <path id="jpa21.compile.path">
-            <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
-            <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
-                includes="${persistence21.jar}, ${beanvalidation.jar}"/>
-            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
-            <fileset
-                dir="${eclipselink.core.lib.dir}"
-                includes="${eclipselink.core.depend}"/>
-            <fileset
-                dir="${eclipselink.moxy.lib.dir}"
-                includes="${eclipselink.moxy.depend}"/>
-            <pathelement path="${eclipselink.jpa}/../../${eclipselink.jar}"/>
-            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
-            <pathelement path="${junit.lib}"/>
-            <pathelement path="${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
-            <!-- pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
-            <pathelement path="${eclipselink.jpa}/../${plugins.dir}/${persistence21.jar}"/>
-            <pathelement path="${eclipselink.jpa}/../${plugins.dir}/${beanvalidation.jar}"/>
-            <fileset
-                dir="${eclipselink.core.lib.dir}"
-                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${jpatest.2.coretest.dir}/${classes.dir}"/>
+            <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
+            <pathelement path="${jpatest.2.jpa.plugins.dir}/${beanvalidation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
             <pathelement path="${junit.lib}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/javax.ws.rs_1.1.1.v20101004-1200.jar"/ -->
+            <pathelement path="${jpatest.2.common.plugins.dir}/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
@@ -595,8 +587,6 @@
     </target>
 
     <!-- Prototype only: intended for the time when both jpa2.0 compatability (2.0 compiled), and 2.1 functionality testing (2.1 compiled) will need to be performed -->
-    <!-- temporarily exclude jpa21 due to compilation failures
-    -->
     <target name="compile-jpa21-standard">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/classes21"
@@ -609,8 +599,6 @@
                deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
-            <exclude name="org/eclipse/persistence/testing/models/jpa21/**"/>
-            <exclude name="org/eclipse/persistence/testing/tests/jpa21/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
