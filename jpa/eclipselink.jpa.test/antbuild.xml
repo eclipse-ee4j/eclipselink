@@ -101,14 +101,14 @@
     </condition>
     <property name="jpatest.2.common.plugins.dir" value="${jpatest.build.location}/${jpatest.2.base.dir}/plugins"/>
     <property name="jpatest.2.modelgentest.dir"   value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
-    <property name="jpatest.2.jpa.dir"            value="${jpatest.build.location}/../eclipselink.jpa.modelgen.test"/>
+    <property name="jpatest.2.jpa.plugins.dir"    value="${jpatest.build.location}/${jpatest.2.base.dir}/jpa/plugins"/>
     <property name="jpatest.2.core.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.core"/>
     <property name="jpatest.2.coretest.dir"       value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.core.test"/>
     <property name="jpatest.2.oracle.dir"         value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
     <property name="jpatest.2.oracletest.dir"     value="${jpatest.build.location}/${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
     <property name="jpatest.2.moxy.dir"           value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/org.eclipse.persistence.moxy"/>
     <property name="jpatest.2.moxy.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/moxy/plugins"/>
-    <property name="jpatest.2.sdo.plugins.dir"   value="${jpatest.build.location}/${jpatest.2.base.dir}/sdo/plugins"/>
+    <property name="jpatest.2.sdo.plugins.dir"    value="${jpatest.build.location}/${jpatest.2.base.dir}/sdo/plugins"/>
 
     <property name="jpatest.2.plugins.dir" value="${jpatest.2.base.dir}/plugins"/>
     <property name="version.qualifier"     value="qualifier"/>
@@ -393,7 +393,7 @@
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
             <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
-                includes="${eclipselink.jpa.depend}"/>
+                includes="${persistence20.jar}, ${beanvalidation.jar}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
             <fileset
                 dir="${eclipselink.core.lib.dir}"
@@ -406,6 +406,44 @@
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
+            <!-- Needed for performance tests comparing with hibernate.>
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+            <!-- Needed for tests using coherence.>
+            <fileset dir="${coherence.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+        </path>
+        <path id="jpa21.compile.path">
+            <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
+            <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
+                includes="${persistence21.jar}, ${beanvalidation.jar}"/>
+            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <fileset
+                dir="${eclipselink.moxy.lib.dir}"
+                includes="${eclipselink.moxy.depend}"/>
+            <pathelement path="${eclipselink.jpa}/../../${eclipselink.jar}"/>
+            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
+            <!-- pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa}/../${plugins.dir}/${persistence21.jar}"/>
+            <pathelement path="${eclipselink.jpa}/../${plugins.dir}/${beanvalidation.jar}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
+            <pathelement path="${junit.lib}"/>
+            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/javax.ws.rs_1.1.1.v20101004-1200.jar"/ -->
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
@@ -435,6 +473,7 @@
     <target name="init">
         <mkdir dir="${eclipselink.jpa.test}/${run.dir}"/>
         <mkdir dir="${eclipselink.jpa.test}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.jpa.test}/classes21"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.annotation.model}"/>
         <mkdir dir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.xml.only.model}"/>
@@ -492,7 +531,7 @@
     <!-- Compiles all tests. -->
     <target name="compile" description="compile EclipseLink testing"
             depends="init, config-trunk, config-flat,
-                     compile-with-modelgen, compile-standard, compile-springplatform, compile-criteria, compile-fullregression"/>
+                     compile-with-modelgen, compile-standard, compile-jpa21-standard, compile-springplatform, compile-criteria, compile-fullregression"/>
 
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
@@ -556,9 +595,11 @@
     </target>
 
     <!-- Prototype only: intended for the time when both jpa2.0 compatability (2.0 compiled), and 2.1 functionality testing (2.1 compiled) will need to be performed -->
+    <!-- temporarily exclude jpa21 due to compilation failures
+    -->
     <target name="compile-jpa21-standard">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
-               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               destdir="${eclipselink.jpa.test}/classes21"
                debug="${javac.debug}"
                encoding="UTF-8"
                debuglevel="${javac.debuglevel}"
@@ -568,6 +609,8 @@
                deprecation="${javac.deprecation}"
                failonerror="true">
             <include name="org/eclipse/persistence/testing/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa21/**"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa21/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
             <exclude name="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
@@ -654,8 +697,9 @@
                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
         <jar jarfile="${eclipselink.jpa.test}/${jpa21.test.jar}">
-           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                    includes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
+           <fileset dir="${eclipselink.jpa.test}/classes21"
+                    includes="org/eclipse/persistence/testing/tests/**/*.class"
+                    excludes="org/eclipse/persistence/testing/framework/**/*.class"/>
         </jar>
     </target>
 
@@ -1297,6 +1341,40 @@
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/eclipselink-remote.jar"/>
         </path>
+        <path id="jpa21.run.classpath">
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <path refid="jpa21.compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.merge.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.validation.failed.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.field.access.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.advanced.properties}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.spaces}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/eclipselink-partitioned-model.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/eclipselink-plsql-model.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.cascade.deletes}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.performance2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.metamodel.model}.jar"/>
+            <!--pathelement path="${eclipselink.jpa.test}/${eclipselink.pu.with.multibyte}.jar"/-->
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.delimited.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.extensibility.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.beanvalidation.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.composite.advanced.model.member_3}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_1}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_2}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/eclipselink-remote.jar"/>
+        </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
             <pathelement path="../../../extension.lib.external/${validation.impl.jar}"/>
@@ -1409,6 +1487,31 @@
         <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
+    <!-- Runs LRG (AllCMP3TestRunModel) with agent. -->
+    <target name="test-lrg21" depends="clean-test, config-trunk, config-flat">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <!-- param name="RUN_PATH" value="run.classpath"/ -->
+            <param name="RUN_PATH" value="jpa21.run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=eclipselink"/>
+            <param name="RUN_PATH" value="run.extended.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="run-bean-validation-tests" inheritRefs="true"/>
+        <antcall target="oracle-test" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
 
     <!-- Runs JPA 2.0 BeanValidation tests, make sure you have validate jar which includes javax.validation.*, validate classes, slfj jdk and api classes under your classpath -->
     <target name="run-bean-validation-tests" depends="config-trunk, config-flat" if="validate.jar.exist">
@@ -1482,6 +1585,19 @@
             <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
             <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
             <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+    <!-- Runs SRG (EntityManagerJUnitTestSuite) with agent. -->
+    <target name="test-srg21" depends="clean-test,config-trunk, config-flat">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="jpa21.run.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
         <antcall target="generate-report" inheritRefs="true"/>

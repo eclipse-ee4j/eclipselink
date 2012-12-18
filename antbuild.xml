@@ -1307,10 +1307,10 @@
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
-            depends="test-core-srg, test-jpa-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
+            depends="test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
     <!-- Run core LRG. -->
@@ -1339,9 +1339,15 @@
     <target name="test-jpa" description="run the jpa tests">
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="test-lrg"/>
     </target>
+    <target name="test-jpa21" description="run the jpa tests">
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="test-lrg21"/>
+    </target>
     <!-- Run JPA SRG. -->
     <target name="test-jpa-srg" description="run the jpa srg tests">
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="test-srg"/>
+    </target>
+    <target name="test-jpa21-srg" description="run the jpa srg tests">
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="test-srg21"/>
     </target>
     <!-- Run WDF suite -->
     <target name="build-wdf" description="build the WDF jpa tests">
