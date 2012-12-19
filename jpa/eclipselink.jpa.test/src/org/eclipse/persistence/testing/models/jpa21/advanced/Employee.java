@@ -84,7 +84,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         procedureName="Read_Using_UnNamed_Cursor",
         resultClasses={Employee.class},
         parameters = {
-            @StoredProcedureParameter(mode=REF_CURSOR, type=void.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, type=void.class)
         }
     ),
     @NamedStoredProcedureQuery(

@@ -135,7 +135,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @ColumnResult(name = "country_v"),
             @ColumnResult(name = "province_v"),
             @ColumnResult(name = "p_code_v")
-        }),
+        })
 })
 public class Address implements Serializable {
     private int id;
