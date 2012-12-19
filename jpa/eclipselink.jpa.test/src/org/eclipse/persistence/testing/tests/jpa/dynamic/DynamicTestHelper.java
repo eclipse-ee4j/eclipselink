@@ -132,7 +132,7 @@ public class DynamicTestHelper {
             public void generateSchema(PersistenceUnitInfo info, Map map) {
                 // TODO: JPA 2.1 Functionality.
             }
-            @Override
+
             public boolean generateSchema(String persistenceUnitName, Map map) {
                 // TODO Auto-generated method stub
                 return false;
