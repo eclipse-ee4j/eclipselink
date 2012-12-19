@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     12/24/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -96,7 +98,7 @@ public class EntityManagerFactoryProvider {
     protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {          
         if (ddlType == null || ddlType == TableCreationType.CREATE) {
             mgr.createDefaultTables(true); 
-        } else if (ddlType == TableCreationType.DROP) {
+        } else if (ddlType == TableCreationType.DROP || ddlType == TableCreationType.DROP_AND_CREATE) {
             mgr.replaceDefaultTables(true, true); 
         } else if (ddlType == TableCreationType.EXTEND) { 
             mgr.extendDefaultTables(true);
@@ -209,9 +211,22 @@ public class EntityManagerFactoryProvider {
      * @param properties User specified properties for the persistence unit
      */
     protected static void login(DatabaseSessionImpl session, Map properties) {
+        String ddlGenerationTarget = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, properties);
+        
+        if (ddlGenerationTarget != null) {
+            if (ddlGenerationTarget.equals(PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION) && properties.containsKey("internal-provider-generate-schema")) {
+                // Avoid an actual connection if we don't need one.
+                // If they provide us with a user name and password we could connect.
+                // At minimum if they provide the platform we'll generate the
+                // DDL as if we had logged in.
+                session.setShouldConnect(false);
+            }
+        }
+        
         String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
         if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
-            // if user has not specified a database platform, try to detect
+            // if user has not specified a database platform, try to detect. 
+            // Will also look for jpa 2.1 properties.
             session.loginAndDetectDatasource();
         } else {
             session.login();
@@ -373,15 +388,15 @@ public class EntityManagerFactoryProvider {
         generateDefaultTables(mgr, ddlType);
     }
     
-    protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc) {
+    protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc, TableCreationType ddlType) {
         // Ensure that the appLocation string ends with  File.separator 
         appLocation = addFileSeperator(appLocation);
-        if (null != createDDLJdbc) {
-            String createJdbcFileName = appLocation + createDDLJdbc;
-            mgr.outputCreateDDLToFile(createJdbcFileName);
+        
+        if (createDDLJdbc != null && ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
+            mgr.outputCreateDDLToFile(appLocation + createDDLJdbc);
         }
 
-        if (null != dropDDLJdbc) {
+        if (dropDDLJdbc != null && ddlType.equals(TableCreationType.DROP) || ddlType.equals(TableCreationType.DROP_AND_CREATE)) {
             String dropJdbcFileName = appLocation + dropDDLJdbc;              
             mgr.outputDropDDLToFile(dropJdbcFileName);
         }

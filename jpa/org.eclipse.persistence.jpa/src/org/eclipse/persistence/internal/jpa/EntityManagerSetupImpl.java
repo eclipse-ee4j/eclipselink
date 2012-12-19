@@ -34,6 +34,8 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF. 
  *     08/01/2012-2.5 Chris Delahunt
  *       - 371950: Metadata caching 
+ *     12/24/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -344,7 +346,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     /*
      * Used to distinguish the various DDL options
      */
-    protected enum TableCreationType {NONE, CREATE, DROP, EXTEND};
+    protected enum TableCreationType {NONE, CREATE, DROP, DROP_AND_CREATE, EXTEND};
     
     /*
      * PersistenceException responsible for the invalid state.
@@ -3425,28 +3427,85 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         compositeProperties.put(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, newCompositeMemberMapOfProperties);
     }
 
-    protected void generateDDL(Map props) {
+    /**
+     * INTERNAL:
+     * Generate the DDL per the properties provided.
+     */
+    public void generateDDL(Map props) {
         if (this.compositeMemberEmSetupImpls == null) {
-            TableCreationType ddlType = TableCreationType.NONE;
+            // By default we will use EclipseLink DDL generation properties.
+            // However, if a JPA generation action is specified, we'll look
+            // for JPA's schema generation properties.
+            String NONE = PersistenceUnitProperties.NONE;
+            String CREATE = PersistenceUnitProperties.CREATE_ONLY;
+            String DROP_AND_CREATE = PersistenceUnitProperties.DROP_AND_CREATE;
+            String DROP = null; // No eclipselink equivalent. (TODO: will add)
+            String GENERATION_MODE = PersistenceUnitProperties.DDL_GENERATION_MODE;
+            String DEFAULT_GENERATION_MODE = PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE;
+            String DATABASE_GENERATION = PersistenceUnitProperties.DDL_DATABASE_GENERATION;
+            String DATABASE_AND_SCRIPTS_GENERATION = PersistenceUnitProperties.DDL_BOTH_GENERATION;
+            String SCRIPTS_GENERATION = PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION;
+            String CREATE_FILE = PersistenceUnitProperties.CREATE_JDBC_DDL_FILE;
+            String DROP_FILE = PersistenceUnitProperties.DROP_JDBC_DDL_FILE;
+            
+            // JPA doesn't have any of these default properties, so currently
+            // share them for both types of applications.
+            String APP_LOCATION = PersistenceUnitProperties.APP_LOCATION;
+            String CREATE_OR_EXTEND = PersistenceUnitProperties.CREATE_OR_EXTEND;
+            String DEFAULT_APP_LOCATION = PersistenceUnitProperties.DEFAULT_APP_LOCATION;
+            String DEFAULT_CREATE_FILE = PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME;
+            String DEFAULT_DROP_FILE = PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME;
 
-            String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props, PersistenceUnitProperties.NONE);
+            // We need to determine which set of properties we will look for.
+            // Currently we don't mix the EclipseLink and JPA properties, it 
+            // must be one set or the other.
+            String ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION, props);
+            if (ddlGeneration == null) {
+                // Use JPA properties.
+                ddlGeneration = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, props);
+                NONE = PersistenceUnitProperties.SCHEMA_NONE;
+                CREATE = PersistenceUnitProperties.SCHEMA_CREATE;
+                DROP_AND_CREATE = PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE;
+                DROP = PersistenceUnitProperties.SCHEMA_DROP;
+                GENERATION_MODE = PersistenceUnitProperties.SCHEMA_GENERATION_TARGET;
+                DEFAULT_GENERATION_MODE = PersistenceUnitProperties.SCHEMA_DATABASE_GENERATION;
+                DATABASE_GENERATION = PersistenceUnitProperties.SCHEMA_DATABASE_GENERATION;
+                DATABASE_AND_SCRIPTS_GENERATION = PersistenceUnitProperties.SCHEMA_DATABASE_AND_SCRIPTS_GENERATION;
+                SCRIPTS_GENERATION = PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION;
+                CREATE_FILE = PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET;
+                DROP_FILE = PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET;
+            }
+
+            // Neither generation found, bail!
+            if (ddlGeneration == null) {
+                return;
+            }
+            
             ddlGeneration = ddlGeneration.toLowerCase();
-            if(ddlGeneration.equals(PersistenceUnitProperties.NONE)) {
+            
+            // If 'none' specified, bail!
+            if (ddlGeneration.equals(NONE)) {
                 return;
             }
 
-            if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_ONLY)) {
+            // By default the table creation type will be 'none'.
+            TableCreationType ddlType = TableCreationType.NONE;
+            
+            if (ddlGeneration.equals(CREATE)) {
                 ddlType = TableCreationType.CREATE;
-            } else if (ddlGeneration.equals(PersistenceUnitProperties.DROP_AND_CREATE)) {
+            } else if (ddlGeneration.equals(DROP)) {
                 ddlType = TableCreationType.DROP;
-            } else if (ddlGeneration.equals(PersistenceUnitProperties.CREATE_OR_EXTEND)) {
+            } else if (ddlGeneration.equals(DROP_AND_CREATE)) {
+                ddlType = TableCreationType.DROP_AND_CREATE;
+            } else if (ddlGeneration.equals(CREATE_OR_EXTEND)) {
                 ddlType = TableCreationType.EXTEND;
             }
 
             if (ddlType != TableCreationType.NONE) {
-                String ddlGenerationMode = getConfigPropertyAsString(PersistenceUnitProperties.DDL_GENERATION_MODE, props, PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE);
+                String ddlGenerationMode = getConfigPropertyAsString(GENERATION_MODE, props, DEFAULT_GENERATION_MODE);
+                
                 // Optimize for cases where the value is explicitly set to NONE 
-                if (ddlGenerationMode.equals(PersistenceUnitProperties.NONE)) {                
+                if (ddlGenerationMode.equals(NONE)) {                
                     return;
                 }
 
@@ -3454,18 +3513,20 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
                 }
+                
                 SchemaManager mgr = new SchemaManager(getDatabaseSession());
 
-                if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_DATABASE_GENERATION) || ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
+                if (ddlGenerationMode.equals(DATABASE_GENERATION) || ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
                     writeDDLToDatabase(mgr, ddlType);
                 }
 
-                if (ddlGenerationMode.equals(PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION)|| ddlGenerationMode.equals(PersistenceUnitProperties.DDL_BOTH_GENERATION)) {
-                    String appLocation = getConfigPropertyAsString(PersistenceUnitProperties.APP_LOCATION, props, PersistenceUnitProperties.DEFAULT_APP_LOCATION);
-                    String createDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, props, PersistenceUnitProperties.DEFAULT_CREATE_JDBC_FILE_NAME);
-                    String dropDDLJdbc = getConfigPropertyAsString(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, props,  PersistenceUnitProperties.DEFAULT_DROP_JDBC_FILE_NAME);
-                    writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc);                
+                if (ddlGenerationMode.equals(SCRIPTS_GENERATION)|| ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
+                    String appLocation = getConfigPropertyAsString(APP_LOCATION, props, DEFAULT_APP_LOCATION);
+                    String createDDLJdbc = getConfigPropertyAsString(CREATE_FILE, props, DEFAULT_CREATE_FILE);
+                    String dropDDLJdbc = getConfigPropertyAsString(DROP_FILE, props,  DEFAULT_DROP_FILE);
+                    writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType);                
                 }
+                
                 if (isCompositeMember()) {
                     // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});

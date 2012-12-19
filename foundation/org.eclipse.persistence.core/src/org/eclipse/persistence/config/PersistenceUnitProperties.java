@@ -17,6 +17,8 @@
  *       - 341940: Add disable/enable allowing native queries 
  *     09/20/2011-2.3.1 Guy Pelletier 
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+ *     12/24/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1394,6 +1396,150 @@ public class PersistenceUnitProperties {
      */
     public static final String TARGET_SERVER = "eclipselink.target-server";
 
+    /**
+     * The javax.persistence.schema-generation-action property specifies the 
+     * action to be taken by the persistence provider. If the javax.persistence.
+     * schema-generation-target property is not specified, no action must be
+     * taken, regardless of the value of the javax.persistence.schema-generation-action 
+     * property. The values for this property are "none", "create", 
+     * "drop-and-create", "drop".
+     * 
+     * @see #SCHEMA_CREATE
+     * @see #SCHEMA_DROP_AND_CREATE
+     * @see #SCHEMA_DROP
+     * @see #SCHEMA_NONE
+     */
+    public static final String SCHEMA_GENERATION_ACTION = "javax.persistence.schema-generation-action";
+    
+    /**
+     * The parameter value <code>"create"</code>
+     * <p>For use with the <code>"javax.persistence.schema-generation-action"</code> property.</p>
+     * <p>Specifies that database tables should be created.</p>
+     *
+     * @see #SCHEMA_GENERATION_ACTION
+     */
+    public static final String SCHEMA_CREATE = "create";
+    
+    /**
+     * The parameter value <code>"drop-and-create"</code>
+     * <p>For use with the <code>"javax.persistence.schema-generation-action"</code> property.</p>
+     * <p>Specifies that database tables should be dropped, then created.</p>
+     * 
+     * @see #SCHEMA_GENERATION_ACTION
+     */
+    public static final String SCHEMA_DROP_AND_CREATE = "drop-and-create";
+    
+    /**
+     * The parameter value <code>"drop"</code>
+     * <p>For use with the <code>"javax.persistence.schema-generation-action"</code> property.</p>
+     * <p>Specifies that database tables should be dropped.</p>
+     * 
+     * @see #SCHEMA_GENERATION_ACTION
+     */
+    public static final String SCHEMA_DROP = "drop";
+    
+    /**
+     * The parameter value <code>"none"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-action"</code> property,
+     * and is the default parameter value.</p>
+     * <p>Specifies that database tables should not be created or dropped.</p>
+     * 
+     * @see #SCHEMA_GENERATION_ACTION
+     */
+    public static final String SCHEMA_NONE = "none";
+    
+    /**
+     * The javax.persistence.schema-generation-target property specifies whether
+     * the schema is to be created in the database, whether scripts are to be 
+     * generated, or both. The values for this property are "database", 
+     * "scripts", "database-and-scripts".
+     * 
+     * @see #SCHEMA_SCRIPTS_GENERATION
+     * @see #SCHEMA_DATABASE_GENERATION
+     * @see #SCHEMA_DATABASE_AND_SCRIPTS_GENERATION
+     */
+    public static final String SCHEMA_GENERATION_TARGET = "javax.persistence.schema-generation-target";
+    
+    /**
+     * The parameter value <code>"scripts"</code>
+     * <p>For use with the <code>"javax.persistence.schema-generation-target"</code> property.</p>
+     * <p>Specifies that DDL will be written to file(s).</p>
+     * 
+     * @see #SCHEMA_GENERATION_TARGET
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     */
+    public static final String SCHEMA_SCRIPTS_GENERATION = "scripts";
+    
+    /**
+     * The parameter value <code>"database"</code>
+     * <p>For use with the <code>"javax.persistence.schema-generation-target"</code> property, 
+     * and is the default parameter value</p>
+     * <p>Specifies that DDL will be written to the database.</p>
+     * 
+     * @see #SCHEMA_GENERATION_TARGET
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     */
+    public static final String SCHEMA_DATABASE_GENERATION = "database";
+    
+    /**
+     * The parameter value <code>"both"</code> 
+     * <p>For use with the <code>"eclipselink.ddl-generation.output-mode"</code> property.</p>
+     * <p>Specifies that DDL will be written to file(s) and the database.</p>
+     * 
+     * @see #SCHEMA_GENERATION_TARGET
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     */
+    public static final String SCHEMA_DATABASE_AND_SCRIPTS_GENERATION = "database-and-scripts";
+    
+    /**
+     * The property <code>"javax.persistence.ddl-create-script-target"</code>
+     * <p>Specifies the name of the DDL file which is used to create 
+     * database tables.</p>
+     */
+    public static final String SCHEMA_CREATE_SCRIPT_TARGET = "javax.persistence.ddl-create-script-target";
+    
+    /**
+     * The property <code>"javax.persistence.ddl-drop-script-target"</code>
+     * <p>Specifies the name of the DDL file which is used to drop 
+     * database tables.</p>
+     */
+    public static final String SCHEMA_DROP_SCRIPT_TARGET = "javax.persistence.ddl-drop-script-target";
+    
+    /**
+     * The property <code>"javax.persistence.database-product-name"</code>
+     * <p>If scripts are to be generated by the persistence provider and a 
+     * connection to the target database is not supplied, 
+     * the javax.persistence.database-product-name property must be specified. 
+     * The value of this property should be the value returned for the target 
+     * database by the JDBC DatabaseMetaData method getDatabaseProductName.</p>
+     */
+    public static final String SCHEMA_DATABASE_PRODUCT_NAME = "javax.persistence.database-product-name";
+    
+    /**
+     * The property <code>"javax.persistence.database-major-version"</code>
+     * <p>If sufficient database version information is not included in the 
+     * result of JDBC DatabaseMetaData method getDatabaseProductName, the 
+     * javax.persistence.database-major-version property should be specified as 
+     * needed. This should contain the value returned by the JDBC 
+     * getDatabaseMajor-Version method. </p>
+     */
+    public static final String SCHEMA_DATABASE_MAJOR_VERSION = "javax.persistence.database-major-version";
+    
+    /**
+     * The property <code>"javax.persistence.database-minor-version"</code>
+     * <p>If sufficient database version information is not included in the 
+     * result of JDBC DatabaseMetaData method getDatabaseProductName, the 
+     * javax.persistence.database-minor-version property should be specified as 
+     * needed. This should contain the value returned by the JDBC 
+     * getDatabaseMinor-Version method. </p>
+     */
+    public static final String SCHEMA_DATABASE_MINOR_VERSION = "javax.persistence.database-minor-version";
+    
+    // TODO: Add the JPA 2.1 source script support.
+    
     /**
      * The <code>"eclipselink.sequencing.default-sequence-to-table"</code> property
      * determines the default behavior when a GeneratedValue of type SEQUENCE is used

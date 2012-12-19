@@ -38,12 +38,12 @@
         
         <properties>
             <property name="eclipselink.session-name" value="default-session"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="jpa21-model-create.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="jpa21-model-drop.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation-target" value="scripts"/>
+            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-model-drop.jdbc"/>
+            <property name="javax.persistence.ddl-create-script-target" value="jpa21-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
@@ -80,48 +80,62 @@
         
         <properties>
             <property name="eclipselink.session-name" value="default-ddl-session"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="jpa21-ddl-model-create.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="jpa21-ddl-model-drop.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation-target" value="database-and-scripts"/>
+            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-ddl-model-drop.jdbc"/>
+            <property name="javax.persistence.ddl-create-script-target" value="jpa21-ddl-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
     <persistence-unit name="xml-default" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        
         <mapping-file>META-INF/advanced-orm.xml</mapping-file>
-        
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         
         <properties>
             <property name="eclipselink.session-name" value="default-xml-session"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="jpa21-xml-model-create.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="jpa21-xml-model-drop.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="sql-script"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation-action" value="create"/>
+            <property name="javax.persistence.schema-generation-target" value="scripts"/>
+            <property name="javax.persistence.ddl-create-script-target" value="jpa21-xml-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
     <persistence-unit name="xml-ddl" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
-        
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         
         <properties>
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
-            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-            <property name="eclipselink.create-ddl-jdbc-file-name" value="jpa21-xml-ddl-model-create.jdbc"/>
-            <property name="eclipselink.drop-ddl-jdbc-file-name" value="jpa21-xml-ddl-model-drop.jdbc"/>
-            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation-target" value="database-and-scripts"/>
+            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-xml-ddl-model-drop.jdbc"/>
+            <property name="javax.persistence.ddl-create-script-target" value="jpa21-xml-ddl-model-create.jdbc"/>
+        </properties>
+    </persistence-unit>
+    
+    <persistence-unit name="generate-schema-use-connection" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        
+        <properties>
+            <property name="eclipselink.session-name" value="generate-schema-use-conn-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="generate-schema-no-connection" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    
 </persistence>

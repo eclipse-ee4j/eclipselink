@@ -12,6 +12,8 @@
  *     tware - 1.0RC1 - OSGI refactor
  *     12/23/2008-1.1M5 Michael O'Brien 
  *        - 253701: set persistenceInitializationHelper so EntityManagerSetupImpl.undeploy() can clear the JavaSECMPInitializer
+ *     12/24/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -19,7 +21,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
 import javax.persistence.spi.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -44,6 +48,108 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
     }
     
     /**
+     * Internal method to return the entity manager factory.
+     */
+    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties){
+        if (puInfo != null) {
+            boolean isNew = false;
+            String uniqueName = null; // the name the uniquely defines the pu
+            String sessionName = null;
+            EntityManagerSetupImpl emSetupImpl = null;
+            String puName = puInfo.getPersistenceUnitName();
+            JPAInitializer initializer = getInitializer(puInfo.getPersistenceUnitName(), properties);
+            
+            try {
+                if (EntityManagerSetupImpl.mustBeCompositeMember(puInfo)) {
+                    // Persistence unit cannot be used standalone (only as a composite member).
+                    // Still the factory will be created but attempt to createEntityManager would cause an exception. 
+                    emSetupImpl = new EntityManagerSetupImpl(puName, puName);
+                    // Predeploy assigns puInfo and does not do anything else.
+                    // The session is not created, no need to add emSetupImpl to the global map.
+                    emSetupImpl.predeploy(puInfo, properties);
+                    isNew = true;
+                } else {
+                    if (initializer.isPersistenceUnitUniquelyDefinedByName()) {
+                        uniqueName = puName;
+                    } else {
+                        uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
+                    }
+                    
+                    sessionName = EntityManagerSetupImpl.getOrBuildSessionName(properties, puInfo, uniqueName);
+                    synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+                        emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
+                        
+                        if (emSetupImpl == null) {
+                            // there may be initial emSetupImpl cached in Initializer - remove it and use.
+                            emSetupImpl = initializer.extractInitialEmSetupImpl(puName);
+                            
+                            if (emSetupImpl != null) {
+                                // change the name
+                                emSetupImpl.changeSessionName(sessionName);
+                            } else {
+                                // create and predeploy a new emSetupImpl
+                                emSetupImpl = initializer.callPredeploy((SEPersistenceUnitInfo) puInfo, properties, uniqueName, sessionName);
+                            }
+                            
+                            // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                            emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
+                            EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
+                            isNew = true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(initializer.getInitializationClassLoader(), e);
+            }
+
+            if (! isNew) {
+                if (! uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
+                    throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
+                }
+            
+                // synchronized to prevent undeploying by other threads.
+                boolean undeployed = false;
+                synchronized(emSetupImpl) {
+                    if (emSetupImpl.isUndeployed()) {
+                        undeployed = true;
+                    }
+                
+                    // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
+                    emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), properties);
+                }
+                
+                if (undeployed) {
+                    // after the emSetupImpl has been obtained from emSetupImpls
+                    // it has been undeployed by factory.close() in another thread - start all over again.
+                    return (EntityManagerFactoryImpl) createEntityManagerFactory(puName, properties);
+                }
+            }
+            
+            EntityManagerFactoryImpl factory = null;
+            try {
+                factory = new EntityManagerFactoryImpl(emSetupImpl, properties);
+        
+                // This code has been added to allow validation to occur without actually calling createEntityManager
+                if (emSetupImpl.shouldGetSessionOnCreateFactory(properties)) {
+                    factory.getDatabaseSession();
+                }
+                
+                return factory;
+            } catch (RuntimeException ex) {
+                if (factory != null) {
+                    factory.close();
+                } else {
+                    emSetupImpl.undeploy();
+                }
+                
+                throw ex;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
      * Called by Persistence class when an EntityManagerFactory
      * is to be created.
      *
@@ -58,105 +164,90 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      */
     public EntityManagerFactory createEntityManagerFactory(String emName, Map properties){
         Map nonNullProperties = (properties == null) ? new HashMap() : properties;
-        String name = emName;
-        if (name == null){
-            name = "";
-        }
-        if (!checkForProviderProperty(nonNullProperties)){
-            //not EclipseLink so return null;
-            return null;
-        }
-        EntityManagerSetupImpl emSetupImpl = null;
-        boolean isNew = false;
-        // the name that uniquely defines persistence unit
-        String uniqueName = null;
-        String sessionName = null;
-        JPAInitializer initializer = getInitializer(emName, nonNullProperties);
-        try {
-            SEPersistenceUnitInfo puInfo = initializer.findPersistenceUnitInfo(name, nonNullProperties);
-            // either persistence unit not found or provider not supported
-            if(puInfo == null) {
-                return null;
-            }
-            
-            if(EntityManagerSetupImpl.mustBeCompositeMember(puInfo)) {
-                // persistence unit cannot be used standalone (only as a composite member).
-                // still the factory will be created but attempt to createEntityManager would cause an exception. 
-                emSetupImpl = new EntityManagerSetupImpl(name, name);
-                // predeploy assigns puInfo and does not do anything else.
-                // the session is not created, no need to add emSetupImpl to the global map.
-                emSetupImpl.predeploy(puInfo, nonNullProperties);
-                isNew = true;
-            } else {
-                if(initializer.isPersistenceUnitUniquelyDefinedByName()) {
-                    uniqueName = name;
-                } else {
-                    uniqueName = initializer.createUniquePersistenceUnitName(puInfo);
-                }
-                    
-                sessionName = EntityManagerSetupImpl.getOrBuildSessionName(nonNullProperties, puInfo, uniqueName);
-                synchronized (EntityManagerFactoryProvider.emSetupImpls) {
-                    emSetupImpl = EntityManagerFactoryProvider.getEntityManagerSetupImpl(sessionName);
-                    if(emSetupImpl == null) {
-                        // there may be initial emSetupImpl cached in Initializer - remove it and use.
-                        emSetupImpl = initializer.extractInitialEmSetupImpl(name);
-                        if(emSetupImpl != null) {
-                            // change the name
-                            emSetupImpl.changeSessionName(sessionName);
-                        } else {
-                            // create and predeploy a new emSetupImpl
-                            emSetupImpl = initializer.callPredeploy(puInfo, nonNullProperties, uniqueName, sessionName);
-                        }
-                        // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                        emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
-                        EntityManagerFactoryProvider.addEntityManagerSetupImpl(sessionName, emSetupImpl);
-                        isNew = true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw PersistenceUnitLoadingException.exceptionSearchingForPersistenceResources(initializer.getInitializationClassLoader(), e);
+
+        if (checkForProviderProperty(nonNullProperties)){
+            String name = (emName == null) ? "" : emName;
+            JPAInitializer initializer = getInitializer(name, nonNullProperties);
+            return createEntityManagerFactoryImpl(initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties);
         }
 
-        if(!isNew) {
-            if(!uniqueName.equals(emSetupImpl.getPersistenceUnitUniqueName())) {
-                throw PersistenceUnitLoadingException.sessionNameAlreadyInUse(sessionName, uniqueName, emSetupImpl.getPersistenceUnitUniqueName());
-            }
+        // Not EclipseLink so return null;
+        return null;
+    }
+    
+    /**
+     * Create database schemas and/or tables and/or create DDL
+     * scripts as determined by the supplied properties.
+     * <p>
+     * Called by the Persistence class when schema generation is to occur as a 
+     * separate phase from creation of the entity manager factory.
+     * <p>
+     * @param persistenceUnitName the name of the persistence unit
+     * @param properties properties for schema generation; these may also 
+     *        contain provider-specific properties. The value of these 
+     *        properties override any values that may have been configured 
+     *        elsewhere.
+     * @throws PersistenceException if insufficient or inconsistent 
+     *         configuration information is provided of if schema generation 
+     *         otherwise fails
+     *
+     * @since Java Persistence 2.1
+     */
+    public void generateSchema(PersistenceUnitInfo info, Map properties) {
+        if (checkForProviderProperty(properties)) {
+            // TODO:
+            // 1 - if we are generating to scripts only, we do not require a 
+            // connection. We should only connect when needed.
+            // 2 - If we are dealing with script source, we don't need to
+            // go through the whole pre-deploy/deploy stages ...
             
-            // synchronized to prevent undeploying by other threads.
-            boolean undeployed = false;
-            synchronized(emSetupImpl) {
-                if(emSetupImpl.isUndeployed()) {
-                    undeployed = true;
-                }
-                
-                // emSetupImpl has been already predeployed, predeploy will just increment factoryCount.
-                emSetupImpl.predeploy(emSetupImpl.getPersistenceUnitInfo(), nonNullProperties);
-            }
-            if(undeployed) {
-                // after the emSetupImpl has been obtained from emSetupImpls
-                // it has been undeployed by factory.close() in another thread - start all over again.
-                return createEntityManagerFactory(emName, properties);
-            }
+            // Let EclipseLink know we're calling from generate schema.
+            // On first access of the session we will log in, therefore, it is
+            // too late for us to tell the session not to at that point, so set
+            // a property for EclipseLink to look for.
+            properties.put("internal-provider-generate-schema", true);
+            
+            // Will cause a login if necessary, generate the DDL and then close.
+            EntityManagerFactoryImpl emfImpl = createEntityManagerFactoryImpl(info, properties);
+            EntityManager em = emfImpl.createEntityManager(properties);
+            em.close();
         }
-            
-        EntityManagerFactoryImpl factory = null;
-        try {
-            factory = new EntityManagerFactoryImpl(emSetupImpl, nonNullProperties);
+    }
+    
+    /**
+     * Create database schemas and/or tables and/or create DDL scripts as 
+     * determined by the supplied properties.
+     * <p>
+     * Called by the Persistence class when schema generation is to occur as a 
+     * separate phase from creation of the entity manager factory.
+     * <p>
+     * @param persistenceUnitName the name of the persistence unit
+     * @param properties properties for schema generation; these may also 
+     *        contain provider-specific properties. The value of these 
+     *        properties override any values that may have been configured 
+     *        elsewhere.
+     * @throws PersistenceException if insufficient or inconsistent
+     *         configuration information is provided of if schema generation 
+     *         otherwise fails
+     *
+     * @since Java Persistence 2.1
+     */
+    public boolean generateSchema(String persistenceUnitName, Map properties) {
+        String puName = (persistenceUnitName == null) ? "" : persistenceUnitName;
+        Map nonNullProperties = (properties == null) ? new HashMap() : properties;
         
-            // This code has been added to allow validation to occur without actually calling createEntityManager
-            if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
-                factory.getDatabaseSession();
+        // If not EclipseLink, do nothing.
+        if (checkForProviderProperty(nonNullProperties)) {
+            JPAInitializer initializer = getInitializer(puName, nonNullProperties);
+            SEPersistenceUnitInfo puInfo = initializer.findPersistenceUnitInfo(puName, nonNullProperties);
+            
+            if (puInfo != null) {
+                generateSchema(puInfo, nonNullProperties);
+                return true;
             }
-            return factory;
-        } catch (RuntimeException ex) {
-            if(factory != null) {
-                factory.close();
-            } else {
-                emSetupImpl.undeploy();
-            }
-            throw ex;
         }
+        
+        return false;
     }
     
     /**
@@ -401,16 +492,6 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             classloader = Thread.currentThread().getContextClassLoader();
         }
         return classloader;
-    }
-
-    public void generateSchema(PersistenceUnitInfo info, Map map) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public boolean generateSchema(String persistenceUnitName, Map map) {
-        // TODO: JPA 2.1 functionality
-        return false;
     }
 }
 

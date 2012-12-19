@@ -15,6 +15,8 @@
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     12/24/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -100,6 +102,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     //Bug#3440544 Used to stop the attempt to login more than once. 
     protected volatile boolean isLoggedIn;
 
+    // By default we should connect.
+    protected boolean shouldConnect = true;
+    
     /**
      * INTERNAL:
      * Set the SequencingHome object used by the session.
@@ -134,6 +139,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public DatabaseEventListener getDatabaseEventListener() {
         return databaseEventListener;
+    }
+    
+    
+    public void setShouldConnect(boolean shouldConnect) {
+        this.shouldConnect = shouldConnect;
     }
     
     /**
@@ -298,7 +308,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Connect the session only.
      */
     public void connect() throws DatabaseException {
-        getAccessor().connect(getDatasourceLogin(), this);
+        if (shouldConnect) {
+            getAccessor().connect(getDatasourceLogin(), this);
+        }
     }
 
     /**
@@ -610,44 +622,65 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public void loginAndDetectDatasource() throws DatabaseException {
         preConnectDatasource();
-        Connection conn = null;
-        try{
-            conn = (Connection)getReadLogin().connectToDatasource(null,this);
-            // null out the cached platform because the platform on the login will be changed by the following line of code
-            this.platform = null;
-            String platformName = null;
-            try {
-                String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
-                platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
-                getLogin().setPlatformClassName(platformName);
-            } catch (EclipseLinkException classNotFound) {
-                if (platformName.indexOf("Oracle") != -1) {
-                    // If we are running against Oracle, it is possible that we are running in an environment where
-                    // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
-                    getLogin().setPlatformClassName(OraclePlatform.class.getName());
-                } else {
-                    throw classNotFound;
-                }
+        
+        if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
+            String vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
+            
+            String majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
+            if (majorVersion != null) {
+                vendorNameAndVersion += majorVersion;
             }
-        }catch (SQLException ex){
-            DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
-            // Typically exception would occur if user did not provide correct connection
-            // parameters. The root cause of exception should be propagated up
-            dbEx.initCause(ex);
-            throw dbEx;
-        }finally{
-            if (conn != null){
-                try{
-                    conn.close();
-                }catch (SQLException ex){
+            
+            String minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
+            if (minorVersion != null) {
+                vendorNameAndVersion += minorVersion;
+            }
+
+            getLogin().setPlatformClassName(DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog()));
+        } else {
+            if (shouldConnect) {
+                Connection conn = null;
+                try {
+                    conn = (Connection)getReadLogin().connectToDatasource(null, this);
+                    // null out the cached platform because the platform on the login will be changed by the following line of code
+                    this.platform = null;
+                    String platformName = null;
+                
+                    try {
+                        String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
+                        platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
+                        getLogin().setPlatformClassName(platformName);
+                    } catch (EclipseLinkException classNotFound) {
+                        if (platformName.indexOf("Oracle") != -1) {
+                            // If we are running against Oracle, it is possible that we are running in an environment where
+                            // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
+                            getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                        } else {
+                            throw classNotFound;
+                        }
+                    }
+                } catch (SQLException ex) {
                     DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
                     // Typically exception would occur if user did not provide correct connection
                     // parameters. The root cause of exception should be propagated up
                     dbEx.initCause(ex);
                     throw dbEx;
+                } finally {
+                    if (conn != null) {
+                        try {
+                            conn.close();
+                        } catch (SQLException ex) {
+                            DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
+                            // Typically exception would occur if user did not provide correct connection
+                            // parameters. The root cause of exception should be propagated up
+                            dbEx.initCause(ex);
+                            throw dbEx;
+                        }
+                    }
                 }
             }
         }
+        
         connect();
         postConnectDatasource();
     }
