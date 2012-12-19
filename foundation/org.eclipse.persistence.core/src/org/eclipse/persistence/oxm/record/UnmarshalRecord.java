@@ -58,6 +58,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
@@ -91,7 +92,7 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, XMLMarshaller, NamespaceResolver, TreeObjectBuilder, XMLUnmarshaller> {
+public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.UnmarshalRecord<AbstractSession, DatabaseField, IDResolver, XMLMarshaller, NamespaceResolver, XMLRoot, TreeObjectBuilder, XMLUnmarshaller> {
     protected XMLReader xmlReader;
     private TreeObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
@@ -1457,6 +1458,14 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
         if(null != referenceResolver) {
             referenceResolver.resolveReferences(abstractSession, idResolver, unmarshaller.getErrorHandler());
         }
+    }
+
+    /**
+     * INTERNAL:
+     * @since EclipseLink 2.5.0
+     */
+    public XMLRoot createRoot() {
+        return new XMLRoot();
     }
 
 }

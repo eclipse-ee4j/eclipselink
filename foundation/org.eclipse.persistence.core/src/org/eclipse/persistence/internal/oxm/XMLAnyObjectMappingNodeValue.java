@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -224,7 +223,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         if (!xmlAnyObjectMapping.usesXMLRoot()) {
             unmarshalRecord.setAttributeValue(value, xmlAnyObjectMapping);
         } else {
-        	Root xmlRoot = new XMLRoot();
+            Root xmlRoot = unmarshalRecord.createRoot();
             xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
             xmlRoot.setSchemaType(unmarshalRecord.getTypeQName());
             xmlRoot.setLocalName(xPathFragment.getLocalName());

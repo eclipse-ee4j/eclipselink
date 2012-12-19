@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -48,6 +49,7 @@ public interface UnmarshalRecord<
     ID_RESOLVER extends IDResolver,
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver,
+    ROOT extends Root,
     TREE_OBJECT_BUILDER extends ObjectBuilder,
     UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
@@ -59,6 +61,8 @@ public interface UnmarshalRecord<
 
     public void addAttributeValue(ContainerValue containerValue, Object node,
             Object collection);
+
+    public ROOT createRoot();
 
     public void endUnmappedElement(String uri, String localName, String name) throws SAXException;
 

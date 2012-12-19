@@ -49,7 +49,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -187,7 +186,7 @@ public class JSONReader extends XMLReaderAdapter {
                     Object unmarshalledObject = unmarshalRecord.getCurrentObject();
                     if(includeRoot && unmarshalClass != null){
                         if(!(unmarshalledObject instanceof Root)) {
-                        	Root xmlRoot = new XMLRoot();
+                            Root xmlRoot = unmarshalRecord.createRoot();
                             xmlRoot.setNamespaceURI(unmarshalRecord.getRootElementNamespaceUri());
                             xmlRoot.setLocalName(unmarshalRecord.getLocalName());
                             xmlRoot.setObject(unmarshalledObject);

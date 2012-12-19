@@ -33,7 +33,6 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.deferred.AnyMappingContentHandler;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.w3c.dom.Attr;
@@ -306,7 +305,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if (!xmlAnyCollectionMapping.usesXMLRoot() || xPathFragment.getLocalName() == null || (xmlAnyCollectionMapping.isMixedContent() && unmarshalRecord.getTextWrapperFragment() != null && unmarshalRecord.getTextWrapperFragment().equals(xPathFragment))) {
             unmarshalRecord.addAttributeValue(this, value);
         } else {
-        	Root xmlRoot = new XMLRoot();
+            Root xmlRoot = unmarshalRecord.createRoot();
             xmlRoot.setNamespaceURI(xPathFragment.getNamespaceURI());
             xmlRoot.setSchemaType(unmarshalRecord.getTypeQName());
             xmlRoot.setLocalName(xPathFragment.getLocalName());
