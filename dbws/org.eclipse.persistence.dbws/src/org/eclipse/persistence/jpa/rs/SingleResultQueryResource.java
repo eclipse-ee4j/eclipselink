@@ -46,7 +46,7 @@ public class SingleResultQueryResource extends AbstractResource {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.querySingleResult(getParameterMap(ui, persistenceUnit), name, getParameterMap(ui, name), getHintMap(ui));
+        Object result = app.querySingleResult(getMatrixParameters(ui, persistenceUnit), name, getMatrixParameters(ui, name), getQueryParameters(ui));
         return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
     }
 }

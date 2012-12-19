@@ -12,10 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
@@ -48,11 +52,20 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
     protected AbstractSession jpaSession;
 
+    /**
+     * Instantiates a new pre login mapping adapter.
+     *
+     * @param jpaSession the jpa session
+     */
     public PreLoginMappingAdapter(AbstractSession jpaSession){
         this.jpaSession = jpaSession;
     }
 
-    @SuppressWarnings({ "unchecked" })
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.jaxb.SessionEventListener#preLogin(org.eclipse.persistence.sessions.SessionEvent)
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
         for (Object descriptorAlias: project.getAliasDescriptors().keySet()){
@@ -132,6 +145,29 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 // to ChoiceMapping to allow a link to be returned instead of the whole Object
                                 // XMLInverseMappings are ignored in JAXB, so we should not convert those
                                 convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
+                            }
+                        }
+                    }
+                }
+            }
+
+            InheritancePolicy inheritancePolicy = descriptor.getInheritancePolicyOrNull();
+            if ((inheritancePolicy != null) && (inheritancePolicy.isRootParentDescriptor())) {
+                boolean isAbstract = Modifier.isAbstract(descriptor.getJavaClass().getModifiers());
+                if (isAbstract) {
+                    Class subClassToInstantiate = null;
+                    Map<?, ?> classIndicatorMapping = inheritancePolicy.getClassIndicatorMapping();
+                    // get one of subclasses that extends this abstract class
+                    for (Map.Entry<?, ?> entry : classIndicatorMapping.entrySet()) {
+                        Object value = entry.getValue();
+                        if (value instanceof Class) {
+                            subClassToInstantiate = (Class) value;
+                            isAbstract = Modifier.isAbstract(subClassToInstantiate.getModifiers());
+                            if ((subClassToInstantiate != null) && (!isAbstract)) {
+                                InstantiationPolicy instantiationPolicy = new InstantiationPolicy();
+                                instantiationPolicy.useFactoryInstantiationPolicy(new ConcreteSubclassFactory(subClassToInstantiate), "createConcreteSubclass");
+                                descriptor.setInstantiationPolicy(instantiationPolicy);
+                                break;
                             }
                         }
                     }

@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
@@ -46,41 +47,14 @@ public class ServerCrudTest {
     private static PersistenceContext context = null;
 
     /**
-     * Sample user json for id.
-     *
-     * @param userId the user id
-     * @param addressId the address id
-     * @return the byte array output stream
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public static ByteArrayOutputStream sampleUserJSONForId(Integer userId, Integer addressId) throws IOException{
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        StringBuffer json = new StringBuffer();
-        json.append("{\"address\":" + 
-                "{\"city\":\"Ottawa\",");
-        if (addressId != null){
-            json.append("\"id\":" + addressId + ",");
-        }
-        json.append("\"postalCode\":\"K1P 1A4\",\"street\":\"Main Street\",\"type\":\"Business\"," +
-                "\"_relationships\":[\"_link\":{\"href\":\"http://localhost:8080/JPA-RS/jpars_auction-static/entity/StaticAddress/123456+Business/user\",\"rel\":\"user\"}]},");
-        if (userId != null){
-            json.append("\"id\":" + userId + ",");
-        }
-        json.append("\"name\":\"LegoLover\",\"version\":0," + 
-                "\"_relationships\":[\"_link\"{\"href\":\"http://localhost:8080/JPA-RS/auction-static/entity/StaticUser/466/address\",\"rel\":\"address\"}]}");
-        stream.write(json.toString().getBytes());
-        return stream;
-    }
-
-    /**
      * Setup.
      *
      * @throws URISyntaxException the uRI syntax exception
      */
     @BeforeClass
-    public static void setup() throws URISyntaxException{
+    public static void setup() throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
+        ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
@@ -621,8 +595,8 @@ public class ServerCrudTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
-        Object result = restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
-        assertTrue(result.equals("1"));
+        String result = restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
+        assertTrue(result.contains("{\"value\":1}"));
         StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
         user1 = dbRead(user1.getId(), StaticUser.class);
@@ -660,7 +634,7 @@ public class ServerCrudTest {
         }
     }
 
-    //@Test
+
     /**
      * Test create object graph put.
      *
@@ -668,6 +642,7 @@ public class ServerCrudTest {
      * @throws JAXBException the jAXB exception
      * @throws URISyntaxException the uRI syntax exception
      */
+    @Test
     public void testCreateObjectGraphPut() throws RestCallFailedException, JAXBException, URISyntaxException {
         // Create a bid without auction and user first
         StaticBid bid = new StaticBid();
@@ -686,20 +661,35 @@ public class ServerCrudTest {
         auction.setDescription("Lego auction");
         auction = restCreate(auction, "StaticAuction", StaticAuction.class);
 
-        StaticUser user = null;
-        try{
-            user = restCreate(sampleUserJSONForId(466, 123456), "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
-        } catch (IOException exc){
-            fail(exc.toString());
-        }
+        // Create address
+        StaticAddress address = new StaticAddress();
+        address.setCity("Ottawa");
+        address.setId(123456);
+        address.setStreet("Main Street");
+        address.setPostalCode("K1P 1A4");
+        address.setType("Business");
+        address = restCreate(address, "StaticAddress", StaticAddress.class);
+
+        // Create a user
+        StaticUser user = new StaticUser();
+        user.setId(466);
+        user.setName("LegoLover");
+        user = restCreate(user, "StaticUser", StaticUser.class);
+
+        // Update user with address
+        restUpdateBidirectionalRelationship(String.valueOf(user.getId()), "StaticUser", "address", address, DEFAULT_PU,
+                MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "user", true);
+
+        // read user again, because we will update the bid with user
+        user = restRead(String.valueOf(user.getId()), "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
 
         // Update bid with the auction
         restUpdateBidirectionalRelationship(String.valueOf(777), "StaticBid",
-                "auction", auction, "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
+                "auction", auction, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
         String bidJsonResponse = restUpdateBidirectionalRelationship(
-                String.valueOf(777), "StaticBid", "user", user, "auction-static", MediaType.APPLICATION_JSON_TYPE,
+                String.valueOf(777), "StaticBid", "user", user, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE, null, true);
 
         String expectedAuctionLink = RestUtils.getServerURI() + DEFAULT_PU + "/entity/StaticBid/777/auction";
@@ -720,10 +710,11 @@ public class ServerCrudTest {
 
         dbDelete(bid);
         dbDelete(user);
+        dbDelete(address);
         dbDelete(auction);
     }
 
-    //@Test
+
     /**
      * Test create object graph post.
      *
@@ -731,6 +722,7 @@ public class ServerCrudTest {
      * @throws JAXBException the jAXB exception
      * @throws URISyntaxException the uRI syntax exception
      */
+    @Test
     public void testCreateObjectGraphPost() throws RestCallFailedException, JAXBException, URISyntaxException {
         // Create a bid without auction and user first (no id)
         StaticBid bid = new StaticBid();
@@ -745,23 +737,20 @@ public class ServerCrudTest {
         auction.setImage("Starwars2.jpg");
         auction.setEndPrice(1000);
         auction.setDescription("PlayStation auction");
-        auction = restUpdate(auction, "StaticAuction", StaticAuction.class,
-                false);
+        auction = restUpdate(auction, "StaticAuction", StaticAuction.class, false);
 
-        StaticUser user = null;
-        try{
-            user = restUpdate(sampleUserJSONForId(null, null), "StaticUser", StaticUser.class, DEFAULT_PU, null,MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, true); 
-        } catch (IOException exc){
-            fail(exc.toString());
-        }
+        // Create a user (no id)
+        StaticUser user = new StaticUser();
+        user.setName("LegoLover");
+        user = restUpdate(user, "StaticUser", StaticUser.class, false);
 
         // Update bid with the auction
-        restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, "auction-static",
+        restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, DEFAULT_PU,
                 MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, "bids", true);
 
         // update bid with the user
         String bidJsonResponse = restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "user", user,
-                "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
+                DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
 
         String expectedAuctionLink = RestUtils.getServerURI() + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/auction";
         String expectedUserLink = RestUtils.getServerURI() + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/user";
@@ -840,6 +829,26 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_employee-static/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
+    }
+
+    @Test
+    public void testRemoveRelationshipNonCollection() throws RestCallFailedException, URISyntaxException, JAXBException {
+        StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        StaticUser newUser = new StaticUser();
+        newUser.setName("Mark");
+
+        // add a user to bid
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "jpars_auction-static", MediaType.APPLICATION_JSON_TYPE,
+                MediaType.APPLICATION_JSON_TYPE);
+        assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
+
+        // remove relationship between bid and the new user
+        String removedUser = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", DEFAULT_PU,
+                MediaType.APPLICATION_JSON_TYPE, null, null, true);
+        if (removedUser != null) {
+            System.out.println(removedUser);
+        }
+        dbDelete(newUser);
     }
 
     private static void dbCreate(Object object) {
@@ -975,7 +984,7 @@ public class ServerCrudTest {
         return null;
     }
 
-    private static Object restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
+    private static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
         StringBuffer resourceURL = new StringBuffer();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
@@ -1134,7 +1143,7 @@ public class ServerCrudTest {
         String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
                 + objectId + "/" + relationshipName;
         if (partner != null) {
-            url += ";partner=" + partner;
+            url += ";" + MatrixParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
         }
 
         WebResource webResource = client.resource(url);

@@ -31,6 +31,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SecondaryTable;
@@ -42,6 +44,11 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
+@NamedQueries({
+        @NamedQuery(
+                name = "Employee.getManager",
+                query = "select u.firstName, u.lastName, u.manager from Employee u")
+})
 @Entity
 @Table(name = "JPARS_EMPLOYEE")
 @SecondaryTable(name = "JPARS_SALARY")

@@ -31,7 +31,9 @@ import javax.imageio.ImageIO;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
 
+import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
 import com.sun.jersey.api.client.Client;
@@ -342,7 +344,6 @@ public class RestUtils {
     /**
      * Rest named query.
      *
-     * @param context the context
      * @param queryName the query name
      * @param returnType the return type
      * @param persistenceUnit the persistence unit
@@ -352,7 +353,8 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restNamedQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+    public static String restNamedQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
+            throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
@@ -362,13 +364,13 @@ public class RestUtils {
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
+
         return response.getEntity(String.class);
     }
 
     /**
      * Rest named single result query.
      *
-     * @param context the context
      * @param queryName the query name
      * @param returnType the return type
      * @param persistenceUnit the persistence unit
@@ -378,7 +380,8 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restNamedSingleResultQuery(PersistenceContext context, String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+    public static String restNamedSingleResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
+            throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
         RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
@@ -402,12 +405,12 @@ public class RestUtils {
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints) throws URISyntaxException {
+    public static String restUpdateQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType mediaType) throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
-        ClientResponse response = webResource.post(ClientResponse.class);
+        ClientResponse response = webResource.accept(mediaType).post(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
@@ -476,12 +479,12 @@ public class RestUtils {
      */
     public static String restUpdateBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue,
             String persistenceUnit, MediaType mediaType, String partner, boolean sendLinks)
-            throws RestCallFailedException, JAXBException, URISyntaxException {
+            throws RestCallFailedException, URISyntaxException, JAXBException {
 
         String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
                 + objectId + "/" + relationshipName;
         if (partner != null) {
-            url += ";partner=" + partner;
+            url += ";" + MatrixParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
         }
         WebResource webResource = client.resource(url);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -493,6 +496,33 @@ public class RestUtils {
         }
 
         return response.getEntity(String.class);
+    }
+
+    public static String restRemoveBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName,
+            String persistenceUnit, MediaType mediaType, String partner, String listItemId, boolean sendLinks)
+            throws RestCallFailedException, URISyntaxException, JAXBException {
+
+        String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
+                + objectId + "/" + relationshipName;
+        if (partner != null) {
+            url += ";" + MatrixParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
+            if (listItemId != null) {
+                url += "?" + QueryParameters.JPARS_LIST_ITEM_ID + "=" + listItemId;
+            }
+        } else {
+            if (listItemId != null) {
+                url += "?" + QueryParameters.JPARS_LIST_ITEM_ID + "=" + listItemId;
+            }
+        }
+
+        WebResource webResource = client.resource(url);
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).delete(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        return result;
     }
 
     /**
@@ -580,16 +610,22 @@ public class RestUtils {
         return ext;
     }
 
-    @SuppressWarnings("unused")
-    private static void writeToFile(String data) throws IOException {
+    // @SuppressWarnings("unused")
+    public static void writeToFile(String data) {
         BufferedWriter writer = null;
         try {
             String fileName = (System.currentTimeMillis() + ".txt");
             writer = new BufferedWriter(new FileWriter(fileName));
             writer.write(data);
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             if (writer != null) {
-                writer.close();
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
