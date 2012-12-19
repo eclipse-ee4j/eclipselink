@@ -61,7 +61,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         resultClasses = org.eclipse.persistence.testing.models.jpa21.advanced.Address.class,
         procedureName = "Read_Address",
         parameters = {
-            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class)
         }
     ),
       
@@ -70,7 +70,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         resultSetMappings = "address-field-result-map-named",
         procedureName = "Read_Address_Mapped_Named",
         parameters = {
-            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class)
         }
     ),
          
@@ -79,7 +79,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         resultSetMappings = "address-field-result-map-numbered",
         procedureName = "Read_Address_Mapped_Numbered",
         parameters = {
-            @StoredProcedureParameter(mode=IN, type=Integer.class),
+            @StoredProcedureParameter(mode=IN, type=Integer.class)
         }
     ),
             
@@ -88,7 +88,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         resultSetMappings = "address-column-result-map",
         procedureName = "Read_Address_Mapped_Named",
         parameters = {
-            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class),
+            @StoredProcedureParameter(mode=IN, name="address_id_v", type=Integer.class)
         }
      )
 })
