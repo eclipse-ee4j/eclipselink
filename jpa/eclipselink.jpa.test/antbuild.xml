@@ -436,6 +436,9 @@
             <pathelement path="${junit.lib}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
