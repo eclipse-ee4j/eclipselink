@@ -649,7 +649,7 @@ public class TestService {
         String resultString = outputStream.toString();
 
         assertTrue("Incorrect result",
-                resultString.contains("{" + "\"" + ConfigDefaults.JPARS_LIST_GROUPING_NAME + "\"" + ":{\"" + ConfigDefaults.JPARS_LIST_ITEM_NAME + "\":[{\"COUNT\":[" + count.toString() + "]}]}}"));
+                resultString.contains("{" + "\"" + ConfigDefaults.JPARS_LIST_GROUPING_NAME + "\"" + ":{\"" + ConfigDefaults.JPARS_LIST_ITEM_NAME + "\":[{\"COUNT\":" + count.toString() + "}]}}"));
         clearData();
     }
 
