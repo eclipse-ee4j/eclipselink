@@ -111,7 +111,7 @@ public class XMLMarshaller implements Cloneable {
     private String attributePrefix;
     private boolean includeRoot;
     private boolean marshalEmptyCollections;
-    private boolean reduceWildcardArrays;
+    private boolean reduceAnyArrays;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
     
     private NamespacePrefixMapper mapper;
@@ -185,7 +185,7 @@ public class XMLMarshaller implements Cloneable {
         marshalProperties = new Properties();
         includeRoot = true;
         marshalEmptyCollections = true;
-        reduceWildcardArrays = false;
+        reduceAnyArrays = false;
         indentString = "   "; // default indent is three spaces
     }
 
@@ -1790,19 +1790,19 @@ public class XMLMarshaller implements Cloneable {
     }
     
     /**
-     * Property to determine if size 1 collections should be treated as collections
+     * Property to determine if size 1 any collections should be treated as collections
      * Ignored marshalling XML.
      */
-    public boolean isReduceWildcardArrays() {
-		return reduceWildcardArrays;
+    public boolean isReduceAnyArrays() {
+		return reduceAnyArrays;
 	}
 
     /**
-     * Property to determine if size 1 collections should be treated as collections
+     * Property to determine if size 1 any collections should be treated as collections
      * Ignored marshalling XML.
      */
-    public void setReduceWildcardArrays(boolean reduceWildcardArrays) {
-        this.reduceWildcardArrays = reduceWildcardArrays;
+    public void setReduceAnyArrays(boolean reduceAnyArrays) {
+        this.reduceAnyArrays = reduceAnyArrays;
     }
 
      /**

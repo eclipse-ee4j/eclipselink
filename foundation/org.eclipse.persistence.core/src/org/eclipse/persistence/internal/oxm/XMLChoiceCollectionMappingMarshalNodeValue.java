@@ -188,18 +188,14 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
             	   }
                 }
                 if(frag != null){
-                   int valueSize = listValue.size();
-                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
-                        marshalRecord.startCollection();
+                    int valueSize = listValue.size();                    
+                    marshalRecord.startCollection();
 
-                    }
-                    
                     for(int j=0;j<valueSize; j++){              	          
                     	marshalSingleValueWithNodeValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance(), associatedNodeValue);
                     }
-                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
-                        marshalRecord.endCollection();
-                    }
+                    
+                    marshalRecord.endCollection();                    
                 }    
             }                   
         }        

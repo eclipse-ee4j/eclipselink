@@ -36,7 +36,7 @@ public class CollectionHolderPopulatedSingleItemReducedTestCases extends JAXBWit
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE);
-        jaxbMarshaller.setProperty(MarshallerProperties.JSON_REDUCE_WILDCARD_ARRAYS, Boolean.TRUE);
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, Boolean.TRUE);
     }
 
     @Override

@@ -7,12 +7,12 @@
       "referencedObject" : {
          "id" : "1"
       },
-      "root" : "60",
+      "root" : [ "60" ],
       "referenced-id" : "2",
-      "collection13integer" : 123,
-      "collection13string" : "eee",
-      "collection14integer" : 123,
-      "collection14string" : "eee",
+      "collection13integer" : [ 123 ],
+      "collection13string" : [ "eee" ],
+      "collection14integer" : [ 123 ],
+      "collection14string" : [ "eee" ],
       "collection1" : [ 10 ],
       "collection11" : [ "YWJj" ],
       "collection3" : [ {

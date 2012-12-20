@@ -134,7 +134,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             	
                 if(nextFragment != null){
                    int valueSize = listValue.size();
-                   if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
+                   if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceAnyArrays()){
                         marshalRecord.startCollection();
                    }
                  
@@ -142,7 +142,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                     	marshalSingleValue(nextFragment, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance());
                     }
                 
-                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceWildcardArrays()){
+                    if(valueSize > 1 || !((XMLMarshaller)marshalRecord.getMarshaller()).isReduceAnyArrays()){
                         marshalRecord.endCollection();
                     }
                 }            

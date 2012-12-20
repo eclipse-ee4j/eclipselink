@@ -133,6 +133,6 @@ public class MarshallerProperties {
      * Default is false so all collections (even size 1) will have the [ ] around them.
      * @since 2.4.2
      */
-    public static final String JSON_REDUCE_WILDCARD_ARRAYS = "eclipselink.json.reduce-wildcard-arrays";
+    public static final String JSON_REDUCE_ANY_ARRAYS = "eclipselink.json.reduce-any-arrays";
    
 }
