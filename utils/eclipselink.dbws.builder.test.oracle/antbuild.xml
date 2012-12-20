@@ -71,18 +71,6 @@
 
     <!-- OS environment variables have 'env' as a prefix -->
     <property environment="env"/>
-    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
-                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
-        <available file="${user.home}/build.properties"/>
-    </condition>
-    <echo message="${custom.properties.message}"/>
-    <property file="${user.home}/build.properties"/>
-    <property file="${dbwsbldrorcltst.build.location}/antbuild.properties"/>
-    <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
-    <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
-    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
-        <contains string="${dbwsbldrorcltst.build.location}" substring="utils"/>
-    </condition>
     <condition property="custom.test.properties.message" value="Loading ${user.home}/test.properties..."
                                                           else="Custom properties file '${user.home}/test.properties' not found to load.">
         <available file="${user.home}/test.properties"/>
@@ -90,6 +78,18 @@
     <echo message="${custom.test.properties.message}"/>
     <property file="${user.home}/test.properties"/>
     <property file="${dbwsbldrorcltst.build.location}/test.properties"/>
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${dbwsbldrorcltst.build.location}/antbuild.properties"/>
+    <!-- Sets default oracle.extensions.depend dir location to default based upon discovered dir heirarchy -->
+    <!-- Must be defined after ${user.home}/build.properties and ${user.home}/test.properties are included to allow redefinition -->
+    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
+        <contains string="${dbwsbldrorcltst.build.location}" substring="utils"/>
+    </condition>
 
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrorcltsts jar"/>
