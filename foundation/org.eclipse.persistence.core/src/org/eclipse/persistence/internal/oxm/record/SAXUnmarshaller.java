@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -559,6 +560,8 @@ if(clazz == ClassConstants.OBJECT) {
  	                if (isPrimitiveWrapper) {
  	                       unmarshalRecord = new XMLRootRecord(clazz);
  	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                }else if (Node.class.isAssignableFrom(clazz)) {
+                           return createXMLRootForNode(node);
  	                }else{
  	                	throw xme;
  	                }
@@ -591,6 +594,16 @@ if(clazz == ClassConstants.OBJECT) {
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
     }
 
+    private Object createXMLRootForNode(Node node) {
+    	XMLRoot xmlRoot = new XMLRoot();
+    	xmlRoot.setObject(node);
+    	if (node != null) {
+    	    xmlRoot.setLocalName(node.getLocalName());
+    	    xmlRoot.setNamespaceURI(node.getNamespaceURI());
+    	}
+    	return xmlRoot;
+    }
+    
     public Object unmarshal(Reader reader) {
         if (xmlUnmarshaller.getXMLContext().hasDocumentPreservation()) {
             Node domElement = getXMLParser().parse(reader).getDocumentElement();
@@ -884,13 +897,13 @@ if(clazz == ClassConstants.OBJECT) {
         try {
             XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
 
-            if (xmlContext.hasDocumentPreservation()) {
+            if (xmlContext.hasDocumentPreservation() || (Node.class.isAssignableFrom(clazz) && xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML)) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
                 xmlReader.parse(inputSource);
                 return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement(), clazz);
             }
-            
+                        
             UnmarshalRecord unmarshalRecord = null;
             XMLDescriptor xmlDescriptor = null;
 
@@ -922,9 +935,11 @@ if(clazz == ClassConstants.OBJECT) {
             		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
      	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
      	                if (isPrimitiveWrapper) {
-     	                       unmarshalRecord = new XMLRootRecord(clazz);
-     	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
-     	                }else{
+     	                    unmarshalRecord = new XMLRootRecord(clazz);
+     	                    unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+     	                } else if(Node.class.isAssignableFrom(clazz)){
+     	                	
+            		    } else{
      	                	throw xme;
      	                }
      	                

@@ -366,7 +366,7 @@ public class XMLMarshaller implements Cloneable {
 
        
         //if this is a simple xml root, the session and descriptor will be null
-        if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (session == null ||  !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             if (result instanceof StreamResult) {
                 StreamResult streamResult = (StreamResult) result;
                 Writer writer = streamResult.getWriter();
@@ -437,12 +437,8 @@ public class XMLMarshaller implements Cloneable {
             return;
         }
         try {
-            Document document = null;
-            if(isXMLRoot && session == null) {
-                document = ((Node)((XMLRoot)object).getObject()).getOwnerDocument();
-            } else {
-                document = objectToXML(object, xmlDescriptor, isXMLRoot);
-            }
+            Document document = objectToXML(object, xmlDescriptor, isXMLRoot);
+            
             if ((result instanceof SAXResult) && (isFragment())) {
                 FragmentContentHandler fragmentHandler = new FragmentContentHandler(((SAXResult) result).getHandler());
                 if (isXMLRoot) {
