@@ -47,7 +47,6 @@ import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
 import org.eclipse.persistence.jpa.rs.QueryResource;
 import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
-import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
@@ -649,7 +648,7 @@ public class TestService {
         String resultString = outputStream.toString();
 
         assertTrue("Incorrect result",
-                resultString.contains("{" + "\"" + ConfigDefaults.JPARS_LIST_GROUPING_NAME + "\"" + ":{\"" + ConfigDefaults.JPARS_LIST_ITEM_NAME + "\":[{\"COUNT\":" + count.toString() + "}]}}"));
+                resultString.contains("[{\"COUNT\":3}]"));
         clearData();
     }
 

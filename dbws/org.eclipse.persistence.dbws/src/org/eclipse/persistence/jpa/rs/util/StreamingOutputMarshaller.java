@@ -80,10 +80,12 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 Marshaller marshaller = context.createMarshaller();
                 marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
                 marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
-
-                result = (QueryResultList) result;
-                marshaller.marshal(result, output);
-
+                if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+                    // avoid outer QueryResultList class (outer grouping name) in JSON responses
+                    marshaller.marshal(((QueryResultList) result).getItems(), output);
+                } else {
+                    marshaller.marshal(result, output);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new JPARSException(e.getMessage());
