@@ -42,10 +42,12 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
 import org.eclipse.persistence.internal.oxm.MediaType;
+import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.UnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.platform.xml.DefaultErrorHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
@@ -577,8 +579,10 @@ if(clazz == CoreClassConstants.OBJECT) {
         		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
  	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
  	                if (isPrimitiveWrapper) {
- 	                       unmarshalRecord = new XMLRootRecord(clazz);
- 	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                      unmarshalRecord = new XMLRootRecord(clazz);
+ 	                      unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                }else if (Node.class.isAssignableFrom(clazz)) {
+                          return createXMLRootForNode(node);
  	                }else{
  	                	throw xme;
  	                }
@@ -609,6 +613,16 @@ if(clazz == CoreClassConstants.OBJECT) {
             return unmarshalRecord.getCurrentObject();
         }
         return xmlDescriptor.wrapObjectInXMLRoot(unmarshalRecord, this.isResultAlwaysXMLRoot);
+    }
+    
+    private Object createXMLRootForNode(Node node) {
+        Root xmlRoot = new XMLRoot();
+    	xmlRoot.setObject(node);
+    	if (node != null) {
+    	    xmlRoot.setLocalName(node.getLocalName());
+    	    xmlRoot.setNamespaceURI(node.getNamespaceURI());
+    	}
+    	return xmlRoot;
     }
 
     public Object unmarshal(Reader reader) {
@@ -905,7 +919,7 @@ if(clazz == CoreClassConstants.OBJECT) {
         try {
             Context xmlContext = xmlUnmarshaller.getXMLContext();
 
-            if (xmlContext.hasDocumentPreservation()) {
+            if (xmlContext.hasDocumentPreservation() || (Node.class.isAssignableFrom(clazz) && xmlUnmarshaller.getMediaType().isApplicationXML())) {
                 SAXDocumentBuilder saxDocumentBuilder = new SAXDocumentBuilder();
                 xmlReader.setContentHandler(saxDocumentBuilder);
                 xmlReader.parse(inputSource);

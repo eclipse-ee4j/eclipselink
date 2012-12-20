@@ -95,7 +95,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(UrlTestCases.class);
 
         suite.addTest(PrimitiveArrayTestSuite.suite());
-
+        suite.addTestSuite(NodeTestCases.class);
         return suite;
     }
 }

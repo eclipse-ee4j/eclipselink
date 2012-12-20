@@ -149,8 +149,8 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
                 attributeNamespaceURI = null;
             }
             
-            // Handle case where prefix/uri are not set on an xmlns prefixed attribute
-            if (attributeNamespaceURI == null && atts.getQName(x).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":")) {
+            // Handle case where prefix/uri are not set on an xmlns prefixed attribute            
+            if (attributeNamespaceURI == null && (atts.getQName(x).startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ":") || atts.getQName(x).equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE))) {            	
                 attributeNamespaceURI = javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
             }
             
