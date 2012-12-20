@@ -92,16 +92,13 @@ public class QueryResource extends AbstractResource {
                 return Response.ok(new StreamingOutputMarshaller(app, resultList, hh.getAcceptableMediaTypes())).build();
             }
         } else if (dbQuery instanceof ReadAllQuery) {
-            List<ClassDescriptor> descriptors = ((ReadAllQuery) dbQuery).getDescriptors();
-            if (descriptors == null) {
-                // only domain object selected: SELECT u FROM EmployeeAddress u
-                // we will return list of domain objects
-                List<Object> results = app.queryMultipleResults(query);
-                return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
-            }
+            // only domain object selected: SELECT u FROM EmployeeAddress u
+            // we will return list of domain objects
+            List<Object> results = app.queryMultipleResults(query);
+            return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
+        } else if (dbQuery instanceof ReadObjectQuery) {
             // one or more contained domain objects (such as  u.address, u.project in this example) and
             // some other simple fields (u.age, u.lastname) are selected : SELECT u.address, u.project, u.age, u.lastname FROM Employee  
-        } else if (dbQuery instanceof ReadObjectQuery) {
             List<Object> results = app.queryMultipleResults(query);
             return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
         }
