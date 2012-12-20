@@ -30,8 +30,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -46,10 +44,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
  * @since EclipseLink 2.4.0
  */
 public class DynamicXMLMetadataSource implements MetadataSource {
-
-    private static final String LINK_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
-    private static final String LINK_PREFIX = "atom";
-
     private XmlBindings xmlBindings;
 
     public DynamicXMLMetadataSource(DatabaseSession session, String packageName) {
@@ -59,13 +53,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
 
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
-
-        XmlSchema xmlSchema = new XmlSchema();
-        XmlNs atomNs = new XmlNs();
-        atomNs.setPrefix(LINK_PREFIX);
-        atomNs.setNamespaceUri(LINK_NAMESPACE_URI);
-        xmlSchema.getXmlNs().add(atomNs);
-        xmlBindings.setXmlSchema(xmlSchema);
 
         for (ClassDescriptor ormDescriptor : session.getProject().getOrderedDescriptors()) {
             String descriptorPackageName = "";
