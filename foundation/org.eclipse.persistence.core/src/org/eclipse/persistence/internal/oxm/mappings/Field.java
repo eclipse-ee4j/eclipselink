@@ -53,9 +53,8 @@ public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends Cor
     /**
      * Get the NamespaceResolver associated with this XMLField
      * @return The NamespaceResolver associated with this XMLField
-     * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
-    public NamespaceResolver getNamespaceResolver();
+    public NAMESPACE_RESOLVER getNamespaceResolver();
     
     /**
      * Return the schema type associated with this field
@@ -157,8 +156,7 @@ public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends Cor
     /**
      * Set the NamespaceResolver associated with this XMLField
      * @param newNamespaceResolver The namespaceResolver to be associated with this XMLField
-     * @see org.eclipse.persistence.oxm.NamespaceResolver
-     */
+      */
     public void setNamespaceResolver(NAMESPACE_RESOLVER newNamespaceResolver);
     
    /**

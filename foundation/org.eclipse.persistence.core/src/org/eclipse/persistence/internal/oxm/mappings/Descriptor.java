@@ -124,11 +124,10 @@ public interface Descriptor <
      /**
      * Return the NamespaceResolver associated with this descriptor
      * @return the NamespaceResolver associated with this descriptor
-     * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
-     public NamespaceResolver getNamespaceResolver();
+     public NAMESPACE_RESOLVER getNamespaceResolver();
      
-     public NamespaceResolver getNonNullNamespaceResolver();
+     public NAMESPACE_RESOLVER getNonNullNamespaceResolver();
      
      
      /**
@@ -233,7 +232,6 @@ public interface Descriptor <
        /**
      * Set the NamespaceResolver to associate with this descriptor
      * @param newNamespaceResolver the NamespaceResolver to associate with this descriptor
-     * @see org.eclipse.persistence.oxm.NamespaceResolver
      */
      public void setNamespaceResolver(NAMESPACE_RESOLVER newNamespaceResolver);
         
