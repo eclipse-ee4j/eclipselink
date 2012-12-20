@@ -37,6 +37,10 @@ import javax.persistence.Table;
         @NamedQuery(
                 name = "EmployeeAddress.getAll",
                 query = "SELECT u FROM EmployeeAddress u"
+        ),
+        @NamedQuery(
+                name = "EmployeeAddress.getPicture",
+                query = "SELECT u.areaPicture FROM EmployeeAddress u where u.id = :id"
         )
 })
 

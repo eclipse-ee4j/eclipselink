@@ -98,7 +98,7 @@ public class QueryResource extends AbstractResource {
             return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
         } else if (dbQuery instanceof ReadObjectQuery) {
             // one or more contained domain objects (such as  u.address, u.project in this example) and
-            // some other simple fields (u.age, u.lastname) are selected : SELECT u.address, u.project, u.age, u.lastname FROM Employee
+            // some other simple fields (u.age, u.lastname) are selected : SELECT u.address, u.project, u.age, u.lastname FROM Employee  
             List<Object> results = app.queryMultipleResults(query);
             return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
         }
