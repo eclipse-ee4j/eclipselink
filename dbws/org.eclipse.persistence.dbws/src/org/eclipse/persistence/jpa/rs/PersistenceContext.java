@@ -1084,6 +1084,7 @@ public class PersistenceContext {
         Marshaller marshaller = getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
 
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         marshaller.setAdapter(new RelationshipLinkAdapter(getBaseURI().toString(), this));
