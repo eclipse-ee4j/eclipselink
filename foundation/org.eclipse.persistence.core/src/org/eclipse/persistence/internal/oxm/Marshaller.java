@@ -54,9 +54,9 @@ public abstract class Marshaller<
     public abstract boolean isIncludeRoot();
     
     /**
-     * Property to determine if size 1 collections should be treated as collections
+     * Property to determine if size 1 any collections should be treated as collections
      * Ignored marshalling XML.
      */
-    public abstract boolean isReduceWildcardArrays();
+    public abstract boolean isReduceAnyArrays();
       
 }

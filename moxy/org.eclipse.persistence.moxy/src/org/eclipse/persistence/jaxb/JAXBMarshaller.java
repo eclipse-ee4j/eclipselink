@@ -727,8 +727,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setIndentString((String) value);
             } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)){
             	xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
-            } else if (MarshallerProperties.JSON_REDUCE_WILDCARD_ARRAYS.equals(key)){
-            	xmlMarshaller.setReduceWildcardArrays((Boolean) value);
+            } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)){
+            	xmlMarshaller.setReduceAnyArrays((Boolean) value);
             } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
             } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
