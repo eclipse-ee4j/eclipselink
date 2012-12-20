@@ -88,6 +88,9 @@ import static org.eclipse.persistence.internal.xr.Util.WEB_INF_DIR;
 import static org.eclipse.persistence.internal.xr.Util.WSDL_DIR;
 import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT;
 
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
+import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
+
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderHelper bridges between {@link DBWSAdapter}'s and JAX-WS {@link Provider}'s
@@ -125,6 +128,8 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  * </pre>
  */
 public class ProviderHelper extends XRServiceFactory {
+    public static final QName SENDER_QNAME = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Sender");
+    public static final QName CLIENT_QNAME = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
 
     protected static final String XSL_PREAMBLE =
       "<?xml version=\"1.0\"?> " +
@@ -460,22 +465,17 @@ public class ProviderHelper extends XRServiceFactory {
                 SOAPFactory soapFactory = null;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
-                }
-                else {
+                } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName clientQName = null;
+                QName faultCodeQName = null;
                 if (usesSOAP12) {
-                    clientQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Client");
+                    faultCodeQName = SENDER_QNAME;
+                } else {
+                    faultCodeQName = CLIENT_QNAME;
                 }
-                else {
-                    clientQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
-                }
-                soapFault =
-                    soapFactory.createFault("SOAPMessage request format error - missing body element",
-                        clientQName);
-            }
-            catch (SOAPException se) {
+                soapFault = soapFactory.createFault("SOAPMessage request format error - missing body element", faultCodeQName);
+            } catch (SOAPException se) {
                 /* safe to ignore */
             }
             throw new SOAPFaultException(soapFault);
@@ -537,25 +537,21 @@ public class ProviderHelper extends XRServiceFactory {
                 SOAPFactory soapFactory = null;
                 if (usesSOAP12) {
                     soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
-                }
-                else {
+                } else {
                     soapFactory = SOAPFactory.newInstance();
                 }
-                QName clientQName = null;
+                QName faultCodeQName = null;
                 if (usesSOAP12) {
-                    clientQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Client");
-                }
-                else {
-                    clientQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Client");
+                    faultCodeQName = SENDER_QNAME;
+                } else {
+                    faultCodeQName = CLIENT_QNAME;
                 }
                 Throwable e1 = e;
                 if (e.getCause() != null) {
                     e1 = e.getCause();
                 }
-                soapFault = soapFactory.createFault("SOAPMessage request format error - " +
-                    e1, clientQName);
-            }
-            catch (SOAPException se) {
+                soapFault = soapFactory.createFault("SOAPMessage request format error - " + e1, faultCodeQName);
+            } catch (SOAPException se) {
                 // ignore
             }
             throw new SOAPFaultException(soapFault);
@@ -633,21 +629,17 @@ public class ProviderHelper extends XRServiceFactory {
                     SOAPFactory soapFactory = null;
                     if (usesSOAP12) {
                         soapFactory = SOAPFactory.newInstance(SOAP_1_2_PROTOCOL);
-                    }
-                    else {
+                    } else {
                         soapFactory = SOAPFactory.newInstance();
                     }
-                    QName serverQName = null;
+                    QName faultCodeQName = null;
                     if (usesSOAP12) {
-                        serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
+                        faultCodeQName = RECEIVER_QNAME;
+                    } else {
+                        faultCodeQName = SERVER_QNAME;
                     }
-                    else {
-                        serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
-                    }
-                    soapFault = soapFactory.createFault("SOAPMessage response error - " +
-                        e.getMessage(), serverQName);
-                }
-                catch (SOAPException soape2) {
+                    soapFault = soapFactory.createFault("SOAPMessage response error - " + e.getMessage(), faultCodeQName);
+                } catch (SOAPException soape2) {
                     // ignore
                 }
                 throw new SOAPFaultException(soapFault);

@@ -57,11 +57,14 @@ public class SOAPResponseWriter {
 
     protected DBWSAdapter dbwsAdapter;
     protected Map<String, XMLDescriptor> resultDescriptors = new HashMap<String, XMLDescriptor>();
+    public static final QName RECEIVER_QNAME = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Receiver");
+    public static final QName SERVER_QNAME = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
 
     public SOAPResponseWriter(DBWSAdapter dbwsAdapter) {
         this.dbwsAdapter = dbwsAdapter;
     }
 
+    @SuppressWarnings("unchecked")
     public void initialize() {
         SOAPResponseClassLoader loader =
             new SOAPResponseClassLoader(Thread.currentThread().getContextClassLoader());
@@ -164,27 +167,24 @@ public class SOAPResponseWriter {
         }
     }
 
-    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, Exception e)
-    throws SOAPException {
+    public SOAPMessage generateResponse(Operation op, boolean useSOAP12, Exception e) throws SOAPException {
         MessageFactory messageFactory = null;
         if (useSOAP12) {
             messageFactory = MessageFactory.newInstance(SOAP_1_2_PROTOCOL);
-        }
-        else {
+        } else {
             messageFactory = MessageFactory.newInstance();
         }
         SOAPMessage message = messageFactory.createMessage();
         message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_PREFIX, W3C_XML_SCHEMA_NS_URI);
         message.getSOAPPart().getEnvelope().addNamespaceDeclaration(SCHEMA_INSTANCE_PREFIX, W3C_XML_SCHEMA_INSTANCE_NS_URI);
         SOAPBody body = message.getSOAPPart().getEnvelope().getBody();
-        QName serverQName = null;
+        QName faultCodeQName = null;
         if (useSOAP12) {
-            serverQName = new QName(URI_NS_SOAP_1_2_ENVELOPE, "Server");
+            faultCodeQName = RECEIVER_QNAME;
+        } else {
+            faultCodeQName = SERVER_QNAME;
         }
-        else {
-            serverQName = new QName(URI_NS_SOAP_1_1_ENVELOPE, "Server");
-        }
-        body.addFault(serverQName, op.getName() + " failed: " + e);
+        body.addFault(faultCodeQName, op.getName() + " failed: " + e);
         return message;
     }
 
