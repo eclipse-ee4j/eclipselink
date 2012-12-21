@@ -324,6 +324,18 @@ public class ServerEmployeeTest {
         getEmployeeAddressNamedQueryWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    @Ignore
+    // To simulate an issue w.r.t. marshalling a list
+    public void testReadListAttributeJSON() throws RestCallFailedException, URISyntaxException {
+        readResponsibilitiesFromEmployee(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Ignore
+    // To simulate an issue w.r.t. marshalling a list
+    public void testReadListAttributeXML() throws RestCallFailedException, URISyntaxException {
+        readResponsibilitiesFromEmployee(MediaType.APPLICATION_XML_TYPE);
+    }
+
     private void executeMultiselectQueryGetEmployeeWithDomainObject(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
         // create an employee
         Employee employee = new Employee();
@@ -377,6 +389,34 @@ public class ServerEmployeeTest {
 
         // delete manager
         RestUtils.restDelete(manager.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void readResponsibilitiesFromEmployee(MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+        // Tesing getting an attribute which is a list
+
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(1002);
+        employee.setFirstName("Miles");
+        employee.setLastName("Davis");
+
+        employee.addResponsibility("team lead");
+        employee.addResponsibility("standard lead");
+        employee.addResponsibility("er team member");
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        employee = RestUtils.restRead(context, new Integer(1002), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
+        assertNotNull(employee.getResponsibilities());
+        assertTrue(employee.getResponsibilities().size() == 3);
+
+        //http://localhost:8080/eclipselink.jpars.test/persistence/jpars_employee-static/entity/Employee/1002/responsibilities
+
+        //RestUtils.restReadByHref(context, "http://localhost:8080/eclipselink.jpars.test/persistence/jpars_employee-static/entity/Employee/1002/responsibilities", mediaType);
+
+        // delete employee
+        RestUtils.restDelete(new Integer(1002), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
     private void readEmployeeWithResponsibilities(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
