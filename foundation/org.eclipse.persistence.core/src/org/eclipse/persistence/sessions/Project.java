@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.*;
@@ -113,7 +114,9 @@ public class Project implements Serializable, Cloneable {
     protected IdValidation defaultIdValidation = null;
     
     
-    /** List of queries - once Project is initialized, these are copied to the Session. */
+    /** List of named AttributeGroups - once Project is initialized, these are copied to the Session. */
+    protected Map<String, AttributeGroup> attributeGroups = null;
+
     protected transient List<DatabaseQuery> queries = null;
     
     /** Flag that allows native queries or not */
@@ -166,6 +169,7 @@ public class Project implements Serializable, Cloneable {
         this.queries = new ArrayList<DatabaseQuery>();
         this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         this.metamodelIdClassMap = new HashMap<String, List<String>>();
+        this.attributeGroups = new HashMap<String, AttributeGroup>();
     }
 
     /**
@@ -257,6 +261,14 @@ public class Project implements Serializable, Cloneable {
      */
     public void setQueries(List<DatabaseQuery> queries) {
         this.queries = queries;
+    }
+    
+    /**
+     * INTERNAL:
+     * List of named AttributesGroups that will be copied to the session at initialization time.
+     */
+    public Map<String, AttributeGroup> getAttributeGroups(){
+        return this.attributeGroups;
     }
     
     /**
@@ -436,6 +448,9 @@ public class Project implements Serializable, Cloneable {
         while (ordered.hasNext()){
             ClassDescriptor descriptor = (ClassDescriptor)ordered.next();
             descriptor.convertClassNamesToClasses(classLoader);
+        }
+        for (AttributeGroup group : this.getAttributeGroups().values()){
+            group.convertClassNamesToClasses(classLoader);
         }
         // Clear old descriptors to allow rehash on new classes.
         this.descriptors = new HashMap();

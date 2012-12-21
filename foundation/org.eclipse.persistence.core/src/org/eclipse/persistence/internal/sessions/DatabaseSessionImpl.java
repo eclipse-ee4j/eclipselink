@@ -48,6 +48,7 @@ import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 
@@ -538,6 +539,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // Process JPA named queries and add as session queries,
         // this must be done after descriptor init as requires to parse the JPQL.
         processJPAQueries();
+        for (AttributeGroup group : getProject().getAttributeGroups().values()){
+            getAttributeGroups().put(group.getName(), group);
+            this.getDescriptor(group.getType()).addAttributeGroup(group);
+        }
     }
 
     /**

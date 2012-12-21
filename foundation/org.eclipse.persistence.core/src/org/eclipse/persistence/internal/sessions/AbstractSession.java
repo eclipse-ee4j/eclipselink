@@ -126,6 +126,11 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Stores predefine reusable queries.*/
     transient protected Map<String, List<DatabaseQuery>> queries;
+    
+    /**
+     * Stores predefined reusable AttributeGroups.
+     */
+    protected Map<String, AttributeGroup> attributeGroups;
 
     /** Stores predefined not yet parsed JPQL queries.*/
     transient protected List<DatabaseQuery> jpaQueries;
@@ -2646,6 +2651,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
 
     /**
+     * ADVANCED
+     * Return all predefined attribute groups
+     */
+    public Map<String, AttributeGroup> getAttributeGroups(){
+        if (this.attributeGroups == null){
+            this.attributeGroups = new HashMap<String, AttributeGroup>(5);
+        }
+        return this.attributeGroups;
+    }
+
+    /**
      * INTERNAL:
      * Return the pre-defined queries in this session.
      * A single vector containing all the queries is returned.
@@ -4759,7 +4775,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        iterator.setVisitedObjects(new IdentityHashMap());
        iterator.setShouldTrackCurrentGroup(true);
        
-       if(objectOrCollection instanceof Collection) {
+       if (objectOrCollection instanceof Collection) {
            Iterator it = ((Collection)objectOrCollection).iterator();
            while(it.hasNext()) {
                iterator.startIterationOn(it.next(), loadGroup);

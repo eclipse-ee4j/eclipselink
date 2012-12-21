@@ -13,12 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
@@ -98,6 +102,17 @@ public class FetchGroup extends AttributeGroup {
      */
     private boolean shouldLoad;
     
+    /**
+     * Caches the EntityFetch group for this FetchGroup
+     */
+    protected EntityFetchGroup entityFetchGroup;
+    
+    /**
+     * Stores a reference to the root entity for an Aggregate Object relationship.
+     * This ensures that partially loaded aggregates can be triggered.
+     */
+    protected FetchGroupTracker rootEntity;
+    
     public FetchGroup() {
         super();
     }
@@ -129,6 +144,9 @@ public class FetchGroup extends AttributeGroup {
      * into the entity.
      */
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
+        if (rootEntity != null){
+            return rootEntity._persistence_getFetchGroup().onUnfetchedAttribute(rootEntity, attributeName);
+        }
         ReadObjectQuery query = new ReadObjectQuery(entity);
         query.setShouldUseDefaultFetchGroup(false);
         Session session = entity._persistence_getSession();
@@ -178,6 +196,22 @@ public class FetchGroup extends AttributeGroup {
     }
 
     /**
+     * INTERNAL:
+     * @return the rootEntity
+     */
+    public FetchGroupTracker getRootEntity() {
+        return rootEntity;
+    }
+
+    /**
+     * INTERNAL:
+     * @param rootEntity the rootEntity to set
+     */
+    public void setRootEntity(FetchGroupTracker rootEntity) {
+        this.rootEntity = rootEntity;
+    }
+
+    /**
      * Configure this group to also act as a {@link LoadGroup} when set to true
      * and load all of the specified relationships so that the entities returned
      * from the query where this group was used have the requested relationships
@@ -189,6 +223,26 @@ public class FetchGroup extends AttributeGroup {
      */
     public void setShouldLoad(boolean shouldLoad) {
         this.shouldLoad = shouldLoad;
+        if (this.superClassGroup != null){
+            ((FetchGroup)this.superClassGroup).setShouldLoad(shouldLoad);
+        }else{
+            setSubclassShouldLoad(shouldLoad);
+        }
+    }
+    
+    /**
+     * passes should load to subclasses.
+     * 
+     * @see #setShouldLoadAll(boolean) to configure {@link #shouldLoad()} on
+     *      nested groups
+     */
+    protected void setSubclassShouldLoad(boolean shouldLoad) {
+        if (this.subClasses != null){
+            for (AttributeGroup group : this.subClasses){
+                ((FetchGroup)group).shouldLoad = shouldLoad;
+                ((FetchGroup)group).setSubclassShouldLoad(shouldLoad);
+            }
+        }
     }
     
     /**
@@ -200,7 +254,7 @@ public class FetchGroup extends AttributeGroup {
      *      effecting existing nested groups.
      */
     public void setShouldLoadAll(boolean shouldLoad) {
-        this.shouldLoad = shouldLoad;
+        this.setShouldLoad(shouldLoad);
         if(this.hasItems()) {
             Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
             while(it.hasNext()) {
@@ -244,33 +298,31 @@ public class FetchGroup extends AttributeGroup {
      * LoadGroup created with all member groups with shouldLoad set to false dropped.
      */
     public LoadGroup toLoadGroupLoadOnly() {
-        if(!this.shouldLoad) {
-            return null;
-        }
-        LoadGroup loadGroup = new LoadGroup(getName());
-        if(this.hasItems()) {
-            Iterator<Map.Entry<String, AttributeItem>> it = getItems().entrySet().iterator();
-            while(it.hasNext()) {
-                Map.Entry<String, AttributeItem> entry = it.next();
-                FetchGroup group = (FetchGroup)entry.getValue().getGroup();
-                if(group != null) {
-                    loadGroup.addAttribute(entry.getKey(), group.toLoadGroupLoadOnly());
-                } else {
-                    loadGroup.addAttribute(entry.getKey());
-                }
-            }
-        }
-        if(!loadGroup.getItems().isEmpty()) {
-            return loadGroup;
-        } else {
-            return null;
-        }
+        return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), true);
     }
     
     @Override
     public FetchGroup clone() {
         return (FetchGroup)super.clone();
     }    
+
+    public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){
+        if (loadOnly && !this.shouldLoad){
+            return null;
+        }
+        return super.toLoadGroup(cloneMap, loadOnly);
+    }
+    /**
+     * INTERNAL:
+     * Used to retrieve the EntityFetchGroup for this FetchGroup
+     * @return the entityFetchGroup
+     */
+    public EntityFetchGroup getEntityFetchGroup(FetchGroupManager fetchGroupManager) {
+        if (this.entityFetchGroup == null){
+            this.entityFetchGroup = fetchGroupManager.getEntityFetchGroup(this.getAttributeNames());
+        }
+        return entityFetchGroup;
+    }
 
     /**
      * Returns FetchGroup corresponding to the passed (possibly nested) attribute.
@@ -282,11 +334,19 @@ public class FetchGroup extends AttributeGroup {
 
     @Override
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+        this.entityFetchGroup = null;
         super.addAttribute(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
     }
 
-    public void addAttribute(String attributeNameOrPath, FetchGroup group) {
-        super.addAttribute(attributeNameOrPath, group);
+    @Override
+    public void addAttribute(String attributeNameOrPath, Collection<AttributeGroup> groups) {
+        this.entityFetchGroup = null;
+        super.addAttribute(attributeNameOrPath, groups);
     }
 
+    @Override
+    public void addAttributeKey(String attributeNameOrPath, AttributeGroup group) {
+        this.entityFetchGroup = null;
+        super.addAttributeKey(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
+    }
 }

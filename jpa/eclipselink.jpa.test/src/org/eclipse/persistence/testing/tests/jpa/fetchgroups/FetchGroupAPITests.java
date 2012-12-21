@@ -282,7 +282,7 @@ public class FetchGroupAPITests extends TestCase {
         assertNotNull(testFI2);
         assertEquals("test", testFI2.getAttributeName());
         assertNotNull(testFI2.getGroup());
-        assertEquals("test.test", testFI2.getGroup().getName());
+        assertEquals("test", testFI2.getGroup().getName());
         assertFalse(testFI2.getGroup().getItems().isEmpty());
 
         testFI2 = testFI.getGroup().getItem("test");
@@ -295,7 +295,7 @@ public class FetchGroupAPITests extends TestCase {
 
         testFI2 = fg.getItem("test.test");
         assertNotNull(testFI2);
-        assertEquals("test.test", testFI2.getGroup().getName());
+        assertEquals("test", testFI2.getGroup().getName());
     }
 
     @Test
