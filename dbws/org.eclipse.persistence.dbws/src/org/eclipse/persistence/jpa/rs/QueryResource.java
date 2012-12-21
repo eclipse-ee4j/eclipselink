@@ -86,19 +86,14 @@ public class QueryResource extends AbstractResource {
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
             List<Object[]> results = app.queryMultipleResults(query);
             QueryResultList resultList = populateReportQueryResponse(results, reportItems);
-            if (resultList == null) {
-                return null;
-            } else {
+            if (resultList != null) {
                 return Response.ok(new StreamingOutputMarshaller(app, resultList, hh.getAcceptableMediaTypes())).build();
             }
-        } else if (dbQuery instanceof ReadAllQuery) {
-            // only domain object selected: SELECT u FROM EmployeeAddress u
+        } else if ((dbQuery instanceof ReadAllQuery) || (dbQuery instanceof ReadObjectQuery)) {
+            // ReadAllQuery : only domain object selected: SELECT u FROM EmployeeAddress u
             // we will return list of domain objects
-            List<Object> results = app.queryMultipleResults(query);
-            return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
-        } else if (dbQuery instanceof ReadObjectQuery) {
-            // one or more contained domain objects (such as  u.address, u.project in this example) and
-            // some other simple fields (u.age, u.lastname) are selected : SELECT u.address, u.project, u.age, u.lastname FROM Employee  
+            // ReadObjectQuery : one or more contained domain objects and some other simple fields are selected, for example
+            // SELECT u.address, u.project, u.age, u.lastname FROM Employee
             List<Object> results = app.queryMultipleResults(query);
             return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
         }

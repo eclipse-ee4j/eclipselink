@@ -76,7 +76,6 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             try {
                 Class<?>[] jaxbClasses = new Class[] { QueryResultList.class };
                 JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
-                JAXBContextFactory.createContext(jaxbClasses, null, QueryResultList.class.getClassLoader());
                 Marshaller marshaller = context.createMarshaller();
                 marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
                 marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
