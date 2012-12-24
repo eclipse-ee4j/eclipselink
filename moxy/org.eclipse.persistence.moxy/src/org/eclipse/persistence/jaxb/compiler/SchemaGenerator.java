@@ -236,7 +236,21 @@ public class SchemaGenerator {
             if (info.isEnumerationType()) {
                 restrictionType = ((EnumTypeInfo) info).getRestrictionBase();
                 restriction.setEnumerationFacets(this.getEnumerationFacetsFor((EnumTypeInfo) info));
-                restriction.setBaseType(XMLConstants.SCHEMA_PREFIX + COLON + restrictionType.getLocalPart());
+         
+                String prefix = null;
+                if (restrictionType.getNamespaceURI() != null && !restrictionType.getNamespaceURI().equals(EMPTY_STRING)) {
+                    if (restrictionType.getNamespaceURI().equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI)) {
+                        prefix = XMLConstants.SCHEMA_PREFIX;
+                    } else {
+                        prefix = getPrefixForNamespace(schema, restrictionType.getNamespaceURI());
+                    }
+                }
+                String extensionTypeName = restrictionType.getLocalPart();
+                if (prefix != null) {
+                    extensionTypeName = prefix + COLON + extensionTypeName;
+                }                
+                restriction.setBaseType(extensionTypeName);
+                
                 type.setRestriction(restriction);
             } else {
             	valueField= info.getXmlValueProperty();
