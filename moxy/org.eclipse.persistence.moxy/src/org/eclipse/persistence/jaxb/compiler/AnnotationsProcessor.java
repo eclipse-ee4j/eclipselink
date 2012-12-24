@@ -3059,10 +3059,33 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaClass, XmlEnum.class)) {
             XmlEnum xmlEnum = (XmlEnum) helper.getAnnotation(javaClass, XmlEnum.class);
             restrictionClass = xmlEnum.value();
-        }
-        QName restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));
-        info.setRestrictionBase(restrictionBase);
+      	    JavaClass restrictionJavaClass= helper.getJavaClass(restrictionClass);
 
+            
+      	    QName restrictionBase = null;
+      	    boolean restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
+      	    if(!restrictionIsEnum){
+        	     restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));                  
+            }else{
+	            while (restrictionIsEnum) {
+	            	
+	                  TypeInfo restrictionTypeInfo = typeInfo.get(restrictionJavaClass.getQualifiedName());
+	                  if(restrictionTypeInfo == null && shouldGenerateTypeInfo(restrictionJavaClass)){
+	                  	 JavaClass[] jClasses = new JavaClass[] { restrictionJavaClass };
+	                       buildNewTypeInfo(jClasses);
+	                       restrictionTypeInfo = typeInfo.get(restrictionJavaClass.getQualifiedName());
+	                  }
+	                  restrictionBase = new QName(restrictionTypeInfo.getClassNamespace(), restrictionTypeInfo.getSchemaTypeName());
+	
+	                 xmlEnum = (XmlEnum) helper.getAnnotation(restrictionJavaClass, XmlEnum.class);
+	                 restrictionClass = xmlEnum.value();  
+	                 restrictionJavaClass= helper.getJavaClass(restrictionClass);
+	                 restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
+	            }
+            }
+            info.setRestrictionBase(restrictionBase);
+        }
+     
         for (Iterator<JavaField> fieldIt = javaClass.getDeclaredFields().iterator(); fieldIt.hasNext();) {
             JavaField field = fieldIt.next();
             if (field.isEnumConstant()) {
