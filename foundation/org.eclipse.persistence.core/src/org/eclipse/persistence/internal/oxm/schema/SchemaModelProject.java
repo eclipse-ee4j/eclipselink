@@ -237,16 +237,16 @@ public class SchemaModelProject extends Project {
         simpleContentMapping.setXPath(Constants.SCHEMA_PREFIX + ":simpleContent");
         descriptor.addMapping(simpleContentMapping);
 
+        XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
+        orderedAttributesMapping.setAttributeName("orderedAttributes");
+        descriptor.addMapping(orderedAttributesMapping);
+
         XMLCompositeObjectMapping anyAttributeMapping = new XMLCompositeObjectMapping();
         anyAttributeMapping.setReferenceClass(AnyAttribute.class);
         anyAttributeMapping.setAttributeName("anyAttribute");
         anyAttributeMapping.setXPath(Constants.SCHEMA_PREFIX + ":" + "anyAttribute");
         descriptor.addMapping(anyAttributeMapping);
-
-        XMLAnyCollectionMapping orderedAttributesMapping = new XMLAnyCollectionMapping();
-        orderedAttributesMapping.setAttributeName("orderedAttributes");
-        descriptor.addMapping(orderedAttributesMapping);
-
+        
         XMLAnyAttributeMapping attributesMapMapping = new XMLAnyAttributeMapping();
         attributesMapMapping.setAttributeName("attributesMap");
         attributesMapMapping.setGetMethodName("getAttributesMap");
