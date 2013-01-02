@@ -2477,7 +2477,7 @@ public class ValidationException extends EclipseLinkException {
     
     public static ValidationException cannotInstantiateSessionEventListenerClass(String className,Exception e) {
         Object[] args = { className };
-        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_EXCEPTIONHANDLER_CLASS, args),e);
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, CANNOT_INSTANTIATE_SESSIONEVENTLISTENER_CLASS, args),e);
         validationException.setErrorCode(CANNOT_INSTANTIATE_SESSIONEVENTLISTENER_CLASS);
         return validationException;
     }
