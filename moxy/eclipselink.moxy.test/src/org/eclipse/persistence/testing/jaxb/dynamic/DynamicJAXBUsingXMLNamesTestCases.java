@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -141,7 +142,8 @@ public class DynamicJAXBUsingXMLNamesTestCases extends TestCase {
         jaxbContext.setValueByXPath(person, "ns0:full_name/text()", nsResolver, "Larry King");
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         DynamicEntity person2 = ((JAXBElement<DynamicEntity>) jaxbContext.createUnmarshaller().unmarshal(marshalDoc)).getValue();
         String newName = jaxbContext.getValueByXPath(person2, "ns0:full_name/text()", nsResolver, String.class);

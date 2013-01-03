@@ -1172,7 +1172,6 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         jaxbContext.createMarshaller().marshal(person, marshalDoc);
 
-        jaxbContext.createMarshaller().marshal(person, System.out);
 
         DynamicEntity readPerson = (DynamicEntity) jaxbContext.createUnmarshaller().unmarshal(marshalDoc);
         DynamicEntity readAddress = readPerson.get("address");
