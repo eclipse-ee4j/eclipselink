@@ -208,7 +208,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("salary", salary);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         // Nothing to really test, if the import failed we couldn't have created the salary.
     }
@@ -253,14 +255,17 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         DynamicEntity person = jaxbContext.newDynamicEntity(PACKAGE + "." + PERSON);
         assertNotNull("Could not create Dynamic Entity.", person);
 
+        
         person.set("email", "bdobbs@subgenius.com");
         person.set("lastName", "Dobbs");
         person.set("id", 678);
         person.set("phoneNumber", "212-555-8282");
         person.set("firstName", "Bob");
 
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+        
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         // Test that XmlType.propOrder was interpreted properly
         Node node = marshalDoc.getDocumentElement().getChildNodes().item(0);
@@ -294,7 +299,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("id", 777);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         Node node = marshalDoc.getChildNodes().item(0);
 
@@ -313,7 +320,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("type", "O+");
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         Node node = marshalDoc.getDocumentElement();
 
@@ -338,7 +347,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("nickname", nicknames);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         Node node = marshalDoc.getDocumentElement();
 
@@ -418,9 +429,10 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
 
         person.set("name", "Bob Dobbs");
         person.set("salary", salary);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
 
         // Nothing to really test, XmlValue isn't represented in an instance doc.
     }
@@ -677,7 +689,9 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("name", "Bob Dobbs");
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("individuo"), DynamicEntity.class, person);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
+        
 
         Node node = marshalDoc.getChildNodes().item(0);
 
@@ -842,7 +856,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("relatedResource", resource);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
     }
 
     public void testBinary() throws Exception {
@@ -874,7 +889,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         person.set("hex", byteArray);
 
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        jaxbContext.createMarshaller().marshal(person, marshalDoc);
+        JAXBElement jbe = new JAXBElement(new QName("person"), DynamicEntity.class, person);
+        jaxbContext.createMarshaller().marshal(jbe, marshalDoc);
     }
 
     public void testXMLSchemaSchema() throws Exception {
