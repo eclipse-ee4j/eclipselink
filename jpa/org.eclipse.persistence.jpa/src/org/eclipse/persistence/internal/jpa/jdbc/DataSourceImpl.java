@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.eclipse.persistence.internal.jpa.transaction.TransactionManagerImpl;
 
@@ -152,6 +153,13 @@ public class DataSourceImpl implements DataSource {
      */
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
         return false;
+    }
+
+    /*
+     * JDBC 4.1
+     */
+    public Logger getParentLogger() {
+        return null;
     }
 
 }
