@@ -190,13 +190,6 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     				"<trim-strings>false</trim-strings>" +
     			"</login>" +
     		"</session>" +
-    		"<session xsi:type=\"database-session\">" +
-    			"<name>logLevelValidation-dbws-ox-session</name>" +
-    			"<logging xsi:type=\"eclipselink-log\">" +
-    			"<log-level>"+off_level+"</log-level>" +
-    			"</logging>" +
-    			"<primary-project xsi:type=\"xml\">eclipselink-dbws-ox.xml</primary-project>" +
-    		"</session>" +
     	"</sessions>";
 
     @Test

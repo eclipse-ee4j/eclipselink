@@ -508,7 +508,7 @@ public class ObjectTypeTestSuite extends DBWSTestSuite {
     }
     static String MYTYPE_ARRAY_XML =
         REGULAR_XML_HEADER +
-        "<mytype_1_arrayType xmlns=\"urn:ObjectTypeTests\">" +
+        "<mytype_1_arrayType xmlns=\"urn:ObjectTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<item>" +
                 "<id>66</id>" +
                 "<name>Steve French</name>" +

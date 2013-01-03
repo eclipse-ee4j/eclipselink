@@ -21,6 +21,8 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -30,6 +32,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 import javax.wsdl.WSDLException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.MessageFactory;
@@ -38,6 +44,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.Endpoint;
 import javax.xml.ws.Provider;
@@ -55,13 +62,18 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
+import org.eclipse.persistence.internal.xr.XmlBindingsModel;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -78,6 +90,8 @@ import org.eclipse.persistence.tools.dbws.TableOperationModel;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+import static org.eclipse.persistence.tools.dbws.Util.DOM_PLATFORM_CLASSNAME;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 //testing imports
@@ -263,9 +277,53 @@ public class OptLockTestSuite extends ProviderHelper implements Provider<SOAPMes
 
      @Override
      public void buildSessions() {
-         Project oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-             parentClassLoader);
+         Project oxProject = null;
+         Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+         StreamSource xml = new StreamSource(new StringReader(DBWS_OX_STREAM.toString()));
+         try {
+             JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
+             Unmarshaller unmarshaller = jc.createUnmarshaller();
+             
+             JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
+             XmlBindingsModel model = jaxbElt.getValue();
+             for (XmlBindings xmlBindings : model.getBindingsList()) {
+                 metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+             }
+         } catch (JAXBException jaxbex) {
+             jaxbex.printStackTrace();
+         }
+         
+         Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
+         try {
+             org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
+                     org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(parentClassLoader, properties);
+             oxProject = jCtx.getXMLContext().getSession(0).getProject();
+
+             // may need to alter descriptor alias
+             if (oxProject.getAliasDescriptors() != null) {
+                 Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
+                 for (Object key : oxProject.getAliasDescriptors().keySet()) {
+                     String alias = key.toString();
+                     XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
+                     
+                     String defaultRootElement = xdesc.getDefaultRootElement();
+                     String proposedAlias = defaultRootElement;
+                     if (defaultRootElement.endsWith(TYPE_STR)) {
+                         proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
+                     }
+                     proposedAlias = proposedAlias.toLowerCase();
+                     xdesc.setAlias(proposedAlias);
+                     aliasDescriptors.put(proposedAlias, xdesc);
+                 }
+                 oxProject.setAliasDescriptors(aliasDescriptors);
+             }
+         } catch (JAXBException e) {
+             e.printStackTrace();
+         }
+         ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
          ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+
          Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
              parentClassLoader);
          DatasourceLogin login = orProject.getLogin();

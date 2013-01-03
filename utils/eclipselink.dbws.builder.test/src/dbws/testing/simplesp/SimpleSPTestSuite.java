@@ -282,12 +282,11 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(ALL_SIMPLESP_ROWS_XML));
-        assertTrue("control document not same as instance document", comparer.isNodeEqual(
-            controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String ALL_SIMPLESP_ROWS_XML =
       "<?xml version = '1.0' encoding = 'UTF-8'?>" +
-      "<simplesp-rows xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+      "<simplesp-rows xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
         "<simplesp-row>" +
           "<EMPNO>7369</EMPNO>" +
           "<ENAME>SMITH</ENAME>" +
@@ -430,12 +429,11 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(ALL_SIMPLESP_CLERK_ROWS_XML));
-        assertTrue("control document not same as instance document", comparer.isNodeEqual(
-            controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String ALL_SIMPLESP_CLERK_ROWS_XML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<simplesp-rows xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+      "<simplesp-rows xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
         "<simplesp-row>" +
           "<EMPNO>7369</EMPNO>" +
           "<ENAME>SMITH</ENAME>" +

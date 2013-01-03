@@ -98,6 +98,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             "\nTYPE MORECOMPLEXRECORD IS RECORD (" +
 	            "\nMCR1 A_PHONE_TYPE_VARRAY" +
 	        "\n);" +
+            "\nPROCEDURE INARGONLYPROC(OLDTAB IN TAB1);" +
             "\nPROCEDURE TABLETOVARRAY(OLDTAB IN TAB1, NEWVARRAY OUT VARCHARARRAY);" +
             "\nPROCEDURE TABLESTOVARRAY(OLDTAB IN TAB1, OLDTAB2 IN TAB1, NEWVARRAY OUT VARCHARARRAY);" +
             "\nPROCEDURE VARRAYTOTABLE(OLDVARRAY IN VARCHARARRAY, NEWTAB OUT TAB1);" +
@@ -121,6 +122,10 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "\nEND COMPLEXPKG;";
     static final String CREATE_COMPLEXPKG_BODY =
         "CREATE OR REPLACE PACKAGE BODY COMPLEXPKG AS" +
+            "\nPROCEDURE INARGONLYPROC(OLDTAB IN TAB1) AS" +
+        	"\nBEGIN" +
+                "\nNULL;" +
+        	"\nEND INARGONLYPROC;" +
             "\nPROCEDURE TABLETOVARRAY(OLDTAB IN TAB1, NEWVARRAY OUT VARCHARARRAY) AS" +
             "\nBEGIN" +
                 "\nNEWVARRAY := VARCHARARRAY();" +
@@ -370,6 +375,12 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
                   "</property>" +
               "</properties>" +
               "<plsql-procedure " +
+	              "name=\"InArgOnlyTest\" " +
+	              "catalogPattern=\"COMPLEXPKG\" " +
+	              "procedurePattern=\"INARGONLYPROC\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+	          "/>" +
+              "<plsql-procedure " +
                   "name=\"TableToVArrayTest\" " +
                   "catalogPattern=\"COMPLEXPKG\" " +
                   "procedurePattern=\"TABLETOVARRAY\" " +
@@ -490,6 +501,22 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_COMPLEXPKG_TAB1_TYPE, ddlDebug);
             runDdl(conn, DROP_VARCHARARRAY_TYPE, ddlDebug);
         }
+    }
+
+    @Test
+    public void inArgOnlyTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab1 = unmarshaller.unmarshal(new StringReader(TABLE_XML));
+        Invocation invocation = new Invocation("InArgOnlyTest");
+        invocation.setParameter("OLDTAB", inputTab1);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(RESULT_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
     @Test
@@ -832,6 +859,13 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    public static final String RESULT_XML =
+        STANDALONE_XML_HEADER +
+        "<simple-xml-format>" +
+            "<simple-xml>" +
+                "<result>1</result>" +
+            "</simple-xml>" +
+        "</simple-xml-format>";
     public static final String TABLE_XML =
         STANDALONE_XML_HEADER +
         "<COMPLEXPKG_TAB1 xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
@@ -914,7 +948,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
         "</a_phone_typeType>";
     public static final String APHONETYPEARRAY_XML =
         STANDALONE_XML_HEADER +
-        "<a_phone_type_varrayType xmlns=\"urn:ComplexPLSQLSP\">" +
+        "<a_phone_type_varrayType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>" +
           	"<home>(613)111-2222</home>" +
           	"<cell>(613)222-3333</cell>" +
@@ -938,7 +972,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 	    "</COMPLEXPKG_SIMPLERECORD>";
     public static final String PHONE_TYPE_TABLE_XML = 
     	STANDALONE_XML_HEADER +
-    	"<a_phone_type_tableType xmlns=\"urn:ComplexPLSQLSP\">" +
+    	"<a_phone_type_tableType xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	  "<item>" +
     	    "<home>(613)333-4444</home>" +
     	    "<cell>(613)444-5555</cell>" +
@@ -1012,7 +1046,7 @@ public class ComplexPLSQLSPTestSuite extends DBWSTestSuite {
 
     public static final String MORECOMPLEX_RECORD_XML = 
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSP\">" +
+        "<COMPLEXPKG_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSP\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<mcr1>" +
               "<item>" +
               	"<home>(613)111-2222</home>" +

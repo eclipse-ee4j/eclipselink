@@ -959,7 +959,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
         "</a_phone2_typeType>";
     public static final String APHONETYPEARRAY_XML =
         STANDALONE_XML_HEADER +
-        "<a_phone2_type_varrayType xmlns=\"urn:ComplexPLSQLSF\">" +
+        "<a_phone2_type_varrayType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>" +
           	"<home>(613)111-2222</home>" +
           	"<cell>(613)222-3333</cell>" +
@@ -983,7 +983,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	    "</COMPLEXPKG2_SIMPLERECORD>";
     public static final String PHONE_TYPE_TABLE_XML = 
     	STANDALONE_XML_HEADER +
-    	"<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\">" +
+    	"<a_phone2_type_tableType xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
     	  "<item>" +
     	    "<home>(613)333-4444</home>" +
     	    "<cell>(613)444-5555</cell>" +
@@ -1047,7 +1047,7 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
     
     public static final String MORECOMPLEX_RECORD_XML = 
         STANDALONE_XML_HEADER +
-        "<COMPLEXPKG2_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSF\">" +
+        "<COMPLEXPKG2_MORECOMPLEXRECORD xmlns=\"urn:ComplexPLSQLSF\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<mcr1>" +
               "<item>" +
               	"<home>(613)111-2222</home>" +

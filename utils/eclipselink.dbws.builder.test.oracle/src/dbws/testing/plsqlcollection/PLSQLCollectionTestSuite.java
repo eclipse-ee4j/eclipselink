@@ -327,7 +327,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         "</PACKAGE2_ORECORD>";
     public static final String OUTPUTTABLE_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE2_TAB2 xmlns=\"urn:PLSQLCollection\">" +
+        "<PACKAGE2_TAB2 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
           "<item>" +
             "<o1>somedata</o1>" +
             "<o2>66.6</o2>" +

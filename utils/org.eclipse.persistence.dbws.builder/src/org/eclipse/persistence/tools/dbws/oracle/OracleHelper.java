@@ -720,9 +720,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
                 alias = targetTypeName.toLowerCase();
                 
-                // remove '%' from target and name
+                // remove '%' from target, alias, and name
                 name = name.replace(PERCENT, UNDERSCORE);
                 targetTypeName = targetTypeName.replace(PERCENT, UNDERSCORE);
+                alias = alias.replace(PERCENT, UNDERSCORE);
                 
                 // handle PL/SQL record type
                 if (dbType.isPLSQLRecordType()) {
