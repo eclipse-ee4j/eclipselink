@@ -2707,13 +2707,13 @@ public class MappingsGenerator {
                     xPath += property.getXmlPath();
                 } else {
                     QName name = property.getSchemaName();
-                    String namespace = "";
-                    if (namespaceInfo.isAttributeFormQualified()) {
-                        namespace = namespaceInfo.getNamespace();
-                    }
-                    if (!name.getNamespaceURI().equals("")) {
-                        namespace = name.getNamespaceURI();
-                    }
+                    String namespace = name.getNamespaceURI();
+                    //if (namespaceInfo.isAttributeFormQualified()) {
+                    //    namespace = namespaceInfo.getNamespace();
+                    //}
+                    //if (!name.getNamespaceURI().equals("")) {
+                    //    namespace = name.getNamespaceURI();
+                    //}
                     if (namespace.equals("")) {
                         xPath += (ATT + name.getLocalPart());
                     } else {
