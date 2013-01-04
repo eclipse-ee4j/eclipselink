@@ -437,7 +437,9 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         assertEquals(sizeBefore, sizeAfter);
 
         InputStream is = new ByteArrayInputStream(stream.toByteArray());
-        Document testDocument = parser.parse(is);
+
+        Document testDocument = getTestDocument(is);
+
         stream.close();
         is.close();
 
@@ -487,13 +489,25 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         assertEquals(sizeBefore, sizeAfter);
 
         InputStream is = new ByteArrayInputStream(stream.toByteArray());
-        Document testDocument = parser.parse(is);
+        Document testDocument = getTestDocument(is);
+        
         stream.close();
         is.close();
 
         objectToXMLDocumentTest(testDocument);
     }
 
+    public Document getTestDocument(InputStream is) throws Exception{
+       return parser.parse(is);
+    }
+    
+    public Document getTestDocument(String s) throws Exception{
+        StringReader reader = new StringReader(s);
+        InputSource inputSource = new InputSource(reader);
+        Document doc = parser.parse(inputSource);
+        reader.close();
+        return doc;
+    }
 
     public void testObjectToXMLStringWriter() throws Exception {
         objectToXMLStringWriter(getWriteControlObject());
@@ -522,11 +536,9 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         assertEquals(sizeBefore, sizeAfter);
 
-        StringReader reader = new StringReader(writer.toString());        
-        InputSource inputSource = new InputSource(reader);
-        Document testDocument = parser.parse(inputSource);
+        Document testDocument = getTestDocument(writer.toString());
+
         writer.close();
-        reader.close();
 
         objectToXMLDocumentTest(testDocument);
     }
@@ -555,11 +567,9 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             int sizeAfter = getNamespaceResolverSize(desc);
 
             assertEquals(sizeBefore, sizeAfter);
-            StringReader reader = new StringReader(writer.toString());
-            InputSource inputSource = new InputSource(reader);
-            Document testDocument = parser.parse(inputSource);
+            Document testDocument = getTestDocument(writer.toString());
+            
             writer.close();
-            reader.close();
             objectToXMLDocumentTest(testDocument);
         }
     }
@@ -589,11 +599,9 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             int sizeAfter = getNamespaceResolverSize(desc);
 
             assertEquals(sizeBefore, sizeAfter);
-            StringReader reader = new StringReader(writer.toString());
-            InputSource inputSource = new InputSource(reader);
-            Document testDocument = parser.parse(inputSource);
+           
+            Document testDocument = getTestDocument(writer.toString());
             writer.close();
-            reader.close();
             objectToXMLDocumentTest(testDocument);
         }
     }
@@ -623,11 +631,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             int sizeAfter = getNamespaceResolverSize(desc);
 
             assertEquals(sizeBefore, sizeAfter);
-            StringReader reader = new StringReader(writer.toString());
-            InputSource inputSource = new InputSource(reader);
-            Document testDocument = parser.parse(inputSource);
+            Document testDocument = getTestDocument(writer.toString());
             writer.close();
-            reader.close();
             objectToXMLDocumentTest(testDocument);
         }
     }

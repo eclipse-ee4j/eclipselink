@@ -255,18 +255,6 @@ public class XRPackager implements DBWSPackager {
         orSessionConfig.setLogConfig(orLogConfig);
         ts.addSessionConfig(orSessionConfig);
 
-        DatabaseSessionConfig oxSessionConfig = new DatabaseSessionConfig();
-        oxSessionConfig.setName(projectName + "-" + DBWS_OX_SESSION_NAME_SUFFIX);
-        ProjectConfig oxProjectConfig = builder.buildOXProjectConfig();
-        oxSessionConfig.setPrimaryProject(oxProjectConfig);
-        DefaultSessionLogConfig oxLogConfig = new DefaultSessionLogConfig();
-        oxLogConfig.setLogLevel(OFF);
-        oxSessionConfig.setLogConfig(oxLogConfig);
-        String oxSessionCustomizerClassName = builder.getOxSessionCustomizerClassName();
-        if (oxSessionCustomizerClassName != null && !"".equals(oxSessionCustomizerClassName)) {
-            oxSessionConfig.setSessionCustomizerClass(oxSessionCustomizerClassName);
-        }
-        ts.addSessionConfig(oxSessionConfig);
         return ts;
     }
 

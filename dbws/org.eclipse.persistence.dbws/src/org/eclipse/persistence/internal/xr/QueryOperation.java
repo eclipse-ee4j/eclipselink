@@ -316,7 +316,7 @@ public class QueryOperation extends Operation {
                 NamespaceResolver nr = new NamespaceResolver();
                 simpleXMLFormatDescriptor.setNamespaceResolver(nr);
                 XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-                schemaReference.setSchemaContext("/any");
+                schemaReference.setSchemaContext("/simple-xml-format");
                 schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
                 simpleXMLFormatDescriptor.setSchemaReference(schemaReference);
                 oxSession.getProject().addDescriptor(simpleXMLFormatDescriptor);
@@ -379,8 +379,7 @@ public class QueryOperation extends Operation {
                         Object targetObject = value;
                         if (xrService.descriptorsByQName.containsKey(resultType)) {
                             XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
-                            ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
-                                    xdesc.getAlias());
+                            ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(xdesc.getAlias());
                             if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor()) {
                                 if (isCollection()) {
                                     XRDynamicEntity_CollectionWrapper xrCollWrapper =

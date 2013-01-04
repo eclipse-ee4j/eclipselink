@@ -24,7 +24,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -36,14 +38,20 @@ import org.w3c.dom.NodeList;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModel;
 import org.eclipse.persistence.dbws.DBWSModelProject;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
@@ -51,9 +59,15 @@ import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
 import org.eclipse.persistence.internal.xr.XRServiceFactory;
 import org.eclipse.persistence.internal.xr.XRServiceModel;
+import org.eclipse.persistence.internal.xr.XmlBindingsModel;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -69,9 +83,14 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
 import org.eclipse.persistence.tools.dbws.JSR109WebServicePackager;
 import org.eclipse.persistence.tools.dbws.XRPackager;
 
+import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
+import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAME;
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
+import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
+import static org.eclipse.persistence.tools.dbws.Util.OX_PRJ_SUFFIX;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
 public class DBWSTestSuite {
@@ -92,13 +111,11 @@ public class DBWSTestSuite {
     public static final String DATABASE_DDL_DEBUG_KEY = "db.ddl.debug";
     public static final String DEFAULT_DATABASE_DDL_DEBUG = "false";
     public static final String RELEASE_VERSION_KEY = "release.version";
-    public static final String DEFAULT_RELEASE_VERSION= "2.4.0";
-    public static String releaseVersion =
-        System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
-    public static final String REGULAR_XML_HEADER =
-        "<?xml version = '1.0' encoding = 'UTF-8'?>";
-    public static final String STANDALONE_XML_HEADER =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
+    public static final String DEFAULT_RELEASE_VERSION= "2.5.0";
+    public static String releaseVersion = System.getProperty(RELEASE_VERSION_KEY, DEFAULT_RELEASE_VERSION);
+    public static final String REGULAR_XML_HEADER = "<?xml version = '1.0' encoding = 'UTF-8'?>";
+    public static final String STANDALONE_XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>";
+    public static final String OFF_STR = "off";
 
     //shared JUnit fixtures
     public static Connection conn = AllTests.conn;
@@ -227,20 +244,71 @@ public class DBWSTestSuite {
                 XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(parentClassLoader);
                 Project orProject = null;
                 if (DBWS_OR_STREAM.size() != 0) {
-                    orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-                        xrdecl);
+                    orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()), xrdecl);
                 } else {
                     orProject = new Project();
-                    orProject.setName(builder.getProjectName() + "-dbws-or");
+                    orProject.setName(builder.getProjectName().concat(OR_PRJ_SUFFIX));
                 }
+
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {
-                    oxProject = XMLProjectReader.read(new StringReader(DBWS_OX_STREAM.toString()),
-                        xrdecl);
+                    Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+                    StreamSource xml = new StreamSource(new StringReader(DBWS_OX_STREAM.toString()));
+                    try {
+                        JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
+                        Unmarshaller unmarshaller = jc.createUnmarshaller();
+                        
+                        JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
+                        XmlBindingsModel model = jaxbElt.getValue();
+                        for (XmlBindings xmlBindings : model.getBindingsList()) {
+                            metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                        }
+                    } catch (JAXBException jaxbex) {
+                        jaxbex.printStackTrace();
+                    }
+                    
+                    Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+                    properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
+                    try {
+                        org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
+                                org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
+                        oxProject = jCtx.getXMLContext().getSession(0).getProject();
+
+                        // may need to alter descriptor alias
+                        if (oxProject.getAliasDescriptors() != null) {
+                            Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
+                            for (Object key : oxProject.getAliasDescriptors().keySet()) {
+                                String alias = key.toString();
+                                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
+                                
+                                String defaultRootElement = xdesc.getDefaultRootElement();
+                                String proposedAlias = defaultRootElement;
+                                if (defaultRootElement.endsWith(TYPE_STR)) {
+                                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
+                                }
+                                proposedAlias = proposedAlias.toLowerCase();
+                                xdesc.setAlias(proposedAlias);
+                                aliasDescriptors.put(proposedAlias, xdesc);
+
+                                // workaround for JAXB validation:  JAXB expects a DataHandler in the 
+                                // object model for SwaRef, whereas we want to work with a byte[]
+                                for (DatabaseMapping mapping : xdesc.getMappings()) {
+                                    if (mapping instanceof XMLBinaryDataMapping) {
+                                        ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
+                                        ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
+                                    }
+                                }
+                            }
+                            oxProject.setAliasDescriptors(aliasDescriptors);
+                        }
+                    } catch (JAXBException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     oxProject = new Project();
-                    oxProject.setName(builder.getProjectName() + "-dbws-ox");
                 }
+                oxProject.setName(builder.getProjectName().concat(OX_PRJ_SUFFIX));
+
                 DatasourceLogin login = new DatabaseLogin();
                 login.setUserName(username);
                 login.setPassword(password);
@@ -266,12 +334,10 @@ public class DBWSTestSuite {
                 }
                 ProjectHelper.fixOROXAccessors(orProject, oxProject);
                 DatabaseSession databaseSession = orProject.createDatabaseSession();
-                if ("off".equalsIgnoreCase(builder.getLogLevel())) {
+                if (OFF_STR.equalsIgnoreCase(builder.getLogLevel())) {
                     databaseSession.dontLogMessages();
-                }
-                else {
-                    databaseSession.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(
-                        builder.getLogLevel()));
+                } else {
+                    databaseSession.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(builder.getLogLevel()));
                 }
                 xrService.setORSession(databaseSession);
                 xrService.setXMLContext(new XMLContext(oxProject));
@@ -297,7 +363,7 @@ public class DBWSTestSuite {
         for (int x = nodeList.getLength() - 1; x >= 0; x--) {
             childNode = nodeList.item(x);
             if (childNode.getNodeType() == Node.TEXT_NODE) {
-                if (childNode.getNodeValue().trim().equals("")) {
+                if (childNode.getNodeValue().trim().equals(EMPTY_STRING)) {
                     node.removeChild(childNode);
                 }
             } else if (childNode.getNodeType() == Node.ELEMENT_NODE) {

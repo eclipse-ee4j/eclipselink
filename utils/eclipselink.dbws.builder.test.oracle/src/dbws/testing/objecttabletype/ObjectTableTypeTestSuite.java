@@ -413,7 +413,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     }
     static String RESULT_XML =
         REGULAR_XML_HEADER +
-        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<item>" +
                 "<name>BUBBLES</name>" +
                 "<age>32</age>" +
@@ -546,7 +546,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
 
     static String NEW_PTABLE_OUTPUT_XML =
         REGULAR_XML_HEADER +
-        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<dbws_persontype_tableType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<item>" +
                 "<name>BUBBLES</name>" +
                 "<age>32</age>" +
@@ -639,7 +639,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
         "</dbws_myempobjectType>";
     static String NEW_ETABLE_OUTPUT2_XML =
         REGULAR_XML_HEADER +
-	    "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+	    "<dbws_grouptypeType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
 		    "<name>MyNewGroup</name>" +
 		    "<ecount>3</ecount>" +
 		    "<etable>" +
@@ -673,7 +673,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     }
     static String TJOBS_XML =
         REGULAR_XML_HEADER +
-        "<t_jobsType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<t_jobsType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<job_id>3</job_id>" +
             "<job_title>CON</job_title>" +
             "<max_salary>4255</max_salary>" +
@@ -692,7 +692,7 @@ public class ObjectTableTypeTestSuite extends DBWSTestSuite {
     }
     static String COLJOBS_XML =
         REGULAR_XML_HEADER +
-        "<col_jobsType xmlns=\"urn:ObjectTableTypeTests\">" +
+        "<col_jobsType xmlns=\"urn:ObjectTableTypeTests\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<item>" +
            "<job_id>1</job_id>" +
            "<job_title>THEIF</job_title>" +

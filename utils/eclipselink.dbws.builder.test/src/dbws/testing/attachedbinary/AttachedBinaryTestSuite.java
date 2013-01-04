@@ -419,13 +419,13 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
     static final String XSD =
     	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-    	"<xsd:schema xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:attachedbinary\" xmlns=\"urn:attachedbinary\" elementFormDefault=\"qualified\">" +
+    	"<xsd:schema xmlns:ref=\"http://ws-i.org/profiles/basic/1.1/xsd\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" targetNamespace=\"urn:attachedbinary\" xmlns=\"urn:attachedbinary\" elementFormDefault=\"qualified\">" +
     		"<xsd:import schemaLocation=\"swaref.xsd\" namespace=\"http://ws-i.org/profiles/basic/1.1/xsd\"/>" +
     		"<xsd:complexType name=\"attachedbinaryType\">" +
     			"<xsd:sequence>" +
     				"<xsd:element name=\"id\" type=\"xsd:decimal\"/>" +
     				"<xsd:element name=\"name\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>" +
-    				"<xsd:element name=\"b\" type=\"ref:swaRef\" minOccurs=\"0\" nillable=\"true\" xmlns:ns0=\"http://www.w3.org/2005/05/xmlmime\" ns0:expectedContentTypes=\"application/octet-stream\"/>" +
+    				"<xsd:element name=\"b\" type=\"ref:swaRef\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>" +
     			"</xsd:sequence>" +
     		"</xsd:complexType>" +
     		"<xsd:element name=\"attachedbinaryType\" type=\"attachedbinaryType\"/>" +

@@ -145,8 +145,7 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(INLINEBINARY_COLLECTION_XML));
-        assertTrue("control document not same as instance document",
-            comparer.isNodeEqual(controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String INLINEBINARY_COLLECTION_XML =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
@@ -154,17 +153,17 @@ public class InlineBinaryTestSuite extends DBWSTestSuite {
             "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>1</id>" +
                 "<name>one</name>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+                "<b>AQEBAQEBAQEBAQEBAQEB</b>" +
             "</inlinebinaryType>" +
             "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>2</id>" +
                 "<name>two</name>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
+                "<b>AgICAgICAgICAgICAgIC</b>" +
             "</inlinebinaryType>" +
             "<inlinebinaryType xmlns=\"urn:inlinebinary\">" +
                 "<id>3</id>" +
                 "<name>three</name>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
+                "<b>AwMDAwMDAwMDAwMDAwMD</b>" +
             "</inlinebinaryType>" +
         "</inlinebinary-collection>";
 }

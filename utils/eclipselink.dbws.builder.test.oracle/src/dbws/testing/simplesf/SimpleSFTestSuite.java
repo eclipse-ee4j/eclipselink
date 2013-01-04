@@ -249,7 +249,7 @@ public class SimpleSFTestSuite extends DBWSTestSuite {
     }
     public static final String FIND_MAX_SAL_FOR_DEPT_XML =
         REGULAR_XML_HEADER +
-        "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+        "<max-sal-for-dept xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"simple-xml-format\">" +
           "<simple-xml>" +
             "<result>2850</result>" +
           "</simple-xml>" +

@@ -94,16 +94,18 @@ public class Util {
 
     public static final String TOPLEVEL = "TOPLEVEL";
     public static final String CLASSES = "classes";
-    public static final String DEFAULT_WSDL_LOCATION_URI =
-        "REPLACE_WITH_ENDPOINT_ADDRESS";
-    public static final String SWAREF_FILENAME =
-    	XMLConstants.SWA_REF.toLowerCase() + ".xsd";
+    public static final String DEFAULT_WSDL_LOCATION_URI = "REPLACE_WITH_ENDPOINT_ADDRESS";
+    public static final String SWAREF_FILENAME = XMLConstants.SWA_REF.toLowerCase() + ".xsd";
     // leave this duplicate as someone may be referencing it...
     public static final String WSI_SWAREF_XSD_FILE = SWAREF_FILENAME;
     public static final String WEB_XML_FILENAME = "web.xml";
-    public static final String DEFAULT_PLATFORM_CLASSNAME =
-        "org.eclipse.persistence.platform.database.OraclePlatform";
+    public static final String DEFAULT_PLATFORM_CLASSNAME = "org.eclipse.persistence.platform.database.OraclePlatform";
+    public static final String DOM_PLATFORM_CLASSNAME = "org.eclipse.persistence.oxm.platform.DOMPlatform";
     public static final String UNDER_DBWS = "_dbws";
+    public static final String OX_PRJ_SUFFIX = "-dbws-ox";
+    public static final String OR_PRJ_SUFFIX = "-dbws-or";
+    public static final String XML_BINDINGS = "xml-bindings";
+    public static final String XML_MIME_PREFIX = "xmime";
     public static final String WSI_SWAREF = XMLConstants.SWA_REF;
     public static final String WSI_SWAREF_PREFIX = XMLConstants.REF_PREFIX;
     public static final String WSI_SWAREF_URI = XMLConstants.REF_URL;
@@ -510,10 +512,7 @@ public class Util {
     }
 
     public static boolean isNullStream(OutputStream outputStream) {
-        if (outputStream == null | outputStream == __nullStream) {
-            return true;
-        }
-        return false;
+        return (outputStream == null | outputStream == __nullStream);
     }
 
     /**
@@ -543,32 +542,35 @@ public class Util {
     public static RelationalDescriptor buildORDescriptor(String tableName, String projectName,
         List<String> requireCRUDOperations, NamingConventionTransformer nct) {
         RelationalDescriptor desc = new RelationalDescriptor();
-        String tablenameAlias = nct.generateSchemaAlias(tableName);
         desc.addTableName(tableName);
-        desc.setAlias(tablenameAlias);
+        String tableAlias = tableName.toLowerCase();
+        desc.setAlias(tableAlias);
         String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
         desc.setJavaClassName(generatedJavaClassName);
         desc.useWeakIdentityMap();
         // keep track of which tables require CRUD operations
-        if (requireCRUDOperations != null && nct.generateSchemaAlias(tableName).equals(tablenameAlias)) {
-            requireCRUDOperations.add(tablenameAlias);
+        if (requireCRUDOperations != null) {
+            requireCRUDOperations.add(tableAlias);
         }
         return desc;
     }
 
     public static XMLDescriptor buildOXDescriptor(String tableName,  String projectName,
+            String targetNamespace, NamingConventionTransformer nct) {
+        return buildOXDescriptor(tableName, nct.generateSchemaAlias(tableName), projectName, targetNamespace, nct);
+    }
+    public static XMLDescriptor buildOXDescriptor(String tableName, String schemaAlias, String projectName,
         String targetNamespace, NamingConventionTransformer nct) {
         XMLDescriptor xdesc = new XMLDescriptor();
         String generatedJavaClassName = getGeneratedJavaClassName(tableName, projectName);
         xdesc.setJavaClassName(generatedJavaClassName);
-        String tablenameAlias = nct.generateSchemaAlias(tableName);
-        xdesc.setAlias(tablenameAlias);
+        xdesc.setAlias(tableName.toLowerCase());
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
-        xdesc.setDefaultRootElement(tablenameAlias);
+        xdesc.setDefaultRootElement(schemaAlias);
         XMLSchemaURLReference schemaReference = new XMLSchemaURLReference(EMPTY_STRING);
-        schemaReference.setSchemaContext(SLASH + tablenameAlias);
+        schemaReference.setSchemaContext(SLASH + schemaAlias);
         schemaReference.setType(org.eclipse.persistence.platform.xml.XMLSchemaReference.COMPLEX_TYPE);
         xdesc.setSchemaReference(schemaReference);
         return xdesc;
@@ -590,8 +592,7 @@ public class Util {
             nsURI = builder.schema.getNamespaceResolver().resolveNamespacePrefix(prefix);
             if (prefix.equalsIgnoreCase(SCHEMA_PREFIX)) {
                 nsURI = W3C_XML_SCHEMA_NS_URI;
-            }
-            else {
+            } else {
                 nsURI = DEFAULT_NS_PREFIX;
             }
             localPart = typeString.substring(colonIdx+1);
@@ -601,13 +602,11 @@ public class Util {
                     qName = new QName(W3C_XML_SCHEMA_NS_URI, localPart,
                         prefix == null ? DEFAULT_NS_PREFIX : prefix);
                 }
-            }
-            else {
+            } else {
                 qName = new QName(nsURI == null ? NULL_NS_URI : nsURI,
                     localPart, prefix == null ? DEFAULT_NS_PREFIX : prefix);
             }
-        }
-        else {
+        } else {
             qName = qNameFromString(OPEN_PAREN + builder.getTargetNamespace() +
                 CLOSE_PAREN + typeString, builder.schema);
         }

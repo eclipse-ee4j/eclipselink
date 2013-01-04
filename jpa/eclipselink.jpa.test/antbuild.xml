@@ -1374,8 +1374,8 @@
             <pathelement path="../../../extension.lib.external/${validation.api.jar}"/>
         </path>
         <path id="run.jpa21.classpath">
-            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
-            <path refid="compile.path"/>
+            <pathelement path="${eclipselink.jpa.test}/${classes21.dir}"/>
+            <path refid="jpa21.compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa21.test.jar}"/>

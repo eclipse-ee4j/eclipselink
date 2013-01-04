@@ -2865,20 +2865,12 @@ public class MappingsGenerator {
                 }
             }else if(type != null && !type.isTransient()){
                 if(next.getNamespaceURI() == null || next.getNamespaceURI().equals("")) {
-                	if(type.getDescriptor().getDefaultRootElement() == null){
-                		type.getDescriptor().setDefaultRootElement(next.getLocalPart());
-                	}else{
-                        type.getDescriptor().addRootElement(next.getLocalPart());
-                	}
+                    type.getDescriptor().addRootElement(next.getLocalPart());
                 } else {
                     Descriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
                     String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
-                    if(type.getDescriptor().getDefaultRootElement() == null){
-                		descriptor.setDefaultRootElement(getQualifiedString(prefix, next.getLocalPart()));
-                	}else{
-                        descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
-                	}
+                    descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
                 }
             }
         }

@@ -220,12 +220,11 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(REGION_XML));
-        assertTrue("Expected:\n" + documentToString(controlDoc) +
-            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static final String REGION_XML =
         REGULAR_XML_HEADER +
-        "<dbws_regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_regionType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
         "<reg_id>5</reg_id>" +
         "<reg_name>this is a test</reg_name>" +
         "</dbws_regionType>";
@@ -243,12 +242,11 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(EMP_ADDRESS_XML));
-        assertTrue("Expected:\n" + documentToString(controlDoc) +
-            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     static final String EMP_ADDRESS_XML =
         REGULAR_XML_HEADER +
-        "<dbws_emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<dbws_emp_addressType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<street>20 Pinetrail Cres.</street>" +
            "<suburb>Centrepointe</suburb>" +
            "<addr_region>" +
@@ -307,7 +305,7 @@ public class AdvancedJDBCPackageTestSuite extends DBWSTestSuite {
     }
     static final String EMP_INFO_ARRAY_XML =
         REGULAR_XML_HEADER +
-        "<dbws_emp_info_arrayType xmlns=\"urn:advancedjdbcpackage\">" +
+        "<dbws_emp_info_arrayType xmlns=\"urn:advancedjdbcpackage\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
             "<item>" +
                 "<id>1</id>" +
                 "<name>entry 1</name>" +

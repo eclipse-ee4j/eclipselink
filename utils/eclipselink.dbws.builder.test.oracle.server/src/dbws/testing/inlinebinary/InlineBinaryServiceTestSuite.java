@@ -40,9 +40,12 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class InlineBinaryServiceTestSuite extends DBWSTestSuite {
-	static final String b0 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB";
-	static final String b1 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC";
-	static final String b2 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD";
+	//static final String b0 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB";
+	//static final String b1 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC";
+	//static final String b2 = "rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD";
+    static final String b0 = "AQEBAQEBAQEBAQEBAQEB";
+    static final String b1 = "AgICAgICAgICAgICAgIC";
+    static final String b2 = "AwMDAwMDAwMDAwMDAwMD";
 	
     static final String SOAP_FINDBYPK_REQUEST =
         "<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\">" +

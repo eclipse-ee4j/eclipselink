@@ -15,10 +15,15 @@ package org.eclipse.persistence.internal.xr;
 
 //javase imports
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 //java eXtension imports
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,20 +31,33 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 //EclipseLink imports
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.metadata.MetadataSource;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
+import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+
+import static org.eclipse.persistence.internal.helper.ClassConstants.APBYTE;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SESSIONS_XML;
@@ -131,27 +149,25 @@ import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
  */
 @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
 public class XRServiceFactory  {
-
     public XRServiceAdapter xrService;
     public ClassLoader parentClassLoader;
     public InputStream xrSchemaStream;
 
+    static final String TYPE_STR = "Type";
+    static final String XML_BINDINGS_STR = "xml-bindings";
+    static final String DOM_PLATFORM_CLASSNAME = "org.eclipse.persistence.oxm.platform.DOMPlatform";
+    static final String OXM_PROCESSING_EX = "An exception occurred processing OXM metadata";
+    
     public XRServiceFactory() {
         super();
     }
 
     public XRServiceAdapter buildService() {
-
-        // sub-classes override with specific behaviour
-
         initializeService(parentClassLoader, xrSchemaStream);
         return xrService;
     }
 
     public XRServiceAdapter buildService(XRServiceModel xrServiceModel) {
-
-        // sub-classes override with specific behaviour
-
         xrService = new XRServiceAdapter();
         xrService.setName(xrServiceModel.getName());
         xrService.setSessionsFile(xrServiceModel.getSessionsFile());
@@ -188,7 +204,6 @@ public class XRServiceFactory  {
      *
      */
     public void loadXMLSchema(InputStream xrSchemaStream) {
-
         SchemaModelProject schemaProject = new SchemaModelProject();
         XMLContext xmlContext = new XMLContext(schemaProject);
         XMLUnmarshaller unmarshaller = xmlContext.createUnmarshaller();
@@ -199,24 +214,102 @@ public class XRServiceFactory  {
         xrService.schema = schema;
         xrService.schemaNamespace = targetNamespace;
     }
-
+    
+    /**
+     * <p>INTERNAL:
+     * Create a Project using OXM metadata.  The given classloader is expected 
+     * to successfully load 'META-INF/eclipselink-dbws-ox.xml'.
+     */
+    protected Project loadOXMetadata(ClassLoader xrdecl) {
+        Project oxProject = null;
+        InputStream inStream = null;
+        String searchPath = null;
+        
+        // try "META-INF/" and "/META-INF/"
+        for (String prefix : META_INF_PATHS) {
+            searchPath = prefix + Util.DBWS_OX_XML;
+            inStream = xrdecl.getResourceAsStream(searchPath);
+            if (inStream != null) {
+                break;
+            }
+        }
+        if (inStream != null) {
+            Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+            StreamSource xml = new StreamSource(inStream);
+            try {
+                JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
+                Unmarshaller unmarshaller = jc.createUnmarshaller();
+                
+                JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
+                XmlBindingsModel model = jaxbElt.getValue();
+                for (XmlBindings xmlBindings : model.getBindingsList()) {
+                    metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                }
+            } catch (JAXBException jaxbex) {
+                throw new DBWSException(OXM_PROCESSING_EX, jaxbex);
+            }
+            
+            Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
+            try {
+                DynamicJAXBContext jCtx = DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
+                oxProject = jCtx.getXMLContext().getSession(0).getProject();
+    
+                // may need to alter descriptor alias
+                if (oxProject.getAliasDescriptors() != null) {
+                    Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
+                    for (Object key : oxProject.getAliasDescriptors().keySet()) {
+                        XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(key.toString());
+                        
+                        String defaultRootElement = xdesc.getDefaultRootElement();
+                        String proposedAlias = defaultRootElement;
+                        if (proposedAlias.endsWith(TYPE_STR)) {
+                            proposedAlias = proposedAlias.substring(0, proposedAlias.lastIndexOf(TYPE_STR));
+                        }
+                        xdesc.setAlias(proposedAlias);
+                        aliasDescriptors.put(proposedAlias, xdesc);
+                        
+                        // workaround for JAXB validation:  JAXB expects a DataHandler in the 
+                        // object model for SwaRef, whereas we want to work with a byte[]
+                        for (DatabaseMapping mapping : xdesc.getMappings()) {
+                            if (mapping instanceof XMLBinaryDataMapping) {
+                                ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
+                                ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
+                            }
+                        }
+                    }
+                    oxProject.setAliasDescriptors(aliasDescriptors);
+                }
+            } catch (JAXBException e) {
+                throw new DBWSException(OXM_PROCESSING_EX, e);
+            }
+        }
+        return oxProject == null ? new SimpleXMLFormatProject() : oxProject; 
+    }
+    
     /**
      * <p>INTERNAL:
      */
     public void buildSessions() {
         ClassLoader projectLoader = new XRDynamicClassLoader(parentClassLoader);
+
+        Project oxProject = loadOXMetadata(projectLoader);
+
+        ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
+        ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+        xrService.xmlContext = new XMLContext(oxProject);
+        xrService.oxSession = xrService.xmlContext.getSession(0);
+        
         SessionManager sessionManager = SessionManager.getManager();
         boolean found = false;
-        String sessionsFile =
-            xrService.sessionsFile == null ? DBWS_SESSIONS_XML : xrService.sessionsFile;
+        String sessionsFile = xrService.sessionsFile == null ? DBWS_SESSIONS_XML : xrService.sessionsFile;
         for (String prefix : META_INF_PATHS) {
             String searchPath = prefix + sessionsFile;
             XRSessionConfigLoader loader = new XRSessionConfigLoader(searchPath);
             loader.setShouldLogin(false);
             try {
                 found = loader.load(sessionManager, projectLoader);
-            }
-            catch (RuntimeException e) { /* ignore */
+            } catch (RuntimeException e) { /* ignore */
             }
             if (found) {
                 break;
@@ -229,22 +322,11 @@ public class XRServiceFactory  {
         String orSessionKey = xrService.name + "-" + DBWS_OR_SESSION_NAME_SUFFIX;
         if (sessions.containsKey(orSessionKey)) {
             xrService.orSession = (Session)sessions.get(orSessionKey);
-        }
-        else {
+        } else {
             throw DBWSException.couldNotLocateORSessionForService(xrService.name);
         }
-        String oxSessionKey = xrService.name + "-" + DBWS_OX_SESSION_NAME_SUFFIX;
-        if (sessions.containsKey(oxSessionKey)) {
-            xrService.oxSession = (Session)sessions.get(oxSessionKey);
-        }
-        else {
-            throw DBWSException.couldNotLocateOXSessionForService(xrService.name);
-        }
-        ((XMLLogin)xrService.oxSession.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-        ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(),
-            xrService.oxSession.getProject());
-        xrService.xmlContext = new XMLContext(xrService.oxSession.getProject());
-        xrService.oxSession = xrService.xmlContext.getSession(0);
+
+        ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(), oxProject);
     }
 
     /**
@@ -363,4 +445,21 @@ public class XRServiceFactory  {
         return transformer;
     }
 
+    /**
+     * Implementation of MetadataSource to allow passing XmlBindings
+     * to the DynamicJAXBContextFactory
+     *
+     */
+    public class DBWSMetadataSource implements MetadataSource {
+        XmlBindings xmlbindings;
+        
+        public DBWSMetadataSource(XmlBindings bindings) {
+            xmlbindings = bindings;
+        }
+        
+        @Override
+        public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {
+            return xmlbindings;
+        }
+    }
 }

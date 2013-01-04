@@ -37,12 +37,16 @@ import static java.util.logging.Level.SEVERE;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
 //EclipseLink imports
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -69,11 +73,13 @@ import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.UpdateOperation;
 import org.eclipse.persistence.internal.xr.Util;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
+import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
-import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -117,12 +123,14 @@ import static org.eclipse.persistence.internal.xr.Util.getClassFromJDBCType;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.XML_MIME_URL;
 import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
 import static org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType.isXMLType;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
 import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
+import static org.eclipse.persistence.tools.dbws.Util.CHAR_STR;
 import static org.eclipse.persistence.tools.dbws.Util.DATE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
 import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
@@ -135,6 +143,7 @@ import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
@@ -142,6 +151,7 @@ import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_XSD;
+import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.addSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.buildORDescriptor;
 import static org.eclipse.persistence.tools.dbws.Util.buildOXDescriptor;
@@ -204,6 +214,7 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String SWAREF_STR = "SWAREF";
     public static final String NO_TABLE_MSG = "No tables were found matching the following: ";
     public static final String NO_PROC_MSG = "No procedures were found matching the following: ";
+    public static final String OXM_MARSHAL_EX_MSG = "An exception occurred while attempting to marshal the OXM bindings file";
     public static final String OPENBRACKET = "[";
     public static final String CLOSEBRACKET = "]";
     public static final String CRLF = "\n";
@@ -247,14 +258,18 @@ public abstract class BaseDBWSBuilderHelper {
     protected void addToOROXProjectsForBuildSql(ModelWithBuildSql modelWithBuildSql,
         Project orProject, Project oxProject, NamingConventionTransformer nct) {
         List<DbColumn> columns = buildDbColumns(dbwsBuilder.getConnection(), modelWithBuildSql.getBuildSql());
-        String tableName = modelWithBuildSql.getReturnType();
+        String schemaAlias = modelWithBuildSql.getReturnType();
+        String tableName = null;
+        if (schemaAlias.endsWith(TYPE_STR)) {
+            tableName = schemaAlias.substring(0, schemaAlias.lastIndexOf(TYPE_STR));
+        } else {
+            tableName = schemaAlias;
+        }
         NamingConventionTransformer customNct = setUpCustomTransformer(tableName, nct);
-        RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(),
-            null, customNct);
+        RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(), null, customNct);
         desc.descriptorIsAggregate();
         orProject.addDescriptor(desc);
-        XMLDescriptor xdesc = buildOXDescriptor(tableName, dbwsBuilder.getProjectName(),
-            dbwsBuilder.getTargetNamespace(), customNct);
+        XMLDescriptor xdesc = buildOXDescriptor(tableName, schemaAlias, dbwsBuilder.getProjectName(), dbwsBuilder.getTargetNamespace(), customNct);
         oxProject.addDescriptor(xdesc);
         List<String> columnsAlreadyProcessed = new ArrayList<String>();
         for (DbColumn dbColumn : columns) {
@@ -266,16 +281,16 @@ public abstract class BaseDBWSBuilderHelper {
                     continue;
                 }
                 dbwsBuilder.logMessage(FINE, "Building mappings for " + columnName);
-                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc,
-                    dbwsBuilder.getDatabasePlatform(), nct);
+                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, dbwsBuilder.getDatabasePlatform(), nct);
                 desc.addMapping(orFieldMapping);
-                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn,
-                    dbwsBuilder.getDatabasePlatform(), nct);
+                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, dbwsBuilder.getDatabasePlatform(), nct);
+                if (oxFieldMapping instanceof XMLBinaryDataMapping) {
+                    xdesc.getNamespaceResolver().put(XML_MIME_PREFIX, XML_MIME_URL);
+                }
                 xdesc.addMapping(oxFieldMapping);
             }
             else {
-                dbwsBuilder.logMessage(SEVERE, "Duplicate ResultSet columns not supported '" +
-                    columnName + "'");
+                dbwsBuilder.logMessage(SEVERE, "Duplicate ResultSet columns not supported '" + columnName + "'");
                 throw new RuntimeException("Duplicate ResultSet columns not supported");
             }
         }
@@ -351,18 +366,15 @@ public abstract class BaseDBWSBuilderHelper {
         if (dbTables.isEmpty() && !dbwsBuilder.hasBuildSqlOperations()) {
             dbwsBuilder.logMessage(FINEST, "No tables specified");
             oxProject = new SimpleXMLFormatProject();
-        }
-        else {
+        } else {
             oxProject = new Project();
         }
         oxProject.setName(projectName + "-" + DBWS_OX_LABEL);
         for (TableType dbTable : dbTables) {
             String tableName = dbTable.getTableName();
-            RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(),
-                dbwsBuilder.requireCRUDOperations, nct);
+            RelationalDescriptor desc = buildORDescriptor(tableName, dbwsBuilder.getProjectName(), dbwsBuilder.requireCRUDOperations, nct);
             orProject.addDescriptor(desc);
-            XMLDescriptor xdesc = buildOXDescriptor(tableName, dbwsBuilder.getProjectName(),
-                dbwsBuilder.getTargetNamespace(), nct);
+            XMLDescriptor xdesc = buildOXDescriptor(tableName, dbwsBuilder.getProjectName(), dbwsBuilder.getTargetNamespace(), nct);
             oxProject.addDescriptor(xdesc);
             for (FieldType dbColumn : dbTable.getColumns()) {
                 String columnName = dbColumn.getFieldName();
@@ -371,11 +383,12 @@ public abstract class BaseDBWSBuilderHelper {
                     continue;
                 }
                 dbwsBuilder.logMessage(FINE, "Building mappings for " + tableName + "." + columnName);
-                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc,
-                    dbwsBuilder.getDatabasePlatform(), nct);
+                DirectToFieldMapping orFieldMapping = buildORFieldMappingFromColumn(dbColumn, desc, dbwsBuilder.getDatabasePlatform(), nct);
                 desc.addMapping(orFieldMapping);
-                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn,
-                    dbwsBuilder.getDatabasePlatform(), nct);
+                XMLDirectMapping oxFieldMapping = buildOXFieldMappingFromColumn(dbColumn, dbwsBuilder.getDatabasePlatform(), nct);
+                if (oxFieldMapping instanceof XMLBinaryDataMapping) {
+                    xdesc.getNamespaceResolver().put(XML_MIME_PREFIX, XML_MIME_URL);
+                }
                 xdesc.addMapping(oxFieldMapping);
                 // check for switch from Byte[] to byte[]
                 if (oxFieldMapping.getAttributeClassificationName() == APBYTE.getName()) {
@@ -472,22 +485,22 @@ public abstract class BaseDBWSBuilderHelper {
         String dmdTypeName = getJDBCTypeNameFromType(jdbcType);
         QName qName = getXMLTypeFromJDBCType(jdbcType);
         Class<?> attributeClass;
-        if ("CHAR".equalsIgnoreCase(dmdTypeName) && dbColumn.getEnclosedType().isSizedType()) {
+        if (CHAR_STR.equalsIgnoreCase(dmdTypeName) && dbColumn.getEnclosedType().isSizedType()) {
             SizedType sizedType = (SizedType)dbColumn.getEnclosedType();
             if (sizedType.getSize() == 1) {
                 attributeClass = Character.class;
-            }
-            else {
+            } else {
                 attributeClass = String.class;
             }
-        }
-        else {
+        } else {
             attributeClass = getClassFromJDBCType(dmdTypeName.toUpperCase(), databasePlatform);
         }
         //https://bugs.eclipse.org/bugs/show_bug.cgi?id=359130
         //problem with conversion and Oracle11 platform
         if (attributeClass.getName().contains("oracle.sql.TIMESTAMP")) {
             attributeClass = java.sql.Timestamp.class;
+        } else if (attributeClass.getName().contains(java.lang.Character[].class.getName())) {
+            attributeClass = java.lang.String.class;
         }
         XMLDirectMapping xdm = setUpXMLDirectMapping(columnName, qName, nct, attributeClass,
             jdbcType, dbColumn.pk());
@@ -692,14 +705,15 @@ public abstract class BaseDBWSBuilderHelper {
                 ClassDescriptor desc = (ClassDescriptor)i.next();
                 String tablenameAlias = desc.getAlias();
                 if (dbwsBuilder.requireCRUDOperations.contains(tablenameAlias)) {
+                    String schemaAlias = tablenameAlias.concat(TYPE_STR);
                     QueryOperation findByPKQueryOperation = new QueryOperation();
-                    findByPKQueryOperation.setName(Util.PK_QUERYNAME + "_" + tablenameAlias);
+                    findByPKQueryOperation.setName(Util.PK_QUERYNAME + "_" + schemaAlias);
                     findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
                     nqh1.setName(Util.PK_QUERYNAME);
                     nqh1.setDescriptor(tablenameAlias);
                     Result result = new Result();
-                    QName theInstanceType = new QName(dbwsBuilder.getTargetNamespace(), tablenameAlias,
+                    QName theInstanceType = new QName(dbwsBuilder.getTargetNamespace(), schemaAlias,
                         TARGET_NAMESPACE_PREFIX);
                     result.setType(theInstanceType);
                     findByPKQueryOperation.setResult(result);
@@ -714,7 +728,7 @@ public abstract class BaseDBWSBuilderHelper {
                     dbwsBuilder.xrServiceModel.getOperations().put(findByPKQueryOperation.getName(),
                         findByPKQueryOperation);
                     QueryOperation findAllOperation = new QueryOperation();
-                    findAllOperation.setName(FINDALL_QUERYNAME + "_" + tablenameAlias);
+                    findAllOperation.setName(FINDALL_QUERYNAME + "_" + schemaAlias);
                     findAllOperation.setUserDefined(false);
                     NamedQueryHandler nqh2 = new NamedQueryHandler();
                     nqh2.setName(FINDALL_QUERYNAME);
@@ -726,7 +740,7 @@ public abstract class BaseDBWSBuilderHelper {
                     dbwsBuilder.xrServiceModel.getOperations().put(findAllOperation.getName(),
                         findAllOperation);
                     InsertOperation insertOperation = new InsertOperation();
-                    insertOperation.setName(CREATE_OPERATION_NAME + "_" + tablenameAlias);
+                    insertOperation.setName(CREATE_OPERATION_NAME + "_" + schemaAlias);
                     Parameter theInstance = new Parameter();
                     theInstance.setName(THE_INSTANCE_NAME);
                     theInstance.setType(theInstanceType);
@@ -734,12 +748,12 @@ public abstract class BaseDBWSBuilderHelper {
                     dbwsBuilder.xrServiceModel.getOperations().put(insertOperation.getName(),
                         insertOperation);
                     UpdateOperation updateOperation = new UpdateOperation();
-                    updateOperation.setName(UPDATE_OPERATION_NAME + "_" + tablenameAlias);
+                    updateOperation.setName(UPDATE_OPERATION_NAME + "_" + schemaAlias);
                     updateOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(updateOperation.getName(),
                         updateOperation);
                     DeleteOperation deleteOperation = new DeleteOperation();
-                    deleteOperation.setName(REMOVE_OPERATION_NAME + "_" + tablenameAlias);
+                    deleteOperation.setName(REMOVE_OPERATION_NAME + "_" + schemaAlias);
                     deleteOperation.setDescriptorName(tablenameAlias);
                     for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
                         DatabaseField field = (DatabaseField)j.next();
@@ -840,11 +854,13 @@ public abstract class BaseDBWSBuilderHelper {
     public void writeSchema(OutputStream dbwsSchemaStream) {
         if (!isNullStream(dbwsSchemaStream)) {
             SchemaModelProject schemaProject = new SchemaModelProject();
-            boolean hasSwaRef = dbwsBuilder.getSchema().getNamespaceResolver().resolveNamespacePrefix(
-                WSI_SWAREF_PREFIX) != null;
-            if (hasSwaRef) {
+            if (dbwsBuilder.getSchema().getNamespaceResolver().resolveNamespacePrefix(WSI_SWAREF_PREFIX) != null) {
                 XMLDescriptor descriptor = (XMLDescriptor)schemaProject.getClassDescriptor(Schema.class);
                 descriptor.getNamespaceResolver().put(WSI_SWAREF_PREFIX, WSI_SWAREF_URI);
+            }
+            if (dbwsBuilder.getSchema().getNamespaceResolver().resolveNamespacePrefix(XML_MIME_PREFIX) != null) {
+                XMLDescriptor descriptor = (XMLDescriptor)schemaProject.getClassDescriptor(Schema.class);
+                descriptor.getNamespaceResolver().put(XML_MIME_PREFIX, XML_MIME_URL);
             }
             XMLContext context = new XMLContext(schemaProject);
             XMLMarshaller marshaller = context.createMarshaller();
@@ -910,10 +926,19 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
             if (writeOXProject) {
-                XMLContext context = new XMLContext(workbenchXMLProject);
-                context.getSession(oxProject).getEventManager().addListener(new MissingDescriptorListener());
-                XMLMarshaller marshaller = context.createMarshaller();
-                marshaller.marshal(oxProject, new OutputStreamWriter(dbwsOxStream));
+                List<XmlBindings> xmlBindingsList = XmlBindingsGenerator.generateXmlBindings(oxProject.getOrderedDescriptors());
+                if (xmlBindingsList.size() > 0) {
+                    XmlBindingsModel model = new XmlBindingsModel();
+                    model.setBindingsList(xmlBindingsList);
+                    try {
+                        JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
+                        Marshaller marshaller = jc.createMarshaller();
+                        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                        marshaller.marshal(model, dbwsOxStream);
+                    } catch (JAXBException jaxbEx) {
+                        throw new DBWSException(OXM_MARSHAL_EX_MSG, jaxbEx);
+                    }
+                }
            }
         }
         dbwsBuilder.getPackager().closeOrStream(dbwsOrStream);
@@ -980,8 +1005,7 @@ public abstract class BaseDBWSBuilderHelper {
                         binaryAttach = true;
                         if (MTOM_STR.equalsIgnoreCase(tom.getAttachmentType())) {
                             attachmentType = MTOM_STR;
-                        }
-                        else {
+                        } else {
                             attachmentType = SWAREF_STR;
                         }
                         // only need one operation to require attachments
@@ -995,8 +1019,7 @@ public abstract class BaseDBWSBuilderHelper {
                                     binaryAttach = true;
                                     if (MTOM_STR.equalsIgnoreCase(tom.getAttachmentType())) {
                                         attachmentType = MTOM_STR;
-                                    }
-                                    else {
+                                    } else {
                                         attachmentType = SWAREF_STR;
                                     }
                                     break;
@@ -1006,21 +1029,18 @@ public abstract class BaseDBWSBuilderHelper {
                     }
                 }
             }
+            XMLBinaryDataMapping xbdm = new XMLBinaryDataMapping(); 
             if (binaryAttach) {
-                xdm = new XMLBinaryDataMapping();
-                XMLBinaryDataMapping xbdm = (XMLBinaryDataMapping)xdm;
                 if (attachmentType.equals(SWAREF_STR)) {
                     xbdm.setSwaRef(true);
-                }
-                xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
+                    qName = XMLConstants.SWA_REF_QNAME;
             }
-            else {
-                xdm = new XMLDirectMapping();
-                SerializedObjectConverter converter = new SerializedObjectConverter(xdm);
-                xdm.setConverter(converter);
+            } else {
+                xbdm.setShouldInlineBinaryData(true);
             }
-        }
-        else {
+            xbdm.setMimeType(DEFAULT_ATTACHMENT_MIMETYPE);
+            xdm = xbdm;
+        } else {
             xdm = new XMLDirectMapping();
         }
         String fieldName = nct.generateElementAlias(columnName);

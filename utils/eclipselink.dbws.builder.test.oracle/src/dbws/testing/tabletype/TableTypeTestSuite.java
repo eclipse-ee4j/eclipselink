@@ -372,11 +372,11 @@ public class TableTypeTestSuite extends DBWSTestSuite {
 
     protected static final String XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">\n" +
+        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">\n" +
            "<xsd:complexType name=\"tabletype2Type\">\n" +
               "<xsd:sequence>\n" +
                 "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
-                "<xsd:element name=\"lr\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+                "<xsd:element name=\"lr\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
               "</xsd:sequence>\n" +
            "</xsd:complexType>\n" +
            "<xsd:complexType name=\"tabletypeType\">\n" +
@@ -389,10 +389,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                  "<xsd:element name=\"sal\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
                  "<xsd:element name=\"commission\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
                  "<xsd:element name=\"sales\" type=\"xsd:double\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"binid\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"b\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+                 "<xsd:element name=\"binid\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
+                 "<xsd:element name=\"b\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
                  "<xsd:element name=\"c\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"r\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+                 "<xsd:element name=\"r\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\" xmime:expectedContentTypes=\"application/octet-stream\"/>\n" +
               "</xsd:sequence>\n" +
            "</xsd:complexType>\n" +
            "<xsd:element name=\"tabletype2Type\" type=\"tabletype2Type\"/>\n" +
@@ -772,7 +772,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
            "<class-mapping-descriptors>\n" +
               "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
                  "<class>tabletype.Tabletype</class>\n" +
-                 "<alias>tabletypeType</alias>\n" +
+                 "<alias>tabletype</alias>\n" +
                  "<primary-key>\n" +
                     "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
                  "</primary-key>\n" +
@@ -883,7 +883,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "</class-mapping-descriptor>\n" +
               "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
                  "<class>tabletype.Tabletype2</class>\n" +
-                 "<alias>tabletype2Type</alias>\n" +
+                 "<alias>tabletype2</alias>\n" +
                  "<primary-key>\n" +
                     "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
                  "</primary-key>\n" +
@@ -950,227 +950,80 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</object-persistence>";
 
     protected static final String OX_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
-           "<name>tabletype-dbws-ox</name>\n" +
-           "<class-mapping-descriptors>\n" +
-              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype</class>\n" +
-                 "<alias>tabletypeType</alias>\n" +
-                 "<events/>\n" +
-                 "<querying/>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field name=\"id/text()\" is-required=\"true\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<empty-node-represents-null>true</empty-node-represents-null>\n" +
-                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>name</attribute-name>\n" +
-                       "<field name=\"name/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>deptno</attribute-name>\n" +
-                       "<field name=\"deptno/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>deptname</attribute-name>\n" +
-                       "<field name=\"deptname/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>section</attribute-name>\n" +
-                       "<field name=\"section/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.Character</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>sal</attribute-name>\n" +
-                       "<field name=\"sal/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}double</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>commission</attribute-name>\n" +
-                       "<field name=\"commission/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}double</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>sales</attribute-name>\n" +
-                       "<field name=\"sales/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}double</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>binid</attribute-name>\n" +
-                       "<field name=\"binid/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}base64Binary</schema-type>\n" +
-                       "</field>\n" +
-                       "<converter xsi:type=\"serialized-object-converter\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>b</attribute-name>\n" +
-                       "<field name=\"b/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}base64Binary</schema-type>\n" +
-                       "</field>\n" +
-                       "<converter xsi:type=\"serialized-object-converter\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>c</attribute-name>\n" +
-                       "<field name=\"c/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}string</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>[Ljava.lang.Character;</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>r</attribute-name>\n" +
-                       "<field name=\"r/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}base64Binary</schema-type>\n" +
-                       "</field>\n" +
-                       "<converter xsi:type=\"serialized-object-converter\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>aggregate</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<default-root-element>tabletypeType</default-root-element>\n" +
-                 "<default-root-element-field name=\"tabletypeType\"/>\n" +
-                 "<namespace-resolver>\n" +
-                    "<default-namespace-uri>urn:tabletype</default-namespace-uri>\n" +
-                 "</namespace-resolver>\n" +
-                 "<schema xsi:type=\"schema-url-reference\">\n" +
-                    "<resource></resource>\n" +
-                    "<schema-context>/tabletypeType</schema-context>\n" +
-                    "<node-type>complex-type</node-type>\n" +
-                 "</schema>\n" +
-              "</class-mapping-descriptor>\n" +
-              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype2</class>\n" +
-                 "<alias>tabletype2Type</alias>\n" +
-                 "<events/>\n" +
-                 "<querying/>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field name=\"id/text()\" is-required=\"true\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>\n" +
-                       "</field>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<empty-node-represents-null>true</empty-node-represents-null>\n" +
-                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
-                       "<attribute-name>lr</attribute-name>\n" +
-                       "<field name=\"lr/text()\" xsi:type=\"node\">\n" +
-                          "<schema-type>{http://www.w3.org/2001/XMLSchema}base64Binary</schema-type>\n" +
-                       "</field>\n" +
-                       "<converter xsi:type=\"serialized-object-converter\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                       "<null-policy xsi:type=\"null-policy\">\n" +
-                          "<xsi-nil-represents-null>true</xsi-nil-represents-null>\n" +
-                          "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
-                       "</null-policy>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>aggregate</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<default-root-element>tabletype2Type</default-root-element>\n" +
-                 "<default-root-element-field name=\"tabletype2Type\"/>\n" +
-                 "<namespace-resolver>\n" +
-                    "<default-namespace-uri>urn:tabletype</default-namespace-uri>\n" +
-                 "</namespace-resolver>\n" +
-                 "<schema xsi:type=\"schema-url-reference\">\n" +
-                    "<resource></resource>\n" +
-                    "<schema-context>/tabletype2Type</schema-context>\n" +
-                    "<node-type>complex-type</node-type>\n" +
-                 "</schema>\n" +
-              "</class-mapping-descriptor>\n" +
-           "</class-mapping-descriptors>\n" +
-           "<login xsi:type=\"xml-login\">\n" +
-              "<platform-class>org.eclipse.persistence.oxm.platform.DOMPlatform</platform-class>\n" +
-           "</login>\n" +
-        "</object-persistence>";
+        "<?xml version = '1.0' encoding = 'UTF-8'?>" +
+        "<xml-bindings-list xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\">" +
+           "<xml-bindings package-name=\"tabletype\">" +
+              "<xml-schema namespace=\"urn:tabletype\" element-form-default=\"QUALIFIED\"/>" +
+              "<java-types>" +
+                 "<java-type xml-accessor-type=\"FIELD\" name=\"Tabletype\">" +
+                    "<xml-type namespace=\"urn:tabletype\" name=\"tabletypeType\"/>" +
+                    "<xml-root-element namespace=\"urn:tabletype\" name=\"tabletypeType\"/>" +
+                    "<java-attributes>" +
+                       "<xml-element xml-path=\"id/text()\" type=\"java.math.BigInteger\" required=\"true\" java-attribute=\"id\">" +
+                          "<xml-schema-type name=\"decimal\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"name/text()\" type=\"java.lang.String\" java-attribute=\"name\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"string\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"deptno/text()\" type=\"java.math.BigInteger\" java-attribute=\"deptno\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"decimal\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"deptname/text()\" type=\"java.lang.String\" java-attribute=\"deptname\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"string\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"section/text()\" type=\"java.lang.Character\" java-attribute=\"section\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"string\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"sal/text()\" type=\"java.lang.Float\" java-attribute=\"sal\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"double\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"commission/text()\" type=\"java.lang.Float\" java-attribute=\"commission\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"double\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"sales/text()\" type=\"java.lang.Float\" java-attribute=\"sales\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"double\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"binid\" xml-mime-type=\"application/octet-stream\" xml-inline-binary-data=\"true\" type=\"[B\" java-attribute=\"binid\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"base64Binary\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"b\" xml-mime-type=\"application/octet-stream\" xml-inline-binary-data=\"true\" type=\"[B\" java-attribute=\"b\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"base64Binary\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"c/text()\" type=\"java.lang.String\" java-attribute=\"c\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"string\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"r\" xml-mime-type=\"application/octet-stream\" xml-inline-binary-data=\"true\" type=\"[B\" java-attribute=\"r\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"base64Binary\"/>" +
+                       "</xml-element>" +
+                    "</java-attributes>" +
+                 "</java-type>" +
+                 "<java-type xml-accessor-type=\"FIELD\" name=\"Tabletype2\">" +
+                    "<xml-type namespace=\"urn:tabletype\" name=\"tabletype2Type\"/>" +
+                    "<xml-root-element namespace=\"urn:tabletype\" name=\"tabletype2Type\"/>" +
+                    "<java-attributes>" +
+                       "<xml-element xml-path=\"id/text()\" type=\"java.math.BigInteger\" required=\"true\" java-attribute=\"id\">" +
+                          "<xml-schema-type name=\"decimal\"/>" +
+                       "</xml-element>" +
+                       "<xml-element xml-path=\"lr\" xml-mime-type=\"application/octet-stream\" xml-inline-binary-data=\"true\" type=\"[B\" java-attribute=\"lr\">" +
+                          "<xml-null-policy is-set-performed-for-absent-node=\"true\" null-representation-for-xml=\"XSI_NIL\" empty-node-represents-null=\"false\" xsi-nil-represents-null=\"true\"/>" +
+                          "<xml-schema-type name=\"base64Binary\"/>" +
+                       "</xml-element>" +
+                    "</java-attributes>" +
+                 "</java-type>" +
+              "</java-types>" +
+           "</xml-bindings>" +
+        "</xml-bindings-list>";
 
     protected static final String ONE_PERSON_XML =
         REGULAR_XML_HEADER +
@@ -1183,10 +1036,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<sal>100000.8</sal>" +
           "<commission>450.8</commission>" +
           "<sales>10000.8</sales>" +
-          "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACEBA=</binid>" +
-          "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+          "<binid>EBA=</binid>" +
+          "<b>AQEBAQEBAQEBAQEBAQEB</b>" +
           "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
-          "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
+          "<r>AQEB</r>" +
         "</tabletypeType>";
 
     protected static final String UPDATED_PERSON_XML =
@@ -1200,10 +1053,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<sal>112000.99</sal>" +
           "<commission>450.8</commission>" +
           "<sales>10000.8</sales>" +
-          "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACEBA=</binid>" +
-          "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+          "<binid>EBA=</binid>" +
+          "<b>AQEBAQEBAQEBAQEBAQEB</b>" +
           "<c>ababababababababababababababab</c>" +
-          "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
+          "<r>AQEB</r>" +
         "</tabletypeType>";
 
 
@@ -1257,10 +1110,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<sal>100000.8</sal>" +
                 "<commission>450.8</commission>" +
                 "<sales>10000.8</sales>" +
-                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACEBA=</binid>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
+                "<binid>EBA=</binid>" +
+                "<b>AQEBAQEBAQEBAQEBAQEB</b>" +
                 "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
-                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
+                "<r>AQEB</r>" +
             "</tabletypeType>" +
             "<tabletypeType xmlns=\"urn:tabletype\">" +
                 "<id>2</id>" +
@@ -1271,10 +1124,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<sal>20000.0</sal>" +
                 "<commission>0.0</commission>" +
                 "<sales>0.0</sales>" +
-                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACAQE=</binid>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
+                "<binid>AQE=</binid>" +
+                "<b>AgICAgICAgICAgICAgIC</b>" +
                 "<c>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</c>" +
-                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAgIC</r>" +
+                "<r>AgIC</r>" +
             "</tabletypeType>" +
             "<tabletypeType xmlns=\"urn:tabletype\">" +
                 "<id>3</id>" +
@@ -1285,10 +1138,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<sal>98000.2</sal>" +
                 "<commission>150.2</commission>" +
                 "<sales>2000.2</sales>" +
-                "<binid>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAACERA=</binid>" +
-                "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
+                "<binid>ERA=</binid>" +
+                "<b>AwMDAwMDAwMDAwMDAwMD</b>" +
                 "<c>cccccccccccccccccccccccccccccc</c>" +
-                "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAwMD</r>" +
+                "<r>AwMD</r>" +
             "</tabletypeType>" +
         "</tabletype-collection>";
 
@@ -1297,15 +1150,15 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     	"<tabletype2-collection>" +
     	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
     	      "<id>66</id>" +
-    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
+    	      "<lr>AQEBAQEBAQEB</lr>" +
     	   "</tabletype2Type>" +
     	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
     	      "<id>67</id>" +
-    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAgICAgICAgIC</lr>" +
+    	      "<lr>AgICAgICAgIC</lr>" +
     	   "</tabletype2Type>" +
     	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
     	      "<id>68</id>" +
-    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAwMDAwMDAwMD</lr>" +
+    	      "<lr>AwMDAwMDAwMD</lr>" +
     	   "</tabletype2Type>" +
     	"</tabletype2-collection>";
 }
