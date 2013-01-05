@@ -122,10 +122,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLComplexTestSuite("testSetup"));
 
         List<String> tests = new ArrayList<String>();
-        tests.add("compexInTest2");
         tests.add("complexABSTest");
         tests.add("complexABSWithParameterTest");
-        tests.add("compexInTest");
+        tests.add("complexInTest1");
+        tests.add("complexInTest2");
+        tests.add("complexInTest3");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
         tests.add("complexNotInTest");
@@ -281,10 +282,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testUnion");
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
-
         tests.add("testNestedArrays");
         tests.add("testNoSelect");
         tests.add("testHierarchicalClause");
+        tests.add("testDeleteWithUnqualifiedPathExpression");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -397,19 +398,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
     }
 
-    public void compexInTest2()
-    {
-        EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :param";
-
-        List params = new ArrayList();
-        params.add(-1);
-        params.add(0);
-        params.add(1);
-        em.createQuery(ejbqlString).setParameter("param", params)/*.setParameter("param2", 0).setParameter("param3", 1)*/.getResultList();
-    }
-
-    public void compexInTest()
+    public void complexInTest1()
     {
         EntityManager em = createEntityManager();
 
@@ -440,6 +429,31 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("Complex IN test failed", comparer.compareObjects(result, expectedResult));
 
+    }
+
+    public void complexInTest2()
+    {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :param";
+
+        List params = new ArrayList();
+        params.add(-1);
+        params.add(0);
+        params.add(1);
+        em.createQuery(ejbqlString).setParameter("param", params)/*.setParameter("param2", 0).setParameter("param3", 1)*/.getResultList();
+    }
+
+    // Fix bug#392439
+    public void complexInTest3()
+    {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE UPPER(emp.lastName) IN :param";
+
+        List params = new ArrayList();
+        params.add("SMITH");
+        params.add("FILION");
+        params.add("DELACHEVROTIÈRE");
+        em.createQuery(ejbqlString).setParameter("param", params).getResultList();
     }
 
     public void complexLengthTest()
@@ -4435,5 +4449,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query = em.createQuery("Select e from Employee e start with e.salary > 1000 connect by e.manager order siblings by e.firstName");
         query.getResultList();
         closeEntityManager(em);
+    }
+
+    // Bug#397192
+    public void testDeleteWithUnqualifiedPathExpression() {
+       EntityManager em = createEntityManager();
+       em.createQuery("DELETE FROM Employee WHERE salary = :value1 AND (roomNumber > :value2 OR roomNumber < 1)");
+       closeEntityManager(em);
     }
 }
