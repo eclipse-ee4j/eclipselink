@@ -131,6 +131,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -138,7 +139,7 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * This visitor resolves the type of any given {@link Expression}.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -1305,10 +1306,18 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(ValueExpression expression) {
+
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
 		Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
 		DatabaseMapping mapping = declaration.getMapping();
-		type = mapping.getReferenceDescriptor().getJavaClass();
+
+		if (mapping.isDirectMapMapping()) {
+			DirectMapMapping mapMapping = (DirectMapMapping) mapping;
+			type = mapMapping.getValueClass();
+		}
+		else {
+			type = calculateMappingType(declaration.getMapping());
+		}
 	}
 
 	/**

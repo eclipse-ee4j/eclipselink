@@ -282,6 +282,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testUnion");
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
+        tests.add("testDeleteWithUnqualifiedPathExpression");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -2996,9 +2997,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // Bug 372178 - JPQL: query fails on Symfoware
         if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSymfoware())
         {
-            warning("The test 'caseTypeTest' is not supported on Symfoware, "  
+            warning("The test 'caseTypeTest' is not supported on Symfoware, "
                   + "EclipseLink will convert some (not all) Integer into String, "
-                  + "and because Symfoware does not support implicit type conversion, " 
+                  + "and because Symfoware does not support implicit type conversion, "
                   + "we ended up with the addition between String and Integer which is illegal on Symfoware.");
             closeEntityManager(em);
             return;
@@ -3636,8 +3637,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void testDirectColletionInSubquery() {
         EntityManager em = createEntityManager();
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp LEFT JOIN emp.responsibilities respons WHERE (emp.responsibilities IS EMPTY) OR (respons IN (SELECT rs FROM Employee empx join empx.responsibilities rs WHERE 1 = 0))";
-
-        List result = em.createQuery(ejbqlString).getResultList();
+        em.createQuery(ejbqlString).getResultList();
         closeEntityManager(em);
     }
 
@@ -3767,8 +3767,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
 
-    // Bug 331124
-    // Test that join to elemenet collections work.
+    // Bug 331124, GLASSFISH-19316
+    // Test that join to element collections work.
     public void testElementCollection() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select b from Buyer b join b.creditLines l where l > 0");
@@ -3796,6 +3796,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select b from Buyer b join b.creditLines l where l = :arg");
         query.setParameter("arg", args);
+        query.getResultList();
+        query = em.createQuery("select c from Buyer c join c.creditLines cc where key(cc) = :attrKey and value(cc) = :attrValue");
+        query.setParameter("attrKey",   "test");
+        query.setParameter("attrValue", 0);
         query.getResultList();
         closeEntityManager(em);
     }
@@ -3829,22 +3833,22 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         closeEntityManager(em);
     }
-    
+
     // Bug 393470
     // Test a group by clause that does not contain any functions in the select clause
     public void testGroupByWithoutFunction() {
         EntityManager em = createEntityManager();
-        
+
         Query query = em.createQuery("Select e from Employee e group by e");
         List results = query.getResultList();
         assertNotNull("Results should be non-null", results);
         assertTrue("Results should not be empty", results.size() != 0);
-        
+
         String sql = query.unwrap(DatabaseQuery.class).getSQLString();
         if (sql.toUpperCase().indexOf("GROUP BY") != -1) {
             fail("GROUP BY not included in generated SQL: " + sql);
         }
-        
+
         closeEntityManager(em);
     }
 
@@ -4385,6 +4389,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
        EntityManager em = createEntityManager();
        Query query = em.createQuery("select e from Employee e join e.projects p where treat(p as LargeProject).budget > 10000");
        query.getResultList();
+       closeEntityManager(em);
+    }
+
+    // Bug#397192
+    public void testDeleteWithUnqualifiedPathExpression() {
+       EntityManager em = createEntityManager();
+       em.createQuery("DELETE FROM Employee WHERE salary = :value1 AND (roomNumber > :value2 OR roomNumber < 1)");
        closeEntityManager(em);
     }
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3195,13 +3195,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			if (!helper.isResultVariable(expression.getVariableName())) {
 
 				if (validatingLeftExpression) {
-					leftIdentificationVariable = true;
+					leftIdentificationVariable = !expression.isVirtual();
 
 					// Make sure what was parsed is a valid identification variable
 					leftIdentificationVariableValid = validateIdentificationVariable(expression);
 				}
 				else {
-					rightIdentificationVariable = true;
+					rightIdentificationVariable = !expression.isVirtual();
 
 					// Make sure what was parsed is a valid identification variable
 					rightIdentificationVariableValid = validateIdentificationVariable(expression);
@@ -3235,6 +3235,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			}
 		}
 	}
+
 	protected class FirstDeclarationVisitor extends AnonymousExpressionVisitor {
 
 		protected boolean valid;
