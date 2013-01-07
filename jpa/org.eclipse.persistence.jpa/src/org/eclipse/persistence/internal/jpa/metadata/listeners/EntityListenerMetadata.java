@@ -407,6 +407,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), classAccessor);
             holder.convertToSerializableMethods(m_listener.getAllEventMethods());
             holder.listener = m_listener;
+            m_listener.setOwningSession(getProject().getSession());
         }
         classAccessor.getDescriptor().getClassDescriptor().getEventManager().addEntityListenerHolder(holder);
     }

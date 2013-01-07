@@ -30,7 +30,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
-import java.lang.reflect.Method;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -860,7 +859,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void cleanUpEntityListenerInjectionManager(){
         if (entityListenerInjectionManager != null){
-            entityListenerInjectionManager.cleanUp();
+            entityListenerInjectionManager.cleanUp(this);
         }
     }
     

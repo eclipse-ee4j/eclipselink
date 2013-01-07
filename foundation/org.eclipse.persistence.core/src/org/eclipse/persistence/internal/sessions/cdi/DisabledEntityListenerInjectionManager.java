@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.sessions.cdi;
 
 import javax.naming.NamingException;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 public class DisabledEntityListenerInjectionManager implements
         EntityListenerInjectionManager {
 
@@ -24,8 +26,7 @@ public class DisabledEntityListenerInjectionManager implements
     }
 
     @Override
-    public void cleanUp() {
-        System.out.println("---------- disabled cleanup injection");
+    public void cleanUp(AbstractSession session) {
     }
 
 }

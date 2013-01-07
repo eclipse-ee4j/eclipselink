@@ -14,6 +14,8 @@ package org.eclipse.persistence.internal.sessions.cdi;
 
 import javax.naming.NamingException;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 /**
  * Interface to control CDI-based injection in EntityListeners
  * Any references to CDI specific classes should be reserved for implementers to allow this
@@ -25,5 +27,5 @@ public interface EntityListenerInjectionManager {
     
     public Object createEntityListenerAndInjectDependancies(Class entityListenerClass) throws NamingException;
 
-    public void cleanUp();
+    public void cleanUp(AbstractSession session);
 }

@@ -54,7 +54,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
                     listener = (DescriptorEventListener)constructListenerInstance(listenerClass);
                 } else {
                     EntityListener entityListener = new EntityListener(listenerClass, descriptor.getJavaClass());
-    
+                    entityListener.setOwningSession(session);
                     if (!(serializableMethods == null)) {
                         //The user class is not a DescriptorEventListener, so wrap it in a JPA EntityListener instance
                         entityListener.setAllEventMethods(this.convertToMethods(loader));

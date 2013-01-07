@@ -66,6 +66,7 @@ public class EntityListener extends DescriptorEventAdapter {
     private Hashtable<String, List<Method>> m_methods;
     private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
     private static Hashtable<Integer, String> m_eventStrings;
+    private AbstractSession owningSession;
 
     /**
      * INTERNAL: 
@@ -131,11 +132,11 @@ public class EntityListener extends DescriptorEventAdapter {
      * @param entityListenerClass
      * @return the class instance that has had injection run on it. If injection failes, null.
      */
-    protected Object createEntityListenerAndInjectDependancies(Class entityListenerClass, AbstractSession session){
+    protected Object createEntityListenerAndInjectDependancies(Class entityListenerClass){
         try{
-            return session.getEntityListenerInjectionManager().createEntityListenerAndInjectDependancies(entityListenerClass);
+            return owningSession.getEntityListenerInjectionManager().createEntityListenerAndInjectDependancies(entityListenerClass);
         } catch (Exception e){
-            session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
+            owningSession.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
         }
         return null;
     }
@@ -147,7 +148,7 @@ public class EntityListener extends DescriptorEventAdapter {
      * @return
      */
     protected Object constructListenerInstance(AbstractSession session){
-        Object entityListenerClassInstance =  createEntityListenerAndInjectDependancies(m_listenerClass, session);
+        Object entityListenerClassInstance =  createEntityListenerAndInjectDependancies(m_listenerClass);
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -194,6 +195,13 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    public void setOwningSession(AbstractSession owningSession) {
+        this.owningSession = owningSession;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected List<Method> getEventMethods(int eventCode) {
         String eventString = m_eventStrings.get(eventCode);
         
@@ -234,6 +242,13 @@ public class EntityListener extends DescriptorEventAdapter {
         return m_listenerClass;
     }
     
+    /**
+     * INTERNAL:
+     */
+    public AbstractSession getOwningSession() {
+        return owningSession;
+    }
+
     /**
      * INTERNAL:
      */

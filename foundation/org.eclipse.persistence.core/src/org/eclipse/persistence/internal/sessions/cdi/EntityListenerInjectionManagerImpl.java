@@ -25,6 +25,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
+
 /**
  * Manages calls to CDI to inject into EntityListeners
  * This class will be created reflectively to avoid dependencies on CDI classes in environments
@@ -56,20 +59,19 @@ public class EntityListenerInjectionManagerImpl implements EntityListenerInjecti
         return entityListener;
     }
     
-    public void cleanUp(){
-        System.out.println("---------- cleanup injection");
+    public void cleanUp(AbstractSession session){
         Set<Object> keys = new HashSet<Object>();
         synchronized(injectionTargets){
             keys.addAll(injectionTargets.keySet());
             for (Object listener: keys){
                 try{
-                    System.out.println("---------- cleanup " + listener);
                     InjectionTarget<Object> target = injectionTargets.get(listener);
                     target.preDestroy(listener);
                     target.dispose(listener);
                     injectionTargets.remove(listener);
-                } catch (Exception e){e.printStackTrace();}
-    
+                } catch (Exception e){
+                    session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
+                }
             }
         }
         if (creationalContext != null){
