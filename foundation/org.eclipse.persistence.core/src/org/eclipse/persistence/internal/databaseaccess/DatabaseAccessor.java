@@ -18,6 +18,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     11/05/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -123,6 +125,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
         super();
         this.lobWriter = null;
         this.isDynamicStatementInUse = false;
+    }
+    
+    /**
+     * Create a database accessor with the given connection.
+     */
+    public DatabaseAccessor(Object connection) {
+        this();
+        this.datasourceConnection = connection;
     }
     
     /**

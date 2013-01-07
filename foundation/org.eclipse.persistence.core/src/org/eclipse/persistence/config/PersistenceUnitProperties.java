@@ -19,6 +19,8 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1524,7 +1526,7 @@ public class PersistenceUnitProperties {
      * result of JDBC DatabaseMetaData method getDatabaseProductName, the 
      * javax.persistence.database-major-version property should be specified as 
      * needed. This should contain the value returned by the JDBC 
-     * getDatabaseMajor-Version method. </p>
+     * getDatabaseMajor-Version method.</p>
      */
     public static final String SCHEMA_DATABASE_MAJOR_VERSION = "javax.persistence.database-major-version";
     
@@ -1534,11 +1536,65 @@ public class PersistenceUnitProperties {
      * result of JDBC DatabaseMetaData method getDatabaseProductName, the 
      * javax.persistence.database-minor-version property should be specified as 
      * needed. This should contain the value returned by the JDBC 
-     * getDatabaseMinor-Version method. </p>
+     * getDatabaseMinor-Version method.</p>
      */
     public static final String SCHEMA_DATABASE_MINOR_VERSION = "javax.persistence.database-minor-version";
     
-    // TODO: Add the JPA 2.1 source script support.
+    /**
+     * <p>The <code>javax.persistence.ddl-create-script-source</code> property 
+     * is used for script execution. It specifies a Reader configured for reading 
+     * of the DDL script or a string specifying the URL for the DDL script.</p>
+     * <p>In Java EE container environments, it is generally expected that the 
+     * container will be responsible for executing DDL scripts, although the 
+     * container is permitted to delegate this task to the persistence provider. 
+     * If a DDL script is to be used in Java SE environments or if the Java EE 
+     * container delegates the execution of scripts to the persistence provider, 
+     * this property must be specified.</p>
+     */
+    public static final String SCHEMA_CREATE_SCRIPT_SOURCE = "javax.persistence.ddl-create-script-source";
+    
+    /**
+     * <p>The <code>javax.persistence.ddl-drop-script-source</code> property is 
+     * used for script execution. It specifies a Reader configured for reading 
+     * of the DDL script or a string specifying the URL for the DDL script.</p>
+     * <p>In Java EE container environments, it is generally expected that the 
+     * container will be responsible for executing DDL scripts, although the 
+     * container is permitted to delegate this task to the persistence provider. 
+     * If DDL scripts are to be used in Java SE environments or if the Java EE 
+     * container delegates the execution of scripts to the persistence provider, 
+     * this properties must be specified.</p>
+     */
+    public static final String SCHEMA_DROP_SCRIPT_SOURCE = "javax.persistence.ddl-drop-script-source";
+    
+    /**
+     * <p>The <code>javax.persistence.sql-load-script-source</code> property is 
+     * used to specify a data load script as part of the persistence unit. It 
+     * specifies a Reader configured for reading of the DDL script or a string 
+     * specifying the URL for the DDL script.</p>
+     * <p> In Java EE container environments, it is generally expected that the 
+     * container will be responsible for executing data load scripts, although 
+     * the container is permitted to delegate this task to the persistence 
+     * provider. If a load script is to be used in Java SE environments or if 
+     * the Java EE container delegates the execution of the load script to the 
+     * persistence provider, this property must be specified. The script source 
+     * may take the form of either a Reader or a string designating a URL.</p>
+     */
+    public static final String SCHEMA_SQL_LOAD_SCRIPT_SOURCE = "javax.persistence.sql-load-script-source";
+    
+    /**
+     * The <code>javax.persistence.schema-generation-connection</code> property 
+     * specifies specifies the JDBC connection to be used for schema generation. 
+     * This is intended for use in Java EE environments, where the platform 
+     * provider may want to control the database privileges that are available 
+     * to the persistence provider. This connection is provided by the 
+     * container, and should be closed by the container when the schema 
+     * generation request or entity manager factory creation completes. The 
+     * connection provided must have credentials sufficient for the persistence
+     * provider to carry out the requested actions. If this property is not 
+     * specified, the persistence provider should use the DataSource that has 
+     * otherwise been provided.
+     */
+    public static final String SCHEMA_GENERATION_CONNECTION = "javax.persistence.schema-generation-connection";
     
     /**
      * The <code>"eclipselink.sequencing.default-sequence-to-table"</code> property

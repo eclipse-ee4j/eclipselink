@@ -113,10 +113,8 @@
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
-            <property name="javax.persistence.schema-generation-target" value="database-and-scripts"/>
-            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-xml-ddl-model-drop.jdbc"/>
-            <property name="javax.persistence.ddl-create-script-target" value="jpa21-xml-ddl-model-create.jdbc"/>
+            <property name="javax.persistence.ddl-drop-script-source" value="META-INF/jpa21-xml-ddl-model-source-drop.jdbc"/>
+            <property name="javax.persistence.ddl-create-script-source" value="META-INF/jpa21-xml-ddl-model-source-create.jdbc"/>
         </properties>
     </persistence-unit>
     

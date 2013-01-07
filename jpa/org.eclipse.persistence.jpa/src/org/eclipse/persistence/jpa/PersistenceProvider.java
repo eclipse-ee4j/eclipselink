@@ -14,6 +14,8 @@
  *        - 253701: set persistenceInitializationHelper so EntityManagerSetupImpl.undeploy() can clear the JavaSECMPInitializer
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -195,7 +197,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      */
     public void generateSchema(PersistenceUnitInfo info, Map properties) {
         if (checkForProviderProperty(properties)) {
-            // TODO:
+            // TODO: See if we can get around setting a property and just
+            // calling createEntityManagerFactory down to login with a boolean
+            // connect flag.
+            
             // 1 - if we are generating to scripts only, we do not require a 
             // connection. We should only connect when needed.
             // 2 - If we are dealing with script source, we don't need to
@@ -211,6 +216,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             EntityManagerFactoryImpl emfImpl = createEntityManagerFactoryImpl(info, properties);
             EntityManager em = emfImpl.createEntityManager(properties);
             em.close();
+            
+            // Clear the property to ensure a connect on subsequent access to 
+            // this persistence unit.
+            properties.put("internal-provider-generate-schema", false);
         }
     }
     

@@ -12,6 +12,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -83,9 +85,9 @@ public class DDLTestSuite extends JUnitTestCase {
         Map properties = new HashMap();
         properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-no-conn-session");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, true);
-        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME, "Oracle.");
-        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION, "11");
-        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION, "11");
+        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME, "MySQL");
+        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION, "5");
+        properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION, "5");
         properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
         properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "generate-schema-no-connection-drop.jdbc");

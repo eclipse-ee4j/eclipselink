@@ -36,6 +36,8 @@
  *       - 371950: Metadata caching 
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -85,6 +87,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.persistence.OptimisticLockException;
 
 import org.eclipse.persistence.internal.databaseaccess.BatchWritingMechanism;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
@@ -658,7 +661,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             if (!this.isSessionLoadedFromSessionsXML) {
                                 addStructConverters();
                             }
-                            generateDDL(deployProperties);
+                            
+                            // Generate the DDL using the correct connection. 
+                            generateDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);    
                         }
                     }
                     this.deployLock.release();
@@ -1219,6 +1224,29 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
     public DatabaseSessionImpl getDatabaseSession() {
         return (DatabaseSessionImpl)session;
+    }
+    
+    /**
+     * We may be provided a connection via the properties to use. Check for
+     * one and build a database session around it. Otherwise return the pu 
+     * database session.
+     */
+    public DatabaseSessionImpl getDatabaseSession(Map props) {
+        DatabaseSessionImpl databaseSession = getDatabaseSession();
+        Object connection = getConfigProperty(PersistenceUnitProperties.SCHEMA_GENERATION_CONNECTION, props);
+        
+        if (connection == null) {
+            return databaseSession;
+        } else {
+            // A connection was provided. Build a database session using that 
+            // connection and use the same log level set on the original 
+            // database session.
+            DatabaseSessionImpl newDatabaseSession = new DatabaseSessionImpl();
+            newDatabaseSession.setAccessor(new DatabaseAccessor(connection));
+            newDatabaseSession.setLogLevel(databaseSession.getLogLevel());
+            newDatabaseSession.setProject(databaseSession.getProject().clone());
+            return newDatabaseSession;
+        }
     }
     
     /**
@@ -3431,7 +3459,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * INTERNAL:
      * Generate the DDL per the properties provided.
      */
-    public void generateDDL(Map props) {
+    public void generateDDL(Map props, DatabaseSessionImpl session, ClassLoader classLoader) {
         if (this.compositeMemberEmSetupImpls == null) {
             // By default we will use EclipseLink DDL generation properties.
             // However, if a JPA generation action is specified, we'll look
@@ -3475,70 +3503,83 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 CREATE_FILE = PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET;
                 DROP_FILE = PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET;
             }
-
-            // Neither generation found, bail!
+            
+            // Neither generation found, look for source scripts to execute.
             if (ddlGeneration == null) {
-                return;
-            }
-            
-            ddlGeneration = ddlGeneration.toLowerCase();
-            
-            // If 'none' specified, bail!
-            if (ddlGeneration.equals(NONE)) {
-                return;
-            }
-
-            // By default the table creation type will be 'none'.
-            TableCreationType ddlType = TableCreationType.NONE;
-            
-            if (ddlGeneration.equals(CREATE)) {
-                ddlType = TableCreationType.CREATE;
-            } else if (ddlGeneration.equals(DROP)) {
-                ddlType = TableCreationType.DROP;
-            } else if (ddlGeneration.equals(DROP_AND_CREATE)) {
-                ddlType = TableCreationType.DROP_AND_CREATE;
-            } else if (ddlGeneration.equals(CREATE_OR_EXTEND)) {
-                ddlType = TableCreationType.EXTEND;
-            }
-
-            if (ddlType != TableCreationType.NONE) {
-                String ddlGenerationMode = getConfigPropertyAsString(GENERATION_MODE, props, DEFAULT_GENERATION_MODE);
+                Object createSourceScript = getConfigProperty(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_SOURCE, props); 
+                Object dropSourceScript = getConfigProperty(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_SOURCE, props);    
                 
-                // Optimize for cases where the value is explicitly set to NONE 
-                if (ddlGenerationMode.equals(NONE)) {                
-                    return;
-                }
-
-                if (isCompositeMember()) {
-                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                if (dropSourceScript != null) {
+                    writeDDLToDatabase(session, dropSourceScript, classLoader);
                 }
                 
-                SchemaManager mgr = new SchemaManager(getDatabaseSession());
-
-                if (ddlGenerationMode.equals(DATABASE_GENERATION) || ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
-                    writeDDLToDatabase(mgr, ddlType);
+                if (createSourceScript != null) {
+                    writeDDLToDatabase(session, createSourceScript, classLoader);
                 }
+            } else {
+                ddlGeneration = ddlGeneration.toLowerCase();
+            
+                // If anything but 'none' specified, keep going.
+                if (! ddlGeneration.equals(NONE)) {
+                    // By default the table creation type will be 'none'.
+                    TableCreationType ddlType = TableCreationType.NONE;
+            
+                    if (ddlGeneration.equals(CREATE)) {
+                        ddlType = TableCreationType.CREATE;
+                    } else if (ddlGeneration.equals(DROP)) {
+                        ddlType = TableCreationType.DROP;
+                    } else if (ddlGeneration.equals(DROP_AND_CREATE)) {
+                        ddlType = TableCreationType.DROP_AND_CREATE;
+                    } else if (ddlGeneration.equals(CREATE_OR_EXTEND)) {
+                        ddlType = TableCreationType.EXTEND;
+                    }
 
-                if (ddlGenerationMode.equals(SCRIPTS_GENERATION)|| ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
-                    String appLocation = getConfigPropertyAsString(APP_LOCATION, props, DEFAULT_APP_LOCATION);
-                    String createDDLJdbc = getConfigPropertyAsString(CREATE_FILE, props, DEFAULT_CREATE_FILE);
-                    String dropDDLJdbc = getConfigPropertyAsString(DROP_FILE, props,  DEFAULT_DROP_FILE);
-                    writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType);                
-                }
+                    if (ddlType != TableCreationType.NONE) {
+                        String ddlGenerationMode = getConfigPropertyAsString(GENERATION_MODE, props, DEFAULT_GENERATION_MODE);
                 
-                if (isCompositeMember()) {
-                    // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
-                    session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                        // Optimize for cases where the value is explicitly set to NONE 
+                        if (! ddlGenerationMode.equals(NONE)) {
+                            if (isCompositeMember()) {
+                                // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_begin_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                            }
+                
+                            SchemaManager mgr = new SchemaManager(session);
+
+                            if (ddlGenerationMode.equals(DATABASE_GENERATION) || ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
+                                writeDDLToDatabase(mgr, ddlType);
+                            }
+
+                            if (ddlGenerationMode.equals(SCRIPTS_GENERATION)|| ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
+                                String appLocation = getConfigPropertyAsString(APP_LOCATION, props, DEFAULT_APP_LOCATION);
+                                String createDDLJdbc = getConfigPropertyAsString(CREATE_FILE, props, DEFAULT_CREATE_FILE);
+                                String dropDDLJdbc = getConfigPropertyAsString(DROP_FILE, props,  DEFAULT_DROP_FILE);
+                                writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType);                
+                            }
+                
+                            if (isCompositeMember()) {
+                                // debug output added to make it easier to navigate the log because the method is called outside of composite member deploy
+                                session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "composite_member_end_call", new Object[]{"generateDDL", persistenceUnitInfo.getPersistenceUnitName(), state});
+                            }
+                        }
+                    }
                 }
             }
+            
+            // Look for any load scripts to apply.
+            Object loadSourceScript = getConfigProperty(PersistenceUnitProperties.SCHEMA_SQL_LOAD_SCRIPT_SOURCE, props); 
+            
+            if (loadSourceScript != null) {
+                writeDDLToDatabase(session, loadSourceScript, classLoader);
+            }
+            
         } else {
             // composite
             Map compositeMemberMapOfProperties = (Map)getConfigProperty(PersistenceUnitProperties.COMPOSITE_UNIT_PROPERTIES, props);
             for(EntityManagerSetupImpl compositeMemberEmSetupImpl : this.compositeMemberEmSetupImpls) {
                 // the properties guaranteed to be non-null after updateCompositeMemberProperties call
                 Map compositeMemberProperties = (Map)compositeMemberMapOfProperties.get(compositeMemberEmSetupImpl.getPersistenceUnitInfo().getPersistenceUnitName());
-                compositeMemberEmSetupImpl.generateDDL(compositeMemberProperties);
+                compositeMemberEmSetupImpl.generateDDL(compositeMemberProperties, session, classLoader);
             }
         }
     }

@@ -818,7 +818,7 @@
 
     <target name="package-jpa21-model" depends="">
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}/META-INF">
-          <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.jpa21.model}" includes="*.xml"/>
+          <fileset dir="${eclipselink.jpa.test}/resource/${eclipselink.jpa21.model}" includes="*.xml, *.jdbc"/>
       </copy>
       <copy todir="${eclipselink.jpa.test}/${build.dir}/${eclipselink.jpa21.model}">
           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"

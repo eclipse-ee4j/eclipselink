@@ -14,6 +14,8 @@
  *     mnorman - tweaks to work from Ant command-line,
  *               get database properties from System, etc.
  *
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.dynamic;
 
@@ -130,7 +132,6 @@ public class DynamicTestHelper {
             }
             
             public void generateSchema(PersistenceUnitInfo info, Map map) {
-                // TODO: JPA 2.1 Functionality.
             }
 
             public boolean generateSchema(String persistenceUnitName, Map map) {

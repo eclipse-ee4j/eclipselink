@@ -11,17 +11,25 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/08/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
@@ -386,6 +394,76 @@ public class EntityManagerFactoryProvider {
             return;
         }
         generateDefaultTables(mgr, ddlType);
+    }
+    
+    /**
+     * This method will read SQL from a reader or URL and send it through
+     * to the database. This could open up the database to SQL injection if
+     * not careful.
+     * TODO: clean up the runtime exceptions.
+     */
+    protected static void writeDDLToDatabase(DatabaseSessionImpl session, Object source, ClassLoader loader) {
+        if (source != null) {
+            Reader reader = null;
+            
+            try {
+                if (source instanceof Reader) {
+                    reader = (Reader) source;
+                } else {
+                    Enumeration<URL> sourceURLs = loader.getResources((String) source);
+                    
+                    if (sourceURLs.hasMoreElements()) {
+                        URL url = sourceURLs.nextElement();
+                        java.net.URLConnection cnx1 = url.openConnection();
+                        // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
+                        cnx1.setUseCaches(false);
+                        reader = new InputStreamReader(cnx1.getInputStream(), "UTF-8");
+                    } else {
+                        throw new RuntimeException("Source not found: " + source);
+                    }
+                }
+            
+                if (reader != null) {
+                    StringBuffer sqlBuffer;
+                    int data = reader.read();
+                    
+                    // While there is still data to read, read line by line.
+                    while (data != -1) {
+                        sqlBuffer = new StringBuffer();
+                        char aChar = (char) data;
+        
+                        // Read till the end of the line or maybe even file.
+                        while (aChar != '\n' && data != -1) {
+                            sqlBuffer.append(aChar);
+                                
+                            // Read next character.
+                            data = reader.read();
+                            aChar = (char) data;
+                        }
+
+                        try {
+                            session.executeNonSelectingSQL(sqlBuffer.toString());
+                        } catch (DatabaseException e) {
+                            // ignore any database exceptions and just keep chugging through. 
+                        }
+                            
+                        data = reader.read();
+                    }
+        
+                    reader.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("IOException caught reading DDL source: " + source + "[" + e + "]");
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        // ignore.
+                    }
+                }
+            }
+        }
     }
     
     protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc, TableCreationType ddlType) {
