@@ -18,6 +18,9 @@ package org.eclipse.persistence.internal.descriptors;
 public class PersistenceObjectInstantiationPolicy extends InstantiationPolicy {
     /** The factory is an instance of the domain class. */
     protected PersistenceObject factory;
+
+    protected PersistenceObjectInstantiationPolicy() {        
+    }
     
     public PersistenceObjectInstantiationPolicy(PersistenceObject factory) {
         this.factory = factory;

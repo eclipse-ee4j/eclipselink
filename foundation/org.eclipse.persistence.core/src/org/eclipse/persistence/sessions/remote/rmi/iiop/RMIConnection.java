@@ -49,6 +49,7 @@ public class RMIConnection extends RemoteConnection {
         try {
             Transporter transporter = new Transporter();
             transporter.setObject(command);
+            transporter.prepare(this.session);
             transporter = getRemoteSessionController().processCommand(transporter);
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
@@ -94,7 +95,11 @@ public class RMIConnection extends RemoteConnection {
      */
     public RemoteUnitOfWork commitRootUnitOfWork(RemoteUnitOfWork theRemoteUnitOfWork) {
         try {
-            Transporter transporter = getRemoteSessionController().commitRootUnitOfWork(new Transporter(theRemoteUnitOfWork));
+            Transporter transporter = new Transporter();
+            transporter.setObject(theRemoteUnitOfWork);
+            transporter.prepare(this.session);
+            transporter = getRemoteSessionController().commitRootUnitOfWork(transporter);
+            transporter.expand(this.session);
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
             } else {
@@ -178,7 +183,6 @@ public class RMIConnection extends RemoteConnection {
         }
 
         return clientNextPageObjects;
-
     }
 
     /**
@@ -214,7 +218,7 @@ public class RMIConnection extends RemoteConnection {
             remoteCursoredStream.setPolicy(policy);
 
             if (policy.getQuery().isReadAllQuery() && (!policy.getQuery().isReportQuery())) {// could be DataReadQuery
-                fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), (DistributedSession)session);
+                fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), session);
             }
             return remoteCursoredStream;
         } catch (RemoteException exception) {
@@ -240,27 +244,6 @@ public class RMIConnection extends RemoteConnection {
             return remoteScrollableCursor;
         } catch (RemoteException exception) {
             throw CommunicationException.errorInInvocation(exception);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * An object has been serialized from the server to the remote client.
-     * Replace the transient attributes of the remote value holders with client-side objects.
-     * Being used for the cursored stream only
-     */
-    public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, DistributedSession session) {
-        RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
-        List remoteObjectCollection = stream.getObjectCollection();
-        if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
-
-            // find next power-of-2 size
-            Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
-            for (Object serverSideDomainObject : remoteObjectCollection) {
-                clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
-            }
-            stream.setObjectCollection(clientObjectCollection);
         }
     }
 
@@ -380,6 +363,7 @@ public class RMIConnection extends RemoteConnection {
     public Transporter instantiateRemoteValueHolderOnServer(RemoteValueHolder remoteValueHolder) {
         try {
             Transporter transporter = getRemoteSessionController().instantiateRemoteValueHolderOnServer(new Transporter(remoteValueHolder));
+            transporter.expand(this.session);
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
             }
@@ -395,7 +379,11 @@ public class RMIConnection extends RemoteConnection {
      */
     public Transporter remoteExecute(DatabaseQuery query) {
         try {
-            Transporter transporter = getRemoteSessionController().executeQuery(new Transporter(query));
+            Transporter transporter = new Transporter();
+            transporter.setObject(query);
+            transporter.prepare(this.session);
+            transporter = getRemoteSessionController().executeQuery(transporter);
+            transporter.expand(session);
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
             }
@@ -412,6 +400,7 @@ public class RMIConnection extends RemoteConnection {
     public Transporter remoteExecuteNamedQuery(String name, Class javaClass, Vector arguments) {
         try {
             Transporter transporter = getRemoteSessionController().executeNamedQuery(new Transporter(name), new Transporter(javaClass), new Transporter(arguments));
+            transporter.expand(this.session);
             if (!transporter.wasOperationSuccessful()) {
                 throw transporter.getException();
             }

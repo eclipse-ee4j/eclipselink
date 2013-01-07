@@ -48,6 +48,10 @@ public class RemoteSession extends DistributedSession {
     protected Sequencing sequencing;
     protected boolean shouldEnableDistributedIndirectionGarbageCollection = false;
 
+    public RemoteSession() {
+        super(0);
+    }
+    
     /**
      * PUBLIC:
      * Creates a RemoteSession.

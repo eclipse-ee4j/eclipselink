@@ -49,6 +49,12 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
 
     /**
      * INTERNAL:
+     */
+    public IdentityMapAccessor() {
+    }
+    
+    /**
+     * INTERNAL:
      * An IdentityMapAccessor sits between the session and the identityMapManager
      * It needs references in both directions.
      */

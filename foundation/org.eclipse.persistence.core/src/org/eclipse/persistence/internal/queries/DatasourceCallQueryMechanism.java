@@ -44,6 +44,9 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     /** Normally only a single call is used, however multiple table may require multiple calls on write. */
     protected Vector calls;
 
+    public DatasourceCallQueryMechanism() {
+    }
+    
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism

@@ -80,6 +80,7 @@ import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.Session
@@ -269,6 +270,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Store the query builder used to parse JPQL. */
     transient protected JPAQueryBuilder queryBuilder;
+
+    /** Set the Serializer to use by default for serialization. */
+    transient protected Serializer serializer;
     
     /**
      * INTERNAL:
@@ -324,6 +328,23 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         for (DatabaseQuery query : project.getQueries()) {
             addQuery(query.getName(), query);
         }
+    }
+
+    /**
+     * Return the Serializer to use by default for serialization.
+     */
+    public Serializer getSerializer() {
+        if ((this.serializer == null) && (getParent() != null)) {
+            return getParent().getSerializer();
+        }
+        return serializer;
+    }
+
+    /**
+     * Set the Serializer to use by default for serialization.
+     */
+    public void setSerializer(Serializer serializer) {
+        this.serializer = serializer;
     }
     
     /**

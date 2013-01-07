@@ -37,6 +37,9 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     protected transient Object sourceObject;
     protected Integer refreshCascade;
 
+    protected QueryBasedValueHolder() {        
+    }
+    
     /**
      * Initialize the query-based value holder.
      */

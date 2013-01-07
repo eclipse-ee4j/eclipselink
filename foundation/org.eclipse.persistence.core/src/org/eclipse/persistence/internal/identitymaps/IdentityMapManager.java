@@ -78,6 +78,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /** PERF: Used to avoid readLock and profiler checks to improve performance. */
     protected boolean isCacheAccessPreCheckRequired;
 
+    protected IdentityMapManager() {        
+    }
+    
     public IdentityMapManager(AbstractSession session) {
         this.session = session;
         this.cacheMutex = new ConcurrencyManager();

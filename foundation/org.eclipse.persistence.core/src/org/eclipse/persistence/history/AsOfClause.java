@@ -42,8 +42,11 @@ import org.eclipse.persistence.internal.helper.*;
  */
 public class AsOfClause implements Serializable {
     public static final AsOfClause NO_CLAUSE = new AsOfClause((Expression)null);
-    private final Object value;
+    private Object value;
 
+    protected AsOfClause() {
+    }
+    
     public AsOfClause(java.util.Date date) {
         this.value = date;
     }

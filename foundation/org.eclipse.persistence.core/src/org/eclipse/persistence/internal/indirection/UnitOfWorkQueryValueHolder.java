@@ -29,6 +29,10 @@ import org.eclipse.persistence.mappings.*;
  * @author    Sati
  */
 public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
+    protected UnitOfWorkQueryValueHolder() {
+        super();
+    }
+    
     protected UnitOfWorkQueryValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         super(attributeValue, clone, mapping, unitOfWork);
     }

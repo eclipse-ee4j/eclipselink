@@ -30,6 +30,10 @@ import org.eclipse.persistence.sessions.Record;
  * getting objects from identity maps.
  */
 public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
+    
+    public UnitOfWorkIdentityMapAccessor() {
+    }
+    
     public UnitOfWorkIdentityMapAccessor(AbstractSession session, IdentityMapManager identityMapManager) {
         super(session, identityMapManager);
     }

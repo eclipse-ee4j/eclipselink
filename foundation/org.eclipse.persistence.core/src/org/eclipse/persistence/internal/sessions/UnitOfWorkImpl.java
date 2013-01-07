@@ -298,6 +298,12 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
     /**
      * INTERNAL:
+     */
+    public UnitOfWorkImpl() {        
+    }
+    
+    /**
+     * INTERNAL:
      * Create and return a new unit of work with the session as its parent.
      */
     public UnitOfWorkImpl(AbstractSession parent, ReferenceMode referenceMode) {

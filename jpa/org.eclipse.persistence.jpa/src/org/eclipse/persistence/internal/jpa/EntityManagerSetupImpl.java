@@ -142,7 +142,6 @@ import org.eclipse.persistence.config.RemoteProtocol;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.EISPlatform;
@@ -482,14 +481,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @return An EntityManagerFactory to be used by the Container to obtain EntityManagers
      */
     public AbstractSession deploy(ClassLoader realClassLoader, Map additionalProperties) {
-        if (state != STATE_PREDEPLOYED && state != STATE_DEPLOYED && state != STATE_HALF_DEPLOYED) {
+        if (this.state != STATE_PREDEPLOYED && this.state != STATE_DEPLOYED && this.state != STATE_HALF_DEPLOYED) {
             if (mustBeCompositeMember()) {
-                throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(persistenceUnitInfo.getPersistenceUnitName()));
+                throw new PersistenceException(EntityManagerSetupException.compositeMemberCannotBeUsedStandalone(this.persistenceUnitInfo.getPersistenceUnitName()));
             }
-            throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state, persistenceException));
+            throw new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(this.persistenceUnitInfo.getPersistenceUnitName(), this.state, this.persistenceException));
         }
         // state is PREDEPLOYED or DEPLOYED
-        session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+        this.session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), this.session.getName(), this.state, this.factoryCount});
         
         ClassLoader classLoaderToUse = realClassLoader;
         
@@ -499,58 +498,58 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {
-            Map deployProperties = mergeMaps(additionalProperties, persistenceUnitInfo.getProperties());
-            translateOldProperties(deployProperties, session);
+            Map deployProperties = mergeMaps(additionalProperties, this.persistenceUnitInfo.getProperties());
+            translateOldProperties(deployProperties, this.session);
             if (isComposite()) {
                 updateCompositeMembersProperties(deployProperties);
             }
-            if (state == STATE_PREDEPLOYED) {
-                deployLock.acquire();
+            if (this.state == STATE_PREDEPLOYED) {
+                this.deployLock.acquire();
                 isLockAcquired = true;
-                if (state == STATE_PREDEPLOYED) {
-                    if (shouldBuildProject && !isSessionLoadedFromSessionsXML) {
+                if (this.state == STATE_PREDEPLOYED) {
+                    if (this.shouldBuildProject && !this.isSessionLoadedFromSessionsXML) {
                         if (isComposite()) {
                             deployCompositeMembers(deployProperties, classLoaderToUse);
                         } else {
-                            if (processor.getMetadataSource() != null) {
-                                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, classLoaderToUse, session.getSessionLog());
+                            if (this.processor.getMetadataSource() != null) {
+                                Map metadataProperties = this.processor.getMetadataSource().getPropertyOverrides(deployProperties, classLoaderToUse, this.session.getSessionLog());
                                 if (metadataProperties != null && !metadataProperties.isEmpty()) {
-                                    translateOldProperties(metadataProperties, session);
+                                    translateOldProperties(metadataProperties, this.session);
                                     deployProperties = mergeMaps(metadataProperties, deployProperties);
                                 }
                             }
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
-                            processor.setClassLoader(classLoaderToUse);
-                            processor.createDynamicClasses();
-                            if (classLoaderToUse instanceof DynamicClassLoader){
-                                processor.createRestInterfaces();
+                            this.processor.setClassLoader(classLoaderToUse);
+                            this.processor.createDynamicClasses();
+                            if (this.weaveRest){
+                                this.processor.createRestInterfaces();
                             }
                             
-                            processor.addEntityListeners();
+                            this.processor.addEntityListeners();
 
-                            if (projectCacheAccessor != null) {
+                            if (this.projectCacheAccessor != null) {
                                 //cache the project:
-                                projectCacheAccessor.storeProject(session.getProject(), deployProperties, session.getSessionLog());
+                                this.projectCacheAccessor.storeProject(this.session.getProject(), deployProperties, this.session.getSessionLog());
                             }
 
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                            session.getProject().convertClassNamesToClasses(classLoaderToUse);
+                            this.session.getProject().convertClassNamesToClasses(classLoaderToUse);
 
                             if (!isCompositeMember()) {
                                 addBeanValidationListeners(deployProperties, classLoaderToUse);
                             }
 
                             // Process the customizers last.
-                            processor.processCustomizers();
+                            this.processor.processCustomizers();
                         }
 
-                        processor = null;
+                        this.processor = null;
                     } else {
                         // The project is initially created using class names rather than classes.  This call will make the conversion.
                         // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                        session.getProject().convertClassNamesToClasses(classLoaderToUse);
-                        if (!shouldBuildProject) {
+                        this.session.getProject().convertClassNamesToClasses(classLoaderToUse);
+                        if (!this.shouldBuildProject) {
                             //process anything that might not have been serialized/cached in the project correctly:
                             if (!isCompositeMember()) {
                                 addBeanValidationListeners(deployProperties, classLoaderToUse);
@@ -561,22 +560,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         }
                     }
                     finishProcessingDescriptorEvents(classLoaderToUse);
-                    structConverters = getStructConverters(classLoaderToUse);
-
+                    this.structConverters = getStructConverters(classLoaderToUse);
+                    
+                    updateRemote(deployProperties, classLoaderToUse);
                     initSession();
 
-                    if (session.getIntegrityChecker().hasErrors()){
-                        session.handleException(new IntegrityException(session.getIntegrityChecker()));
+                    if (this.session.getIntegrityChecker().hasErrors()){
+                        this.session.handleException(new IntegrityException(session.getIntegrityChecker()));
                     }
 
-                    session.getDatasourcePlatform().getConversionManager().setLoader(classLoaderToUse);
-                    state = STATE_HALF_DEPLOYED;
+                    this.session.getDatasourcePlatform().getConversionManager().setLoader(classLoaderToUse);
+                    this.state = STATE_HALF_DEPLOYED;
                     // keep deployLock
                 } else {
                     // state is HALF_DEPLOYED or DEPLOY_FAILED
-                    deployLock.release();
+                    this.deployLock.release();
                     isLockAcquired = false;
-                    if (state == STATE_DEPLOY_FAILED) {
+                    if (this.state == STATE_DEPLOY_FAILED) {
                         // while this thread waited in STATE_PREDEPLOYED another thread attempted to deploy and failed. 
                         // Rethrow the cache PersistenceException, which caused STATE_DEPLOYED_FAILED.
                         throw persistenceException;
@@ -585,19 +585,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             // state is HALF_DEPLOYED or DEPLOYED
             if (!isCompositeMember()) {
-                if (!session.isConnected()) {
+                if (this.session.isDatabaseSession() && !((DatabaseSessionImpl)session).isLoggedIn()) {
                     // If it's HALF_DEPLOYED then deployLock has been already acquired.
                     if (!isLockAcquired) {
-                        deployLock.acquire();
+                        this.deployLock.acquire();
                         isLockAcquired = true;
                     }
-                    if(!session.isConnected()) {
-                        if (state == STATE_DEPLOY_FAILED) {
+                    if (!((DatabaseSessionImpl)this.session).isLoggedIn()) {
+                        if (this.state == STATE_DEPLOY_FAILED) {
                             // while this thread waited in STATE_HALF_DEPLOYED another thread attempted to connect the session and failed. 
                             // Rethrow the cache PersistenceException, which caused STATE_DEPLOYED_FAILED.
                             throw persistenceException;
                         }
-                        session.setProperties(deployProperties);
+                        this.session.setProperties(deployProperties);
                         updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /**
@@ -608,15 +608,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                              * However, this would introduce a DB login when validation is on 
                              * - in opposition to the functionality of the property (to only validate)
                              */
-                            if (this.session.isDatabaseSession() && (this.state == STATE_HALF_DEPLOYED)) {
+                            if (this.state == STATE_HALF_DEPLOYED) {
                                 getDatabaseSession().initializeDescriptors();
                                 this.state = STATE_DEPLOYED;
                             }
                         } else {
                             try {
-                                if (this.session.isDatabaseSession() && isSessionLoadedFromSessionsXML) {
+                                if (this.isSessionLoadedFromSessionsXML) {
                                     getDatabaseSession().login();
-                                } else if (this.session.isDatabaseSession()) {
+                                } else {
                                     login(getDatabaseSession(), deployProperties);
                                 }
                                 // Make JTA integration throw JPA exceptions.
@@ -637,10 +637,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                         });
                                     }
                                 }
-                                state = STATE_DEPLOYED;
+                                this.state = STATE_DEPLOYED;
                             } catch (Throwable loginException) {
-                                if (state == STATE_HALF_DEPLOYED) {
-                                    if (this.session.isDatabaseSession() && this.session.isConnected()) {
+                                if (this.state == STATE_HALF_DEPLOYED) {
+                                    if (this.session.isConnected()) {
                                         // session is connected, but postConnect has failed.
                                         // Likely this is caused by failure in initializeDescriptors: 
                                         // either descriptor exception or by invalid named jpql query.
@@ -650,25 +650,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                         } catch (Throwable logoutException) {
                                             // Ignore
                                         }
-                                        state = STATE_DEPLOY_FAILED;
+                                        this.state = STATE_DEPLOY_FAILED;
                                     }
                                 }
                                 throw loginException;
                             }
-                            if (!isSessionLoadedFromSessionsXML) {
+                            if (!this.isSessionLoadedFromSessionsXML) {
                                 addStructConverters();
                             }
                             generateDDL(deployProperties);
                         }
                     }
-                    deployLock.release();
+                    this.deployLock.release();
                     isLockAcquired = false;
                 }
                 // 266912: Initialize the Metamodel, a login should have already occurred.
                 try {
                     this.getMetamodel();
                 } catch (Exception e) {
-                    session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
+                    this.session.log(SessionLog.FINEST, SessionLog.METAMODEL, "metamodel_init_failed", new Object[]{e.getMessage()});
                 }
             }
             // Clear the weaver's reference to meta-data information, as it is held by the class loader and will never gc.
@@ -677,16 +677,16 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 this.weaver = null;
             }            
             
-            return session;
+            return this.session;
         } catch (Throwable exception) {
             // before releasing deployLock switch to the correct state
-            if (state == STATE_PREDEPLOYED) {
-                state = STATE_DEPLOY_FAILED;
+            if (this.state == STATE_PREDEPLOYED) {
+                this.state = STATE_DEPLOY_FAILED;
             }
             PersistenceException persistenceEx;
-            if (state == STATE_DEPLOY_FAILED) {
+            if (this.state == STATE_DEPLOY_FAILED) {
                 if (exception == persistenceException) {
-                    persistenceEx = new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state, persistenceException));
+                    persistenceEx = new PersistenceException(EntityManagerSetupException.cannotDeployWithoutPredeploy(this.persistenceUnitInfo.getPersistenceUnitName(), this.state, this.persistenceException));
                 } else {
                     // before releasing deployLock cache the exception
                     persistenceEx = createDeployFailedPersistenceException(exception);
@@ -699,12 +699,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
             if (isLockAcquired) {
-                deployLock.release();
+                this.deployLock.release();
             }
-            session.logThrowable(SessionLog.SEVERE, SessionLog.EJB, exception);
+            this.session.logThrowable(SessionLog.SEVERE, SessionLog.EJB, exception);
             throw persistenceEx;
         } finally {
-            session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
+            this.session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_end", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), this.session.getName(), this.state, this.factoryCount});
         }
     }
 
@@ -961,7 +961,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         throw ValidationException.invalidValueForProperty(protocol, PersistenceUnitProperties.REMOTE_PROTOCOL, exception);
                     }
                 }
-                RemoteSession remoteSession = (RemoteSession)connection.createRemoteSession();
+                RemoteSession remoteSession = new RemoteSession();
                 remoteSession.setIsMetadataRemote(false);
                 remoteSession.setProject(this.session.getProject());
                 remoteSession.setProfiler(this.session.getProfiler());
@@ -969,6 +969,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 remoteSession.setEventManager(this.session.getEventManager());
                 remoteSession.setQueries(this.session.getQueries());
                 remoteSession.setProperties(this.session.getProperties());
+                remoteSession.setName(this.session.getName());
+                remoteSession.setRemoteConnection(connection);
                 this.session = remoteSession;
             }
         } else {
@@ -2390,11 +2392,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * Make any changes to our ServerSession that can be made after it is created.
      */
     protected void updateSession(Map m, ClassLoader loader) {
-        if (session == null || session.isConnected()) {
+        if (session == null || (session.isDatabaseSession() && ((DatabaseSessionImpl)session).isLoggedIn())) {
             return;
         }
-        
-        updateRemote(m, loader);
 
         // In deploy ServerPlatform could've changed which will affect the loggers.
         boolean serverPlatformChanged = updateServerPlatform(m, loader);

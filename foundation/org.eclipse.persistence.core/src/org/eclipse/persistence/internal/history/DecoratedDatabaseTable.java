@@ -26,6 +26,10 @@ import org.eclipse.persistence.internal.helper.*;
 public class DecoratedDatabaseTable extends DatabaseTable {
     private AsOfClause asOfClause;
 
+    protected DecoratedDatabaseTable() {
+        
+    }
+    
     public DecoratedDatabaseTable(String name, AsOfClause asOfClause) {
         super(name);
         this.asOfClause = asOfClause;

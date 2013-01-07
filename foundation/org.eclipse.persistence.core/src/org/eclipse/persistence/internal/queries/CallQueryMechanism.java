@@ -38,6 +38,9 @@ import org.eclipse.persistence.queries.*;
  */
 public class CallQueryMechanism extends DatasourceCallQueryMechanism {
 
+    public CallQueryMechanism() {
+    }
+    
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism

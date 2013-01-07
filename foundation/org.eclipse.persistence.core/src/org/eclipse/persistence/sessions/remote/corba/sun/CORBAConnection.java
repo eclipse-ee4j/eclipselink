@@ -206,27 +206,6 @@ public class CORBAConnection extends RemoteConnection {
 
     /**
      * INTERNAL:
-     * An object has been serialized from the server to the remote client.
-     * Replace the transient attributes of the remote value holders with client-side objects.
-     * Being used for the cursored stream only
-     */
-    public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, DistributedSession session) {
-        RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
-        List remoteObjectCollection = stream.getObjectCollection();
-        if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
-            Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
-
-            // find next power-of-2 size
-            Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
-            for (Object serverSideDomainObject : remoteObjectCollection) {
-                clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
-            }
-            stream.setObjectCollection(clientObjectCollection);
-        }
-    }
-
-    /**
-     * INTERNAL:
      * Return the table descriptor specified for the class.
      */
     public ClassDescriptor getDescriptor(Class domainClass) {

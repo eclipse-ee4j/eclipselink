@@ -33,6 +33,9 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  */
 public class EntityFetchGroup extends FetchGroup {
 
+    protected EntityFetchGroup() {        
+    }
+    
     public EntityFetchGroup(FetchGroup fetchGroup) {
         super(fetchGroup.getName());
         if(fetchGroup.hasItems()) {

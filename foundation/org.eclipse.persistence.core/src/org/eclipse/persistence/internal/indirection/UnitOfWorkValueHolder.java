@@ -57,6 +57,10 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     protected String sourceAttributeName;
     protected ObjID wrappedValueHolderRemoteID;
 
+    protected UnitOfWorkValueHolder() {
+        super();
+    }
+    
     protected UnitOfWorkValueHolder(ValueHolderInterface attributeValue, Object clone, DatabaseMapping mapping, UnitOfWorkImpl unitOfWork) {
         this.wrappedValueHolder = attributeValue;
         this.mapping = mapping;

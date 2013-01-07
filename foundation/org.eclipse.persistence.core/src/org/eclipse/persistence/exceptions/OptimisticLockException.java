@@ -40,7 +40,14 @@ public class OptimisticLockException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
+     */
+    protected OptimisticLockException() {        
+    }
+    
+    /**
+     * INTERNAL:
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected OptimisticLockException(String theMessage) {
         super(theMessage);
@@ -48,7 +55,7 @@ public class OptimisticLockException extends EclipseLinkException {
 
     /**
      * INTERNAL:
-     * TopLink exceptions should only be thrown by TopLink.
+     * EclipseLink exceptions should only be thrown by EclipseLink.
      */
     protected OptimisticLockException(String theMessage, ObjectLevelModifyQuery query) {
         super(theMessage);

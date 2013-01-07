@@ -32,6 +32,9 @@ public class JPQLCallQueryMechanism extends ExpressionQueryMechanism {
     //call (because an JPQLCall is out on its own)
     protected JPQLCall ejbqlCall;
 
+    public JPQLCallQueryMechanism() {
+    }
+    
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism

@@ -81,6 +81,9 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * Alters the behaviour of the RWUOW commit to function like the UOW with respect to Entity lifecycle
      */
     protected boolean discoverUnregisteredNewObjectsWithoutPersist;
+
+    public RepeatableWriteUnitOfWork() {
+    }
     
     public RepeatableWriteUnitOfWork(org.eclipse.persistence.internal.sessions.AbstractSession parentSession, ReferenceMode referenceMode){
         super(parentSession, referenceMode);

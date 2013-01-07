@@ -36,6 +36,9 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /** Normally only a single statement is used, however multiple table may require multiple statements on write. */
     protected Vector sqlStatements;
 
+    public StatementQueryMechanism() {
+    }
+    
     /**
      * INTERNAL:
      * Return a new mechanism for the query

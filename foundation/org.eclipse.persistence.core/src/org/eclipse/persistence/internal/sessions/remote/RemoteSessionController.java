@@ -173,6 +173,7 @@ public class RemoteSessionController {
      * Remote unit of work after serialization is commited locally.
      */
     public Transporter commitRootUnitOfWork(Transporter remoteTransporter) {
+        remoteTransporter.expand(this.session);
         // Must force concurrency mgrs active thread if in nested transaction.
         if (isInTransaction()) {
             getSession().getTransactionMutex().setActiveThread(Thread.currentThread());
@@ -197,7 +198,7 @@ public class RemoteSessionController {
         } catch (RuntimeException exception) {
             transporter.setException(exception);
         }
-
+        transporter.prepare(remoteUnitOfWork);
         return transporter;
     }
 
@@ -331,7 +332,7 @@ public class RemoteSessionController {
     /**
      * A named query after serialization is executed locally.
      */
-    public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {
+    public Transporter executeNamedQuery(Transporter nameTransporter, Transporter classTransporter, Transporter argumentsTransporter) {        
         Transporter transporter = new Transporter();
 
         try {
@@ -353,6 +354,7 @@ public class RemoteSessionController {
         } catch (RuntimeException exception) {
             transporter.setException(exception);
         }
+        transporter.prepare(this.session);
         return transporter;
     }
 
@@ -360,6 +362,7 @@ public class RemoteSessionController {
      * A remote query after serialization is executed locally.
      */
     public Transporter executeQuery(Transporter remoteTransporter) {
+        remoteTransporter.expand(this.session);
         DatabaseQuery query = (DatabaseQuery)remoteTransporter.getObject();
         Transporter transporter = new Transporter();
 
@@ -380,6 +383,7 @@ public class RemoteSessionController {
         } catch (RuntimeException exception) {
             transporter.setException(exception);
         }
+        transporter.prepare(this.session);
         return transporter;
     }
 
@@ -527,6 +531,7 @@ public class RemoteSessionController {
      * The corresponding original value holder is instantiated.
      */
     public Transporter instantiateRemoteValueHolderOnServer(Transporter remoteTransporter) {
+        remoteTransporter.expand(this.session);
         RemoteValueHolder clientValueHolder = (RemoteValueHolder)remoteTransporter.getObject();
         RemoteValueHolder serverValueHolder = (RemoteValueHolder)getRemoteValueHolders().get(clientValueHolder.getID());
         Transporter transporter = new Transporter();
@@ -535,7 +540,7 @@ public class RemoteSessionController {
             Object value = serverValueHolder.getMapping().getValueFromRemoteValueHolder(serverValueHolder);// force instantiation
             transporter.setObjectDescriptors(serverValueHolder.getMapping().replaceValueHoldersIn(value, this));
 
-            // The following is a hack.  Many appologies.
+            // The following is a hack.  Many apologies.
             // The hashCode is called for the case where an Indirect Collection is being returned.  The hashCode function
             // causes the delegate for the collection to be build.  The delegate needs to be returned to the client
             // in order to properly deal with the list.
@@ -550,6 +555,7 @@ public class RemoteSessionController {
         } catch (RuntimeException exception) {
             transporter.setException(exception);
         }
+        transporter.prepare(this.session);
         return transporter;
     }
 

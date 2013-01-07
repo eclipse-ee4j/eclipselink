@@ -40,6 +40,9 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
     protected transient RemoteSessionController parentSessionController;
     protected boolean isFlush;
 
+    public RemoteUnitOfWork() {
+    }
+    
     public RemoteUnitOfWork(RemoteUnitOfWork parent) {
         this(parent, null);
     }

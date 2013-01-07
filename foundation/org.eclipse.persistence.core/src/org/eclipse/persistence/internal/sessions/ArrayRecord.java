@@ -25,6 +25,10 @@ public class ArrayRecord extends DatabaseRecord {
     protected DatabaseField[] fieldsArray;
     protected Object[] valuesArray;
 
+    protected ArrayRecord() {
+        super();
+    }
+    
     public ArrayRecord(Vector fields, DatabaseField[] fieldsArray, Object[] valuesArray) {
         super(fields, null, fieldsArray.length);
         this.fieldsArray = fieldsArray;

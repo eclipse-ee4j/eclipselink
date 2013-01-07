@@ -56,6 +56,9 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected Expression selectionCriteria;
 
+    public ExpressionQueryMechanism() {
+    }
+    
     /**
      * Initialize the state of the query
      * @param query - owner of mechanism

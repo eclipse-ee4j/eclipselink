@@ -32,6 +32,9 @@ public class AttributeItem implements Serializable {
 
 //    private transient DatabaseMapping mapping;
 
+    protected AttributeItem() {        
+    }
+    
     public AttributeItem(AttributeGroup parent, String attributeName) {
         this.parent = parent;
         this.attributeName = attributeName;

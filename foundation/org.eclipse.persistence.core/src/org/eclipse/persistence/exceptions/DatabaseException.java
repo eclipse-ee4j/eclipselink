@@ -55,6 +55,13 @@ public class DatabaseException extends EclipseLinkException {
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by the EclipseLink code.
      */
+    protected DatabaseException() {
+    }
+    
+    /**
+     * INTERNAL:
+     * EclipseLink exceptions should only be thrown by the EclipseLink code.
+     */
     protected DatabaseException(String message) {
         super(message);
     }

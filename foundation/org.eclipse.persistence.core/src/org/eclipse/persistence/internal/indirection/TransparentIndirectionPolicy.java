@@ -265,13 +265,11 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      */
     public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query, DistributedSession session) {
         Object container = getMapping().getAttributeValueFromObject(object);
-        //There may have been a concurrent modifucation of the collection on the server side
-        // and the valueholders would not have been updated so treat it like no indirection
-        if (container instanceof IndirectContainer || (!(((IndirectContainer) container).getValueHolder() instanceof RemoteValueHolder)) ) {
+        if (container instanceof IndirectContainer && ((((IndirectContainer) container).getValueHolder() instanceof RemoteValueHolder)) ) {
             RemoteValueHolder valueHolder = (RemoteValueHolder)((IndirectContainer)container).getValueHolder();
             valueHolder.setSession(session);
             valueHolder.setMapping(getMapping());
-            if ((!query.shouldMaintainCache()) && ((!query.shouldCascadeParts()) || (query.shouldCascadePrivateParts() && (!getMapping().isPrivateOwned())))) {
+            if ((!query.shouldMaintainCache()) && ((!query.shouldCascadeParts()) || (query.shouldCascadePrivateParts() && (!this.mapping.isPrivateOwned())))) {
                 valueHolder.setQuery(null);
             } else {
                 valueHolder.setQuery(query);
@@ -280,7 +278,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             // set to uninstantiated since no objects are serialized past remote value holders
             valueHolder.setUninstantiated();
         } else {
-            getMapping().fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
+            this.mapping.fixRealObjectReferences(object, objectDescriptors, processedObjects, query, session);
         }
     }
 

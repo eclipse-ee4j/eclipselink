@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.sessions.remote;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.*;
 
 /**
@@ -51,6 +52,24 @@ public class Transporter implements Serializable {
             return null;
         }
         return (RuntimeException)getObject();
+    }
+
+    /**
+     * Serialize the object.
+     */
+    public void prepare(AbstractSession session) {
+        if (session.getSerializer() != null) {
+            this.object = session.getSerializer().serialize(this.object, session);
+        }
+    }
+
+    /**
+     * Deserialize the object.
+     */
+    public void expand(AbstractSession session) {
+        if (session.getSerializer() != null) {
+            this.object = session.getSerializer().deserialize((byte[])this.object, session);
+        }
     }
 
     /**

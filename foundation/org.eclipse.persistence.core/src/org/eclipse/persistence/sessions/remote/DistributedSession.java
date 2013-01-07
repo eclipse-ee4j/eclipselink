@@ -19,6 +19,7 @@ import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.identitymaps.*;
@@ -28,8 +29,11 @@ import org.eclipse.persistence.internal.sessions.*;
  * <b>Purpose</b>: Super class to all remote client session's.
  */
 public abstract class DistributedSession extends DatabaseSessionImpl {
+    /** Connection to remote persistence service. */
     protected transient RemoteConnection remoteConnection;
+    /** Cache if default classes have been read from server. */
     protected boolean hasDefaultReadOnlyClasses;
+    /** Define if meta-data is initialized locally, or serialized from the server. */
     protected boolean isMetadataRemote = true;
 
     /**
@@ -204,11 +208,14 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
 
         // If the descriptor is null then this means that descriptor must now be read from the server.
         if (descriptor == null) {
+            if (!this.isMetadataRemote) {
+                return super.getDescriptor(domainClass);
+            }
             startOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             descriptor = getRemoteConnection().getDescriptor(domainClass);
             endOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             if (descriptor == null) {
-                return null;
+                return super.getDescriptor(domainClass);
             }
             getDescriptors().put(domainClass, descriptor);
             String alias = descriptor.getAlias();
@@ -231,6 +238,9 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
 
         // If the descriptor is null then this means that descriptor must now be read from the server.
         if (descriptor == null) {
+            if (!this.isMetadataRemote) {
+                return null;
+            }
             startOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
             descriptor = getRemoteConnection().getDescriptorForAlias(alias);
             endOperationProfile(SessionProfiler.RemoteMetadata, null, SessionProfiler.ALL);
@@ -306,7 +316,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
             return false;
         }
 
-        return true;
+        return getRemoteConnection().isConnected();
     }
         
     /**
@@ -352,7 +362,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * INTERNAL:
      * Set the remote connection.
      */
-    protected void setRemoteConnection(RemoteConnection remoteConnection) {
+    public void setRemoteConnection(RemoteConnection remoteConnection) {
         this.remoteConnection = remoteConnection;
     }
 
@@ -370,7 +380,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      * Logout the session, close the remote connection and release the hold resources
      */
     @Override
-    public void release() {
+    public void logout() {
         //CR3854: logging out of DistributedSession is not releasing remote resources.
         //The remote connection remove() call should  release the resource, like the stateful
         //session been, which the connection holds on.
@@ -393,5 +403,41 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      */
     public void setIsMetadataRemote(boolean isMetadataRemote) {
         this.isMetadataRemote = isMetadataRemote;
+    }
+    
+    /**
+     * INTERNAL:
+     * Connect not required.
+     */
+    @Override
+    public void connect() throws DatabaseException {
+        this.remoteConnection.initialize(this);
+    }
+
+    /**
+     * INTERNAL:
+     * Disconnect not required.
+     */
+    @Override
+    public void disconnect() throws DatabaseException {
+        getSequencingHome().onDisconnect();
+    }
+
+    /**
+     * PUBLIC:
+     * Connect to the database using the predefined login.
+     * During connection, attempt to auto detect the required database platform.
+     * This method can be used in systems where for ease of use developers have
+     * EclipseLink autodetect the platform.
+     * To be safe, however, the platform should be configured directly.
+     * The login must have been assigned when or after creating the session.
+     */
+    @Override
+    public void loginAndDetectDatasource() throws DatabaseException {
+        preConnectDatasource();
+        connect();
+        Login login = this.remoteConnection.getLogin();
+        setLogin(login);
+        postConnectDatasource();
     }
 }

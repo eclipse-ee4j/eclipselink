@@ -24,9 +24,14 @@ import org.eclipse.persistence.sessions.remote.*;
  */
 public abstract class RemoteConnection implements java.io.Serializable {
 
-    /** <p>This attribute is used to provide a globally unique identifier for this connection.
-     * It should be the same value as the JNDI context or the RMIRegistry context */
+    /**
+     * This attribute is used to provide a globally unique identifier for this connection.
+     * It should be the same value as the JNDI context or the RMIRegistry context.
+     */
     protected String serviceName;
+    
+    /** Back reference to owning session. */
+    protected DistributedSession session;
 
     /**
      * INTERNAL:
@@ -37,6 +42,17 @@ public abstract class RemoteConnection implements java.io.Serializable {
      */
     public abstract void processCommand(RemoteCommand remoteCommand);
 
+    /**
+     * Allow the connection to initialize an setting in the session.
+     */
+    public void initialize(DistributedSession session) {
+        this.session = session;
+    }
+    
+    public boolean isConnected() {
+        return true;
+    }
+    
     /**
      * Begin a transaction on the database.
      */
@@ -242,5 +258,26 @@ public abstract class RemoteConnection implements java.io.Serializable {
      */
     public void release() {
         //no-op
+    }
+
+    /**
+     * INTERNAL:
+     * An object has been serialized from the server to the remote client.
+     * Replace the transient attributes of the remote value holders with client-side objects.
+     * Being used for the cursored stream only
+     */
+    public void fixObjectReferences(Transporter remoteCursoredStream, ObjectLevelReadQuery query, DistributedSession session) {
+        RemoteCursoredStream stream = (RemoteCursoredStream)remoteCursoredStream.getObject();
+        List remoteObjectCollection = stream.getObjectCollection();
+        if (query.isReadAllQuery() && (!query.isReportQuery())) {// could be DataReadQuery
+            Vector clientObjectCollection = new Vector(remoteObjectCollection.size());
+
+            // find next power-of-2 size
+            Map recursiveSet = new IdentityHashMap(remoteObjectCollection.size() + 1);
+            for (Object serverSideDomainObject : remoteObjectCollection) {
+                clientObjectCollection.addElement(session.getObjectCorrespondingTo(serverSideDomainObject, remoteCursoredStream.getObjectDescriptors(), recursiveSet, query));
+            }
+            stream.setObjectCollection(clientObjectCollection);
+        }
     }
 }

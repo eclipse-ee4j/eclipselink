@@ -25,6 +25,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class UnitOfWorkIdentityMap extends FullIdentityMap {
 
+    protected UnitOfWorkIdentityMap() {        
+    }
+    
     public UnitOfWorkIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super();
         this.maxSize = size;

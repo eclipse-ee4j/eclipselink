@@ -30,6 +30,9 @@ public class CacheId implements Serializable, Comparable<CacheId> {
 
     /** Cached hashcode. */
     protected int hash;
+
+    public CacheId() {        
+    }
     
     public CacheId(Object[] primaryKey) {
         this.primaryKey = primaryKey;
