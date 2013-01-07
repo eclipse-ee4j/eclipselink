@@ -131,9 +131,8 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public Writer buildAddFieldWriter(AbstractSession session, FieldDefinition field, Writer writer) throws ValidationException {
         try {
-            writer.write("ALTER TABLE " + getFullName());
-            writer.write(" ADD " );
-            field.appendDBString(writer, session, this);
+            writer.write("ALTER TABLE " + getFullName() + " ");
+            session.getPlatform().writeAddColumnClause(writer, session, this, field);
             writer.write(" ");
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);

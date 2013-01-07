@@ -3269,4 +3269,17 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void initializeConnectionData(Connection connection) throws SQLException {
     }
+    
+    /**
+     * INTERNAL:
+     * May need to override this method if the platform supports ALTER TABLE ADD &lt;column&gt;
+     * and the generated sql doesn't work.
+     * Write the string that follows ALTER TABLE to create a sql statement for
+     * the platform in order to append a new column to an existing table.
+     */
+     public void writeAddColumnClause(Writer writer, AbstractSession session, TableDefinition table, FieldDefinition field) throws IOException {
+        writer.write("ADD ");
+        field.appendDBString(writer, session, table);
+    }          
+    
 }
