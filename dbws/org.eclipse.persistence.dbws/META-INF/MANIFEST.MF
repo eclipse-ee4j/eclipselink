@@ -4,10 +4,12 @@ Export-Package: org.eclipse.persistence.dbws;version="2.5.0",
  org.eclipse.persistence.internal.xr;version="2.5.0",
  org.eclipse.persistence.internal.xr.sxf;version="2.5.0",
  org.eclipse.persistence.jpa.rs;version="2.5.0",
+ org.eclipse.persistence.jpa.rs.config;version="2.5.0",
  org.eclipse.persistence.jpa.rs.eventlistener;version="2.5.0",
  org.eclipse.persistence.jpa.rs.exceptions;version="2.5.0",
  org.eclipse.persistence.jpa.rs.logging;version="2.5.0",
  org.eclipse.persistence.jpa.rs.logging.i18n;version="2.5.0",
+ org.eclipse.persistence.jpa.rs.response;version="2.5.0",
  org.eclipse.persistence.jpa.rs.util;version="2.5.0"
 Bundle-ClassPath: .
 Bundle-Name: EclipseLink DBWS

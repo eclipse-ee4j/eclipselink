@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 @XmlRootElement(name = ConfigDefaults.JPARS_LIST_GROUPING_NAME)
 public class QueryResultList {
 
-    List<QueryResultListItem> items;
+    private List<QueryResultListItem> items;
 
     /**
      * Instantiates a new query result list.
@@ -60,5 +60,35 @@ public class QueryResultList {
             items = new ArrayList<QueryResultListItem>();
         }
         items.add(item);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((items == null) ? 0 : items.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        QueryResultList other = (QueryResultList) obj;
+        if (items == null) {
+            if (other.items != null) {
+                return false;
+            }
+        } else if (!items.equals(other.items)) {
+            return false;
+        }
+        return true;
     }
 }

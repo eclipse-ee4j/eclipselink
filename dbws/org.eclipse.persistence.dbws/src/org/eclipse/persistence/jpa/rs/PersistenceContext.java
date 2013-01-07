@@ -73,6 +73,8 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+import org.eclipse.persistence.jpa.rs.response.QueryResultList;
+import org.eclipse.persistence.jpa.rs.response.QueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -80,6 +82,8 @@ import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.LinkMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
+import org.eclipse.persistence.jpa.rs.util.QueryResultListItemMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.QueryResultListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.RelationshipLinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
@@ -281,6 +285,9 @@ public class PersistenceContext {
         }
 
         metadataLocations.add(new LinkMetadataSource());
+        metadataLocations.add(new QueryResultListMetadataSource());
+        metadataLocations.add(new QueryResultListItemMetadataSource());
+
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
 
         properties.put("eclipselink.session-event-listener", new PreLoginMappingAdapter((AbstractSession)session));
@@ -1138,14 +1145,41 @@ public class PersistenceContext {
      * In general, this will only affect fields that have been weaved into the object
      * @param entity
      */
+    @SuppressWarnings("rawtypes")
     protected void preMarshallIndividualEntity(Object entity){
-        if (entity instanceof PersistenceWeavedRest){
+        if (entity instanceof QueryResultListItem) {
+            QueryResultListItem item = (QueryResultListItem) entity;
+            List<JAXBElement> fields = item.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                // one or more fields in the QueryResultListItem might be a domain object,
+                // so, we need to set the relationshipInfo for those domain objects.
+                setRelationshipInfo(fields.get(i).getValue());
+            }
+        } else if (entity instanceof QueryResultList) {
+            QueryResultList list = (QueryResultList) entity;
+            List<QueryResultListItem> items = list.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                QueryResultListItem item = items.get(i);
+                List<JAXBElement> fields = item.getFields();
+                for (int index = 0; index < fields.size(); index++) {
+                    // one or more fields in the QueryResultListItem might be a domain object,
+                    // so, we need to set the relationshipInfo for those domain objects.
+                    setRelationshipInfo(fields.get(index).getValue());
+                }
+            }
+        } else {
+            setRelationshipInfo(entity);
+        }
+    }
+
+    private void setRelationshipInfo(Object entity) {
+        if ((entity != null) && (entity instanceof PersistenceWeavedRest)) {
             ClassDescriptor descriptor = getJpaSession().getClassDescriptor(entity.getClass());
-            if (descriptor != null){
-                ((PersistenceWeavedRest)entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
-                for (DatabaseMapping mapping : descriptor.getMappings()){
-                    if (mapping.isForeignReferenceMapping()){
-                        ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
+            if (descriptor != null) {
+                ((PersistenceWeavedRest) entity)._persistence_setRelationships(new ArrayList<RelationshipInfo>());
+                for (DatabaseMapping mapping : descriptor.getMappings()) {
+                    if (mapping.isForeignReferenceMapping()) {
+                        ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
 
                         RelationshipInfo info = new RelationshipInfo();
 
@@ -1153,7 +1187,7 @@ public class PersistenceContext {
                         info.setOwningEntity(entity);
                         info.setOwningEntityAlias(descriptor.getAlias());
                         info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
-                        ((PersistenceWeavedRest)entity)._persistence_getRelationships().add(info);
+                        ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
                     }
                 }
             }
