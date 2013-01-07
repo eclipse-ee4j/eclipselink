@@ -711,7 +711,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(field);
     
         field = new FieldDefinition();
-        field.setName("WHEN");
+        field.setName("THE_DATE");
         field.setTypeName("NUMERIC");
         field.setSize(23);
         field.setShouldAllowNull(true);
@@ -1304,7 +1304,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(field);
     
         field = new FieldDefinition();
-        field.setName("WHEN");
+        field.setName("THE_DATE");
         field.setTypeName("NUMERIC");
         field.setSize(23);
         field.setShouldAllowNull(true);

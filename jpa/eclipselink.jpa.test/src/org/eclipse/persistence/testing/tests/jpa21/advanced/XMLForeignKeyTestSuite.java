@@ -87,7 +87,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         suite.addTest(new XMLForeignKeyTestSuite("testManyToOneForeignKey"));
         suite.addTest(new XMLForeignKeyTestSuite("testElementCollectionForeignKeys"));
         
-        suite.addTest(new ForeignKeyTestSuite("testReadAndWriteDDLObjects"));
+        suite.addTest(new XMLForeignKeyTestSuite("testReadAndWriteDDLObjects"));
         
         return suite;
     }

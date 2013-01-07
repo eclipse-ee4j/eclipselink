@@ -15,7 +15,7 @@
             </basic>
             <element-collection name="accomplishments">
                 <map-key-column name="ACCOMPLISHMENT"/>
-                <column name="WHEN"/>
+                <column name="THE_DATE"/>
                 <temporal>DATE</temporal>
                 <collection-table  name="JPA21_XML_DDL_RUNNER_ACS">
                     <join-column name="ATHLETE_ID"/>

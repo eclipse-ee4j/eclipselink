@@ -41,7 +41,7 @@ public class Athlete {
     protected String lastName;
     
     @ElementCollection
-    @Column(name="WHEN")
+    @Column(name="THE_DATE")
     @Temporal(DATE)
     @MapKeyColumn(name="ACCOMPLISHMENT")
     @CollectionTable(
