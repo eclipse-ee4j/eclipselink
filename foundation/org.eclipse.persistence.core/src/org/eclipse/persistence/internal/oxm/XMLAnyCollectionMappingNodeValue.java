@@ -428,11 +428,11 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
 
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
-                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (Field)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
+                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, descriptor, (Field)xmlAnyCollectionMapping.getField(), originalValue, value, wasXMLRoot, false);               
                 objectBuilder.buildRow(marshalRecord, value, session, marshaller, null);
                 marshalRecord.afterContainmentMarshal(object, value);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
-                objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
+                marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
 
             }
         }

@@ -13,17 +13,21 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
 import org.w3c.dom.Node;
 
@@ -33,6 +37,10 @@ public interface MarshalRecord<
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver,
     UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER> {
+
+    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
+
+    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
 
     public void add(FIELD field, Object value);
 
@@ -50,8 +58,8 @@ public interface MarshalRecord<
     public void attribute(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver, String value);
 
-    public void attributeWithoutQName(String schemaInstanceUrl,
-            String schemaTypeAttribute, String xsiPrefix, String typeValue);
+    public void attributeWithoutQName(String namespaceURI,
+            String localName, String prefix, String value);
 
     public void beforeContainmentMarshal(Object value);
 
@@ -115,6 +123,8 @@ public interface MarshalRecord<
     public void predicateAttribute(XPathFragment anXPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
+    public void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
+
     public void removeGroupingElement(XPathNode holderXPathNode);
 
     public void setGroupingElement(ArrayList<XPathNode> object);
@@ -126,5 +136,7 @@ public interface MarshalRecord<
     public void startCollection();
 
     public void startPrefixMapping(String prefix, String uri);
+
+    public void writeXsiTypeAttribute(Descriptor descriptor, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver);
 
 }

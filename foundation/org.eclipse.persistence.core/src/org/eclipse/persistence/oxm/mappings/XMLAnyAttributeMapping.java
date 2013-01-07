@@ -381,7 +381,7 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements AnyAttrib
         }
 
         ((XMLObjectBuilder) descriptor.getObjectBuilder()).writeExtraNamespaces(extraNamespaces, recordToModify);
-        ((XMLObjectBuilder) descriptor.getObjectBuilder()).removeExtraNamespacesFromNamespaceResolver(recordToModify, extraNamespaces, session);
+        recordToModify.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
     }
 
     /**

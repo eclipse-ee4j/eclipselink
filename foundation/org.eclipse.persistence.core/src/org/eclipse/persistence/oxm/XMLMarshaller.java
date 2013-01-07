@@ -1202,7 +1202,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             marshalRecord.namespaceDeclarations(nr);
             
             if (descriptor != null && !isNil) {            	   	        
-            	treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
+                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
                 treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
             }
             
@@ -1525,7 +1525,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
 
         AbstractSession objectSession = xmlContext.getSession(object);
         xmlRow.setSession(objectSession);
-        bldr.addXsiTypeAndClassIndicatorIfRequired(xmlRow, descriptor, null, null, originalObject, object, isXMLRoot, true);
+        xmlRow.addXsiTypeAndClassIndicatorIfRequired(descriptor, null, null, originalObject, object, isXMLRoot, true);
         xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
             ((Element) xmlRow.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);

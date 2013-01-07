@@ -277,13 +277,12 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
-            objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (Field)xmlCompositeCollectionMapping.getField(), false);
+            marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (Field)xmlCompositeCollectionMapping.getField(), false);
             
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment);
             marshalRecord.afterContainmentMarshal(object, value);
             marshalRecord.endElement(xPathFragment, namespaceResolver);
-            objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
-           
+            marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);    
         } else {            
             if(Constants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeCollectionMapping.getReferenceClassName())){                
                 throw XMLMarshalException.descriptorNotFoundInProject(value.getClass().getName());                            

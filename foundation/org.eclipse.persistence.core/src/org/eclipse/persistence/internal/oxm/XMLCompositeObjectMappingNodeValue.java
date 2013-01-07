@@ -202,7 +202,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }
             if(!isSelfFragment) {
-                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
+                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, (Descriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (Field)xmlCompositeObjectMapping.getField(), false);
             }
 
             objectBuilder.buildRow(marshalRecord, objectValue, session, marshalRecord.getMarshaller(), xPathFragment);
@@ -211,7 +211,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
-            objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
+            marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
         } else {            
             if(Constants.UNKNOWN_OR_TRANSIENT_CLASS.equals(xmlCompositeObjectMapping.getReferenceClassName())){
                 throw XMLMarshalException.descriptorNotFoundInProject(objectValue.getClass().getName());

@@ -71,6 +71,21 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         super();
     }
 
+    /**
+     * Copy Constructor
+     * @since EclipseLink 2.5.0
+     */
+    public NamespaceResolver(NamespaceResolver namespaceResolver) {
+        this.defaultNamespaceURI = namespaceResolver.defaultNamespaceURI;
+        Map<String, String> namespaceResolverPrefixesToNamespaces = namespaceResolver.prefixesToNamespaces;
+        if(namespaceResolverPrefixesToNamespaces != null) {
+            this.prefixesToNamespaces = new HashMap<String, String>(namespaceResolverPrefixesToNamespaces.size());
+            this.prefixesToNamespaces.putAll(namespaceResolver.prefixesToNamespaces);
+        }
+        this.prefixCounter = namespaceResolver.prefixCounter;
+        this.dom = namespaceResolver.dom;
+    }
+
     public Map<String, String> getPrefixesToNamespaces() {
         if(null == prefixesToNamespaces) {
             prefixesToNamespaces = new HashMap<String, String>();

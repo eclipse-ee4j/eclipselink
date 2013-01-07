@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
@@ -28,11 +27,6 @@ public interface ObjectBuilder<
 
     public List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
-
-        public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, Descriptor xmlDescriptor, Descriptor referenceDescriptor, Field xmlField,
-            Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
-
     public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment);
 
     public ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
@@ -40,7 +34,5 @@ public interface ObjectBuilder<
     public XPathNode getRootXPathNode();
 
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session);
-
-    public void removeExtraNamespacesFromNamespaceResolver(XMLRecord marshalRecord, List extraNamespaces, CoreAbstractSession session);
 
 }

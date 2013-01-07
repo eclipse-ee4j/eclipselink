@@ -36,6 +36,11 @@ public abstract class Marshaller<
     public abstract NAMESPACE_PREFIX_MAPPER getNamespacePrefixMapper();
 
     /**
+     * Return the property for a given key, if one exists.
+     */
+   public abstract Object getProperty(Object key);
+
+    /**
      * INTERNAL
      * @return the transformer instance for this marshaller
      */
@@ -48,6 +53,11 @@ public abstract class Marshaller<
     public abstract CONTEXT getXMLContext();
 
     /**
+     * INTERNAL
+     */
+    public abstract boolean isEqualUsingIdenity();
+
+    /**
      * Determine if the @XMLRootElement should be marshalled when present.  
      * Ignored marshalling XML.   
      */
@@ -58,5 +68,5 @@ public abstract class Marshaller<
      * Ignored marshalling XML.
      */
     public abstract boolean isReduceAnyArrays();
-      
+
 }

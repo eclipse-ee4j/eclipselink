@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm.record;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -24,16 +25,21 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.ValidatorHandler;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -579,6 +585,82 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     @Override
     public void writeHeader() {
         marshalRecord.writeHeader();
-    }    
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public List<Namespace> addExtraNamespacesToNamespaceResolver(
+            Descriptor descriptor, CoreAbstractSession session,
+            boolean allowOverride, boolean ignoreEqualResolvers) {
+        validatingRecord.addExtraNamespacesToNamespaceResolver(descriptor, session, allowOverride, ignoreEqualResolvers);
+        return marshalRecord.addExtraNamespacesToNamespaceResolver(descriptor, session, allowOverride, ignoreEqualResolvers);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public void removeExtraNamespacesFromNamespaceResolver(
+            List<Namespace> extraNamespaces, CoreAbstractSession session) {
+        validatingRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
+        marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public void attributeWithoutQName(String namespaceURI, String localName,
+            String prefix, String value) {
+        validatingRecord.attributeWithoutQName(namespaceURI, localName, prefix, value);
+        marshalRecord.attributeWithoutQName(namespaceURI, localName, prefix, value);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public boolean addXsiTypeAndClassIndicatorIfRequired(
+            Descriptor xmlDescriptor, Descriptor referenceDescriptor,
+            Field xmlField, boolean isRootElement) {
+        validatingRecord.addXsiTypeAndClassIndicatorIfRequired(xmlDescriptor, referenceDescriptor, xmlField, isRootElement);
+        return marshalRecord.addXsiTypeAndClassIndicatorIfRequired(xmlDescriptor, referenceDescriptor, xmlField, isRootElement);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public boolean addXsiTypeAndClassIndicatorIfRequired(
+            Descriptor xmlDescriptor, Descriptor referenceDescriptor,
+            Field xmlField, Object originalObject, Object obj,
+            boolean wasXMLRoot, boolean isRootElement) {
+        validatingRecord.setNamespaceResolver(new NamespaceResolver(marshalRecord.getNamespaceResolver()));
+        validatingRecord.addXsiTypeAndClassIndicatorIfRequired(xmlDescriptor, referenceDescriptor, xmlField, originalObject, obj, wasXMLRoot, isRootElement);
+        return marshalRecord.addXsiTypeAndClassIndicatorIfRequired(xmlDescriptor, referenceDescriptor, xmlField, originalObject, obj, wasXMLRoot, isRootElement);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    public void writeXsiTypeAttribute(Descriptor descriptor, String typeUri,
+            String typeLocal, String typePrefix, boolean addToNamespaceResolver) {
+        validatingRecord.writeXsiTypeAttribute(descriptor, typeUri, typeLocal, typePrefix, addToNamespaceResolver);
+        marshalRecord.writeXsiTypeAttribute(descriptor, typeUri, typeLocal, typePrefix, addToNamespaceResolver);
+    }
+
+    /**
+     * @since EclipseLink 2.5.0
+     */
+    @Override
+    protected void writeXsiTypeAttribute(Descriptor xmlDescriptor,
+            XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
+        validatingRecord.writeXsiTypeAttribute(xmlDescriptor, xmlRef, addToNamespaceResolver);
+        marshalRecord.writeXsiTypeAttribute(xmlDescriptor, xmlRef, addToNamespaceResolver);
+    }
+
 
 }

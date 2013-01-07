@@ -143,11 +143,11 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                 getXPathNode().startElement(marshalRecord, rootFragment, object, session, descriptor.getNonNullNamespaceResolver(), objectBuilder, objectValue);               
               
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
-                objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, descriptor, (Field)xmlAnyObjectMapping.getField(), originalValue, objectValue, wasXMLRoot, false);
+                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, descriptor, (Field)xmlAnyObjectMapping.getField(), originalValue, objectValue, wasXMLRoot, false);
                 objectBuilder.buildRow(marshalRecord, objectValue, (org.eclipse.persistence.internal.sessions.AbstractSession) childSession, marshaller, null);
                 marshalRecord.afterContainmentMarshal(object, objectValue);
                 marshalRecord.endElement(rootFragment, namespaceResolver);
-                objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
+                marshalRecord.removeExtraNamespacesFromNamespaceResolver(extraNamespaces, session);
             }
         }
 

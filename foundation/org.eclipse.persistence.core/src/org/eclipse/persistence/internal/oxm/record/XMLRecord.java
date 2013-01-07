@@ -12,11 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import java.util.List;
+
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.w3c.dom.Node;
 
 public interface XMLRecord<
@@ -39,8 +42,9 @@ public interface XMLRecord<
      */
     public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
 
-    public void attributeWithoutQName(String schemaInstanceUrl,
-            String schemaTypeAttribute, String xsiPrefix, String typeValue);
+    public List addExtraNamespacesToNamespaceResolver(Descriptor descriptor, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
+
+    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value);
 
     public Node getDOM();
 

@@ -44,4 +44,19 @@ package org.eclipse.persistence.oxm;
  */
 public class NamespaceResolver extends org.eclipse.persistence.internal.oxm.NamespaceResolver {
 
+    /**
+     * Default constructor
+     */
+    public NamespaceResolver() {
+        super();
+    }
+
+    /**
+     * Copy constructor
+     * @since EclipseLink 2.5.0
+     */
+    public NamespaceResolver(NamespaceResolver namespaceResolver) {
+        super(namespaceResolver);
+    }
+
 }
