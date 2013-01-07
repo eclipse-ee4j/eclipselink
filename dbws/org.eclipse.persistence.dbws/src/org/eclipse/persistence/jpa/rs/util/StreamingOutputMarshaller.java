@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -27,14 +26,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
@@ -64,7 +60,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         this(context, result, mediaType(acceptedTypes));
     }
 
-    public void write(OutputStream output) throws IOException, WebApplicationException {
+    public void write(OutputStream output) throws IOException {
         if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
             output.write((byte[])result);
         } else if (result instanceof String){
@@ -72,46 +68,24 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             writer.write((String)result);
             writer.flush();
             writer.close();
-        } else if (result instanceof QueryResultList) {
-            try {
-                Class<?>[] jaxbClasses = new Class[] { QueryResultList.class };
-                JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
-                marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
-                if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-                    // avoid outer QueryResultList class (outer grouping name) in JSON responses
-                    marshaller.marshal(((QueryResultList) result).getItems(), output);
-                } else {
-                    marshaller.marshal(result, output);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new JPARSException(e.getMessage());
-            }
         } else {
-            if (this.context != null && this.context.getJAXBContext() != null && this.result != null && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
+            if (this.context != null && this.context.getJAXBContext() != null && this.result != null
+                    && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
-                    context.marshallEntity(result, mediaType, output);
-                    return;
-                } catch (JAXBException e) {
-                    JAXBException initialException = e;
-                    if (this.result instanceof List){
-                        List<JAXBElement<Object>> returnList = new ArrayList<JAXBElement<Object>>(((List)this.result).size());
-                        List resultAsList = (List)this.result;
-                        try{
-                            for (Object object: resultAsList){
-                                JAXBElement jaxbResult = new JAXBElement(new QName("result"), object.getClass(), object);
-                                returnList.add(jaxbResult);
-                            }
-    
-                            context.marshallEntity(returnList, mediaType, output);
-                            return;
-                        } catch (JAXBException ex){
-                            JPARSLogger.fine("jaxb_exception_while_marshalling", new Object[]{ex.toString()});
+                    if (result instanceof QueryResultList) {
+                        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+                            // avoid outer QueryResultList class (outer grouping name) in JSON responses
+                            context.marshallEntity(((QueryResultList) result).getItems(), mediaType, output);
+                        } else {
+                            context.marshallEntity(result, mediaType, output);
                         }
+                    } else {
+                        context.marshallEntity(result, mediaType, output);
                     }
-                    JPARSLogger.fine("jpars_could_not_marshal_serializing", new Object[]{initialException});
+                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPARSException(e.toString());
                 }
             }
             if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
@@ -171,20 +145,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         }
         return false;
     }
-    
-    private static boolean contains(List<?> types, MediaType type) {
-        for (Object mt : types) {
-            if (mt instanceof String) {
-                if (((String) mt).contains(type.toString())) {
-                    return true;
-                }
-            } else if (((MediaType) mt).isCompatible(type)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
         Marshaller marshaller = context.getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());

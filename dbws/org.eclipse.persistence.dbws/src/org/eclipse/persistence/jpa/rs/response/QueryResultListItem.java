@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlAnyElement;
 
 public class QueryResultListItem {
     @SuppressWarnings("rawtypes")
-    List<JAXBElement> fields;
+    private List<JAXBElement> fields;
 
     /**
      * Instantiates a new query result list item.
@@ -33,7 +33,7 @@ public class QueryResultListItem {
      * @return the fields
      */
     @SuppressWarnings("rawtypes")
-    @XmlAnyElement
+    @XmlAnyElement(lax = true)
     public List<JAXBElement> getFields() {
         return fields;
     }
@@ -46,5 +46,35 @@ public class QueryResultListItem {
     @SuppressWarnings("rawtypes")
     public void setFields(List<JAXBElement> fields) {
         this.fields = fields;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        QueryResultListItem other = (QueryResultListItem) obj;
+        if (fields == null) {
+            if (other.fields != null) {
+                return false;
+            }
+        } else if (!fields.equals(other.fields)) {
+            return false;
+        }
+        return true;
     }
 }
