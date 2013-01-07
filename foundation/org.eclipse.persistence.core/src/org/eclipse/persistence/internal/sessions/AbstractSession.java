@@ -30,6 +30,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.Method;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
@@ -76,6 +77,8 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
+import org.eclipse.persistence.internal.sessions.cdi.DisabledEntityListenerInjectionManager;
+import org.eclipse.persistence.internal.sessions.cdi.EntityListenerInjectionManager;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.Command;
@@ -274,6 +277,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /** Set the Serializer to use by default for serialization. */
     transient protected Serializer serializer;
     
+    /** Allow CDI injection of entity listeners **/
+    transient protected EntityListenerInjectionManager entityListenerInjectionManager;
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -851,6 +856,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     }
 
     /**
+     * allow the entity listener injection manager to clean itself up.
+     */
+    public void cleanUpEntityListenerInjectionManager(){
+        if (entityListenerInjectionManager != null){
+            entityListenerInjectionManager.cleanUp();
+        }
+    }
+    
+    /**
      * PUBLIC:
      * clear the integrityChecker. IntegrityChecker holds all the ClassDescriptor Exceptions.
      */
@@ -1113,6 +1127,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return new ProtectedValueHolder(attributeValue, mapping, this);
     }
 
+    public EntityListenerInjectionManager createEntityListenerInjectionManager(){
+        try{
+            return (EntityListenerInjectionManager)Class.forName(EntityListenerInjectionManager.DEFAULT_CDI_INJECTION_MANAGER, true, getLoader()).newInstance();
+        } catch (Exception e){
+            logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
+        }
+        return new DisabledEntityListenerInjectionManager();
+    }
+    
     /**
      * INTERNAL:
      * This method is similar to getAndCloneCacheKeyFromParent.  It purpose is to get protected cache data from the shared cache and
@@ -2182,6 +2205,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public int getQueryTimeoutDefault() {
         return queryTimeoutDefault;
+    }
+
+    public EntityListenerInjectionManager getEntityListenerInjectionManager() {
+        if (entityListenerInjectionManager == null){
+            entityListenerInjectionManager = createEntityListenerInjectionManager();
+        }
+        return entityListenerInjectionManager;
     }
 
     /**
@@ -3769,6 +3799,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         this.commitManager = commitManager;
     }
 
+    public void setEntityListenerInjectionManager(
+            EntityListenerInjectionManager entityListenerInjectionManager) {
+        this.entityListenerInjectionManager = entityListenerInjectionManager;
+    }
+    
     /**
      * INTERNAL:
      * Set the event manager.

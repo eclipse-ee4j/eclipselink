@@ -46,7 +46,8 @@ Require-Bundle: org.eclipse.persistence.core;bundle-version="2.5.0";visibility:=
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
-Import-Package: javax.persistence;jpa="2.0";version="[1.1.0,2.2)",
+Import-Package: javax.naming;resolution:=optional,
+ javax.persistence;jpa="2.0";version="[1.1.0,2.2)",
  javax.persistence.criteria;jpa="2.0";version="[1.1.0,2.2)",
  javax.persistence.metamodel;jpa="2.0";version="[1.1.0,2.2)",
  javax.persistence.spi;jpa="2.0";version="[1.1.0,2.2)",

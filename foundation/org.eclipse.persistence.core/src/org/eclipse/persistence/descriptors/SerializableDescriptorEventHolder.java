@@ -16,6 +16,8 @@ package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 /**
  * INTERNAL:
  * Interface to hold onto a DescriptorEvents within a project so they can be rebuilt after serialization.
@@ -24,6 +26,6 @@ import java.io.Serializable;
  * @since EclipseLink 2.5
  */
 public interface SerializableDescriptorEventHolder extends Serializable {
-    public void addListenerToEventManager(ClassDescriptor descriptor, ClassLoader loader);
+    public void addListenerToEventManager(ClassDescriptor descriptor, AbstractSession session, ClassLoader loader);
 
 }

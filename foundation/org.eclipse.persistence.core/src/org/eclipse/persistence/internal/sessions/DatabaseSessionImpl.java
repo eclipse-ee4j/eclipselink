@@ -836,6 +836,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.eventManager.preLogout(this);
         }
         
+        cleanUpEntityListenerInjectionManager();
+        
         // Reset cached data, as may be invalid later on.
         this.lastDescriptorAccessed = null;
 

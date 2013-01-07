@@ -743,7 +743,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     private void finishProcessingDescriptorEvents(ClassLoader realClassLoader) {
         for (ClassDescriptor descriptor: session.getProject().getDescriptors().values()) {
             if (descriptor.hasEventManager()) {
-                descriptor.getEventManager().processDescriptorEventHolders(realClassLoader);
+                descriptor.getEventManager().processDescriptorEventHolders(session, realClassLoader);
             }
         }
     }

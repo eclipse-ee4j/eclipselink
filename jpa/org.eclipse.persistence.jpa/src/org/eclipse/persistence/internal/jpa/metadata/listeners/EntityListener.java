@@ -37,6 +37,9 @@ import org.eclipse.persistence.exceptions.ValidationException;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * An EntityListener is placed on the owning entity's descriptor. 
@@ -58,6 +61,7 @@ public class EntityListener extends DescriptorEventAdapter {
     public final static String PRE_UPDATE_WITH_CHANGES = "preUpdateWithChanges";
     
     private Object m_listener;
+    private Class m_listenerClass;
     private Class m_entityClass;
     private Hashtable<String, List<Method>> m_methods;
     private Hashtable<String, Hashtable<Integer, Boolean>> m_overriddenEvents;
@@ -89,13 +93,9 @@ public class EntityListener extends DescriptorEventAdapter {
         }
     }
     
-    /**
-     * INTERNAL: 
-     */
-    public EntityListener(Object listener, Class entityClass) { 
+    public EntityListener(Class listenerClass, Class entityClass){
         this(entityClass);
-        
-        m_listener = listener;
+        this.m_listenerClass = listenerClass;
     }
     
     /**
@@ -124,6 +124,50 @@ public class EntityListener extends DescriptorEventAdapter {
             methods.add(method);
             m_methods.put(event, methods);
         }
+    }
+    
+    /**
+     * Create the wrapped listener and trigger CDI injection.
+     * @param entityListenerClass
+     * @return the class instance that has had injection run on it. If injection failes, null.
+     */
+    protected Object createEntityListenerAndInjectDependancies(Class entityListenerClass, AbstractSession session){
+        try{
+            return session.getEntityListenerInjectionManager().createEntityListenerAndInjectDependancies(entityListenerClass);
+        } catch (Exception e){
+            session.logThrowable(SessionLog.FINEST, SessionLog.JPA, e);
+        }
+        return null;
+    }
+    
+    /**
+     * Construct an instance of the wrapped entity listener
+     * This method will attempt to create the listener in a CDI injection
+     * friendly manner and if that fails, reflectively instantiate the class
+     * @return
+     */
+    protected Object constructListenerInstance(AbstractSession session){
+        Object entityListenerClassInstance =  createEntityListenerAndInjectDependancies(m_listenerClass, session);
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    if (entityListenerClassInstance == null){
+                        entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(m_listenerClass));
+                    }
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.errorInstantiatingClass(m_listenerClass, exception.getException());
+                }
+            } else {
+                if (entityListenerClassInstance == null){
+                    entityListenerClassInstance = PrivilegedAccessHelper.newInstanceFromClass(m_listenerClass);
+                }
+            }
+        } catch (IllegalAccessException exception) {
+            throw ValidationException.errorInstantiatingClass(m_listenerClass, exception);
+        } catch (InstantiationException exception) {
+            throw ValidationException.errorInstantiatingClass(m_listenerClass, exception);
+        }
+        return entityListenerClassInstance;
     }
     
     /**
@@ -177,11 +221,17 @@ public class EntityListener extends DescriptorEventAdapter {
         return methods.get(methods.size()-1);
     }
     
+    public Object getListener(AbstractSession session) {
+        if (m_listener == null){
+            m_listener = constructListenerInstance(session);
+        }
+        return m_listener;
+    }
     /**
      * INTERNAL:
      */
     public Class getListenerClass() {
-        return m_listener.getClass();    
+        return m_listenerClass;
     }
     
     /**
@@ -279,11 +329,10 @@ public class EntityListener extends DescriptorEventAdapter {
      */
     void invokeMethod(String event, DescriptorEvent descriptorEvent) {
         List<Method> eventMethods = getEventMethods(event);
-        
         if (eventMethods != null) {
             for (Method method : eventMethods) {
                 Object[] objectList = { descriptorEvent.getSource() };
-                invokeMethod(method, m_listener, objectList, descriptorEvent);
+                invokeMethod(method, getListener(descriptorEvent.getSession()), objectList, descriptorEvent);
             }
         }
     }
@@ -481,7 +530,7 @@ public class EntityListener extends DescriptorEventAdapter {
             validateMethodModifiers(method);
         } else {
             Class parameterClass = (numberOfParameters == 0) ? null : method.getParameterTypes()[0];
-            throw ValidationException.invalidEntityListenerCallbackMethodArguments(m_entityClass, parameterClass, m_listener.getClass(), method.getName());
+            throw ValidationException.invalidEntityListenerCallbackMethodArguments(m_entityClass, parameterClass, getListenerClass(), method.getName());
         }
     }
     

@@ -266,7 +266,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     /**
      * INTERNAL:
      */
-    Object getInstance(Class cls) {
+    protected Object getInstance(Class cls) {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
@@ -393,20 +393,16 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
         if (m_entityListenerClass == null) {
             m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
-
         JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
         holder.setIsDefaultListener(Boolean.valueOf(isDefaultListener));
 
-        Object entityListenerClassInstance = getInstance(getClass(m_entityListenerClass, loader));
         holder.listenerClassName = m_entityListenerClass.getName();
-
+        
         if (m_entityListenerClass.extendsInterface(DescriptorEventListener.class)) {
-            holder.listener = (DescriptorEventListener) entityListenerClassInstance;
-            holder.extendsDescriptorEvent = Boolean.TRUE;
+            holder.listener = (DescriptorEventListener)getInstance(getClass(m_entityListenerClass, loader));
         } else {
             // Initialize the listener class before processing the callback methods.
-            m_listener = new EntityListener(entityListenerClassInstance, getClass(classAccessor.getDescriptorJavaClass(), loader));
-
+            m_listener = new EntityListener(getClass(m_entityListenerClass, loader), getClass(classAccessor.getDescriptorJavaClass(), loader));
             // Process the callback methods defined from XML and annotations.
             processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), classAccessor);
             holder.convertToSerializableMethods(m_listener.getAllEventMethods());

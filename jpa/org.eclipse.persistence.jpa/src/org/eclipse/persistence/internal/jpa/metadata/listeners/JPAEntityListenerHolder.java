@@ -28,12 +28,12 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 public class JPAEntityListenerHolder implements SerializableDescriptorEventHolder, Cloneable {
     public String listenerClassName;
 
     public Boolean isDefaultListener;
-    public Boolean extendsDescriptorEvent;
 
     public transient DescriptorEventListener listener;
 
@@ -44,18 +44,22 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
     }
 
     @Override
-    public void addListenerToEventManager(ClassDescriptor descriptor, ClassLoader loader) {
+    public void addListenerToEventManager(ClassDescriptor descriptor, AbstractSession session, ClassLoader loader) {
+
         if (listener == null) {
             if (listenerClassName !=null) {
-                //This must be an EntityListener, create the user class and the instance
-                Object entityListenerClassInstance = getListenerInstance(loader);
-                if (serializableMethods == null) {
-                    //if it has no methods, it must implement DescriptorEventListener and not need to be wrapped
-                    listener = (DescriptorEventListener) entityListenerClassInstance;
+                Class listenerClass = getListenerClass(loader);
+                
+                if (DescriptorEventListener.class.isAssignableFrom(listenerClass)){
+                    listener = (DescriptorEventListener)constructListenerInstance(listenerClass);
                 } else {
-                    //The user class is not a DescriptorEventListener, so wrap it in a JPA EntityListener instance
-                    EntityListener entityListener = new EntityListener(entityListenerClassInstance, descriptor.getJavaClass());
-                    entityListener.setAllEventMethods(this.convertToMethods(loader));
+                    EntityListener entityListener = new EntityListener(listenerClass, descriptor.getJavaClass());
+    
+                    if (!(serializableMethods == null)) {
+                        //The user class is not a DescriptorEventListener, so wrap it in a JPA EntityListener instance
+                        entityListener.setAllEventMethods(this.convertToMethods(loader));
+                        
+                    }
                     listener = entityListener;
                 }
                 
@@ -66,7 +70,6 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
                 listener = entityListener;
             }
         }
-
         //need to also check if this is a EntityClassListener and call
         if (listenerClassName!=null) {
             if (isDefaultListener) {
@@ -80,36 +83,22 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     }
     
-    /**
-     * INTERNAL:
-     * used to return an instance of the listenerClassName
-     * @return an instance of listenerClassName
-     */
-    private Object getListenerInstance(ClassLoader loader){
+    protected Object constructListenerInstance(Class listenerClass){
         Object entityListenerClassInstance = null;
-        Class entityListenerClass = null;
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    entityListenerClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(listenerClassName, true, loader));
+                    entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(listenerClass));
                 } catch (PrivilegedActionException exception) {
-                    throw ValidationException.unableToLoadClass(listenerClassName, exception.getException());
-                }
-                try {
-                    entityListenerClassInstance = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(entityListenerClass));
-                } catch (PrivilegedActionException exception) {
-                    throw ValidationException.errorInstantiatingClass(entityListenerClass, exception.getException());
+                    throw ValidationException.errorInstantiatingClass(listenerClass, exception.getException());
                 }
             } else {
-                entityListenerClass =  PrivilegedAccessHelper.getClassForName(listenerClassName, true, loader);
-                entityListenerClassInstance = PrivilegedAccessHelper.newInstanceFromClass(entityListenerClass);
+                entityListenerClassInstance = PrivilegedAccessHelper.newInstanceFromClass(listenerClass);
             }
-        } catch (ClassNotFoundException exception) {
-            throw ValidationException.unableToLoadClass(listenerClassName, exception);
         } catch (IllegalAccessException exception) {
-            throw ValidationException.errorInstantiatingClass(entityListenerClass, exception);
+            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
         } catch (InstantiationException exception) {
-            throw ValidationException.errorInstantiatingClass(entityListenerClass, exception);
+            throw ValidationException.errorInstantiatingClass(listenerClass, exception);
         }
         return entityListenerClassInstance;
     }
@@ -129,6 +118,30 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
 
     /**
      * INTERNAL:
+     * used to return an instance of the listenerClassName
+     * @return an instance of listenerClassName
+     */
+    private Class getListenerClass(ClassLoader loader){
+        Class entityListenerClass = null;
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    entityListenerClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(listenerClassName, true, loader));
+                } catch (PrivilegedActionException exception) {
+                    throw ValidationException.unableToLoadClass(listenerClassName, exception.getException());
+                }
+
+            } else {
+                entityListenerClass =  PrivilegedAccessHelper.getClassForName(listenerClassName, true, loader);
+            }
+        } catch (ClassNotFoundException exception) {
+            throw ValidationException.unableToLoadClass(listenerClassName, exception);
+        }
+        return entityListenerClass;
+    }
+    
+    /**
+     * INTERNAL:
      * You can have multiple event methods for the same event, however, only
      * one event method per class is permitted.
      */
@@ -142,7 +155,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         MethodSerialImpl convertedMethod = new MethodSerialImpl(method);
         serializableMethods.get(event).add(convertedMethod);
     }
-
+    
     /**
      * INTERNAL:
      * This returns a hashtable of methods which are used in a JPA EntityListener instance, built from
@@ -167,12 +180,13 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
         }
         return table;
     }
-
+    
     public java.util.Hashtable<String,java.util.List<MethodSerialImpl>> getMethods() {
         if (serializableMethods == null) {
             serializableMethods = new Hashtable<String, List<MethodSerialImpl>>();
         }
         return serializableMethods;
     }
-
+    
 }
+

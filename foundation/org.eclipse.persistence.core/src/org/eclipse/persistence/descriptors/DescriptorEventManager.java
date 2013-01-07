@@ -162,7 +162,7 @@ public class DescriptorEventManager extends CoreDescriptorEventManager implement
     public void addEntityListenerHolder(SerializableDescriptorEventHolder holder) {
         this.getDescriptorEventHolders().add(holder);
     }
-
+    
     /**
      * INTERNAL:
      * Clone the manager and its private parts.
@@ -188,10 +188,10 @@ public class DescriptorEventManager extends CoreDescriptorEventManager implement
      * serialized and re-added to the EventManager using a SerializableDescriptorEventHolder.
      * @param classLoader 
      */
-    public void processDescriptorEventHolders(ClassLoader classLoader) {
+    public void processDescriptorEventHolders(AbstractSession session, ClassLoader classLoader) {
         if (this.descriptorEventHolders != null) {
             for (SerializableDescriptorEventHolder holder: descriptorEventHolders) {
-                holder.addListenerToEventManager(getDescriptor(), classLoader);
+                holder.addListenerToEventManager(getDescriptor(), session, classLoader);
             }
         }
     }
