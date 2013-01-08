@@ -418,7 +418,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             if (cycleRecoverableClass == null) {
                 initCycleRecoverableClasses();
             }
-            if (cycleRecoverableClass.isAssignableFrom(object.getClass())) {
+            if (cycleRecoverableClass != null && cycleRecoverableClass.isAssignableFrom(object.getClass())) {
                 try {
                     Object jaxbMarshaller = marshaller.getProperty(XMLConstants.JAXB_MARSHALLER);
                     // Create a proxy instance of CycleRecoverable$Context, a parameter to
@@ -499,7 +499,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE);
             this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT);
         } catch (Exception e) {
-            throw XMLMarshalException.marshalException(e);
         }
     }
 
