@@ -180,80 +180,83 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * objects back and at the same time test their converters as well.
      */
     public void testReadAndWriteDDLObjects() {
-        EntityManager em = createEntityManager(XML_DDL_PU);
-            
-        try {
-            beginTransaction(em);
-            
-            Runner runner = new Runner();
-            runner.setAge(53);
-            runner.setIsFemale();
-            runner.setFirstName("Doris");
-            runner.setLastName("Day");
-            runner.addPersonalBest("10 KM", "47:34");
-            runner.addPersonalBest("5", "26:41");
-            runner.addAccomplishment("Ran 100KM without stopping", new Date(System.currentTimeMillis()));
-            RunnerInfo runnerInfo = new RunnerInfo();
-            runnerInfo.setHealth(Health.H);
-            runnerInfo.setLevel(Level.A);
-            RunnerStatus runnerStatus = new RunnerStatus();
-            runnerStatus.setRunningStatus(RunningStatus.D);
-            runnerInfo.setStatus(runnerStatus);
-            runner.setInfo(runnerInfo);
-            
-            Race race = new Race();
-            race.setName("The Ultimate Marathon");
-            race.addRunner(runner);
-            
-            Organizer organizer = new Organizer();
-            organizer.setName("Joe Organ");
-            organizer.setRace(race);
-            
-            Responsibility responsibility = new Responsibility();
-            responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
-            responsibility.setDescription("Raise funds");
-            
-            race.addOrganizer(organizer, responsibility);
-            
-            em.persist(race);
-            em.persist(organizer);
-            em.persist(runner);
-            commitTransaction(em);
+        // Load scripts for this PU are built for MySql
+        if (getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager(XML_DDL_PU);
                 
-            // Clear the cache
-            em.clear();
-            clearCache(XML_DDL_PU);
-    
-            Runner runnerRefreshed = em.find(Runner.class, runner.getId());
-            assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
-            assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
-            assertTrue("The embeddable level conversion did not work.", runnerRefreshed.getInfo().getLevel().equals(Level.AMATEUR));
-            assertTrue("The nested embeddable running status conversion did not work.", runnerRefreshed.getInfo().getStatus().getRunningStatus().equals(RunningStatus.DOWN_TIME));
-            assertTrue("The number of personal bests for this runner is incorrect.", runnerRefreshed.getPersonalBests().size() == 2);
-            assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("10K"));
-            assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
-            assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
-            assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("26:41.0"));
-            
-            Race raceRefreshed = em.find(Race.class, race.getId());
-            Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
-            assertFalse("No race organizers returned.", organizers.isEmpty());
-            assertTrue("More than one race organizer returned.", organizers.size() == 1);
-            
-            Responsibility resp = organizers.keySet().iterator().next();
-            assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
-            
-            for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
-                assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
-            }
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
+            try {
+                beginTransaction(em);
                 
-            throw e;
-        } finally {
-            closeEntityManager(em);
+                Runner runner = new Runner();
+                runner.setAge(53);
+                runner.setIsFemale();
+                runner.setFirstName("Doris");
+                runner.setLastName("Day");
+                runner.addPersonalBest("10 KM", "47:34");
+                runner.addPersonalBest("5", "26:41");
+                runner.addAccomplishment("Ran 100KM without stopping", new Date(System.currentTimeMillis()));
+                RunnerInfo runnerInfo = new RunnerInfo();
+                runnerInfo.setHealth(Health.H);
+                runnerInfo.setLevel(Level.A);
+                RunnerStatus runnerStatus = new RunnerStatus();
+                runnerStatus.setRunningStatus(RunningStatus.D);
+                runnerInfo.setStatus(runnerStatus);
+                runner.setInfo(runnerInfo);
+                
+                Race race = new Race();
+                race.setName("The Ultimate Marathon");
+                race.addRunner(runner);
+                
+                Organizer organizer = new Organizer();
+                organizer.setName("Joe Organ");
+                organizer.setRace(race);
+                
+                Responsibility responsibility = new Responsibility();
+                responsibility.setUniqueIdentifier(new Long(System.currentTimeMillis()));
+                responsibility.setDescription("Raise funds");
+                
+                race.addOrganizer(organizer, responsibility);
+                
+                em.persist(race);
+                em.persist(organizer);
+                em.persist(runner);
+                commitTransaction(em);
+                    
+                // Clear the cache
+                em.clear();
+                clearCache(XML_DDL_PU);
+        
+                Runner runnerRefreshed = em.find(Runner.class, runner.getId());
+                assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
+                assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
+                assertTrue("The embeddable level conversion did not work.", runnerRefreshed.getInfo().getLevel().equals(Level.AMATEUR));
+                assertTrue("The nested embeddable running status conversion did not work.", runnerRefreshed.getInfo().getStatus().getRunningStatus().equals(RunningStatus.DOWN_TIME));
+                assertTrue("The number of personal bests for this runner is incorrect.", runnerRefreshed.getPersonalBests().size() == 2);
+                assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("10K"));
+                assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
+                assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
+                assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("26:41.0"));
+                
+                Race raceRefreshed = em.find(Race.class, race.getId());
+                Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
+                assertFalse("No race organizers returned.", organizers.isEmpty());
+                assertTrue("More than one race organizer returned.", organizers.size() == 1);
+                
+                Responsibility resp = organizers.keySet().iterator().next();
+                assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
+                
+                for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
+                    assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
+                }
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                    
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
 }

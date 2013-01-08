@@ -51,68 +51,71 @@ public class XMLIndexTestSuite extends JUnitTestCase {
      * mapping issues.
      */
     public void testDDLPersistenceUnit() {
-        EntityManager em = createEntityManager(XML_DDL_PU);
-            
-        try {
-            beginTransaction(em);
-            
-            Fork fork1 = new Fork();
-            fork1.setColor("Black");
-            fork1.setStyle("Carving");
-            fork1.setPrice(2.99);
-            fork1.setRental(0.99);
-            em.persist(fork1);
-            
-            Fork fork2 = new Fork();
-            fork2.setColor("Gray");
-            fork2.setStyle("Cheese");
-            fork2.setPrice(7.99);
-            fork2.setRental(1.99);
-            em.persist(fork2);
-            
-            Fork fork3 = new Fork();
-            fork3.setColor("Brushed Nickel");
-            fork3.setStyle("Chip");
-            fork3.setPrice(7.99);
-            fork3.setRental(1.99);
-            em.persist(fork3);
-            
-            ForkUser forkUser1 = new ForkUser();
-            forkUser1.setName("User1");
-            forkUser1.addFork(fork1);
-            forkUser1.addFork(fork2);
-            forkUser1.addFork(fork3);
-            fork1.addUser(forkUser1);
-            fork2.addUser(forkUser1);
-            fork3.addUser(forkUser1);
-            em.persist(forkUser1);
-            
-            ForkUser forkUser2 = new ForkUser();
-            forkUser2.setName("User2");
-            forkUser2.addFork(fork2);
-            forkUser2.addFork(fork3);;
-            fork2.addUser(forkUser2);
-            fork3.addUser(forkUser2);
-            em.persist(forkUser2);
-            
-            ForkUser forkUser3 = new ForkUser();
-            forkUser3.setName("User3");
-            forkUser3.addFork(fork1);
-            forkUser3.addFork(fork3);;
-            fork1.addUser(forkUser3);
-            fork3.addUser(forkUser3);
-            em.persist(forkUser3);
-                        
-            commitTransaction(em);
-            
-        } catch (RuntimeException e) {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
+        // Load scripts for this PU are built for MySql
+        if (getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager(XML_DDL_PU);
                 
-            throw e;
-        } finally {
-            closeEntityManager(em);
+            try {
+                beginTransaction(em);
+                
+                Fork fork1 = new Fork();
+                fork1.setColor("Black");
+                fork1.setStyle("Carving");
+                fork1.setPrice(2.99);
+                fork1.setRental(0.99);
+                em.persist(fork1);
+                
+                Fork fork2 = new Fork();
+                fork2.setColor("Gray");
+                fork2.setStyle("Cheese");
+                fork2.setPrice(7.99);
+                fork2.setRental(1.99);
+                em.persist(fork2);
+                
+                Fork fork3 = new Fork();
+                fork3.setColor("Brushed Nickel");
+                fork3.setStyle("Chip");
+                fork3.setPrice(7.99);
+                fork3.setRental(1.99);
+                em.persist(fork3);
+                
+                ForkUser forkUser1 = new ForkUser();
+                forkUser1.setName("User1");
+                forkUser1.addFork(fork1);
+                forkUser1.addFork(fork2);
+                forkUser1.addFork(fork3);
+                fork1.addUser(forkUser1);
+                fork2.addUser(forkUser1);
+                fork3.addUser(forkUser1);
+                em.persist(forkUser1);
+                
+                ForkUser forkUser2 = new ForkUser();
+                forkUser2.setName("User2");
+                forkUser2.addFork(fork2);
+                forkUser2.addFork(fork3);;
+                fork2.addUser(forkUser2);
+                fork3.addUser(forkUser2);
+                em.persist(forkUser2);
+                
+                ForkUser forkUser3 = new ForkUser();
+                forkUser3.setName("User3");
+                forkUser3.addFork(fork1);
+                forkUser3.addFork(fork3);;
+                fork1.addUser(forkUser3);
+                fork3.addUser(forkUser3);
+                em.persist(forkUser3);
+                            
+                commitTransaction(em);
+                
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                    
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
 }

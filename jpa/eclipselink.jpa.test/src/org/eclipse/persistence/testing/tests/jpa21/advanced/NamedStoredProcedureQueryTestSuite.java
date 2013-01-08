@@ -625,17 +625,16 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
                 
                 // Check output parameters by name.
+                Object outputParamValueFromName = query.getOutputParameterValue("employee_count_v");
+                assertNotNull("The output parameter was null.", outputParamValueFromName);
                 // TODO: to investigate. This little bit is hacky. For some 
                 // reason MySql returns a Long here. By position is ok, that is, 
                 // it returns an Integer (as we registered)
-                Long outputParamValueFromName;
-                if (getPlatform().isMySQL()) {
-                    outputParamValueFromName = (Long) query.getOutputParameterValue("employee_count_v");
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
                 } else {
-                    outputParamValueFromName = new Long((Integer) query.getOutputParameterValue("employee_count_v"));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
-                assertNotNull("The output parameter was null.", outputParamValueFromName);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
                 
                 // Do some negative tests ...                
                 try {
@@ -788,17 +787,16 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
                 
                 // Check output parameters by name.
+                Object outputParamValueFromName = query.getOutputParameterValue("employee_count_v");
+                assertNotNull("The output parameter was null.", outputParamValueFromName);
                 // TODO: to investigate. This little bit is hacky. For some 
                 // reason MySql returns a Long here. By position is ok, that is, 
                 // it returns an Integer (as we registered)
-                Long outputParamValueFromName;
-                if (getPlatform().isMySQL()) {
-                    outputParamValueFromName = (Long) query.getOutputParameterValue("employee_count_v");
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
                 } else {
-                    outputParamValueFromName = new Long((Integer) query.getOutputParameterValue("employee_count_v"));
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
-                assertNotNull("The output parameter was null.", outputParamValueFromName);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
                 
                 // Do some negative tests ...                
                 try {
