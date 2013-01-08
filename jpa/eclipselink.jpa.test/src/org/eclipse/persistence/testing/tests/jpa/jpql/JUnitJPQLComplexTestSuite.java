@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -283,6 +283,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
         tests.add("testDeleteWithUnqualifiedPathExpression");
+        tests.add("testElementCollectionInLikeExpression");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -4397,5 +4398,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
        EntityManager em = createEntityManager();
        em.createQuery("DELETE FROM Employee WHERE salary = :value1 AND (roomNumber > :value2 OR roomNumber < 1)");
        closeEntityManager(em);
+    }
+
+    // Bug#395720 - ANTLR allowed it even though it's not spec compliant
+    public void testElementCollectionInLikeExpression() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery("SELECT b FROM Buyer b WHERE b.creditLines LIKE '%e%'");
+   	 query.getResultList();
+   	 closeEntityManager(em);
     }
 }
