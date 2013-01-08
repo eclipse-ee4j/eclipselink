@@ -55,12 +55,9 @@ public interface UnmarshalRecord<
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
-    public void addAttributeValue(
-            ContainerValue mappingNodeValue,
-            Object value);
+    public void addAttributeValue(ContainerValue containerValue, Object value);
 
-    public void addAttributeValue(ContainerValue containerValue, Object node,
-            Object collection);
+    public void addAttributeValue(ContainerValue containerValue, Object value, Object collection);
 
     public ROOT createRoot();
 
@@ -74,8 +71,7 @@ public interface UnmarshalRecord<
 
     public UnmarshalRecord getChildUnmarshalRecord(TREE_OBJECT_BUILDER targetObjectBuilder);
 
-    public Object getContainerInstance(
-            ContainerValue xmlAnyAttributeMappingNodeValue);
+    public Object getContainerInstance(ContainerValue containerValue);
 
     public Object getContainerInstance(ContainerValue containerValue, boolean b);
 
@@ -117,7 +113,7 @@ public interface UnmarshalRecord<
 
     public XPathNode getXPathNode();
 
-    public UnmarshalRecord initialize(TREE_OBJECT_BUILDER treeObjectBuilder);
+    public UnmarshalRecord initialize(TREE_OBJECT_BUILDER objectBuilder);
 
     public void initializeRecord(Mapping mapping) throws SAXException;
 
@@ -127,8 +123,7 @@ public interface UnmarshalRecord<
 
     public boolean isSelfRecord();
 
-    public void removeNullCapableValue(
-            NullCapableValue xmlFragmentMappingNodeValue);
+    public void removeNullCapableValue(NullCapableValue nullCapableValue);
 
     public void resetStringBuffer();
 
@@ -138,36 +133,35 @@ public interface UnmarshalRecord<
 
     public void setAttributes(Attributes atts);
 
-    public void setAttributeValue(Object childObject,
-            Mapping xmlAnyObjectMapping);
+    public void setAttributeValue(Object object, Mapping mapping);
 
     public void setChildRecord(UnmarshalRecord unmarshalRecord);
 
     public void setContainerInstance(int index, Object containerInstance);
 
-    public void setCurrentObject(Object childObject);
+    public void setCurrentObject(Object object);
 
     public void setFragmentBuilder(SAXFragmentBuilder fragmentBuilder);
 
     public void setLeafElementType(QName leafElementType);
 
-    public void setLocalName(String object);
+    public void setLocalName(String localName);
 
-    public void setNil(boolean b);
+    public void setNil(boolean isNil);
 
     public void setParentRecord(UnmarshalRecord unmarshalRecord);
 
     public void setReferenceResolver(ReferenceResolver referenceResolver);
 
-    public void setRootElementName(String object);
+    public void setRootElementName(String rootElementName);
 
-    public void setSelfRecord(boolean b);
+    public void setSelfRecord(boolean isSelfRecord);
 
     public void setSession(ABSTRACT_SESSION session);
 
     public void setTextWrapperFragment(XPathFragment textWrapperFragment);
 
-    public void setTransformationRecord(DOMRecord xmlTransformationRecord);
+    public void setTransformationRecord(DOMRecord transformationRecord);
 
     public void setTypeQName(QName qname);
 
@@ -175,8 +169,7 @@ public interface UnmarshalRecord<
 
     public void setUnmarshaller(UNMARSHALLER unmarshaller);
 
-    public void setUnmarshalNamespaceResolver(
-            UnmarshalNamespaceResolver unmarshalNamespaceResolver);
+    public void setUnmarshalNamespaceResolver(UnmarshalNamespaceResolver unmarshalNamespaceResolver);
 
     public void setXMLReader(XMLReader xmlReader);
 
