@@ -50,6 +50,7 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
      */
     public DistributedSession(RemoteConnection remoteConnection) {
         this.remoteConnection = remoteConnection;
+        this.remoteConnection.initialize(this);
         this.project = new org.eclipse.persistence.sessions.Project();
     }
 

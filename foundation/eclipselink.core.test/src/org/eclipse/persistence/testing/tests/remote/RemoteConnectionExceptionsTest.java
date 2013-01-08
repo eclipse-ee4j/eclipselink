@@ -18,6 +18,7 @@ import java.lang.reflect.*;
 
 import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.testing.framework.*;
 
 public class RemoteConnectionExceptionsTest extends TestCase {
@@ -53,6 +54,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
             throw new TestProblemException("remoteConnection's type is different from the type used to create the test");
         }
         this.remoteConnection = remoteConnection;
+        this.remoteConnection.setSession(new RemoteSession());
     }
 
     protected RemoteConnection getRemoteConnection() {
@@ -175,7 +177,6 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         for (int i = 0; i < methods.size(); i++) {
             Method method = (Method)methods.elementAt(i);
             Object[] params = (Object[])args.elementAt(i);
-            String name = method.getName();
             Object result = null;
             Throwable exception = null;
             try {

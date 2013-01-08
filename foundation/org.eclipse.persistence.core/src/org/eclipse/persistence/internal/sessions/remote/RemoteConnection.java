@@ -48,6 +48,14 @@ public abstract class RemoteConnection implements java.io.Serializable {
     public void initialize(DistributedSession session) {
         this.session = session;
     }
+
+    public DistributedSession getSession() {
+        return session;
+    }
+
+    public void setSession(DistributedSession session) {
+        this.session = session;
+    }
     
     public boolean isConnected() {
         return true;
