@@ -1664,7 +1664,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(stringExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
+				boolean valid = validateStateFieldPathExpression(pathExpression, validPathExpressionTypeForStringExpression());
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -2473,6 +2473,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected void validateWhereClause(WhereClause expression) {
 		super.visit(expression);
+	}
+
+	/**
+	 * Returns the type of path expression that is valid for a string expression; which is the left
+	 * expression in a <code><b>LIKE</b></code> expression.
+	 *
+	 * @return By default, only basic field are allowed
+	 */
+	protected PathType validPathExpressionTypeForStringExpression() {
+		return PathType.BASIC_FIELD_ONLY;
 	}
 
 	/**
