@@ -98,4 +98,35 @@ public class NoRootElementTestCases extends JAXBWithJSONTestCases{
 		}
 		fail("an error was expected");
 	}
+
+    @Override
+    public void testObjectToXMLStreamWriter() throws Exception {
+        try {
+            super.testObjectToXMLStreamWriter();
+        } catch (Exception e) {
+            return;
+        }
+        fail("an error was expected");
+    }
+
+    @Override
+    public void testObjectToXMLStreamWriterRecord() throws Exception {
+        try {
+            super.testObjectToXMLStreamWriterRecord();
+        } catch (Exception e) {
+            return;
+        }
+        fail("an error was expected");
+    }
+
+    @Override
+    public void testObjectToXMLEventWriter() throws Exception {
+        try {
+            super.testObjectToXMLEventWriter();
+        } catch (Exception e) {
+            return;
+        }
+        fail("an error was expected");
+    }
+
 }
