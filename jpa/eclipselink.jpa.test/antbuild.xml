@@ -2508,7 +2508,9 @@
             deprecation="${javac.deprecation}"
             failonerror="false"
             includes="org/eclipse/persistence/testing/framework/**,
-                org/eclipse/persistence/testing/tests/performance/emulateddb/**">
+                org/eclipse/persistence/testing/tests/performance/emulateddb/**,
+                org/eclipse/persistence/tools/**,
+                org/eclipse/persistence/testing/tests/TestRunModel.java">
             <classpath refid="compile.server.path"/>
         </javac>
         <javac
@@ -3761,6 +3763,20 @@
             <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
             <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-jpa21-sessionbean">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="jpa21-sessionbean"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa21/sessionbean"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa21/entity-listener"/>
+            <param name="MODEL_NAME" value="eclipselink-jpa21-sessionbean-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa21/sessionbean"/>
+            <param name="TEST_NAME" value="eclipselink-jpa21-sessionbean-model"/>
+            <param name="EAR_NAME" value="eclipselink-jpa21-sessionbean-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
