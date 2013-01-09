@@ -234,7 +234,7 @@ public class XRServiceFactory  {
             }
         }
         if (inStream != null) {
-            Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+            Map<String, DBWSMetadataSource> metadataMap = null;
             StreamSource xml = new StreamSource(inStream);
             try {
                 JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
@@ -242,49 +242,54 @@ public class XRServiceFactory  {
                 
                 JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                 XmlBindingsModel model = jaxbElt.getValue();
-                for (XmlBindings xmlBindings : model.getBindingsList()) {
-                    metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                if (model.getBindingsList() != null) {
+                    metadataMap = new HashMap<String, DBWSMetadataSource>();
+                    for (XmlBindings xmlBindings : model.getBindingsList()) {
+                        metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                    }
                 }
             } catch (JAXBException jaxbex) {
                 throw new DBWSException(OXM_PROCESSING_EX, jaxbex);
             }
             
-            Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
-            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
-            try {
-                DynamicJAXBContext jCtx = DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
-                oxProject = jCtx.getXMLContext().getSession(0).getProject();
-    
-                // may need to alter descriptor alias
-                if (oxProject.getAliasDescriptors() != null) {
-                    Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
-                    for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                        XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(key.toString());
-                        
-                        String defaultRootElement = xdesc.getDefaultRootElement();
-                        String proposedAlias = defaultRootElement;
-                        if (proposedAlias.endsWith(TYPE_STR)) {
-                            proposedAlias = proposedAlias.substring(0, proposedAlias.lastIndexOf(TYPE_STR));
-                        }
-                        xdesc.setAlias(proposedAlias);
-                        aliasDescriptors.put(proposedAlias, xdesc);
-                        
-                        // workaround for JAXB validation:  JAXB expects a DataHandler in the 
-                        // object model for SwaRef, whereas we want to work with a byte[]
-                        for (DatabaseMapping mapping : xdesc.getMappings()) {
-                            if (mapping instanceof XMLBinaryDataMapping) {
-                                ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
-                                ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
+            if (metadataMap != null) {
+                Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+                properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
+                try {
+                    DynamicJAXBContext jCtx = DynamicJAXBContextFactory.createContextFromOXM(xrdecl, properties);
+                    oxProject = jCtx.getXMLContext().getSession(0).getProject();
+        
+                    // may need to alter descriptor alias
+                    if (oxProject.getAliasDescriptors() != null) {
+                        Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
+                        for (Object key : oxProject.getAliasDescriptors().keySet()) {
+                            XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(key.toString());
+                            
+                            String defaultRootElement = xdesc.getDefaultRootElement();
+                            String proposedAlias = defaultRootElement;
+                            if (proposedAlias.endsWith(TYPE_STR)) {
+                                proposedAlias = proposedAlias.substring(0, proposedAlias.lastIndexOf(TYPE_STR));
+                            }
+                            xdesc.setAlias(proposedAlias);
+                            aliasDescriptors.put(proposedAlias, xdesc);
+                            
+                            // workaround for JAXB validation:  JAXB expects a DataHandler in the 
+                            // object model for SwaRef, whereas we want to work with a byte[]
+                            for (DatabaseMapping mapping : xdesc.getMappings()) {
+                                if (mapping instanceof XMLBinaryDataMapping) {
+                                    ((XMLBinaryDataMapping) mapping).setAttributeClassification(APBYTE);
+                                    ((XMLBinaryDataMapping) mapping).setAttributeClassificationName(APBYTE.getName());
+                                }
                             }
                         }
+                        oxProject.setAliasDescriptors(aliasDescriptors);
                     }
-                    oxProject.setAliasDescriptors(aliasDescriptors);
+                } catch (JAXBException e) {
+                    throw new DBWSException(OXM_PROCESSING_EX, e);
                 }
-            } catch (JAXBException e) {
-                throw new DBWSException(OXM_PROCESSING_EX, e);
             }
         }
-        return oxProject == null ? new SimpleXMLFormatProject() : oxProject; 
+        return oxProject; 
     }
     
     /**
@@ -293,13 +298,6 @@ public class XRServiceFactory  {
     public void buildSessions() {
         ClassLoader projectLoader = new XRDynamicClassLoader(parentClassLoader);
 
-        Project oxProject = loadOXMetadata(projectLoader);
-
-        ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
-        ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
-        xrService.xmlContext = new XMLContext(oxProject);
-        xrService.oxSession = xrService.xmlContext.getSession(0);
-        
         SessionManager sessionManager = SessionManager.getManager();
         boolean found = false;
         String sessionsFile = xrService.sessionsFile == null ? DBWS_SESSIONS_XML : xrService.sessionsFile;
@@ -326,7 +324,25 @@ public class XRServiceFactory  {
             throw DBWSException.couldNotLocateORSessionForService(xrService.name);
         }
 
+        Project oxProject = null;
+        // load OX project via xml-bindings
+        if ((oxProject = loadOXMetadata(projectLoader)) == null) {
+            // at this point we may have a legacy deployment XML project
+            String oxSessionKey = xrService.name + "-" + DBWS_OX_SESSION_NAME_SUFFIX;
+            if (sessions.containsKey(oxSessionKey)) {
+                xrService.oxSession = (Session)sessions.get(oxSessionKey);
+                ((XMLLogin)xrService.oxSession.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+                oxProject = xrService.oxSession.getProject(); 
+            }
+            if (oxProject == null) {
+                oxProject = new SimpleXMLFormatProject();
+            }
+        }
         ProjectHelper.fixOROXAccessors(xrService.orSession.getProject(), oxProject);
+        ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
+        ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
+        xrService.xmlContext = new XMLContext(oxProject);
+        xrService.oxSession = xrService.xmlContext.getSession(0);
     }
 
     /**

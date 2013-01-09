@@ -19,6 +19,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import dbws.testing.attachedbinary.AttachedBinaryServiceTestSuite;
 import dbws.testing.inlinebinary.InlineBinaryServiceTestSuite;
+import dbws.testing.legacysimpletable.LegacySimpleTableServiceTestSuite;
 import dbws.testing.mtom.MTOMServiceTestSuite;
 import dbws.testing.simpleplsql.SimplePLSQLServiceTestSuite;
 import dbws.testing.simplesp.SimpleSPServiceTestSuite;
@@ -29,6 +30,7 @@ import dbws.testing.simpletable.SimpleTableServiceTestSuite;
 @SuiteClasses({
     AttachedBinaryServiceTestSuite.class,
     InlineBinaryServiceTestSuite.class,
+    LegacySimpleTableServiceTestSuite.class,
     MTOMServiceTestSuite.class,
     SimplePLSQLServiceTestSuite.class,
     SimpleSPServiceTestSuite.class,
