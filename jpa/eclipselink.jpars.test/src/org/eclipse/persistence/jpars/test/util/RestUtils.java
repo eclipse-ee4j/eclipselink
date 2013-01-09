@@ -498,6 +498,23 @@ public class RestUtils {
         return response.getEntity(String.class);
     }
 
+    /**
+     * Rest remove bidirectional relationship.
+     *
+     * @param context the context
+     * @param objectId the object id
+     * @param type the type
+     * @param relationshipName the relationship name
+     * @param persistenceUnit the persistence unit
+     * @param mediaType the media type
+     * @param partner the partner
+     * @param listItemId the list item id
+     * @param sendLinks the send links
+     * @return the string
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     * @throws JAXBException the jAXB exception
+     */
     public static String restRemoveBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName,
             String persistenceUnit, MediaType mediaType, String partner, String listItemId, boolean sendLinks)
             throws RestCallFailedException, URISyntaxException, JAXBException {
@@ -525,32 +542,7 @@ public class RestUtils {
         return result;
     }
 
-    /**
-     * Append parameters and hints.
-     *
-     * @param resourceURL the resource url
-     * @param parameters the parameters
-     * @param hints the hints
-     */
-    public static void appendParametersAndHints(StringBuilder resourceURL, Map<String, Object> parameters, Map<String, String> hints) {
-        if (parameters != null && !parameters.isEmpty()) {
-            for (String key : parameters.keySet()) {
-                resourceURL.append(";" + key + "=" + parameters.get(key));
-            }
-        }
-        if (hints != null && !hints.isEmpty()) {
-            boolean firstElement = true;
 
-            for (String key : hints.keySet()) {
-                if (firstElement) {
-                    resourceURL.append("?");
-                } else {
-                    resourceURL.append("&");
-                }
-                resourceURL.append(key + "=" + hints.get(key));
-            }
-        }
-    }
 
     /**
      * Gets the jSON message.
@@ -577,26 +569,54 @@ public class RestUtils {
         return convertStreamToString(is);
     }
 
-    /**
-     * Convert stream to string.
-     *
-     * @param is the is
-     * @return the string
-     */
-    public static String convertStreamToString(InputStream is) {
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
+    /**
+     * Convert image to byte array.
+     *
+     * @param imageName the image name
+     * @return the byte[]
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static byte[] convertImageToByteArray(String imageName) throws IOException {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(IMAGE_FOLDER + imageName);
         BufferedImage originalImage = ImageIO.read(is);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(originalImage, getExtension(new File(imageName)), baos);
         return baos.toByteArray();
+    }
+
+    /**
+     * Rest find attribute.
+     *
+     * @param context the context
+     * @param id the id
+     * @param type the type
+     * @param attribute the attribute
+     * @param persistenceUnit the persistence unit
+     * @param tenantId the tenant id
+     * @param outputMediaType the output media type
+     * @return the string
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public static String restFindAttribute(PersistenceContext context, Object id, String type, String attribute, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType)
+            throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type + "/" + id + "/" + attribute);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        return result;
     }
 
     private static String getExtension(File f) {
@@ -610,8 +630,8 @@ public class RestUtils {
         return ext;
     }
 
-    // @SuppressWarnings("unused")
-    public static void writeToFile(String data) {
+    @SuppressWarnings("unused")
+    private static void writeToFile(String data) {
         BufferedWriter writer = null;
         try {
             String fileName = (System.currentTimeMillis() + ".txt");
@@ -629,4 +649,33 @@ public class RestUtils {
             }
         }
     }
+
+    private static void appendParametersAndHints(StringBuilder resourceURL, Map<String, Object> parameters, Map<String, String> hints) {
+        if (parameters != null && !parameters.isEmpty()) {
+            for (String key : parameters.keySet()) {
+                resourceURL.append(";" + key + "=" + parameters.get(key));
+            }
+        }
+        if (hints != null && !hints.isEmpty()) {
+            boolean firstElement = true;
+
+            for (String key : hints.keySet()) {
+                if (firstElement) {
+                    resourceURL.append("?");
+                } else {
+                    resourceURL.append("&");
+                }
+                resourceURL.append(key + "=" + hints.get(key));
+            }
+        }
+    }
+
+    private static String convertStreamToString(InputStream is) {
+        try {
+            return new java.util.Scanner(is).useDelimiter("\\A").next();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }
