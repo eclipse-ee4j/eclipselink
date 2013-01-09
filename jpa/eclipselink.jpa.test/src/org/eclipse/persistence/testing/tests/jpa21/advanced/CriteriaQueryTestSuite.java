@@ -78,10 +78,10 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdate"));
         suite.addTest(new CriteriaQueryTestSuite("testComplexConditionCaseInCriteriaUpdate"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateEmbeddedField"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateCompareSQL"));
+        //suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateCompareSQL"));
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
-        suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
+        //suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
 
         return suite;
     }
