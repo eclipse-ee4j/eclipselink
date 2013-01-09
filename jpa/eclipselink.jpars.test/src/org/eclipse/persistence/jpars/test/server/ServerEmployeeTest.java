@@ -16,17 +16,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -44,6 +42,7 @@ import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ServerEmployeeTest {
@@ -55,10 +54,10 @@ public class ServerEmployeeTest {
     /**
      * Setup.
      *
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @BeforeClass
-    public static void setup() throws URISyntaxException {
+    public static void setup() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
         ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
@@ -84,7 +83,6 @@ public class ServerEmployeeTest {
                     em.getTransaction().begin();
                     em.createQuery("delete from EmployeeAddress a").executeUpdate();
                     em.createQuery("delete from PhoneNumber b").executeUpdate();
-                    //em.createQuery("delete from Project c").executeUpdate();
                     em.createQuery("delete from LargeProject c").executeUpdate();
                     em.createQuery("delete from SmallProject d").executeUpdate();
                     em.createQuery("delete from Employee e").executeUpdate();
@@ -97,249 +95,326 @@ public class ServerEmployeeTest {
     /**
      * Test read employee json.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testReadEmployeeJSON() throws RestCallFailedException, URISyntaxException {
+    public void testReadEmployeeJSON() throws Exception {
         readEmployee(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test read employee xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testReadEmployeeXML() throws RestCallFailedException, URISyntaxException {
+    public void testReadEmployeeXML() throws Exception {
         readEmployee(MediaType.APPLICATION_XML_TYPE);
     }
 
     /**
      * Test update employee with employment period json.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithEmploymentPeriodJSON() throws RestCallFailedException, URISyntaxException {
+    public void testUpdateEmployeeWithEmploymentPeriodJSON() throws Exception {
         updateEmployeeWithEmploymentPeriod(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test update employee with employment period xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithEmploymentPeriodXML() throws RestCallFailedException, URISyntaxException {
+    public void testUpdateEmployeeWithEmploymentPeriodXML() throws Exception {
         updateEmployeeWithEmploymentPeriod(MediaType.APPLICATION_XML_TYPE);
     }
 
     /**
      * Test create employee with phone numbers json.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testCreateEmployeeWithPhoneNumbersJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testCreateEmployeeWithPhoneNumbersJSON() throws Exception {
         createEmployeeWithPhoneNumbers(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test create employee with phone numbers xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testCreateEmployeeWithPhoneNumbersXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testCreateEmployeeWithPhoneNumbersXML() throws Exception {
         createEmployeeWithPhoneNumbers(MediaType.APPLICATION_XML_TYPE);
     }
 
     /**
      * Test update employee with manager json.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithManagerJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithManagerJSON() throws Exception {
         updateEmployeeWithManager(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test update employee with manager xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithManagerXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithManagerXML() throws Exception {
         updateEmployeeWithManager(MediaType.APPLICATION_XML_TYPE);
     }
 
     /**
      * Test update employee with project json.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithProjectJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithProjectJSON() throws Exception {
         updateEmployeeWithProject(MediaType.APPLICATION_JSON_TYPE, false);
     }
 
     /**
      * Test update employee with project xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithProjectXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithProjectXML() throws Exception {
         updateEmployeeWithProject(MediaType.APPLICATION_XML_TYPE, false);
     }
 
+    /**
+     * Test update employee with project remove all projects json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testUpdateEmployeeWithProjectRemoveAllProjectsJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithProjectRemoveAllProjectsJSON() throws Exception {
         updateEmployeeWithProject(MediaType.APPLICATION_JSON_TYPE, true);
     }
 
     /**
-     * Test update employee with project xml.
+     * Test update employee with project remove all projects xml.
      *
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
+     * @throws Exception the exception
      */
     @Test
-    public void testUpdateEmployeeWithProjectRemoveAllProjectsXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testUpdateEmployeeWithProjectRemoveAllProjectsXML() throws Exception {
         updateEmployeeWithProject(MediaType.APPLICATION_XML_TYPE, true);
     }
 
     /**
      * Test create employee address with binary data json.
      *
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testCreateEmployeeAddressWithBinaryDataJSON() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testCreateEmployeeAddressWithBinaryDataJSON() throws Exception {
         createEmployeeAddressWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
     }
 
     /**
      * Test create employee address with binary data xml.
      *
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
+     * @throws Exception the exception
      */
     @Test
-    public void testCreateEmployeeAddressWithBinaryDataXML() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testCreateEmployeeAddressWithBinaryDataXML() throws Exception {
         createEmployeeAddressWithBinaryData(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test execute query get all xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testExecuteQueryGetAllXML() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testExecuteQueryGetAllXML() throws Exception {
         executeQueryGetAll(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test execute query get all json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testExecuteQueryGetAllJSON() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testExecuteQueryGetAllJSON() throws Exception {
         executeQueryGetAll(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test execute single result query xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testExecuteSingleResultQueryXML() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testExecuteSingleResultQueryXML() throws Exception {
         executeSingleResultQuery(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test execute single result query json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testExecuteSingleResultQueryJSON() throws IOException, RestCallFailedException, URISyntaxException {
+    public void testExecuteSingleResultQueryJSON() throws Exception {
         executeSingleResultQuery(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test read employee with responsibilities xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testReadEmployeeWithResponsibilitiesXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testReadEmployeeWithResponsibilitiesXML() throws Exception {
         readEmployeeWithResponsibilities(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test read employee with responsibilities json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testReadEmployeeWithResponsibilitiesJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testReadEmployeeWithResponsibilitiesJSON() throws Exception {
         readEmployeeWithResponsibilities(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test multiselect query get employee address with simple fields xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testMultiselectQueryGetEmployeeAddressWithSimpleFieldsXML() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testMultiselectQueryGetEmployeeAddressWithSimpleFieldsXML() throws Exception {
         executeMultiselectQueryGetEmployeeAddressWithSimpleFields(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test multiselect query get employee address with simple fields json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testMultiselectQueryGetEmployeeAddressWithSimpleFieldsJSON() throws RestCallFailedException, URISyntaxException, JAXBException {
+    public void testMultiselectQueryGetEmployeeAddressWithSimpleFieldsJSON() throws Exception {
         executeMultiselectQueryGetEmployeeAddressWithSimpleFields(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test multiselect query get employee with domain object json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testMultiselectQueryGetEmployeeWithDomainObjectJSON() throws IOException, RestCallFailedException, URISyntaxException, JAXBException {
+    public void testMultiselectQueryGetEmployeeWithDomainObjectJSON() throws Exception {
         executeMultiselectQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test multiselect query get employee with domain object xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testMultiselectQueryGetEmployeeWithDomainObjectXML() throws IOException, RestCallFailedException, URISyntaxException, JAXBException {
+    public void testMultiselectQueryGetEmployeeWithDomainObjectXML() throws Exception {
         executeMultiselectQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test employee address named query with binary data xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testEmployeeAddressNamedQueryWithBinaryDataXML() throws IOException, RestCallFailedException, URISyntaxException, JAXBException {
+    public void testEmployeeAddressNamedQueryWithBinaryDataXML() throws Exception {
         getEmployeeAddressNamedQueryWithBinaryData(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test employee address named query with binary data json.
+     *
+     * @throws Exception the exception
+     */
     @Test
-    public void testEmployeeAddressNamedQueryWithBinaryDataJSON() throws IOException, RestCallFailedException, URISyntaxException, JAXBException {
+    public void testEmployeeAddressNamedQueryWithBinaryDataJSON() throws Exception {
         getEmployeeAddressNamedQueryWithBinaryData(MediaType.APPLICATION_JSON_TYPE);
     }
 
-    @Test
-    public void testReadListAttributeJSON() throws RestCallFailedException, URISyntaxException {
-        readResponsibilitiesFromEmployee(MediaType.APPLICATION_JSON_TYPE);
+    /**
+     * Test read employee responsibilities xml.
+     *
+     * @throws Exception the exception
+     */
+    @Ignore
+    public void testReadEmployeeResponsibilitiesXML() throws Exception {
+        readEmployeeResponsibilities(MediaType.APPLICATION_XML_TYPE);
     }
 
-    @Test
-    public void testReadListAttributeXML() throws RestCallFailedException, URISyntaxException {
-        readResponsibilitiesFromEmployee(MediaType.APPLICATION_XML_TYPE);
+    /**
+     * Test read employee responsibilities json.
+     *
+     * @throws Exception the exception
+     */
+    @Ignore
+    public void testReadEmployeeResponsibilitiesJSON() throws Exception {
+        readEmployeeResponsibilities(MediaType.APPLICATION_JSON_TYPE);
     }
 
-    private void executeMultiselectQueryGetEmployeeWithDomainObject(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
+    /**
+     * Test read employee phone numbers json.
+     *
+     * @throws Exception the exception
+     */
+    @Ignore
+    public void testReadEmployeePhoneNumbersJSON() throws Exception {
+        readEmployeePhoneNumbers(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    /**
+     * Test read employee phone numbers xml.
+     *
+     * @throws Exception the exception
+     */
+    @Ignore
+    public void testReadEmployeePhoneNumbersXML() throws Exception {
+        readEmployeePhoneNumbers(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Execute multiselect query get employee with domain object.
+     *
+     * @param mediaType the media type
+     * @throws Exception the exception
+     */
+    private void executeMultiselectQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
-        employee.setId(55999);
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         employee.setGender(Gender.Male);
 
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a manager
         Employee manager = new Employee();
-        manager.setId(10557);
         manager.setFirstName("Charlie");
         manager.setLastName("Parker");
         manager.setGender(Gender.Male);
 
-        manager = RestUtils.restCreate(context, manager, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        manager = RestUtils.restUpdate(context, manager, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Employee manager create failed.", manager);
 
         // update employee with manager
@@ -363,39 +438,28 @@ public class ServerEmployeeTest {
         Object queryResult = RestUtils.restNamedQuery("Employee.getManager", DEFAULT_PU, null, null, mediaType);
         String expected = null;
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-            expected = "[{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\":{\"type\":\"employee\",\"firstName\":\"Charlie\",\"gender\":\"Male\",\"id\":10557,\"lastName\":\"Parker\",\"" +
-                    "responsibilities\":[],\"salary\":0.0,\"version\":1,\"_relationships\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/55999\",\"method\":\"GET\",\"rel\":\"self\"}}],\"phoneNumbers\":[],\"projects\":[]}},{\"firstName\":\"Charlie\",\"lastName\":\"Parker\"}]";
+            expected = "[{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\":{\"type\":\"employee\",\"firstName\":\"Charlie\",\"gender\":\"Male\",\"id\":" +
+                    manager.getId() + ",\"lastName\":\"Parker\",\"" + "responsibilities\":[],\"salary\":0.0,\"version\":1,\"_relationships\":[{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}],\"phoneNumbers\":[],\"projects\":[]}},{\"firstName\":\"Charlie\",\"lastName\":\"Parker\"}]";
         } else {
-            expected = "<firstName>Charlie</firstName><gender>Male</gender><id>10557</id><lastName>Parker</lastName><salary>0.0</salary>" +
-			"<version>1</version><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""   +
-                    RestUtils.getServerURI()  +
-                    "jpars_employee-static/entity/Employee/10557/address\" rel=\"address\"/></_relationships><_relationships><_link href=\"" +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\""   +
-                    RestUtils.getServerURI()  +
-                    "jpars_employee-static/entity/Employee/10557/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/10557/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships><managedEmployees><_link href=\""  +
-                    RestUtils.getServerURI() +
-                    "jpars_employee-static/entity/Employee/55999\" method=\"GET\" rel=\"self\"/></managedEmployees></manager></item><item><firstName>Charlie</firstName><lastName>Parker</lastName></item></List>";
+            expected = "<firstName>Charlie</firstName><gender>Male</gender><id>" + manager.getId() +
+            		"</id><lastName>Parker</lastName><salary>0.0</salary>" + 	"<version>1</version><_relationships><_link href=\""  +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() +
+                    "/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""   + RestUtils.getServerURI()  +
+                    "jpars_employee-static/entity/Employee/" + manager.getId() + "/address\" rel=\"address\"/></_relationships><_relationships><_link href=\"" +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() +
+                    "/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\""   + RestUtils.getServerURI()  +
+                    "jpars_employee-static/entity/Employee/" + manager.getId() + "/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\""  +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""  +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships><managedEmployees><_link href=\""  +
+                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "\" method=\"GET\" rel=\"self\"/></managedEmployees></manager></item><item><firstName>Charlie</firstName><lastName>Parker</lastName></item></List>";
         }
 
         assertTrue(((String) queryResult).contains(expected));
@@ -407,29 +471,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(manager.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void readResponsibilitiesFromEmployee(MediaType mediaType) throws RestCallFailedException, URISyntaxException {
-        // create an employee
-        Employee employee = new Employee();
-        employee.setId(11023);
-        employee.setFirstName("Miles");
-        employee.setLastName("Davis");
-
-        employee.addResponsibility("team lead");
-        employee.addResponsibility("standard lead");
-        employee.addResponsibility("er team member");
-
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
-        assertNotNull("Employee create failed.", employee);
-
-        employee = RestUtils.restRead(context, new Integer(11023), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
-        assertNotNull(employee.getResponsibilities());
-        assertTrue(employee.getResponsibilities().size() == 3);
-
-        // delete employee
-        RestUtils.restDelete(new Integer(11023), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
-    }
-
-    private void readEmployeeWithResponsibilities(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
+    private void readEmployeeWithResponsibilities(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setId(11025);
@@ -451,7 +493,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(new Integer(11025), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void executeQueryGetAll(MediaType mediaType) throws URISyntaxException, IOException {
+    private void executeQueryGetAll(MediaType mediaType) throws Exception {
         // create address1
         EmployeeAddress address1 = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true);
@@ -493,7 +535,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void executeMultiselectQueryGetEmployeeAddressWithSimpleFields(MediaType mediaType) throws URISyntaxException {
+    private void executeMultiselectQueryGetEmployeeAddressWithSimpleFields(MediaType mediaType) throws Exception {
         // create address1
         EmployeeAddress address1 = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true);
@@ -530,7 +572,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void executeSingleResultQuery(MediaType mediaType) throws URISyntaxException, IOException {
+    private void executeSingleResultQuery(MediaType mediaType) throws Exception {
         EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address.setId(9112);
         address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
@@ -563,7 +605,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void createEmployeeAddressWithBinaryData(MediaType mediaType) throws IOException, RestCallFailedException, URISyntaxException {
+    private void createEmployeeAddressWithBinaryData(MediaType mediaType) throws Exception {
         EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
 
@@ -580,22 +622,20 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    private void updateEmployeeWithProject(MediaType mediaType, boolean removeAllProjects) throws RestCallFailedException, URISyntaxException, JAXBException {
+    private void updateEmployeeWithProject(MediaType mediaType, boolean removeAllProjects) throws Exception {
         // create an employee
         Employee employee = new Employee();
-        employee.setId(8809);
         employee.setFirstName("Charles");
         employee.setLastName("Mingus");
         employee.setGender(Gender.Male);
 
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a small project
         SmallProject smallProject = new SmallProject("SmallProject", "This is a small project.");
-        smallProject.setId(109);
 
-        smallProject = RestUtils.restCreate(context, smallProject, SmallProject.class.getSimpleName(), SmallProject.class, DEFAULT_PU, null, mediaType, true);
+        smallProject = RestUtils.restUpdate(context, smallProject, SmallProject.class.getSimpleName(), SmallProject.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("SmallProject create failed.", smallProject);
 
         // update employee with small project
@@ -604,11 +644,10 @@ public class ServerEmployeeTest {
 
         // create a large project
         LargeProject largeProject = new LargeProject();
-        largeProject.setId(110);
         largeProject.setName("LargeProject");
         largeProject.setBudget(100000);
 
-        largeProject = RestUtils.restCreate(context, largeProject, LargeProject.class.getSimpleName(), LargeProject.class, DEFAULT_PU, null, mediaType, true);
+        largeProject = RestUtils.restUpdate(context, largeProject, LargeProject.class.getSimpleName(), LargeProject.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("LargeProject create failed.", largeProject);
 
         // update employee with large project
@@ -618,43 +657,45 @@ public class ServerEmployeeTest {
         // read employee and verify that the relationship is set correctly for the projects 
         String employeeUpdated = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
         assertNotNull("Employee read failed.", employeeUpdated);
-        assertTrue(employeeUpdated.contains("SmallProject/109"));
-        assertTrue(employeeUpdated.contains("LargeProject/110"));
+        assertTrue(employeeUpdated.contains("SmallProject/" + smallProject.getId()));
+        assertTrue(employeeUpdated.contains("LargeProject/" + largeProject.getId()));
 
         String expectedEmplWithoutLargeProject = null;
         String expectedEmplWithoutAnyProject = null;
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             expectedEmplWithoutLargeProject = "\"projects\":[{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/SmallProject/109\",\"method\":\"GET\",\"rel\":\"self\"}}]";
+                    + "jpars_employee-static/entity/SmallProject/" + smallProject.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}]";
 
             expectedEmplWithoutAnyProject = ("\"_relationships\":[{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU +
-                    "/entity/Employee/8809/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[],\"phoneNumbers\":[],\"projects\":[]}");
+                    + RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" +
+                    employee.getId() +  "/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() + "/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\""
+                    + RestUtils.getServerURI()  + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU +
+                    "/entity/Employee/" + employee.getId() +
+                    "/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[],\"phoneNumbers\":[],\"projects\":[]}");
         } else {
-            expectedEmplWithoutLargeProject = "<projects><_link href=\"" + RestUtils.getServerURI() + "jpars_employee-static/entity/SmallProject/109\" method=\"GET\" rel=\"self\"/></projects>";
+            expectedEmplWithoutLargeProject = "<projects><_link href=\"" + RestUtils.getServerURI() + "jpars_employee-static/entity/SmallProject/" +
+            		smallProject.getId() + "\" method=\"GET\" rel=\"self\"/></projects>";
 
-            expectedEmplWithoutAnyProject = "<_relationships><_link href=\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/address\" rel=\"address\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/8809/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/8809/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships></employee>";
+            expectedEmplWithoutAnyProject = "<_relationships><_link href=\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" +  employee.getId() +
+                    "/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""  + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/address\" rel=\"address\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
+                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
+                    "/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""
+                    + RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() +  
+                    "/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships></employee>";
         }
 
         if (removeAllProjects) {
@@ -688,15 +729,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    /**
-     * Update employee with manager.
-     *
-     * @param mediaType the media type
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
-     */
-    private void updateEmployeeWithManager(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
+    private void updateEmployeeWithManager(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setId(90888);
@@ -741,15 +774,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(manager.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    /**
-     * Creates the employee with phone numbers.
-     *
-     * @param mediaType the media type
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     * @throws JAXBException the jAXB exception
-     */
-    private void createEmployeeWithPhoneNumbers(MediaType mediaType) throws RestCallFailedException, URISyntaxException, JAXBException {
+    private void createEmployeeWithPhoneNumbers(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
         employee.setId(90777);
@@ -812,14 +837,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(new Integer(90777), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    /**
-     * Update employee with employment period.
-     *
-     * @param mediaType the media type
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     */
-    private void updateEmployeeWithEmploymentPeriod(MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    private void updateEmployeeWithEmploymentPeriod(MediaType mediaType) throws Exception {
         Employee employee = new Employee();
         employee.setId(10234);
         employee.setFirstName("John");
@@ -849,14 +867,7 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(new Integer(10234), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
-    /**
-     * Read employee.
-     *
-     * @param mediaType the media type
-     * @throws RestCallFailedException the rest call failed exception
-     * @throws URISyntaxException the uRI syntax exception
-     */
-    private void readEmployee(MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    private void readEmployee(MediaType mediaType) throws Exception {
         Employee employee = new Employee();
         employee.setId(18234);
         employee.setFirstName("Pat");
@@ -875,7 +886,7 @@ public class ServerEmployeeTest {
         assertNull("Employee could not be deleted", emp);
     }
 
-    private void getEmployeeAddressNamedQueryWithBinaryData(MediaType mediaType) throws IOException, RestCallFailedException, URISyntaxException {
+    private void getEmployeeAddressNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
         EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         address.setAreaPicture(RestUtils.convertImageToByteArray("manhattan.png"));
 
@@ -904,5 +915,123 @@ public class ServerEmployeeTest {
 
         // delete employee address
         RestUtils.restDelete(address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void readEmployeeResponsibilities(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(921025);
+        employee.setFirstName("Johannes");
+        employee.setLastName("Brahms");
+
+        employee.addResponsibility("musician");
+        employee.addResponsibility("architect");
+        employee.addResponsibility("conductor");
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        employee = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
+        assertNotNull(employee.getResponsibilities());
+        assertTrue(employee.getResponsibilities().size() == 3);
+        List<String> responsibilities = employee.getResponsibilities();
+        assertTrue(responsibilities.contains("musician"));
+        assertTrue(responsibilities.contains("architect"));
+        assertTrue(responsibilities.contains("conductor"));
+
+        // read responsibilities
+        String resp = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "responsibilities", DEFAULT_PU, null, mediaType);
+        assertNotNull(resp);
+
+        // delete employee
+        RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void readEmployeePhoneNumbers(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(90777);
+        employee.setFirstName("Miles");
+        employee.setLastName("Davis");
+        EmploymentPeriod employmentPeriod = new EmploymentPeriod();
+        Calendar now = GregorianCalendar.getInstance();
+        employmentPeriod.setStartDate(now);
+        employee.setPeriod(employmentPeriod);
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        // create a cell phone number for this employee
+        PhoneNumber cell = new PhoneNumber();
+        cell.setId(employee.getId());
+        cell.setNumber("123-123 1234");
+        cell.setType("cell");
+        cell.setEmployee(employee);
+        cell = RestUtils.restCreate(context, cell, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", cell);
+        assertTrue("123-123 1234".equals(cell.getNumber()));
+
+        // update employee with cell number
+        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", cell, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
+
+        // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+cell";
+        assertTrue(result.contains(cellLinkHref));
+
+        // create a work phone number
+        PhoneNumber workPhone = new PhoneNumber();
+        workPhone.setId(employee.getId());
+        workPhone.setNumber("987-654 1234");
+        workPhone.setType("work");
+        workPhone.setEmployee(employee);
+        workPhone = RestUtils.restCreate(context, workPhone, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", workPhone);
+        assertTrue("987-654 1234".equals(workPhone.getNumber()));
+
+        // update employee with work phone number
+        result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", workPhone, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
+        // make sure that response from restUpdateBidirectionalRelationship contains work phone number AND cell number in employee object
+        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+work";
+        assertTrue(result.contains(workPhoneLinkHref));
+        assertTrue(result.contains(cellLinkHref));
+
+        // read employee with phone numbers
+        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(90777), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
+
+        // make sure employee has 2 phone numbers 
+        assertTrue(employeeWithPhoneNumbers.contains(workPhoneLinkHref));
+        assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
+
+        String expected = null;
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            expected = "[{\"id\":90777,\"number\":\"123-123 1234\",\"type\":\"cell\",\"_relationships\":[{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+cell/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\""  +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/90777\",\"method\":\"GET\",\"rel\":\"self\"}}},{\"id\":90777,\"number\":\"987-654 1234\",\"type\":\"work\",\"_relationships\":[{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+work/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/90777\",\"method\":\"GET\",\"rel\":\"self\"}}}]";
+        } else {
+            expected = "<List><phoneNumber><id>90777</id><number>123-123 1234</number><type>cell</type><_relationships><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/PhoneNumber/90777+cell/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/Employee/90777\" method=\"GET\" rel=\"self\"/></employee></phoneNumber><phoneNumber><id>90777</id><number>987-654 1234</number><type>work</type><_relationships><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/PhoneNumber/90777+work/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/Employee/90777\" method=\"GET\" rel=\"self\"/></employee></phoneNumber></List>";
+        }
+
+        // read phone numbers
+        String phones = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "phoneNumbers", DEFAULT_PU, null, mediaType);
+        assertNotNull(phones);
+        assertTrue(phones.contains(expected));
+
+        // delete employee (cascade deletes phone numbers)
+        RestUtils.restDelete(new Integer(90777), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 }
