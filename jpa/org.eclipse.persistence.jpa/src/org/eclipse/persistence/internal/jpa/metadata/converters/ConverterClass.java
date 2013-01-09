@@ -23,6 +23,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -85,7 +86,7 @@ public class ConverterClass implements Converter {
     @Override
     public void initialize(DatabaseMapping mapping, Session session) {
         Converter converter;
-        ClassLoader loader = session.getClass().getClassLoader();
+        ClassLoader loader = ConversionManager.getDefaultManager().getLoader();
         
         if (disableConversion) {
             converter = null;

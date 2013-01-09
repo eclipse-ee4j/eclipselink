@@ -36,7 +36,9 @@
  *       - 371950: Metadata caching 
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2012-2.5 Guy Pelletier 
+ *     01/08/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
@@ -235,6 +237,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     // used by deploy method
     protected ConcurrencyManager deployLock = new ConcurrencyManager();
 
+    protected boolean requiresConnection;
+    
     // 266912: Criteria API and Metamodel API (See Ch 5 of the JPA 2.0 Specification)
     /** Reference to the Metamodel for this deployment and session. 
      * Please use the accessor and not the instance variable directly*/
@@ -359,6 +363,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     public EntityManagerSetupImpl(String persistenceUnitUniqueName, String sessionName) {
         this.persistenceUnitUniqueName = persistenceUnitUniqueName;
         this.sessionName = sessionName;
+        this.requiresConnection = true;
     }
     
     public EntityManagerSetupImpl() {
@@ -621,7 +626,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 if (this.isSessionLoadedFromSessionsXML) {
                                     getDatabaseSession().login();
                                 } else {
-                                    login(getDatabaseSession(), deployProperties);
+                                    login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
                                 // Make JTA integration throw JPA exceptions.
                                 if (this.session.hasExternalTransactionController()) {
@@ -2735,6 +2740,15 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }    
     
     /**
+     * INTERNAL:
+     * By default we require a connection to the database. However, when 
+     * generating schema to scripts only, this is not required.
+     */
+    public void setRequiresConnection(boolean requiresConnection) {
+        this.requiresConnection = requiresConnection;
+    }
+    
+    /**
      * Allow customized session event listener to be added into session.
      * The method needs to be called in deploy stage.
      */
@@ -3468,7 +3482,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String NONE = PersistenceUnitProperties.NONE;
             String CREATE = PersistenceUnitProperties.CREATE_ONLY;
             String DROP_AND_CREATE = PersistenceUnitProperties.DROP_AND_CREATE;
-            String DROP = null; // No eclipselink equivalent. (TODO: will add)
+            String DROP = PersistenceUnitProperties.DROP_ONLY;
             String GENERATION_MODE = PersistenceUnitProperties.DDL_GENERATION_MODE;
             String DEFAULT_GENERATION_MODE = PersistenceUnitProperties.DEFAULT_DDL_GENERATION_MODE;
             String DATABASE_GENERATION = PersistenceUnitProperties.DDL_DATABASE_GENERATION;

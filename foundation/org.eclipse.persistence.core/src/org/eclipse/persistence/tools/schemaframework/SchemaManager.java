@@ -10,6 +10,8 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  *     Dies Koper - add support for creating indices on tables
+ *     01/11/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -930,6 +932,29 @@ public class SchemaManager {
         try {
             TableCreator tableCreator = getDefaultTableCreator(generateFKConstraints);
             tableCreator.createTables(this.session, this);
+        } catch (DatabaseException ex) {
+            // Ignore error
+        } finally {
+            getSession().getSessionLog().setShouldLogExceptionStackTrace(shouldLogExceptionStackTrace);
+        }
+        // Reset database change events to new tables.
+        if (this.session.getDatabaseEventListener() != null) {
+            this.session.getDatabaseEventListener().remove(this.session);
+            this.session.getDatabaseEventListener().register(this.session);
+        }
+    }
+    
+    /**
+     * Create the default table schema for the project this session associated with.
+     */
+    public void dropDefaultTables() {
+        // Drop each table w/o throwing exception and/or exit if some don't exist.
+        boolean shouldLogExceptionStackTrace = getSession().getSessionLog().shouldLogExceptionStackTrace();
+        getSession().getSessionLog().setShouldLogExceptionStackTrace(false);
+
+        try {
+            TableCreator tableCreator = getDefaultTableCreator(false);
+            tableCreator.dropTables(this.session, this);
         } catch (DatabaseException ex) {
             // Ignore error
         } finally {

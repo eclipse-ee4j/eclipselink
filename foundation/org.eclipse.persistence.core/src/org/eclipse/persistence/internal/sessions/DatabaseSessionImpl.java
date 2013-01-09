@@ -17,6 +17,8 @@
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/11/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -101,9 +103,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
 
     //Bug#3440544 Used to stop the attempt to login more than once. 
     protected volatile boolean isLoggedIn;
-
-    // By default we should connect.
-    protected boolean shouldConnect = true;
     
     /**
      * INTERNAL:
@@ -139,11 +138,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      */
     public DatabaseEventListener getDatabaseEventListener() {
         return databaseEventListener;
-    }
-    
-    
-    public void setShouldConnect(boolean shouldConnect) {
-        this.shouldConnect = shouldConnect;
     }
     
     /**
@@ -308,9 +302,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Connect the session only.
      */
     public void connect() throws DatabaseException {
-        if (shouldConnect) {
-            getAccessor().connect(getDatasourceLogin(), this);
-        }
+        getAccessor().connect(getDatasourceLogin(), this);
     }
 
     /**
@@ -611,18 +603,11 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     }
 
     /**
-     * PUBLIC:
-     * Connect to the database using the predefined login.
-     * During connection, attempt to auto detect the required database platform.
-     * This method can be used in systems where for ease of use developers have
-     * EclipseLink autodetect the platform.
-     * To be safe, however, the platform should be configured directly.
-     * The login must have been assigned when or after creating the session.
-     *
+     * INTERNAL:
+     * This will attempt to set the login platform from the JPA 2.1 schema 
+     * properties. Returns true if successful, false otherwise.
      */
-    public void loginAndDetectDatasource() throws DatabaseException {
-        preConnectDatasource();
-        
+    protected boolean setSchemaPlatform() {
         if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
             String vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
             
@@ -637,45 +622,65 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             getLogin().setPlatformClassName(DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog()));
-        } else {
-            if (shouldConnect) {
-                Connection conn = null;
-                try {
-                    conn = (Connection)getReadLogin().connectToDatasource(null, this);
-                    // null out the cached platform because the platform on the login will be changed by the following line of code
-                    this.platform = null;
-                    String platformName = null;
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * PUBLIC:
+     * Connect to the database using the predefined login.
+     * During connection, attempt to auto detect the required database platform.
+     * This method can be used in systems where for ease of use developers have
+     * EclipseLink autodetect the platform.
+     * To be safe, however, the platform should be configured directly.
+     * The login must have been assigned when or after creating the session.
+     *
+     */
+    public void loginAndDetectDatasource() throws DatabaseException {
+        preConnectDatasource();
+        
+        // Try to set the platform from JPA 2.1 schema properties first before
+        // attempting a detection.
+        if (! setSchemaPlatform()) {
+            Connection conn = null;
+            try {
+                conn = (Connection)getReadLogin().connectToDatasource(null, this);
+                // null out the cached platform because the platform on the login will be changed by the following line of code
+                this.platform = null;
+                String platformName = null;
                 
-                    try {
-                        String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
-                        platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
-                        getLogin().setPlatformClassName(platformName);
-                    } catch (EclipseLinkException classNotFound) {
-                        if (platformName.indexOf("Oracle") != -1) {
-                            // If we are running against Oracle, it is possible that we are running in an environment where
-                            // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
-                            getLogin().setPlatformClassName(OraclePlatform.class.getName());
-                        } else {
-                            throw classNotFound;
-                        }
+                try {
+                    String vendorNameAndVersion = conn.getMetaData().getDatabaseProductName() + conn.getMetaData().getDatabaseMajorVersion();
+                    platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
+                    getLogin().setPlatformClassName(platformName);
+                } catch (EclipseLinkException classNotFound) {
+                    if (platformName.indexOf("Oracle") != -1) {
+                        // If we are running against Oracle, it is possible that we are running in an environment where
+                        // the OracleXPlatform class can not be loaded. Try using OraclePlatform class before giving up
+                        getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                    } else {
+                        throw classNotFound;
                     }
-                } catch (SQLException ex) {
-                    DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
-                    // Typically exception would occur if user did not provide correct connection
-                    // parameters. The root cause of exception should be propagated up
-                    dbEx.initCause(ex);
-                    throw dbEx;
-                } finally {
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException ex) {
-                            DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
-                            // Typically exception would occur if user did not provide correct connection
-                            // parameters. The root cause of exception should be propagated up
-                            dbEx.initCause(ex);
-                            throw dbEx;
-                        }
+                }
+            } catch (SQLException ex) {
+                DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
+                // Typically exception would occur if user did not provide correct connection
+                // parameters. The root cause of exception should be propagated up
+                dbEx.initCause(ex);
+                throw dbEx;
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException ex) {
+                        DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
+                        // Typically exception would occur if user did not provide correct connection
+                        // parameters. The root cause of exception should be propagated up
+                        dbEx.initCause(ex);
+                        throw dbEx;
                     }
                 }
             }
@@ -697,6 +702,24 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         connect();
         postConnectDatasource();
     }
+    
+    /**
+     * PUBLIC:
+     * Issue any pre connect and post connect without an actual connection to 
+     * the database. Descriptors are initialized in postConnectDatasource and
+     * are used in DDL generation. This will look to set the schema platform
+     * via the JPA 2.1 properties before DDL generation.
+     * 
+     * The login must have been assigned when or after creating the session.
+     *
+     * @see #login(Login)
+     */
+    public void loginNoConnect() throws DatabaseException {
+        preConnectDatasource();
+        setSchemaPlatform();
+        postConnectDatasource();
+    }
+    
     /**
      * INTERNAL:
      * This method includes all of the code that is issued before the datasource

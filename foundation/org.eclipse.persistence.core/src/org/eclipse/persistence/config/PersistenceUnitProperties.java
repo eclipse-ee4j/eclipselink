@@ -19,7 +19,9 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2012-2.5 Guy Pelletier 
+ *     01/08/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.config;
@@ -1951,6 +1953,16 @@ public class PersistenceUnitProperties {
      * @see #DDL_GENERATION
      */
     public static final String CREATE_ONLY = "create-tables";
+    
+    /**
+     * The parameter value <code>"drop-tables"</code>
+     * 
+     * <p>For use with the <code>"eclipselink.ddl-generation"</code> property.</p>
+     * <p>Specifies that database tables should be dropped only.</p>
+     * 
+     * @see #DDL_GENERATION
+     */
+    public static final String DROP_ONLY = "drop-tables";
     
     /**
      * The parameter value <code>"drop-and-create-tables"</code>

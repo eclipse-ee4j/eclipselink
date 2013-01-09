@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/11/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.server;
 
@@ -480,17 +482,15 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     @Override
     public void connect() {
-        if (shouldConnect) {
-            // make sure pools correspond to their logins
-            updateStandardConnectionPools();
-            // Configure the read pool
-            this.readConnectionPool.startUp();
-            setAccessor(allocateReadConnection());
-            releaseReadConnection(getAccessor());
+        // make sure pools correspond to their logins
+        updateStandardConnectionPools();
+        // Configure the read pool
+        this.readConnectionPool.startUp();
+        setAccessor(allocateReadConnection());
+        releaseReadConnection(getAccessor());
     
-            for (ConnectionPool pool : getConnectionPools().values()) {
-                pool.startUp();
-            }
+        for (ConnectionPool pool : getConnectionPools().values()) {
+            pool.startUp();
         }
     }
 

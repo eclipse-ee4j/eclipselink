@@ -11,7 +11,9 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/24/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2012-2.5 Guy Pelletier 
+ *     01/08/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
@@ -21,16 +23,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+
+import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
@@ -106,7 +111,9 @@ public class EntityManagerFactoryProvider {
     protected static void generateDefaultTables(SchemaManager mgr, TableCreationType ddlType) {          
         if (ddlType == null || ddlType == TableCreationType.CREATE) {
             mgr.createDefaultTables(true); 
-        } else if (ddlType == TableCreationType.DROP || ddlType == TableCreationType.DROP_AND_CREATE) {
+        } else if (ddlType == TableCreationType.DROP) {
+            mgr.dropDefaultTables();
+        } else if  (ddlType == TableCreationType.DROP_AND_CREATE) {
             mgr.replaceDefaultTables(true, true); 
         } else if (ddlType == TableCreationType.EXTEND) { 
             mgr.extendDefaultTables(true);
@@ -218,26 +225,23 @@ public class EntityManagerFactoryProvider {
      * @param session The session to login to.
      * @param properties User specified properties for the persistence unit
      */
-    protected static void login(DatabaseSessionImpl session, Map properties) {
+    protected static void login(DatabaseSessionImpl session, Map properties, boolean requiresConnection) {
         String ddlGenerationTarget = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, properties);
         
-        if (ddlGenerationTarget != null) {
-            if (ddlGenerationTarget.equals(PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION) && properties.containsKey("internal-provider-generate-schema")) {
-                // Avoid an actual connection if we don't need one.
-                // If they provide us with a user name and password we could connect.
-                // At minimum if they provide the platform we'll generate the
-                // DDL as if we had logged in.
-                session.setShouldConnect(false);
-            }
-        }
-        
-        String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
-        if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
-            // if user has not specified a database platform, try to detect. 
-            // Will also look for jpa 2.1 properties.
-            session.loginAndDetectDatasource();
+        // Avoid an actual connection if we don't need one. If the user provides 
+        // us with a user name and password we could connect. At minimum if they 
+        // provide the platform we'll generate the DDL as if we had connected.
+        if (ddlGenerationTarget != null && ddlGenerationTarget.equals(PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION) && ! requiresConnection) {
+            session.loginNoConnect();
         } else {
-            session.login();
+            String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
+            if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
+                // if user has not specified a database platform, try to detect. 
+                // Will also look for jpa 2.1 schema properties.
+                session.loginAndDetectDatasource();
+            } else {
+                session.login();
+            }
         }
     }
     
@@ -400,7 +404,6 @@ public class EntityManagerFactoryProvider {
      * This method will read SQL from a reader or URL and send it through
      * to the database. This could open up the database to SQL injection if
      * not careful.
-     * TODO: clean up the runtime exceptions.
      */
     protected static void writeDDLToDatabase(DatabaseSessionImpl session, Object source, ClassLoader loader) {
         if (source != null) {
@@ -410,16 +413,15 @@ public class EntityManagerFactoryProvider {
                 if (source instanceof Reader) {
                     reader = (Reader) source;
                 } else {
-                    Enumeration<URL> sourceURLs = loader.getResources((String) source);
+                    URL sourceURL = loader.getResource((String) source);
                     
-                    if (sourceURLs.hasMoreElements()) {
-                        URL url = sourceURLs.nextElement();
-                        java.net.URLConnection cnx1 = url.openConnection();
-                        // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
-                        cnx1.setUseCaches(false);
-                        reader = new InputStreamReader(cnx1.getInputStream(), "UTF-8");
+                    if (sourceURL == null) {
+                        throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{source}));
                     } else {
-                        throw new RuntimeException("Source not found: " + source);
+                        URLConnection connection = sourceURL.openConnection();
+                        // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
+                        connection.setUseCaches(false);
+                        reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
                     }
                 }
             
@@ -441,10 +443,12 @@ public class EntityManagerFactoryProvider {
                             aChar = (char) data;
                         }
 
+                        String sqlString = sqlBuffer.toString();
                         try {
-                            session.executeNonSelectingSQL(sqlBuffer.toString());
+                            session.executeNonSelectingSQL(sqlString);
                         } catch (DatabaseException e) {
-                            // ignore any database exceptions and just keep chugging through. 
+                            // TODO: ignore for now, although the spec seems to want an exception??
+                            //throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-sql-exception", new Object[]{sqlString, source}), e); 
                         }
                             
                         data = reader.read();
@@ -453,7 +457,7 @@ public class EntityManagerFactoryProvider {
                     reader.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException("IOException caught reading DDL source: " + source + "[" + e + "]");
+                throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-io-exception", new Object[]{source}), e);
             } finally {
                 if (reader != null) {
                     try {
@@ -482,7 +486,7 @@ public class EntityManagerFactoryProvider {
         mgr.setCreateSQLFiles(false);
         // When running in the application server environment always ensure that
         // we write out both the drop and create table files.
-        generateDefaultTables(mgr, TableCreationType.DROP);
+        generateDefaultTables(mgr, TableCreationType.DROP_AND_CREATE);
         mgr.closeDDLWriter();
     }    
 }

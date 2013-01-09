@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware - initial implementation as part of extensibility feature
+ *     01/11/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -59,7 +61,6 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  *
  */
 public class EntityManagerFactoryImpl implements EntityManagerFactory, PersistenceUnitUtil, JpaEntityManagerFactory {
-    
     protected EntityManagerFactoryDelegate delegate;
     
     
@@ -295,27 +296,48 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     public EntityManager createEntityManager(Map properties) {
         return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
     }
-
-    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return createEntityManagerImpl(map, synchronizationType);
+    
+    /**
+     * Returns an EntityManager for this deployment. False indicates
+     * a connection is not required when an entity manager setup is used.
+     * E.g. when coming from generateSchema for SCRIPTS only.
+     */
+    public EntityManager createEntityManager(Map properties, boolean requiresConnection) {
+        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED, requiresConnection);
     }
 
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
         return createEntityManagerImpl(null, synchronizationType);
     }
-
+    
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        return createEntityManagerImpl(map, synchronizationType);
+    }
+    
     protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
+        return createEntityManagerImpl(properties, syncType, true);
+    }
+    
+    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType, boolean requiresConnection) {
         EntityManagerSetupImpl setupImpl = delegate.getSetupImpl();
-        if (setupImpl != null && setupImpl.isMetadataExpired()){
-            String sessionName = setupImpl.getSessionName();
-            EntityManagerSetupImpl storedImpl = null;
-            synchronized (EntityManagerFactoryProvider.emSetupImpls){
-                storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
-            }
-            if (storedImpl != null){
-                delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+        
+        if (setupImpl != null) {
+            // Set the requires connection flag before getting the session. When
+            // generateSchema is called to SCRIPT only, no connection is required.
+            setupImpl.setRequiresConnection(requiresConnection);
+            
+            if (setupImpl.isMetadataExpired()) {
+                String sessionName = setupImpl.getSessionName();
+                EntityManagerSetupImpl storedImpl = null;
+                synchronized (EntityManagerFactoryProvider.emSetupImpls){
+                    storedImpl = EntityManagerFactoryProvider.emSetupImpls.get(sessionName);
+                }
+                if (storedImpl != null) {
+                    delegate = new EntityManagerFactoryDelegate(storedImpl, delegate.getProperties(), this);
+                }
             }
         }
+        
         return delegate.createEntityManagerImpl(properties, syncType);
     }
 
@@ -596,7 +618,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     public boolean shouldOrderUpdates() {
         return delegate.shouldOrderUpdates();
     }
-
+    
     /**
      * ADVANCED:
      * Set updates should be ordered by primary key to avoid possible database deadlocks.
