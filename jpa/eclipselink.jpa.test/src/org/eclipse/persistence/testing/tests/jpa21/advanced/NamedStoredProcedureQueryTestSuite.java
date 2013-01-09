@@ -632,6 +632,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Byte) {
+                    int value = ((Byte) outputParamValueFromName).intValue();
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + value, value == numberOfEmployes);
                 } else {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
@@ -794,6 +797,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Byte) {                    
+                    int value = ((Byte) outputParamValueFromName).intValue();
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + value, value == numberOfEmployes);
                 } else {
                     assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
                 }
