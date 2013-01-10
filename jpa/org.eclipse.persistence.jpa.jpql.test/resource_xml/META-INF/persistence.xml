@@ -18,6 +18,7 @@
 		<class>jpql.query.Customer</class>
 		<class>jpql.query.Dept</class>
 		<class>jpql.query.Employee</class>
+		<class>jpql.query.Employee$EmbeddedAddress</class>
 		<class>jpql.query.Home</class>
 		<class>jpql.query.Phone</class>
 		<class>jpql.query.Product</class>

@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class NullComparisonExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NULL";
 
@@ -33,7 +34,7 @@ public final class NullComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT NULL";
 
@@ -47,7 +48,7 @@ public final class NullComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE IS NULL";
 
@@ -61,7 +62,7 @@ public final class NullComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE IS NULL HAVING e.adult";
 

@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * @version 2.5
@@ -29,7 +30,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		if (isEclipseLink2_0()) {
 			return;
@@ -50,7 +51,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		if (isEclipseLink2_0()) {
 			return;
@@ -68,7 +69,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age != 'JPQL'";
 
@@ -82,7 +83,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age != 'JPQL' GROUP BY e.name";
 
@@ -97,7 +98,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		if (isEclipseLink2_0()) {
 			return;
@@ -116,7 +117,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		if (isEclipseLink2_0()) {
 			return;

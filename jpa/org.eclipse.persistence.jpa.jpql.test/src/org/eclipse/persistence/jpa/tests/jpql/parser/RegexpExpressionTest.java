@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * @version 2.4
@@ -26,7 +26,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*
 public final class RegexpExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		// Select e from Employee e where e.firstName regexp '^B.*'
 
@@ -40,7 +40,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where regexp";
 
@@ -54,7 +54,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where regexp 'value'";
 
@@ -68,7 +68,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp";
 
@@ -82,7 +82,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp ";
 
@@ -99,7 +99,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp order by e.name";
 
@@ -117,7 +117,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp 2 + 2";
 
@@ -131,7 +131,7 @@ public final class RegexpExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() throws Exception {
+	public void test_JPQLQuery_08() throws Exception {
 
 		String jpqlQuery = "Select e from Employee e where e.firstName regexp 2 + 2 order by e.name";
 

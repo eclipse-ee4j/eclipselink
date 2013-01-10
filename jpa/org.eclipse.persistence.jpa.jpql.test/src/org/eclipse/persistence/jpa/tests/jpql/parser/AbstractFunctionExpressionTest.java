@@ -15,7 +15,15 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.FunctionExpression FunctionExpression}.
+ *
+ * @version 2.5
+ * @since 2.4
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
@@ -74,7 +82,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -92,7 +100,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String identifier = identifier(index);
 		String variable = identifier.toLowerCase();
@@ -110,7 +118,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -133,7 +141,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -156,7 +164,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -179,7 +187,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -202,7 +210,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -225,7 +233,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -248,7 +256,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String identifier = identifier(index);
 		String functionName = ExpressionTools.EMPTY_STRING;
@@ -271,7 +279,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() {
+	public void test_JPQLQuery_10() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -294,7 +302,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_11() {
+	public void test_JPQLQuery_11() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -317,7 +325,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_12() {
+	public void test_JPQLQuery_12() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -340,7 +348,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_13() {
+	public void test_JPQLQuery_13() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -363,7 +371,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_14() {
+	public void test_JPQLQuery_14() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -391,7 +399,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_15() {
+	public void test_JPQLQuery_15() {
 
 		String identifier = identifier(index);
 		String functionName1 = functionName(index++);
@@ -416,7 +424,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_16() {
+	public void test_JPQLQuery_16() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);
@@ -446,7 +454,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_17() {
+	public void test_JPQLQuery_17() {
 
 		String identifier = identifier(index);
 		String functionName = functionName(index);

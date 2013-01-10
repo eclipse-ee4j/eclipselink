@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class DateTimeTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate < CURRENT_DATE";
 
@@ -33,7 +34,7 @@ public final class DateTimeTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM Employee e WHERE CURRENT_TIME > e.startDate";
 
@@ -47,7 +48,7 @@ public final class DateTimeTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate + 45 = CURRENT_TIMESTAMP";
 
@@ -61,7 +62,7 @@ public final class DateTimeTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT e " +
 		               "FROM Employee e " +
@@ -83,7 +84,7 @@ public final class DateTimeTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT o " +
 		               "FROM Customer c JOIN c.orders o " +

@@ -18,6 +18,6 @@ import org.junit.Test;
 public final class HavingClauseTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 	}
 }

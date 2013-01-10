@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class CollectionMemberDeclarationTest extends JPQLParserTest {
@@ -27,7 +28,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = " SELECT e  FROM  IN ( e.address.street  )  AS emp ";
 
@@ -42,7 +43,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM IN(e.address.street) emp";
 
@@ -55,7 +56,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT e FROM IN(e.address.street) emp, IN(e.name) AS name";
 
@@ -71,7 +72,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT e FROM IN";
 
@@ -88,7 +89,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT e FROM IN(";
 		CollectionMemberDeclarationTester in = fromIn(nullExpression(), nullExpression());
@@ -103,7 +104,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String query = "SELECT e FROM IN()";
 
@@ -116,7 +117,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String query = "SELECT e FROM IN() AS";
 
@@ -132,7 +133,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String query = "SELECT e FROM IN AS";
 
@@ -152,7 +153,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String query = "SELECT e FROM IN( AS";
 
@@ -171,7 +172,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() {
+	public void test_JPQLQuery_10() {
 
 		String query = "SELECT e FROM IN) AS";
 
@@ -190,7 +191,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_11() {
+	public void test_JPQLQuery_11() {
 
 		String query = "SELECT e FROM IN AS employees";
 
@@ -210,7 +211,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_12() {
+	public void test_JPQLQuery_12() {
 
 		String query = "SELECT e FROM IN() AS ";
 
@@ -229,7 +230,7 @@ public final class CollectionMemberDeclarationTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_14() {
+	public void test_JPQLQuery_14() {
 
 		String query = "SELECT a FROM Address a WHERE EXISTS (SELECT e FROM Employee e, IN a.customerList)";
 

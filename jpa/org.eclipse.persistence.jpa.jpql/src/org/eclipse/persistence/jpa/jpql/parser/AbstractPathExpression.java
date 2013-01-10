@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,17 +29,16 @@ import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
  * @see CollectionValuedPathExpression
  * @see IdentificationVariable
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
 public abstract class AbstractPathExpression extends AbstractExpression {
 
 	/**
 	 * Determines whether the path ends with a dot or not.
 	 */
-	private Boolean endsWithDot;
+	private boolean endsWithDot;
 
 	/**
 	 * The identification variable that starts the path expression, which can be a sample {@link
@@ -64,22 +63,16 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	private boolean startsWithDot;
 
 	/**
-	 * Determines whether the identification variable is virtual, meaning it's not part of the query
-	 * but is required for proper navigability.
-	 */
-	private boolean virtualIdentificationVariable;
-
-	/**
 	 * Creates a new <code>AbstractPathExpression</code>.
 	 *
 	 * @param parent The parent of this expression
-	 * @param expression The identification variable that was already parsed, which means the
-	 * beginning of the parsing should start with a dot
+	 * @param identificationVariable The identification variable that was already parsed, which means
+	 * the beginning of the parsing should start with a dot
 	 */
-	protected AbstractPathExpression(AbstractExpression parent, AbstractExpression expression) {
+	protected AbstractPathExpression(AbstractExpression parent, AbstractExpression identificationVariable) {
 		super(parent);
 		this.pathSize = -1;
-		this.identificationVariable = expression;
+		this.identificationVariable = identificationVariable;
 		this.identificationVariable.setParent(this);
 	}
 
@@ -87,17 +80,17 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * Creates a new <code>AbstractPathExpression</code>.
 	 *
 	 * @param parent The parent of this expression
-	 * @param expression The identification variable that was already parsed, which means the
-	 * beginning of the parsing should start with a dot
+	 * @param identificationVariable The identification variable that was already parsed, which means
+	 * the beginning of the parsing should start with a dot
 	 * @param paths The path expression that is following the identification variable
 	 */
 	public AbstractPathExpression(AbstractExpression parent,
-	                              AbstractExpression expression,
+	                              AbstractExpression identificationVariable,
 	                              String paths) {
 
 		super(parent, paths);
 		this.pathSize = -1;
-		this.identificationVariable = expression;
+		this.identificationVariable = identificationVariable;
 		this.identificationVariable.setParent(this);
 	}
 
@@ -133,66 +126,96 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 */
 	@Override
 	protected final void addOrderedChildrenTo(List<Expression> children) {
+
 		checkPaths();
-		children.add(identificationVariable);
+
+		if (!hasVirtualIdentificationVariable()) {
+			children.add(identificationVariable);
+		}
+
 		children.add(buildStringExpression(getText()));
 	}
 
 	private void checkPaths() {
 
-		if (paths == null) {
+		// Nothing to do
+		if (paths != null) {
+			return;
+		}
 
-			paths = new ArrayList<String>();
-			String text = getText();
-			StringBuilder word = new StringBuilder();
-			boolean hasDot = text.indexOf(DOT) > -1;
+		paths = new ArrayList<String>();
+		String text = getText();
+		char character = '\0';
+		StringBuilder singlePath = new StringBuilder();
 
-			if ((identificationVariable != null) && !virtualIdentificationVariable) {
-				paths.add(identificationVariable.toParsedText());
-			}
+		// Extract each path from the text
+		for (int index = 0, count = text.length(); index < count; index++) {
 
-			// Extract each path from the word
-			for (int index = 0, count = text.length(); index < count; index++) {
-				char character = text.charAt(index);
+			character = text.charAt(index);
 
-				// Skip the first '.' so an empty path isn't added
-				if ((index == 0)       &&
-				    (character == DOT) &&
-				    (identificationVariable != null)) {
+			// Make sure the identification variable is handled
+			// correctly if it was passed during instantiation
+			if (index == 0) {
 
-					continue;
-				}
+				// No identification variable was passed during instantiation
+				if (identificationVariable == null) {
 
-				// Append the character and continue to the next character
-				if (character != DOT) {
-					word.append(character);
-					continue;
-				}
+					// The path starts with '.'
+					startsWithDot = (character == DOT);
 
-				if (hasDot && (identificationVariable == null)) {
-					if (word.length() == 0) {
-						identificationVariable = buildNullExpression();
-					}
-					else {
-						identificationVariable = new IdentificationVariable(this, word.toString());
+					// Start appending to the current single path
+					if (!startsWithDot) {
+						singlePath.append(character);
 					}
 				}
+				// The identification variable was passed during instantiation,
+				// add its parsed text as a path, it's assume the character is a dot
+				else if (!identificationVariable.isNull() &&
+				         !identificationVariable.isVirtual()) {
 
-				paths.add(word.toString());
-				word.delete(0, word.length());
-			}
-
-			if (identificationVariable == null) {
-				if (hasDot) {
-					identificationVariable = new IdentificationVariable(this, word.toString());
+					paths.add(identificationVariable.toParsedText());
 				}
+				// Start appending to the current single path
 				else {
-					identificationVariable = buildNullExpression();
+					singlePath.append(character);
 				}
 			}
+			else {
 
-			if (word.length() > 0) {
-				paths.add(word.toString());
+				// Append the character and continue
+				if (character != DOT) {
+					singlePath.append(character);
+				}
+				// Scanning a '.'
+				else {
+
+					// Store the current single path
+					paths.add(singlePath.toString());
+
+					// Clean the buffer
+					singlePath.setLength(0);
+				}
+			}
+		}
+
+		// Check if the last character is a '.'
+		endsWithDot = (character == DOT);
+
+		// Make sure the last path is added to the list
+		if (singlePath.length() > 0) {
+			paths.add(singlePath.toString());
+		}
+
+		// Cache the size
+		pathSize = paths.size();
+
+		// The identification variable can never be null
+		if (identificationVariable == null) {
+			if (startsWithDot || !endsWithDot && (pathSize == 1)) {
+				identificationVariable = buildNullExpression();
+			}
+			else {
+				identificationVariable = new IdentificationVariable(this, paths.get(0));
 			}
 		}
 	}
@@ -203,10 +226,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * @return <code>true</code> if the path ends with a dot; <code>false</code> otherwise
 	 */
 	public final boolean endsWithDot() {
-		if (endsWithDot == null) {
-			String text = getText();
-			endsWithDot = text.charAt(text.length() - 1) == DOT;
-		}
+		checkPaths();
 		return endsWithDot;
 	}
 
@@ -244,14 +264,15 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether this identification variable is virtual, meaning it's not part of the query
-	 * but is required for proper navigability.
+	 * Determines whether the path's identification variable is virtual or not, meaning it's not part
+	 * of the query but is required for proper navigability.
 	 *
 	 * @return <code>true</code> if this identification variable was virtually created to fully
 	 * qualify path expression; <code>false</code> if it was parsed
 	 */
 	public final boolean hasVirtualIdentificationVariable() {
-		return virtualIdentificationVariable;
+		checkPaths();
+		return identificationVariable.isVirtual();
 	}
 
 	/**
@@ -259,15 +280,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 */
 	@Override
 	protected final void parse(WordParser wordParser, boolean tolerant) {
-
-		String word = getText();
-
-		if (!hasIdentificationVariable()) {
-			startsWithDot = word.startsWith(".");
-		}
-
-		// A null WordParser happens in a unique case
-		wordParser.moveForward(word);
+		wordParser.moveForward(getText());
 	}
 
 	/**
@@ -286,10 +299,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * @return The number of segments
 	 */
 	public final int pathSize() {
-		if (pathSize == -1) {
-			checkPaths();
-			pathSize = paths.size();
-		}
+		checkPaths();
 		return pathSize;
 	}
 
@@ -297,13 +307,10 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * Sets a virtual identification variable because the abstract schema name was parsed without
 	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
 	 *
-	 * @param variableName The identification variable that was generated to identify the abstract
-	 * schema name
+	 * @param variableName The identification variable that was generated to identify the "root" object
 	 */
 	protected final void setVirtualIdentificationVariable(String variableName) {
 
-		paths = null;
-		virtualIdentificationVariable = true;
 		identificationVariable = new IdentificationVariable(this, variableName, true);
 
 		rebuildActualText();
@@ -349,28 +356,29 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	@Override
 	protected final void toParsedText(StringBuilder writer, boolean actual) {
 
-		int pathSize = pathSize();
+		checkPaths();
 
 		if (startsWithDot) {
 			writer.append(DOT);
 		}
-		else if (!virtualIdentificationVariable) {
-			identificationVariable.toParsedText(writer, actual);
-			if (pathSize > 1) {
+
+		for (int index = 0, count = pathSize(); index < count; index++) {
+
+			if (index > 0) {
 				writer.append(DOT);
+			}
+
+			// Make sure to use the identification variable for proper formatting
+			if ((index == 0) && hasIdentificationVariable()) {
+				identificationVariable.toParsedText(writer, actual);
+			}
+			// Append a single path
+			else {
+				writer.append(paths.get(index));
 			}
 		}
 
-		for (int index = (virtualIdentificationVariable ? 0 : 1); index < pathSize; index++) {
-
-			writer.append(paths.get(index));
-
-			if (index < pathSize - 1) {
-				writer.append(DOT);
-			}
-		}
-
-		if (endsWithDot()) {
+		if (endsWithDot) {
 			writer.append(DOT);
 		}
 	}

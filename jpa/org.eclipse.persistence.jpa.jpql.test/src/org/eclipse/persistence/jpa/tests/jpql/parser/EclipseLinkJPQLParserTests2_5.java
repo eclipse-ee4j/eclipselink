@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_5.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * This test suite contains a series of unit-tests that test parsing JPQL queries that follows the

@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class OrderByClauseTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String jpqlQuery = "SELECT ORDERe FROM Ordering ORDERe ORDER BY ORDERe.name";
 
@@ -33,7 +34,7 @@ public final class OrderByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_ASC() {
+	public void test_JPQLQuery_ASC() {
 
 		String jpqlQuery = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC";
 
@@ -47,7 +48,7 @@ public final class OrderByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Default() {
+	public void test_JPQLQuery_Default() {
 
 		String jpqlQuery = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name";
 
@@ -61,7 +62,7 @@ public final class OrderByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_DESC() {
+	public void test_JPQLQuery_DESC() {
 
 		String jpqlQuery = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name DESC";
 
@@ -75,7 +76,7 @@ public final class OrderByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_MultipleValue() {
+	public void test_JPQLQuery_MultipleValue() {
 
 		String jpqlQuery = "SELECT e, f, g FROM Employee e, Manager g ORDER BY e.name ASC, f.address DESC, g.phone";
 

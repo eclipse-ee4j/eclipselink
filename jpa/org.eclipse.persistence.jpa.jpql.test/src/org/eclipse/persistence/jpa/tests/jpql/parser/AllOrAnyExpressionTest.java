@@ -14,12 +14,20 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression AllOrAnyExpression}.
+ *
+ * @version 2.5
+ * @since 2.3
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public final class AllOrAnyExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_All_1() {
+	public void test_JPQLQuery_All_1() {
 		String query = "SELECT e FROM Employee e WHERE ALL (SELECT m FROM Manager m)";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -37,7 +45,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_All_2() {
+	public void test_JPQLQuery_All_2() {
 		String query = "SELECT e FROM Employee e WHERE ALL";
 
 		AllOrAnyExpressionTester allExpression = all(nullExpression());
@@ -54,7 +62,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_All_3() {
+	public void test_JPQLQuery_All_3() {
 		String query = "SELECT e FROM Employee e WHERE ALL(";
 
 		AllOrAnyExpressionTester allExpression = all(nullExpression());
@@ -70,7 +78,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_All_4() {
+	public void test_JPQLQuery_All_4() {
 		String query = "SELECT e FROM Employee e WHERE ALL()";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -83,7 +91,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_All_5() {
+	public void test_JPQLQuery_All_5() {
 		String query = "SELECT e FROM Employee e WHERE ALL GROUP BY e.name";
 
 		AllOrAnyExpressionTester allExpression = all(nullExpression());
@@ -101,7 +109,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_All_6() {
+	public void test_JPQLQuery_All_6() {
 		String query = "SELECT e FROM Employee e WHERE ALL( GROUP BY e.name";
 
 		AllOrAnyExpressionTester allExpression = all(nullExpression());
@@ -118,7 +126,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_1() {
+	public void test_JPQLQuery_Any_1() {
 		String query = "SELECT e FROM Employee e WHERE ANY (SELECT m FROM Manager m)";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -136,7 +144,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_2() {
+	public void test_JPQLQuery_Any_2() {
 		String query = "SELECT e FROM Employee e WHERE ANY";
 
 		AllOrAnyExpressionTester anyExpression = any(nullExpression());
@@ -153,7 +161,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_3() {
+	public void test_JPQLQuery_Any_3() {
 		String query = "SELECT e FROM Employee e WHERE ANY(";
 
 		AllOrAnyExpressionTester anyExpression = any(nullExpression());
@@ -169,7 +177,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_4() {
+	public void test_JPQLQuery_Any_4() {
 		String query = "SELECT e FROM Employee e WHERE ANY()";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -182,7 +190,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_5() {
+	public void test_JPQLQuery_Any_5() {
 		String query = "SELECT e FROM Employee e WHERE ANY GROUP BY e.name";
 
 		AllOrAnyExpressionTester anyExpression = any(nullExpression());
@@ -200,7 +208,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Any_6() {
+	public void test_JPQLQuery_Any_6() {
 		String query = "SELECT e FROM Employee e WHERE ANY( GROUP BY e.name";
 
 		AllOrAnyExpressionTester anyExpression = any(nullExpression());
@@ -217,7 +225,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_1() {
+	public void test_JPQLQuery_Some_1() {
 		String query = "SELECT e FROM Employee e WHERE SOME (SELECT m FROM Manager m)";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -235,7 +243,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_2() {
+	public void test_JPQLQuery_Some_2() {
 		String query = "SELECT e FROM Employee e WHERE SOME";
 
 		AllOrAnyExpressionTester someExpression = some(nullExpression());
@@ -252,7 +260,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_3() {
+	public void test_JPQLQuery_Some_3() {
 		String query = "SELECT e FROM Employee e WHERE SOME(";
 
 		AllOrAnyExpressionTester someExpression = some(nullExpression());
@@ -268,7 +276,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_4() {
+	public void test_JPQLQuery_Some_4() {
 		String query = "SELECT e FROM Employee e WHERE SOME()";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -281,7 +289,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_5() {
+	public void test_JPQLQuery_Some_5() {
 		String query = "SELECT e FROM Employee e WHERE SOME GROUP BY e.name";
 
 		AllOrAnyExpressionTester someExpression = some(nullExpression());
@@ -299,7 +307,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Some_6() {
+	public void test_JPQLQuery_Some_6() {
 		String query = "SELECT e FROM Employee e WHERE SOME( GROUP BY e.name";
 
 		AllOrAnyExpressionTester someExpression = some(nullExpression());

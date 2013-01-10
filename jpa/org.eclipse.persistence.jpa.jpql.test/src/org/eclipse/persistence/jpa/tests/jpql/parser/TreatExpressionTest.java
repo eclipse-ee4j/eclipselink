@@ -15,15 +15,15 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_1.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @UniqueSignature
 @SuppressWarnings("nls")
 public final class TreatExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		// Select e
 		// From Employee e Join TREAT(e.projects AS LargeProject) lp
@@ -39,7 +39,7 @@ public final class TreatExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		// Select e
 		// From Employee e Join TREAT(e.projects LargeProject) lp

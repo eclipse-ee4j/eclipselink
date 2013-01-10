@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class NullIfExpressionTest extends JPQLParserTest {
@@ -26,7 +27,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_1() {
+	public void test_JPQLQuery_1() {
 		String query = "SELECT NULLIF('JPQL', 4 + e.age) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement
@@ -39,7 +40,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_2() {
+	public void test_JPQLQuery_2() {
 		String query = "SELECT NULLIF() FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -56,7 +57,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_3() {
+	public void test_JPQLQuery_3() {
 		String query = "SELECT NULLIF(,) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -73,7 +74,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_4() {
+	public void test_JPQLQuery_4() {
 		String query = "SELECT NULLIF FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -92,7 +93,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_5() {
+	public void test_JPQLQuery_5() {
 		String query = "SELECT NULLIF( FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -111,7 +112,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_6() {
+	public void test_JPQLQuery_6() {
 		String query = "SELECT NULLIF) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(nullExpression(), nullExpression());
@@ -130,7 +131,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_7() {
+	public void test_JPQLQuery_7() {
 		String query = "SELECT NULLIF(e.name) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
@@ -147,7 +148,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_8() {
+	public void test_JPQLQuery_8() {
 		String query = "SELECT NULLIF(e.name,) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());
@@ -164,7 +165,7 @@ public final class NullIfExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_9() {
+	public void test_JPQLQuery_9() {
 		String query = "SELECT NULLIF(e.name, ) FROM Employee e";
 
 		NullIfExpressionTester nullIf = nullIf(path("e.name"), nullExpression());

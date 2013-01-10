@@ -14,11 +14,12 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class TrimExpressionTest extends JPQLParserTest {
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(e.name)";
 
@@ -32,7 +33,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING e.name)";
 
@@ -46,7 +47,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(BOTH e.name)";
 
@@ -60,7 +61,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(LEADING FROM e.name)";
 
@@ -74,7 +75,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(TRAILING FROM e.name)";
 
@@ -88,7 +89,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM('J' FROM e.name)";
 
@@ -102,7 +103,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(BOTH 'J' FROM e.name)";
 
@@ -116,7 +117,7 @@ public final class TrimExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String query = "SELECT p FROM Person p where 'a' = trim(trim('a'))";
 

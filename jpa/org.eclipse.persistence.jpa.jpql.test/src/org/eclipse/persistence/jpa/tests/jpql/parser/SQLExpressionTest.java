@@ -15,6 +15,14 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.FunctionExpression FunctionExpression}.
+ * when the JPQL identifier is 'SQL'.
+ *
+ * @version 2.5
+ * @since 2.4
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public final class SQLExpressionTest extends AbstractFunctionExpressionTest {
 

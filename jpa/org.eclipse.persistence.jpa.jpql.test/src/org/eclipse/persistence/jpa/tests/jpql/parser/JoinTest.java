@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class JoinTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_Join_01() {
+	public void test_JPQLQuery_Join_01() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN pub.magazines mag WHERE pub.revenue > 1000000";
 
@@ -33,7 +34,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_02() {
+	public void test_JPQLQuery_Join_02() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN pub.magazines AS mag WHERE pub.revenue > 1000000";
 
@@ -47,7 +48,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_03() {
+	public void test_JPQLQuery_Join_03() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN pub.magazines WHERE pub.revenue > 1000000";
 
@@ -61,7 +62,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_04() {
+	public void test_JPQLQuery_Join_04() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN WHERE pub.revenue > 1000000";
 
@@ -77,7 +78,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_05() {
+	public void test_JPQLQuery_Join_05() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN AS HAVING pub.revenue > 1000000";
 
@@ -93,7 +94,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_06() {
+	public void test_JPQLQuery_Join_06() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN AS mag WHERE pub.revenue > 1000000";
 
@@ -107,7 +108,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_07() {
+	public void test_JPQLQuery_Join_07() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -124,7 +125,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_08() {
+	public void test_JPQLQuery_Join_08() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -141,7 +142,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_09() {
+	public void test_JPQLQuery_Join_09() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -159,7 +160,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_Join_10() {
+	public void test_JPQLQuery_Join_10() {
 
 		String jpqlQuery = "Delete from Employee e join e.address a where e.id < 0";
 
@@ -177,7 +178,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_01() {
+	public void test_JPQLQuery_JoinFetch_01() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH pub.magazines mag WHERE pub.revenue > 1000000";
 
@@ -191,7 +192,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_02() {
+	public void test_JPQLQuery_JoinFetch_02() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH pub.magazines AS mag WHERE pub.revenue > 1000000";
 
@@ -205,7 +206,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_03() {
+	public void test_JPQLQuery_JoinFetch_03() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH pub.magazines WHERE pub.revenue > 1000000";
 
@@ -219,7 +220,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_04() {
+	public void test_JPQLQuery_JoinFetch_04() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH WHERE pub.revenue > 1000000";
 
@@ -235,7 +236,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_05() {
+	public void test_JPQLQuery_JoinFetch_05() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH AS HAVING pub.revenue > 1000000";
 
@@ -251,7 +252,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_06() {
+	public void test_JPQLQuery_JoinFetch_06() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH AS mag WHERE pub.revenue > 1000000";
 
@@ -265,7 +266,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_07() {
+	public void test_JPQLQuery_JoinFetch_07() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -282,7 +283,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_08() {
+	public void test_JPQLQuery_JoinFetch_08() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -299,7 +300,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_09() {
+	public void test_JPQLQuery_JoinFetch_09() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -317,7 +318,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_10() {
+	public void test_JPQLQuery_JoinFetch_10() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -335,7 +336,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_11() {
+	public void test_JPQLQuery_JoinFetch_11() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +
@@ -353,7 +354,7 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_JoinFetch_12() {
+	public void test_JPQLQuery_JoinFetch_12() {
 
 		String jpqlQuery = "SELECT pub " +
 		                   "FROM Publisher pub " +

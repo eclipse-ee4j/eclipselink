@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class GroupByClauseTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT e FROM Employee e GROUP BY e.name";
 
@@ -33,7 +34,7 @@ public final class GroupByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM Employee e GROUP BY e.name, e";
 

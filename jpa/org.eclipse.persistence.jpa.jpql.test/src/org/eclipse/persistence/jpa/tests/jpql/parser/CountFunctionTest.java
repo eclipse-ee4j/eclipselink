@@ -15,7 +15,15 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.CountFunction CountFunction}.
+ *
+ * @version 2.5
+ * @since 2.3
+ * @author Pascal Filion
+ */
 public final class CountFunctionTest extends AggregateFunctionTest {
 
 	@Override

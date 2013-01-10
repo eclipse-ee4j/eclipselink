@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class CoalesceExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 		String query = "SELECT COALESCE(e.age, e.name) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -31,7 +32,7 @@ public final class CoalesceExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 		String query = "SELECT e FROM Employee e WHERE COALESCE(e.age, 20) + 20";
 
 		ExpressionTester selectStatement = selectStatement(

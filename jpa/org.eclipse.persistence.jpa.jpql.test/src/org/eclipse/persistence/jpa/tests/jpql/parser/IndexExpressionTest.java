@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class IndexExpressionTest extends JPQLParserTest {
@@ -27,7 +28,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX(c) BETWEEN 0 AND 9";
 
@@ -41,7 +42,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX() BETWEEN 0 AND 9";
 
@@ -55,7 +56,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX( BETWEEN 0 AND 9";
 
@@ -73,7 +74,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX BETWEEN 0 AND 9";
 
@@ -91,7 +92,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX) ";
 
@@ -111,7 +112,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX e)";
 
@@ -129,7 +130,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX(e";
 
@@ -147,7 +148,7 @@ public final class IndexExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() throws Exception {
+	public void test_JPQLQuery_08() throws Exception {
 
 		String query = "SELECT c FROM CreditCard c WHERE INDEX(e ";
 

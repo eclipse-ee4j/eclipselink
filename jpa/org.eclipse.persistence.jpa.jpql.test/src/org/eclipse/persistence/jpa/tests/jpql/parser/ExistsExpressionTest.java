@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class ExistsExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_1() {
+	public void test_JPQLQuery_1() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS (SELECT e FROM Employee e)";
 
@@ -38,7 +39,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_2() {
+	public void test_JPQLQuery_2() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT EXISTS (SELECT e FROM Employee e)";
 
@@ -57,7 +58,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_3() {
+	public void test_JPQLQuery_3() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS";
 
@@ -75,7 +76,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_4() {
+	public void test_JPQLQuery_4() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(";
 
@@ -92,7 +93,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_5() {
+	public void test_JPQLQuery_5() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS()";
 
@@ -106,7 +107,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_6() {
+	public void test_JPQLQuery_6() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS GROUP BY e.name";
 
@@ -125,7 +126,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_7() {
+	public void test_JPQLQuery_7() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS( GROUP BY e.name";
 
@@ -144,7 +145,7 @@ public final class ExistsExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_8() {
+	public void test_JPQLQuery_8() {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS (SELECT e FROM Employee e WHERE e.name = 'Pascal' GROUP BY e.name HAVING e.age > 21)";
 

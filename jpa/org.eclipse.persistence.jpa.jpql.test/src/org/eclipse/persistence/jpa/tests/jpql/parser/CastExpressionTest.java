@@ -14,8 +14,8 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * The unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.CastExpression CastExpression}.
@@ -44,7 +44,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		// Select cast(e.firstName as char)
 		// from Employee e
@@ -65,7 +65,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		// Select cast(e.firstName as char(3))
 		// from Employee e
@@ -86,7 +86,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		// Select cast(e.firstName NUMERIC(5, 4)) from Employee e
 
@@ -99,7 +99,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		// Select cast(e.firstName timestamp) from Employee e
 
@@ -112,7 +112,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		// Select cast(e.firstName YEAR()) from Employee e
 
@@ -129,7 +129,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		// Select cast(e.firstName as TIMESTAMP()) from Employee e
 
@@ -146,7 +146,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName from Employee e";
 
@@ -165,7 +165,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_08() throws Exception {
+	public void test_JPQLQuery_08() throws Exception {
 
 		String jpqlQuery = "Select cast";
 
@@ -181,7 +181,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_09() throws Exception {
+	public void test_JPQLQuery_09() throws Exception {
 
 		String jpqlQuery = "Select cast(";
 
@@ -197,7 +197,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_10() throws Exception {
+	public void test_JPQLQuery_10() throws Exception {
 
 		String jpqlQuery = "Select cast()";
 
@@ -213,7 +213,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_11() throws Exception {
+	public void test_JPQLQuery_11() throws Exception {
 
 		String jpqlQuery = "Select cast(AS";
 
@@ -229,7 +229,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_12() throws Exception {
+	public void test_JPQLQuery_12() throws Exception {
 
 		String jpqlQuery = "Select cast(AS)";
 
@@ -245,7 +245,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_14() throws Exception {
+	public void test_JPQLQuery_14() throws Exception {
 
 		String jpqlQuery = "select cast from Employee e";
 
@@ -262,7 +262,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_15() throws Exception {
+	public void test_JPQLQuery_15() throws Exception {
 
 		String jpqlQuery = "select cast ) from Employee e";
 
@@ -279,7 +279,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_16() throws Exception {
+	public void test_JPQLQuery_16() throws Exception {
 
 		String jpqlQuery = "select cast AS ) from Employee e";
 
@@ -297,7 +297,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_17() throws Exception {
+	public void test_JPQLQuery_17() throws Exception {
 
 		String jpqlQuery = "select cast char) from Employee e";
 
@@ -314,7 +314,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_18() throws Exception {
+	public void test_JPQLQuery_18() throws Exception {
 
 		String jpqlQuery = "select cast as char) from Employee e";
 

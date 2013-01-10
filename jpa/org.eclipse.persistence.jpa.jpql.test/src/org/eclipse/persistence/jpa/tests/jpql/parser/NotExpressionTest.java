@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class NotExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT e.adult";
 
@@ -33,7 +34,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT ((2 + e.age) NOT BETWEEN e.age AND 65)";
 
@@ -55,7 +56,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT HAVING e.age = 2";
 
@@ -70,7 +71,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17)";
 
@@ -84,7 +85,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) OR (e.name = 'JPQL')";
 
@@ -103,7 +104,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) AND (e.name = 'JPQL')";
 
@@ -122,7 +123,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) OR NOT (e.name = 'JPQL')";
 
@@ -141,7 +142,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) AND NOT (e.name = 'JPQL')";
 
@@ -160,7 +161,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String query = "SELECT e FROM Employee e WHERE NOT e.firstName = :firstName AND e.lastName = :lastName";
 

@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class SelectClauseTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT AVG(mag.price) FROM Magazine mag";
 
@@ -32,7 +33,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e.firstName, e.lastName, e.address FROM Employee e";
 
@@ -45,7 +46,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT OBJECT(e), COUNT(DISTINCT e) FROM Employee e";
 
@@ -58,7 +59,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT COUNT(DISTINCT mag.price) FROM Magazine mag";
 
@@ -71,7 +72,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT COUNT  ( DISTINCT mag.price  ) FROM Magazine mag";
 
@@ -84,7 +85,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String query = "SELECT DISTINCT e FROM Employee e";
 
@@ -97,7 +98,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String query = "SELECT AVG(e.age), e, COUNT(e.name), NEW test(e), OBJECT(e), SUM(e.age) FROM Employee e";
 
@@ -117,7 +118,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String query = "SELECT OBJECT(e) FROM Employee e";
 
@@ -130,7 +131,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String query = "SELECT DISTINCT e FROM Employee e";
 
@@ -143,7 +144,7 @@ public final class SelectClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() {
+	public void test_JPQLQuery_10() {
 
 		String query = "SELECT e FROM Employee e";
 

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * This unit-test tests parsing {@link org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration

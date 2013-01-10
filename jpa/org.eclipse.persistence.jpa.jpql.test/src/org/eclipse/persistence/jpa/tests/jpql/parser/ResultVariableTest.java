@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class ResultVariableTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String jpqlQuery = "SELECT e AS n FROM Employee e";
 
@@ -32,7 +33,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String jpqlQuery = "SELECT e n FROM Employee e";
 
@@ -45,7 +46,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String jpqlQuery = "SELECT AVG(e.age) AS g FROM Employee e";
 
@@ -58,7 +59,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String jpqlQuery = "SELECT AVG(e.age) g FROM Employee e";
 
@@ -71,7 +72,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String jpqlQuery = "SELECT AVG(e.age) + 2 AS g FROM Employee e";
 
@@ -84,7 +85,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String jpqlQuery = "SELECT AVG(e.age) + 2 AS g FROM Employee e";
 
@@ -97,7 +98,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String jpqlQuery = "SELECT AVG(e.age) AS g, e.name AS n FROM Employee e";
 
@@ -113,7 +114,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String jpqlQuery = "SELECT AVG(e.age) g, e.name n FROM Employee e";
 
@@ -129,7 +130,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String jpqlQuery = "SELECT AVG(e.age) AS";
 
@@ -144,7 +145,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() {
+	public void test_JPQLQuery_10() {
 
 		String jpqlQuery = "SELECT AVG(e.age) AS ";
 
@@ -156,7 +157,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_11() {
+	public void test_JPQLQuery_11() {
 
 		String jpqlQuery = "SELECT AS";
 
@@ -171,7 +172,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_12() {
+	public void test_JPQLQuery_12() {
 
 		String jpqlQuery = "SELECT AS ";
 
@@ -183,7 +184,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_13() {
+	public void test_JPQLQuery_13() {
 
 		String jpqlQuery = "SELECT AS n";
 
@@ -195,7 +196,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_14() {
+	public void test_JPQLQuery_14() {
 
 		String jpqlQuery = "SELECT e AS emp FROM Employee e ORDER BY emp";
 
@@ -209,7 +210,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_15() {
+	public void test_JPQLQuery_15() {
 
 		String jpqlQuery = "SELECT e.name, AVG(e.age) AS age FROM Employee e ORDER BY age";
 

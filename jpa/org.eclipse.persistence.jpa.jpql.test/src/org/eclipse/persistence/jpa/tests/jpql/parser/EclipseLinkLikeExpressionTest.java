@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class EclipseLinkLikeExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%')";
 
@@ -38,7 +39,7 @@ public final class EclipseLinkLikeExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') ESCAPE ' '";
 
@@ -58,7 +59,7 @@ public final class EclipseLinkLikeExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2";
 
@@ -77,7 +78,7 @@ public final class EclipseLinkLikeExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "Select e from Employee e where UPPER(e.firstName) like UPPER('b%') + 2 ESCAPE ' '";
 

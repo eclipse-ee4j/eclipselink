@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * Unit-tests that make sure nested array are properly parsed.
@@ -26,7 +27,7 @@ import org.junit.Test;
 public final class EclipseLinkInExpressionTest extends JPQLParserTest {
 
 	@Test
-	public final void test_BuildExpression_01() {
+	public final void test_JPQLQuery_01() {
 
 		String jpqlQuery = "Select e from Employee e where (e.id1, e.id2) IN ((:id1, :id2), (:id3, :id4))";
 
@@ -52,7 +53,7 @@ public final class EclipseLinkInExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void test_BuildExpression_02() {
+	public final void test_JPQLQuery_02() {
 
 		String jpqlQuery = "Select e from Employee e where (e.id1, e.id2) IN :ids";
 

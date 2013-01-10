@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.jpa.jpql;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -28,7 +27,6 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
-import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
@@ -129,7 +127,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
 	@Override
 	public String[] entityNames() {
 
-		List<String> names = new LinkedList<String>();
+		List<String> names = new ArrayList<String>();
 
 		for (ClassDescriptor descriptor : queryContext.getSession().getDescriptors().values()) {
 			if (!descriptor.isAggregateDescriptor()) {
@@ -232,6 +230,19 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
 	@Override
 	public Object getManagedType(Expression expression) {
 		return queryContext.resolveDescriptor(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Object getReferenceManagedType(Object mapping) {
+
+		if (mapping == null) {
+			return null;
+		}
+
+		return ((DatabaseMapping) mapping).getReferenceDescriptor();
 	}
 
 	/**
@@ -477,26 +488,6 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
 	@Override
 	public boolean isTypeResolvable(Object type) {
 		return type != null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
-
-		// Find the declaration associated with the identification variable
-		Declaration declaration = queryContext.findDeclaration(expression.getIdentificationVariable().toActualText());
-
-		if (declaration == null) {
-			return true;
-		}
-
-		JPQLQueryDeclaration.Type type = declaration.getType();
-
-		// A path composed from a table name or a subquery is not validated
-		return type != JPQLQueryDeclaration.Type.TABLE &&
-		       type != JPQLQueryDeclaration.Type.SUBQUERY;
 	}
 
 	/**

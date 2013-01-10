@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * @version 2.5
@@ -21,10 +22,10 @@ import org.junit.Test;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class UnionClauseTest extends JPQLParserTest {
+public final class UnionClauseTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		String jpqlQuery = "select e from Employee e union";
 
@@ -38,7 +39,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String jpqlQuery = "select e from Employee e union ";
 
@@ -55,7 +56,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String jpqlQuery = "select e from Employee e union all";
 
@@ -69,7 +70,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String jpqlQuery = "select e from Employee e union all ";
 
@@ -86,7 +87,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect";
 
@@ -100,7 +101,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect ";
 
@@ -117,7 +118,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect all";
 
@@ -131,7 +132,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() throws Exception {
+	public void test_JPQLQuery_08() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect all ";
 
@@ -148,7 +149,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() throws Exception {
+	public void test_JPQLQuery_09() throws Exception {
 
 		String jpqlQuery = "select e from Employee e except";
 
@@ -162,7 +163,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() throws Exception {
+	public void test_JPQLQuery_10() throws Exception {
 
 		String jpqlQuery = "select e from Employee e except ";
 
@@ -179,7 +180,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_11() throws Exception {
+	public void test_JPQLQuery_11() throws Exception {
 
 		String jpqlQuery = "select e from Employee e except all";
 
@@ -193,7 +194,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_12() throws Exception {
+	public void test_JPQLQuery_12() throws Exception {
 
 		String jpqlQuery = "select e from Employee e except all ";
 
@@ -210,7 +211,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_13() throws Exception {
+	public void test_JPQLQuery_13() throws Exception {
 
 		String jpqlQuery = "select e from Employee e except select a from Alias a";
 
@@ -227,7 +228,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_14() throws Exception {
+	public void test_JPQLQuery_14() throws Exception {
 
 		String jpqlQuery = "select e from Employee e " +
 		                   "except select a from Alias a " +
@@ -262,7 +263,7 @@ public class UnionClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_15() throws Exception {
+	public void test_JPQLQuery_15() throws Exception {
 
 		String jpqlQuery = "select e from Employee e " +
 		                   "except select a " +

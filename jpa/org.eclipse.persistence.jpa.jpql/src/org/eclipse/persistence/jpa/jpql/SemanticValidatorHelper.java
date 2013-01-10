@@ -19,7 +19,6 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
-import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 
 /**
  * This helper is used by {@link AbstractSemanticValidator} in order to retrieve JPA information.
@@ -177,6 +176,18 @@ public interface SemanticValidatorHelper {
 	 * @return The list of parameter types or an empty list
 	 */
 	Object[] getMethodParameterTypeDeclarations(Object constructor);
+
+	/**
+	 * Returns the reference managed type from the given relationship mapping.
+	 * <p>
+	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
+	 * persistence.jpa.jpql.spi.IMapping IMapping} and the return type would be {@link
+	 * org.eclipse.persistence.jpa.jpql.spi.IManagedType IManagedType}.
+	 *
+	 * @param relationshipMapping The relationship mapping
+	 * @return The managed type referenced by the given relationship mapping
+	 */
+	Object getReferenceManagedType(Object relationshipMapping);
 
 	/**
 	 * Returns the type by resolving the given {@link Expression}.
@@ -374,17 +385,6 @@ public interface SemanticValidatorHelper {
 	 * @return <code>true</code> if the actual class exists; <code>false</code> otherwise
 	 */
 	boolean isTypeResolvable(Object type);
-
-	/**
-	 * Determines whether a path expression should be validated or not. This can happen in some very
-	 * specific cases.
-	 *
-	 * @param expression The {@link StateFieldPathExpression} that might not need to be validated
-	 * @return <code>true</code> to validate the given path expression; <code>false</code> otherwise
-	 * @deprecated No longer used
-	 */
-	@Deprecated
-	boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression);
 
 	/**
 	 * Changes the state of this helper to use the given subquery.

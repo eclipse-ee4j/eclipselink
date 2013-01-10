@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * Tests parsing <code><b>START WITH</b></code> clause.
@@ -28,7 +29,7 @@ import org.junit.Test;
 public final class StartWithClauseTest extends JPQLParserTest {
 
 	@Test
-	public void test_BuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH";
 
@@ -41,7 +42,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH ";
 
@@ -57,7 +58,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY e.ids";
 
@@ -80,7 +81,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH HAVING e.id = e.customer.id";
 
@@ -97,7 +98,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH e.id = 100";
 
@@ -110,7 +111,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH e.id = 100 AND e.name = 'JPQL'";
 
@@ -131,7 +132,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "SELECT e " + "" +
 		                   "FROM Employee e " +

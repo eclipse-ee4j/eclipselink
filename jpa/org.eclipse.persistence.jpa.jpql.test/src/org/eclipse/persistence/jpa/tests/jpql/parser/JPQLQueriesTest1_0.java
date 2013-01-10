@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * This unit-tests tests the parsed tree representation of a JPQL query.

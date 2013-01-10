@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 45000";
 
@@ -33,7 +34,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 45000.45";
 
@@ -47,7 +48,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 4E5";
 
@@ -61,7 +62,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = +123";
 
@@ -75,7 +76,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = -8.932E5";
 
@@ -89,7 +90,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 0.123e-1";
 
@@ -103,7 +104,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3f";
 
@@ -117,7 +118,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_08() {
+	public void test_JPQLQuery_08() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3F";
 
@@ -131,7 +132,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_09() {
+	public void test_JPQLQuery_09() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5L";
 
@@ -145,7 +146,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_10() {
+	public void test_JPQLQuery_10() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3d";
 
@@ -159,7 +160,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_11() {
+	public void test_JPQLQuery_11() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3D";
 
@@ -173,7 +174,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_14() {
+	public void test_JPQLQuery_14() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 0xFF";
 
@@ -187,7 +188,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_15() {
+	public void test_JPQLQuery_15() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = .2F";
 
@@ -201,7 +202,7 @@ public final class NumericLiteralTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_16() {
+	public void test_JPQLQuery_16() {
 
 		String query = "SELECT e FROM Employee e WHERE e.salary = 2.2e-2d AND e.name = 'JPQL'";
 

@@ -14,12 +14,20 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName AbstractSchemaName}.
+ *
+ * @version 2.5
+ * @since 2.3
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public final class AbstractSchemaNameTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e";
 
@@ -34,7 +42,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e, Address a";
 
@@ -50,7 +58,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String jpqlQuery = "select o from Order o";
 
@@ -63,7 +71,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String jpqlQuery = "select o from Order o order by o.name";
 
@@ -77,7 +85,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String jpqlQuery = "select o from Order o where o.age > 18";
 
@@ -91,7 +99,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String jpqlQuery = "select g from Group g";
 
@@ -104,7 +112,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "select g from Group g where g.age > 18";
 

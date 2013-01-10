@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class UpdateItemTest extends JPQLParserTest {
@@ -27,7 +28,22 @@ public final class UpdateItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_02() {
+	public void test_JPQLQuery_01() {
+
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update(
+				"Employee", "e",
+				set("e.name", string("'Pascal'"))
+			)
+		);
+
+		testQuery(jpqlQuery, updateStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_02() {
 
 		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal', e.manager.salary = 100000";
 
@@ -43,7 +59,7 @@ public final class UpdateItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String jpqlQuery = "UPDATE Employee SET AVG(2) = 'Pascal'";
 
@@ -58,7 +74,7 @@ public final class UpdateItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String jpqlQuery = "UPDATE Employee SET avg = 'Pascal'";
 
@@ -70,20 +86,5 @@ public final class UpdateItemTest extends JPQLParserTest {
 		);
 
 		testInvalidQuery(jpqlQuery, updateStatement, buildQueryFormatter_1());
-	}
-
-	@Test
-	public void testBuildExpression_01() {
-
-		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal'";
-
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee", "e",
-				set("e.name", string("'Pascal'"))
-			)
-		);
-
-		testQuery(jpqlQuery, updateStatement);
 	}
 }

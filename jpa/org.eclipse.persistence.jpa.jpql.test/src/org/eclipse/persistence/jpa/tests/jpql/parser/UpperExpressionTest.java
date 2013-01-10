@@ -14,12 +14,13 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 @SuppressWarnings("nls")
 public final class UpperExpressionTest extends JPQLParserTest {
 
 	@Test
-	public void testBuildExpression_01() {
+	public void test_JPQLQuery_01() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(e.firstName)";
 
@@ -33,7 +34,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_JPQLQuery_02() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(AVG(e.firstName))";
 
@@ -47,7 +48,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_03() {
+	public void test_JPQLQuery_03() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER";
 
@@ -65,7 +66,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_04() {
+	public void test_JPQLQuery_04() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(";
 
@@ -83,7 +84,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_05() {
+	public void test_JPQLQuery_05() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER()";
 
@@ -101,7 +102,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_06() {
+	public void test_JPQLQuery_06() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER GROUP BY e.name";
 
@@ -120,7 +121,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void testBuildExpression_07() {
+	public void test_JPQLQuery_07() {
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER( GROUP BY e.name";
 

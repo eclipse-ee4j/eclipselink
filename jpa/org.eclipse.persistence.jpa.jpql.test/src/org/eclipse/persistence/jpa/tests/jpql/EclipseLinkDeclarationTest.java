@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.SimpleSelectStatementTester;
 import org.junit.Test;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * @version 2.5

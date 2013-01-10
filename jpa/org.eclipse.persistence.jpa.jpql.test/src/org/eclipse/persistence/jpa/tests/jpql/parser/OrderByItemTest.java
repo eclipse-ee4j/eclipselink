@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
  * This unit-tests test parsing the null ordering added to an ordering item.
@@ -26,7 +27,7 @@ import org.junit.Test;
 public final class OrderByItemTest extends JPQLParserTest {
 
 	@Test
-	public void test_BuildExpression_01() throws Exception {
+	public void test_JPQLQuery_01() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name asc nulls first";
 
@@ -40,7 +41,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_02() throws Exception {
+	public void test_JPQLQuery_02() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name asc nulls last";
 
@@ -54,7 +55,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_03() throws Exception {
+	public void test_JPQLQuery_03() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls first";
 
@@ -68,7 +69,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_04() throws Exception {
+	public void test_JPQLQuery_04() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last";
 
@@ -82,7 +83,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_05() throws Exception {
+	public void test_JPQLQuery_05() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age desc nulls first";
 
@@ -99,7 +100,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_06() throws Exception {
+	public void test_JPQLQuery_06() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age nulls";
 
@@ -120,7 +121,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_07() throws Exception {
+	public void test_JPQLQuery_07() throws Exception {
 
 		String jpqlQuery = "select e from Employee e order by e.name nulls last, e.age NULLS ";
 
@@ -141,7 +142,7 @@ public final class OrderByItemTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_08() throws Exception {
+	public void test_JPQLQuery_08() throws Exception {
 
 		String jpqlQuery = "SELECT i FROM Item i WHERE i.category=:category ORDER BY i.id\"";
 

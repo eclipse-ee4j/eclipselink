@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.JoinTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.RangeVariableDeclarationTester;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.UpdateClauseTester;
 import org.junit.Test;
-import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTest.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 import static org.junit.Assert.*;
 
 /**
@@ -121,7 +122,20 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		return declaration;
 	}
 
-	protected final RangeDeclarationTester rangeDeclarationJoin(String entityName,
+	protected final RangeDeclarationTester rangeDeclaration(String entityName,
+	                                                        String variableName) {
+
+		return rangeDeclaration(entityName, variableName, null, new JoinTester[0]);
+	}
+
+	protected final RangeDeclarationTester rangeDeclaration(String entityName,
+	                                                        String variableName,
+	                                                        ExpressionTester declarationExpression) {
+
+		return rangeDeclaration(entityName, variableName, declarationExpression, new JoinTester[0]);
+	}
+
+	protected final RangeDeclarationTester rangeDeclaration(String entityName,
 	                                                        String variableName,
 	                                                        ExpressionTester declarationExpression,
 	                                                        JoinTester... joins) {
@@ -143,20 +157,30 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 			declaration.variableName   = variableName.toUpperCase().intern();
 		}
 
-		declaration.declarationExpression = declarationExpression;
-		declaration.rootPath              = entityName;
-		declaration.joins                 = CollectionTools.list(joins);
+		if (declarationExpression != null) {
+			declaration.declarationExpression = declarationExpression;
+		}
+		else {
+			declaration.declarationExpression = identificationVariableDeclaration(declaration.baseExpression, joins);
+		}
+
+		declaration.rootPath = entityName;
+
+		if (joins.length == 0) {
+			declaration.joins = Collections.emptyList();
+		}
+		else {
+			declaration.joins = CollectionTools.list(joins);
+		}
 
 		return declaration;
 	}
 
-	protected final RangeDeclarationTester rangeDeclaration(String entityName,
-	                                                        String variableName,
-	                                                        JoinTester... joins) {
+	protected final RangeDeclarationTester rangeDeclarationWithJoins(String entityName,
+	                                                                 String variableName,
+	                                                                 JoinTester... joins) {
 
-		RangeDeclarationTester declaration = rangeDeclarationJoin(entityName, variableName, null, joins);
-		declaration.declarationExpression = identificationVariableDeclaration(declaration.baseExpression, joins);
-		return declaration;
+		return rangeDeclaration(entityName, variableName, null, joins);
 	}
 
 	/**
@@ -236,7 +260,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		testDeclarations(
 			jpqlQuery,
 			tolerant,
-			rangeDeclarationJoin("Employee", "e", join("e.manager", "m")),
+			rangeDeclarationWithJoins("Employee", "e", join("e.manager", "m")),
 			rangeDeclaration("Address", "a")
 		);
 	}
@@ -471,7 +495,7 @@ public abstract class DeclarationTest extends JPQLCoreTest {
 		testDeclarations(
 			jpqlQuery,
 			tolerant,
-			rangeDeclarationJoin("Employee", "e", updateClause)
+			rangeDeclaration("Employee", "e", updateClause)
 		);
 	}
 

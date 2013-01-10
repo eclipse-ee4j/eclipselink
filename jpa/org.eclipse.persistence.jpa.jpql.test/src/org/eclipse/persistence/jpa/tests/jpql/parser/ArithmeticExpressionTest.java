@@ -14,14 +14,17 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
 /**
- * @version 2.4
- * @since 2.4
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression ArithmeticExpression}.
+ *
+ * @version 2.5
+ * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class ArithmeticExpressionTest extends JPQLParserTest {
+public final class ArithmeticExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testOrderOfOperations_01() {

@@ -2386,10 +2386,17 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 						String path = pathExpression.getPath(index);
 						Object mapping = helper.getMappingNamed(managedType, path);
 
-						// A collection mapping cannot be traversed
-						if (helper.isCollectionMapping(mapping)) {
+						// Not resolvable
+						if (mapping == null) {
+							addProblem(pathExpression, UpdateItem_NotResolvable, pathExpression.toParsedText());
+							valid = false;
+							break;
+						}
+						// A collection mapping cannot be traversed or a value cannot be assigned to it
+						else if (helper.isCollectionMapping(mapping)) {
 							addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
 							valid = false;
+							break;
 						}
 						// Validate an intermediate path (n + 1, ..., n - 2)
 						else if (index + 1 < count) {
@@ -2398,19 +2405,35 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 							if (helper.isRelationshipMapping(mapping)) {
 								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
 								valid = false;
+								break;
 							}
 							// A basic mapping cannot be traversed
 							else if (helper.isPropertyMapping(mapping)) {
 								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
 								valid = false;
+								break;
+							}
+							// Retrieve the embeddable mapping's reference managed type
+							else {
+								managedType = helper.getReferenceManagedType(mapping);
+
+								if (managedType == null) {
+									addProblem(pathExpression, UpdateItem_NotResolvable, pathExpression.toParsedText());
+									valid = false;
+									break;
+								}
 							}
 						}
 					}
 				}
 				else {
-					addProblem(pathExpression, StateFieldPathExpression_NotResolvable, pathExpression.toParsedText());
+					addProblem(pathExpression, UpdateItem_NotResolvable, pathExpression.toParsedText());
 					valid = false;
 				}
+			}
+			else {
+				addProblem(pathExpression, UpdateItem_NotResolvable, expression.getStateFieldPathExpression().toParsedText());
+				valid = false;
 			}
 		}
 

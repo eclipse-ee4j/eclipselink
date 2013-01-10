@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.junit.Test;
-
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 import static org.junit.Assert.*;
 
 @SuppressWarnings("nls")

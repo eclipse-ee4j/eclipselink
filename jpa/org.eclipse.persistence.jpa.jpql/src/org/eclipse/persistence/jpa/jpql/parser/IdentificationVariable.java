@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -190,12 +190,12 @@ public final class IdentificationVariable extends AbstractExpression {
 	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries. This internally transforms
 	 * the what was thought to be an identification variable to a path expression.
 	 *
-	 * @param variableName The identification variable that was generated to identify the abstract
-	 * schema name
+	 * @param variableName The identification variable that was generated to identify the "root" object
 	 */
 	public void setVirtualIdentificationVariable(String variableName) {
 
 		virtual = true;
+
 		stateFieldPathExpression = new StateFieldPathExpression(getParent(), getText());
 		stateFieldPathExpression.setVirtualIdentificationVariable(variableName);
 

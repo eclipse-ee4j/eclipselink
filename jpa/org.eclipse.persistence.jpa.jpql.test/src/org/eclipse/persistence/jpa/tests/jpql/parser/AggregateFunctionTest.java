@@ -15,7 +15,15 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.junit.Test;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLParserTester.*;
 
+/**
+ * Unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.AggregateFunction AggregateFunction}.
+ *
+ * @version 2.5
+ * @since 2.3
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public abstract class AggregateFunctionTest extends JPQLParserTest {
 
@@ -26,7 +34,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	protected abstract String identifier();
 
 	@Test
-	public final void testBuildExpression_01() {
+	public final void test_JPQLQuery_01() {
 		String query = "SELECT " + identifier() + "(e) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -38,7 +46,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_02() {
+	public final void test_JPQLQuery_02() {
 		String query = "SELECT " + identifier() + "(DISTINCT e) FROM Employee e";
 
 		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(variable("e"));
@@ -54,7 +62,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_03() {
+	public final void test_JPQLQuery_03() {
 		String query = "SELECT " + identifier() + " FROM Employee e";
 
 		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
@@ -70,7 +78,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_04() {
+	public final void test_JPQLQuery_04() {
 		String query = "SELECT " + identifier() + "( FROM Employee e";
 
 		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
@@ -85,7 +93,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_05() {
+	public final void test_JPQLQuery_05() {
 		String query = "SELECT " + identifier() + "() FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
@@ -97,7 +105,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_06() {
+	public final void test_JPQLQuery_06() {
 		String query = "SELECT " + identifier() + "(DISTINCT) FROM Employee e";
 
 		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
@@ -112,7 +120,7 @@ public abstract class AggregateFunctionTest extends JPQLParserTest {
 	}
 
 	@Test
-	public final void testBuildExpression_07() {
+	public final void test_JPQLQuery_07() {
 		String query = "SELECT " + identifier() + "(DISTINCT FROM Employee e";
 
 		AggregateFunctionTester aggregateFunctionTester = aggregateFunctionTester(nullExpression());
