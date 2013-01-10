@@ -1377,7 +1377,7 @@ public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValid
 
 		String jpqlQuery  = "UPDATE Employee e SET e.embeddedAddress.postalcode = 'JPQL'";
 		int startPosition = "UPDATE Employee e SET ".length();
-		int endPosition   = "UPDATE Employee e SET e.customerList.postalcode".length();
+		int endPosition   = "UPDATE Employee e SET e.embeddedAddress.postalcode".length();
 
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
