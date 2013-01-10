@@ -28,6 +28,16 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  * Defines the metadata for the @Struct annotation for mapping
  * ObjectRelationshipDataTypeDescriptor.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -36,6 +46,7 @@ public class StructMetadata extends ORMetadata {
     private List<String> fields = new ArrayList<String>();
     
     /**
+     * INTERNAL:
      * Used for XML loading.
      */
     public StructMetadata() {
@@ -43,6 +54,7 @@ public class StructMetadata extends ORMetadata {
     }
     
     /**
+     * INTERNAL:
      * Used for annotation loading.
      */
     public StructMetadata(MetadataAnnotation struct, MetadataAccessor accessor) {
@@ -54,6 +66,10 @@ public class StructMetadata extends ORMetadata {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Used for xml merging.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof StructMetadata) {
@@ -68,8 +84,9 @@ public class StructMetadata extends ORMetadata {
     }
     
     /**
-     * Switch the descriptor to the correct type and
-     * set the structure name and properties.
+     * INTERNAL:
+     * Switch the descriptor to the correct type and set the structure name and 
+     * properties.
      */
     public void process(MetadataDescriptor descriptor) {
         ClassDescriptor oldDesriptor = descriptor.getClassDescriptor();
@@ -91,20 +108,36 @@ public class StructMetadata extends ORMetadata {
         descriptor.getProject().getProject().getOrderedDescriptors().add(newDescriptor);
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<String> getFields() {
+        return fields;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }  
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setName(String name) {
         this.name = name;
     }
-
-    public List<String> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<String> fields) {
-        this.fields = fields;
-    }    
 }
     

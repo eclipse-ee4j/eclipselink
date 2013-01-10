@@ -12,7 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.nosql;
 
-//import org.eclipse.persistence.annotations.DataFormatType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -22,8 +21,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
 /**
- * Defines the metadata for the @EIS annotation for mapping
- * an EISDescriptor.
+ * Defines the metadata for the @EIS annotation for mapping an EISDescriptor.
+ * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
  * 
  * @author James Sutherland
  * @since EclipseLink 2.4
@@ -33,6 +41,7 @@ public class NoSqlMetadata extends ORMetadata {
     private String dataFormat;
     
     /**
+     * INTERNAL:
      * Used for XML loading.
      */
     public NoSqlMetadata() {
@@ -40,6 +49,7 @@ public class NoSqlMetadata extends ORMetadata {
     }
     
     /**
+     * INTERNAL:
      * Used for annotation loading.
      */
     public NoSqlMetadata(MetadataAnnotation struct, MetadataAccessor accessor) {
@@ -49,22 +59,26 @@ public class NoSqlMetadata extends ORMetadata {
         this.dataFormat = (String)struct.getAttribute("dataFormat");
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getDataFormat() {
+        return dataFormat;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getDataType() {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public String getDataFormat() {
-        return dataFormat;
-    }
-
-    public void setDataFormat(String dataFormat) {
-        this.dataFormat = dataFormat;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for XML merging.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof NoSqlMetadata) {
@@ -79,8 +93,9 @@ public class NoSqlMetadata extends ORMetadata {
     }
     
     /**
-     * Switch the descriptor to the correct type and
-     * set the data-type name and format.
+     * INTERNAL:
+     * Switch the descriptor to the correct type and set the data-type name and 
+     * format.
      */
     public void process(MetadataDescriptor descriptor) {
         ClassDescriptor oldDesriptor = descriptor.getClassDescriptor();
@@ -112,6 +127,22 @@ public class NoSqlMetadata extends ORMetadata {
         // Also need to switch the descriptor in the project.
         descriptor.getProject().getProject().getOrderedDescriptors().remove(oldDesriptor);
         descriptor.getProject().getProject().getOrderedDescriptors().add(newDescriptor);
+    }
+   
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDataFormat(String dataFormat) {
+        this.dataFormat = dataFormat;
+    }
+   
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 }
     

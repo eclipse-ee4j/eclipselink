@@ -206,6 +206,14 @@ public class XMLAttributes extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<ArrayAccessor> getArrays() {
+        return m_arrays;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<BasicCollectionAccessor> getBasicCollections() {
         return m_basicCollections;
     }
@@ -290,6 +298,14 @@ public class XMLAttributes extends ORMetadata {
         return m_oneToOnes;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<StructureAccessor> getStructures() {
+        return m_structures;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -394,6 +410,14 @@ public class XMLAttributes extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setArrays(List<ArrayAccessor> arrays) {
+        m_arrays = arrays;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setBasicCollections(List<BasicCollectionAccessor> basicCollections) {
         m_basicCollections = basicCollections;
     }
@@ -482,6 +506,14 @@ public class XMLAttributes extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setStructures(List<StructureAccessor> structures) {
+        m_structures = structures;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setTransformations(List<TransformationAccessor> transformations) {
         m_transformations = transformations;
     }
@@ -509,22 +541,5 @@ public class XMLAttributes extends ORMetadata {
     public void setVersions(List<VersionAccessor> versions) {
         m_versions = versions;
     }
-    
-    public List<StructureAccessor> getStructures() {
-        return m_structures;
-    }
-
-    public void setStructures(List<StructureAccessor> structures) {
-        m_structures = structures;
-    }
-
-    public List<ArrayAccessor> getArrays() {
-        return m_arrays;
-    }
-
-    public void setArrays(List<ArrayAccessor> arrays) {
-        m_arrays = arrays;
-    }
-    
 }
     

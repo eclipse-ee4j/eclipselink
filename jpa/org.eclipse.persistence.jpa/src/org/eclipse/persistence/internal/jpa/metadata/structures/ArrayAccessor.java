@@ -98,7 +98,6 @@ public class ArrayAccessor extends DirectAccessor {
         
         return false;
     }
-
     
     /**
      * INTERNAL:
@@ -190,6 +189,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Return the target class for this accessor.
      */
     protected MetadataClass getTargetClass() {
@@ -219,6 +219,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Return true if this element collection contains embeddable objects.
      */
     @Override
@@ -227,6 +228,7 @@ public class ArrayAccessor extends DirectAccessor {
     }
     
     /**
+     * INTERNAL:
      * Process the ArrayMapping or ObjectArrayMapping.
      */
     @Override
@@ -285,15 +287,15 @@ public class ArrayAccessor extends DirectAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setTargetClassName(String targetClassName) {
-        m_targetClassName = targetClassName;
+    public void setDatabaseType(String databaseType) {
+        m_databaseType = databaseType;
     }
-
+    
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDatabaseType(String databaseType) {
-        m_databaseType = databaseType;
+    public void setTargetClassName(String targetClassName) {
+        m_targetClassName = targetClassName;
     }
 }

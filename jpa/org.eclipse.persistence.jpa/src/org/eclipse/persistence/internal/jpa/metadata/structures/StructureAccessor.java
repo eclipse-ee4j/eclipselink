@@ -29,6 +29,16 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 /**
  * Defines a StructureMapping metadata.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author James Sutherland
  * @since EclipseLink 2.3
  */
@@ -40,7 +50,8 @@ public class StructureAccessor extends MappingAccessor {
     private String m_targetClassName;
 
     /**
-     * Used for OX mapping.
+     * INTERNAL:
+     * Used for XML loading.
      */
     public StructureAccessor() {
         super("<structure>");
@@ -48,6 +59,7 @@ public class StructureAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Used for annotation loading.
      */
     public StructureAccessor(MetadataAnnotation embedded, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(embedded, accessibleObject, classAccessor);
@@ -58,6 +70,7 @@ public class StructureAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Used for xml merging.
      */
     @Override
     public boolean equals(Object objectToCompare) {
@@ -70,6 +83,52 @@ public class StructureAccessor extends MappingAccessor {
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public ColumnMetadata getColumn() {
+        return m_column;
+    }
+   
+    /**
+     * INTERNAL:
+     * If a target class is specified in metadata, it will be set as the 
+     * reference class, otherwise we will use the raw class.
+     */
+    @Override
+    public MetadataClass getReferenceClass() {
+        if (m_referenceClass == null) {
+            m_referenceClass = getTargetClass();
+        
+            if (m_referenceClass == null) {
+                // Get the reference class from the accessible object.
+                m_referenceClass = super.getReferenceClass();
+            } 
+        }
+        
+        return m_referenceClass;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the target class for this accessor.
+     */
+    protected MetadataClass getTargetClass() {
+        return m_targetClass;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    protected String getTargetClassName() {
+        return m_targetClassName;
+    }
+
+    /**
+     * INTERNAL:
+     */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
@@ -84,6 +143,17 @@ public class StructureAccessor extends MappingAccessor {
     }
     
     /**
+     * INTERNAL:
+     * Must return true as an embedded is referenced and needs to be correctly 
+     * initialized.
+     */
+    @Override
+    public boolean isEmbedded() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Build and structure mapping and add it to the descriptor.
      */
     @Override
@@ -108,51 +178,19 @@ public class StructureAccessor extends MappingAccessor {
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
     }
-
-    public ColumnMetadata getColumn() {
-        return m_column;
-    }
-
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setColumn(ColumnMetadata column) {
         m_column = column;
     }
     
     /**
-     * Must return true as an embedded is referenced and needs to be correctly initialized.
+     * INTERNAL:
+     * Used for OX mapping.
      */
-    public boolean isEmbedded() {
-        return true;
-    }
-   
-    /**
-     * If a target class is specified in metadata, it will be set as the 
-     * reference class, otherwise we will use the raw class.
-     */
-    @Override
-    public MetadataClass getReferenceClass() {
-        if (m_referenceClass == null) {
-            m_referenceClass = getTargetClass();
-        
-            if (m_referenceClass == null) {
-                // Get the reference class from the accessible object.
-                m_referenceClass = super.getReferenceClass();
-            } 
-        }
-        
-        return m_referenceClass;
-    }
-    
-    /**
-     * Return the target class for this accessor.
-     */
-    protected MetadataClass getTargetClass() {
-        return m_targetClass;
-    }
-
-    protected String getTargetClassName() {
-        return m_targetClassName;
-    }
-
     public void setTargetClassName(String targetClassName) {
         m_targetClassName = targetClassName;
     }

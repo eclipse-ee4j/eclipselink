@@ -992,6 +992,30 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLRecordMetadata> getPLSQLRecords() {
+        return m_plsqlRecords;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<PLSQLTableMetadata> getPLSQLTables() {
+        return m_plsqlTables;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public StructMetadata getStruct() {
+        return m_struct;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public boolean hasDerivedId() {
         return ! getDescriptor().getDerivedIdAccessors().isEmpty();
@@ -1819,6 +1843,30 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
+        m_plsqlRecords = records;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
+        m_plsqlTables = tables;
+    }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setStruct(StructMetadata struct) {
+        m_struct = struct;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public String toString() {
@@ -1856,29 +1904,5 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean usesVirtualAccess() {
         return getAccessType().equals(EL_ACCESS_VIRTUAL);
-    }
-
-    public List<PLSQLRecordMetadata> getPLSQLRecords() {
-        return m_plsqlRecords;
-    }
-
-    public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
-        m_plsqlRecords = records;
-    }
-
-    public List<PLSQLTableMetadata> getPLSQLTables() {
-        return m_plsqlTables;
-    }
-
-    public void setPLSQLTables(List<PLSQLTableMetadata> tables) {
-        m_plsqlTables = tables;
-    }
-    
-    public StructMetadata getStruct() {
-        return m_struct;
-    }
-
-    public void setStruct(StructMetadata struct) {
-        m_struct = struct;
     }
 }
