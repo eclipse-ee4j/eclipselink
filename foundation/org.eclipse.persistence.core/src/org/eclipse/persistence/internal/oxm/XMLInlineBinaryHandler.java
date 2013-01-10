@@ -23,7 +23,7 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 
-public class XMLInlineBinaryHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
+public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl {
     NodeValue nodeValue;
     Mapping mapping;
     boolean isCollection = false;

@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
 /**
  * TopLink XML mappings make use of XMLFields based on XPath statements to find the relevant
@@ -708,7 +708,7 @@ public class XMLField extends DatabaseField implements Field<NamespaceResolver> 
     * INTERNAL:
     * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
     */
-    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
         if (schemaType != null) { 
         	if(XMLConstants.QNAME_QNAME.equals(schemaType)){
         		return xmlConversionManager.buildQNameFromString((String)value, record);        		

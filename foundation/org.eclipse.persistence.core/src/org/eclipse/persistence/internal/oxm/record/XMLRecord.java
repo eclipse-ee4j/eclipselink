@@ -12,22 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
-import java.util.List;
-
-import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.Marshaller;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.w3c.dom.Node;
 
-public interface XMLRecord<
-    ABSTRACT_SESSION extends CoreAbstractSession,
-    FIELD extends CoreField,
-    MARSHALLER extends Marshaller,
-    NAMESPACE_RESOLVER extends NamespaceResolver,
-    UNMARSHALLER extends Unmarshaller> {
+public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
 
     /**
      * Nil: This is used to indicate that this field represents xsi:nil="true"
@@ -42,32 +29,11 @@ public interface XMLRecord<
      */
     public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
 
-    public List addExtraNamespacesToNamespaceResolver(Descriptor descriptor, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
-
-    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value);
-
-    public Node getDOM();
-
-    public MARSHALLER getMarshaller();
-
-    public NAMESPACE_RESOLVER getNamespaceResolver();
-
     public char getNamespaceSeparator();
 
     public ABSTRACT_SESSION getSession();
 
-    public UNMARSHALLER getUnmarshaller();
-
-    public boolean hasCustomNamespaceMapper();
-
-    public boolean hasEqualNamespaceResolvers();
-
     public boolean isNamespaceAware();
 
-    public void namespaceDeclaration(String prefix, String typeUri);
-
-    public Object put(FIELD field, Object object);
-
-    public String resolveNamespacePrefix(String prefix);
 
 }

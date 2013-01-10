@@ -109,6 +109,12 @@ public interface Descriptor <
      */
     public String getJavaClassName();
     
+    /**
+     * INTERNAL:
+     * Returns this Descriptor's location accessor, if one is defined.
+     */
+    public ATTRIBUTE_ACCESSOR getLocationAccessor();
+
      /**
 	 * Returns the mapping associated with a given attribute name.
 	 * This can be used to find a descriptors mapping in a amendment method before the descriptor has been initialized.

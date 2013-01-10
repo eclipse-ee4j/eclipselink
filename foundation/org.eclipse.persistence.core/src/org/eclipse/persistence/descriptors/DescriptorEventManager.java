@@ -47,7 +47,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  * @see ClassDescriptor
  */
-public class DescriptorEventManager extends CoreDescriptorEventManager implements Cloneable, Serializable {
+public class DescriptorEventManager extends CoreDescriptorEventManager<DescriptorEvent> implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     protected Vector eventSelectors;
     protected transient Vector eventMethods;

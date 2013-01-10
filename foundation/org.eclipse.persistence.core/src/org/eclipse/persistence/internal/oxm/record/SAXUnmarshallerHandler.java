@@ -18,7 +18,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Context;
@@ -257,7 +256,6 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         }
                         
                         UnmappedContentHandlerWrapper unmappedContentHandlerWrapper = new UnmappedContentHandlerWrapper(unmappedContentHandler, this);
-                        unmappedContentHandler.setUnmarshalRecord(unmappedContentHandlerWrapper);
 
                         unmappedContentHandler.startElement(namespaceURI, localName, qName, atts);
                         xmlReader.setContentHandler(unmappedContentHandler);
@@ -279,13 +277,13 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 unmarshalRecord.setSession((AbstractSession) unmarshaller.getXMLContext().getSession(0));
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             } else if (xmlDescriptor.hasInheritance()) {
-                unmarshalRecord = new org.eclipse.persistence.oxm.record.UnmarshalRecord(null);
+                unmarshalRecord = new UnmarshalRecordImpl(null);
                 unmarshalRecord.setUnmarshaller(unmarshaller);
                 unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
                 unmarshalRecord.setXMLReader(this.getXMLReader());
                 unmarshalRecord.setAttributes(atts);
                 
-                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) unmarshalRecord, (CoreAbstractSession) session);
+                Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(unmarshalRecord), (CoreAbstractSession) session);
                 
                 if (classValue == null) {
                     // no xsi:type attribute - look for type indicator on the default root element
@@ -310,9 +308,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
-                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                unmarshalRecord = wrapper.getUnmarshalRecord();
             } else {
-                unmarshalRecord = (UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                unmarshalRecord = wrapper.getUnmarshalRecord();
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             }
             this.descriptor = xmlDescriptor;

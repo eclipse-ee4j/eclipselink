@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -44,6 +45,7 @@ import org.eclipse.persistence.internal.oxm.mappings.InverseReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.internal.oxm.mappings.TransformationMapping;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
@@ -66,14 +68,14 @@ public class XPathObjectBuilder implements ObjectBuilder {
     private Class cycleRecoverableClass = null;
     private Class cycleRecoverableContextClass = null;
     private List<ContainerValue> defaultEmptyContainerValues; //a list of container values that have isDefaultEmptyContainer() set to true
-    private Descriptor descriptor;
+    private CoreDescriptor descriptor;
     private volatile boolean initialized = false;
     private List<NullCapableValue> nullCapableValues;
     private XPathNode rootXPathNode;
     private List<TransformationMapping> transformationMappings;
 
-    public XPathObjectBuilder(Descriptor descriptor2) {
-        this.descriptor = descriptor2;
+    public XPathObjectBuilder(CoreDescriptor descriptor) {
+        this.descriptor = descriptor;
         this.rootXPathNode = new XPathNode();
     }
 
@@ -101,7 +103,7 @@ public class XPathObjectBuilder implements ObjectBuilder {
     }
 
     @Override
-    public List<Namespace> addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    public List<Namespace> addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (rootXPathNode.getNonAttributeChildren() == null) {
             return null;
         } else {
@@ -228,6 +230,11 @@ public class XPathObjectBuilder implements ObjectBuilder {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Object extractPrimaryKeyFromObject(Object object, CoreAbstractSession session) {
+        throw new UnsupportedOperationException();
+    }
+ 
     public List<ContainerValue> getContainerValues() {
         return this.containerValues;
     }
@@ -266,7 +273,7 @@ public class XPathObjectBuilder implements ObjectBuilder {
             if(initialized) {
                 return;
             }
-            Descriptor xmlDescriptor = descriptor;
+            Descriptor xmlDescriptor = (Descriptor) descriptor;
     
             // MAPPINGS
             Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
@@ -509,6 +516,17 @@ public class XPathObjectBuilder implements ObjectBuilder {
         }
 
         return hasValue;
+    }
+
+    @Override
+    public Object buildNewInstance() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CoreDescriptor getDescriptor() {
+        return descriptor;
     }
 
 }

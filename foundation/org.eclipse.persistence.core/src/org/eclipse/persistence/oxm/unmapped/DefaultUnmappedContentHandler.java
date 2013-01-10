@@ -12,11 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.oxm.unmapped;
 
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+
 /**
  * <p><b>Purpose:</b>Provide a default implementation of the UnmappedContentHandler
  * <p><b>Responsibilities:</b><ul>
  * <li>This handler swallows all SAX events corresponding to unmapped content so
  * when used unmapped content will not be processed.
  */
-public class DefaultUnmappedContentHandler extends org.eclipse.persistence.internal.oxm.unmapped.DefaultUnmappedContentHandler {
+public class DefaultUnmappedContentHandler extends org.eclipse.persistence.internal.oxm.unmapped.DefaultUnmappedContentHandler<UnmarshalRecord> {
 }

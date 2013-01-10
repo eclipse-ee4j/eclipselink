@@ -20,7 +20,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CompositeObjectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
@@ -463,7 +462,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(xmlDescriptor != null){
 	            if (xmlDescriptor.hasInheritance()) {
 	                unmarshalRecord.setAttributes(atts);
-	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) unmarshalRecord, unmarshalRecord.getSession());
+	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(unmarshalRecord), unmarshalRecord.getSession());
 	                if (clazz == null) {
 	                    // no xsi:type attribute - look for type indicator on the default root element
 	                    XPathQName leafElementType = unmarshalRecord.getLeafElementType();
@@ -489,7 +488,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 	                }
 	            }
 	            ObjectBuilder stob2 = (ObjectBuilder)xmlDescriptor.getObjectBuilder();
-	            UnmarshalRecord childRecord = (UnmarshalRecord)stob2.createRecord(unmarshalRecord.getSession());
+	            org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) stob2.createRecord(unmarshalRecord.getSession());
+	            UnmarshalRecord childRecord = wrapper.getUnmarshalRecord();
 	            childRecord.setUnmarshaller(unmarshalRecord.getUnmarshaller());
 	            childRecord.setSelfRecord(true);
 	            unmarshalRecord.setChildRecord(childRecord);

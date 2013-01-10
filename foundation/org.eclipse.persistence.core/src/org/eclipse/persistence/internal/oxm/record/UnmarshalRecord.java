@@ -21,11 +21,10 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.IDResolver;
-import org.eclipse.persistence.internal.oxm.Marshaller;
-import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.NullCapableValue;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Reference;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.SAXFragmentBuilder;
@@ -43,15 +42,16 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 
+/**
+ * This class represents unmarshal record behaviour that is specific to the SAX
+ * platform.
+ */
 public interface UnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
     ID_RESOLVER extends IDResolver,
-    MARSHALLER extends Marshaller,
-    NAMESPACE_RESOLVER extends NamespaceResolver,
-    ROOT extends Root,
     TREE_OBJECT_BUILDER extends ObjectBuilder,
-    UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
+    UNMARSHALLER extends Unmarshaller> extends AbstractUnmarshalRecord<ABSTRACT_SESSION, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
@@ -59,11 +59,15 @@ public interface UnmarshalRecord<
 
     public void addAttributeValue(ContainerValue containerValue, Object value, Object collection);
 
-    public ROOT createRoot();
+    public Root createRoot();
 
     public void endUnmappedElement(String uri, String localName, String name) throws SAXException;
 
+    public Object get(FIELD field);
+
     public NodeValue getAttributeChildNodeValue(String namespace, String localName);
+
+    public Attributes getAttributes();
 
     public CharSequence getCharacters();
 
@@ -79,6 +83,12 @@ public interface UnmarshalRecord<
 
     public Descriptor getDescriptor();
 
+    /**
+     * Gets the encoding for this document. Only set on the root-level UnmarshalRecord
+     * @return a String representing the encoding for this doc
+     */
+    public String getEncoding();
+
     public SAXFragmentBuilder getFragmentBuilder();
 
     public XPathQName getLeafElementType();
@@ -86,6 +96,8 @@ public interface UnmarshalRecord<
     public int getLevelIndex();
 
     public String getLocalName();
+
+    public String getNoNamespaceSchemaLocation();
 
     public XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes);
 
@@ -97,7 +109,11 @@ public interface UnmarshalRecord<
 
     public ReferenceResolver getReferenceResolver();
 
+    public String getRootElementName();
+ 
     public String getRootElementNamespaceUri();
+
+    public String getSchemaLocation();
 
     public XPathFragment getTextWrapperFragment();
 
@@ -107,7 +123,15 @@ public interface UnmarshalRecord<
 
     public UnmarshalContext getUnmarshalContext();
 
+    public UNMARSHALLER getUnmarshaller();
+
     public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver();
+
+    /**
+     * Gets the XML Version for this document. Only set on the root-level
+     * UnmarshalRecord, if supported by the parser.
+     */
+    public String getVersion();
 
     public XMLReader getXMLReader();
 
@@ -122,6 +146,8 @@ public interface UnmarshalRecord<
     public boolean isNil();
 
     public boolean isSelfRecord();
+
+    public void reference(Reference reference);
 
     public void removeNullCapableValue(NullCapableValue nullCapableValue);
 
@@ -154,6 +180,8 @@ public interface UnmarshalRecord<
     public void setReferenceResolver(ReferenceResolver referenceResolver);
 
     public void setRootElementName(String rootElementName);
+    
+    public void setRootElementNamespaceUri(String rootElementNamespaceUri);
 
     public void setSelfRecord(boolean isSelfRecord);
 

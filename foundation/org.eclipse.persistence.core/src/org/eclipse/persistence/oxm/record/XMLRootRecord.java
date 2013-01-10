@@ -14,10 +14,10 @@ package org.eclipse.persistence.oxm.record;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -38,7 +38,7 @@ public class XMLRootRecord extends UnmarshalRecord {
      * Default constructor.
      */
     public XMLRootRecord(Class cls) {
-        super(null);
+        super(new UnmarshalRecordImpl(null));
         targetClass = cls;
     }
 
@@ -50,6 +50,14 @@ public class XMLRootRecord extends UnmarshalRecord {
 
         if (shouldReadChars) {
             characters.append(ch, start, length);
+        }
+    }
+
+    @Override
+    public void characters(CharSequence characters) throws SAXException {
+        if(null != characters) {
+            String string = characters.toString();
+            characters(string.toCharArray(), 0, string.length());
         }
     }
 
@@ -99,16 +107,12 @@ public class XMLRootRecord extends UnmarshalRecord {
     }
    	
     @Override
-    public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
-    }
-
-    @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         // set the root element's prefix qualified name and namespace prefix
-        if (rootElementName == null) {
-            rootElementName = qName;
-            rootElementLocalName = localName;
-            rootElementNamespaceUri = namespaceURI;
+        if (getRootElementName() == null) {
+            setRootElementName(qName);
+            setLocalName(localName);
+            setRootElementNamespaceUri(namespaceURI);
         }
         if(XMLConstants.EMPTY_STRING.equals(localName)) {
             return;

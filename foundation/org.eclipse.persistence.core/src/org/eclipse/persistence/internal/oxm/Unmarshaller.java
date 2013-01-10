@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
 
@@ -29,7 +30,6 @@ public abstract class Unmarshaller<
      * Value that will be used to prefix attributes.  
      * Ignored unmarshalling XML.   
      * @return
-     * @since 2.4
      */
     public abstract String getAttributePrefix();
 
@@ -42,7 +42,6 @@ public abstract class Unmarshaller<
     /**
      * Return this Unmarshaller's custom IDResolver.
      * @see IDResolver
-     * @since 2.3.3
      * @return the custom IDResolver, or null if one has not been specified.
      */
     public abstract ID_RESOLVER getIDResolver();
@@ -51,7 +50,6 @@ public abstract class Unmarshaller<
      * Get the MediaType for this xmlUnmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
      * If not set the default is MediaType.APPLICATION_XML
-     * @since 2.4
      * @return MediaType
      */
     public abstract MEDIA_TYPE getMediaType();
@@ -59,7 +57,6 @@ public abstract class Unmarshaller<
     /**
      * Name of the NamespaceResolver to be used during unmarshal
      * Ignored unmarshalling XML.  
-     * @since 2.4    
      */ 
     public abstract NamespaceResolver getNamespaceResolver();
 
@@ -67,9 +64,16 @@ public abstract class Unmarshaller<
      * Get the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default
      * Ignored unmarshalling XML.   
-     * @since 2.4
      */
     public abstract char getNamespaceSeparator();
+
+    /**
+     * Return the property for a given key, if one exists.
+     *
+     * @parm key
+     * @return
+     */
+    public abstract Object getProperty(Object key);
 
     public abstract Schema getSchema();
 
@@ -90,7 +94,6 @@ public abstract class Unmarshaller<
     /**
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
      * Ignored unmarshalling XML.  
-     * @since 2.4    
      */ 
     public abstract String getValueWrapper();
 
@@ -111,12 +114,13 @@ public abstract class Unmarshaller<
      * Determine if the @XMLRootElement should be marshalled when present.  
      * Ignored unmarshalling XML.   
      * @return
-     * @since 2.4
      */
     public abstract boolean isIncludeRoot();
 
     public abstract boolean isResultAlwaysXMLRoot();
     
     public abstract void setIDResolver(ID_RESOLVER idResolver);
+
+    public abstract XMLUnmarshalListener getUnmarshalListener();
 
 }

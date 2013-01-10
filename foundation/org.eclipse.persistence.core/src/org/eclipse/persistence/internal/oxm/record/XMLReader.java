@@ -133,7 +133,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
      * INTERNAL:
      * @since 2.4
      */
-    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+    public Object convertValueBasedOnSchemaType(Field xmlField, Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
     	return xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, record);    	
     }
 

@@ -15,6 +15,7 @@ package org.eclipse.persistence.descriptors;
 import java.util.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.core.descriptors.CoreDescriptorEvent;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.queries.*;
@@ -33,7 +34,7 @@ import org.eclipse.persistence.internal.sessions.*;
  * @see DescriptorEventManager
  * @see DescriptorEventListener
  */
-public class DescriptorEvent extends EventObject {
+public class DescriptorEvent extends EventObject implements CoreDescriptorEvent {
 
     /**
      * The code of the descriptor event being raised.

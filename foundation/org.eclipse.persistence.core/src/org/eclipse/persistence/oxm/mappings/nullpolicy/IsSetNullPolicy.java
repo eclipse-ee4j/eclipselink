@@ -25,8 +25,8 @@ import org.eclipse.persistence.internal.oxm.NullCapableValue;
 import org.eclipse.persistence.internal.oxm.OptionalNodeValue;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
@@ -113,7 +113,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * INTERNAL
      */
     @Override
-    public void directMarshal(Field field, XMLRecord record, Object object) {
+    public void directMarshal(Field field, AbstractMarshalRecord record, Object object) {
         if(!isSet(object)) {
             return;
         }
@@ -139,7 +139,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
      * INTERNAL
      */
     @Override
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, Field field, CoreAbstractSession session) {
+    public boolean compositeObjectMarshal(AbstractMarshalRecord record, Object object, Field field, CoreAbstractSession session) {
         if (!isSet(object)) {
             return false;
         } else {

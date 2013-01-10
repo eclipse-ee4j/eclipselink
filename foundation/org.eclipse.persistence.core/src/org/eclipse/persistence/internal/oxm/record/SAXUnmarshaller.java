@@ -470,7 +470,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (Descriptor)session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            unmarshalRecord = wrapper.getUnmarshalRecord();
 
             
         	}catch(XMLMarshalException xme){
@@ -574,7 +575,8 @@ if(clazz == CoreClassConstants.OBJECT) {
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            unmarshalRecord = wrapper.getUnmarshalRecord();
         	}catch(XMLMarshalException xme){
         		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
  	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
@@ -838,7 +840,8 @@ if(clazz == CoreClassConstants.OBJECT) {
         	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
-            unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+            unmarshalRecord = wrapper.getUnmarshalRecord();
         	}catch(XMLMarshalException xme){
         		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
  	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
@@ -952,7 +955,8 @@ if(clazz == CoreClassConstants.OBJECT) {
             	try{
                 session = xmlContext.getReadSession(clazz);
                 xmlDescriptor = (Descriptor) session.getDescriptor(clazz);
-                unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                unmarshalRecord = wrapper.getUnmarshalRecord(); 
             	}catch(XMLMarshalException xme){            		
             		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
      	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);

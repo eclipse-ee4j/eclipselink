@@ -21,7 +21,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
@@ -57,7 +56,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             CoreAbstractSession session = unmarshalRecord.getSession();
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) unmarshalRecord, session);
+            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(unmarshalRecord), session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();

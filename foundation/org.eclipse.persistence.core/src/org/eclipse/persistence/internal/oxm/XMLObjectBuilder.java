@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -503,7 +504,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         isXMLDescriptor = null;
     }
     
-    protected List<Namespace> addExtraNamespacesToNamespaceResolver(Descriptor desc, org.eclipse.persistence.internal.oxm.record.XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    protected List<Namespace> addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         return marshalRecord.addExtraNamespacesToNamespaceResolver(desc, session, allowOverride, ignoreEqualResolvers);
     }
 

@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
  * INTERNAL:
  * This class delegates all events corresponding to the UnmappedContentHandler.
  */
-public class UnmappedContentHandlerWrapper extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
+public class UnmappedContentHandlerWrapper extends UnmarshalRecordImpl {
     private int depth;
     private UnmappedContentHandler unmappedContentHandler;
 
@@ -34,7 +34,7 @@ public class UnmappedContentHandlerWrapper extends org.eclipse.persistence.oxm.r
         setUnmarshaller((XMLUnmarshaller) parentRecord.getUnmarshaller());
         setXMLReader(parentRecord.getXMLReader());
         setUnmarshalNamespaceResolver(parentRecord.getUnmarshalNamespaceResolver());
-        unmappedContentHandler.setUnmarshalRecord(this);
+        unmappedContentHandler.setUnmarshalRecord(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this));
     }
 
     public UnmappedContentHandlerWrapper(UnmappedContentHandler unmappedContentHandler, SAXUnmarshallerHandler saxUnmarshallerHandler) {
@@ -44,7 +44,7 @@ public class UnmappedContentHandlerWrapper extends org.eclipse.persistence.oxm.r
         setUnmarshaller((XMLUnmarshaller) saxUnmarshallerHandler.getUnmarshaller());
         setXMLReader(saxUnmarshallerHandler.getXMLReader());
         setUnmarshalNamespaceResolver(saxUnmarshallerHandler.getUnmarshalNamespaceResolver());
-        unmappedContentHandler.setUnmarshalRecord(this);
+        unmappedContentHandler.setUnmarshalRecord(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this));
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {

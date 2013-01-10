@@ -22,7 +22,6 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
-import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
@@ -31,12 +30,15 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
 import org.w3c.dom.Node;
 
+/**
+ * This class represents marshal record behaviour that is specific to the SAX
+ * platform.
+ */
 public interface MarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
     FIELD extends CoreField,
     MARSHALLER extends Marshaller,
-    NAMESPACE_RESOLVER extends NamespaceResolver,
-    UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER, UNMARSHALLER> {
+    NAMESPACE_RESOLVER extends NamespaceResolver> extends AbstractMarshalRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER> {
 
     public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
 

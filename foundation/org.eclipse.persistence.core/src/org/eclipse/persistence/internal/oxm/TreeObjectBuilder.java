@@ -21,6 +21,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.NodeRecord;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.w3c.dom.Node;
 
 /**
@@ -42,13 +44,13 @@ import org.w3c.dom.Node;
  * <li>Create records appropriate to this implementation of ObjectBuilder.</li>
  * </ul>
  */
-public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder<AbstractRecord, AbstractSession, XMLMarshaller> {
+public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder<AbstractRecord, AbstractSession, ClassDescriptor, XMLMarshaller> {
 
     private XPathObjectBuilder xPathObjectBuilder;
 
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
-        xPathObjectBuilder = new XPathObjectBuilder((Descriptor) descriptor);
+        xPathObjectBuilder = new XPathObjectBuilder(descriptor);
     }
 
     @Override
@@ -125,9 +127,9 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      */
     public AbstractRecord createRecord(AbstractSession session) {
         xPathObjectBuilder.lazyInitialize();
-        org.eclipse.persistence.oxm.record.UnmarshalRecord uRec = new org.eclipse.persistence.oxm.record.UnmarshalRecord(this);
+        org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl uRec = new org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl(this);
         uRec.setSession(session);
-        return uRec;
+        return new UnmarshalRecord(uRec);
     }
 
     /**
@@ -159,7 +161,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
     }
 
     @Override
-    public List addExtraNamespacesToNamespaceResolver(Descriptor desc, XMLRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
+    public List addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         return xPathObjectBuilder.addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, allowOverride, ignoreEqualResolvers);
     }
 

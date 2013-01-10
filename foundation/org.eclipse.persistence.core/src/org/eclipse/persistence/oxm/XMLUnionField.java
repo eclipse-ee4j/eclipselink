@@ -19,7 +19,7 @@ import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.UnionField;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
 /**
  * <p>Subclass of XMLField for fields that are mapped to unions.
@@ -188,7 +188,7 @@ public class XMLUnionField extends XMLField implements UnionField<NamespaceResol
     * INTERNAL:
     */
     @Override
-    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+    public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record) {
         Object convertedValue = value;
         for (int i = 0; i < schemaTypes.size(); i++) {
             QName nextQName = (QName) schemaTypes.get(i);

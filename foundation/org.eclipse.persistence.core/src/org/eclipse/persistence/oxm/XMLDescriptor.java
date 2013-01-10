@@ -38,9 +38,11 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -54,7 +56,6 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.queries.DoesExistQuery;
@@ -894,9 +895,9 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
 
     }
     
-    private void setDeclaredTypeOnXMLRoot(Root xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, XMLUnmarshaller unmarshaller){
+    private void setDeclaredTypeOnXMLRoot(Root xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, Unmarshaller unmarshaller){
     	XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
-    	XMLDescriptor desc = unmarshaller.getXMLContext().getDescriptor(xpathQName);
+    	Descriptor desc = unmarshaller.getXMLContext().getDescriptor(xpathQName);
     	if(desc != null){
     		xmlRoot.setDeclaredType(desc.getJavaClass());
     	}

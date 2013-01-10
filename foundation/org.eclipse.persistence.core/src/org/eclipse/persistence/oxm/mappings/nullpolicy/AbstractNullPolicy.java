@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.record.DOMRecord;
@@ -216,7 +217,7 @@ public abstract class AbstractNullPolicy {
      * @param field
      * @return true if this method caused any objects to be marshaled, else false.
      */
-    public boolean compositeObjectMarshal(XMLRecord record, Object object, Field field, CoreAbstractSession session) {
+    public boolean compositeObjectMarshal(AbstractMarshalRecord record, Object object, Field field, CoreAbstractSession session) {
         if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             record.put(field, XMLRecord.NIL);
             return true;
@@ -358,7 +359,7 @@ public abstract class AbstractNullPolicy {
     /**
      * INTERNAL
      */
-    public void directMarshal(Field field, XMLRecord record, Object object) {
+    public void directMarshal(Field field, AbstractMarshalRecord record, Object object) {
         Object fieldValue = null;
         if(marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             fieldValue = Constants.EMPTY_STRING;

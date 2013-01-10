@@ -29,6 +29,8 @@ import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -46,7 +48,7 @@ import org.w3c.dom.Node;
  * PUBLIC:
  * Provides a Record/Map API on an XML DOM element.
  */
-public abstract class XMLRecord extends AbstractRecord implements org.eclipse.persistence.internal.oxm.record.XMLRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver, XMLUnmarshaller> {
+public abstract class XMLRecord extends AbstractRecord implements AbstractMarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver>, AbstractUnmarshalRecord<AbstractSession, XMLUnmarshaller> {
     protected XMLMarshaller marshaller;
     protected XMLUnmarshaller unmarshaller;
     private DocumentPreservationPolicy docPresPolicy;

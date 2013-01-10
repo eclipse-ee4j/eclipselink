@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.core.descriptors;
 
-public abstract class CoreDescriptorEventManager {
+public abstract class CoreDescriptorEventManager<
+    DESCRIPTOR_EVENT extends CoreDescriptorEvent> {
+
+    public abstract void executeEvent(DESCRIPTOR_EVENT event);
+
+    public abstract boolean hasAnyEventListeners();
 
 }

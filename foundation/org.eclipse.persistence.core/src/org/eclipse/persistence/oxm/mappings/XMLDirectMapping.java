@@ -20,6 +20,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -260,7 +261,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * INTERNAL:
      * Allows for subclasses to convert the attribute value.
      */
-    public Object getAttributeValue(Object fieldValue, AbstractSession session, XMLRecord record) {
+    public Object getAttributeValue(Object fieldValue, AbstractSession session, AbstractUnmarshalRecord record) {
     	// Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
         boolean isNullRepresentedByEmptyNode = nullPolicy.isNullRepresentedByEmptyNode();
@@ -290,7 +291,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
 
         // Allow for user defined conversion to the object value.       
         if (converter != null) {
-            attributeValue = convertDataValueToObjectValue(attributeValue, session, record.getUnmarshaller());
+            attributeValue = convertDataValueToObjectValue(attributeValue, session, (XMLUnmarshaller) record.getUnmarshaller());
         } else {
             // PERF: Avoid conversion check when not required.
             if ((attributeValue == null) || (attributeValue.getClass() != this.attributeObjectClassification)) {

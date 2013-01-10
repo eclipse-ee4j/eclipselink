@@ -485,8 +485,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                  if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
                  	adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
                  }
-            	
-                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+            	UnmarshalRecord wrapper = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+                org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord = (org.eclipse.persistence.internal.oxm.record.UnmarshalRecord) wrapper.getUnmarshalRecord();
                 XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                 unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
                 unmarshalRecord.setXMLReader(staxReader);

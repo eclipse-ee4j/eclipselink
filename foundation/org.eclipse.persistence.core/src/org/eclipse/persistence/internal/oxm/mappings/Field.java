@@ -19,7 +19,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 
 public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends CoreField{
 	
@@ -27,7 +27,7 @@ public interface Field<NAMESPACE_RESOLVER extends NamespaceResolver> extends Cor
      * INTERNAL:
      * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
      */
-     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record);
+     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, AbstractUnmarshalRecord record);
 	
     /**
     * Return the class for a given qualified XML Schema type

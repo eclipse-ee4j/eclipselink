@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
  * @author  mmacivor
  */
 
-public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.oxm.record.UnmarshalRecord {
+public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal.oxm.record.UnmarshalRecordImpl {
     UnmarshalRecord record;
     Mapping mapping;
     String c_id = null;

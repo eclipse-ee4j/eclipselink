@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,8 +10,21 @@
  * Contributors:
  *     Blaise Doughan - 2.5 - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.core.descriptors;
+package org.eclipse.persistence.internal.oxm.record;
 
-public interface CoreDescriptorEvent {
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Unmarshaller;
+
+/**
+ * This class represents unmarshal record behaviour that is common to all XML 
+ * platforms.
+ */
+public interface AbstractUnmarshalRecord<
+    ABSTRACT_SESSION extends CoreAbstractSession,
+    UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION> {
+
+    public UNMARSHALLER getUnmarshaller();
+
+    public String resolveNamespacePrefix(String prefix);
 
 }

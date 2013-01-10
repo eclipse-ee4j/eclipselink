@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.TimeZoneHolder;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
-import org.eclipse.persistence.internal.oxm.record.XMLRecord;
+import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 
 /**
@@ -2032,7 +2032,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         return this.trimGMonth;
     }
 
-    public QName buildQNameFromString(String stringValue, XMLRecord record){     
+    public QName buildQNameFromString(String stringValue, AbstractUnmarshalRecord record){     
         int index = stringValue.lastIndexOf(Constants.COLON);
         if(index > -1) {
             String prefix =  stringValue.substring(0, index);
