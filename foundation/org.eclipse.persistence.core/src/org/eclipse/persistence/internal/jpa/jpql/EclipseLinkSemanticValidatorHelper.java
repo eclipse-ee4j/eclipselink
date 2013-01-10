@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,14 +31,14 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
- * The EclipseLink implementation of {@link SemanticValidatorHelper} that accesses directly the
- * EclipseLink objects without going through Hermes SPI, which is done to increase performance.
+ * The EclipseLink implementation of {@link SemanticValidatorHelper}, which directly accesses
+ * EclipseLink objects without using Hermes SPI.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
-public final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelper {
+final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelper {
 
 	/**
 	 * The context used to query information about the JPQL query.
@@ -92,11 +92,13 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 
 		DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
 
+		// Collect the identification variables from the declarations
 		for (Declaration declaration : declarationResolver.getDeclarations()) {
 			IdentificationVariable identificationVariable = declaration.identificationVariable;
 			addIdentificationVariable(identificationVariable, identificationVariables);
 		}
 
+		// Collect the result variables
 		for (IdentificationVariable identificationVariable : declarationResolver.getResultVariables()) {
 			addIdentificationVariable(identificationVariable, identificationVariables);
 		}
@@ -205,13 +207,26 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
-	public Object getMappingNamed(Object entity, String path) {
-
-		ClassDescriptor descriptor = (ClassDescriptor) entity;
-		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
+	@Override
+	public Object getReferenceManagedType(Object mapping) {
 
 		if (mapping == null) {
-			mapping = descriptor.getQueryKeyNamed(path);
+			return null;
+		}
+
+		return ((DatabaseMapping) mapping).getReferenceDescriptor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Object getMappingNamed(Object entity, String name) {
+
+		ClassDescriptor descriptor = (ClassDescriptor) entity;
+		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
+
+		if (mapping == null) {
+			mapping = descriptor.getQueryKeyNamed(name);
 		}
 
 		return mapping;
@@ -333,7 +348,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	 */
 	public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
 
-		Declaration declaration = queryContext.getDeclaration(expression.getVariableName());
+		Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
 
 		if (declaration == null) {
 			return false;
@@ -451,22 +466,28 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
-	public Object resolveMapping(String variableName, String path) {
+	public Object resolveMapping(String variableName, String name) {
 
 		// Find the declaration associated with the identification variable
 		Declaration declaration = queryContext.findDeclaration(variableName);
-		if (declaration == null) return null;
 
-		// Retrieve the resolved ClassDescriptor
+		if (declaration == null) {
+			return null;
+		}
+
+		// Retrieve the associated descriptor
 		ClassDescriptor descriptor = declaration.getDescriptor();
-		if (descriptor == null) return null;
 
-		// First retrieve the mapping
-		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
+		if (descriptor == null) {
+			return null;
+		}
 
-		// No mapping was found, look for a QueryKey
+		// Now, retrieve the mapping
+		Object mapping = descriptor.getObjectBuilder().getMappingForAttributeName(name);
+
+		// No mapping was found, look for a query key
 		if (mapping == null) {
-			mapping = descriptor.getQueryKeyNamed(path);
+			mapping = descriptor.getQueryKeyNamed(name);
 		}
 
 		return mapping;

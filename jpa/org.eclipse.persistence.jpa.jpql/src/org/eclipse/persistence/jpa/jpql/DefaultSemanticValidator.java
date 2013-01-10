@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -88,7 +88,6 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -106,7 +105,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see DefaultGrammarValidator
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -1027,8 +1026,8 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("null")
 	@Override
+	@SuppressWarnings("null")
 	protected boolean validateUpdateItem(UpdateItem expression) {
 
 		// First validate the path expression

@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -221,6 +221,19 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	 */
 	public ITypeDeclaration[] getMethodParameterTypeDeclarations(Object constructor) {
 		return ((IConstructor) constructor).getParameterTypes();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public IManagedType getReferenceManagedType(Object relationshipMapping) {
+
+		if (relationshipMapping == null) {
+			return null;
+		}
+
+		IMapping mapping = (IMapping) relationshipMapping;
+		return mapping.getParent().getProvider().getManagedType(mapping.getType());
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,29 +21,37 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The unit-test class used for testing a JPQL jpqlQuery semantically when the JPA version is 1.0 and 2.0.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTest {
+public final class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new DefaultJPQLQueryContext(jpqlGrammar);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isPathExpressionToCollectionMappingAllowed() {
 		return false;
@@ -1284,7 +1292,7 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	@Test
 	public final void test_UpdateItem_NotResolvable_1() throws Exception {
 
-		String jpqlQuery = "UPDATE Employee AS e SET e.name = 'JPQL'";
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'JPQL'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testDoesNotHaveProblem(problems, UpdateItem_NotResolvable);
 	}
@@ -1292,7 +1300,7 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	@Test
 	public final void test_UpdateItem_NotResolvable_2() throws Exception {
 
-		String jpqlQuery  = "UPDATE Employee AS e SET name = 'JPQL'";
+		String jpqlQuery = "UPDATE Employee AS e SET e.name = 'JPQL'";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testDoesNotHaveProblem(problems, UpdateItem_NotResolvable);
 	}
@@ -1300,9 +1308,76 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	@Test
 	public final void test_UpdateItem_NotResolvable_3() throws Exception {
 
+		String jpqlQuery = "UPDATE Employee SET name = 'JPQL'";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testDoesNotHaveProblem(problems, UpdateItem_NotResolvable);
+	}
+
+	@Test
+	public final void test_UpdateItem_NotResolvable_4() throws Exception {
+
+		String jpqlQuery  = "UPDATE Employee e SET name = 'JPQL'";
+		int startPosition = "UPDATE Employee e SET ".length();
+		int endPosition   = "UPDATE Employee e SET name".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasProblem(
+			problems,
+			UpdateItem_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateItem_NotResolvable_5() throws Exception {
+
+		String jpqlQuery  = "UPDATE Employee SET e.name = 'JPQL'";
+		int startPosition = "UPDATE Employee SET ".length();
+		int endPosition   = "UPDATE Employee SET e.name".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasProblem(
+			problems,
+			UpdateItem_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateItem_NotResolvable_6() throws Exception {
+
 		String jpqlQuery  = "UPDATE Employee AS e SET e.customerList = 'JPQL'";
 		int startPosition = "UPDATE Employee AS e SET ".length();
 		int endPosition   = "UPDATE Employee AS e SET e.customerList".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasProblem(
+			problems,
+			UpdateItem_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateItem_NotResolvable_7() throws Exception {
+
+		String jpqlQuery  = "UPDATE Employee e SET e.embeddedAddress.city = 'JPQL'";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_UpdateItem_NotResolvable_8() throws Exception {
+
+		String jpqlQuery  = "UPDATE Employee e SET e.embeddedAddress.postalcode = 'JPQL'";
+		int startPosition = "UPDATE Employee e SET ".length();
+		int endPosition   = "UPDATE Employee e SET e.customerList.postalcode".length();
 
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 

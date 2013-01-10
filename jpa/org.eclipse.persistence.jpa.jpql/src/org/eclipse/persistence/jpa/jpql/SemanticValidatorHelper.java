@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -168,6 +168,18 @@ public interface SemanticValidatorHelper {
 	 * @return The list of parameter types or an empty list
 	 */
 	Object[] getMethodParameterTypeDeclarations(Object constructor);
+
+	/**
+	 * Returns the reference managed type from the given relationship mapping.
+	 * <p>
+	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
+	 * persistence.jpa.jpql.spi.IMapping IMapping} and the return type would be {@link
+	 * org.eclipse.persistence.jpa.jpql.spi.IManagedType IManagedType}.
+	 *
+	 * @param relationshipMapping The relationship mapping
+	 * @return The managed type referenced by the given relationship mapping
+	 */
+	Object getReferenceManagedType(Object relationshipMapping);
 
 	/**
 	 * Returns the type by resolving the given {@link Expression}.

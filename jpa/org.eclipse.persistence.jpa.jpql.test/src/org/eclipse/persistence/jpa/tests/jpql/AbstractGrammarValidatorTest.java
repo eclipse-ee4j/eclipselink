@@ -2621,24 +2621,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_InExpression_InItemIsMissingComma() throws Exception {
-
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN(?1 ?2)";
-		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(?1".length();
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			InExpression_InItemIsMissingComma,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_InExpression_InItemsEndWithComma() throws Exception {
+	public final void test_InExpression_ItemEndWithComma() throws Exception {
 
 		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN(?1, ?2,)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(?1, ?2".length();
@@ -2655,17 +2638,53 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_InExpression_InvalidExpression() throws Exception {
+	public final void test_InExpression_ItemInvalidExpression_2() throws Exception {
 
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.age) IN(e.address.street)";
-		int startPosition = "SELECT e FROM Employee e WHERE ".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.age)".length();
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN :age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testDoesNotHaveProblem(
+			problems,
+			InExpression_InvalidExpression
+		);
+	}
+
+	@Test
+	public final void test_InExpression_ItemInvalidExpression_3() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (:age)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testDoesNotHaveProblem(
+			problems,
+			InExpression_InvalidExpression
+		);
+	}
+
+	@Test
+	public final void test_InExpression_ItemInvalidExpression_4() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN (SELECT a FROM Address a)";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testDoesNotHaveProblem(
+			problems,
+			InExpression_InvalidExpression
+		);
+	}
+
+	@Test
+	public final void test_InExpression_ItemIsMissingComma() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name IN(?1 ?2)";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(?1".length();
+		int endPosition   = startPosition + 1;
 
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
 		testHasOnlyOneProblem(
 			problems,
-			InExpression_InvalidExpression,
+			InExpression_InItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -2674,7 +2693,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public final void test_InExpression_MissingExpression() throws Exception {
 
-		String jpqlQuery  = "SELECT e FROM Employee e WHERE IN(e.address.street)";
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE IN :age";
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
 		int endPosition   = startPosition;
 

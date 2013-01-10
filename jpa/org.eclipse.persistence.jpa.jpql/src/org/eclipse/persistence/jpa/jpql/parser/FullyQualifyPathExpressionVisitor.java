@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,19 +14,18 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * This visitor makes sure that all path expressions are fully qualified with the identification
- * variable in the range variable declaration. This only applies to an <b>UPDATE</b> or <b>DELETE</b>
- * query.
+ * This visitor makes sure that all path expressions are fully qualified with a "virtual"
+ * identification variable if the range variable declaration does not define one. This only applies
+ * to an <code><b>UPDATE</b></code> or <code><b>DELETE</b></code> queries.
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
 public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChildrenVisitor {
 
 	/**
-	 * The identification variable defined in the range variable declaration or the abstract schema
-	 * name in lower case.
+	 * The "virtual" identification variable if none was defined.
 	 */
 	private String variableName;
 
@@ -43,8 +42,13 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 		return visitor;
 	}
 
-	private void qualifyPathExpression(AbstractPathExpression expression) {
-		expression.setVirtualIdentificationVariable(variableName);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(AbstractSchemaName expression) {
+		// The "virtual" variable name will be the entity name
+		variableName = expression.toActualText().toLowerCase();
 	}
 
 	/**
@@ -60,9 +64,28 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	 */
 	@Override
 	public void visit(CollectionValuedPathExpression expression) {
-		// A null check is required because the query could be invalid/incomplete
-		if (variableName != null) {
-			visitAbstractPathExpression(expression);
+		visitAbstractPathExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(DeleteClause expression) {
+		expression.getRangeVariableDeclaration().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(DeleteStatement expression) {
+
+		expression.getDeleteClause().accept(this);
+
+		// Don't traverse the tree if the path expressions don't need to be virtually qualified
+		if ((variableName != null) && expression.hasWhereClause()) {
+			expression.getWhereClause().accept(this);
 		}
 	}
 
@@ -74,12 +97,7 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 
 		// A null check is required because the query could be invalid/incomplete
 		// The identification variable should become a state field path expression
-		if ((variableName != null)  &&
-		    !expression.isVirtual() &&
-		    !variableName.equalsIgnoreCase(expression.getText())) {
-
-			expression.setVirtualIdentificationVariable(variableName);
-		}
+		expression.setVirtualIdentificationVariable(variableName);
 	}
 
 	/**
@@ -96,11 +114,10 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	@Override
 	public void visit(RangeVariableDeclaration expression) {
 
-		if (expression.hasIdentificationVariable()) {
-			variableName = expression.getIdentificationVariable().toParsedText().toLowerCase();
-		}
-		else {
-			variableName = expression.getRootObject().toParsedText().toLowerCase();
+		// The "root" object does not have an identification variable,
+		// then we'll assume all path expressions are unqualified
+		if (!expression.hasIdentificationVariable()) {
+			expression.getRootObject().accept(this);
 			expression.setVirtualIdentificationVariable(variableName);
 		}
 	}
@@ -127,17 +144,40 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	@Override
 	public void visit(StateFieldPathExpression expression) {
 		// A null check is required because the query could be invalid/incomplete
-		if (variableName != null) {
-			visitAbstractPathExpression(expression);
+		visitAbstractPathExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UpdateClause expression) {
+
+		expression.getRangeVariableDeclaration().accept(this);
+
+		// Don't traverse the tree if the path expressions don't need to be virtually qualified
+		if ((variableName != null) && expression.hasUpdateItems()) {
+			expression.getUpdateItems().accept(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UpdateStatement expression) {
+
+		expression.getUpdateClause().accept(this);
+
+		// Don't traverse the tree if the path expressions don't need to be virtually qualified
+		if ((variableName != null) && expression.hasWhereClause()) {
+			expression.getWhereClause().accept(this);
 		}
 	}
 
 	private void visitAbstractPathExpression(AbstractPathExpression expression) {
 
-		if (!expression.hasIdentificationVariable()) {
-			qualifyPathExpression(expression);
-		}
-		else if (!expression.startsWithDot()) {
+		if (!expression.startsWithDot()) {
 
 			// Visit the general identification variable to make sure it's not a map key, map entry
 			// or map value expression
@@ -145,11 +185,7 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 			expression.getIdentificationVariable().accept(visitor);
 
 			if (visitor.expression == null) {
-				String variable = expression.getIdentificationVariable().toParsedText();
-
-				if (!variableName.equalsIgnoreCase(variable)) {
-					qualifyPathExpression(expression);
-				}
+				expression.setVirtualIdentificationVariable(variableName);
 			}
 		}
 	}
