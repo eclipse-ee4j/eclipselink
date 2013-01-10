@@ -1,14 +1,5 @@
-/*
-
-    For minimal implementation, compare with:
-         C:\PL\JPA\EclipseLink\SVN\org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\CloudscapePlatform.java
-         
-    For PVSW data type mapping, see: getColumnClassName():C:\cmsynergy\psql11.20_pnl\psql\comp\sdk\jdbc\pvjdbc2\src\com\pervasive\jdbc\v2\ResultSetMetaData.java         
-    
-*/
-
 /*******************************************************************************
- * Copyright (c) 2012 All rights reserved.
+ * Copyright (c) 2012 Pervasive Software Inc. All Rights Reserved
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,9 +7,19 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
+ * Contributors: 
+ *       Peter Lohman - initial implementation
  *     
  ******************************************************************************/  
+
+ /*
+
+    For minimal implementation, compare with:
+         C:\PL\JPA\EclipseLink\SVN\org.eclipse.persistence\foundation\org.eclipse.persistence.core\src\org\eclipse\persistence\platform\database\CloudscapePlatform.java
+         
+    For PVSW data type mapping, see: getColumnClassName():C:\cmsynergy\psql11.20_pnl\psql\comp\sdk\jdbc\pvjdbc2\src\com\pervasive\jdbc\v2\ResultSetMetaData.java         
+    
+*/
 package org.eclipse.persistence.platform.database;
 
 import java.util.*;
