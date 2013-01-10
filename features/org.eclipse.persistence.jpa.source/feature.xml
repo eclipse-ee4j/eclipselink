@@ -82,7 +82,7 @@
          id="org.eclipse.persistence.oracle.source"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ORACLE_VERSION@"
          unpack="false"/>
 
 </feature>

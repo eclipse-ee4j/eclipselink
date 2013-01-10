@@ -114,7 +114,7 @@
          id="org.eclipse.persistence.oracle"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ORACLE_VERSION@"
          unpack="false"/>
 
 </feature>

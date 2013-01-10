@@ -33,7 +33,7 @@
          id="org.eclipse.persistence.oracle.nosql.source"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@ORACLENOSQL_VERSION@"
          unpack="false"/ -->
 
 </feature>
