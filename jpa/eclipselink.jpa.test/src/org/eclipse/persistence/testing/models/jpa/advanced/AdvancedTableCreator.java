@@ -20,6 +20,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.util.Vector;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.logging.SessionLog;
+
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
 import org.eclipse.persistence.tools.schemaframework.*;
 
@@ -952,7 +960,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(IDfield);
         
         ForeignKeyConstraint foreignKeyGOLFER_WORLDRANK = new ForeignKeyConstraint();
-        foreignKeyGOLFER_WORLDRANK.setName("WORLDRANK_ID");
+        foreignKeyGOLFER_WORLDRANK.setName("CMP3_GOLFER_CMP3_WORLDRANK");
         foreignKeyGOLFER_WORLDRANK.setTargetTable("CMP3_WORLDRANK"); 
         foreignKeyGOLFER_WORLDRANK.addSourceField("WORLDRANK_ID");
         foreignKeyGOLFER_WORLDRANK.addTargetField("ID");
@@ -2609,5 +2617,78 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addForeignKeyConstraint(foreignKeyCMP3_DOOR_CMP3_ROOM);
  
         return table;
+    }
+    @Override
+    public void replaceTables(DatabaseSession session) {
+        if (session.getPlatform().isPervasive()) {
+            adjustForeignKeyFieldTypes(session);
+        }
+        super.replaceTables(session);
+    }
+
+    private void adjustForeignKeyFieldTypes(DatabaseSession session) {
+        for (TableDefinition sourceTableDefinition : getTableDefinitions() ) {
+            for (FieldDefinition sourceFieldDefinition : sourceTableDefinition.getFields()) {  // see TableDefinition, l.789
+                if (sourceFieldDefinition.getForeignKeyFieldName() != null) {
+                    // We need to build each foreign key constraint on the fly, because TableDefinition.buildFieldTypes() has not been called yet
+                    ForeignKeyConstraint foreignKeyConstraint = buildForeignKeyConstraint(sourceFieldDefinition, session.getPlatform());
+                    // Assume only one of each (as in Field Defintion)
+                    String sourceFieldName = foreignKeyConstraint.getSourceFields().get(0);
+                    String targetFieldName = foreignKeyConstraint.getTargetFields().get(0);
+
+                    // Find the target table and the target field
+                    TableDefinition targetTableDefinition = getTableDefinition(foreignKeyConstraint.getTargetTable());
+                    // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target table " +  foreignKeyConstraint.getTargetTable() + " for foreign key " + foreignKeyConstraint.getName());
+                    FieldDefinition targetFieldDefinition = getFieldDefinition(targetTableDefinition, targetFieldName); 
+                    // session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator: Found target field " + targetFieldDefinition.getName() + " in table " + targetTableDefinition.getName());
+                    // Only change source column if target is identity
+                    String qualifiedName = targetTableDefinition.getFullName() + '.' + targetFieldDefinition.getName();
+                    if (targetFieldDefinition.isIdentity() && session.getPlatform().shouldPrintFieldIdentityClause((AbstractSession)session, qualifiedName)) {
+                        session.getSessionLog().log(SessionLog.FINEST, "AdvancedTableCreator.adjustForeignKeyFieldTypes(): Changing data type of source field " + sourceFieldDefinition.getName() + "to INTEGER in table " + sourceTableDefinition.getName());
+                        sourceFieldDefinition.setTypeName("INTEGER");
+                        sourceFieldDefinition.setSize(0);                                             
+                    }
+                }
+            }
+        }
+    }    
+
+
+    // Helper methods for adjustForeignKeyFieldTypes()
+
+    private FieldDefinition getFieldDefinition(TableDefinition tableDefinition, String fieldName) {
+        for (FieldDefinition targetField : tableDefinition.getFields()) { // see TableDefinition, l.351
+            if (targetField.getName().equals(fieldName)) {
+                return targetField;
+            }
+        }
+        return null;    
+    }
+
+    private TableDefinition getTableDefinition(String tableName) {
+        for (TableDefinition targetTable : getTableDefinitions()) { // see TableCreator, l.87
+            if (targetTable.getName().equals(tableName)) {
+                return targetTable;
+            }
+        }
+        return null;    
+    }
+
+    // Mostly cloned from TableDefinition.buildForeignKeyConstraint()
+    private ForeignKeyConstraint buildForeignKeyConstraint(FieldDefinition field, DatabasePlatform platform) {
+        Vector sourceFields = new Vector();
+        Vector targetFields = new Vector();
+        ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
+        DatabaseField tempTargetField = new DatabaseField(field.getForeignKeyFieldName());
+        DatabaseField tempSourceField = new DatabaseField(field.getName());
+
+        sourceFields.add(tempSourceField.getName());
+        targetFields.add(tempTargetField.getName());
+
+        fkConstraint.setSourceFields(sourceFields);
+        fkConstraint.setTargetFields(targetFields);
+        fkConstraint.setTargetTable(tempTargetField.getTable().getQualifiedNameDelimited(platform));
+
+        return fkConstraint;
     }
 }

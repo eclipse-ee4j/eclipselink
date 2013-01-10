@@ -51,7 +51,7 @@ public class Jdk12ScrollableCursorTest extends TestCase {
             TYPE_SCROLL_INSENSITIVE_isSupported = false;
             CONCUR_UPDATABLE_isSupported = false;
         }
-        if(getSession().getPlatform().isSymfoware()) {
+        if(getSession().getPlatform().isSymfoware() || getSession().getPlatform().isPervasive()) {
             // Symfoware supports updatable cursors, but considers SQL queries
             // that select from multiple tables as non-updatable, thus raising
             // an exception for this test.

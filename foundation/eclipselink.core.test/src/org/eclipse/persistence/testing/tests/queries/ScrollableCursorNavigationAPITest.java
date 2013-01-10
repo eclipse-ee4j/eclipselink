@@ -55,6 +55,11 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
         if (getSession().getPlatform().isMySQL()) {
             throw new TestWarningException("Not supported in MySQL");
         }
+
+        if (getSession().getPlatform().isPervasive()) {
+            throw new TestWarningException("This test is not supported on the Pervasive platform.");
+        }
+
         TYPE_SCROLL_INSENSITIVE_isSupported = true;
         CONCUR_UPDATABLE_isSupported = true;
         if(getSession().getPlatform().isSQLServer()) {

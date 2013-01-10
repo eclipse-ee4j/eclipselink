@@ -43,6 +43,11 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isHANA()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
+
+        if (getSession().getPlatform().isPervasive()) {
+            throw new TestWarningException("This test is not supported on the Pervasive platform.");
+        }
+
         TYPE_SCROLL_INSENSITIVE_isSupported = true;
         CONCUR_UPDATABLE_isSupported = true;
         if(getSession().getPlatform().isSQLServer()) {

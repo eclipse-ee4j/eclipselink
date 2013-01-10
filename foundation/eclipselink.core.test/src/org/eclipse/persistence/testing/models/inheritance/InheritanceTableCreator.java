@@ -131,7 +131,7 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
         FieldDefinition fieldTYPE = new FieldDefinition();
         fieldTYPE.setName("TYPE");
         fieldTYPE.setTypeName("VARCHAR2");
-        fieldTYPE.setSize(255);
+        fieldTYPE.setSize(240);
         fieldTYPE.setSubSize(0);
         fieldTYPE.setIsPrimaryKey(true);
         fieldTYPE.setIsIdentity(false);

@@ -13,6 +13,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.customsqlstoredprocedures;
 
+import org.eclipse.persistence.exceptions.ValidationException;
+import java.io.IOException;
+import java.io.Writer;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.tools.schemaframework.*;
@@ -467,7 +472,170 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         proc.addStatement("OPEN C2");
         return proc;
     }
-    
+ 
+    class PervasiveStoredProcedureDefinition extends StoredProcedureDefinition {
+        protected String returnString;
+
+        public PervasiveStoredProcedureDefinition() {
+            this.returnString = "";
+        }
+
+        public void setReturnString (String theString) {
+            this.returnString = theString;
+        } 
+
+        protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
+            try {
+                writer.write(returnString);
+            } catch (IOException ioException) {
+                throw ValidationException.fileError(ioException);
+            }
+        }
+    }    
+       
+    public StoredProcedureDefinition buildPervasiveDeleteProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Delete_Employee");
+        proc.addArgument("EMP_ID", Long.class);
+        proc.addStatement("Delete FROM SALARY where EMP_ID = :EMP_ID");
+        proc.addStatement("Delete FROM EMPLOYEE where EMP_ID = :EMP_ID");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveInsertProcedure() {
+        // Assume no identity.
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Insert_Employee");
+        proc.addArgument("EMP_ID", Long.class);
+        proc.addArgument("SALARY", Integer.class);
+        proc.addArgument("END_DATE", java.sql.Date.class);
+        proc.addArgument("MANAGER_ID", Long.class);
+        proc.addArgument("START_DATE", java.sql.Date.class);
+        proc.addArgument("F_NAME", String.class, 40);
+        proc.addArgument("L_NAME", String.class, 40);
+        proc.addArgument("GENDER", String.class, 1);
+        proc.addArgument("ADDR_ID", Long.class);
+        proc.addArgument("START_TIME", java.sql.Time.class);
+        proc.addArgument("END_TIME", java.sql.Time.class);
+        proc.addStatement("Insert INTO EMPLOYEE (EMP_ID, END_DATE, MANAGER_ID, START_DATE, F_NAME, L_NAME, GENDER, ADDR_ID, START_TIME, END_TIME) " + "VALUES (:EMP_ID, :END_DATE, :MANAGER_ID, :START_DATE, :F_NAME, :L_NAME, :GENDER, :ADDR_ID, :START_TIME, :END_TIME)");
+        proc.addStatement("Insert INTO SALARY (SALARY, EMP_ID) VALUES (:SALARY, :EMP_ID)");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveReadAllProcedure() {
+        PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
+        proc.setReturnString (
+        " RETURNS (" + 
+        "EMP_ID BIGINT, " +
+        "F_NAME CHAR(40), " +
+        "L_NAME CHAR(40), " +
+        "START_DATE DATE, " +
+        "END_DATE DATE, " +
+        "START_TIME TIME, " +
+        "END_TIME TIME, " +
+        "GENDER CHAR(1), " +
+        "ADDR_ID BIGINT, " +
+        "MANAGER_ID BIGINT, " +
+        "VERSION BIGINT, " +
+        "EMP_ID BIGINT, " + 
+        "SALARY INTEGER " +
+        ")" 
+        );
+        proc.setName("Read_All_Employees");
+        proc.addStatement("Select E.*, S.* from EMPLOYEE E, SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveReadObjectProcedure() {
+        PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
+        proc.setReturnString (
+        " RETURNS (" + 
+        "EMP_ID BIGINT, " +
+        "F_NAME CHAR(40), " +
+        "L_NAME CHAR(40), " +
+        "START_DATE DATE, " +
+        "END_DATE DATE, " +
+        "START_TIME TIME, " +
+        "END_TIME TIME, " +
+        "GENDER CHAR(1), " +
+        "ADDR_ID BIGINT, " +
+        "MANAGER_ID BIGINT, " +
+        "VERSION BIGINT, " +
+        "EMP_ID BIGINT, " + 
+        "SALARY INTEGER " +
+        ")" 
+        );
+        proc.setName("Read_Employee");
+        proc.addArgument("EMP_ID", Long.class);
+        proc.addStatement("Select E.*, S.* from EMPLOYEE E, SALARY S where E.EMP_ID = S.EMP_ID AND E.EMP_ID = :EMP_ID");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveStoredProcedureInOutPut() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("StoredProcedure_InOutput");
+        proc.addInOutputArgument("EMP_ID", Long.class);
+        proc.addInOutputArgument("F_NAME", String.class);
+        proc.addStatement("SET :EMP_ID = :EMP_ID");
+        proc.addStatement("SET :F_NAME = :F_NAME");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveSelectWithOutputAndResultSetProcedure() {
+        PervasiveStoredProcedureDefinition proc = new PervasiveStoredProcedureDefinition();
+        proc.setReturnString (
+        " RETURNS (" + 
+        "EMP_ID BIGINT, " +
+        "F_NAME CHAR(40), " +
+        "L_NAME CHAR(40), " +
+        "START_DATE DATE, " +
+        "END_DATE DATE, " +
+        "START_TIME TIME, " +
+        "END_TIME TIME, " +
+        "GENDER CHAR(1), " +
+        "ADDR_ID BIGINT, " +
+        "MANAGER_ID BIGINT, " +
+        "VERSION BIGINT, " +
+        "EMP_ID BIGINT, " + 
+        "SALARY INTEGER " +
+        ")" 
+        );
+        proc.setName("Select_Output_and_ResultSet");
+        proc.addArgument("ARG1", Long.class);
+        proc.addOutputArgument("VERSION", Long.class);
+        proc.addStatement("SET :VERSION = 23");
+        proc.addStatement("Select E.*, S.* from EMPLOYEE E, SALARY S where E.EMP_ID = S.EMP_ID AND E.F_NAME = 'Bob'");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveSelectWithOutputProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Select_Employee_using_Output");
+        proc.addArgument("ARG1", Long.class);
+        proc.addOutputArgument("VERSION", Long.class);
+        proc.addStatement("SET :VERSION = 23");
+        return proc;
+    }
+
+    public StoredProcedureDefinition buildPervasiveUpdateProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Update_Employee");
+        proc.addArgument("EMP_ID", Long.class);
+        proc.addArgument("SALARY", Integer.class);
+        proc.addArgument("END_DATE", java.sql.Date.class);
+        proc.addArgument("MANAGER_ID", Long.class);
+        proc.addArgument("START_DATE", java.sql.Date.class);
+        proc.addArgument("F_NAME", String.class, 40);
+        proc.addArgument("L_NAME", String.class, 40);
+        proc.addArgument("GENDER", String.class, 1);
+        proc.addArgument("ADDR_ID", Long.class);
+        proc.addArgument("START_TIME", java.sql.Time.class);
+        proc.addArgument("END_TIME", java.sql.Time.class);
+        proc.addStatement("Update SALARY set SALARY = :SALARY WHERE (EMP_ID = :EMP_ID)");
+        proc.addStatement("Update EMPLOYEE set END_DATE = :END_DATE, MANAGER_ID = :MANAGER_ID, " + "START_DATE = :START_DATE, F_NAME = :F_NAME, L_NAME = :L_NAME, GENDER = :GENDER, ADDR_ID = :ADDR_ID " + " WHERE (EMP_ID = :EMP_ID)");
+        return proc;
+    }
+
     /**
      * Also creates the procs.
      */
@@ -527,6 +695,19 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         if (platform.isDB2()) {
             schema.replaceObject(buildDB2SelectWithOutputAndResultSetProcedure());
         }
+
+        if (platform.isPervasive()) {
+            schema.replaceObject(buildPervasiveReadAllProcedure());
+            schema.replaceObject(buildPervasiveInsertProcedure());
+            schema.replaceObject(buildPervasiveDeleteProcedure());
+            schema.replaceObject(buildPervasiveInsertProcedure());
+            schema.replaceObject(buildPervasiveReadAllProcedure());
+            schema.replaceObject(buildPervasiveReadObjectProcedure());
+            schema.replaceObject(buildPervasiveStoredProcedureInOutPut());
+            schema.replaceObject(buildPervasiveSelectWithOutputAndResultSetProcedure());
+            schema.replaceObject(buildPervasiveSelectWithOutputProcedure());
+            schema.replaceObject(buildPervasiveUpdateProcedure());
+       }
     }
 
     protected void setCommonSQL(Session session) {
@@ -576,6 +757,8 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             setSQLServerSQL(session);
         } else if (session.getLogin().isAnyOracleJDBCDriver()) {// Require output cursor support.
             setOracleSQL(session);
+        } else if (session.getLogin().getPlatform().isPervasive()) {
+            setPervasiveSQL(session);
         } else {
             ClassDescriptor empDescriptor = session.getDescriptor(new Employee());
             empDescriptor.getQueryManager().setReadObjectSQLString("select E.*, S.* FROM EMPLOYEE E, SALARY S WHERE E.EMP_ID = S.EMP_ID AND E.EMP_ID = #EMP_ID");
@@ -664,6 +847,78 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
         ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
         manyToMany.setSelectionSQLString("select P.*, L.* FROM LPROJECT L, PROJECT P, PROJ_EMP PE WHERE ((P.PROJ_ID = L.PROJ_ID (+)) AND (PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
     }
+
+    protected void setPervasiveSQL(Session session) {
+        ClassDescriptor empDescriptor = session.getDescriptor(new Employee());
+        StoredProcedureCall call;
+
+        // Currently the rowcount does not work, so disable locking.
+        empDescriptor.setOptimisticLockingPolicy(null);
+        session.getLogin().getPlatform().setUsesNativeSQL(true);
+
+        ReadObjectQuery readQuery = new ReadObjectQuery();
+        call = new StoredProcedureCall();
+        call.setProcedureName("Read_Employee");
+        call.addNamedArgument("EMP_ID");
+        call.setReturnsResultSet(true);
+        readQuery.setCall(call);
+        empDescriptor.getQueryManager().setReadObjectQuery(readQuery);
+
+        ReadAllQuery readAllQuery = new ReadAllQuery();
+        call = new StoredProcedureCall();
+        call.setProcedureName("Read_All_Employees");
+        call.setReturnsResultSet(true);
+        readAllQuery.setCall(call);
+        empDescriptor.getQueryManager().setReadAllQuery(readAllQuery);
+
+        DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
+        call = new StoredProcedureCall();
+        call.setProcedureName("Delete_Employee");
+        call.addNamedArgument("EMP_ID");
+        deleteQuery.setCall(call);
+        empDescriptor.getQueryManager().setDeleteQuery(deleteQuery);
+
+        InsertObjectQuery insertQuery = new InsertObjectQuery();
+        call = new StoredProcedureCall();
+        call.setProcedureName("Insert_Employee");
+        call.setUsesBinding(true);
+        call.setShouldCacheStatement(true);
+        call.addNamedArgument("EMP_ID");
+        call.addNamedArgument("SALARY");
+        call.addNamedArgument("END_DATE");
+        call.addNamedArgument("MANAGER_ID");
+        call.addNamedArgument("START_DATE");
+        call.addNamedArgument("F_NAME");
+        call.addNamedArgument("L_NAME");
+        call.addNamedArgument("GENDER");
+        call.addNamedArgument("ADDR_ID");
+        call.addNamedArgument("START_TIME");
+        call.addNamedArgument("END_TIME");
+        insertQuery.setCall(call);
+        empDescriptor.getQueryManager().setInsertQuery(insertQuery);
+
+        UpdateObjectQuery updateQuery = new UpdateObjectQuery();
+        call = new StoredProcedureCall();
+        call.setProcedureName("Update_Employee");
+        call.addNamedArgument("EMP_ID");
+        call.addNamedArgument("SALARY");
+        call.addNamedArgument("END_DATE");
+        call.addNamedArgument("MANAGER_ID");
+        call.addNamedArgument("START_DATE");
+        call.addNamedArgument("F_NAME");
+        call.addNamedArgument("L_NAME");
+        call.addNamedArgument("GENDER");
+        call.addNamedArgument("ADDR_ID");
+        //call.addNamedArgument("VERSION");
+        call.addNamedArgument("START_TIME");
+        call.addNamedArgument("END_TIME");
+        updateQuery.setCall(call);
+        empDescriptor.getQueryManager().setUpdateQuery(updateQuery);
+
+        ManyToManyMapping manyToMany = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
+        manyToMany.setSelectionSQLString("select P.*, L.* FROM PROJ_EMP PE, PROJECT P LEFT OUTER JOIN LPROJECT L ON (L.PROJ_ID = P.PROJ_ID) WHERE ((PE.EMP_ID = #EMP_ID) AND (P.PROJ_ID = PE.PROJ_ID))");
+    }
+
 
     protected void setSQLServerSQL(Session session) {
         ClassDescriptor empDescriptor = session.getDescriptor(new Employee());

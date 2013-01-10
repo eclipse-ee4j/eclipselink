@@ -75,7 +75,7 @@ public class ScrollableCursorTest extends TestCase {
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isSymfoware() ||
-            getSession().getPlatform().isHANA()) {
+            getSession().getPlatform().isHANA() || getSession().getPlatform().isPervasive()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform.");
         }
         TYPE_SCROLL_INSENSITIVE_isSupported = true;
@@ -87,6 +87,7 @@ public class ScrollableCursorTest extends TestCase {
             TYPE_SCROLL_INSENSITIVE_isSupported = false;
             CONCUR_UPDATABLE_isSupported = false;
         }
+
         setNormalQueryObjects(getSession().readAllObjects(getReferenceClass(), joinExpression));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

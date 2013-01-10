@@ -122,7 +122,7 @@ public class House {
         definition.setName("HOUSE");
 
         definition.addPrimaryKeyField("AGENT_ID", java.math.BigDecimal.class, 15);
-        definition.addPrimaryKeyField("LOCATION", String.class, 200);
+        definition.addPrimaryKeyField("LOCATION", String.class, 180);
         definition.addField("DESCRIPTIONS", String.class, 200);
         definition.addField("INS_ID", java.math.BigDecimal.class, 15);
         definition.addField("VERSION", java.sql.Timestamp.class, 200);

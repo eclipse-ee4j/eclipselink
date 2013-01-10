@@ -80,7 +80,7 @@ public abstract class SellingPoint {
         definition.setName("SELLING_POINT");
 
         definition.addPrimaryKeyField("AGENT_ID", java.math.BigDecimal.class, 15);
-        definition.addPrimaryKeyField("LOCATION", String.class, 200);
+        definition.addPrimaryKeyField("LOCATION", String.class, 180);
         definition.addPrimaryKeyField("AREA", String.class, 50);
         definition.addField("DESCRIPTION", String.class, 200);
         // CR#2896 - TW

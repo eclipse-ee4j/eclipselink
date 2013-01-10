@@ -2927,6 +2927,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employeePopulator.employeeExample1().setManager(employeePopulator.employeeExample1());
             employeePopulator.employeeExample2().setManager(employeePopulator.employeeExample3());
             employeePopulator.employeeExample3().setManager(employeePopulator.employeeExample2());
+            em.clear();
+            clearCache();
             employeePopulator.persistExample(getDatabaseSession());
             
             beginTransaction(em);
@@ -7506,8 +7508,12 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
+        } else if ((JUnitTestCase.getServerSession()).getPlatform().isPervasive()) {
+            getServerSession().logMessage("Test testUpdateUsingTempStorage* skipped for this platform. "
+                                          + "Pervasive does not support dynamic parameters in the Select list.");
+            return;
         }
-
+        
         String firstName = "testUpdateUsingTempStorage";
         int n = 3;
         
@@ -7869,6 +7875,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        } else if ((JUnitTestCase.getServerSession()).getPlatform().isPervasive()) {
+            getServerSession().logMessage("Test testUpdateAll*ProjectsWithNullTeamLeader skipped for this platform." );
             return;
         }
         String className = Helper.getShortClassName(cls);
@@ -9256,6 +9265,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
+            return;
+        }
+        else   if ((JUnitTestCase.getServerSession()).getPlatform().isPervasive()) {
+            getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform." );
             return;
         }
         

@@ -73,7 +73,7 @@ public class EmailAccount {
         /* Next define the attribute mappings. */
         descriptor.addDirectMapping("id", "ID");
         descriptor.addDirectMapping("emailAddress", "EMAILADD");
-        descriptor.addDirectMapping("owner", "OWNER");
+        descriptor.addDirectMapping("owner", "ACC_OWNER");
         descriptor.addDirectMapping("hostName", "HOSTNAME");
 
         return descriptor;
@@ -191,7 +191,7 @@ public class EmailAccount {
 
         definition.addIdentityField("ID", java.math.BigDecimal.class, 15);
         definition.addField("EMAILADD", String.class, 40);
-        definition.addField("OWNER", String.class, 20);
+        definition.addField("ACC_OWNER", String.class, 20);
         definition.addField("HOSTNAME", String.class, 20);
 
         return definition;

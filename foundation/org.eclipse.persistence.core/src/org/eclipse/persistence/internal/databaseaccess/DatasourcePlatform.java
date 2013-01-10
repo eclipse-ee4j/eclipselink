@@ -59,8 +59,8 @@ public class DatasourcePlatform implements Platform {
     protected Map sequences;
     
     /** Delimiter to use for fields and tables using spaces or other special values */
-    protected String startDelimiter;
-    protected String endDelimiter;
+    protected String startDelimiter = null;
+    protected String endDelimiter = null;
     
     /** Ensures that only one thread at a time can add/remove sequences */
     protected Object sequencesLock = new Boolean(true);
@@ -506,6 +506,10 @@ public class DatasourcePlatform implements Platform {
     }
 
     public boolean isOracle9() {
+        return false;
+    }
+
+    public boolean isPervasive(){
         return false;
     }
 

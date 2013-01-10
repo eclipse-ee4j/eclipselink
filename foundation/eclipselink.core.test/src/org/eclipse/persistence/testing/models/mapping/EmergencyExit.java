@@ -65,7 +65,7 @@ public class EmergencyExit implements Serializable {
         definition.setName("CUBICLE_EMERGENCYEXIT");
 
         definition.addPrimaryKeyField("EXIT_ID", String.class, 15);
-        definition.addPrimaryKeyField("CUBICLE_LOCATION", String.class, 255);
+        definition.addPrimaryKeyField("CUBICLE_LOCATION", String.class, 238);
         return definition;
     }
 }
