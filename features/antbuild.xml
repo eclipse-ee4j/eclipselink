@@ -241,6 +241,10 @@
         <property name="hermes.criteria" value="[1.0,9.0)"/>
         <property name="oracleddl.prefix" value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria" value="[1.0,9.0)"/>
+        <property name="oracle.prefix" value="org.eclipse.persistence.oracle"/>
+        <property name="oracle.criteria" value="[1.0,9.0)"/>
+        <property name="oraclenosql.prefix" value="org.eclipse.persistence.oracle.nosql"/>
+        <property name="oraclenosql.criteria" value="[1.0,9.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
@@ -319,6 +323,12 @@
         <selectbundle basename="${oracleddl.prefix}" directory="${feature.2.util.plugins.dir}"
                      criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
         />
+        <selectbundle basename="${oracle.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${oracle.criteria}" property="oracle.version" versiononly="true"
+        />
+        <selectbundle basename="${oraclenosql.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${oraclenosql.criteria}" property="oraclenosql.version" versiononly="true"
+        />
         <selectbundle basename="${wsdl.prefix}" directory="${feature.2.util.plugins.dir}"
                      criterion="${wsdl.criteria}" property="wsdl.version" versiononly="true"
         />
@@ -354,6 +364,10 @@
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                 unless="asm.version"/>
         <say  message="   hermes.version      = '${hermes.version}'"                                                          if="hermes.version"/>
         <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
+        <say  message="   oracle.version   = '${oracle.version}'"                                                             if="oracle.version"/>
+        <say  message="   '${oracle.prefix}_${oracle.criteria}.jar' not found! Generated features will be invalid."           unless="oracle.version"/>
+        <say  message="   oraclenosql.version   = '${oraclenosql.version}'"                                                   if="oraclenosql.version"/>
+        <say  message="   '${oraclenosql.prefix}_${oraclenosql.criteria}.jar' not found! Generated features will be invalid." unless="oraclenosql.version"/>
     </target>
 
     <target name="create-deployable-features" depends="resolve-feature-dependencies">
@@ -378,6 +392,8 @@
         <filter token="ASM_VERSION"         value="${asm.version}"/>
         <filter token="HERMES_VERSION"      value="${hermes.version}"/>
         <filter token="ORACLEDDL_VERSION"   value="${oracleddl.version}"/>
+        <filter token="ORACLE_VERSION"      value="${oracle.version}"/>
+        <filter token="ORACLENOSQL_VERSION" value="${oraclenosql.version}"/>
         <!--          Filters for feature.properties files          -->
         <filter token="PROVIDER"            value="${specification.vendor}"/>
         <filter token="REPOS_NAME"          value="${p2.release.repos.name}"/>
