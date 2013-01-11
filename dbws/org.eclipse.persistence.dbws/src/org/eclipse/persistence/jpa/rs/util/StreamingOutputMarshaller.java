@@ -33,7 +33,6 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.response.QueryResultList;
 
 /**
@@ -60,7 +59,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         this(context, result, mediaType(acceptedTypes));
     }
 
-    public void write(OutputStream output) throws IOException {
+  @Override
+    public void write(OutputStream output) throws IOException, WebApplicationException {
         if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
             output.write((byte[])result);
         } else if (result instanceof String){
@@ -84,8 +84,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     }
                     return;
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    throw new JPARSException(e.toString());
+                    JPARSLogger.exception("jpars_caught_exception", new Object[]{}, e);
+                    throw new WebApplicationException();
                 }
             }
             if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
@@ -101,11 +101,12 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             }
         }
     }
-
+    
+  
     /**
     * Identify the preferred {@link MediaType} from the list provided. This
     * will check for JSON string or {@link MediaType} first then XML.
-    *
+    * 
     * @param types
     *            List of {@link String} or {@link MediaType} values;
     * @return selected {@link MediaType}
@@ -145,7 +146,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         }
         return false;
     }
-
+    
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
         Marshaller marshaller = context.getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());

@@ -467,7 +467,7 @@ public class PersistenceContext {
      * @param attributeValue the attribute value
      * @param partner the partner
      * @return the object
-     *
+     *  
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, String attribute, String listItemId, Object entity, String partner)
@@ -503,7 +503,7 @@ public class PersistenceContext {
                     fieldName = field.getName();
                     if (fieldName.equals(attribute)) {
                         try {
-                            // call clear on this collection
+                            // call clear on this collection 
                             Object attributeValue = getAttribute(entity, attribute);
                             originalAttributeValue = attributeValue;
                             if (attributeValue instanceof Collection) {
@@ -963,7 +963,7 @@ public class PersistenceContext {
      * @param object
      * @param mediaType
      * @param output
-     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending
+     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending 
      * the actual objects in the relationships
      * @throws JAXBException
      */
@@ -1000,10 +1000,10 @@ public class PersistenceContext {
 
         if (acceptedMedia == MediaType.APPLICATION_JSON_TYPE) {
             // Part of the fix for https://bugs.eclipse.org/bugs/show_bug.cgi?id=394059
-            // This issue happens when request has objects derived from an abstract class.
+            // This issue happens when request has objects derived from an abstract class. 
             // JSON_INCLUDE_ROOT is set to false for  JPA-RS. This means JSON requests won't have root tag.
-            // The unmarshal method needs to be called with type, so that moxy can unmarshal the message based on type.
-            // For xml, root tag is always set, unmarshaller must use root of the message for unmarshalling and type should
+            // The unmarshal method needs to be called with type, so that moxy can unmarshal the message based on type. 
+            // For xml, root tag is always set, unmarshaller must use root of the message for unmarshalling and type should 
             // not be passed to unmarshal for xml type requests.
             JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
             if (element.getValue() instanceof List<?>) {
@@ -1112,6 +1112,7 @@ public class PersistenceContext {
                     marshaller.marshal(o, writer);
                 }
                 writer.writeEndDocument();
+                writer.flush();
                 postMarshallEntity(object);
             } catch (Exception e) {
                 e.printStackTrace();
