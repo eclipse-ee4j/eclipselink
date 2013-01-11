@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +39,6 @@ import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,31 +63,6 @@ public class ServerEmployeeTest {
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = new PersistenceFactoryBase();
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), true);
-    }
-
-    /**
-     * Cleanup.
-     */
-    @After
-    public void cleanup() {
-        cleanResources();
-    }
-
-    private static void cleanResources() {
-        if (context != null) {
-            if (context.getEmf() != null) {
-                EntityManager em = context.getEmf().createEntityManager();
-                if (em != null) {
-                    em.getTransaction().begin();
-                    em.createQuery("delete from EmployeeAddress a").executeUpdate();
-                    em.createQuery("delete from PhoneNumber b").executeUpdate();
-                    em.createQuery("delete from LargeProject c").executeUpdate();
-                    em.createQuery("delete from SmallProject d").executeUpdate();
-                    em.createQuery("delete from Employee e").executeUpdate();
-                    em.getTransaction().commit();
-                }
-            }
-        }
     }
 
     /**
@@ -435,35 +408,22 @@ public class ServerEmployeeTest {
         }
 
         // query
-        Object queryResult = RestUtils.restNamedQuery("Employee.getManager", DEFAULT_PU, null, null, mediaType);
-        String expected = null;
+        String queryResult = RestUtils.restNamedQuery("Employee.getManager", DEFAULT_PU, null, null, mediaType);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-            expected = "[{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\":{\"type\":\"employee\",\"firstName\":\"Charlie\",\"gender\":\"Male\",\"id\":" +
-                    manager.getId() + ",\"lastName\":\"Parker\",\"" + "responsibilities\":[],\"salary\":0.0,\"version\":1,\"_relationships\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}],\"phoneNumbers\":[],\"projects\":[]}},{\"firstName\":\"Charlie\",\"lastName\":\"Parker\"}]";
-        } else {
-            expected = "<firstName>Charlie</firstName><gender>Male</gender><id>" + manager.getId() +
-            		"</id><lastName>Parker</lastName><salary>0.0</salary>" + 	"<version>1</version><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() +
-                    "/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""   + RestUtils.getServerURI()  +
-                    "jpars_employee-static/entity/Employee/" + manager.getId() + "/address\" rel=\"address\"/></_relationships><_relationships><_link href=\"" +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() +
-                    "/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\""   + RestUtils.getServerURI()  +
-                    "jpars_employee-static/entity/Employee/" + manager.getId() + "/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""  +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + manager.getId() + "/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships><managedEmployees><_link href=\""  +
-                    RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "\" method=\"GET\" rel=\"self\"/></managedEmployees></manager></item><item><firstName>Charlie</firstName><lastName>Parker</lastName></item></List>";
-        }
+            assertTrue(queryResult.contains("[{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\""));
+            assertTrue(queryResult.contains("managedEmployees\":[{"));
+            assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
+            assertTrue(queryResult.contains("{\"firstName\":\"Charlie\",\"lastName\":\"Parker\"}"));
+        } 
 
-        assertTrue(((String) queryResult).contains(expected));
-
+        if (mediaType == MediaType.APPLICATION_XML_TYPE) {
+            assertTrue(queryResult.contains("<item><firstName>Miles</firstName><lastName>Davis</lastName><manager"));
+            assertTrue(queryResult.contains("<managedEmployees><_link"));
+            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId())); 
+            assertTrue(queryResult.contains("</managedEmployees>"));
+            assertTrue(queryResult.contains("<item><firstName>Charlie</firstName><lastName>Parker</lastName></item>"));
+        }        
+        
         // delete employee
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
 
@@ -515,20 +475,19 @@ public class ServerEmployeeTest {
         assertTrue("Main Street".equals(address2.getStreet()));
 
         // query
-        Object result = RestUtils.restNamedQuery("EmployeeAddress.getAll", DEFAULT_PU, null, null, mediaType);
+        String result = RestUtils.restNamedQuery("EmployeeAddress.getAll", DEFAULT_PU, null, null, mediaType);
         String expected1 = null;
         String expected2 = null;
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             expected1 = "{\"city\":\"Newyork City\",\"country\":\"USA\",\"id\":" + address1.getId() + ",\"postalCode\":\"10005\",\"province\":\"NY\",\"street\":\"Wall Street\",\"_relationships\":[]}";
-            expected2 = "{\"city\":\"Ottawa\",\"country\":\"Canada\",\"id\":" + address2.getId()
-                    + ",\"postalCode\":\"K1Y 6F7\",\"province\":\"Ontario\",\"street\":\"Main Street\",\"_relationships\":[]}";
+            expected2 = "{\"city\":\"Ottawa\",\"country\":\"Canada\",\"id\":" + address2.getId() + ",\"postalCode\":\"K1Y 6F7\",\"province\":\"Ontario\",\"street\":\"Main Street\",\"_relationships\":[]}";
         } else {
             expected1 = "<city>Newyork City</city><country>USA</country><id>" + address1.getId() + "</id><postalCode>10005</postalCode><province>NY</province><street>Wall Street</street>";
             expected2 = "<city>Ottawa</city><country>Canada</country><id>" + address2.getId() + "</id><postalCode>K1Y 6F7</postalCode><province>Ontario</province><street>Main Street</street>";
         }
 
-        assertTrue(((String) result).contains(expected1));
-        assertTrue(((String) result).contains(expected2));
+        assertTrue(result.contains(expected1));
+        assertTrue(result.contains(expected2));
 
         // delete employee address
         RestUtils.restDelete(address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
@@ -537,36 +496,34 @@ public class ServerEmployeeTest {
 
     private void executeMultiselectQueryGetEmployeeAddressWithSimpleFields(MediaType mediaType) throws Exception {
         // create address1
-        EmployeeAddress address1 = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
+        EmployeeAddress address1 = new EmployeeAddress("Washington", "USA", "WA", "99999", "Main");
         address1 = RestUtils.restUpdate(context, address1, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address1);
-        assertTrue("Newyork City".equals(address1.getCity()));
+        assertTrue("Washington".equals(address1.getCity()));
         assertTrue("USA".equals(address1.getCountry()));
-        assertTrue("NY".equals(address1.getProvince()));
-        assertTrue("10005".equals(address1.getPostalCode()));
-        assertTrue("Wall Street".equals(address1.getStreet()));
+        assertTrue("WA".equals(address1.getProvince()));
+        assertTrue("99999".equals(address1.getPostalCode()));
+        assertTrue("Main".equals(address1.getStreet()));
 
         // create address2
-        EmployeeAddress address2 = new EmployeeAddress("Ottawa", "Canada", "Ontario", "K1Y 6F7", "Main Street");
+        EmployeeAddress address2 = new EmployeeAddress("Halifax", "Canada", "NS", "K1A5A7", "Queen");
         address2 = RestUtils.restUpdate(context, address2, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("EmployeeAddress create failed.", address2);
-        assertTrue("Ottawa".equals(address2.getCity()));
+        assertTrue("Halifax".equals(address2.getCity()));
         assertTrue("Canada".equals(address2.getCountry()));
-        assertTrue("Ontario".equals(address2.getProvince()));
-        assertTrue("K1Y 6F7".equals(address2.getPostalCode()));
-        assertTrue("Main Street".equals(address2.getStreet()));
+        assertTrue("NS".equals(address2.getProvince()));
+        assertTrue("K1A5A7".equals(address2.getPostalCode()));
+        assertTrue("Queen".equals(address2.getStreet()));
 
         // query
         String result = RestUtils.restNamedQuery("EmployeeAddress.getRegion", DEFAULT_PU, null, null, mediaType);
-        String expected = null;
+        assertNotNull(result);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-            expected = "[{\"postalCode\":\"10005\",\"province\":\"NY\",\"street\":\"Wall Street\"},{\"postalCode\":\"K1Y 6F7\",\"province\":\"Ontario\",\"street\":\"Main Street\"}]";
+            assertTrue(result.contains("[{\"postalCode\":\"99999\",\"province\":\"WA\",\"street\":\"Main\"},{\"postalCode\":\"K1A5A7\",\"province\":\"NS\",\"street\":\"Queen\"}]"));
         } else {
-            expected = "<List><item><postalCode>10005</postalCode><province>NY</province><street>Wall Street</street></item><item><postalCode>K1Y 6F7</postalCode><province>Ontario</province><street>Main Street</street></item></List>";
-        }
-
-        assertTrue(((String) result).contains(expected));
-
+            assertTrue(result.contains("<List><item><postalCode>99999</postalCode><province>WA</province><street>Main</street></item><item><postalCode>K1A5A7</postalCode><province>NS</province><street>Queen</street></item></List>"));
+        } 
+        
         // delete employee address
         RestUtils.restDelete(address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
         RestUtils.restDelete(address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
@@ -660,67 +617,94 @@ public class ServerEmployeeTest {
         assertTrue(employeeUpdated.contains("SmallProject/" + smallProject.getId()));
         assertTrue(employeeUpdated.contains("LargeProject/" + largeProject.getId()));
 
-        String expectedEmplWithoutLargeProject = null;
-        String expectedEmplWithoutAnyProject = null;
-
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-            expectedEmplWithoutLargeProject = "\"projects\":[{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/SmallProject/" + smallProject.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}]";
+            if (removeAllProjects) {
+                // remove all projects
+                String allProjectsRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, mediaType, "teamLeader", null, true);
+                // verify relationships
+                assertTrue(allProjectsRemoved.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(allProjectsRemoved.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                // there must be no project associated with this employee
+                assertTrue(allProjectsRemoved.contains("projects\":[]"));
+            } else {
+                // remove projects one by one
+                // Disassociate large project from the employee first
+                String largeProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, mediaType, "teamLeader", String.valueOf(largeProject.getId()), true);
+                // verify relationships
+                assertTrue(largeProjectDisassociated.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                //the employee should have only small project after this
+                assertTrue(largeProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId()));
 
-            expectedEmplWithoutAnyProject = ("\"_relationships\":[{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" +
-                    employee.getId() +  "/manager\",\"rel\":\"manager\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() + "/address\",\"rel\":\"address\"}},{\"_link\":{\"href\":\""
-                    + RestUtils.getServerURI()  + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/responsibilities\",\"rel\":\"responsibilities\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/projects\",\"rel\":\"projects\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/managedEmployees\",\"rel\":\"managedEmployees\"}},{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU +
-                    "/entity/Employee/" + employee.getId() +
-                    "/phoneNumbers\",\"rel\":\"phoneNumbers\"}}],\"managedEmployees\":[],\"phoneNumbers\":[],\"projects\":[]}");
-        } else {
-            expectedEmplWithoutLargeProject = "<projects><_link href=\"" + RestUtils.getServerURI() + "jpars_employee-static/entity/SmallProject/" +
-            		smallProject.getId() + "\" method=\"GET\" rel=\"self\"/></projects>";
-
-            expectedEmplWithoutAnyProject = "<_relationships><_link href=\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" +  employee.getId() +
-                    "/manager\" rel=\"manager\"/></_relationships><_relationships><_link href=\""  + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/address\" rel=\"address\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/responsibilities\" rel=\"responsibilities\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/projects\" rel=\"projects\"/></_relationships><_relationships><_link href=\"" + RestUtils.getServerURI()
-                    + "jpars_employee-static/entity/Employee/" + employee.getId() +
-                    "/managedEmployees\" rel=\"managedEmployees\"/></_relationships><_relationships><_link href=\""
-                    + RestUtils.getServerURI() + "jpars_employee-static/entity/Employee/" + employee.getId() +  
-                    "/phoneNumbers\" rel=\"phoneNumbers\"/></_relationships></employee>";
+                // Disassociate small project from the employe
+                String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, mediaType, "teamLeader", String.valueOf(smallProject.getId()), true);
+                // verify relationships
+                assertTrue(smallProjectDisassociated.contains("\"firstName\":\"Charles\",\"gender\":\"Male\",\"id\":" + employee.getId() + ",\"lastName\":\"Mingus\",\"responsibilities\":[],\"salary\":0.0"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(smallProjectDisassociated.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                // there must be no project associated with this employee
+                assertTrue(smallProjectDisassociated.contains("projects\":[]"));
+            }
+        } else { 
+            // MediaType.APPLICATION_XML_TYPE
+            if (removeAllProjects) {
+                // remove all projects
+                String allProjectsRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, mediaType, "teamLeader", null, true);
+                // verify relationships
+                assertTrue(allProjectsRemoved.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                // there must be no project associated with this employee
+                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!allProjectsRemoved.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+            } else {
+                // Disassociate large project from the employee
+                String largeProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, mediaType, "teamLeader", String.valueOf(largeProject.getId()), true);
+                assertTrue(largeProjectDisassociated.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                // the employee should have only small project after this
+                assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+                
+                // Disassociate small project from the employee
+                String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
+                        mediaType, "teamLeader", String.valueOf(smallProject.getId()), true);
+                assertTrue(smallProjectDisassociated.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/address"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/responsibilities"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/projects"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/managedEmployees"));
+                assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/phoneNumbers"));
+                // there must be no project associated with this employee
+                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
+                assertTrue(!smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
+            }
         }
 
-        if (removeAllProjects) {
-            // remove all projects
-            String allProjectsRemoved = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
-                    mediaType, "teamLeader", null, true);
-            System.out.println("allProjects: " + allProjectsRemoved);
-            System.out.println("expected: " + expectedEmplWithoutAnyProject);
-
-            assertTrue(allProjectsRemoved.contains(expectedEmplWithoutAnyProject));
-        } else {
-            // Disassociate large project from the employee
-            String largeProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
-                    mediaType, "teamLeader", String.valueOf(largeProject.getId()), true);
-            assertTrue(largeProjectDisassociated.contains(expectedEmplWithoutLargeProject));
-
-            // read employee to make sure he has only small project
-            String employeeNoLargeProject = RestUtils.restRead(context, employee.getId(), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
-            assertTrue(employeeNoLargeProject.contains(expectedEmplWithoutLargeProject));
-
-            // Disassociate small project from the employee
-            String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
-                    mediaType, "teamLeader", String.valueOf(smallProject.getId()), true);
-            assertTrue(smallProjectDisassociated.contains(expectedEmplWithoutAnyProject));
-        }
         // delete projects 
         RestUtils.restDelete(largeProject.getId(), LargeProject.class.getSimpleName(), LargeProject.class, DEFAULT_PU, null, null, mediaType);
         RestUtils.restDelete(smallProject.getId(), SmallProject.class.getSimpleName(), SmallProject.class, DEFAULT_PU, null, null, mediaType);

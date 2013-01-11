@@ -1,10 +1,7 @@
 package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
-import javax.xml.bind.annotation.XmlType;
-
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
-@XmlType(propOrder = { "method", "href", "rel" })
 public class Link {
 
     public Link() {

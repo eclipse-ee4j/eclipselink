@@ -1112,6 +1112,7 @@ public class PersistenceContext {
                     marshaller.marshal(o, writer);
                 }
                 writer.writeEndDocument();
+                writer.flush();
                 postMarshallEntity(object);
             } catch (Exception e) {
                 e.printStackTrace();
