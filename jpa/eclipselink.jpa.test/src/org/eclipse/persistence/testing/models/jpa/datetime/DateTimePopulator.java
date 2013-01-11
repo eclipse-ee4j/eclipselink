@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
+import java.lang.reflect.Method;
 import java.sql.Time;
 
 import java.sql.Timestamp;
@@ -21,6 +22,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
@@ -36,9 +39,43 @@ public class DateTimePopulator {
         allObjects.add(example3());
         allObjects.add(example4());
         
+        // Bug 387491 - Three JUnitJPQLDateTimeTestSuite tests fail with Oracle jdbc 12.1 driver
+        // Starting with Oracle jdbc 12.1 Statement.setDate no longer truncates time component of sql.Date.
+        // The following code makes Oracle9Platform to do that by setting shouldTruncateDate flag to "true".
+        boolean hasSetTruncateDate = false;
+        if (session.getPlatform().isOracle9()) {
+            try {
+                Class clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                Method getDriverVersionMethod = PrivilegedAccessHelper.getMethod(clazz, "getDriverVersion", null, false);
+                String driverVersion = (String) PrivilegedAccessHelper.invokeMethod(getDriverVersionMethod, session.getPlatform(), null);
+                if (Helper.compareVersions(driverVersion, "12.1") >= 0) {
+                    Method shouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "shouldTruncateDate", null, false);
+                    boolean shouldTruncateDate = (Boolean) PrivilegedAccessHelper.invokeMethod(shouldTruncateDateMethod, session.getPlatform(), null);
+                    if (!shouldTruncateDate) {
+                        Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
+                        PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{true});
+                        hasSetTruncateDate = true;
+                    }
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed oracle9Platform.setShouldTruncateDate(true)", ex);
+            }
+        }
+        
         UnitOfWork unitOfWork = session.acquireUnitOfWork();        
         unitOfWork.registerAllObjects(allObjects);
-        unitOfWork.commit();        
+        unitOfWork.commit();
+        
+        if (hasSetTruncateDate) {
+            // Now setting shouldTruncateDate flag back to its original value "false".
+            try {
+                Class clazz = PrivilegedAccessHelper.getClassForName("org.eclipse.persistence.platform.database.oracle.Oracle9Platform");
+                Method setShouldTruncateDateMethod = PrivilegedAccessHelper.getMethod(clazz, "setShouldTruncateDate", new Class[]{boolean.class}, false);
+                PrivilegedAccessHelper.invokeMethod(setShouldTruncateDateMethod, session.getPlatform(), new Object[]{false});
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed oracle9Platform.setShouldTruncateDate(false)", ex);
+            }
+        }
     }
     
     public DateTime example1() {

@@ -92,15 +92,17 @@ public class Oracle9Platform extends Oracle8Platform {
      * true for version 11.2.0.2 or later.
      */
     protected transient boolean isLtzTimestampInGmt;
-    /* Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
-     * before been passed as a parameter to PreparedStatement. 
-     * true for version 12.1 or later.
-     */
-    protected transient boolean shouldTruncateDate;
     /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
      * To re-initialize connection data call clearConnectionData method. 
      */
     protected transient boolean isConnectionDataInitialized;
+    
+    /** Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
+     * before been passed as a parameter to PreparedStatement. 
+     * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
+     * Set this flag to true to make the platform to truncate days/hours/minutes before passing the date to Statement.setDate method.
+     */
+    protected boolean shouldTruncateDate;
     
     private XMLTypeFactory xmlTypeFactory;
 
@@ -156,6 +158,18 @@ public class Oracle9Platform extends Oracle8Platform {
         }
     }
 
+    /**
+     * Copy the state into the new platform.
+     */
+    public void copyInto(Platform platform) {
+        super.copyInto(platform);
+        if (!(platform instanceof Oracle9Platform)) {
+            return;
+        }
+        Oracle9Platform oracle9Platform = (Oracle9Platform)platform;
+        oracle9Platform.setShouldTruncateDate(shouldTruncateDate());
+    }
+    
     /**
      * INTERNAL:
      * Get a timestamp value from a result set.
@@ -444,9 +458,6 @@ public class Oracle9Platform extends Oracle8Platform {
             }
             if (Helper.compareVersions(this.driverVersion, "11.2.0.2") >= 0) {
                 this.isLtzTimestampInGmt = true;
-                if (Helper.compareVersions(this.driverVersion, "12.1") >= 0) {
-                    this.shouldTruncateDate = true;
-                }
             }
         }
         this.isConnectionDataInitialized = true;
@@ -497,7 +508,7 @@ public class Oracle9Platform extends Oracle8Platform {
             statement.setObject(index, tsTZ);
         } else if (this.shouldTruncateDate && parameter instanceof java.sql.Date) {
             // hours, minutes, seconds all set to zero
-            statement.setDate(index, Helper.truncateDate((java.sql.Date)parameter));
+            statement.setDate(index, Helper.truncateDateIgnoreMilliseconds((java.sql.Date)parameter));
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, index, session);
         }
@@ -896,12 +907,24 @@ public class Oracle9Platform extends Oracle8Platform {
     }
 
     /**
-     * INTERNAL:
+     * PUBLIC:
      * Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
      * before been passed as a parameter to PreparedStatement. 
-     * true for version 12.1 or later.
+     * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
+     * "true" indicates that the platform truncates days/hours/minutes before passing the date to Statement.setDate method.
      */
     public boolean shouldTruncateDate() {
         return shouldTruncateDate;
+    }
+
+    /**
+     * PUBLIC:
+     * Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
+     * before been passed as a parameter to PreparedStatement. 
+     * Starting with version 12.1 oracle jdbc Statement.setDate no longer zeroes sql.Date's entire time component (only milliseconds).
+     * Set this flag to true to make the platform to truncate days/hours/minutes before passing the date to Statement.setDate method.
+     */
+    public void setShouldTruncateDate(boolean shouldTruncateDate) {
+        this.shouldTruncateDate = shouldTruncateDate;
     }
 }
