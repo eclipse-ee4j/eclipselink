@@ -23,7 +23,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.sessions.Session;
 
 /**
- * Uses Kyro to serialize the object.
+ * Uses Kryo to serialize the object.
  * @author James Sutherland
  */
 public class KryoSerializer implements Serializer {

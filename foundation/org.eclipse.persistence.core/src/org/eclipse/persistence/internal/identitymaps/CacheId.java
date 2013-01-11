@@ -70,31 +70,40 @@ public class CacheId implements Serializable, Comparable<CacheId> {
      * Pre-compute the hash to optimize hash calls.
      */
     protected int computeHash(Object[] primaryKey) {
-        int hashValue = 0;
+        int result = 1;
         for (Object value : primaryKey) {
             if (value != null) {
-            	//bug5709489, gf bug 1193: fix to handle array hashcodes properly
-            	if (value.getClass().isArray()) {
-            	    hashValue = hashValue ^ computeArrayHashCode(value);
-            	} else {
-            	    hashValue = hashValue ^ value.hashCode();
-            	}
+                //bug5709489, gf bug 1193: fix to handle array hashcodes properly
+                if (value.getClass().isArray()) {
+                    result = computeArrayHashCode(result, value);
+                } else {
+                    result = 31 * result + value.hashCode();
+                }
+            } else {
+                result = 31 * result;
             }
         }
-        return hashValue;
+        return result;
     }
 
     /**
      * Compute the hashcode for supported array types.
      */
-    private int computeArrayHashCode(Object obj) {
+    private int computeArrayHashCode(int result, Object obj) {
         if (obj.getClass() == ClassConstants.APBYTE) {
-            return Arrays.hashCode((byte[]) obj);
+            for (byte element : (byte[])obj) {
+                result = 31 * result + element;
+            }
         } else if (obj.getClass() == ClassConstants.APCHAR) {
-            return Arrays.hashCode((char[]) obj);
+            for (char element : (char[])obj) {
+                result = 31 * result + element;
+            }
         } else {
-            return Arrays.hashCode((Object[]) obj);
+            for (Object element : (Object[])obj) {
+                result = 31 * result + (element == null ? 0 : element.hashCode());
+            }
         }
+        return result;
     }
 
     /**
