@@ -1755,6 +1755,7 @@ public class Helper implements Serializable {
     
     /**
      * Return a sql.Date with time component zeroed out.
+     * Starting with version 12.1 Oracle jdbc Statement.setDate method no longer zeroes out the time component.
      */
     public static java.sql.Date truncateDate(java.sql.Date date) {
         // PERF: Avoid deprecated get methods, that are now very inefficient.
@@ -1764,7 +1765,37 @@ public class Helper implements Serializable {
                 || (calendar.get(Calendar.MINUTE) != 0)
                 || (calendar.get(Calendar.SECOND) != 0)
                 || (calendar.get(Calendar.MILLISECOND) != 0)) {
-            date = dateFromYearMonthDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)); 
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DATE);
+            calendar.clear();
+            calendar.set(year, month, day, 0, 0, 0);
+            long millis = calendar.getTimeInMillis();
+            date = new java.sql.Date(millis);
+        }
+        releaseCalendar(calendar);
+        return date;
+    }
+
+    /**
+     * Return a sql.Date with time component zeroed out (with possible exception of milliseconds).
+     * Starting with version 12.1 Oracle jdbc Statement.setDate method no longer zeroes out the whole time component,
+     * yet it still zeroes out milliseconds.
+     */
+    public static java.sql.Date truncateDateIgnoreMilliseconds(java.sql.Date date) {
+        // PERF: Avoid deprecated get methods, that are now very inefficient.
+        Calendar calendar = allocateCalendar();
+        calendar.setTime(date);
+        if ((calendar.get(Calendar.HOUR_OF_DAY) != 0)
+                || (calendar.get(Calendar.MINUTE) != 0)
+                || (calendar.get(Calendar.SECOND) != 0)) {
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DATE);
+            calendar.clear();
+            calendar.set(year, month, day, 0, 0, 0);
+            long millis = calendar.getTimeInMillis();
+            date = new java.sql.Date(millis);
         }
         releaseCalendar(calendar);
         return date;
