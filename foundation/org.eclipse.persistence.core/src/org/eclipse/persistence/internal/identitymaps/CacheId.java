@@ -30,6 +30,9 @@ public class CacheId implements Serializable, Comparable<CacheId> {
 
     /** Cached hashcode. */
     protected int hash;
+    
+    /** Indicates whether at least one element of primaryKey is array. */
+    protected boolean hasArray;
 
     public CacheId() {        
     }
@@ -76,6 +79,7 @@ public class CacheId implements Serializable, Comparable<CacheId> {
                 //bug5709489, gf bug 1193: fix to handle array hashcodes properly
                 if (value.getClass().isArray()) {
                     result = computeArrayHashCode(result, value);
+                    this.hasArray = true;
                 } else {
                     result = 31 * result + value.hashCode();
                 }
@@ -139,6 +143,9 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         if (this.hash != id.hash) {
             return false;
         }
+        if (this.hasArray != id.hasArray) {
+            return false;
+        }
         // PERF: Using direct variable access.
         int size = this.primaryKey.length;
         Object[] otherKey = id.primaryKey;
@@ -155,20 +162,26 @@ public class CacheId implements Serializable, Comparable<CacheId> {
                 } else if (otherValue == null) {
                     return false;
                 }
-                Class valueClass = value.getClass();
-                Class otherClass = otherValue.getClass();
-                if (valueClass.isArray()) {
-                    //gf bug 1193: fix array comparison logic to exit if they don't match, and continue the loop if they do
-                    if (((valueClass == ClassConstants.APBYTE) && (otherClass == ClassConstants.APBYTE)) ) {
-                        if (!Helper.compareByteArrays((byte[])value, (byte[])otherValue)){
-                            return false;
-                        }
-                    } else if (((valueClass == ClassConstants.APCHAR) && (otherClass == ClassConstants.APCHAR)) ) {
-                        if (!Helper.compareCharArrays((char[])value, (char[])otherValue)){
-                            return false;
+                if (this.hasArray) {
+                    Class valueClass = value.getClass();
+                    if (valueClass.isArray()) {
+                        Class otherClass = otherValue.getClass();
+                        //gf bug 1193: fix array comparison logic to exit if they don't match, and continue the loop if they do
+                        if (((valueClass == ClassConstants.APBYTE) && (otherClass == ClassConstants.APBYTE)) ) {
+                            if (!Helper.compareByteArrays((byte[])value, (byte[])otherValue)){
+                                return false;
+                            }
+                        } else if (((valueClass == ClassConstants.APCHAR) && (otherClass == ClassConstants.APCHAR)) ) {
+                            if (!Helper.compareCharArrays((char[])value, (char[])otherValue)){
+                                return false;
+                            }
+                        } else {
+                            if (!Helper.compareArrays((Object[])value, (Object[])otherValue)) {
+                                return false;
+                            }
                         }
                     } else {
-                        if (!Helper.compareArrays((Object[])value, (Object[])otherValue)) {
+                        if (!(value.equals(otherValue))) {
                             return false;
                         }
                     }
@@ -225,6 +238,10 @@ public class CacheId implements Serializable, Comparable<CacheId> {
         }
     }
 
+    public boolean hasArray() {
+        return this.hasArray;
+    }
+    
     public String toString() {
         return "[" + Arrays.asList(this.primaryKey) + ": " + this.hash + "]";
     }
