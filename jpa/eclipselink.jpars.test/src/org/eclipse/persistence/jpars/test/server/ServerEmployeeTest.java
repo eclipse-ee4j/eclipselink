@@ -40,7 +40,6 @@ import org.eclipse.persistence.jpars.test.util.DBUtils;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ServerEmployeeTest {
@@ -330,7 +329,7 @@ public class ServerEmployeeTest {
      *
      * @throws Exception the exception
      */
-    @Ignore
+    @Test
     public void testReadEmployeeResponsibilitiesXML() throws Exception {
         readEmployeeResponsibilities(MediaType.APPLICATION_XML_TYPE);
     }
@@ -340,7 +339,7 @@ public class ServerEmployeeTest {
      *
      * @throws Exception the exception
      */
-    @Ignore
+    @Test
     public void testReadEmployeeResponsibilitiesJSON() throws Exception {
         readEmployeeResponsibilities(MediaType.APPLICATION_JSON_TYPE);
     }
@@ -350,7 +349,7 @@ public class ServerEmployeeTest {
      *
      * @throws Exception the exception
      */
-    @Ignore
+    @Test
     public void testReadEmployeePhoneNumbersJSON() throws Exception {
         readEmployeePhoneNumbers(MediaType.APPLICATION_JSON_TYPE);
     }
@@ -360,7 +359,7 @@ public class ServerEmployeeTest {
      *
      * @throws Exception the exception
      */
-    @Ignore
+    @Test
     public void testReadEmployeePhoneNumbersXML() throws Exception {
         readEmployeePhoneNumbers(MediaType.APPLICATION_XML_TYPE);
     }
@@ -761,7 +760,7 @@ public class ServerEmployeeTest {
     private void createEmployeeWithPhoneNumbers(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
-        employee.setId(90777);
+        employee.setId(32777);
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         EmploymentPeriod employmentPeriod = new EmploymentPeriod();
@@ -788,7 +787,7 @@ public class ServerEmployeeTest {
         assertNotNull(result);
 
         // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
-        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+cell";
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell";
         assertTrue(result.contains(cellLinkHref));
 
         // create a work phone number
@@ -806,19 +805,19 @@ public class ServerEmployeeTest {
                 "employee", true);
         assertNotNull(result);
         // make sure that response from restUpdateBidirectionalRelationship contains work phone number AND cell number in employee object
-        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+work";
+        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+work";
         assertTrue(result.contains(workPhoneLinkHref));
         assertTrue(result.contains(cellLinkHref));
 
         // read employee with phone numbers
-        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(90777), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
         assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
         // make sure employee has 2 phone numbers 
         assertTrue(employeeWithPhoneNumbers.contains(workPhoneLinkHref));
         assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
 
         // delete employee (cascade deletes phone numbers)
-        RestUtils.restDelete(new Integer(90777), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
     private void updateEmployeeWithEmploymentPeriod(MediaType mediaType) throws Exception {
@@ -924,9 +923,17 @@ public class ServerEmployeeTest {
         assertTrue(responsibilities.contains("conductor"));
 
         // read responsibilities
-        String resp = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "responsibilities", DEFAULT_PU, null, mediaType);
-        assertNotNull(resp);
+        String result = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "responsibilities", DEFAULT_PU, null, mediaType);
+        assertNotNull(result);
 
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            String expected = "{\"responsibilities\":[\"musician\",\"architect\",\"conductor\"]}";
+            assertTrue(result.contains(expected));
+        } else {
+            String expected = "<List><responsibilities>musician</responsibilities><responsibilities>architect</responsibilities><responsibilities>conductor</responsibilities></List>";
+            assertTrue(result.contains(expected));
+        }
+        
         // delete employee
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
@@ -934,7 +941,6 @@ public class ServerEmployeeTest {
     private void readEmployeePhoneNumbers(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
-        employee.setId(90777);
         employee.setFirstName("Miles");
         employee.setLastName("Davis");
         EmploymentPeriod employmentPeriod = new EmploymentPeriod();
@@ -942,7 +948,7 @@ public class ServerEmployeeTest {
         employmentPeriod.setStartDate(now);
         employee.setPeriod(employmentPeriod);
 
-        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
         assertNotNull("Employee create failed.", employee);
 
         // create a cell phone number for this employee
@@ -961,7 +967,7 @@ public class ServerEmployeeTest {
         assertNotNull(result);
 
         // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
-        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+cell";
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell";
         assertTrue(result.contains(cellLinkHref));
 
         // create a work phone number
@@ -979,12 +985,12 @@ public class ServerEmployeeTest {
                 "employee", true);
         assertNotNull(result);
         // make sure that response from restUpdateBidirectionalRelationship contains work phone number AND cell number in employee object
-        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+work";
+        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+work";
         assertTrue(result.contains(workPhoneLinkHref));
         assertTrue(result.contains(cellLinkHref));
 
         // read employee with phone numbers
-        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(90777), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
         assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
 
         // make sure employee has 2 phone numbers 
@@ -993,21 +999,19 @@ public class ServerEmployeeTest {
 
         String expected = null;
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
-            expected = "[{\"id\":90777,\"number\":\"123-123 1234\",\"type\":\"cell\",\"_relationships\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+cell/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\""  +
-                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/90777\",\"method\":\"GET\",\"rel\":\"self\"}}},{\"id\":90777,\"number\":\"987-654 1234\",\"type\":\"work\",\"_relationships\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/90777+work/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/90777\",\"method\":\"GET\",\"rel\":\"self\"}}}]";
+            expected = "[{\"id\":" + employee.getId() + ",\"number\":\"123-123 1234\",\"type\":\"cell\",\"_relationships\":[{\"_link\":{\"href\":\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" +  
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}},{\"id\":" + employee.getId() +
+                    ",\"number\":\"987-654 1234\",\"type\":\"work\",\"_relationships\":[{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" +
+                    employee.getId() + "+work/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" +
+                    employee.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}}]";
         } else {
-            expected = "<List><phoneNumber><id>90777</id><number>123-123 1234</number><type>cell</type><_relationships><_link href=\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU +
-            		"/entity/PhoneNumber/90777+cell/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU +
-            		"/entity/Employee/90777\" method=\"GET\" rel=\"self\"/></employee></phoneNumber><phoneNumber><id>90777</id><number>987-654 1234</number><type>work</type><_relationships><_link href=\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU +
-            		"/entity/PhoneNumber/90777+work/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU +
-            		"/entity/Employee/90777\" method=\"GET\" rel=\"self\"/></employee></phoneNumber></List>";
+            expected = "<List><phoneNumber><id>" + employee.getId() + 	"</id><number>123-123 1234</number><type>cell</type><_relationships><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "\" method=\"GET\" rel=\"self\"/></employee></phoneNumber><phoneNumber><id>" +
+            		employee.getId() + "</id><number>987-654 1234</number><type>work</type><_relationships><_link href=\"" + RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/PhoneNumber/" + employee.getId() + "+work/employee\" rel=\"employee\"/></_relationships><employee><_link href=\"" + RestUtils.getServerURI() + DEFAULT_PU +
+            		"/entity/Employee/" + employee.getId() + "\" method=\"GET\" rel=\"self\"/></employee></phoneNumber></List>";
         }
 
         // read phone numbers
@@ -1016,6 +1020,6 @@ public class ServerEmployeeTest {
         assertTrue(phones.contains(expected));
 
         // delete employee (cascade deletes phone numbers)
-        RestUtils.restDelete(new Integer(90777), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 }

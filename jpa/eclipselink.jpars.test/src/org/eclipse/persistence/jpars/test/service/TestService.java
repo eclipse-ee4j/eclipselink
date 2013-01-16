@@ -47,7 +47,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
 import org.eclipse.persistence.jpa.rs.QueryResource;
 import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
-import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
@@ -95,7 +95,7 @@ public class TestService {
     @BeforeClass
     public static void setup(){
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
+        ExamplePropertiesLoader.loadProperties(properties); 
         factory = null;
         try{
             factory = new PersistenceFactoryBase();
@@ -246,7 +246,7 @@ public class TestService {
         clearData();
     }
 
-    @Test
+    @Test 
     public void testMarshallBid() throws URISyntaxException {
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
@@ -470,7 +470,7 @@ public class TestService {
         assertTrue("Entity was not updated.", entity.get("name").equals("Robert"));
     }
 
-    @Test
+    @Test 
     public void testDynamicCompositeKey() throws URISyntaxException {
         EntityResource resource = new EntityResource();
         resource.setPersistenceFactory(factory);

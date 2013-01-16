@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 public class RestAdapterClassWriter implements EclipseLinkClassWriter, Opcodes {
 
-    public static final String REFERENCE_ADAPTER_SHORT_SIGNATURE = "org/eclipse/persistence/jpa/rs/util/ReferenceAdapter";
+    public static final String REFERENCE_ADAPTER_SHORT_SIGNATURE = "org/eclipse/persistence/jpa/rs/util/xmladapters/ReferenceAdapter";
     
     /**
      * creates a class name that can be used for a ReferenceAdapter subclass for the given

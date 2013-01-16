@@ -10,13 +10,14 @@
  * Contributors:
  *      tware - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.util.IdHelper;
 
 public class RelationshipLinkAdapter extends XmlAdapter<Link, RelationshipInfo> {
 

@@ -11,7 +11,7 @@
  *      dclarke/tware - initial 
  *      tware
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
  * {@link MetadataSource} used in the creation of dynamic JAXB contexts for applications.
- *
+ * 
  * @author dclarke
  * @since EclipseLink 2.4.0
  */

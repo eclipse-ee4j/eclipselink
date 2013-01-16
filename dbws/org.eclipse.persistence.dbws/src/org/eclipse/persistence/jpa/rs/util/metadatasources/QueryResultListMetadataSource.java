@@ -11,7 +11,7 @@
  *     gonural -  Initial implementation
  ******************************************************************************/
 
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
 
@@ -19,26 +19,25 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.response.QueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
 
 /**
- * Makes the QueryResultListItem class available to JPA-RS JAXB context.
- *
- * @see QueryResultListItem
+ * Makes the QueryResultList class available to JPA-RS JAXB context.  
+ * 
+ * @see QueryResultList
  * @author gonural
  *
  */
-public class QueryResultListItemMetadataSource implements MetadataSource {
+public class QueryResultListMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public QueryResultListItemMetadataSource() {
+    public QueryResultListMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(QueryResultListItem.class.getPackage().getName());
+        xmlBindings.setPackageName(QueryResultList.class.getPackage().getName());
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
         JavaType javaType = new JavaType();
-        javaType.setName(QueryResultListItem.class.getSimpleName());
-        javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
+        javaType.setName(QueryResultList.class.getSimpleName());
         javaTypes.getJavaType().add(javaType);
     }
 

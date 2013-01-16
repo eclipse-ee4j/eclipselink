@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.jpa.rs.response.QueryResultList;
-import org.eclipse.persistence.jpa.rs.response.QueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -93,7 +93,7 @@ public class QueryResource extends AbstractResource {
             // ReadAllQuery : only domain object selected: SELECT u FROM EmployeeAddress u
             // we will return list of domain objects
             // ReadObjectQuery : one or more contained domain objects and some other simple fields are selected, for example
-            // SELECT u.address, u.project, u.age, u.lastname FROM Employee
+            // SELECT u.address, u.project, u.age, u.lastname FROM Employee  
             List<Object> results = app.queryMultipleResults(query);
             return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
         }

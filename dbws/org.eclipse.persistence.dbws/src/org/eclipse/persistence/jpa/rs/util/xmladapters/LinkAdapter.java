@@ -11,7 +11,7 @@
  *      bdoughan - initial implementation 
  *      tware - initial unmarshall method
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +24,7 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 
@@ -63,7 +64,7 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         String entityId = fixedString.substring(lastSlash + 1);
         ClassDescriptor descriptor = context.getDescriptor(entityType);
         Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
-
+        
         return constructObjectForId(entityType, id);
     }
 
