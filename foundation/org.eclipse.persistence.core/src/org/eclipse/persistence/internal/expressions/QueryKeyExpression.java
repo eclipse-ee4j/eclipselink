@@ -664,6 +664,19 @@ public class QueryKeyExpression extends ObjectExpression {
             return this;
         }
 
+        ReadQuery query = normalizer.getStatement().getQuery();
+        // Record any class used in a join to invlaidate query results cache.
+        if ((query != null) && query.shouldCacheQueryResults()) {
+            if ((mapping != null) && (mapping.getReferenceDescriptor().getJavaClass() != null)) {
+                query.getQueryResultsCachePolicy().getInvalidationClasses().add(mapping.getReferenceDescriptor().getJavaClass());
+            } else {
+                QueryKey queryKey = getQueryKeyOrNull();
+                if ((queryKey != null) && queryKey.isForeignReferenceQueryKey()) {
+                    query.getQueryResultsCachePolicy().getInvalidationClasses().add(((ForeignReferenceQueryKey)queryKey).getReferenceClass());
+                }
+            }
+        }
+
         // If the mapping is 'ref' or 'structure', no join needed.
         if ((mapping != null) && (mapping.isReferenceMapping() || mapping.isStructureMapping())) {
             statement.setRequiresAliases(true);

@@ -42,15 +42,20 @@ public interface JpaCache extends Cache {
     void clear(Class cls);
 
     /**
-     * Clear all the query caches.
+     * Clear all the query results caches.
      */
     void clearQueryCache();
 
     /**
-     * Clear the named query cache associated with the query name.
+     * Clear the named query results cache associated with the query name.
      */
     void clearQueryCache(String queryName);
 
+    /**
+     * Clear all named query results cache associated with entity class.
+     */
+    void clearQueryCache(Class entityClass);
+    
     /**
      * Returns the remaining life of the given Object (in milliseconds).  This method is associated with use of
      * cache invalidation feature and returns the difference between the next expiry

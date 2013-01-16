@@ -48,6 +48,14 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
     }
 
     /**
+     * Invalidate/remove any results for the class from the query cache.
+     * This is used to invalidate the query cache on any change.
+     */
+    public void invalidateQueryCache(Class classThatChanged) {
+        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().invalidateQueryCache(classThatChanged);
+    }
+
+    /**
      * ADVANCED:
      * Clear the query class associated with the passed-in read query
      */

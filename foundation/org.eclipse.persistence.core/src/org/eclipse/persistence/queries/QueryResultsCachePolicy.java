@@ -12,6 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.persistence.descriptors.invalidation.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 
@@ -22,11 +26,12 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  *
  * It allows an invalidation policy and a maximum number of results to be set.
  * Query results are cached based on the parameter values of a query, and the maximum number
- * of results refers to the maximum number of parameter sets results will be ached for.
+ * of results refers to the maximum number of parameter sets results will be cached for.\
+ * By default query result caching is not used.
  *
  * @see org.eclipse.persistence.queries.ReadQuery#setQueryCachePolicy(QueryResultsCachePolicy)
  */
-public class QueryResultsCachePolicy implements java.io.Serializable {
+public class QueryResultsCachePolicy implements Serializable, Cloneable {
     /** Allows invalidation to be specified. */
     protected CacheInvalidationPolicy invalidationPolicy;
     /** Specifies the cache size. */
@@ -35,6 +40,63 @@ public class QueryResultsCachePolicy implements java.io.Serializable {
     protected Class cacheType;
     /** Allows the caching of null to be configured. */
     protected boolean isNullIgnored;
+    /** Allows the query cache to be invalidated when any object of any of the query classes is modified. */    
+    protected boolean invalidateOnChange;
+    /** Stores the set of classes that should trigger the query cached results to be invalidated. */    
+    protected Set<Class> invalidationClasses;
+
+    /**
+     * PUBLIC:
+     * Build a QueryResultsCachePolicy with the default settings
+     * By default there is no invalidation of query results and the maximum
+     * number of results sets is 100.
+     */
+    public QueryResultsCachePolicy() {
+        this(new NoExpiryCacheInvalidationPolicy(), 100);
+    }
+
+    /**
+     * PUBLIC:
+     * Build a QueryResultsCachePolicy and supply a CacheInvalidationPolicy and a maximum
+     * number of results sets.
+     *
+     * @see org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
+     */
+    public QueryResultsCachePolicy(CacheInvalidationPolicy policy, int maximumResultSets) {
+        this.invalidationPolicy = policy;
+        this.maximumResultSets = maximumResultSets;
+        this.cacheType = ClassConstants.CacheIdentityMap_Class;
+        this.isNullIgnored = false;
+        this.invalidateOnChange = true;
+        this.invalidationClasses = new HashSet<Class>();
+    }
+    
+    public QueryResultsCachePolicy clone() {
+        try {
+            QueryResultsCachePolicy clone = (QueryResultsCachePolicy)super.clone();
+            clone.invalidationClasses = new HashSet<Class>();
+            return clone;
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.toString());
+        }
+    }
+    
+    /**
+     * ADVANCED:
+     * Return the set of classes that should trigger the query cached results to be invalidated.
+     */
+    public Set<Class> getInvalidationClasses() {
+        return invalidationClasses;
+    }
+    
+    /**
+     * ADVANCED:
+     * Set the set of classes that should trigger the query cached results to be invalidated.
+     * This is normally computed by the query, but can be set in the case of native queries.
+     */
+    public void setInvalidationClasses(Set<Class> invalidationClasses) {
+        this.invalidationClasses = invalidationClasses;
+    }
 
     /**
      * PUBLIC:
@@ -60,26 +122,18 @@ public class QueryResultsCachePolicy implements java.io.Serializable {
 
     /**
      * PUBLIC:
-     * Build a QueryResultsCachePolicy with the default settings
-     * By default there is no invalidation of query results and the maximum
-     * number of results sets is 100.
+     * Return if any change to any object of the query class should cause the query results to be invalidated.
      */
-    public QueryResultsCachePolicy() {
-        this(new NoExpiryCacheInvalidationPolicy(), 100);
+    public boolean getInvalidateOnChange() {
+        return invalidateOnChange;
     }
 
     /**
      * PUBLIC:
-     * Build a QueryResultsCachePolicy and supply a CacheInvalidationPolicy and a maximum
-     * number of results sets.
-     *
-     * @see org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy
+     * Configure if any change to any object of the query class should cause the query results to be invalidated.
      */
-    public QueryResultsCachePolicy(CacheInvalidationPolicy policy, int maximumResultSets) {
-        this.invalidationPolicy = policy;
-        this.maximumResultSets = maximumResultSets;
-        this.cacheType = ClassConstants.CacheIdentityMap_Class;
-        this.isNullIgnored = false;
+    public void setInvalidateOnChange(boolean invalidateOnChange) {
+        this.invalidateOnChange = invalidateOnChange;
     }
 
     /**

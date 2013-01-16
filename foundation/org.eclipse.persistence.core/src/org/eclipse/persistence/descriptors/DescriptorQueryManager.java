@@ -59,8 +59,10 @@ import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
@@ -853,6 +855,21 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
         if (getDescriptor().isAggregateCollectionDescriptor()) {
             return;
+        }
+        
+        // Configure default query cache for all named queries.
+        QueryResultsCachePolicy defaultQueryCachePolicy = session.getProject().getDefaultQueryResultsCachePolicy();
+        if (defaultQueryCachePolicy != null) {
+            for (List<DatabaseQuery> queries : getQueries().values()) {
+                for (DatabaseQuery query : queries) {
+                    if (query.isReadQuery()) {
+                        ReadQuery readQuery = (ReadQuery)query;
+                        if (!readQuery.shouldCacheQueryResults()) {
+                            readQuery.setQueryResultsCachePolicy(defaultQueryCachePolicy.clone());
+                        }
+                    }
+                }
+            }
         }
 
         getDescriptor().initialize(this, session);

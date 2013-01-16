@@ -289,8 +289,11 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     protected void prepare() throws QueryException {
         super.prepare();
-    	if (shouldCacheQueryResults()){
-                clearQueryResults(getSession());
+        if (shouldCacheQueryResults()) {
+            clearQueryResults(getSession());
+            if (getReferenceClass() != null) {
+                getQueryResultsCachePolicy().getInvalidationClasses().add(getReferenceClass());
+            }
     	}
     }
     

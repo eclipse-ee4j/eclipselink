@@ -879,8 +879,17 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
                 key.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
             }
         }
+        invalidateQueryCache(myClass);
     }
 
+    /**
+     * Invalidate/remove any results for the class from the query cache.
+     * This is used to invalidate the query cache on any change.
+     */
+    public void invalidateQueryCache(Class classThatChanged) {
+        getIdentityMapManager().invalidateQueryCache(classThatChanged);
+    }
+    
     /**
      * ADVANCED:
      * Set all of the objects from all identity maps to be invalid in the cache.

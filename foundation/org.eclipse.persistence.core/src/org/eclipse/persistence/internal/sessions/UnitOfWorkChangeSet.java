@@ -263,7 +263,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         ObjectChangeSet changes = (ObjectChangeSet)this.getObjectChangeSetForClone(entityClone);
         if (changes == null) {
             if (descriptor.isAggregateDescriptor()) {
-                changes = new AggregateObjectChangeSet(new CacheId(new Object[0]), descriptor, entityClone, this, isNew);
+                changes = new AggregateObjectChangeSet(CacheId.EMPTY, descriptor, entityClone, this, isNew);
             } else {
                 changes = new ObjectChangeSet(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entityClone, session), descriptor, entityClone, this, isNew);
             }

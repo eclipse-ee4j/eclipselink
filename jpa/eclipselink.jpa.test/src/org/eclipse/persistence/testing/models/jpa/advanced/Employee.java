@@ -16,7 +16,6 @@ import java.sql.Time;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
@@ -124,6 +123,13 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_RANDOMIZE_EXPIRY, value="true"),
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_SIZE, value="200"),
                 @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE_EXPIRY, value="50000")
+        }
+),
+@NamedQuery(
+        name="CachedEmployeeJoinAddress",
+        query="SELECT e FROM Employee e where e.address.city <> 'nowhere'",
+        hints={
+                @QueryHint(name=QueryHints.QUERY_RESULTS_CACHE, value="true")
         }
 ),
 @NamedQuery(

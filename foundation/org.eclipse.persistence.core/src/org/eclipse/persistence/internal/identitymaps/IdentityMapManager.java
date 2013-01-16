@@ -60,6 +60,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /** A table of identity maps with the key being the query */
     protected Map<Object, IdentityMap> queryResults;
     
+    /** A map of class to list of queries that need to be invalidated when that class changes. */
+    protected Map<Class, List> queryResultsInvalidationsByClass;
+    
     /** A map of indexes on the cache. */
     protected Map<CacheIndex, IdentityMap> cacheIndexes;
 
@@ -90,10 +93,12 @@ public class IdentityMapManager implements Serializable, Cloneable {
         } else if (session.isIsolatedClientSession()) {
             this.identityMaps = new HashMap();
             this.queryResults = new HashMap();
+            this.queryResultsInvalidationsByClass = new HashMap();
             this.cacheIndexes = new HashMap();
         } else {
             this.identityMaps = new ConcurrentHashMap();
             this.queryResults = new ConcurrentHashMap();
+            this.queryResultsInvalidationsByClass = new ConcurrentHashMap();
             this.cacheIndexes = new ConcurrentHashMap();
         }
         checkIsCacheAccessPreCheckRequired();
@@ -419,6 +424,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public void clearQueryCache() {
         this.queryResults = new ConcurrentHashMap();
+        this.queryResultsInvalidationsByClass = new ConcurrentHashMap();
     }
 
     /**
@@ -441,6 +447,23 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 queryKey = query;
             }
             this.queryResults.remove(queryKey);
+        }
+    }
+
+    /**
+     * Invalidate/remove any results for the class from the query cache.
+     * This is used to invalidate the query cache on any change.
+     */
+    public void invalidateQueryCache(Class classThatChanged) {
+        List invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
+        if (invalidations != null) {
+            for (Object queryKey : invalidations) {
+                this.queryResults.remove(queryKey);                
+            }
+        }
+        Class superClass = classThatChanged.getSuperclass();
+        if ((superClass != null) && (superClass != ClassConstants.OBJECT)) {
+            invalidateQueryCache(superClass);
         }
     }
     
@@ -634,6 +657,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     }
                 }
             }
+            invalidateQueryCache(theClass);
         } finally {
             this.session.endOperationProfile(SessionProfiler.Caching);
         }
@@ -988,8 +1012,8 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
 
         Object lookupParameters;
-        if (parameters == null) {
-            lookupParameters = new CacheId(new Object[0]);
+        if ((parameters == null) || parameters.isEmpty()) {
+            lookupParameters = CacheId.EMPTY;
         } else {
             lookupParameters = new CacheId(parameters.toArray());
         }
@@ -1134,6 +1158,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         IdentityMap identityMap = buildNewIdentityMap(descriptor);
         getIdentityMaps().put(javaClass, identityMap);
         clearLastAccessedIdentityMap();
+        invalidateQueryCache(theClass);
     }
 
     public void initializeIdentityMaps() {
@@ -1365,14 +1390,30 @@ public class IdentityMapManager implements Serializable, Cloneable {
             synchronized (this.queryResults) {
                 map = this.queryResults.get(queryKey);
                 if (map == null) {
-                    map = buildNewIdentityMap(query.getQueryResultsCachePolicy().getCacheType(), query.getQueryResultsCachePolicy().getMaximumCachedResults(), null, false);
+                    int size = query.getQueryResultsCachePolicy().getMaximumCachedResults();
+                    // PERF: If no parameters, then there can only be one result.
+                    if ((parameters == null) || parameters.isEmpty()) {
+                        size = 1;
+                    }
+                    map = buildNewIdentityMap(query.getQueryResultsCachePolicy().getCacheType(), size, null, false);
                     this.queryResults.put(queryKey, map);
+                    // Mark the query to be invalidated for the query classes.
+                    if (query.getQueryResultsCachePolicy().getInvalidateOnChange()) {
+                        for (Class queryClass : query.getQueryResultsCachePolicy().getInvalidationClasses()) {
+                            List invalidations = this.queryResultsInvalidationsByClass.get(queryClass);
+                            if (invalidations == null) {
+                                invalidations = new ArrayList();
+                                this.queryResultsInvalidationsByClass.put(queryClass, invalidations);
+                            }
+                            invalidations.add(queryKey);
+                        }
+                    }
                 }
             }
         }
         Object lookupParameters;
-        if (parameters == null) {
-            lookupParameters = new CacheId(new Object[0]);
+        if ((parameters == null) || parameters.isEmpty()) {
+            lookupParameters = CacheId.EMPTY;
         } else {
             lookupParameters = new CacheId(parameters.toArray());
         }

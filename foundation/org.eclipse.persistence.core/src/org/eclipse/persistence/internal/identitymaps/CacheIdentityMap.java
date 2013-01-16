@@ -36,8 +36,8 @@ public class CacheIdentityMap extends FullIdentityMap {
 
     public CacheIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super(size, descriptor, session, isolated);
-        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
-        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
+        this.first = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated);
+        this.last = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     }

@@ -895,8 +895,38 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (counter.getSqlStatements().size() > 0) {
                 fail("Query cache was not used: " + counter.getSqlStatements());
             }
-        } finally {
             rollbackTransaction(em);
+            beginTransaction(em);
+            query = em.createNamedQuery("CachedEmployeeJoinAddress");
+            result = query.getResultList();
+            // Test that an insert triggers the query cache to invalidate.
+            Employee employee = new Employee();
+            Address address = new Address();
+            address.setCity("Ottawa");
+            employee.setAddress(address);
+            em.persist(employee);
+            commitTransaction(em);
+            beginTransaction(em);
+            query = em.createNamedQuery("CachedEmployeeJoinAddress");
+            if ((result.size() + 1) != query.getResultList().size()) {
+                fail("Query result cache not invalidated.");
+            }
+            address = em.merge(address);
+            address.setCity("nowhere");
+            commitTransaction(em);
+            beginTransaction(em);
+            query = em.createNamedQuery("CachedEmployeeJoinAddress");
+            if (result.size() != query.getResultList().size()) {
+                fail("Query result cache not invalidated.");
+            }
+            em.remove(em.merge(employee));
+            commitTransaction(em);
+            query = em.createNamedQuery("CachedEmployeeJoinAddress");
+            if (result.size() != query.getResultList().size()) {
+                fail("Query result cache not invalidated on delete.");
+            }
+        } finally {
+            closeEntityManagerAndTransaction(em);
             if (counter != null) {
                 counter.remove();
             }

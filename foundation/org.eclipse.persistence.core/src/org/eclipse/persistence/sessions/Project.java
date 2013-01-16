@@ -50,6 +50,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.sessions.server.*;
 
@@ -110,13 +111,16 @@ public class Project extends CoreProject<ClassDescriptor> implements Serializabl
     protected int defaultIdentityMapSize = 100;
     
     /** Default value for ClassDescriptor.isIsolated. */
-    protected CacheIsolationType defaultCacheIsolation = null;
+    protected CacheIsolationType defaultCacheIsolation;
     
+    /** Default value for query caching options for all named queries. */
+    protected QueryResultsCachePolicy defaultQueryResultsCachePolicy;
+
     /** Default value for ClassDescriptor.idValidation. */
-    protected IdValidation defaultIdValidation = null;
+    protected IdValidation defaultIdValidation;
     
     /** List of queries - once Project is initialized, these are copied to the Session. */
-    protected List<DatabaseQuery> queries = null;
+    protected List<DatabaseQuery> queries;
 
     /** List of queries from JPA that need special processing before execution. */
     protected List<DatabaseQuery> jpaQueries;
@@ -198,6 +202,23 @@ public class Project extends CoreProject<ClassDescriptor> implements Serializabl
     public Project(DatabaseLogin login) {
         this();
         this.datasourceLogin = login;
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the default values for query caching options for all named queries.
+     */
+    public QueryResultsCachePolicy getDefaultQueryResultsCachePolicy() {
+        return defaultQueryResultsCachePolicy;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the default values for query caching options for all named queries.
+     * By default no query caching is used.
+     */
+    public void setDefaultQueryResultsCachePolicy(QueryResultsCachePolicy defaultQueryResultsCachePolicy) {
+        this.defaultQueryResultsCachePolicy = defaultQueryResultsCachePolicy;
     }
     
     /**

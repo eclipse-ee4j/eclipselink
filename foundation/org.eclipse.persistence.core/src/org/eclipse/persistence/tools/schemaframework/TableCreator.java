@@ -33,6 +33,9 @@ import org.eclipse.persistence.sessions.Session;
  * @author Peter Krogh
  */
 public class TableCreator {
+    /** Flag to disable table existence check before create. */
+    public static boolean CHECK_EXISTENCE = true;
+    
     protected List<TableDefinition> tableDefinitions;
     protected String name;
     protected boolean ignoreDatabaseException; //if true, DDL generation will continue even if exceptions occur
@@ -75,16 +78,23 @@ public class TableCreator {
     public void createConstraints(DatabaseSession session, SchemaManager schemaManager) {
         createConstraints(session, schemaManager, true);
     }
-
+    
     /**
      * Create constraints.
      */
     public void createConstraints(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        createConstraints(getTableDefinitions(), session, schemaManager, build);
+    }
+
+    /**
+     * Create constraints.
+     */
+    public void createConstraints(List<TableDefinition> tables, DatabaseSession session, SchemaManager schemaManager, boolean build) {
         buildConstraints(schemaManager, build);
 
         // Unique constraints should be generated before foreign key constraints,
         // because foreign key constraints can reference unique constraints
-        for (TableDefinition table : getTableDefinitions()) {
+        for (TableDefinition table : tables) {
             try {
                 schemaManager.createUniqueConstraints(table);
             } catch (DatabaseException ex) {
@@ -94,7 +104,7 @@ public class TableCreator {
             }
         }
         
-        for (TableDefinition table : getTableDefinitions()) {
+        for (TableDefinition table : tables) {
             try {
                 schemaManager.createForeignConstraints(table);
             } catch (DatabaseException ex) {
@@ -104,7 +114,7 @@ public class TableCreator {
             }
         }
     }
-
+    
     /**
      * This creates the tables on the database.
      * If the table already exists this will fail.
@@ -130,22 +140,31 @@ public class TableCreator {
         buildConstraints(schemaManager, build);
 
         String sequenceTableName = getSequenceTableName(session);
+        List<TableDefinition> missingTables = new ArrayList<TableDefinition>();
         for (TableDefinition table : getTableDefinitions()) {
             // Must not create sequence table as done in createSequences.
             if (!table.getName().equals(sequenceTableName)) {
-                try {
-                    schemaManager.createObject(table);
-                    session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
-                } catch (DatabaseException ex) {
-                    session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_already_existed", table.getFullName());
-                    if (!shouldIgnoreDatabaseException()) {
-                        throw ex;
+                boolean alreadyExists = false;
+                // Check if the table already exists, to avoid logging create error.
+                if (CHECK_EXISTENCE && schemaManager.shouldWriteToDatabase()) {
+                    alreadyExists = schemaManager.checkTableExists(table);
+                }
+                if (!alreadyExists) {
+                    missingTables.add(table);
+                    try {
+                        schemaManager.createObject(table);
+                        session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
+                    } catch (DatabaseException ex) {
+                        session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_already_existed", table.getFullName());
+                        if (!shouldIgnoreDatabaseException()) {
+                            throw ex;
+                        }
                     }
                 }
             }
         }
         
-        createConstraints(session, schemaManager, false);
+        createConstraints(missingTables, session, schemaManager, false);
 
         schemaManager.createSequences();
     }
@@ -394,99 +413,111 @@ public class TableCreator {
             // Must not create sequence table as done in createSequences.
             if (!table.getName().equals(sequenceTableName)) {
                 AbstractSession abstractSession = (AbstractSession) session;
+                boolean alreadyExists = false;
+                // Check if the table already exists, to avoid logging create error.
+                if (CHECK_EXISTENCE && schemaManager.shouldWriteToDatabase()) {
+                    alreadyExists = schemaManager.checkTableExists(table);
+                }
+                DatabaseException createTableException = null;
+                if (!alreadyExists) {
                     //assume table does not exist
                     try {
                         schemaManager.createObject(table);
                         session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "default_tables_created", table.getFullName());
-                    } catch (DatabaseException createTableException) {
-                        //Assume the table exists, so lookup the column info
+                    } catch (DatabaseException exception) {
+                        createTableException = exception;
+                        alreadyExists = true;
+                    }
+                }
+                if (alreadyExists) {
+                    //Assume the table exists, so lookup the column info
 
-                        //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
-                        //as it is stored internally.  
-                        String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
-                        boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
-                        List<DatabaseRecord> columnInfo = null;
+                    //While SQL is case insensitive, getColumnInfo is and will not return the table info unless the name is passed in
+                    //as it is stored internally.  
+                    String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
+                    boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
+                    List<DatabaseRecord> columnInfo = null;
 
-                        //I need the actual table catalog, schema and tableName for getTableInfo.
+                    //I need the actual table catalog, schema and tableName for getTableInfo.
+                    columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
+                    
+                    if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
+                        tableName = tableName.toUpperCase();
                         columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
-                        
-                        if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
-                            tableName = tableName.toUpperCase();
+                        if (( columnInfo == null || columnInfo.isEmpty()) ){
+                            tableName = tableName.toLowerCase();
                             columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
-                            if (( columnInfo == null || columnInfo.isEmpty()) ){
-                                tableName = tableName.toLowerCase();
-                                columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
-                            }
-                        }
-                        if (columnInfo != null && !columnInfo.isEmpty()) {
-                            //Table exists, add individual fields as necessary
-
-                            //hash the table's existing columns by name
-                            Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
-                            DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
-                            DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
-                            boolean schemaMatchFound = false;
-                            // Determine the probably schema for the table, this is a heuristic, so should not cause issues if wrong.
-                            String qualifier = table.getQualifier();
-                            if ((qualifier == null) || (qualifier.length() == 0)) {
-                                qualifier = session.getDatasourcePlatform().getTableQualifier();
-                                if ((qualifier == null) || (qualifier.length() == 0)) {
-                                    qualifier = session.getLogin().getUserName();
-                                }
-                            }
-                            boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
-                            for (DatabaseRecord record : columnInfo) {
-                                String fieldName = (String)record.get(columnNameLookupField);
-                                if (fieldName != null && fieldName.length() > 0) {
-                                    DatabaseField column = new DatabaseField(fieldName);
-                                    if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
-                                        column.useUpperCaseForComparisons(true);
-                                    }
-                                    String schema = (String)record.get(schemaLookupField);
-                                    // Check the schema as well.  Ignore columns for other schema if a schema match is found.
-                                    if (schemaMatchFound) {
-                                        if (qualifier.equalsIgnoreCase(schema)) {
-                                            columns.put(column,  record);
-                                        }
-                                    } else {
-                                        if (checkSchema) {
-                                            if (qualifier.equalsIgnoreCase(schema)) {
-                                                schemaMatchFound = true;
-                                                // Remove unmatched columns from other schemas.
-                                                columns.clear();
-                                            }
-                                        }
-                                        // If none of the schemas match what is expected, assume what is expected is wrong, and use all columns.
-                                        columns.put(column,  record);
-                                    }
-                                }
-                            }
-
-                            //Go through each field we need to have in the table to see if it already exists
-                            for (FieldDefinition fieldDef : table.getFields()){
-                                DatabaseField dbField = fieldDef.getDatabaseField();
-                                if ( dbField == null ) {
-                                    dbField = new DatabaseField(fieldDef.getName());
-                                }
-                                if (columns.get(dbField)== null) {
-                                    //field does not exist so add it to the table
-                                    try {
-                                        table.addFieldOnDatabase(abstractSession, fieldDef);
-                                    } catch(DatabaseException addFieldEx) {
-                                        session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "table_cannot_add_field", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
-                                        if (!shouldIgnoreDatabaseException()) {
-                                            throw addFieldEx;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "cannot_create_table", table.getFullName(), createTableException.getMessage());
-                            if (!shouldIgnoreDatabaseException()) {
-                                throw createTableException;
-                            }
                         }
                     }
+                    if (columnInfo != null && !columnInfo.isEmpty()) {
+                        //Table exists, add individual fields as necessary
+
+                        //hash the table's existing columns by name
+                        Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
+                        DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
+                        DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
+                        boolean schemaMatchFound = false;
+                        // Determine the probably schema for the table, this is a heuristic, so should not cause issues if wrong.
+                        String qualifier = table.getQualifier();
+                        if ((qualifier == null) || (qualifier.length() == 0)) {
+                            qualifier = session.getDatasourcePlatform().getTableQualifier();
+                            if ((qualifier == null) || (qualifier.length() == 0)) {
+                                qualifier = session.getLogin().getUserName();
+                            }
+                        }
+                        boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
+                        for (DatabaseRecord record : columnInfo) {
+                            String fieldName = (String)record.get(columnNameLookupField);
+                            if (fieldName != null && fieldName.length() > 0) {
+                                DatabaseField column = new DatabaseField(fieldName);
+                                if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                                    column.useUpperCaseForComparisons(true);
+                                }
+                                String schema = (String)record.get(schemaLookupField);
+                                // Check the schema as well.  Ignore columns for other schema if a schema match is found.
+                                if (schemaMatchFound) {
+                                    if (qualifier.equalsIgnoreCase(schema)) {
+                                        columns.put(column,  record);
+                                    }
+                                } else {
+                                    if (checkSchema) {
+                                        if (qualifier.equalsIgnoreCase(schema)) {
+                                            schemaMatchFound = true;
+                                            // Remove unmatched columns from other schemas.
+                                            columns.clear();
+                                        }
+                                    }
+                                    // If none of the schemas match what is expected, assume what is expected is wrong, and use all columns.
+                                    columns.put(column,  record);
+                                }
+                            }
+                        }
+
+                        //Go through each field we need to have in the table to see if it already exists
+                        for (FieldDefinition fieldDef : table.getFields()){
+                            DatabaseField dbField = fieldDef.getDatabaseField();
+                            if ( dbField == null ) {
+                                dbField = new DatabaseField(fieldDef.getName());
+                            }
+                            if (columns.get(dbField)== null) {
+                                //field does not exist so add it to the table
+                                try {
+                                    table.addFieldOnDatabase(abstractSession, fieldDef);
+                                } catch(DatabaseException addFieldEx) {
+                                    session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "table_cannot_add_field", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
+                                    if (!shouldIgnoreDatabaseException()) {
+                                        throw addFieldEx;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (createTableException != null) {
+                        session.getSessionLog().log(SessionLog.FINEST, SessionLog.DDL, "cannot_create_table", table.getFullName(), createTableException.getMessage());
+                        if (!shouldIgnoreDatabaseException()) {
+                            throw createTableException;
+                        }
+                    }
+                }
             }
         }
         createConstraints(session, schemaManager, false);

@@ -423,6 +423,7 @@ public class MergeManager {
             // Iterate over each clone and let the object build merge to clones into the originals.
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
             Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
+            Set<Class> classesChanged = new HashSet<Class>();
             while (objectChangeEnum.hasNext()) {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it
@@ -437,13 +438,19 @@ public class MergeManager {
                 } else {
                     this.session.incrementProfile(SessionProfiler.ChangeSetsNotProcessed);
                 }
+                classesChanged.add(objectChangeSet.getClassType(this.session));
             }
             if (uowChangeSet.hasDeletedObjects()) {
                 Iterator deletedObjects = uowChangeSet.getDeletedObjects().values().iterator();
                 while (deletedObjects.hasNext()) {
                     ObjectChangeSet changeSet = (ObjectChangeSet)deletedObjects.next();
                     changeSet.removeFromIdentityMap(this.session);
+                    classesChanged.add(changeSet.getClassType(this.session));
                 }
+            }
+            // Clear the query cache as well.
+            for (Class changedClass : classesChanged) {
+                this.session.getIdentityMapAccessorInstance().invalidateQueryCache(changedClass);
             }
         } catch (RuntimeException exception) {
             this.session.handleException(exception);

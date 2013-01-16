@@ -41,6 +41,7 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.tools.tuning.SessionTuner;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
@@ -48,6 +49,8 @@ import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -83,18 +86,23 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * INTERNAL:
      * sequencingHome for this session.
      */
-    private SequencingHome sequencingHome;
+    protected SequencingHome sequencingHome;
 
     /**
      * Used to store the server platform that handles server-specific functionality for Oc4j, WLS,  etc.
      */
-    private ServerPlatform serverPlatform;
+    protected ServerPlatform serverPlatform;
+    
+    /**
+     * Stores the tuner used to tune the configuration of this session.
+     */
+    protected SessionTuner tuner;
 
     /**
      * INTERNAL:
      * connectedTime indicates the exact time this session was logged in.
      */
-    private long connectedTime;
+    protected long connectedTime;
 
     /**
      * INTERNAL
@@ -472,6 +480,21 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         // Process JPA named queries and add as session queries,
         // this must be done after descriptor init as requires to parse the JPQL.
         processJPAQueries();
+        
+        // Configure default query cache for all named queries.
+        QueryResultsCachePolicy defaultQueryCachePolicy = getProject().getDefaultQueryResultsCachePolicy();
+        if (defaultQueryCachePolicy != null) {
+            for (List<DatabaseQuery> queries : getQueries().values()) {
+                for (DatabaseQuery query : queries) {
+                    if (query.isReadQuery()) {
+                        ReadQuery readQuery = (ReadQuery)query;
+                        if (!readQuery.shouldCacheQueryResults()) {
+                            readQuery.setQueryResultsCachePolicy(defaultQueryCachePolicy.clone());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -981,5 +1004,19 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
         return executionSession.executeQuery(query, row, retryCount);
+    }
+    
+    /**
+     * Return the tuner used to tune the configuration of this session.
+     */
+    public SessionTuner getTuner() {
+        return tuner;
+    }
+    
+    /**
+     * Set the tuner used to tune the configuration of this session.
+     */
+    public void setTuner(SessionTuner tuner) {
+        this.tuner = tuner;
     }
 }

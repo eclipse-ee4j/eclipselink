@@ -57,6 +57,8 @@ import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
+import org.eclipse.persistence.tools.tuning.SafeModeTuner;
+import org.eclipse.persistence.tools.tuning.SessionTuner;
 
 /**
  * The class defines EclipseLink persistence unit property names. These values
@@ -995,6 +997,19 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_SHARED_DEFAULT = CACHE_SHARED_ + DEFAULT;
 
+    /**
+     * Property prefix <code>"eclipselink.cache.query-results</code> used to
+     * configure the default option for query results caching.
+     * <p>
+     * The query results cache is separate from the object cache.
+     * It caches the results of named query execution.
+     * The query results cache is not enabled by default, and
+     * can be enabled per query.
+     * This option allows it to be enabled for all named queries.
+     * Valid values are "true" or "false" (default).
+     */
+    public static final String QUERY_CACHE = "eclipselink.cache.query-results";
+    
     /**
      * Allows integration with a database event notification service.
      * This allows the EclipseLink cache to be invalidated by database change events.
@@ -2246,6 +2261,23 @@ public class PersistenceUnitProperties {
      * @see ProfilerType
      */
     public static final String PROFILER = "eclipselink.profiler";
+    
+    /**
+     * The <code>"eclipselink.tuning"</code>property configures the type of
+     * tuner to use to configure the persistence unit.
+     * A SessionTuner can be used to define a template for a persistence unit configuration.
+     * It allows a set of configuration values to be configured as a single tuning option.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"Standard" (DEFAULT)
+     * <li>"Safe": See {@link SafeModeTuner}
+     * <li>Custom tuner - Specify a full class name of an implementation of {@link SessionTuner}
+     * </ul>
+     * 
+     * @see TunerType
+     */
+    public static final String TUNING = "eclipselink.tuning";
 
     /**
      * The <code>"eclipselink.transaction.join-existing"</code> property Set to
@@ -2701,7 +2733,6 @@ public class PersistenceUnitProperties {
      * Values:
      * <ul>
      * <li>"rmi"
-     * <li>"corba"
      * <li>a <package.class> name of a subclass implementation of the RemoteConnection abstract class.
      * </ul>
      * 

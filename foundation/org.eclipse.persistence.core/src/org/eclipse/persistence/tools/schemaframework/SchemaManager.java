@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -313,6 +314,30 @@ public class SchemaManager {
     }
 
     /**
+     * Check if the table exists by issuing a select.
+     */
+    public boolean checkTableExists(TableDefinition table) {
+        String column = null;
+        for (FieldDefinition field : table.getFields()) {
+            if (column == null) {
+                column = field.getName();
+            } else if (field.isPrimaryKey()) {
+                column = field.getName();
+                break;
+            }                        
+        }
+        String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
+        DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        try {
+            this.session.executeQuery(query);
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
+    /**
      * Method creates database sequence tables.  If create is true, it will attempt to create the sequence tables and silently 
      * ignore exceptions.  If create is false, it will drop the tables ignoring any exceptions, then create it.  
      * @param tableDefinitions - HashMap of Sequence table definitions
@@ -363,31 +388,38 @@ public class SchemaManager {
      * @throws EclipseLinkException
      */
     private void processDatabaseObjectDefinition(DatabaseObjectDefinition definition, final boolean create, final boolean shouldLogExceptionStackTrace) throws EclipseLinkException {
-        if (shouldLogExceptionStackTrace) {
-            session.getSessionLog().setShouldLogExceptionStackTrace(false);
-        }
-
-        if (create) {
-            try {
-                createObject(definition);
-            } catch (DatabaseException exception) {
-                // Ignore already created
-            } finally {
+       if (create) {
+            boolean exists = false;
+            if (definition instanceof TableDefinition) {
+                exists = checkTableExists((TableDefinition)definition);
+            }
+            if (!exists) {
                 if (shouldLogExceptionStackTrace) {
-                    session.getSessionLog().setShouldLogExceptionStackTrace(true);
+                    this.session.getSessionLog().setShouldLogExceptionStackTrace(false);
+                }
+                try {
+                    createObject(definition);
+                } catch (DatabaseException exception) {
+                    // Ignore already created
+                } finally {
+                    if (shouldLogExceptionStackTrace) {
+                        this.session.getSessionLog().setShouldLogExceptionStackTrace(true);
+                    }
                 }
             }
         } else {
+            if (shouldLogExceptionStackTrace) {
+                this.session.getSessionLog().setShouldLogExceptionStackTrace(false);
+            }
             try {
                 dropObject(definition);
             } catch (DatabaseException exception) {
                 // Ignore table not found for first creation
             } finally {
                 if (shouldLogExceptionStackTrace) {
-                    session.getSessionLog().setShouldLogExceptionStackTrace(true);
+                    this.session.getSessionLog().setShouldLogExceptionStackTrace(true);
                 }
             }
-
             createObject(definition);
         }
     }

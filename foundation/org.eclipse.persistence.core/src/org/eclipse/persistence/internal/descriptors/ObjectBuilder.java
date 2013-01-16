@@ -2452,7 +2452,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         ObjectChangeSet changes = (ObjectChangeSet)uowChangeSet.getObjectChangeSetForClone(clone);
         if (changes == null) {
             if (this.descriptor.isAggregateDescriptor()) {
-                changes = new AggregateObjectChangeSet(new CacheId(new Object[0]), this.descriptor, clone, uowChangeSet, isNew);
+                changes = new AggregateObjectChangeSet(CacheId.EMPTY, this.descriptor, clone, uowChangeSet, isNew);
             } else {
                 changes = new ObjectChangeSet(extractPrimaryKeyFromObject(clone, session, true), this.descriptor, clone, uowChangeSet, isNew);
             }

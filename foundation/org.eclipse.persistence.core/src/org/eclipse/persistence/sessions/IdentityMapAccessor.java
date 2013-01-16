@@ -63,6 +63,13 @@ public interface IdentityMapAccessor {
 
     /**
      * ADVANCED:
+     * Invalidate/remove any results for any query for the class from the query cache.
+     * This is used to invalidate the query cache on any change.
+     */
+    public void invalidateQueryCache(Class classThatChanged);
+
+    /**
+     * ADVANCED:
      * Returns true if the identity map contains an Object with the same primary 
      * key and Class type of the given domainObject.
      */

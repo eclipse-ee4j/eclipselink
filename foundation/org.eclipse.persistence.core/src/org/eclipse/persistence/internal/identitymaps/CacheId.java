@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.helper.*;
  * @author James Sutherland
  */
 public class CacheId implements Serializable, Comparable<CacheId> {
+    public static final CacheId EMPTY = new CacheId(new Object[0]);
 
     /** The primary key values. */
     protected Object[] primaryKey;

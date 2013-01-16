@@ -522,6 +522,19 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
             ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().initializeIdentityMap(theClass);
         }
     }
+    
+    /**
+     * Invalidate/remove any results for the class from the query cache.
+     * This is used to invalidate the query cache on any change.
+     */
+    @Override
+    public void invalidateQueryCache(Class classThatChanged) {
+        if (!session.getDescriptor(classThatChanged).getCachePolicy().isSharedIsolation()) {
+            getIdentityMapManager().invalidateQueryCache(classThatChanged);
+        } else {
+            ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().invalidateQueryCache(classThatChanged);
+        }        
+    }
 
     /**
      * PUBLIC:

@@ -181,6 +181,7 @@ import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCa
 import org.eclipse.persistence.platform.server.CustomServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.queries.QueryResultsCachePolicy;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.DefaultConnector;
@@ -193,6 +194,9 @@ import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
+import org.eclipse.persistence.tools.tuning.SafeModeTuner;
+import org.eclipse.persistence.tools.tuning.SessionTuner;
+import org.eclipse.persistence.tools.tuning.StandardTuner;
 
 /**
  * INTERNAL:
@@ -508,6 +512,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         boolean isLockAcquired = false;
         try {
             Map deployProperties = mergeMaps(additionalProperties, this.persistenceUnitInfo.getProperties());
+            updateTunerPreDeploy(deployProperties, classLoaderToUse);
             translateOldProperties(deployProperties, this.session);
             if (isComposite()) {
                 updateCompositeMembersProperties(deployProperties);
@@ -623,6 +628,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             }
                         } else {
                             try {
+                                updateTunerDeploy(deployProperties, classLoaderToUse);
                                 if (this.isSessionLoadedFromSessionsXML) {
                                     getDatabaseSession().login();
                                 } else {
@@ -672,6 +678,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             generateDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);    
                         }
                     }
+                    updateTunerPostDeploy(deployProperties, classLoaderToUse);
                     this.deployLock.release();
                     isLockAcquired = false;
                 }
@@ -1271,6 +1278,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     }
     
     protected void updateDescriptorCacheSettings(Map m, ClassLoader loader) {
+        String queryCache = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.QUERY_CACHE, m, session);
+        if ((queryCache != null) && queryCache.equalsIgnoreCase("true")) {
+            session.getProject().setDefaultQueryResultsCachePolicy(new QueryResultsCachePolicy());
+        }
+        
         Map typeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_TYPE_, m, session);
         Map sizeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SIZE_, m, session);
         Map sharedMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SHARED_, m, session);
@@ -1565,6 +1577,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     session.setRefreshMetadataListener(this);
                 }
                 session.setName(this.sessionName);
+                updateTunerPreDeploy(predeployProperties, classLoaderToUse);
 
                 if (this.compositeEmSetupImpl == null) {
                     // session name and ServerPlatform must be set prior to setting the loggers.
@@ -2870,6 +2883,51 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Check for a tuning property and run the tuner preDeploy.
+     */
+    protected void updateTunerPreDeploy(Map m, ClassLoader loader) {
+        String tuning = (String)EntityManagerFactoryProvider.getConfigPropertyLogDebug(PersistenceUnitProperties.TUNING, m, this.session);
+        if (tuning != null) {
+            SessionTuner tuner = null;
+            if (tuning.equalsIgnoreCase("Safe")) {
+                tuner = new SafeModeTuner();
+            } else if (tuning.equalsIgnoreCase("Standard")) {
+                tuner = new StandardTuner();
+            } else {
+                if (tuning.equalsIgnoreCase("ExaLogic")) {
+                    tuning = "oracle.toplink.exalogic.tuning.ExaLogicTuner";
+                }
+                Class tunerClass = findClassForProperty(tuning, PersistenceUnitProperties.TUNING, loader);
+                try {
+                    tuner = (SessionTuner)tunerClass.newInstance();
+                } catch (Exception invalid) {
+                    this.session.handleException(EntityManagerSetupException.failedToInstantiateProperty(tuning, PersistenceUnitProperties.TUNING, invalid));
+                }
+            }
+            getDatabaseSession().setTuner(tuner);
+            tuner.tunePreDeploy(m);
+        }
+    }
+
+    /**
+     * Check for a tuning property and run the tuner deploy.
+     */
+    protected void updateTunerDeploy(Map m, ClassLoader loader) {
+        if (getDatabaseSession().getTuner() != null) {
+            getDatabaseSession().getTuner().tuneDeploy(getDatabaseSession());
+        }
+    }
+
+    /**
+     * Check for a tuning property and run the tuner deploy.
+     */
+    protected void updateTunerPostDeploy(Map m, ClassLoader loader) {
+        if (getDatabaseSession().getTuner() != null) {
+            getDatabaseSession().getTuner().tunePostDeploy(getDatabaseSession());
         }
     }
 

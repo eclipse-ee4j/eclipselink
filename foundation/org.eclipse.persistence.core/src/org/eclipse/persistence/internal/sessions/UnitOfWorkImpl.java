@@ -3263,6 +3263,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
+            Set<Class> classesChanged = new HashSet<Class>();
             if (! shouldStoreBypassCache()) {
                 for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
                     // May be no changes for that class type.
@@ -3275,6 +3276,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                                 break;
                             }
                             manager.mergeChanges(objectToWrite, changeSetToWrite, this.getParentIdentityMapSession(descriptor, false, false));
+                            classesChanged.add(objectToWrite.getClass());
                         }
                     }
                 }
@@ -3306,8 +3308,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().releaseAllAcquiredLocks(manager);
                 setMergeManager(null);
 
-                postMergeChanges();
+                postMergeChanges(classesChanged);
 
+                for (Class changedClass : classesChanged) {
+                    this.parent.getIdentityMapAccessorInstance().invalidateQueryCache(changedClass);
+                }
                 // If change propagation enabled through RemoteCommandManager then go for it
                 if (this.parent.shouldPropagateChanges() && (this.parent.getCommandManager() != null)) {
                     if (hasDeletedObjects()) {
@@ -3684,7 +3689,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * INTERNAL:
      * Remove objects from parent's identity map.
      */
-    protected void postMergeChanges() {
+    protected void postMergeChanges(Set classesChanged) {
         //bug 4730595: objects removed during flush are not removed from the cache during commit
         if (this.unitOfWorkChangeSet.hasDeletedObjects()) {
             Map deletedObjects = this.unitOfWorkChangeSet.getDeletedObjects();
@@ -3695,6 +3700,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 // PERF: Do not remove if uow is isolated.
                 if (!descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()) {
                     this.parent.getIdentityMapAccessorInstance().removeFromIdentityMap(primaryKey, descriptor.getJavaClass(), descriptor, removedObjectChangeSet.getUnitOfWorkClone());
+                    classesChanged.add(descriptor.getJavaClass());
                 }
             }
         }

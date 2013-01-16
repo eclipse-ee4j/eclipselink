@@ -23,6 +23,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * <P>
@@ -258,7 +259,7 @@ public class ExpressionBuilder extends ObjectExpression {
         } else {
             setHasBeenNormalized(true);
         }
-
+        
         // Normalize the ON clause if present.  Need to use rebuild, not twist as parameters are real parameters.
         if (this.onClause != null) {
             this.onClause = this.onClause.normalize(normalizer);
@@ -323,6 +324,14 @@ public class ExpressionBuilder extends ObjectExpression {
         if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
             Expression temporalCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);
             normalizer.addAdditionalExpression(temporalCriteria);
+        }
+
+        ReadQuery query = normalizer.getStatement().getQuery();
+        // Record any class used in a join to invlaidate query results cache.
+        if ((query != null) && query.shouldCacheQueryResults()) {
+            if (this.queryClass != null) {
+                query.getQueryResultsCachePolicy().getInvalidationClasses().add(this.queryClass);
+            }
         }
 
         return super.normalize(normalizer);

@@ -247,7 +247,7 @@ public class CacheImpl implements JpaCache {
     }
 
     /**
-     * Clear all the query caches.
+     * Clear all the query results caches.
      */
     public void clearQueryCache() {
         getEntityManagerFactory().verifyOpen();
@@ -255,11 +255,19 @@ public class CacheImpl implements JpaCache {
     }
 
     /**
-     * Clear the named query cache associated with the query name.
+     * Clear the named query results cache associated with the query name.
      */
     public void clearQueryCache(String queryName) {
         getEntityManagerFactory().verifyOpen();
         getAccessor().clearQueryCache(queryName);
+    }
+
+    /**
+     * Clear all named query results cache associated with entity class.
+     */
+    public void clearQueryCache(Class entityClass) {
+        getEntityManagerFactory().verifyOpen();
+        getAccessor().invalidateQueryCache(entityClass);
     }
 
     /**
