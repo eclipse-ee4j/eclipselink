@@ -10,16 +10,23 @@
  * Contributors:
  *      dclarke/tware - initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.service;
 
 import java.util.Map;
+
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 
 public class JPARSPersistenceContextFactoryProvider implements
         PersistenceContextFactoryProvider {
 
+    protected static PersistenceContextFactory factory = new PersistenceFactoryBase();
+    
     @Override
     public PersistenceContextFactory getPersistenceContextFactory(Map<String, Object> properteis) {
-        return new PersistenceFactoryBase();
+        return factory;
     }
 
 }
+

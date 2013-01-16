@@ -33,14 +33,22 @@ public abstract class AbstractResource {
      * @return the persistence factory
      */
     public PersistenceContextFactory getPersistenceFactory() {
+        return getPersistenceFactory(Thread.currentThread().getContextClassLoader());
+    }
+    /**
+     * Gets the persistence factory.
+     *
+     * @return the persistence factory
+     */
+    public PersistenceContextFactory getPersistenceFactory(ClassLoader loader) {
         if (factory == null) {
-            factory = buildPersistenceContextFactory();
+            factory = buildPersistenceContextFactory(loader);
         }
         return factory;
     }
     
-    protected PersistenceContextFactory buildPersistenceContextFactory(){
-        ServiceLoader<PersistenceContextFactoryProvider> contextFactoryLoader = ServiceLoader.load(PersistenceContextFactoryProvider.class);
+    protected PersistenceContextFactory buildPersistenceContextFactory(ClassLoader loader){
+        ServiceLoader<PersistenceContextFactoryProvider> contextFactoryLoader = ServiceLoader.load(PersistenceContextFactoryProvider.class, loader);
 
         for (PersistenceContextFactoryProvider provider: contextFactoryLoader){
             PersistenceContextFactory factory = provider.getPersistenceContextFactory(null);
