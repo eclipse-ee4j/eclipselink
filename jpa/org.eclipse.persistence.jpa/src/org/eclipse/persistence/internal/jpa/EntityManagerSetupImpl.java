@@ -40,6 +40,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/16/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -3625,8 +3627,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                             if (ddlGenerationMode.equals(SCRIPTS_GENERATION)|| ddlGenerationMode.equals(DATABASE_AND_SCRIPTS_GENERATION)) {
                                 String appLocation = getConfigPropertyAsString(APP_LOCATION, props, DEFAULT_APP_LOCATION);
-                                String createDDLJdbc = getConfigPropertyAsString(CREATE_FILE, props, DEFAULT_CREATE_FILE);
-                                String dropDDLJdbc = getConfigPropertyAsString(DROP_FILE, props,  DEFAULT_DROP_FILE);
+                                // These could be a string (file name urls) or actual writers.
+                                Object createDDLJdbc = getConfigProperty(CREATE_FILE, props, DEFAULT_CREATE_FILE);
+                                Object dropDDLJdbc = getConfigProperty(DROP_FILE, props, DEFAULT_DROP_FILE);
                                 writeDDLsToFiles(mgr, appLocation,  createDDLJdbc,  dropDDLJdbc, ddlType);                
                             }
                 

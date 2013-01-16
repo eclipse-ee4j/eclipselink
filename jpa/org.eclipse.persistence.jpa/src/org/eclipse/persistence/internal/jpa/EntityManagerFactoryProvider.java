@@ -15,6 +15,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/16/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
@@ -202,6 +205,11 @@ public class EntityManagerFactoryProvider {
         }
         
         return value;
+    }
+    
+    protected static Object getConfigProperty(String propertyKey, Map overrides, Object defaultObj){
+        Object obj = getConfigProperty(propertyKey, overrides);
+        return (obj == null) ? defaultObj : obj;
     }
     
     /**
@@ -470,17 +478,26 @@ public class EntityManagerFactoryProvider {
         }
     }
     
-    protected static void writeDDLsToFiles(SchemaManager mgr,  String appLocation, String createDDLJdbc, String dropDDLJdbc, TableCreationType ddlType) {
+    protected static void writeDDLsToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType) {
         // Ensure that the appLocation string ends with  File.separator 
         appLocation = addFileSeperator(appLocation);
         
         if (createDDLJdbc != null && ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
-            mgr.outputCreateDDLToFile(appLocation + createDDLJdbc);
+            if (createDDLJdbc instanceof Writer) {
+                mgr.outputCreateDDLToWriter((Writer) createDDLJdbc);
+            } else {
+                // Assume it is a String file name.
+                mgr.outputCreateDDLToFile(appLocation + createDDLJdbc);
+            }
         }
 
         if (dropDDLJdbc != null && ddlType.equals(TableCreationType.DROP) || ddlType.equals(TableCreationType.DROP_AND_CREATE)) {
-            String dropJdbcFileName = appLocation + dropDDLJdbc;              
-            mgr.outputDropDDLToFile(dropJdbcFileName);
+            if (dropDDLJdbc instanceof Writer) {
+                mgr.outputDropDDLToWriter((Writer) dropDDLJdbc);
+            } else {
+                // Assume it is a String file name.
+                mgr.outputDropDDLToFile(appLocation + dropDDLJdbc);
+            }
         }
 
         mgr.setCreateSQLFiles(false);
@@ -488,5 +505,5 @@ public class EntityManagerFactoryProvider {
         // we write out both the drop and create table files.
         generateDefaultTables(mgr, TableCreationType.DROP_AND_CREATE);
         mgr.closeDDLWriter();
-    }    
+    }
 }

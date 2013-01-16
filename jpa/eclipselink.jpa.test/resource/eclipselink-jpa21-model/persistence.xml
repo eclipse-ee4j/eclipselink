@@ -118,19 +118,9 @@
         </properties>
     </persistence-unit>
     
-    <persistence-unit name="generate-schema-use-connection" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
-        <properties>
-            <property name="eclipselink.session-name" value="generate-schema-use-conn-session"/>
-            <property name="eclipselink.orm.validate.schema" value="true"/>
-            <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-        </properties>
-    </persistence-unit>
-    
-    <persistence-unit name="generate-schema-no-connection" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="ddl-template" transaction-type="RESOURCE_LOCAL">
+        <!-- Users of this PU are expected to provide any relevant properties -->
+        <!-- through code, e.g. eclipselink.session-name                      -->
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>

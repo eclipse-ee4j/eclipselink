@@ -11,6 +11,8 @@
  *     tware - initial implementation as part of extensibility feature
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/16/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -287,14 +289,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED, true);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED, true);
     }
     
     /**
@@ -307,15 +309,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
-        return createEntityManagerImpl(null, synchronizationType);
+        return createEntityManagerImpl(null, synchronizationType, true);
     }
     
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
-        return createEntityManagerImpl(map, synchronizationType);
-    }
-    
-    protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType) {
-        return createEntityManagerImpl(properties, syncType, true);
+        return createEntityManagerImpl(map, synchronizationType, true);
     }
     
     protected EntityManagerImpl createEntityManagerImpl(Map properties, SynchronizationType syncType, boolean requiresConnection) {
