@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
@@ -329,11 +330,15 @@ public class SchemaManager {
         String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
         DataReadQuery query = new DataReadQuery(sql);
         query.setMaxRows(1);
+        int level = this.session.getSessionLog().getLevel();
         try {
+            this.session.getSessionLog().setLevel(SessionLog.OFF);
             this.session.executeQuery(query);
             return true;
         } catch (Exception notFound) {
             return false;
+        } finally {
+            this.session.getSessionLog().setLevel(level);
         }
     }
 

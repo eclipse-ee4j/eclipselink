@@ -455,6 +455,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * This is used to invalidate the query cache on any change.
      */
     public void invalidateQueryCache(Class classThatChanged) {
+        if (this.queryResultsInvalidationsByClass == null) {
+            return;
+        }
         List invalidations = this.queryResultsInvalidationsByClass.get(classThatChanged);
         if (invalidations != null) {
             for (Object queryKey : invalidations) {

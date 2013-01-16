@@ -441,4 +441,18 @@ public abstract class DistributedSession extends DatabaseSessionImpl {
         setLogin(login);
         postConnectDatasource();
     }
+
+    /**
+     * PUBLIC:
+     * Connect to the database using the predefined login.
+     * Obtain the login from the server, as it may have configuration initialized from the database meta-data.
+     */
+    @Override
+    public void login() throws DatabaseException {
+        preConnectDatasource();
+        connect();
+        Login login = this.remoteConnection.getLogin();
+        setLogin(login);
+        postConnectDatasource();
+    }
 }

@@ -137,6 +137,15 @@ public class TableCreator {
      * If the table already exists this will fail.
      */
     public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
+        createTables(session, schemaManager, build, true);
+        
+    }
+
+    /**
+     * This creates the tables on the database.
+     * If the table already exists this will fail.
+     */
+    public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build, boolean check) {
         buildConstraints(schemaManager, build);
 
         String sequenceTableName = getSequenceTableName(session);
@@ -146,7 +155,7 @@ public class TableCreator {
             if (!table.getName().equals(sequenceTableName)) {
                 boolean alreadyExists = false;
                 // Check if the table already exists, to avoid logging create error.
-                if (CHECK_EXISTENCE && schemaManager.shouldWriteToDatabase()) {
+                if (check && CHECK_EXISTENCE && schemaManager.shouldWriteToDatabase()) {
                     alreadyExists = schemaManager.checkTableExists(table);
                 }
                 if (!alreadyExists) {
@@ -322,7 +331,7 @@ public class TableCreator {
         } finally {
             setIgnoreDatabaseException(ignore);            
         }
-        createTables(session, schemaManager, false);
+        createTables(session, schemaManager, false, false);
     }
     
     /**
