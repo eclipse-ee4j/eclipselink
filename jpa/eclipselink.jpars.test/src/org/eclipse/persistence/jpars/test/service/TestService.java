@@ -47,7 +47,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceResource;
 import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
 import org.eclipse.persistence.jpa.rs.QueryResource;
 import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
-import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;

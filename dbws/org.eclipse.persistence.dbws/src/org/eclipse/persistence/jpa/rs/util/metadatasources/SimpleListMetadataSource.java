@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle. All rights reserved.
+ * Copyright (c) 2013 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,7 +11,7 @@
  *     gonural -  Initial implementation
  ******************************************************************************/
 
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
 
@@ -19,26 +19,25 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.response.QueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.list.SimpleList;
 
 /**
- * Makes the QueryResultListItem class available to JPA-RS JAXB context.  
+ * Makes the SimpleList class available to JPA-RS JAXB context.  
  * 
- * @see QueryResultListItem
+ * @see SimpleList
  * @author gonural
  *
  */
-public class QueryResultListItemMetadataSource implements MetadataSource {
+public class SimpleListMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public QueryResultListItemMetadataSource() {
+    public SimpleListMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(QueryResultListItem.class.getPackage().getName());
+        xmlBindings.setPackageName(SimpleList.class.getPackage().getName());
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
         JavaType javaType = new JavaType();
-        javaType.setName(QueryResultListItem.class.getSimpleName());
-        javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
+        javaType.setName(SimpleList.class.getSimpleName());
         javaTypes.getJavaType().add(javaType);
     }
 

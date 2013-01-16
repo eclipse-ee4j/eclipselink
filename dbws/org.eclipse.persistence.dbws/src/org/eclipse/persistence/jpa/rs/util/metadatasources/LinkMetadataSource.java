@@ -11,7 +11,7 @@
  *     tware -  Initial implementation
  ******************************************************************************/
 
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
 

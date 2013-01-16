@@ -16,6 +16,10 @@ import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.medi
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -33,11 +37,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.list.SimpleList;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -54,7 +62,8 @@ public class EntityResource extends AbstractResource {
             @Context HttpHeaders hh, @Context UriInfo ui) {
         return findAttribute(persistenceUnit, type, key, attribute, hh, ui, ui.getBaseUri());
     }
-    
+
+    @SuppressWarnings({"rawtypes" })
     protected Response findAttribute(String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null || app.getClass(type) == null) {
@@ -73,9 +82,22 @@ public class EntityResource extends AbstractResource {
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { type, key, attribute, persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+        } 
+
+        Boolean collectionContainsDomainObjects = collectionContainsDomainObjects(entity);
+        if (collectionContainsDomainObjects != null) {
+            if (collectionContainsDomainObjects.booleanValue()) {
+                return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();    
+            } else {
+                // Classes derived from PersistenceWeavedRest class are already in the JAXB context and marshalled properly.
+                // Here, we will only need to deal with collection of classes that are not in the JAXB context, such as String, Integer...
+                //
+                // Jersey 1.2 introduced a new api JResponse to support this better, but in order to be able to work with 
+                // older versions of Jersey, we will use our own wrapper.
+                return Response.ok(new StreamingOutputMarshaller(app, populateSimpleList((Collection) entity, attribute), hh.getAcceptableMediaTypes())).build();
+            }
         }
+        return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
 
     @GET
@@ -83,7 +105,6 @@ public class EntityResource extends AbstractResource {
     public Response find(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
         return find(persistenceUnit, type, key, hh, ui, ui.getBaseUri());
     }
-
 
     protected Response find(String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
@@ -108,7 +129,7 @@ public class EntityResource extends AbstractResource {
             return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
         }
     }
-    
+
     @PUT
     @Path("{type}")
     public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
@@ -150,7 +171,7 @@ public class EntityResource extends AbstractResource {
         rb.entity(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes()));
         return rb.build();
     }
-    
+
     @POST
     @Path("{type}")
     public Response update(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) {
@@ -179,7 +200,7 @@ public class EntityResource extends AbstractResource {
         entity = app.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
-    
+
     @POST
     @Path("{type}/{key}/{attribute}")
     public Response setOrAddAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute,
@@ -224,7 +245,7 @@ public class EntityResource extends AbstractResource {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
         }
     }
-    
+
     @DELETE
     @Path("{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute,
@@ -280,13 +301,13 @@ public class EntityResource extends AbstractResource {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
         }
     }
-    
+
     @DELETE
     @Path("{type}/{key}")
     public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui) {
         return delete(persistenceUnit, type, key, ui, ui.getBaseUri());
     }
-    
+
     protected Response delete(String persistenceUnit, String type, String key, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null || app.getClass(type) == null) {
@@ -302,5 +323,36 @@ public class EntityResource extends AbstractResource {
         Object id = IdHelper.buildId(app, type, key);
         app.delete(discriminators, type, id);
         return Response.ok().build();
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Boolean collectionContainsDomainObjects(Object object) {
+        if (!(object instanceof Collection)) {
+            return null;
+        }
+        Collection collection = (Collection)object;
+        for (Iterator iterator = collection.iterator(); iterator.hasNext(); ) {
+            Object collectionItem = iterator.next();
+            if (PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private SimpleList populateSimpleList(Collection collection, String attributeName) {
+        SimpleList simpleList = new SimpleList();
+        List<JAXBElement> items = new ArrayList<JAXBElement>();
+        
+        for (Iterator iterator = collection.iterator(); iterator.hasNext(); ) {
+            Object collectionItem = iterator.next();
+            if (!(PersistenceWeavedRest.class.isAssignableFrom(collectionItem.getClass()))) {
+                JAXBElement jaxbElement = new JAXBElement(new QName(attributeName), collectionItem.getClass(), collectionItem);
+                items.add(jaxbElement);
+            }
+        }
+        simpleList.setItems(items);
+        return simpleList;
     }
 }

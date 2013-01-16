@@ -73,19 +73,23 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
-import org.eclipse.persistence.jpa.rs.response.QueryResultList;
-import org.eclipse.persistence.jpa.rs.response.QueryResultListItem;
-import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
-import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
-import org.eclipse.persistence.jpa.rs.util.LinkMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
-import org.eclipse.persistence.jpa.rs.util.QueryResultListItemMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.QueryResultListMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.RelationshipLinkAdapter;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.QueryResultListItemMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.QueryResultListMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -287,6 +291,11 @@ public class PersistenceContext {
         metadataLocations.add(new LinkMetadataSource());
         metadataLocations.add(new QueryResultListMetadataSource());
         metadataLocations.add(new QueryResultListItemMetadataSource());
+        metadataLocations.add(new SimpleListMetadataSource());
+
+        metadataLocations.add(new JavaLangMetadataSource());
+        metadataLocations.add(new JavaMathMetadataSource());
+        metadataLocations.add(new JavaUtilMetadataSource());
 
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
 

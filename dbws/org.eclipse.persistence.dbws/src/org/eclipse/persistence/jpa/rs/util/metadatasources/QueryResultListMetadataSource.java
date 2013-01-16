@@ -11,7 +11,7 @@
  *     gonural -  Initial implementation
  ******************************************************************************/
 
-package org.eclipse.persistence.jpa.rs.util;
+package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
 
@@ -19,7 +19,7 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.response.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
 
 /**
  * Makes the QueryResultList class available to JPA-RS JAXB context.  

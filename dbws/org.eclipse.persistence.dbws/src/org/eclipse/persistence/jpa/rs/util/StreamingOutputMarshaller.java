@@ -33,7 +33,8 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.response.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
 /**
  * Simple {@link StreamingOutput} implementation that uses the provided

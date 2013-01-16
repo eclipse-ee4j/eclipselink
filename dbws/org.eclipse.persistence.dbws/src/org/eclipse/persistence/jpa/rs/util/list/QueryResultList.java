@@ -10,49 +10,63 @@
  * Contributors:
  *      gonural - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.response;
+package org.eclipse.persistence.jpa.rs.util.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class QueryResultListItem {
-    @SuppressWarnings("rawtypes")
-    private List<JAXBElement> fields;
+import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
+
+@XmlRootElement(name = ConfigDefaults.JPARS_LIST_GROUPING_NAME)
+public class QueryResultList {
+
+    private List<QueryResultListItem> items;
 
     /**
-     * Instantiates a new query result list item.
+     * Instantiates a new query result list.
      */
-    public QueryResultListItem() {
+    public QueryResultList() {
     }
 
     /**
-     * Gets the fields.
+     * Gets the items.
      *
-     * @return the fields
+     * @return the items
      */
-    @SuppressWarnings("rawtypes")
-    @XmlAnyElement(lax = true)
-    public List<JAXBElement> getFields() {
-        return fields;
+    @XmlElement(name = ConfigDefaults.JPARS_LIST_ITEM_NAME)
+    public List<QueryResultListItem> getItems() {
+        return items;
     }
 
     /**
-     * Sets the fields.
+     * Sets the items.
      *
-     * @param fields the new fields
+     * @param items the new items
      */
-    @SuppressWarnings("rawtypes")
-    public void setFields(List<JAXBElement> fields) {
-        this.fields = fields;
+    public void setItems(List<QueryResultListItem> items) {
+        this.items = items;
+    }
+
+    /**
+     * Adds the item.
+     *
+     * @param item the item
+     */
+    public void addItem(QueryResultListItem item) {
+        if (items == null) {
+            items = new ArrayList<QueryResultListItem>();
+        }
+        items.add(item);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+        result = prime * result + ((items == null) ? 0 : items.hashCode());
         return result;
     }
 
@@ -67,12 +81,12 @@ public class QueryResultListItem {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        QueryResultListItem other = (QueryResultListItem) obj;
-        if (fields == null) {
-            if (other.fields != null) {
+        QueryResultList other = (QueryResultList) obj;
+        if (items == null) {
+            if (other.items != null) {
                 return false;
             }
-        } else if (!fields.equals(other.fields)) {
+        } else if (!items.equals(other.items)) {
             return false;
         }
         return true;
