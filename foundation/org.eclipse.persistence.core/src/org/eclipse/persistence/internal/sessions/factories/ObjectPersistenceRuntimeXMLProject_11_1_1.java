@@ -83,7 +83,6 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
-import org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
@@ -101,7 +100,6 @@ import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.INO
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.OUT_CURSOR;
 import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
-import static org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType.isXMLType;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 import static org.eclipse.persistence.sessions.factories.XMLProjectReader.TOPLINK_11_SCHEMA;
 
@@ -138,8 +136,6 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
             }
         } else if (databaseType.isJDBCType()) {
             return new JDBCTypeWrapper(databaseType);
-        } else if (isXMLType(databaseType.getTypeName())) {
-            return new XMLTypeWrapper(databaseType);
         } else {
             return new SimplePLSQLTypeWrapper(databaseType);
         }
@@ -199,14 +195,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         addDescriptor(buildPLSQLCursorWrapperDescriptor());
         addDescriptor(buildPLSQLrecordWrapperDescriptor());
         addDescriptor(buildPLSQLCollectionWrapperDescriptor());
-        addDescriptor(buildXMLTypeWrapperDescriptor());
         addDescriptor(buildPLSQLargumentDescriptor());
         addDescriptor(buildPLSQLStoredProcedureCallDescriptor());
         addDescriptor(buildPLSQLStoredFunctionCallDescriptor());
         addDescriptor(buildOracleArrayTypeDescriptor());
         addDescriptor(buildOracleObjectTypeDescriptor());
         addDescriptor(buildPLSQLrecordDescriptor());
-        addDescriptor(buildOracleXMLTypeDescriptor());
         addDescriptor(buildPLSQLCollectionDescriptor());
         addDescriptor(buildPLSQLCursorDescriptor());
 
@@ -1570,20 +1564,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
 
          return descriptor;
      }
-     protected ClassDescriptor buildXMLTypeWrapperDescriptor() {
 
-         XMLDescriptor descriptor = new XMLDescriptor();
-         descriptor.setJavaClass(XMLTypeWrapper.class);
-         descriptor.getInheritancePolicy().setParentClass(DatabaseTypeWrapper.class);
-
-         XMLCompositeObjectMapping wrappedDatabaseTypeMapping = new XMLCompositeObjectMapping();
-         wrappedDatabaseTypeMapping.setAttributeName("wrappedDatabaseType");
-         wrappedDatabaseTypeMapping.setXPath(".");
-         wrappedDatabaseTypeMapping.setReferenceClass(OracleXMLType.class);
-         descriptor.addMapping(wrappedDatabaseTypeMapping);
-
-         return descriptor;
-     }
      protected ClassDescriptor buildPLSQLCollectionWrapperDescriptor() {
 
          XMLDescriptor descriptor = new XMLDescriptor();
@@ -1836,17 +1817,6 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          fieldsMapping.setXPath(getPrimaryNamespaceXPath() + "fields/" + getPrimaryNamespaceXPath() + "field");
          descriptor.addMapping(fieldsMapping);
 
-         return descriptor;
-     }
-     protected ClassDescriptor buildOracleXMLTypeDescriptor() {
-
-         XMLDescriptor descriptor = new XMLDescriptor();
-         descriptor.setJavaClass(OracleXMLType.class);
-
-         XMLDirectMapping typeNameMapping = new XMLDirectMapping();
-         typeNameMapping.setAttributeName("typeName");
-         typeNameMapping.setXPath(getPrimaryNamespaceXPath() + "type-name/text()");
-         descriptor.addMapping(typeNameMapping);
          return descriptor;
      }
 

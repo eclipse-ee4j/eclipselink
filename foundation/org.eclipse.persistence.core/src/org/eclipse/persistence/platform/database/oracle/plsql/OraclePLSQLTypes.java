@@ -97,6 +97,35 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         }
     },
     SignType("SIGNTYPE"),
+    XMLType("XMLTYPE") {
+        @Override
+        public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+            buildInitialDeclare(sb, inArg);
+            sb.append(" := :");
+            sb.append(inArg.inIndex);
+            sb.append(";");
+            sb.append(NL);
+        }
+        @Override
+        public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+            buildInitialDeclare(sb, outArg);
+            sb.append(";");
+            sb.append(NL);
+        }        
+        protected void buildInitialDeclare(StringBuilder sb, PLSQLargument arg) {
+            sb.append("  ");
+            sb.append(arg.name);
+            sb.append(TARGET_SUFFIX);
+            sb.append(" ");
+            sb.append(getTypeName());
+        }
+        public int getSqlCode() {
+            return 2007;
+        }
+        public int getConversionCode() {
+            return getSqlCode();
+        }
+    },
     ;
 
     private final String typeName;
@@ -243,6 +272,8 @@ public enum OraclePLSQLTypes implements SimpleDatabaseType, OraclePLSQLType {
         }
         else if (SignType.typeName.equalsIgnoreCase(typeName)) {
             databaseType = SignType;
+        } else if (XMLType.typeName.equalsIgnoreCase(typeName)) {
+        	databaseType = XMLType;
         }
         return databaseType;
     }
