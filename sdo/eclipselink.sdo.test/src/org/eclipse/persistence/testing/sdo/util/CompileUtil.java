@@ -33,11 +33,15 @@ public class CompileUtil {
 	}
 
 	public int compile(String classpath, Object[] javaFiles) {
-        String[] args = new String[javaFiles.length + 3];
+        String[] args = new String[javaFiles.length + 7];
         args[0] = "javac";
         args[1] = "-cp";
         args[2] = classpath;
-        System.arraycopy(javaFiles, 0, args, 3, javaFiles.length);
+        args[3] = "-source";
+        args[4] = "1.6";
+        args[5] = "-target";
+        args[6] = "1.6";
+        System.arraycopy(javaFiles, 0, args, 7, javaFiles.length);
 
         int exitVal = -1;
 
