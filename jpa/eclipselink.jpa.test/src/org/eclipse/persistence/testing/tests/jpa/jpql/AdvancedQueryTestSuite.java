@@ -919,7 +919,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             if (result.size() != query.getResultList().size()) {
                 fail("Query result cache not invalidated.");
             }
-            em.remove(em.merge(employee));
+            em.remove(em.find(Employee.class, employee.getId()));
             commitTransaction(em);
             query = em.createNamedQuery("CachedEmployeeJoinAddress");
             if (result.size() != query.getResultList().size()) {
