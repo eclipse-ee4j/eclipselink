@@ -85,7 +85,6 @@ import org.eclipse.persistence.oxm.platform.DOMPlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
-import org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
@@ -117,7 +116,6 @@ import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTIO
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType.XSI_NIL;
-import static org.eclipse.persistence.platform.database.oracle.jdbc.OracleXMLType.isXMLType;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
@@ -1346,9 +1344,6 @@ public abstract class BaseDBWSBuilderHelper {
             org.eclipse.persistence.internal.helper.DatabaseType theType = OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseType)dType).getTypeName());
             if (theType != null) {
                 return theType;
-            }
-            if (isXMLType(dType.getTypeName())) {
-                return new OracleXMLType();
             } 
         }
         // scalar types
