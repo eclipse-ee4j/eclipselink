@@ -76,8 +76,13 @@ import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultListItem;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListItemMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleHomogeneousListMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.SingleResultQueryListMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryListItem;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
+import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
@@ -85,11 +90,8 @@ import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.QueryResultListItemMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.QueryResultListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -289,9 +291,10 @@ public class PersistenceContext {
         }
 
         metadataLocations.add(new LinkMetadataSource());
-        metadataLocations.add(new QueryResultListMetadataSource());
-        metadataLocations.add(new QueryResultListItemMetadataSource());
-        metadataLocations.add(new SimpleListMetadataSource());
+        metadataLocations.add(new MultiResultQueryListMetadataSource());
+        metadataLocations.add(new MultiResultQueryListItemMetadataSource());
+        metadataLocations.add(new SingleResultQueryListMetadataSource());
+        metadataLocations.add(new SimpleHomogeneousListMetadataSource());
 
         metadataLocations.add(new JavaLangMetadataSource());
         metadataLocations.add(new JavaMathMetadataSource());
@@ -802,25 +805,6 @@ public class PersistenceContext {
     }
 
     /**
-     * Query single result.
-     *
-     * @param tenantId the tenant id
-     * @param name the name
-     * @param parameters the parameters
-     * @param hints the hints
-     * @return the object
-     */
-    public Object querySingleResult(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
-        EntityManager em = getEmf().createEntityManager(tenantId);
-        try {
-            Query query = constructQuery(em, name, parameters, hints);
-            return query.getSingleResult();
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
      * Query multiple results.
      *
      * @param tenantId the tenant id
@@ -838,17 +822,6 @@ public class PersistenceContext {
         } finally {
             em.close();
         }
-    }
-
-    /**
-     * Query multiple results.
-     *
-     * @param query the query
-     * @return the list
-     */
-    @SuppressWarnings("rawtypes")
-    public List queryMultipleResults(Query query) {
-        return query.getResultList();
     }
 
     @SuppressWarnings("rawtypes")
@@ -1156,23 +1129,31 @@ public class PersistenceContext {
      * @param entity
      */
     @SuppressWarnings("rawtypes")
-    protected void preMarshallIndividualEntity(Object entity){
-        if (entity instanceof QueryResultListItem) {
-            QueryResultListItem item = (QueryResultListItem) entity;
+    protected void preMarshallIndividualEntity(Object entity) {
+        if (entity instanceof MultiResultQueryListItem) {
+            MultiResultQueryListItem item = (MultiResultQueryListItem) entity;
             List<JAXBElement> fields = item.getFields();
             for (int i = 0; i < fields.size(); i++) {
-                // one or more fields in the QueryResultListItem might be a domain object,
+                // one or more fields in the MultiResultQueryListItem might be a domain object,
                 // so, we need to set the relationshipInfo for those domain objects.
                 setRelationshipInfo(fields.get(i).getValue());
             }
-        } else if (entity instanceof QueryResultList) {
-            QueryResultList list = (QueryResultList) entity;
-            List<QueryResultListItem> items = list.getItems();
+        } else if (entity instanceof SingleResultQueryList) {
+            SingleResultQueryList item = (SingleResultQueryList) entity;
+            List<JAXBElement> fields = item.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                // one or more fields in the SingleResultQueryList might be a domain object,
+                // so, we need to set the relationshipInfo for those domain objects.
+                setRelationshipInfo(fields.get(i).getValue());
+            }
+        } else if (entity instanceof MultiResultQueryList) {
+            MultiResultQueryList list = (MultiResultQueryList) entity;
+            List<MultiResultQueryListItem> items = list.getItems();
             for (int i = 0; i < items.size(); i++) {
-                QueryResultListItem item = items.get(i);
+                MultiResultQueryListItem item = items.get(i);
                 List<JAXBElement> fields = item.getFields();
                 for (int index = 0; index < fields.size(); index++) {
-                    // one or more fields in the QueryResultListItem might be a domain object,
+                    // one or more fields in the MultiResultQueryList might be a domain object,
                     // so, we need to set the relationshipInfo for those domain objects.
                     setRelationshipInfo(fields.get(index).getValue());
                 }

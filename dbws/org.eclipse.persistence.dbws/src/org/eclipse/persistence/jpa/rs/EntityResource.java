@@ -45,8 +45,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
-import org.eclipse.persistence.jpa.rs.util.list.SimpleList;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -94,7 +94,7 @@ public class EntityResource extends AbstractResource {
                 //
                 // Jersey 1.2 introduced a new api JResponse to support this better, but in order to be able to work with 
                 // older versions of Jersey, we will use our own wrapper.
-                return Response.ok(new StreamingOutputMarshaller(app, populateSimpleList((Collection) entity, attribute), hh.getAcceptableMediaTypes())).build();
+                return Response.ok(new StreamingOutputMarshaller(app, populateSimpleHomogeneousList((Collection) entity, attribute), hh.getAcceptableMediaTypes())).build();
             }
         }
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
@@ -341,8 +341,8 @@ public class EntityResource extends AbstractResource {
     }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private SimpleList populateSimpleList(Collection collection, String attributeName) {
-        SimpleList simpleList = new SimpleList();
+    private SimpleHomogeneousList populateSimpleHomogeneousList(Collection collection, String attributeName) {
+        SimpleHomogeneousList simpleList = new SimpleHomogeneousList();
         List<JAXBElement> items = new ArrayList<JAXBElement>();
         
         for (Iterator iterator = collection.iterator(); iterator.hasNext(); ) {

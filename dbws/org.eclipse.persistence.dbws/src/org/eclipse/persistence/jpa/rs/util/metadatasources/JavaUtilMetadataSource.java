@@ -12,13 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
-import java.util.Calendar;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
 /**
+ * Makes java.util package classes available to JPA-RS JAXB context.  
+ * 
  * @author gonural
  *
  */
@@ -27,7 +28,7 @@ public class JavaUtilMetadataSource  implements MetadataSource {
 
     public JavaUtilMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(Calendar.class.getPackage().getName());
+        xmlBindings.setPackageName("java.util");
     }
 
     @Override

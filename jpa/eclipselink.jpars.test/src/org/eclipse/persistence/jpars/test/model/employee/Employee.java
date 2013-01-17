@@ -47,7 +47,10 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @NamedQueries({
         @NamedQuery(
                 name = "Employee.getManager",
-                query = "select u.firstName, u.lastName, u.manager from Employee u")
+                query = "select u.firstName, u.lastName, u.manager from Employee u"),
+        @NamedQuery(
+                        name = "Employee.getManagerById",
+                        query = "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id")
 })
 @Entity
 @Table(name = "JPARS_EMPLOYEE")

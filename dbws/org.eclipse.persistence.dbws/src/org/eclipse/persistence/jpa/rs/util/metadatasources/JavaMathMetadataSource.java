@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
-import java.math.BigInteger;
 import java.util.Map;
-
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
 /**
+ * Makes java.math package classes available to JPA-RS JAXB context.  
+ * 
  * @author gonural
  *
  */
@@ -27,7 +27,7 @@ public class JavaMathMetadataSource  implements MetadataSource {
 
     public JavaMathMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(BigInteger.class.getPackage().getName());
+        xmlBindings.setPackageName("java.math");
     }
 
     @Override

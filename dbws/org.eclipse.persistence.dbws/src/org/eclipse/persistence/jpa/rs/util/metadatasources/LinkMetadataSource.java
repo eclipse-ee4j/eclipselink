@@ -20,6 +20,7 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 
 /**
  * Makes the Link class available in our Dynamic JAXB context.  This class is used to describe

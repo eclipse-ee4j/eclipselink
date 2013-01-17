@@ -1,5 +1,6 @@
 package org.eclipse.persistence.jpa.rs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,12 @@ import java.util.ServiceLoader;
 
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * @author gonural
@@ -101,5 +108,38 @@ public abstract class AbstractResource {
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
         }
         return queryParameters;
+    }
+    
+    /**
+     * Creates the shell jaxb element list.
+     *
+     * @param reportItems the report items
+     * @return the list
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems) {
+        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
+        if ((reportItems != null) && (reportItems.size() > 0)) {
+            for (ReportItem reportItem : reportItems) {
+                String reportItemName = reportItem.getName();
+                Class resultType = reportItem.getResultType();
+                if (resultType == null) {
+                    DatabaseMapping dbMapping = reportItem.getMapping();
+                    if (dbMapping != null) {
+                        resultType = dbMapping.getAttributeClassification();
+                    } else {
+                        ClassDescriptor desc = reportItem.getDescriptor();
+                        if (desc != null) {
+                            resultType = desc.getJavaClass();
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                JAXBElement element = new JAXBElement(new QName(reportItemName), resultType, null);
+                jaxbElements.add(reportItem.getResultIndex(), element);
+            }
+        }
+        return jaxbElements;
     }
 }

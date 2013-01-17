@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,23 +12,31 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.list;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 
+/**
+ * This class is used to wrap collection of homogeneous simple java type attributes, such as 
+ * Strings, Integers, etc..., and MUST NOT be used to wrap collection of attributes with the type 
+ * that is assignable from PersistenceWeavedRest.
+ * 
+ * @author gonural
+ *
+ */
 @XmlRootElement(name = ConfigDefaults.JPARS_LIST_GROUPING_NAME)
-public class QueryResultList {
-
-    private List<QueryResultListItem> items;
+public class SimpleHomogeneousList {
+    @SuppressWarnings("rawtypes")
+    private List<JAXBElement> items;
 
     /**
-     * Instantiates a new query result list.
+     * Instantiates a new simple list.
      */
-    public QueryResultList() {
+    public SimpleHomogeneousList() {
     }
 
     /**
@@ -36,8 +44,9 @@ public class QueryResultList {
      *
      * @return the items
      */
-    @XmlElement(name = ConfigDefaults.JPARS_LIST_ITEM_NAME)
-    public List<QueryResultListItem> getItems() {
+    @SuppressWarnings("rawtypes")
+    @XmlAnyElement(lax = true)
+    public List<JAXBElement> getItems() {
         return items;
     }
 
@@ -46,22 +55,14 @@ public class QueryResultList {
      *
      * @param items the new items
      */
-    public void setItems(List<QueryResultListItem> items) {
+    @SuppressWarnings("rawtypes")
+    public void setItems(List<JAXBElement> items) {
         this.items = items;
     }
 
-    /**
-     * Adds the item.
-     *
-     * @param item the item
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
      */
-    public void addItem(QueryResultListItem item) {
-        if (items == null) {
-            items = new ArrayList<QueryResultListItem>();
-        }
-        items.add(item);
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -70,6 +71,9 @@ public class QueryResultList {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -81,7 +85,7 @@ public class QueryResultList {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        QueryResultList other = (QueryResultList) obj;
+        SimpleHomogeneousList other = (SimpleHomogeneousList) obj;
         if (items == null) {
             if (other.items != null) {
                 return false;
