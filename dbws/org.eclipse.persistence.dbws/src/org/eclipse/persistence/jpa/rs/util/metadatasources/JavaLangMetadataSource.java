@@ -13,11 +13,12 @@
 package org.eclipse.persistence.jpa.rs.util.metadatasources;
 
 import java.util.Map;
-
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
 /**
+ * Makes java.lang package classes available to JPA-RS JAXB context.  
+ * 
  * @author gonural
  *
  */
@@ -26,7 +27,7 @@ public class JavaLangMetadataSource  implements MetadataSource {
 
     public JavaLangMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(String.class.getPackage().getName());
+        xmlBindings.setPackageName("java.lang");
     }
 
     @Override

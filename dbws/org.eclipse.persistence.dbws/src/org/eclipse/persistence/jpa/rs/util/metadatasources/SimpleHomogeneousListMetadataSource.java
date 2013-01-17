@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle. All rights reserved.
+ * Copyright (c) 2013 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,25 +19,25 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 
 /**
- * Makes the QueryResultList class available to JPA-RS JAXB context.  
+ * Makes the SimpleHomogeneousList class available to JPA-RS JAXB context.  
  * 
- * @see QueryResultList
+ * @see SimpleHomogeneousList
  * @author gonural
  *
  */
-public class QueryResultListMetadataSource implements MetadataSource {
+public class SimpleHomogeneousListMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public QueryResultListMetadataSource() {
+    public SimpleHomogeneousListMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(QueryResultList.class.getPackage().getName());
+        xmlBindings.setPackageName(SimpleHomogeneousList.class.getPackage().getName());
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
         JavaType javaType = new JavaType();
-        javaType.setName(QueryResultList.class.getSimpleName());
+        javaType.setName(SimpleHomogeneousList.class.getSimpleName());
         javaTypes.getJavaType().add(javaType);
     }
 

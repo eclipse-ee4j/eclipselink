@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,23 +12,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util.list;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 
+
+/**
+ * This class is used to wrap collection of records returned by the multi-result JPA report query.
+ *
+ * @author gonural
+ *
+ */
 @XmlRootElement(name = ConfigDefaults.JPARS_LIST_GROUPING_NAME)
-public class SimpleList {
-    @SuppressWarnings("rawtypes")
-    private List<JAXBElement> items;
+public class MultiResultQueryList {
+
+    private List<MultiResultQueryListItem> items;
 
     /**
-     * Instantiates a new simple list.
+     * Instantiates a new query result list.
      */
-    public SimpleList() {
+    public MultiResultQueryList() {
     }
 
     /**
@@ -36,9 +43,8 @@ public class SimpleList {
      *
      * @return the items
      */
-    @SuppressWarnings("rawtypes")
-    @XmlAnyElement(lax = true)
-    public List<JAXBElement> getItems() {
+    @XmlElement(name = ConfigDefaults.JPARS_LIST_ITEM_NAME)
+    public List<MultiResultQueryListItem> getItems() {
         return items;
     }
 
@@ -47,14 +53,22 @@ public class SimpleList {
      *
      * @param items the new items
      */
-    @SuppressWarnings("rawtypes")
-    public void setItems(List<JAXBElement> items) {
+    public void setItems(List<MultiResultQueryListItem> items) {
         this.items = items;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
+    /**
+     * Adds the item.
+     *
+     * @param item the item
      */
+    public void addItem(MultiResultQueryListItem item) {
+        if (items == null) {
+            items = new ArrayList<MultiResultQueryListItem>();
+        }
+        items.add(item);
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -63,9 +77,6 @@ public class SimpleList {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -77,7 +88,7 @@ public class SimpleList {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SimpleList other = (SimpleList) obj;
+        MultiResultQueryList other = (MultiResultQueryList) obj;
         if (items == null) {
             if (other.items != null) {
                 return false;

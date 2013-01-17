@@ -341,19 +341,20 @@ public class RestUtils {
         return (T) context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
     }
 
+    
+    
     /**
-     * Rest named query.
+     * Rest named multi result query.
      *
      * @param queryName the query name
-     * @param returnType the return type
      * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
      * @param outputMediaType the output media type
-     * @return the object
+     * @return the string
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restNamedQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
+    public static String restNamedMultiResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
             throws URISyntaxException {
         StringBuilder resourceURL = new StringBuilder();
         resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);

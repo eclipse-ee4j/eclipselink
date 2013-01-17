@@ -11,7 +11,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -30,17 +29,13 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultListItem;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
-import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryListItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -84,27 +79,27 @@ public class QueryResource extends AbstractResource {
         if (dbQuery instanceof ReportQuery) {
             // simple types selected : select u.name, u.age from employee
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
-            List<Object[]> results = app.queryMultipleResults(query);
-            QueryResultList resultList = populateReportQueryResponse(results, reportItems);
-            if (resultList != null) {
-                return Response.ok(new StreamingOutputMarshaller(app, resultList, hh.getAcceptableMediaTypes())).build();
+            List<Object[]> queryResults = query.getResultList();
+            if ((queryResults != null) && (!queryResults.isEmpty())) {
+                MultiResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
+                if (list != null) {
+                    return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
+                } else {
+                 // something wrong with the descriptors
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                }
             }
-        } else if ((dbQuery instanceof ReadAllQuery) || (dbQuery instanceof ReadObjectQuery)) {
-            // ReadAllQuery : only domain object selected: SELECT u FROM EmployeeAddress u
-            // we will return list of domain objects
-            // ReadObjectQuery : one or more contained domain objects and some other simple fields are selected, for example
-            // SELECT u.address, u.project, u.age, u.lastname FROM Employee  
-            List<Object> results = app.queryMultipleResults(query);
-            return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
-        }
-        return null;
+            return Response.ok(new StreamingOutputMarshaller(app, queryResults, hh.getAcceptableMediaTypes())).build();
+        } 
+        List<Object> results = query.getResultList();
+        return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private QueryResultList populateReportQueryResponse(List<Object[]> results, List<ReportItem> reportItems) {
-        QueryResultList response = new QueryResultList();
+    private MultiResultQueryList populateReportQueryResponse(List<Object[]> results, List<ReportItem> reportItems) {
+        MultiResultQueryList response = new MultiResultQueryList();
         for (Object result : results) {
-            QueryResultListItem queryResultListItem = new QueryResultListItem();
+            MultiResultQueryListItem queryResultListItem = new MultiResultQueryListItem();
             List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems);
             if (jaxbFields == null) {
                 return null;
@@ -120,32 +115,5 @@ public class QueryResource extends AbstractResource {
             response.addItem(queryResultListItem);
         }
         return response;
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems) {
-        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
-        if ((reportItems != null) && (reportItems.size() > 0)) {
-            for (ReportItem reportItem : reportItems) {
-                String reportItemName = reportItem.getName();
-                Class resultType = reportItem.getResultType();
-                if (resultType == null) {
-                    DatabaseMapping dbMapping = reportItem.getMapping();
-                    if (dbMapping != null) {
-                        resultType = dbMapping.getAttributeClassification();
-                    } else {
-                        ClassDescriptor desc = reportItem.getDescriptor();
-                        if (desc != null) {
-                            resultType = desc.getJavaClass();
-                        } else {
-                            return null;
-                        }
-                    }
-                }
-                JAXBElement element = new JAXBElement(new QName(reportItemName), resultType, null);
-                jaxbElements.add(reportItem.getResultIndex(), element);
-            }
-        }
-        return jaxbElements;
     }
 }

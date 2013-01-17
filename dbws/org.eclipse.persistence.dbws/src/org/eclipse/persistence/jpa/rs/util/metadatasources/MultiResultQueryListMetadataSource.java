@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,25 +19,25 @@ import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.jpa.rs.util.list.SimpleList;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
 
 /**
- * Makes the SimpleList class available to JPA-RS JAXB context.  
+ * Makes the MultiResultQueryList class available to JPA-RS JAXB context.  
  * 
- * @see SimpleList
+ * @see MultiResultQueryList
  * @author gonural
  *
  */
-public class SimpleListMetadataSource implements MetadataSource {
+public class MultiResultQueryListMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public SimpleListMetadataSource() {
+    public MultiResultQueryListMetadataSource() {
         xmlBindings = new XmlBindings();
-        xmlBindings.setPackageName(SimpleList.class.getPackage().getName());
+        xmlBindings.setPackageName(MultiResultQueryList.class.getPackage().getName());
         JavaTypes javaTypes = new JavaTypes();
         xmlBindings.setJavaTypes(javaTypes);
         JavaType javaType = new JavaType();
-        javaType.setName(SimpleList.class.getSimpleName());
+        javaType.setName(MultiResultQueryList.class.getSimpleName());
         javaTypes.getJavaType().add(javaType);
     }
 

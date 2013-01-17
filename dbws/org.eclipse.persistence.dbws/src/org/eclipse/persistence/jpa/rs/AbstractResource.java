@@ -1,5 +1,6 @@
 package org.eclipse.persistence.jpa.rs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,12 @@ import java.util.ServiceLoader;
 
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * @author gonural
@@ -61,11 +68,11 @@ public abstract class AbstractResource {
 
     /**
      *  Get a map of the matrix parameters associated with the URI path segment of the current request
-     *
+     *   
      *  In JPA-RS, things that user sets (such as parameters of named queries, etc.) are treated as matrix parameters
      *  List of valid matrix parameters for JPA-RS is defined in MatrixParameters
      *  @see         MatrixParameters
-     *
+     *   
      * @param info the info
      * @param segment the segment
      * @return the matrix parameters
@@ -86,11 +93,11 @@ public abstract class AbstractResource {
 
     /**
      * Get the URI query parameters of the current request
-     *
+     *   
      *  In JPA-RS, predefined attributes (such as eclipselink query hints) are treated as query parameters
      *  List of valid query parameters for JPA-RS is defined in QueryParameters
      *  @see         QueryParameters
-     *
+     *   
      * @param info the info
      * @return the query parameters
      *
@@ -101,5 +108,38 @@ public abstract class AbstractResource {
             queryParameters.put(key, info.getQueryParameters().getFirst(key));
         }
         return queryParameters;
+    }
+    
+    /**
+     * Creates the shell jaxb element list.
+     *
+     * @param reportItems the report items
+     * @return the list
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems) {
+        List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
+        if ((reportItems != null) && (reportItems.size() > 0)) {
+            for (ReportItem reportItem : reportItems) {
+                String reportItemName = reportItem.getName();
+                Class resultType = reportItem.getResultType();
+                if (resultType == null) {
+                    DatabaseMapping dbMapping = reportItem.getMapping();
+                    if (dbMapping != null) {
+                        resultType = dbMapping.getAttributeClassification();
+                    } else {
+                        ClassDescriptor desc = reportItem.getDescriptor();
+                        if (desc != null) {
+                            resultType = desc.getJavaClass();
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                JAXBElement element = new JAXBElement(new QName(reportItemName), resultType, null);
+                jaxbElements.add(reportItem.getResultIndex(), element);
+            }
+        }
+        return jaxbElements;
     }
 }

@@ -17,14 +17,20 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyElement;
 
-public class QueryResultListItem {
+/**
+ * This class is used to wrap collection of attributes returned by the multi-result JPA report query.
+ *
+ * @author gonural
+ *
+ */
+public class MultiResultQueryListItem {
     @SuppressWarnings("rawtypes")
     private List<JAXBElement> fields;
 
     /**
      * Instantiates a new query result list item.
      */
-    public QueryResultListItem() {
+    public MultiResultQueryListItem() {
     }
 
     /**
@@ -67,7 +73,7 @@ public class QueryResultListItem {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        QueryResultListItem other = (QueryResultListItem) obj;
+        MultiResultQueryListItem other = (MultiResultQueryListItem) obj;
         if (fields == null) {
             if (other.fields != null) {
                 return false;

@@ -33,7 +33,7 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.util.list.QueryResultList;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
 /**
@@ -73,10 +73,10 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             if (this.context != null && this.context.getJAXBContext() != null && this.result != null
                     && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
-                    if (result instanceof QueryResultList) {
+                    if (result instanceof MultiResultQueryList) {
                         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
                             // avoid outer QueryResultList class (outer grouping name) in JSON responses
-                            context.marshallEntity(((QueryResultList) result).getItems(), mediaType, output);
+                            context.marshallEntity(((MultiResultQueryList) result).getItems(), mediaType, output);
                         } else {
                             context.marshallEntity(result, mediaType, output);
                         }
