@@ -117,26 +117,38 @@ public abstract class AbstractResource {
      * @return the list
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems) {
+    protected List<JAXBElement> createShellJAXBElementList(List<ReportItem> reportItems, Object record) {
         List<JAXBElement> jaxbElements = new ArrayList<JAXBElement>(reportItems.size());
         if ((reportItems != null) && (reportItems.size() > 0)) {
-            for (ReportItem reportItem : reportItems) {
-                String reportItemName = reportItem.getName();
-                Class resultType = reportItem.getResultType();
-                if (resultType == null) {
+            for (int index = 0; index < reportItems.size(); index++) {
+                ReportItem reportItem = reportItems.get(index);
+                Object reportItemValue = record;
+                if (record instanceof Object[]) {
+                    reportItemValue = ((Object[]) record)[index];
+                }
+                Class reportItemValueType = null;
+                if (reportItemValue != null) {
+                    reportItemValueType = reportItemValue.getClass();
+                }
+                if (reportItemValueType == null) {
+                    // try other paths to determine the type of the report item
                     DatabaseMapping dbMapping = reportItem.getMapping();
                     if (dbMapping != null) {
-                        resultType = dbMapping.getAttributeClassification();
+                        reportItemValueType = dbMapping.getAttributeClassification();
                     } else {
                         ClassDescriptor desc = reportItem.getDescriptor();
                         if (desc != null) {
-                            resultType = desc.getJavaClass();
-                        } else {
-                            return null;
+                            reportItemValueType = desc.getJavaClass();
                         }
                     }
                 }
-                JAXBElement element = new JAXBElement(new QName(reportItemName), resultType, null);
+
+                // so, we couldn't determine the type of the report item, stop here...
+                if (reportItemValueType == null) {
+                    return null;
+                }
+
+                JAXBElement element = new JAXBElement(new QName(reportItem.getName()), reportItemValueType, reportItemValue);
                 jaxbElements.add(reportItem.getResultIndex(), element);
             }
         }

@@ -284,7 +284,6 @@ public class ServerEmployeeTest {
         executeMultiResultQueryGetEmployeeAddressWithSimpleFields(MediaType.APPLICATION_JSON_TYPE);
     }
 
-   
     /**
      * Test multi result query get employee with domain object json.
      *
@@ -364,7 +363,7 @@ public class ServerEmployeeTest {
     public void testReadEmployeePhoneNumbersXML() throws Exception {
         readEmployeePhoneNumbers(MediaType.APPLICATION_XML_TYPE);
     }
-    
+
     /**
      * Test single result query get employee with domain object json.
      *
@@ -374,7 +373,7 @@ public class ServerEmployeeTest {
     public void testSingleResultQueryGetEmployeeWithDomainObjectJSON() throws Exception {
         executeSingleResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_JSON_TYPE);
     }
-    
+
     /**
      * Test single result query get employee with domain object xml.
      *
@@ -383,6 +382,223 @@ public class ServerEmployeeTest {
     @Test
     public void testSingleResultQueryGetEmployeeWithDomainObjectXML() throws Exception {
         executeSingleResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test multi result query max xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMultiResultQueryMaxXML() throws Exception {
+        executeMultiResultQueryMax(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test multi result query max json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMultiResultQueryMaxJSON() throws Exception {
+        executeMultiResultQueryMax(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    /**
+     * Test single result query max xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSingleResultQueryMaxXML() throws Exception {
+        executeSingleResultQueryMax(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test single result query max json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSingleResultQueryMaxJSON() throws Exception {
+        executeSingleResultQueryMax(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    /**
+     * Test multi result query count xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMultiResultQueryCountXML() throws Exception {
+        executeMultiResultQueryCount(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test multi result query count json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMultiResultQueryCountJSON() throws Exception {
+        executeMultiResultQueryCount(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    /**
+     * Test single result query count xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSingleResultQueryCountXML() throws Exception {
+        executeSingleResultQueryCount(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    /**
+     * Test single result query count json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSingleResultQueryCountJSON() throws Exception {
+        executeSingleResultQueryCount(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    private void executeMultiResultQueryMax(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Miles");
+        employee1.setLastName("Davis");
+        employee1.setGender(Gender.Male);
+        employee1.setSalary(new Double(20000));
+
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee1 create failed.", employee1);
+
+        // create another employee
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Charlie");
+        employee2.setLastName("Parker");
+        employee2.setGender(Gender.Male);
+        employee2.setSalary(new Double(30000));
+
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee2 create failed.", employee2);
+
+        // query
+        String queryResult = RestUtils.restNamedMultiResultQuery("Employee.salaryMax", DEFAULT_PU, null, null, mediaType);
+        assertNotNull(queryResult);
+
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            assertTrue(queryResult.equals("[{\"id\":" + employee2.getId() + ",\"salary\":30000.0},{\"id\":" + 	employee1.getId() + ",\"salary\":20000.0}]"));
+        } else {
+            assertTrue(queryResult.contains("<List>"));
+            assertTrue(queryResult.contains("<item><id>" + employee1.getId()));
+            assertTrue(queryResult.contains("<salary>20000.0"));
+            assertTrue(queryResult.contains("<item><id>" + employee2.getId()));
+            assertTrue(queryResult.contains("<salary>30000.0<"));
+        }
+
+        // delete employees
+        RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+        RestUtils.restDelete(employee2.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void executeSingleResultQueryMax(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setFirstName("Miles");
+        employee.setLastName("Davis");
+        employee.setGender(Gender.Male);
+        employee.setSalary(new Double(20000));
+
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        // query
+        String queryResult = RestUtils.restNamedSingleResultQuery("Employee.salaryMax", DEFAULT_PU, null, null, mediaType);
+        assertNotNull(queryResult);
+
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            assertTrue(queryResult.equals("{\"id\":" + employee.getId() + ",\"salary\":20000.0}"));
+        } else {
+            assertTrue(!queryResult.contains("<List>"));
+            assertTrue(queryResult.contains("<item><id>" + employee.getId()));
+            assertTrue(queryResult.contains("<salary>20000.0<"));
+        }
+
+        // delete employee
+        RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void executeSingleResultQueryCount(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Miles");
+        employee1.setLastName("Davis");
+        employee1.setGender(Gender.Male);
+
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee1 create failed.", employee1);
+
+        // create another employee
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Charlie");
+        employee2.setLastName("Parker");
+        employee2.setGender(Gender.Male);
+
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee2 create failed.", employee2);
+
+        // query
+        String queryResult = RestUtils.restNamedSingleResultQuery("Employee.count", DEFAULT_PU, null, null, mediaType);
+        assertNotNull(queryResult);
+
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            assertTrue(queryResult.equals("{\"COUNT\":2}"));
+        } else {
+            assertTrue(!queryResult.contains("<List>"));
+            assertTrue(queryResult.contains("<item><COUNT>2<"));
+        }
+
+        // delete employees
+        RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+        RestUtils.restDelete(employee2.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+    }
+
+    private void executeMultiResultQueryCount(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Miles");
+        employee1.setLastName("Davis");
+        employee1.setGender(Gender.Male);
+
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee1 create failed.", employee1);
+
+        // create another employee
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Charlie");
+        employee2.setLastName("Parker");
+        employee2.setGender(Gender.Male);
+
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee2 create failed.", employee2);
+
+        // query
+        String queryResult = RestUtils.restNamedMultiResultQuery("Employee.count", DEFAULT_PU, null, null, mediaType);
+        assertNotNull(queryResult);
+
+        if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
+            assertTrue(queryResult.equals("[{\"COUNT\":2}]"));
+        } else {
+            assertTrue(queryResult.contains("<List>"));
+            assertTrue(queryResult.contains("<item><COUNT>2<"));
+        }
+
+        // delete employees
+        RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
+        RestUtils.restDelete(employee2.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
 
     private void executeMultiResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
@@ -536,8 +752,8 @@ public class ServerEmployeeTest {
             assertTrue(result.contains("[{\"postalCode\":\"99999\",\"province\":\"WA\",\"street\":\"Main\"},{\"postalCode\":\"K1A5A7\",\"province\":\"NS\",\"street\":\"Queen\"}]"));
         } else {
             assertTrue(result.contains("<List><item><postalCode>99999</postalCode><province>WA</province><street>Main</street></item><item><postalCode>K1A5A7</postalCode><province>NS</province><street>Queen</street></item></List>"));
-        } 
-        
+        }
+
         // delete employee address
         RestUtils.restDelete(address1.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
         RestUtils.restDelete(address2.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, mediaType);
@@ -673,7 +889,7 @@ public class ServerEmployeeTest {
                 // there must be no project associated with this employee
                 assertTrue(smallProjectDisassociated.contains("projects\":[]"));
             }
-        } else { 
+        } else {
             // MediaType.APPLICATION_XML_TYPE
             if (removeAllProjects) {
                 // remove all projects
@@ -702,7 +918,7 @@ public class ServerEmployeeTest {
                 // the employee should have only small project after this
                 assertTrue(largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/SmallProject/" + smallProject.getId() + "\""));
                 assertTrue(!largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
-                
+
                 // Disassociate small project from the employee
                 String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
                         mediaType, "teamLeader", String.valueOf(smallProject.getId()), true);
@@ -948,7 +1164,7 @@ public class ServerEmployeeTest {
             String expected = "<List><responsibilities>musician</responsibilities><responsibilities>architect</responsibilities><responsibilities>conductor</responsibilities></List>";
             assertTrue(result.contains(expected));
         }
-        
+
         // delete employee
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
@@ -1013,14 +1229,14 @@ public class ServerEmployeeTest {
         assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
 
         String expected = null;
-        
+
         // read phone numbers
         String phones = RestUtils.restFindAttribute(context, employee.getId(), Employee.class.getSimpleName(), "phoneNumbers", DEFAULT_PU, null, mediaType);
         assertNotNull(phones);
 
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             expected = "[{\"id\":" + employee.getId() + ",\"number\":\"123-123 1234\",\"type\":\"cell\",\"_relationships\":[{\"_link\":{\"href\":\"" +
-                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" +  
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" +
                     RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "\",\"method\":\"GET\",\"rel\":\"self\"}}},{\"id\":" + employee.getId() +
                     ",\"number\":\"987-654 1234\",\"type\":\"work\",\"_relationships\":[{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" +
                     employee.getId() + "+work/employee\",\"rel\":\"employee\"}}],\"employee\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" +
@@ -1030,15 +1246,15 @@ public class ServerEmployeeTest {
             expected = "<List><phoneNumber><id>" + employee.getId() + "</id><number>123-123 1234</number><type>cell</type><_relationships><_link href=\"" +
                     RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell/employee\"";
             assertTrue(phones.contains(expected));
-            String expected2= "<phoneNumber><id>" + employee.getId() + "</id><number>987-654 1234</number><type>work</type><_relationships><_link href=\"" +
-            		RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+work/employee\"";
+            String expected2 = "<phoneNumber><id>" + employee.getId() + "</id><number>987-654 1234</number><type>work</type><_relationships><_link href=\"" +
+                    RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+work/employee\"";
             assertTrue(phones.contains(expected2));
         }
 
         // delete employee (cascade deletes phone numbers)
         RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
     }
-    
+
     private void executeSingleResultQueryGetEmployeeWithDomainObject(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee = new Employee();
@@ -1077,23 +1293,23 @@ public class ServerEmployeeTest {
 
         // single result query
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id",employee.getId());
-        
+        parameters.put("id", employee.getId());
+
         String queryResult = RestUtils.restNamedSingleResultQuery("Employee.getManagerById", DEFAULT_PU, parameters, null, mediaType);
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("{\"firstName\":\"Miles\",\"lastName\":\"Davis\",\"manager\":"));
             assertTrue(queryResult.contains("managedEmployees\":[{"));
             assertTrue(queryResult.contains("href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
-        } 
+        }
 
         if (mediaType == MediaType.APPLICATION_XML_TYPE) {
             assertTrue(queryResult.contains("<item><firstName>Miles</firstName><lastName>Davis</lastName><manager"));
             assertTrue(queryResult.contains("<managedEmployees><_link"));
-            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId())); 
+            assertTrue(queryResult.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId()));
             assertTrue(queryResult.contains("</managedEmployees>"));
             assertTrue(queryResult.contains("</item>"));
-        }        
-        
+        }
+
         // delete employee
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType);
 
