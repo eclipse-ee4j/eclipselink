@@ -1,19 +1,19 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*   - multi-word targets use hyphens '-'
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -35,17 +35,17 @@
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/netweaver.properties"/>
-    <property file="${eclipselink.jpa.test}/netweaver.properties"/>
-    
-    <property name="cpath" value="${netweaver.deployment.ant.dir}/tc~je~dc_ant.jar: 
+    <property file="${jpatest.basedir}/netweaver.properties"/>
+
+    <property name="cpath" value="${netweaver.deployment.ant.dir}/tc~je~dc_ant.jar:
                                   ${netweaver.clientlib.dir}/sap.com~tc~exception~impl.jar:
                                   ${netweaver.clientlib.dir}/sap.com~tc~je~clientlib~impl.jar:
                                   ${netweaver.clientlib.dir}/sap.com~tc~logging~java~impl.jar:
                                   ${netweaver.deployment.dir}/lib/sap.com~tc~je~deployment14~impl.jar"/>
-	
+
     <taskdef name="sapdeploy" classname="com.sap.engine.services.dc.ant.deploy.SAPDeploy" classpath="${cpath}"/>
     <taskdef name="sapundeploy" classname="com.sap.engine.services.dc.ant.undeploy.SAPUndeploy" classpath="${cpath}"/>
- 
+
     <condition property="netweaver.deployment.script.suffix" value="csh" else="${suffix}">
         <and>
             <isset property="is.unix"/>
@@ -79,31 +79,31 @@
 
 
     <target name="netweaver-setup">
-        <mkdir dir="${eclipselink.jpa.test}/${build.dir}"/>
-        <dirname property="basedir" file="${eclipselink.jpa.test}"/>
+        <mkdir dir="${jpatest.basedir}/${build.dir}"/>
+        <dirname property="basedir" file="${jpatest.basedir}"/>
 
         <!-- pack EAR file containing eclipselink.jar and other required libraries and convert it to SDA -->
-        <zip destfile="${eclipselink.jpa.test}/${build.dir}/${netweaver.eclipselink.app}.ear">
+        <zip destfile="${jpatest.basedir}/${build.dir}/${netweaver.eclipselink.app}.ear">
             <fileset dir="${eclipselink.home}" includes="eclipselink.jar"/>
             <fileset file="${junit.lib}"/>
         </zip>
-        <make_sda source="${basedir}/${build.dir}/${netweaver.eclipselink.app}.ear" target="${basedir}/${build.dir}/${netweaver.eclipselink.app}.sda" />        
+        <make_sda source="${basedir}/${build.dir}/${netweaver.eclipselink.app}.ear" target="${basedir}/${build.dir}/${netweaver.eclipselink.app}.sda" />
 
         <!-- pack EAR file containing the test datasource and convert it to SDA -->
-        <copy overwrite="true" todir="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF">
-    	    <fileset dir="${eclipselink.jpa.test}/resource/${server.name}/templates/setup/META-INF" includes="*.*"/>
+        <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}/setup/META-INF">
+            <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/setup/META-INF" includes="*.*"/>
         </copy>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%data-source-name%%' value="${netweaver.datasource.name}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-name%%' value="${netweaver.datasource.driver.deployname}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-class-name%%' value="${netweaver.datasource.driver.class}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%url%%' value="${netweaver.datasource.url}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%user-name%%' value="${netweaver.datasource.user}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%password%%' value="${netweaver.datasource.password}"/>
-        <zip destfile="${eclipselink.jpa.test}/${build.dir}/${netweaver.datasource.app}.ear">
-            <fileset dir="${eclipselink.jpa.test}/resource/${server.name}/setup"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%data-source-name%%' value="${netweaver.datasource.name}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-name%%' value="${netweaver.datasource.driver.deployname}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%driver-class-name%%' value="${netweaver.datasource.driver.class}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%url%%' value="${netweaver.datasource.url}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%user-name%%' value="${netweaver.datasource.user}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/setup/META-INF/data-sources.xml" token='%%password%%' value="${netweaver.datasource.password}"/>
+        <zip destfile="${jpatest.basedir}/${build.dir}/${netweaver.datasource.app}.ear">
+            <fileset dir="${jpatest.basedir}/resource/${server.name}/setup"/>
         </zip>
         <make_sda source="${basedir}/${build.dir}/${netweaver.datasource.app}.ear" target="${basedir}/${build.dir}/${netweaver.datasource.app}.sda" />
-        
+
         <!-- deploy the SDA -->
         <sapdeploy versionrule="all">
             <saperrorhandling erroraction="prerequisites" errorstrategy="stop"/>
@@ -116,17 +116,17 @@
 
     <target name="netweaver-reset">
         <!-- undeploy the application containing eclipselink.jar -->
-        <copy overwrite="true" todir="${eclipselink.jpa.test}/resource/${server.name}">
-    	    <fileset dir="${eclipselink.jpa.test}/resource/${server.name}/templates/" includes="undeploy_eclipselink.txt"/>
+        <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}">
+            <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/" includes="undeploy_eclipselink.txt"/>
         </copy>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/undeploy_eclipselink.txt" token='%%eclipselink_app%%' value="${netweaver.eclipselink.app}"/>
-        <replace file="${eclipselink.jpa.test}/resource/${server.name}/undeploy_eclipselink.txt" token='%%datasource_app%%' value="${netweaver.datasource.app}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='%%eclipselink_app%%' value="${netweaver.eclipselink.app}"/>
+        <replace file="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt" token='%%datasource_app%%' value="${netweaver.datasource.app}"/>
         <sapundeploy undeploystrategy="IfDependingStop">
             <saperrorhandling erroraction="prerequisites" errorstrategy="stop"/>
             <saperrorhandling erroraction="undeploy" errorstrategy="stop"/>
-            <sapundeploylist listfilepath="${eclipselink.jpa.test}/resource/${server.name}/undeploy_eclipselink.txt"/>
+            <sapundeploylist listfilepath="${jpatest.basedir}/resource/${server.name}/undeploy_eclipselink.txt"/>
             <sapj2eeengine serverhost="${netweaver.host}" serverport="${netweaver.port}" username="${server.user}" userpassword="${server.pwd}"/>
-        </sapundeploy>        
+        </sapundeploy>
     </target>
 
 
@@ -138,18 +138,18 @@
     <!-- add NetWeaver specific resources to the test application ear and deploy it to the server -->
     <target name="netweaver-deploy">
         <!-- add NetWeaver specific resources to the application EAR and convert it to SDA -->
-        <copy overwrite="true" todir="${eclipselink.jpa.test}/resource/${server.name}/META-INF">
-    	    <fileset dir="${eclipselink.jpa.test}/resource/${server.name}/templates/META-INF" includes="*.*"/>
+        <copy overwrite="true" todir="${jpatest.basedir}/resource/${server.name}/META-INF">
+            <fileset dir="${jpatest.basedir}/resource/${server.name}/templates/META-INF" includes="*.*"/>
         </copy>
-        <replace dir="${eclipselink.jpa.test}/resource/${server.name}/META-INF" token='%%eclipselinklib%%' value="${netweaver.eclipselink.app}"/>
-        <replace dir="${eclipselink.jpa.test}/resource/${server.name}/META-INF" token='%%datasourcename%%' value="${netweaver.datasource.name}"/>
-    	<ear destfile="${basedir}/${ear.name}" update="true">
-    	    <fileset dir="${eclipselink.jpa.test}/resource/${server.name}" includes="META-INF/*.*"/>
+        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='%%eclipselinklib%%' value="${netweaver.eclipselink.app}"/>
+        <replace dir="${jpatest.basedir}/resource/${server.name}/META-INF" token='%%datasourcename%%' value="${netweaver.datasource.name}"/>
+        <ear destfile="${basedir}/${ear.name}" update="true">
+            <fileset dir="${jpatest.basedir}/resource/${server.name}" includes="META-INF/*.*"/>
         </ear>
-        <dirname property="basedir" file="${eclipselink.jpa.test}"/>
+        <dirname property="basedir" file="${jpatest.basedir}"/>
         <echo message="ear.name=${ear.name}"/>
         <echo message="application.name=${application.name}"/>
-        <make_sda source="${basedir}/${ear.name}" target="${basedir}/${build.dir}/${application.name}.sda"/>        
+        <make_sda source="${basedir}/${ear.name}" target="${basedir}/${build.dir}/${application.name}.sda"/>
 
         <!-- deploy the SDA -->
         <sapdeploy versionrule="all">
@@ -166,9 +166,9 @@
         <sapundeploy undeploystrategy="IfDependingStop">
             <saperrorhandling erroraction="prerequisites" errorstrategy="stop"/>
             <saperrorhandling erroraction="undeploy" errorstrategy="stop"/>
-            <sapundeploylist listfilepath="${eclipselink.jpa.test}/resource/${server.name}/undeploy.txt"/>
+            <sapundeploylist listfilepath="${jpatest.basedir}/resource/${server.name}/undeploy.txt"/>
             <sapj2eeengine serverhost="${netweaver.host}" serverport="${netweaver.port}" username="${server.user}" userpassword="${server.pwd}"/>
-        </sapundeploy>        
+        </sapundeploy>
     </target>
 
 </project>

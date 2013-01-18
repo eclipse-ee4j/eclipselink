@@ -496,7 +496,8 @@
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
-        <ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"              target="build"/>
+        <!-- ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"          target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"            target="compile-jpars-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"             target="compile-tests-against-jar"/>
@@ -710,13 +711,13 @@
                     javax/persistence/Converts.class,
                     javax/persistence/ForeignKey.class,
                     javax/persistence/Index.class,
-					javax/persistence/AttributeNode.class,
-					javax/persistence/EntityGraph.class,
-					javax/persistence/Subgraph.class,
-					javax/persistence/NamedAttributeNode.class,
-					javax/persistence/NamedEntityGraph.class,
-					javax/persistence/NamedEntityGraphs.class,
-					javax/persistence/NamedSubgraph.class,
+                    javax/persistence/AttributeNode.class,
+                    javax/persistence/EntityGraph.class,
+                    javax/persistence/Subgraph.class,
+                    javax/persistence/NamedAttributeNode.class,
+                    javax/persistence/NamedEntityGraph.class,
+                    javax/persistence/NamedEntityGraphs.class,
+                    javax/persistence/NamedSubgraph.class,
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class,

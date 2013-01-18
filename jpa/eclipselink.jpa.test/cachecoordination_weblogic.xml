@@ -117,7 +117,7 @@
                  <pathelement path="${weblogic.home}/lib/weblogic.jar"/>
                  <pathelement path="${weblogic.domain}/lib/${eclipselink.jar}"/>
          <pathelement path="${junit.lib}"/>
-         <!--pathelement path="${eclipselink.jpa.test}/weblogic.properties"/-->
+         <!--pathelement path="${jpatest.basedir}/weblogic.properties"/-->
         </path>
         <property name="SERVER_NAME" value="${rcm.wls.server1.name}"/>
         <property name="SERVER_VERSION" value="${weblogic.version}"/>

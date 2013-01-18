@@ -73,24 +73,24 @@
 
     <!-- This replaces URL in JAX-RS testcases -->
     <target name="weblogic-jaxrsconfig">
-	    <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+        <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
     </target>
-    
+
     <!-- This creates the server domain. -->
     <target name="weblogic-install">
         <delete dir="${weblogic.domain}"/>
         <delete>
             <fileset dir="." includes="std*.log"/>
         </delete>
-        <delete dir="${eclipselink.jpa.test}/${temp.dir}"/>
-        <mkdir dir="${eclipselink.jpa.test}/${temp.dir}"/>
+        <delete dir="${jpatest.basedir}/${temp.dir}"/>
+        <mkdir dir="${jpatest.basedir}/${temp.dir}"/>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_install.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_install.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -111,10 +111,10 @@
     </target>
 
     <target name="pass-weblogic-and-database-info">
-        <copy todir="${eclipselink.jpa.test}/${temp.dir}" overwrite="true">
-            <fileset dir="${eclipselink.jpa.test}/resource/weblogic" includes="*.py"/>
+        <copy todir="${jpatest.basedir}/${temp.dir}" overwrite="true">
+            <fileset dir="${jpatest.basedir}/resource/weblogic" includes="*.py"/>
         </copy>
-        <replace dir="${eclipselink.jpa.test}/${temp.dir}">
+        <replace dir="${jpatest.basedir}/${temp.dir}">
             <include name="**/*.py"/>
             <replacefilter token="%%WL_HOME%%" value="${weblogic.installdir}"/>
             <replacefilter token="%%WL_HOST%%" value="${weblogic.host}"/>
@@ -142,7 +142,7 @@
     <!-- Start the server. -->
     <target name="weblogic-start">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_start.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_start.py"/>
             <classpath>
                 <!--this path is used for WebLogic JPA2.0 support-->
                 <pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>
@@ -167,7 +167,7 @@
     <target name="weblogic-derby-setup" if="is.derby">
         <echo message="WebLogic will run on Derby Database ......"/>
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_derby_setup.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_derby_setup.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -177,7 +177,7 @@
     <!-- This creates datasource on non-derby database and deploy to the server. -->
     <target name="weblogic-non-derby-setup" unless="is.derby">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_setup.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_setup.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -188,7 +188,7 @@
          Note: WLS server must be running.-->
     <target name="weblogic-reset">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_reset.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_reset.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -199,7 +199,7 @@
     <target name="weblogic-domain-setup">
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_domain_setup.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_domain_setup.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -209,7 +209,7 @@
     <!-- Set back openjpa as DefaultJPAProvider for wls server. -->
     <target name="weblogic-domain-reset">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_domain_reset.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_domain_reset.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -220,7 +220,7 @@
     <target name="weblogic-composite-setup">
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_composite_setup.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_composite_setup.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -230,7 +230,7 @@
     <!-- Remove three datasources created for running composite test models. -->
     <target name="weblogic-composite-reset">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_composite_reset.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_composite_reset.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -240,21 +240,21 @@
     <!-- Stop the server. -->
     <target name="weblogic-stop">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_stop.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_stop.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
         </java>
-        <delete dir="${eclipselink.jpa.test}/${temp.dir}"/>
+        <delete dir="${jpatest.basedir}/${temp.dir}"/>
     </target>
 
     <!-- Deploy the application ear to the server.
          Note: WLS server must be running. -->
     <target name="weblogic-deploy">
-        <property name="ear.dir" value="${eclipselink.jpa.test}"/>
+        <property name="ear.dir" value="${jpatest.basedir}"/>
         <property name="ear.name" value="${application.name}.ear"/>
         <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
-        <replace dir="${eclipselink.jpa.test}/${temp.dir}">
+        <replace dir="${jpatest.basedir}/${temp.dir}">
             <include name="**/wls_*deploy.py"/>
             <replacefilter token="%%appName%%" value="${application.name}"/>
             <replacefilter token="%%testDir%%" value="${ear.dir}"/>
@@ -262,7 +262,7 @@
         </replace>
 
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_deploy.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_deploy.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
@@ -273,7 +273,7 @@
          Note: WLS server must be running. -->
     <target name="weblogic-undeploy">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${eclipselink.jpa.test}/${temp.dir}/wls_undeploy.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/wls_undeploy.py"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>

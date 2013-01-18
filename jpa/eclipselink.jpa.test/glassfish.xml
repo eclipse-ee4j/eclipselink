@@ -1,9 +1,9 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
@@ -20,7 +20,7 @@
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -46,7 +46,7 @@
 -->
 
 <project name="Eclipse Persistence Services JPA SunAS9 Testing" basedir=".">
-    
+
     <property name="env" environment="env" value="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/glassfish.properties"/>
@@ -75,8 +75,8 @@
         <echo message="set the proxy to ${proxy.host}:${proxy.port}"/>
         <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"/>
         <echo message="getting the latest glassfish nightly build from ${nightly-build-url}..."/>
-        <get src="${nightly-build-url}/${latest-glassfish-file-name}" 
-             dest="${installer.dir}/${latest-glassfish-file-name}" 
+        <get src="${nightly-build-url}/${latest-glassfish-file-name}"
+             dest="${installer.dir}/${latest-glassfish-file-name}"
              ignoreerrors="true"
              verbose="true"
              usetimestamp="true"/>
@@ -85,16 +85,16 @@
         <unzip src="${installer.dir}/${latest-glassfish-file-name}" dest="${install.dir}/.."/>
         <chmod dir="${glassfish.home}/bin" perm="ugo+rx"  includes="**/*"/>
     </target>
-    
+
     <!-- This replaces URL in JAX-RS testcases -->
     <target name="glassfish-jaxrsconfig">
-	    <property name="jaxrs-url" value="${glassfish.host}:8080"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
-	    <replace file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
+        <property name="jaxrs-url" value="${glassfish.host}:8080"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='%%host:port%%' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='%%server-platform%%' value="${server.platform}"/>
     </target>
-    
+
     <!-- Copies libraries to domain1 -->
     <target name="glassfish-install" depends="install-latest-glassfish">
         <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
@@ -119,11 +119,11 @@
             </fileset>
         </delete>
         <copy todir="${glassfish.home}/modules" overwrite="true" failonerror="false">
-            <fileset dir="${eclipselink.jpa.test}/../plugins/">
+            <fileset dir="${jpatest.basedir}/../plugins/">
                 <include name="javax.persistence_2*.jar"/>
                 <exclude name="javax.persistence_2*_preview.jar"/>
             </fileset>
-            <fileset dir="${eclipselink.jpa.test}/../../plugins/"
+            <fileset dir="${jpatest.basedir}/../../plugins/"
                 includes="org.eclipse.persistence.antlr_*.jar
                           org.eclipse.persistence.asm_*.jar
                           org.eclipse.persistence.core_*.jar
@@ -138,7 +138,7 @@
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
     </target>
-    
+
     <!-- Start the server. -->
     <target name="glassfish-start">
         <exec executable="${glassfish.home}/bin/asadmin${extension}" spawn="true">
@@ -157,10 +157,10 @@
             <arg value="-Dejb.lookup=${ejb.lookup}"/>
         </exec>
     </target>
-    
+
     <target name="glassfish-create-password-file">
         <echo message="Removing the ${user.home}/.asadminpass"/>
-        <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>        
+        <delete file="${user.home}/.asadminpass" verbose="true" failonerror="false"/>
         <echo message="Writing out the glassfish admin password to ${adminpassfile}"/>
         <echo file="${adminpassfile}" append="false">AS_ADMIN_PASSWORD=${server.pwd}</echo>
     </target>
@@ -184,7 +184,7 @@
             <arg value="--property"/>
             <arg value="User=${db.user}:Password=${db.pwd}:${glassfish.db.info}"/>
             <arg value="jdbc-jta-pool"/>
-        </exec> 
+        </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-resource"/>
             <arg value="--user"/>
@@ -209,7 +209,7 @@
             <arg value="--property"/>
             <arg value="User=${db.user}:Password=${db.pwd}:${glassfish.db.info}"/>
             <arg value="jdbc-nonjta-pool"/>
-        </exec> 
+        </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="create-jdbc-resource"/>
             <arg value="--user"/>
@@ -221,12 +221,12 @@
             <arg value="jdbc/ELNonJTADS"/>
         </exec>
     </target>
-    
+
     <!--
         This target is to remove the connection pool and managed datasource created by target <glassfish-setup>, and stop Derby database
         Note: SunAS9 server must be running.
     -->
-    
+
     <target name="glassfish-reset">
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-resource"/>
@@ -235,7 +235,7 @@
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
             <arg value="jdbc/EclipseLinkDS"/>
-        </exec> 
+        </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-connection-pool"/>
             <arg value="--user"/>
@@ -251,7 +251,7 @@
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
             <arg value="jdbc/ELNonJTADS"/>
-        </exec> 
+        </exec>
         <exec executable="${glassfish.home}/bin/asadmin${extension}">
             <arg value="delete-jdbc-connection-pool"/>
             <arg value="--user"/>
@@ -261,7 +261,7 @@
             <arg value="jdbc-nonjta-pool"/>
         </exec>
     </target>
- 
+
 
     <!-- Stop the server. -->
     <target name="glassfish-stop">
@@ -270,7 +270,7 @@
             <arg value="domain1"/>
         </exec>
     </target>
-    
+
     <!--
         Deploy the application ear to the server.
         Note: SunAS9 server must be running.
@@ -287,7 +287,7 @@
             <arg value="${ear.name}"/>
         </exec>
     </target>
-    
+
     <!--
         Undeploy the application ear to the server.
         Note: SunAS9 server must be running.
@@ -299,7 +299,7 @@
             <arg value="${server.user}"/>
             <arg value="--passwordfile"/>
             <arg value="${adminpassfile}"/>
-            <arg value="${application.name}"/> 
+            <arg value="${application.name}"/>
         </exec>
     </target>
 </project>
