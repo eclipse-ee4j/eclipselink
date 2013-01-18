@@ -1893,8 +1893,6 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
              OracleObjectTypeWrapper.class, getPrimaryNamespaceXPath() + "object-type");
          descriptor.getInheritancePolicy().addClassIndicator(
              PLSQLCursorWrapper.class, getPrimaryNamespaceXPath() + "plsql-cursor");
-         descriptor.getInheritancePolicy().addClassIndicator(
-                 XMLTypeWrapper.class, getPrimaryNamespaceXPath() + "xml-type");
          return descriptor;
      }
 
