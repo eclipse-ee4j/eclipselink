@@ -301,7 +301,7 @@ public class SessionsFactory {
      */
     protected Project loadProjectConfig(ProjectConfig projectConfig) {
         Project project = null;
-        String projectString = projectConfig.getProjectString();
+        String projectString = projectConfig.getProjectString().trim();
 
         if (projectConfig.isProjectClassConfig()) {
             try {
