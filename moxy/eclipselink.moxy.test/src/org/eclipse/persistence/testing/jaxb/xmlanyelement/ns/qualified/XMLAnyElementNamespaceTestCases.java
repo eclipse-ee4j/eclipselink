@@ -21,8 +21,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/ns/qualified/customer.xml";
@@ -59,7 +61,9 @@ public class XMLAnyElementNamespaceTestCases extends JAXBWithJSONTestCases {
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.newDocument();
-            cust.anyElem = doc.createElementNS("someuri", "localName");
+            Element elem = doc.createElementNS("someuri", "localName");
+            elem.setAttributeNS(XMLConstants.XMLNS_URL, "xmlns", "someuri");
+            cust.anyElem = elem;
 
         } catch(Exception ex) {
             fail("unexpected exception creating control object");

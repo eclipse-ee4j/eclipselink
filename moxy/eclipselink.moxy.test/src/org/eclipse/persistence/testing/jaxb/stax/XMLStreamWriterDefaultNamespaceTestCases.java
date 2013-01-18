@@ -26,14 +26,19 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import junit.framework.TestCase;
 
-public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
+public class XMLStreamWriterDefaultNamespaceTestCases extends OXTestCase {
 
-    public void testDefaultNamespaceOverride() throws Exception {
+    public XMLStreamWriterDefaultNamespaceTestCases(String name) {
+		super(name);
+	}
+
+	public void testDefaultNamespaceOverride() throws Exception {
         if(System.getProperty("java.version").contains("1.6")) {
 
             JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{Employee.class}, null);
@@ -83,9 +88,16 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
         streamWriter.flush();
         
         String xml = "<?xml version=\"1.0\"?><employee xmlns=\"\">" + testXmlData + "</employee>";
+        String xml2 = "<?xml version=\'1.0\'?><employee>" + testXmlData + "</employee>";
+
         String writerString = writer.toString();
-        
-        assertTrue("Incorrect XML: " + writerString, writerString.equals(xml));
+        boolean equals = writerString.equals(xml) || writerString.equals(xml2);
+        if(!equals){
+           log("EXPECTED XML:" + xml);
+           log("OR EXPECTED XML:" + xml2);
+           log("ACTUAL XML:" + writerString);
+        }
+        assertTrue("Incorrect XML: " + writerString, equals);
     }
 
     protected EmployeeLax createEmployeeLax(String testXmlData) throws Exception {
@@ -98,6 +110,7 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
     
     protected static Element parseXml(InputStream in) throws Exception {
        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+       docBuilderFactory.setNamespaceAware(true);
        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
        Document xmlDocument = docBuilder.parse(in);
        return xmlDocument.getDocumentElement();
