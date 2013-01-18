@@ -127,6 +127,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("complexInTest1");
         tests.add("complexInTest2");
         tests.add("complexInTest3");
+        tests.add("complexInTest4");
         tests.add("complexLengthTest");
         tests.add("complexLikeTest");
         tests.add("complexNotInTest");
@@ -452,6 +453,27 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         params.add("FILION");
         params.add("DELACHEVROTIÈRE");
         em.createQuery(ejbqlString).setParameter("param", params).getResultList();
+    }
+
+    // Bug#397751
+    public void complexInTest4() {
+
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery("SELECT lp from LargeProject lp WHERE lp.budget = :budget and TYPE(lp) IN :employeeTypes and lp.name IN :employeeStatus");
+   	 query.setParameter("budget", 60000);
+
+   	 List<Object> status = new ArrayList<Object>();
+   	 status.add("EclipseLink");
+   	 status.add("JPQL");
+   	 query.setParameter("employeeStatus", status);
+
+   	 List<Object> types = new ArrayList<Object>();
+   	 types.add(LargeProject.class);
+   	 types.add(SmallProject.class);
+   	 query.setParameter("employeeTypes", types);
+
+   	 query.getResultList();
+   	 closeEntityManager(em);
     }
 
     public void complexLengthTest()
