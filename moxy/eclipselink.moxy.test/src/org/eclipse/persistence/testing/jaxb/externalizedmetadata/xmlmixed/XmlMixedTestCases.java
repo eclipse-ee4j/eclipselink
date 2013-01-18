@@ -22,6 +22,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Element;
 
@@ -65,8 +66,10 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
     	emp.b = "3";
     	emp.stuff = new ArrayList();    
     	emp.stuff.add("blah.");
+    
     	Element elem = parser.newDocument().createElementNS("extra","stuff");
     	elem.setTextContent("This is my stuff.");
+    	elem.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS, "extra");
     	emp.stuff.add(elem);
     	emp.stuff.add("lame.");
 

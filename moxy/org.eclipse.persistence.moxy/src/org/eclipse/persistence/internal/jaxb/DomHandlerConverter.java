@@ -18,7 +18,10 @@ import javax.xml.bind.annotation.DomHandler;
 import javax.xml.transform.Source;
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -86,8 +89,12 @@ public class DomHandlerConverter implements XMLConverter {
             } else {
                 result = domHandler.createUnmarshaller(null);
             }
-            xmlPlatform.newXMLTransformer().transform((org.w3c.dom.Element)dataValue, result);
-            return domHandler.getElement(result);
+            if(result instanceof DOMResult){
+            	((DOMResult) result).setNode((org.w3c.dom.Element)dataValue);
+            }else{
+                xmlPlatform.newXMLTransformer().transform((org.w3c.dom.Element)dataValue, result);                
+            }
+            return domHandler.getElement(result);       
         }
         return dataValue;
     }
@@ -102,10 +109,18 @@ public class DomHandlerConverter implements XMLConverter {
                 source = domHandler.marshal(objectValue, null);
             }
             DOMResult result = new DOMResult();
-            XMLTransformer xmlTransformer = xmlPlatform.newXMLTransformer();
-            xmlTransformer.setFormattedOutput(marshaller.isFormattedOutput());
-            xmlTransformer.transform(source, result);
-            return result.getNode().getFirstChild();
+             if(source instanceof DOMSource){
+            	Node n = ((DOMSource)source).getNode();
+            	if(n.getNodeType() == Node.DOCUMENT_NODE){
+            		return ((Document)n).getDocumentElement();
+            	}
+            	return n;
+            }else{                
+                XMLTransformer xmlTransformer = xmlPlatform.newXMLTransformer();
+                xmlTransformer.setFormattedOutput(marshaller.isFormattedOutput());
+                xmlTransformer.transform(source, result);
+                return result.getNode().getFirstChild();
+            }
         }
         return objectValue;
     }
