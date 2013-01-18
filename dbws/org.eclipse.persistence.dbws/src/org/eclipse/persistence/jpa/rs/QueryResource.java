@@ -95,21 +95,14 @@ public class QueryResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(app, results, hh.getAcceptableMediaTypes())).build();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes" })
     private MultiResultQueryList populateReportQueryResponse(List<Object[]> results, List<ReportItem> reportItems) {
         MultiResultQueryList response = new MultiResultQueryList();
         for (Object result : results) {
             MultiResultQueryListItem queryResultListItem = new MultiResultQueryListItem();
-            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems);
-            if (jaxbFields == null) {
+            List<JAXBElement> jaxbFields = createShellJAXBElementList(reportItems, result);
+           if (jaxbFields == null) {
                 return null;
-            }
-            if (result instanceof Object[]) {
-                for (int i = 0; i < ((Object[]) result).length; i++) {
-                    jaxbFields.get(i).setValue(((Object[]) result)[i]);
-                }
-            } else if (result instanceof Object) {
-                jaxbFields.get(0).setValue(((Object) result));
             }
             queryResultListItem.setFields(jaxbFields);
             response.addItem(queryResultListItem);

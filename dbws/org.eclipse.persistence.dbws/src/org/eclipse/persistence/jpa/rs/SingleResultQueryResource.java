@@ -59,7 +59,7 @@ public class SingleResultQueryResource extends AbstractResource {
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
         if (dbQuery instanceof ReportQuery) {
             List<ReportItem> reportItems = ((ReportQuery) dbQuery).getItems();
-            Object[] queryResults = (Object[]) query.getSingleResult();
+            Object queryResults = query.getSingleResult();
             SingleResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
             if (list != null) {
                 return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
@@ -72,16 +72,12 @@ public class SingleResultQueryResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(app, queryResults, hh.getAcceptableMediaTypes())).build();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private SingleResultQueryList populateReportQueryResponse(Object[] result, List<ReportItem> reportItems) {
+    @SuppressWarnings({ "rawtypes" })
+    private SingleResultQueryList populateReportQueryResponse(Object result, List<ReportItem> reportItems) {
         SingleResultQueryList response = new SingleResultQueryList();
-        List<JAXBElement> fields = createShellJAXBElementList(reportItems);
+        List<JAXBElement> fields = createShellJAXBElementList(reportItems, result);
         if (fields == null) {
             return null;
-        }
-        for (int i = 0; i<result.length; i++) {
-            Object resultItem = result[i];
-            fields.get(i).setValue(((Object) resultItem));
         }
         response.setFields(fields);
         return response;
