@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 
@@ -21,7 +22,10 @@ import org.eclipse.persistence.internal.oxm.Unmarshaller;
  */
 public interface AbstractUnmarshalRecord<
     ABSTRACT_SESSION extends CoreAbstractSession,
+    FIELD extends CoreField,
     UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION> {
+
+    public Object get(FIELD field);
 
     public UNMARSHALLER getUnmarshaller();
 

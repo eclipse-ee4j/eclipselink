@@ -15,10 +15,10 @@ package org.eclipse.persistence.oxm.record;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -180,9 +180,9 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {                    
                     namespaceDeclaration(attr.getPrefix(),  attr.getNamespaceURI());
@@ -195,7 +195,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                 FormattedOutputStreamRecordContentHandler handler = new FormattedOutputStreamRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(handler);
-                xfragReader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, handler);
+                xfragReader.setProperty(Constants.LEXICAL_HANDLER_PROPERTY, handler);
                 xfragReader.parse(node, newNamespace, newName);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -224,7 +224,7 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
                     outputStreamWriteTab();
                 }
                 outputStreamWrite(OPEN_START_ELEMENT);
-                outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                outputStreamWrite(qName.getBytes(Constants.DEFAULT_XML_ENCODING));
                 numberOfTabs++;
                 isStartElementOpen = true;
                 isLastEventText = false;

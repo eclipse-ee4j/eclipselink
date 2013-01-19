@@ -15,11 +15,13 @@ package org.eclipse.persistence.oxm.mappings;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.mappings.DirectMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -314,7 +316,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Convert the attribute value to a field value.
      * Process any converter if defined, and check for null values.
      */
-    public Object getFieldValue(Object attributeValue, AbstractSession session, XMLRecord record) {
+    public Object getFieldValue(Object attributeValue, CoreAbstractSession session, AbstractMarshalRecord record) {
     	// Marshal
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
@@ -325,7 +327,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
 
         // Allow for user defined conversion to the object value.       
-        fieldValue = convertObjectValueToDataValue(fieldValue, session, record.getMarshaller());
+        fieldValue = convertObjectValueToDataValue(fieldValue, (AbstractSession) session, (XMLMarshaller) record.getMarshaller());
    
         if (fieldValue != null) {
         	 Class fieldClassification = getFieldClassification(field);

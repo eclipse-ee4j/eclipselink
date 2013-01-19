@@ -80,7 +80,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
             String rootElementName = this.marshalledObjectRootQName.getLocalPart();
             String rootNamespaceUri = this.marshalledObjectRootQName.getNamespaceURI();
             if(rootNamespaceUri != null && !rootNamespaceUri.equals(XMLConstants.EMPTY_STRING)) {            	
-                NamespaceResolver resolver = getRootMarshalRecord().getNamespaceResolver();
+                org.eclipse.persistence.internal.oxm.NamespaceResolver resolver = getRootMarshalRecord().getNamespaceResolver();
                 if(resolver != null) {
                     String prefix = resolver.resolveNamespaceURI(this.marshalledObjectRootQName.getNamespaceURI());
                     if(prefix != null) {

@@ -19,6 +19,7 @@ import java.util.List;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
@@ -32,6 +33,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -136,7 +138,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, AbstractSession session) {
+    public AbstractMarshalRecord createRecord(String rootName, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver());
         nRec.setSession(session);
         return nRec;
@@ -146,7 +148,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
      * Create a new row/record for the object builder with the given name.
      * This allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, Node parent, AbstractSession session) {
+    public AbstractMarshalRecord createRecord(String rootName, Node parent, AbstractSession session) {
         NodeRecord nRec = new NodeRecord(rootName, getNamespaceResolver(), parent);
         nRec.setSession(session);
         return nRec;
@@ -163,6 +165,83 @@ public class TreeObjectBuilder extends XMLObjectBuilder implements ObjectBuilder
     @Override
     public List addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         return xPathObjectBuilder.addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, allowOverride, ignoreEqualResolvers);
+    }
+
+    @Override
+    public boolean addClassIndicatorFieldToRow(AbstractMarshalRecord abstractMarshalRecord) {
+        if (descriptor.hasInheritance() && !xPathObjectBuilder.isXsiTypeIndicatorField()) {
+            InheritanceRecord inheritanceRecord = new InheritanceRecord(abstractMarshalRecord);
+            descriptor.getInheritancePolicy().addClassIndicatorFieldToRow(inheritanceRecord);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Class classFromRow(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord unmarshalRecord, AbstractSession session) {
+        UnmarshalRecord inheritanceRecord = new UnmarshalRecord(unmarshalRecord);
+        return descriptor.getInheritancePolicy().classFromRow(inheritanceRecord, session);
+    }
+
+    private static class InheritanceRecord extends org.eclipse.persistence.oxm.record.XMLRecord {
+
+        private AbstractMarshalRecord abstractMarshalRecord;
+
+        public InheritanceRecord(AbstractMarshalRecord abstractMarshalRecord) {
+            this.abstractMarshalRecord = abstractMarshalRecord;
+        }
+
+        @Override
+        public String getLocalName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getNamespaceURI() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Document getDocument() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Node getDOM() {
+            throw new UnsupportedOperationException();
+        }
+
+        
+        @Override
+        public String transformToXML() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isNamespaceAware() {
+            return abstractMarshalRecord.isNamespaceAware();
+        }
+
+        @Override
+        public boolean hasCustomNamespaceMapper() {
+            return abstractMarshalRecord.hasCustomNamespaceMapper();
+        }
+
+        @Override
+        public char getNamespaceSeparator() {
+            return abstractMarshalRecord.getNamespaceSeparator();
+        }
+
+        @Override
+        public Object put(DatabaseField key, Object value) {
+            return abstractMarshalRecord.put(key, value);
+        }
+  
     }
 
 }

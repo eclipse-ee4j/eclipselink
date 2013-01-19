@@ -71,7 +71,7 @@ public class DOMRecord extends XMLRecord {
      */
     public DOMRecord() {
         super();
-        namespaceResolver = new NamespaceResolver();
+        setNamespaceResolver(new NamespaceResolver());
         referenceResolver = new ReferenceResolver();
         // Required for subclasses.
     }

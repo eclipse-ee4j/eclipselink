@@ -19,17 +19,18 @@ import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -317,9 +318,9 @@ public class WriterRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
                     namespaceDeclaration(attr.getPrefix(), attr.getNamespaceURI());
@@ -454,7 +455,7 @@ public class WriterRecord extends MarshalRecord {
                         writer.write(' ');
                         writer.write(javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
                         if(null != prefix && prefix.length() > 0) {
-                            writer.write(XMLConstants.COLON);
+                            writer.write(Constants.COLON);
                             writer.write(prefix);
                         }
                         writer.write('=');
@@ -475,7 +476,7 @@ public class WriterRecord extends MarshalRecord {
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
-                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
+                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));
@@ -526,7 +527,7 @@ public class WriterRecord extends MarshalRecord {
     }
 
     @Override
-    public void setMarshaller(XMLMarshaller marshaller) {
+    public void setMarshaller(Marshaller marshaller) {
         super.setMarshaller(marshaller);
         encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
     }

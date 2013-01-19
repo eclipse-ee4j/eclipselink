@@ -20,6 +20,11 @@ public abstract class CoreObjectBuilder<
     ABSTRACT_SESSION extends CoreAbstractSession> {
 
     /**
+     * Return a new instance of the receiver's javaClass.
+     */
+    public abstract Object buildNewInstance();
+
+    /**
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
      */

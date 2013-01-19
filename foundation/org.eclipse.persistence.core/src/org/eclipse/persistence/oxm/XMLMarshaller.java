@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.DOMReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -1113,7 +1114,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             marshalRecord.setCustomNamespaceMapper(true);
         }
         
-        NamespaceResolver nr = marshalRecord.getNamespaceResolver();
+        org.eclipse.persistence.internal.oxm.NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         Root root = null;
         if(isXMLRoot) {
             root = (Root)object;
@@ -1382,14 +1383,14 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         return marshalRecord.getDocument();
     }
 
-    private void addDescriptorNamespacesToXMLRecord(XMLDescriptor xmlDescriptor, XMLRecord record) {
+    private void addDescriptorNamespacesToXMLRecord(XMLDescriptor xmlDescriptor, AbstractMarshalRecord record) {
         if (null == xmlDescriptor) {
             return;
         }
         copyNamespaces(xmlDescriptor.getNamespaceResolver(), record.getNamespaceResolver());
     }
     
-    private void copyNamespaces(NamespaceResolver source, NamespaceResolver target) {
+    private void copyNamespaces(org.eclipse.persistence.internal.oxm.NamespaceResolver source, org.eclipse.persistence.internal.oxm.NamespaceResolver target) {
         if (null != source && null != target) {            
             if(source.hasPrefixesToNamespaces()) {
                 target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());

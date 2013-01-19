@@ -19,16 +19,17 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -78,18 +79,18 @@ public class OutputStreamRecord extends MarshalRecord {
 
     static {
         try {
-            OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            CLOSE_PI = "?>".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            CR = Helper.cr().getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            OPEN_CDATA = "<![CDATA[".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            CLOSE_CDATA = "]]>".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            OPEN_COMMENT = "<!--".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            CLOSE_COMMENT = "-->".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            AMP = "&amp;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            LT = "&lt;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            QUOT = "&quot;".getBytes(XMLConstants.DEFAULT_XML_ENCODING);
-            ENCODING = XMLConstants.DEFAULT_XML_ENCODING.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            OPEN_XML_PI_AND_VERSION_ATTRIBUTE = "<?xml version=\"".getBytes(Constants.DEFAULT_XML_ENCODING);
+            OPEN_ENCODING_ATTRIBUTE = " encoding=\"".getBytes(Constants.DEFAULT_XML_ENCODING);
+            CLOSE_PI = "?>".getBytes(Constants.DEFAULT_XML_ENCODING);
+            CR = Helper.cr().getBytes(Constants.DEFAULT_XML_ENCODING);
+            OPEN_CDATA = "<![CDATA[".getBytes(Constants.DEFAULT_XML_ENCODING);
+            CLOSE_CDATA = "]]>".getBytes(Constants.DEFAULT_XML_ENCODING);
+            OPEN_COMMENT = "<!--".getBytes(Constants.DEFAULT_XML_ENCODING);
+            CLOSE_COMMENT = "-->".getBytes(Constants.DEFAULT_XML_ENCODING);
+            AMP = "&amp;".getBytes(Constants.DEFAULT_XML_ENCODING);
+            LT = "&lt;".getBytes(Constants.DEFAULT_XML_ENCODING);
+            QUOT = "&quot;".getBytes(Constants.DEFAULT_XML_ENCODING);
+            ENCODING = Constants.DEFAULT_XML_ENCODING.getBytes(Constants.DEFAULT_XML_ENCODING);
         } catch (UnsupportedEncodingException e) {
         }
     }
@@ -131,7 +132,7 @@ public class OutputStreamRecord extends MarshalRecord {
     public void startDocument(String encoding, String version) {
         try {
             outputStreamWrite(OPEN_XML_PI_AND_VERSION_ATTRIBUTE);
-            outputStreamWrite(version.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            outputStreamWrite(version.getBytes(Constants.DEFAULT_XML_ENCODING));
             outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
             if (null != encoding) {
                 outputStreamWrite(OPEN_ENCODING_ATTRIBUTE);
@@ -180,7 +181,7 @@ public class OutputStreamRecord extends MarshalRecord {
         }
         outputStreamWrite(OPEN_START_ELEMENT);
         try {
-            outputStreamWrite(getNameForFragment(frag).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            outputStreamWrite(getNameForFragment(frag).getBytes(Constants.DEFAULT_XML_ENCODING));
         } catch (UnsupportedEncodingException e) {
         }
         outputStreamWrite((byte)'/');
@@ -200,7 +201,7 @@ public class OutputStreamRecord extends MarshalRecord {
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         try {
             outputStreamWrite(SPACE);
-            outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            outputStreamWrite(qName.getBytes(Constants.DEFAULT_XML_ENCODING));
             outputStreamWrite((byte)'=');
             outputStreamWrite((byte)'"');
             writeValue(value, true, true, this.outputStream);
@@ -253,7 +254,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 outputStreamWrite(CLOSE_ELEMENT);
             }
             outputStreamWrite(OPEN_CDATA);
-            outputStreamWrite(value.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+            outputStreamWrite(value.getBytes(Constants.DEFAULT_XML_ENCODING));
             outputStreamWrite(CLOSE_CDATA);
         } catch(UnsupportedEncodingException e) {
             throw XMLMarshalException.marshalException(e);
@@ -360,9 +361,9 @@ public class OutputStreamRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {                    
                     namespaceDeclaration(attr.getPrefix(), attr.getNamespaceURI());
@@ -376,7 +377,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 OutputStreamRecordContentHandler handler = new OutputStreamRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(handler);
-                xfragReader.setProperty(XMLConstants.LEXICAL_HANDLER_PROPERTY, handler);
+                xfragReader.setProperty(Constants.LEXICAL_HANDLER_PROPERTY, handler);
                 xfragReader.parse(node, uri, localName);
             } catch (SAXException sex) {
                 throw XMLMarshalException.marshalException(sex);
@@ -406,7 +407,7 @@ public class OutputStreamRecord extends MarshalRecord {
                     outputStreamWrite(CLOSE_ELEMENT);
                 }
                 outputStreamWrite(OPEN_START_ELEMENT);
-                outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                outputStreamWrite(qName.getBytes(Constants.DEFAULT_XML_ENCODING));
                 isStartElementOpen = true;
                 // Handle attributes
                 handleAttributes(atts);
@@ -425,7 +426,7 @@ public class OutputStreamRecord extends MarshalRecord {
                 } else {
                     outputStreamWrite((byte) '<');
                     outputStreamWrite((byte) '/');
-                    outputStreamWrite(qName.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                    outputStreamWrite(qName.getBytes(Constants.DEFAULT_XML_ENCODING));
                     outputStreamWrite(CLOSE_ELEMENT);
                 }
                 isStartElementOpen = false;
@@ -486,16 +487,16 @@ public class OutputStreamRecord extends MarshalRecord {
                 		Entry<String, String> nextEntry = iter.next();
                         String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
-                        outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                        outputStreamWrite(javax.xml.XMLConstants.XMLNS_ATTRIBUTE.getBytes(Constants.DEFAULT_XML_ENCODING));
                         if(null != prefix && prefix.length() > 0) {
-                            outputStreamWrite((byte)XMLConstants.COLON);
-                            outputStreamWrite(prefix.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                            outputStreamWrite((byte)Constants.COLON);
+                            outputStreamWrite(prefix.getBytes(Constants.DEFAULT_XML_ENCODING));
                         }
                         outputStreamWrite((byte)'=');
                         outputStreamWrite((byte)'"');
                         String uri = nextEntry.getValue();
                         if(null != uri) {
-                            outputStreamWrite(uri.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                            outputStreamWrite(uri.getBytes(Constants.DEFAULT_XML_ENCODING));
                         }
                         outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
                     }
@@ -509,7 +510,7 @@ public class OutputStreamRecord extends MarshalRecord {
         protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
-                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
+                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));

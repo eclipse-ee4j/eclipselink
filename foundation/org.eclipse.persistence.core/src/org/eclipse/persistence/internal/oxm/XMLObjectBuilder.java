@@ -106,7 +106,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * This allows subclasses to define different record types.
      */
     public AbstractRecord createRecord(AbstractSession session) {
-        return createRecord(getDescriptor().getTableName(), session);
+        return (AbstractRecord) createRecord(getDescriptor().getTableName(), session);
     }
 
     /**
@@ -114,14 +114,14 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * This allows subclasses to define different record types.
      */
     public AbstractRecord createRecord(int size, AbstractSession session) {
-        return createRecord(getDescriptor().getTableName(), session);
+        return (AbstractRecord) createRecord(getDescriptor().getTableName(), session);
     }
 
     /**
      * Create a new row/record for the object builder with the given name. This
      * allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, AbstractSession session) {
+    public AbstractMarshalRecord createRecord(String rootName, AbstractSession session) {
         NamespaceResolver namespaceResolver = getNamespaceResolver();
         XMLRecord xmlRec = new DOMRecord(rootName, namespaceResolver);
         xmlRec.setSession(session);
@@ -143,7 +143,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Create a new row/record for the object builder with the given name. This
      * allows subclasses to define different record types.
      */
-    public AbstractRecord createRecord(String rootName, Node parent, AbstractSession session) {
+    public AbstractMarshalRecord createRecord(String rootName, Node parent, AbstractSession session) {
         NamespaceResolver namespaceResolver = getNamespaceResolver();
         XMLRecord xmlRec = new DOMRecord(rootName, namespaceResolver, parent);
         xmlRec.setSession(session);

@@ -56,7 +56,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
             CoreAbstractSession session = unmarshalRecord.getSession();
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(unmarshalRecord), session);
+            Class classValue = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 XPathQName leafElementType = unmarshalRecord.getLeafElementType();

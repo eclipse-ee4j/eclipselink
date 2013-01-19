@@ -16,13 +16,18 @@ import java.io.UnsupportedEncodingException;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
@@ -30,14 +35,12 @@ import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,7 +58,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public abstract class MarshalRecord extends XMLRecord implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField, XMLMarshaller, NamespaceResolver> {
+public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSession, DatabaseField, Marshaller, NamespaceResolver> implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField, Marshaller, NamespaceResolver> {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
@@ -63,12 +66,12 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
 
     private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<Object>();
 
-    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
+    protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = Constants.COLON + Constants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
     
     
     public MarshalRecord() {
-        super();
+        super(null);
         namespaceResolver = new NamespaceResolver();
     }
 
@@ -142,7 +145,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
         if (null == value) {
             return;
         }
-        XMLField xmlField = convertToXMLField(key);
+        Field xmlField = convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();
         if (lastFragment.nameIsText()) {
             characters(xmlField.getSchemaType(), value, null, xmlField.isCDATA());
@@ -208,7 +211,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
 	 * @param namespaceURI
 	 */
     public void namespaceDeclaration(String prefix, String namespaceURI){
-        attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + prefix, namespaceURI);
+        attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + prefix, namespaceURI);
     }
     
     /**
@@ -241,7 +244,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     /**
      * INTERNAL
      */
-    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, Root root, boolean isXMLRoot){    
+    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){    
     }
     
     /**
@@ -308,6 +311,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
      * @param qName The qualified name of the attribute.
      * @param value This is the complete value for the attribute.
      */
+    @Override
     public abstract void attribute(String namespaceURI, String localName, String qName, String value);
 
     
@@ -338,7 +342,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
      * @since EclipseLink 2.4 
      */    
     public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
-    	 if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+    	 if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
     	     String convertedValue = getStringForQName((QName)value);
              attribute(xPathFragment, namespaceResolver, convertedValue);
     	 } else{
@@ -356,7 +360,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
             value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                     value, marshaller, mimeType).getData();
         }
-        if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+        if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             String convertedValue = getStringForQName((QName)value);
             characters(convertedValue);
         }else{
@@ -373,7 +377,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     	if(value == null){
     		return null;
     	}
-        if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+        if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
             return getStringForQName((QName)value);
         }else if(value.getClass() == String.class){
         	return (String) value;
@@ -405,10 +409,10 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
                 prefix = namespaceResolver.generatePrefix();                
                 namespaceDeclaration(prefix, namespaceURI);
             }
-            if(XMLConstants.EMPTY_STRING.equals(prefix)){
+            if(Constants.EMPTY_STRING.equals(prefix)){
             	return qName.getLocalPart();
             }
-            return prefix + XMLConstants.COLON + qName.getLocalPart();
+            return prefix + Constants.COLON + qName.getLocalPart();
         }
     }
     
@@ -558,7 +562,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
     	XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
         // We mutate the null into an empty string 
-        attribute(xPathFragment, namespaceResolver, XMLConstants.EMPTY_STRING);
+        attribute(xPathFragment, namespaceResolver, Constants.EMPTY_STRING);
         closeStartGroupingElements(groupingFragment);
     }
 
@@ -591,7 +595,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     public void nilSimple(NamespaceResolver namespaceResolver){
     	 XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
-         StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
+         StringBuilder qName = new StringBuilder(Constants.ATTRIBUTE); // Unsynchronized
          qName.append(xsiPrefix).append(COLON_W_SCHEMA_NIL_ATTRIBUTE);
          XPathFragment nilFragment = new XPathFragment(qName.toString());
          nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -608,7 +612,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
     	 closeStartGroupingElements(groupingFragment);
     	 openStartElement(xPathFragment, namespaceResolver);
     	 String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver);
-    	 XPathFragment nilFragment = new XPathFragment(XMLConstants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
+    	 XPathFragment nilFragment = new XPathFragment(Constants.ATTRIBUTE + xsiPrefix + COLON_W_SCHEMA_NIL_ATTRIBUTE);
     	 nilFragment.setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
     	 attribute(nilFragment, namespaceResolver, TRUE);
     	 closeStartElement();
@@ -637,7 +641,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
         String xsiPrefix;
         if (null == namespaceResolver) {
             // add new xsi entry into the properties map
-            xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+            xsiPrefix = Constants.SCHEMA_INSTANCE_PREFIX;
             namespaceResolver = new NamespaceResolver();
             namespaceResolver.put(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);            
             namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
@@ -645,7 +649,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
             // find an existing xsi entry in the map
             xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             if (null == xsiPrefix) {
-                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);                
+                xsiPrefix = namespaceResolver.generatePrefix(Constants.SCHEMA_INSTANCE_PREFIX);                
                 namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             }
         }
@@ -670,7 +674,7 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
             String prefix = this.getPrefixForFragment(xPathFragment);
             if(prefix != null && prefix.length() > 0) {
-                return prefix + XMLConstants.COLON + xPathFragment.getLocalName();
+                return prefix + Constants.COLON + xPathFragment.getLocalName();
             }
         }
         return xPathFragment.getLocalName();
@@ -684,12 +688,12 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
             String prefix = this.getPrefixForFragment(xPathFragment);
             if(prefix != null && prefix.length() > 0) {
-                name = prefix + XMLConstants.COLON + xPathFragment.getLocalName();
+                name = prefix + Constants.COLON + xPathFragment.getLocalName();
             }
         }
         byte[] bytes = null;
         try {
-            bytes = name.getBytes(XMLConstants.DEFAULT_XML_ENCODING);
+            bytes = name.getBytes(Constants.DEFAULT_XML_ENCODING);
         } catch(UnsupportedEncodingException ex) {}
         return bytes;
     }    
@@ -700,13 +704,13 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
         }
         String uri = xPathFragment.getNamespaceURI();
         if(uri == null || uri.length() == 0) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         
         String defaultNamespace = getNamespaceResolver().getDefaultNamespaceURI();
         
         if(defaultNamespace != null && defaultNamespace.equals(uri)) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         String prefix = this.getNamespaceResolver().resolveNamespaceURI(uri);
         
@@ -726,6 +730,10 @@ public abstract class MarshalRecord extends XMLRecord implements org.eclipse.per
      */
     public CycleDetectionStack<Object> getCycleDetectionStack() {
         return this.cycleDetectionStack;
+    }
+
+    private Field convertToXMLField(CoreField field) {
+        return (Field) field;
     }
 
     // === Inner Classes ======================================================

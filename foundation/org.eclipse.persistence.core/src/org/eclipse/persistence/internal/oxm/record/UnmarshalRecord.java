@@ -51,7 +51,7 @@ public interface UnmarshalRecord<
     FIELD extends CoreField,
     ID_RESOLVER extends IDResolver,
     TREE_OBJECT_BUILDER extends ObjectBuilder,
-    UNMARSHALLER extends Unmarshaller> extends AbstractUnmarshalRecord<ABSTRACT_SESSION, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
+    UNMARSHALLER extends Unmarshaller> extends AbstractUnmarshalRecord<ABSTRACT_SESSION, FIELD, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
     public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
@@ -63,7 +63,6 @@ public interface UnmarshalRecord<
 
     public void endUnmappedElement(String uri, String localName, String name) throws SAXException;
 
-    public Object get(FIELD field);
 
     public NodeValue getAttributeChildNodeValue(String namespace, String localName);
 

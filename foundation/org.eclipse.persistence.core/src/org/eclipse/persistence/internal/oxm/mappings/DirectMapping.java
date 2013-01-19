@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
@@ -45,7 +46,7 @@ public interface DirectMapping<
      */
     public CONVERTER getConverter();
 
-    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XML_RECORD record);
+    public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord record);
 
     public AbstractNullPolicy getNullPolicy();
 

@@ -12,33 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 import javax.xml.validation.ValidatorHandler;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -244,58 +235,21 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     }
 
     @Override
-    public boolean contains(Object value) {
-        return marshalRecord.contains(value);
-    }
-
-    @Override
-    public Object get(DatabaseField key) {
-        return marshalRecord.get(key);
-    }
-
-    @Override
-    public Object getIndicatingNoEntry(String fieldName) {
-        return marshalRecord.getIndicatingNoEntry(fieldName);
-    }
-
-    @Override
     public String resolveNamespacePrefix(String prefix) {
         return marshalRecord.resolveNamespacePrefix(prefix);
     }
 
     @Override
-    public XMLMarshaller getMarshaller() {
+    public Marshaller getMarshaller() {
         return marshalRecord.getMarshaller();
     }
 
     @Override
-    public void setMarshaller(XMLMarshaller marshaller) {
+    public void setMarshaller(Marshaller marshaller) {
     	super.setMarshaller(marshaller);
 
         validatingRecord.setMarshaller(marshaller);
         marshalRecord.setMarshaller(marshaller);
-    }
-
-    @Override
-    public XMLUnmarshaller getUnmarshaller() {
-        return marshalRecord.getUnmarshaller();
-    }
-
-    @Override
-    public void setUnmarshaller(XMLUnmarshaller unmarshaller) {
-        validatingRecord.setUnmarshaller(unmarshaller);
-        marshalRecord.setUnmarshaller(unmarshaller);
-    }
-
-    @Override
-    public void setDocPresPolicy(DocumentPreservationPolicy policy) {
-        validatingRecord.setDocPresPolicy(policy);
-        marshalRecord.setDocPresPolicy(policy);
-    }
-
-    @Override
-    public DocumentPreservationPolicy getDocPresPolicy() {
-        return marshalRecord.getDocPresPolicy();
     }
 
     @Override
@@ -307,22 +261,6 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     public void setOwningObject(Object obj) {
         validatingRecord.setOwningObject(obj);
         marshalRecord.setOwningObject(obj);
-    }
-
-    @Override
-    public Object getCurrentObject() {
-        return marshalRecord.getCurrentObject();
-    }
-
-    @Override
-    public void setCurrentObject(Object obj) {
-        marshalRecord.setCurrentObject(obj);
-        validatingRecord.setCurrentObject(obj);
-    }
-
-    @Override
-    public XPathQName getLeafElementType() {
-        return marshalRecord.getLeafElementType();
     }
 
     @Override
@@ -357,166 +295,6 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     @Override
     public boolean isXOPPackage() {
         return marshalRecord.isXOPPackage();
-    }
-
-    @Override
-    public void setXOPPackage(boolean isXOPPackage) {
-        validatingRecord.setXOPPackage(isXOPPackage);
-        marshalRecord.setXOPPackage(isXOPPackage);
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return marshalRecord.containsKey(key);
-    }
-
-    @Override
-    public boolean containsKey(String fieldName) {
-        return marshalRecord.containsKey(fieldName);
-    }
-
-    @Override
-    public boolean containsKey(DatabaseField key) {
-        return marshalRecord.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return marshalRecord.containsValue(value);
-    }
-
-    @Override
-    public Enumeration elements() {
-        return marshalRecord.elements();
-    }
-
-    @Override
-    public Set entrySet() {
-        return marshalRecord.entrySet();
-    }
-
-    @Override
-    public Object get(Object key) {
-        return marshalRecord.get(key);
-    }
-
-    @Override
-    public Object get(String fieldName) {
-        return marshalRecord.get(fieldName);
-    }
-
-    @Override
-    public Object getValues(DatabaseField key) {
-        return marshalRecord.getValues(key);
-    }
-
-    @Override
-    public Object getValues(String key) {
-        return marshalRecord.getValues(key);
-    }
-
-    @Override
-    public Object getIndicatingNoEntry(DatabaseField key) {
-        return marshalRecord.getIndicatingNoEntry(key);
-    }
-
-    @Override
-    public DatabaseField getField(DatabaseField key) {
-        return marshalRecord.getField(key);
-    }
-
-    @Override
-    public Vector getFields() {
-        return marshalRecord.getFields();
-    }
-
-    @Override
-    public Vector getValues() {
-        return marshalRecord.getValues();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return marshalRecord.isEmpty();
-    }
-
-    @Override
-    public boolean hasNullValueInFields() {
-        return marshalRecord.hasNullValueInFields();
-    }
-
-    @Override
-    public Enumeration keys() {
-        return marshalRecord.keys();
-    }
-
-    @Override
-    public Set keySet() {
-        return marshalRecord.keySet();
-    }
-
-    @Override
-    public void mergeFrom(AbstractRecord row) {
-        validatingRecord.mergeFrom(row);
-        marshalRecord.mergeFrom(row);
-    }
-
-    @Override
-    public Object put(Object key, Object value) throws ValidationException {
-        validatingRecord.put(key, value);
-        return marshalRecord.put(key, value);
-    }
-
-    @Override
-    public Object put(String key, Object value) {
-        validatingRecord.put(key, value);
-        return marshalRecord.put(key, value);
-    }
-
-    @Override
-    public void putAll(Map map) {
-        validatingRecord.putAll(map);
-        marshalRecord.putAll(map);
-    }
-
-    @Override
-    public Object remove(Object key) {
-        validatingRecord.remove(key);
-        return marshalRecord.remove(key);
-    }
-
-    @Override
-    public Object remove(String fieldName) {
-        validatingRecord.remove(fieldName);
-        return marshalRecord.remove(fieldName);
-    }
-
-    @Override
-    public Object remove(DatabaseField key) {
-        validatingRecord.remove(key);
-        return marshalRecord.remove(key);
-    }
-
-    @Override
-    public void replaceAt(Object value, int index) {
-        validatingRecord.replaceAt(value, index);
-        marshalRecord.replaceAt(value, index);
-    }
-
-    @Override
-    public void setNullValueInFields(boolean nullValueInFields) {
-        validatingRecord.setNullValueInFields(nullValueInFields);
-        marshalRecord.setNullValueInFields(nullValueInFields);
-    }
-
-    @Override
-    public int size() {
-        return marshalRecord.size();
-    }
-
-    @Override
-    public Collection values() {
-        return marshalRecord.values();
     }
 
     @Override
@@ -656,11 +434,16 @@ public class ValidatingMarshalRecord extends MarshalRecord {
      * @since EclipseLink 2.5.0
      */
     @Override
-    protected void writeXsiTypeAttribute(Descriptor xmlDescriptor,
+    public void writeXsiTypeAttribute(Descriptor xmlDescriptor,
             XMLSchemaReference xmlRef, boolean addToNamespaceResolver) {
         validatingRecord.writeXsiTypeAttribute(xmlDescriptor, xmlRef, addToNamespaceResolver);
         marshalRecord.writeXsiTypeAttribute(xmlDescriptor, xmlRef, addToNamespaceResolver);
     }
 
+    @Override
+    public void setXOPPackage(boolean isXOPPackage) {
+        validatingRecord.setXOPPackage(isXOPPackage);
+        marshalRecord.setXOPPackage(isXOPPackage);
+    }
 
 }

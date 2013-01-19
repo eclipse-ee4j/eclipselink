@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 
 public interface ChoiceObjectMapping<
@@ -69,7 +70,7 @@ public interface ChoiceObjectMapping<
 
     public Map<XML_FIELD, Class> getFieldToClassMappings();
 
-    public Object getFieldValue(Object object, ABSTRACT_SESSION session, XML_RECORD marshalRecord);
+    public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord marshalRecord);
     
     /**
      * Set the converter on the mapping.

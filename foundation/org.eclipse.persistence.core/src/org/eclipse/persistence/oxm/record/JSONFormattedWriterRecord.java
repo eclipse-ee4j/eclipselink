@@ -18,10 +18,10 @@ import java.io.Writer;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -253,12 +253,12 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLConstants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, Constants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }

@@ -23,18 +23,18 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Marshaller;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -80,7 +80,7 @@ public class JSONWriterRecord extends MarshalRecord {
 
     public JSONWriterRecord(){
         super();
-        space = XMLConstants.EMPTY_STRING;
+        space = Constants.EMPTY_STRING;
     }
     
     public JSONWriterRecord(Writer writer){
@@ -100,7 +100,7 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void setMarshaller(XMLMarshaller marshaller) {
+    public void setMarshaller(Marshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
         encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
@@ -455,7 +455,7 @@ public class JSONWriterRecord extends MarshalRecord {
              value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                      value, marshaller, mimeType).getData();
          }         
-         if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
+         if(schemaType != null && Constants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
              characters((String)convertedValue);
          } else if(value.getClass() == String.class){        	
@@ -496,23 +496,23 @@ public class JSONWriterRecord extends MarshalRecord {
      private boolean isNumericOrBooleanType(QName schemaType){
          if(schemaType == null){
              return false;
-         }else if(schemaType.equals(XMLConstants.BOOLEAN_QNAME)
-                 || schemaType.equals(XMLConstants.INTEGER_QNAME)
-                 || schemaType.equals(XMLConstants.INT_QNAME)
-                 || schemaType.equals(XMLConstants.BYTE_QNAME)
-                 || schemaType.equals(XMLConstants.DECIMAL_QNAME)
-                 || schemaType.equals(XMLConstants.FLOAT_QNAME)
-                 || schemaType.equals(XMLConstants.DOUBLE_QNAME)
-                 || schemaType.equals(XMLConstants.SHORT_QNAME)
-                 || schemaType.equals(XMLConstants.LONG_QNAME)
-                 || schemaType.equals(XMLConstants.NEGATIVE_INTEGER_QNAME)
-                 || schemaType.equals(XMLConstants.NON_NEGATIVE_INTEGER_QNAME)
-                 || schemaType.equals(XMLConstants.NON_POSITIVE_INTEGER_QNAME)
-                 || schemaType.equals(XMLConstants.POSITIVE_INTEGER_QNAME)
-                 || schemaType.equals(XMLConstants.UNSIGNED_BYTE_QNAME)
-                 || schemaType.equals(XMLConstants.UNSIGNED_INT_QNAME)
-                 || schemaType.equals(XMLConstants.UNSIGNED_LONG_QNAME)
-                 || schemaType.equals(XMLConstants.UNSIGNED_SHORT_QNAME)                 
+         }else if(schemaType.equals(Constants.BOOLEAN_QNAME)
+                 || schemaType.equals(Constants.INTEGER_QNAME)
+                 || schemaType.equals(Constants.INT_QNAME)
+                 || schemaType.equals(Constants.BYTE_QNAME)
+                 || schemaType.equals(Constants.DECIMAL_QNAME)
+                 || schemaType.equals(Constants.FLOAT_QNAME)
+                 || schemaType.equals(Constants.DOUBLE_QNAME)
+                 || schemaType.equals(Constants.SHORT_QNAME)
+                 || schemaType.equals(Constants.LONG_QNAME)
+                 || schemaType.equals(Constants.NEGATIVE_INTEGER_QNAME)
+                 || schemaType.equals(Constants.NON_NEGATIVE_INTEGER_QNAME)
+                 || schemaType.equals(Constants.NON_POSITIVE_INTEGER_QNAME)
+                 || schemaType.equals(Constants.POSITIVE_INTEGER_QNAME)
+                 || schemaType.equals(Constants.UNSIGNED_BYTE_QNAME)
+                 || schemaType.equals(Constants.UNSIGNED_INT_QNAME)
+                 || schemaType.equals(Constants.UNSIGNED_LONG_QNAME)
+                 || schemaType.equals(Constants.UNSIGNED_SHORT_QNAME)
          ){
              return true;
          }
@@ -575,7 +575,7 @@ public class JSONWriterRecord extends MarshalRecord {
      /**
       * INTERNAL:
       */
-     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, Root root, boolean isXMLRoot){
+     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
     	 if(treeObjectBuilder != null){
              addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
              treeObjectBuilder.marshalAttributes(this, object, session);
@@ -623,7 +623,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 } else if(namespaceResolver != null){
                     prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
                 }
-                if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+                if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
                     writer.write(prefix);
                     writer.write(getNamespaceSeparator());
                 }
@@ -633,8 +633,8 @@ public class JSONWriterRecord extends MarshalRecord {
         writer.write(xPathFragment.getLocalName());
         writer.write("\"");
         writer.write(space);
-        writer.write(XMLConstants.COLON);
-        writer.write(space);        
+        writer.write(Constants.COLON);
+        writer.write(space);
     }
 
     /**
@@ -734,12 +734,12 @@ public class JSONWriterRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLConstants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, Constants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
@@ -815,7 +815,7 @@ public class JSONWriterRecord extends MarshalRecord {
            protected void handleAttributes(Attributes atts) {
             for (int i=0, attsLength = atts.getLength(); i<attsLength; i++) {
                 String qName = atts.getQName(i);
-                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
+                if((qName != null && (qName.startsWith(javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON) || qName.equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                     continue;
                 }
                 attribute(atts.getURI(i), atts.getLocalName(i), qName, atts.getValue(i));

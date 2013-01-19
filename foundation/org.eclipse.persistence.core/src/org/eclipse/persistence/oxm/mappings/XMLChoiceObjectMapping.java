@@ -20,6 +20,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -29,6 +30,7 @@ import org.eclipse.persistence.internal.oxm.XMLChoiceFieldToClassAssociation;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -207,9 +209,9 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     /**
     * INTERNAL:
     */
-    public Object getFieldValue(Object object, AbstractSession session, XMLRecord record) {
+    public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord record) {
         Object attributeValue = super.getAttributeValueFromObject(object);
-        attributeValue = convertObjectValueToDataValue(attributeValue, session, record.getMarshaller());
+        attributeValue = convertObjectValueToDataValue(attributeValue, (AbstractSession) session, (XMLMarshaller) record.getMarshaller());
         return attributeValue;
     }
 

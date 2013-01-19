@@ -24,7 +24,6 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -60,7 +59,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, (AbstractSession) session, marshalRecord);
+        Object fieldValue = xmlDirectMapping.getFieldValue(objectValue, session, marshalRecord);
         
         // Check for a null value 
         if (null == fieldValue) {
@@ -150,7 +149,7 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), unmarshalRecord);
 
         // Perform operations on the object based on the null policy
-        Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, (AbstractSession) session, unmarshalRecord);
+        Object convertedValue = xmlDirectMapping.getAttributeValue(realValue, session, unmarshalRecord);
         xmlDirectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), convertedValue);
     }
 

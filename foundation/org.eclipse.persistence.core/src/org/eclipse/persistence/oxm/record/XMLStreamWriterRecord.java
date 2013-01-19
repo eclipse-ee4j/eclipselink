@@ -20,10 +20,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DomToXMLStreamWriter;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -153,16 +153,16 @@ public class XMLStreamWriterRecord extends MarshalRecord {
                 if(null == namespaceContext) {
                     xmlStreamWriter.writeStartElement(xPathFragment.getLocalName());
                 } else {
-                    String defaultNamespace = namespaceContext.getNamespaceURI(XMLConstants.EMPTY_STRING);                    
-                    xmlStreamWriter.writeStartElement(XMLConstants.EMPTY_STRING, xPathFragment.getLocalName(), XMLConstants.EMPTY_STRING);
+                    String defaultNamespace = namespaceContext.getNamespaceURI(Constants.EMPTY_STRING);                    
+                    xmlStreamWriter.writeStartElement(Constants.EMPTY_STRING, xPathFragment.getLocalName(), Constants.EMPTY_STRING);
                     if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
-                        xmlStreamWriter.writeDefaultNamespace(XMLConstants.EMPTY_STRING);
+                        xmlStreamWriter.writeDefaultNamespace(Constants.EMPTY_STRING);
                     }
                 }
             } else {
                 String prefix = getPrefixForFragment(xPathFragment);
                 if(prefix == null) {
-                    prefix = XMLConstants.EMPTY_STRING;
+                    prefix = Constants.EMPTY_STRING;
                 }
                 xmlStreamWriter.writeStartElement(prefix, xPathFragment.getLocalName(), namespaceURI);
             }
@@ -211,7 +211,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
 
     public void startDocument(String encoding, String version) {
         try {
-            if(XMLConstants.DEFAULT_XML_ENCODING.equals(encoding)) {
+            if(Constants.DEFAULT_XML_ENCODING.equals(encoding)) {
                 xmlStreamWriter.writeStartDocument(version);
             } else {
                 xmlStreamWriter.writeStartDocument(encoding, version);
@@ -233,7 +233,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             if(null != namespaceResolver) {
                 String defaultNamespace = namespaceResolver.getDefaultNamespaceURI();
                 if(defaultNamespace != null) {
-                    xmlStreamWriter.writeNamespace(XMLConstants.EMPTY_STRING, defaultNamespace);
+                    xmlStreamWriter.writeNamespace(Constants.EMPTY_STRING, defaultNamespace);
                 }
                 if(namespaceResolver.hasPrefixesToNamespaces()) {
                     for(Map.Entry<String, String> entry:this.namespaceResolver.getPrefixesToNamespaces().entrySet()) {

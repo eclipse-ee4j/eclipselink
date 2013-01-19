@@ -28,6 +28,7 @@ import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -87,7 +88,7 @@ import org.xml.sax.ext.Locator2Impl;
  * @author bdoughan
  *
  */
-public class UnmarshalRecordImpl implements UnmarshalRecord<CoreAbstractSession, CoreField, IDResolver, ObjectBuilder, Unmarshaller> {
+public class UnmarshalRecordImpl extends CoreAbstractRecord implements UnmarshalRecord<CoreAbstractSession, CoreField, IDResolver, ObjectBuilder, Unmarshaller> {
     protected XMLReader xmlReader;
     private ObjectBuilder treeObjectBuilder;
     private XPathFragment xPathFragment;
@@ -489,7 +490,7 @@ public class UnmarshalRecordImpl implements UnmarshalRecord<CoreAbstractSession,
         	return;
         }
     	CoreInheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
-    	Class classValue = inheritancePolicy.classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(this), (AbstractSession) session);
+    	Class classValue = treeObjectBuilder.classFromRow(this, session);
     	 if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element
              QName leafElementType = xmlDescriptor.getDefaultRootElementType();

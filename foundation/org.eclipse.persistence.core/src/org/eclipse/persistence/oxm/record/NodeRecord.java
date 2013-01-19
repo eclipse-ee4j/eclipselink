@@ -17,11 +17,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.MarshalRecordContentHandler;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.Attr;
@@ -186,12 +186,12 @@ public class NodeRecord extends MarshalRecord {
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, resolverPfx+ XMLConstants.COLON +attr.getLocalName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, resolverPfx+ Constants.COLON +attr.getLocalName(), attr.getNodeValue());
             } else {
-                attribute(attr.getNamespaceURI(), XMLConstants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
+                attribute(attr.getNamespaceURI(), Constants.EMPTY_STRING, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (attr.getNamespaceURI() != null) {
-                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, XMLConstants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, Constants.EMPTY_STRING, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
@@ -279,7 +279,7 @@ public class NodeRecord extends MarshalRecord {
         if (colonIndex < 0) {
             // handle target/default namespace
             if (namespaceResolver != null) {
-                return namespaceResolver.resolveNamespacePrefix(XMLConstants.EMPTY_STRING);
+                return namespaceResolver.resolveNamespacePrefix(Constants.EMPTY_STRING);
             }
             return null;
         } else {
@@ -341,12 +341,12 @@ public class NodeRecord extends MarshalRecord {
                     if(null == namespaceDeclarationPrefix || 0 == namespaceDeclarationPrefix.length()) {
                         String namespaceDeclarationURI = entry.getValue();
                         if(null == namespaceDeclarationURI) {
-                            element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , XMLConstants.EMPTY_STRING);
+                            element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , Constants.EMPTY_STRING);
                         } else {
                             element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE , namespaceDeclarationURI);
                         }
                     } else {
-                        element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + entry.getKey(), entry.getValue());
+                        element.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + entry.getKey(), entry.getValue());
                     }
                 }
                 prefixMappings.clear();

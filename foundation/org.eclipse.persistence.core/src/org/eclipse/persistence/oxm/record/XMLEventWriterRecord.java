@@ -25,10 +25,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.DomToXMLEventWriter;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -113,7 +113,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
              } else {
                  int index = name.indexOf(':');
                  if(index == -1) {
-                     event = xmlEventFactory.createAttribute(XMLConstants.EMPTY_STRING, namespaceURI, localName, value);
+                     event = xmlEventFactory.createAttribute(Constants.EMPTY_STRING, namespaceURI, localName, value);
                  } else {
                      String prefix = name.substring(0, index);
                      event = xmlEventFactory.createAttribute(prefix, namespaceURI, localName, value);
@@ -145,16 +145,16 @@ public class XMLEventWriterRecord extends MarshalRecord {
                  if(null != namespaceDeclarations) {
                      namespaceDeclarationsIterator = namespaceDeclarations.iterator();
                  }
-                 xmlEventWriter.add(xmlEventFactory.createStartElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
-                 String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(XMLConstants.EMPTY_STRING);
+                 xmlEventWriter.add(xmlEventFactory.createStartElement(Constants.EMPTY_STRING, Constants.EMPTY_STRING, xPathFragment.getLocalName(), attributesIterator, namespaceDeclarationsIterator));
+                 String defaultNamespace = xmlEventWriter.getNamespaceContext().getNamespaceURI(Constants.EMPTY_STRING);
                  if(defaultNamespace != null && defaultNamespace.length() > 0 ) {
-                     xmlEventWriter.setDefaultNamespace(XMLConstants.EMPTY_STRING);
-                     xmlEventWriter.add(xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING));
+                     xmlEventWriter.setDefaultNamespace(Constants.EMPTY_STRING);
+                     xmlEventWriter.add(xmlEventFactory.createNamespace(Constants.EMPTY_STRING));
                  }
              } else {
                  String prefix = getPrefixForFragment(xPathFragment);
                  if(null == prefix) {
-                     prefix = XMLConstants.EMPTY_STRING;
+                     prefix = Constants.EMPTY_STRING;
                  }
                  Iterator attributesIterator = null;
                  if(null != attributes) {
@@ -220,7 +220,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
             String localName = frag.getLocalName();
             String prefix = getPrefixForFragment(xPathFragment);
             if(null == prefix) {
-                prefix = XMLConstants.EMPTY_STRING;
+                prefix = Constants.EMPTY_STRING;
             }
             xmlEventWriter.add(xmlEventFactory.createStartElement(prefix, namespaceURI, localName));
             xmlEventWriter.add(xmlEventFactory.createEndElement(prefix, namespaceURI, localName));
@@ -248,7 +248,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         }
         String prefix = getPrefixForFragment(pathFragment);
         if(null == prefix) {
-            prefix = XMLConstants.EMPTY_STRING;
+            prefix = Constants.EMPTY_STRING;
         }
         try {
             xmlEventWriter.add(xmlEventFactory.createEndElement(prefix, xPathFragment.getNamespaceURI(), pathFragment.getLocalName()));
@@ -291,7 +291,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
         if(null != namespaceResolver) {
             String defaultNamespace = namespaceResolver.getDefaultNamespaceURI();
             if(defaultNamespace != null) {
-                XMLEvent namespace = xmlEventFactory.createNamespace(XMLConstants.EMPTY_STRING, defaultNamespace);
+                XMLEvent namespace = xmlEventFactory.createNamespace(Constants.EMPTY_STRING, defaultNamespace);
                 if(null == namespaceDeclarations) {
                     namespaceDeclarations = new ArrayList();
                 }

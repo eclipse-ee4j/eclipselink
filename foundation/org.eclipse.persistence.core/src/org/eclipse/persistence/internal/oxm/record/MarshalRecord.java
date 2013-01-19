@@ -25,8 +25,6 @@ import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
 import org.w3c.dom.Node;
 
@@ -39,10 +37,6 @@ public interface MarshalRecord<
     FIELD extends CoreField,
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver> extends AbstractMarshalRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER> {
-
-    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
-
-    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
 
     public void add(FIELD field, Object value);
 
@@ -131,7 +125,7 @@ public interface MarshalRecord<
 
     public void setGroupingElement(ArrayList<XPathNode> object);
 
-    public void setLeafElementType(QName defaultRootElementType);
+    public void setLeafElementType(QName leafElementType);
 
     public void setMarshaller(MARSHALLER marshaller);
 
@@ -139,6 +133,5 @@ public interface MarshalRecord<
 
     public void startPrefixMapping(String prefix, String uri);
 
-    public void writeXsiTypeAttribute(Descriptor descriptor, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver);
 
 }

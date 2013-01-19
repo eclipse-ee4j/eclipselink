@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.mappings.transformers.FieldTransformer;
@@ -57,7 +59,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 
-public class XPathObjectBuilder implements ObjectBuilder {
+public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession> implements ObjectBuilder {
 
     public static final String CYCLE_RECOVERABLE = "com.sun.xml.bind.CycleRecoverable";
     public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";    
@@ -73,6 +75,7 @@ public class XPathObjectBuilder implements ObjectBuilder {
     private List<NullCapableValue> nullCapableValues;
     private XPathNode rootXPathNode;
     private List<TransformationMapping> transformationMappings;
+    private boolean xsiTypeIndicatorField;
 
     public XPathObjectBuilder(CoreDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -81,6 +84,15 @@ public class XPathObjectBuilder implements ObjectBuilder {
 
     private XPathNode addChild(XPathFragment xPathFragment, NodeValue nodeValue, NamespaceResolver namespaceResolver) {
         return rootXPathNode.addChild(xPathFragment, nodeValue, namespaceResolver);
+    }
+
+    @Override
+    public boolean addClassIndicatorFieldToRow(AbstractMarshalRecord abstractMarshalRecord) {
+        if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
+            descriptor.getInheritancePolicy().addClassIndicatorFieldToRow((CoreAbstractRecord) abstractMarshalRecord);
+            return true;
+        }
+        return false;
     }
 
     private void addContainerValue(ContainerValue containerValue) {
@@ -123,6 +135,14 @@ public class XPathObjectBuilder implements ObjectBuilder {
             this.transformationMappings = new ArrayList();
         }
         transformationMappings.add(transformationMapping);
+    }
+
+    /**
+     * Return a new instance of the receiver's javaClass.
+     */
+    @Override
+    public Object buildNewInstance() {
+        return this.descriptor.getInstantiationPolicy().buildNewInstance();
     }
 
     @Override
@@ -221,6 +241,11 @@ public class XPathObjectBuilder implements ObjectBuilder {
         return record;
     }
 
+    @Override
+    public Class classFromRow(UnmarshalRecord record, CoreAbstractSession session) {
+        return descriptor.getInheritancePolicy().classFromRow((CoreAbstractRecord) record, session);
+    }
+
     /**
      * Create a new row/record for the object builder.
      * This allows subclasses to define different record types.
@@ -263,6 +288,11 @@ public class XPathObjectBuilder implements ObjectBuilder {
             this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT);
         } catch (Exception e) {
         }
+    }
+
+    @Override
+    public boolean isXsiTypeIndicatorField() {
+        return xsiTypeIndicatorField;
     }
 
     void lazyInitialize() {
@@ -471,6 +501,25 @@ public class XPathObjectBuilder implements ObjectBuilder {
                     }
                 }
             }
+
+            if (descriptor.hasInheritance()) {
+                Field indicatorField = (Field) descriptor
+                        .getInheritancePolicy().getClassIndicatorField();
+                if (indicatorField != null) {
+                    if (indicatorField.getLastXPathFragment().getNamespaceURI() != null
+                            && indicatorField
+                                    .getLastXPathFragment()
+                                    .getNamespaceURI()
+                                    .equals(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI)
+                            && indicatorField.getLastXPathFragment()
+                                    .getLocalName()
+                                    .equals(Constants.SCHEMA_TYPE_ATTRIBUTE)) {
+                        xsiTypeIndicatorField = true;
+                    }
+
+                }
+            }
+
             initialized = true;
         }
     }
@@ -519,14 +568,9 @@ public class XPathObjectBuilder implements ObjectBuilder {
     }
 
     @Override
-    public Object buildNewInstance() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public CoreDescriptor getDescriptor() {
         return descriptor;
     }
+
 
 }

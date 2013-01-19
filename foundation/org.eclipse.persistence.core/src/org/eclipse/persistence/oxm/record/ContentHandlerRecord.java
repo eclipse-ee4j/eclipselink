@@ -14,12 +14,13 @@ package org.eclipse.persistence.oxm.record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
@@ -181,7 +182,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         try {
             String namespaceUri = xPathFragment.getNamespaceURI();
             if(namespaceUri == null) {
-                namespaceUri = XMLConstants.EMPTY_STRING;
+                namespaceUri = Constants.EMPTY_STRING;
             }
             contentHandler.startElement(namespaceUri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment), attributes);
         } catch (SAXException e) {
@@ -218,7 +219,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             this.attributes.clear();
             String namespaceURI = frag.getNamespaceURI();
             if(namespaceURI == null) {
-                namespaceURI = XMLConstants.EMPTY_STRING;
+                namespaceURI = Constants.EMPTY_STRING;
             }
             String localName = frag.getLocalName();
             String shortName = getNameForFragment(frag);
@@ -247,7 +248,7 @@ public class ContentHandlerRecord extends MarshalRecord {
             }
             this.startPrefixMapping(localName, value);
         }        
-        attributes.addAttribute(namespaceURI, localName, qName, XMLConstants.CDATA, value);
+        attributes.addAttribute(namespaceURI, localName, qName, Constants.CDATA, value);
     }
 
     /**
@@ -269,7 +270,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         try {
             String uri = xPathFragment.getNamespaceURI();
             if(uri == null) {
-                uri = XMLConstants.EMPTY_STRING;
+                uri = Constants.EMPTY_STRING;
             }
             contentHandler.endElement(uri, xPathFragment.getLocalName(), getNameForFragment(xPathFragment));
             List<String> currentLevelPrefixMappings = prefixMappings.remove(prefixMappings.size()-1);
@@ -339,17 +340,17 @@ public class ContentHandlerRecord extends MarshalRecord {
             String namespaceURI = attr.getNamespaceURI();
             String localName = attr.getLocalName();
             if(localName == null) {
-                localName = XMLConstants.EMPTY_STRING;
+                localName = Constants.EMPTY_STRING;
             }
             // If the namespace resolver contains a prefix for the attribute's URI,
             // use it instead of what is set on the attribute
             if (resolverPfx != null) {
-                attribute(namespaceURI, localName, resolverPfx+XMLConstants.COLON+attr.getLocalName(), attr.getNodeValue());
+                attribute(namespaceURI, localName, resolverPfx+Constants.COLON+attr.getLocalName(), attr.getNodeValue());
             } else {
                 attribute(namespaceURI, localName, attr.getName(), attr.getNodeValue());
                 // May need to declare the URI locally
                 if (namespaceURI != null) {
-                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, localName , javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + attr.getPrefix(), attr.getNamespaceURI());
+                    attribute(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, localName , javax.xml.XMLConstants.XMLNS_ATTRIBUTE + Constants.COLON + attr.getPrefix(), attr.getNamespaceURI());
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
@@ -375,7 +376,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     public String resolveNamespacePrefix(XPathFragment frag, NamespaceResolver resolver) {
         String resolved = frag.getNamespaceURI();
         if (resolved == null) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         return resolved;
     }
@@ -383,7 +384,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     public String resolveNamespacePrefix(String s) {
         String resolved = super.resolveNamespacePrefix(s);
         if (resolved == null) {
-            return XMLConstants.EMPTY_STRING;
+            return Constants.EMPTY_STRING;
         }
         return resolved;
     }

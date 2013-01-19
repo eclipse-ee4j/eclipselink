@@ -462,7 +462,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(xmlDescriptor != null){
 	            if (xmlDescriptor.hasInheritance()) {
 	                unmarshalRecord.setAttributes(atts);
-	                Class clazz = xmlDescriptor.getInheritancePolicy().classFromRow(new org.eclipse.persistence.oxm.record.UnmarshalRecord(unmarshalRecord), unmarshalRecord.getSession());
+	                Class clazz = ((ObjectBuilder)xmlDescriptor.getObjectBuilder()).classFromRow(unmarshalRecord, unmarshalRecord.getSession());
 	                if (clazz == null) {
 	                    // no xsi:type attribute - look for type indicator on the default root element
 	                    XPathQName leafElementType = unmarshalRecord.getLeafElementType();
