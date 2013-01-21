@@ -64,14 +64,16 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     public void write(OutputStream output) throws IOException, WebApplicationException {
         if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
             output.write((byte[])result);
+            output.flush();
+            output.close();
         } else if (result instanceof String){
             OutputStreamWriter writer = new OutputStreamWriter(output);
             writer.write((String)result);
             writer.flush();
             writer.close();
         } else {
-            if (this.context != null && this.context.getJAXBContext() != null && this.result != null
-                    && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
+            if ((this.context != null && this.context.getJAXBContext() != null && this.result != null) &&
+                    (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
                     if (result instanceof MultiResultQueryList) {
                         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
@@ -89,6 +91,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     throw new WebApplicationException();
                 }
             }
+
             if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
                 // could not marshall, try serializing
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -99,6 +102,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 output.write(baos.toByteArray());
             } else {
                 JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[]{result});
+                throw new WebApplicationException();
             }
         }
     }
