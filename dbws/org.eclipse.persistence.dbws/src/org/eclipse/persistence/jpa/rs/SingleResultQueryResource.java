@@ -15,7 +15,6 @@ import java.net.URI;
 import java.util.List;
 
 import javax.persistence.Query;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,18 +35,17 @@ import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+// Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_OCTET_STREAM})
 @Path("/{context}/singleResultQuery/")
 public class SingleResultQueryResource extends AbstractResource {
-
     @GET
     @Path("{name}")
-    @Produces(MediaType.WILDCARD)
     public Response namedQuerySingleResult(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
         return namedQuerySingleResult(persistenceUnit, name, hh, ui, ui.getBaseUri());
     }
 
+    @SuppressWarnings("rawtypes")
     protected Response namedQuerySingleResult(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
@@ -62,9 +60,23 @@ public class SingleResultQueryResource extends AbstractResource {
             Object queryResults = query.getSingleResult();
             SingleResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
             if (list != null) {
+                List<JAXBElement> item = list.getFields();
+                if ((item!= null) && (item.size() == 1)) {
+                    // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
+                    // If there is only one item in the select clause and if value of that item is binary, we will create a response with 
+                    // that binary data without converting its to Base64.
+                    JAXBElement element = item.get(0);
+                    Object elementValue = element.getValue();
+                    if (elementValue instanceof byte[]) {
+                        List<MediaType> acceptableMediaTypes = hh.getAcceptableMediaTypes();
+                        if (acceptableMediaTypes.contains(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
+                            return Response.ok(new StreamingOutputMarshaller(app, elementValue, hh.getAcceptableMediaTypes())).build();
+                        }
+                    }
+                }
                 return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
             } else {
-                // something wrong with the descriptors
+                // something went wrong with the descriptors, return error
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
         } 

@@ -392,9 +392,58 @@ public class RestUtils {
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
         }
+
         return response.getEntity(String.class);
     }
 
+    
+    /**
+     * Rest named single result query in byte array.
+     *
+     * @param queryName the query name
+     * @param persistenceUnit the persistence unit
+     * @param parameters the parameters
+     * @param hints the hints
+     * @param outputMediaType the output media type
+     * @return the byte[]
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public static byte[] restNamedSingleResultQueryInByteArray(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType)
+            throws URISyntaxException {
+        StringBuilder resourceURL = new StringBuilder();
+        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
+        RestUtils.appendParametersAndHints(resourceURL, parameters, hints);
+        WebResource webResource = client.resource(resourceURL.toString());
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+
+        ByteArrayOutputStream baos = null;
+
+        if (outputMediaType == MediaType.APPLICATION_OCTET_STREAM_TYPE) {
+            try {
+                BufferedImage image = ImageIO.read(response.getEntityInputStream());
+                baos = new ByteArrayOutputStream();
+                ImageIO.write(image, "png", baos);
+                byte[] bytes = baos.toByteArray();
+                return bytes;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (baos != null) {
+                    try {
+                        baos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return null;
+    }    
+    
     /**
      * Rest update query.
      *
