@@ -459,12 +459,14 @@
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
         <echo message="   'compile.path'"/>
+        <echo message="   '${jpatest.2.jpa.plugins.dir}/${resource.jar}'"/>
         <echo message="   '${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}'"/>
         <echo message="   '../../../extension.lib.external/mongo.jar'"/>
         <echo message="  "/>
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${jpatest.2.jpa.plugins.dir}/${resource.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
@@ -1978,7 +1980,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${jpatest.basedir}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="pa.connection.user" value="${pa.connection.user}"/>
             <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
@@ -1999,7 +2001,7 @@
                 <path refid="${RUN_PATH}"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${jpatest.basedir}/${report.dir}/${TEST_CLASS}-test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
     </target>
@@ -2019,7 +2021,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${jpatest.basedir}/${run.dir}">
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
@@ -2039,7 +2041,7 @@
                 <path refid="spring.path"/>
             </classpath>
             <formatter type="xml"/>
-            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${jpatest.basedir}/${report.dir}/${TEST_CLASS}-test-results">
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
     </target>
@@ -2071,7 +2073,7 @@
              fork="true"
              maxmemory="${max.heap.memory}"
              failonerror="false"
-             dir="${jpatest.basedir}/${run.dir}">
+             dir="${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>
@@ -3170,7 +3172,7 @@
              fork="true"
              maxmemory="512m"
              failonerror="false"
-             dir="${jpatest.basedir}/${run.dir}">
+             dir="${run.dir}">
             <jvmarg value="${jvmarg.performance.baseline.version}"/>
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
