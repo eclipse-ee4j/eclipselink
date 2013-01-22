@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,13 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.tests.jpql.tools.AbstractSemanticValidatorTest;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
+import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkJPQLQueryContext;
+import org.eclipse.persistence.jpa.jpql.tools.EclipseLinkSemanticValidator;
+import org.eclipse.persistence.jpa.jpql.tools.JPQLQueryContext;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 

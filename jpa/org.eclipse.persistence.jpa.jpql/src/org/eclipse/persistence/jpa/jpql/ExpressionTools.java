@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,8 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
+
+import java.util.regex.Pattern;
 
 /**
  * A utility class containing various methods related to the Hermes parser.
@@ -29,6 +31,11 @@ package org.eclipse.persistence.jpa.jpql;
 public final class ExpressionTools {
 
 	/**
+	 * The {@link Pattern} representing the regular expression of a numerical value as a double.
+	 */
+	public static Pattern DOUBLE_REGEXP = Pattern.compile("^[-+]?[0-9]*(\\.[0-9]+)?([dD]|([eE][-+]?[0-9]+))?$");
+
+	/**
 	 * The constant of an empty array.
 	 */
 	public static final Object[] EMPTY_ARRAY = new Object[0];
@@ -42,6 +49,21 @@ public final class ExpressionTools {
 	 * The constant of an empty String array.
 	 */
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+	/**
+	 * The {@link Pattern} representing the regular expression of a numerical value as a float.
+	 */
+	public static Pattern FLOAT_REGEXP = Pattern.compile("^[-+]?[0-9]*(\\.[0-9]+)?[fF]$");
+
+	/**
+	 * The {@link Pattern} representing the regular expression of a numerical value as an integer.
+	 */
+	public static Pattern INTEGER_REGEXP = Pattern.compile("^[-+]?[0-9]+$");
+
+	/**
+	 * The {@link Pattern} representing the regular expression of a numerical value as a long.
+	 */
+	public static Pattern LONG_REGEXP = Pattern.compile("^[-+]?[0-9]+[lL]?$");
 
 	/**
 	 * ExpressionTools cannot be instantiated.

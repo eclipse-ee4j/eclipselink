@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**

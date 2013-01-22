@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -191,12 +191,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private final Class<?>[] type;
 
 	/**
-	 * This will tell {@link #visit(IdentificationVariable)} to create a {@link ConstantExpression}
-	 * if this is part of a comparison expression.
-	 */
-	private boolean typeExpression;
-
-	/**
 	 * The visitor responsible to create the {@link Expression Expressions} for the <b>WHEN</b> and
 	 * <b>THEN</b> expressions.
 	 */
@@ -260,12 +254,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	                           Class<?>[] type) {
 
 		Class<?> oldType = this.type[0];
-		boolean oldTypeExpression = typeExpression;
 		Expression oldQueryExpression = queryExpression;
 
 		try {
 			this.type[0]         = null;
-			this.typeExpression  = false;
 			this.queryExpression = null;
 
 			expression.accept(this);
@@ -275,7 +267,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 		finally {
 			this.type[0]         = oldType;
-			this.typeExpression  = oldTypeExpression;
 			this.queryExpression = oldQueryExpression;
 		}
 	}
@@ -303,7 +294,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 		finally {
 			this.type[0]         = null;
-			this.typeExpression  = false;
 			this.queryExpression = null;
 		}
 	}
@@ -331,7 +321,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 		finally {
 			this.type[0]         = null;
-			this.typeExpression  = false;
 			this.queryExpression = null;
 		}
 	}
@@ -726,16 +715,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	@Override
 	public void visit(ComparisonExpression expression) {
 
+		ComparisonExpressionVisitor visitor = new ComparisonExpressionVisitor();
+
 		// Create the left side of the comparison expression
-		expression.getLeftExpression().accept(this);
+		expression.getLeftExpression().accept(visitor);
 		Expression leftExpression = queryExpression;
 
 		// Create the right side of the comparison expression
-		expression.getRightExpression().accept(this);
+		expression.getRightExpression().accept(visitor);
 		Expression rightExpression = queryExpression;
-
-		// Make sure the flag is set to false
-		typeExpression = false;
 
 		// Now create the comparison expression
 		String comparaison = expression.getComparisonOperator();
@@ -1145,8 +1133,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	@Override
 	public void visit(IdentificationVariable expression) {
 
-		// The identification variable is virtual, only do something if it falsely represents a state
-		// field path expression
+		// The identification variable is virtual, only do something
+		// if it falsely represents a state field path expression
 		if (expression.isVirtual()) {
 			StateFieldPathExpression stateFieldPathExpression = expression.getStateFieldPathExpression();
 
@@ -1156,61 +1144,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			}
 		}
 
-		// Entity type name
-		if (typeExpression) {
-			typeExpression = false;
-			ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
-			type[0] = descriptor.getJavaClass();
-			queryExpression = new ConstantExpression(type[0], queryContext.getBaseExpression());
-		}
-		else {
-			String variableName = expression.getVariableName();
+		String variableName = expression.getVariableName();
 
-			// A result variable is parsed as an identification variable
-			// TODO: Do we still need to do this since the following does:
-			// queryContext.findQueryExpression(variableName)
-			if (queryContext.isResultVariable(variableName)) {
-				queryExpression = queryContext.getQueryExpression(variableName);
+		// Identification variable, it's important to use findQueryExpression() and not
+		// getQueryExpression(). If the identification variable is defined by the parent
+		// query, then the ExpressionBuilder have most likely been created already
+		queryExpression = queryContext.findQueryExpression(variableName);
+
+		// Retrieve the Declaration mapped to the variable name
+		Declaration declaration = queryContext.findDeclaration(variableName);
+
+		// A null Declaration would most likely mean it's coming from a
+		// state field path expression that represents an enum constant
+		if (declaration != null) {
+
+			// The Expression was not created yet, which can happen if the identification
+			// variable is declared in a parent query. If that is the case, create the
+			// ExpressionBuilder and cache it for the current query
+			if (queryExpression == null) {
+				declaration.getBaseExpression().accept(this);
+				queryContext.addQueryExpression(variableName, queryExpression);
 			}
-			else {
 
-				// Check if it's an entity type name
-				if (!expression.isVirtual()) {
-					ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
-
-					// Entity type name
-					if (descriptor != null) {
-						type[0] = descriptor.getJavaClass();
-						queryExpression = new ConstantExpression(type[0], queryContext.getBaseExpression());
-						return;
-					}
-				}
-
-				// Identification variable, it's important to use findQueryExpression() and not
-				// getQueryExpression(). If the identification variable is defined by the parent
-				// query, then the ExpressionBuilder have most likely been created already
-				queryExpression = queryContext.findQueryExpression(variableName);
-
-				// Retrieve the Declaration mapped to the variable name
-				Declaration declaration = queryContext.findDeclaration(variableName);
-
-				// A null Declaration would most likely mean it's coming from a
-				// state field path expression that represents an enum constant
-				if (declaration != null) {
-
-					// The Expression was not created yet, which can happen if the identification
-					// variable is declared in a parent query. If that is the case, create the
-					// ExpressionBuilder and cache it for for the current query
-					if (queryExpression == null) {
-						declaration.getBaseExpression().accept(this);
-						queryContext.addQueryExpression(variableName, queryExpression);
-					}
-
-					// Retrieve the Entity type
-					if (declaration.getType() == Type.RANGE) {
-						type[0] = declaration.getDescriptor().getJavaClass();
-					}
-				}
+			// Retrieve the Entity type
+			if (declaration.getType() == Type.RANGE) {
+				type[0] = declaration.getDescriptor().getJavaClass();
 			}
 		}
 	}
@@ -2044,10 +2002,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Create the TYPE expression
 		queryExpression = queryExpression.type();
 
-		// This will tell visit(IdentificationVariable) to create a ConstantExpression
-		// if this is part of a comparison expression
-		typeExpression = true;
-
 		// Note: The type will be calculated when traversing the select expression
 	}
 
@@ -2204,6 +2158,46 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
+	 * This visitor makes sure to properly handle an entity type literal being parsed as an
+	 * identification variable.
+	 */
+	private class ComparisonExpressionVisitor extends EclipseLinkAnonymousExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+
+			boolean found = false;
+
+			if (!expression.isVirtual()) {
+
+				ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
+
+				// Entity type name
+				if (descriptor != null) {
+					type[0] = descriptor.getJavaClass();
+					queryExpression = new ConstantExpression(type[0], queryContext.getBaseExpression());
+					found = true;
+				}
+			}
+
+			if (!found) {
+				expression.accept(ExpressionBuilderVisitor.this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+			expression.accept(ExpressionBuilderVisitor.this);
+		}
+	}
+
+	/**
 	 * This visitor takes care of creating the left expression of an <code><b>IN</b></code> expression
 	 * and make sure to support nested arrays.
 	 */
@@ -2246,7 +2240,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * This visitor takes care of creating the <code><b>IN</b></code> expression by visiting the items.
 	 */
-	private class InExpressionBuilder extends AnonymousExpressionVisitor {
+	private class InExpressionBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
 		private boolean hasNot;
 		private Expression leftExpression;
@@ -2278,6 +2272,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			}
 			else {
 				queryExpression = leftExpression.in(expressions);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+
+			boolean found = false;
+
+			if (!expression.isVirtual()) {
+
+				ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
+
+				// Entity type name
+				if (descriptor != null) {
+					type[0] = descriptor.getJavaClass();
+					queryExpression = new ConstantExpression(type[0], queryContext.getBaseExpression());
+					found = true;
+				}
+			}
+
+			if (!found) {
+				expression.accept(ExpressionBuilderVisitor.this);
 			}
 		}
 

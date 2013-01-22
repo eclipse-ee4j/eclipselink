@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.CollectionValuedPathExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.StateFieldPathExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryDeclaration.Type;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -3192,6 +3190,26 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		validateWhereClause(expression);
 	}
 
+	/**
+	 * This visitor is meant to retrieve an {@link CollectionValuedPathExpression} if the visited
+	 * {@link Expression} is that object.
+	 */
+	protected static class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link CollectionValuedPathExpression} that was visited; <code>null</code> if he was not.
+		 */
+		protected CollectionValuedPathExpression expression;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			this.expression = expression;
+		}
+	}
+
 	protected class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
 
 		protected IdentificationVariable expression;
@@ -3396,6 +3414,26 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		 * This will allow basic fields to be specified but association mappings are not valid.
 		 */
 		BASIC_FIELD_ONLY
+	}
+
+	/**
+	 * This visitor is meant to retrieve an {@link StateFieldPathExpressionVisitor} if the visited
+	 * {@link Expression} is that object.
+	 */
+	protected static class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link StateFieldPathExpression} that was visited; <code>null</code> if it was not.
+		 */
+		protected StateFieldPathExpression expression;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpression expression) {
+			this.expression = expression;
+		}
 	}
 
 	protected class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {

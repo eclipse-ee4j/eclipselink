@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,10 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.model.AllEclipseLinkStateObjectTest2_1;
-import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest1_0;
-import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest2_0;
-import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllEclipseLinkStateObjectTest2_1;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTest1_0;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTest2_0;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllContentAssistTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllJPQLQueryHelperTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllRefactoringToolTests;
 import org.eclipse.persistence.jpa.tests.jpql.parser.AllJPQLParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;

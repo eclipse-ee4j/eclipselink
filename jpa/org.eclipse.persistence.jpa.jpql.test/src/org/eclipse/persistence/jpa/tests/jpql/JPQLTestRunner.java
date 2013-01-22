@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryFormatterTestHelper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,11 +27,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryFormatterTestHelper;
+import org.eclipse.persistence.jpa.jpql.tools.model.AbstractActualJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.tools.model.BaseJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.junit.internal.builders.AllDefaultPossibilitiesBuilder;
 import org.junit.internal.runners.ErrorReportingRunner;

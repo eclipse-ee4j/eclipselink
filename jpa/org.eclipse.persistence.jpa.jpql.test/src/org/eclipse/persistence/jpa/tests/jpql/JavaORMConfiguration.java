@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,13 +19,13 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.eclipse.persistence.jpa.jpql.spi.IEntity;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.spi.IMappingBuilder;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
-import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IMappingBuilder;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IQuery;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
+import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.tools.spi.java.JavaQuery;
 import org.junit.Assert;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;

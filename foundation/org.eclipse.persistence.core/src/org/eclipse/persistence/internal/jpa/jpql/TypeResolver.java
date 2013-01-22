@@ -30,7 +30,7 @@ import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAcc
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
-import org.eclipse.persistence.jpa.jpql.ResolverBuilder;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -1106,8 +1106,8 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 
 			// Long value
 			// Integer value
-			if (ResolverBuilder.LONG_REGEXP   .matcher(text).matches() ||
-			    ResolverBuilder.INTEGER_REGEXP.matcher(text).matches()) {
+			if (ExpressionTools.LONG_REGEXP   .matcher(text).matches() ||
+			    ExpressionTools.INTEGER_REGEXP.matcher(text).matches()) {
 
 				Long value = Long.parseLong(text);
 
@@ -1119,11 +1119,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 				}
 			}
 			// Float
-			else if (ResolverBuilder.FLOAT_REGEXP.matcher(text).matches()) {
+			else if (ExpressionTools.FLOAT_REGEXP.matcher(text).matches()) {
 				type = Float.class;
 			}
 			// Decimal
-			else if (ResolverBuilder.DOUBLE_REGEXP.matcher(text).matches()) {
+			else if (ExpressionTools.DOUBLE_REGEXP.matcher(text).matches()) {
 				type = Double.class;
 			}
 		}

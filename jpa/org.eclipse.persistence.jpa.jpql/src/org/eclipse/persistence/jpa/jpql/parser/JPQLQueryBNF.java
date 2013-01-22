@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,9 +19,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.persistence.jpa.jpql.util.filter.Filter;
-import org.eclipse.persistence.jpa.jpql.util.filter.NullFilter;
-import org.eclipse.persistence.jpa.jpql.util.iterable.ArrayIterable;
+import org.eclipse.persistence.jpa.jpql.utility.filter.Filter;
+import org.eclipse.persistence.jpa.jpql.utility.filter.NullFilter;
+import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
 
 /**
  * <p>This defines a single Backus-Naur Form (BNF) of the JPQL grammar. The Java Persistence functional

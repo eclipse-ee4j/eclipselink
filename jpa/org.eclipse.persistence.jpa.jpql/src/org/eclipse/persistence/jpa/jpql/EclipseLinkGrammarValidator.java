@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.AbstractEclipseLinkSemanticValidator.EclipseLinkOwningClauseVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
@@ -648,24 +649,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		// Validate the subquery
 		else {
 			expression.getQuery().accept(this);
-		}
-	}
-
-	protected static class EclipseLinkOwningClauseVisitor extends OwningClauseVisitor {
-
-		protected UnionClause unionClause;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected void dispose() {
-			super.dispose();
-			unionClause = null;
-		}
-
-		public void visit(UnionClause expression) {
-			this.unionClause = expression;
 		}
 	}
 

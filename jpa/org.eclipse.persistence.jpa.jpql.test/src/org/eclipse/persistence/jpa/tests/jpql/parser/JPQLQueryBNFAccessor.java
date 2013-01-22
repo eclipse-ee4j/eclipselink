@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -36,7 +36,7 @@ import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.util.iterable.ArrayIterable;
+import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
 
 /**
  * This accessor is used to easily retrieve the JPQL identifiers registered with various {@link

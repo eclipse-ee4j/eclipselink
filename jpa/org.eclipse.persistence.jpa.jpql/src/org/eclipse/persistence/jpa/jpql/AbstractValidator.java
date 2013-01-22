@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,8 +48,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
+import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 
 /**
  * The abstract definition of a validator, which provides helper methods and visitors.
@@ -700,7 +699,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * This visitor is responsible to traverse the children of a {@link CollectionExpression} in
 	 * order to properly validate the {@link Expression}.
 	 */
-	protected static class BypassChildCollectionExpressionVisitor extends AnonymousExpressionVisitor {
+	public static class BypassChildCollectionExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * The visitor that will visit the {@link Expression}.
@@ -748,7 +747,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * This visitor is responsible to traverse the parent hierarchy and to skip {@link SubExpression}
 	 * if it's a parent.
 	 */
-	protected static class BypassParentSubExpressionVisitor extends AnonymousExpressionVisitor {
+	public static class BypassParentSubExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * The {@link ExpressionVisitor} that will visit the {@link Expression}.
@@ -783,12 +782,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * This visitor gathers the children of a {@link CollectionExpression} or a single visited
 	 * {@link Expression}.
 	 */
-	protected static class ChildrenCollectorVisitor extends AnonymousExpressionVisitor {
+	public static class ChildrenCollectorVisitor extends AnonymousExpressionVisitor {
 
 		/**
 		 * The unique {@link Expression} that was visited or the children of {@link CollectionExpression}.
 		 */
 		protected List<Expression> expressions;
+
+		/**
+		 * Creates a new <code>ChildrenCollectorVisitor</code>.
+		 */
+		public ChildrenCollectorVisitor() {
+			super();
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -818,7 +824,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	/**
 	 * This visitor validates any {@link Expression} by checking its BNF against some BNFs.
 	 */
-	protected static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
+	public static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
 
 		/**
 		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
@@ -836,7 +842,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		 *
 		 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid
 		 */
-		protected JPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
+		public JPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
 			super();
 			this.queryBNF = queryBNF;
 		}
@@ -964,7 +970,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	/**
 	 * This visitor retrieves the clause owning the visited {@link Expression}.
 	 */
-	protected static class OwningClauseVisitor extends AbstractTraverseParentVisitor {
+	public static class OwningClauseVisitor extends AbstractTraverseParentVisitor {
 
 		public DeleteClause deleteClause;
 		public FromClause fromClause;
@@ -987,7 +993,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 * Disposes the internal data.
 		 */
-		protected void dispose() {
+		public void dispose() {
 			deleteClause       = null;
 			fromClause         = null;
 			groupByClause      = null;

@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
-import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
-import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
+import org.eclipse.persistence.jpa.jpql.utility.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.utility.iterable.SnapshotCloneListIterable;
 
 /**
  * An identification variable followed by the navigation operator (.) and a state field or

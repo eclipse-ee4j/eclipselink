@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
+import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
@@ -25,7 +26,6 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
  * This utility class provides an easy way of creating a list of {@link JPQLGrammar}, which is

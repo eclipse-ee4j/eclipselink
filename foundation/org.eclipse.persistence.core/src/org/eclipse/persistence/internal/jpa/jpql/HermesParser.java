@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,8 +24,6 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidatorExtension;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -60,7 +58,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see JPQLExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author John Bracken
  * @author Pascal Filion
@@ -334,10 +332,7 @@ public final class HermesParser implements JPAQueryBuilder {
 			}
 
 			// Validate the JPQL query semantically (contextually)
-			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(
-				new EclipseLinkSemanticValidatorHelper(queryContext),
-				EclipseLinkSemanticValidatorExtension.NULL_EXTENSION
-			);
+			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(queryContext);
 			semantic.setProblems(problems);
 			expression.accept(semantic);
 

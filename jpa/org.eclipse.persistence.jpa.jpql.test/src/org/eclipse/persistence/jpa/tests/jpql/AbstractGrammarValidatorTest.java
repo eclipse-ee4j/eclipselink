@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunctionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
@@ -26,7 +27,6 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;

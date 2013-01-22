@@ -1,13 +1,13 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.model.DefaultActualJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.DefaultJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
-import org.eclipse.persistence.jpa.jpql.model.query.JPQLQueryStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.jpql.tools.model.DefaultActualJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.tools.model.DefaultJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryFormatter;
+import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryFormatter.IdentifierStyle;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.JPQLQueryStateObject;
+import org.eclipse.persistence.jpa.jpql.tools.model.query.SelectStatementStateObject;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

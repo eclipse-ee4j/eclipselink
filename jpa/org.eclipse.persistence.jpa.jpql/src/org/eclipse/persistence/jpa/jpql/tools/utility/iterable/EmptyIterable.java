@@ -1,0 +1,82 @@
+/*******************************************************************************
+ * Copyright (c) 2008, 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Oracle - initial API and implementation
+ *
+ ******************************************************************************/
+package org.eclipse.persistence.jpa.jpql.tools.utility.iterable;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import org.eclipse.persistence.jpa.jpql.tools.utility.iterator.EmptyIterator;
+
+/**
+ * An <code>EmptyIterable</code> is just that. Maybe just a touch better-performing than {@link
+ * java.util.Collections#EMPTY_SET} since we don't create a new {@link Iterator} every time {@link
+ * #iterator()} is called. (Not sure why they do that....)
+ *
+ * @param <E> the type of elements returned by the iterable's iterator
+ *
+ * @see EmptyIterator
+ * @see EmptyListIterable
+ *
+ * @version 2.5
+ * @since 2.5
+ */
+@SuppressWarnings("nls")
+public final class EmptyIterable<E> implements Iterable<E>, Serializable {
+
+	/**
+	 * The singleton instance of this <code>EmptyIterable</code>.
+	 */
+	private static final Iterable<Object> INSTANCE = new EmptyIterable<Object>();
+
+	/**
+	 * The serial version UID of this class.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Creates a new <code>EmptyIterable</code> and insures single instance.
+	 */
+	private EmptyIterable() {
+		super();
+	}
+
+	/**
+	 * Return the singleton instance of this {@link Iterable}.
+	 *
+	 * @return The singleton instance
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Iterable<T> instance() {
+		return (Iterable<T>) INSTANCE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterator<E> iterator() {
+		return EmptyIterator.instance();
+	}
+
+	private Object readResolve() {
+		// Replace this object with the singleton
+		return INSTANCE;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "[]";
+	}
+}

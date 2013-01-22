@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -144,7 +144,7 @@ public interface SemanticValidatorHelper {
 	 * <p>
 	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
 	 * persistence.jpa.jpql.spi.IManagedType IManagedType} and the return type would be {@link
-	 * org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping}.
+	 * org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
 	 *
 	 * @param managedType The managed type that has a mapping with the given name
 	 * @param name The name of the mapping to retrieve
@@ -170,7 +170,7 @@ public interface SemanticValidatorHelper {
 	 * <p>
 	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
 	 * persistence.jpa.jpql.spi.IConstructor IConstructor} and the return type would be {@link
-	 * org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration ITypeDeclaration}.
+	 * org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration ITypeDeclaration}.
 	 *
 	 * @param constructor The constructor to return its parameter types
 	 * @return The list of parameter types or an empty list
@@ -182,7 +182,7 @@ public interface SemanticValidatorHelper {
 	 * <p>
 	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
 	 * persistence.jpa.jpql.spi.IMapping IMapping} and the return type would be {@link
-	 * org.eclipse.persistence.jpa.jpql.spi.IManagedType IManagedType}.
+	 * org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType IManagedType}.
 	 *
 	 * @param relationshipMapping The relationship mapping
 	 * @return The managed type referenced by the given relationship mapping
@@ -206,7 +206,7 @@ public interface SemanticValidatorHelper {
 	 * <p>
 	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
 	 * persistence.jpa.jpql.spi.ITypeDeclaration ITypeDeclaration} and the return type would be
-	 * {@link org.eclipse.persistence.jpa.jpql.spi.IType IType}.
+	 * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType IType}.
 	 *
 	 * @return The type defined for the Java member
 	 */
@@ -215,7 +215,7 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Retrieves the class with the given fully qualified name.
 	 * <p>
-	 * If it was going through Hermes SPI, an {@link org.eclipse.persistence.jpa.jpql.spi.IType
+	 * If it was going through Hermes SPI, an {@link org.eclipse.persistence.jpa.jpql.tools.spi.IType
 	 * IType} would be returned.
 	 *
 	 * @param typeName The fully qualified  name of the class to retrieve
