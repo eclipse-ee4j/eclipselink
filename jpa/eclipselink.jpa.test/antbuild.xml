@@ -110,6 +110,7 @@
     <property name="jpatest.2.oracle.dir"           value="${jpatest.2.base.dir}/foundation/org.eclipse.persistence.oracle"/>
     <property name="jpatest.2.oracletest.dir"       value="${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.test"/>
     <property name="jpatest.2.oracle.nosqltest.dir" value="${jpatest.2.base.dir}/foundation/eclipselink.extension.oracle.nosql.test"/>
+    <property name="jpatest.2.sdo.plugins.dir"      value="${jpatest.2.base.dir}/sdo/plugins"/>
 
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
@@ -127,6 +128,7 @@
     <echo message="jpatest.2.coretest.dir       = '${jpatest.2.coretest.dir}'"/>
     <echo message="jpatest.2.oracle.dir         = '${jpatest.2.oracle.dir}'"/>
     <echo message="jpatest.2.oracletest.dir     = '${jpatest.2.oracletest.dir}'"/>
+    <echo message="jpatest.2.sdo.plugins.dir    = '${jpatest.2.sdo.plugins.dir}' (for GF)"/>
 
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
@@ -459,14 +461,14 @@
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
         <echo message="   'compile.path'"/>
-        <echo message="   '${jpatest.2.jpa.plugins.dir}/${resource.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${resource.jar}'"/>
         <echo message="   '${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}'"/>
         <echo message="   '../../../extension.lib.external/mongo.jar'"/>
         <echo message="  "/>
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${jpatest.2.jpa.plugins.dir}/${resource.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${resource.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
