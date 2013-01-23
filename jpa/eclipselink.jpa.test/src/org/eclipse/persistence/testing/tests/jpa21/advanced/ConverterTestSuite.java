@@ -18,6 +18,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -57,11 +59,6 @@ public class ConverterTestSuite extends JUnitTestCase {
         super(name);
     }
     
-    public void setUp () {
-        super.setUp();
-        clearCache();
-    }
-    
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("ConverterTestSuite");
@@ -78,7 +75,7 @@ public class ConverterTestSuite extends JUnitTestCase {
      * Test that an attribute picks up an auto apply converter. 
      */
     public void testAutoApplyConverter() {
-        ServerSession session = JUnitTestCase.getServerSession();
+        ServerSession session = getPersistenceUnitServerSession();
         
         ClassDescriptor employeeDescriptor = session.getDescriptor(Employee.class);
         DirectToFieldMapping salaryMapping = (DirectToFieldMapping) employeeDescriptor.getMappingForAttributeName("salary");

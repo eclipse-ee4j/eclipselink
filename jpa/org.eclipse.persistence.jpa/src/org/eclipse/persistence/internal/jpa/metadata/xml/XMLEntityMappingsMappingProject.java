@@ -79,6 +79,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/22/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1001,7 +1003,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getTypeNameAttributeMapping());
+        descriptor.addMapping(getClassTypeAttributeMapping());
         
         return descriptor;
     }
@@ -3137,19 +3139,16 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(StoredProcedureParameterMetadata.class);
         
+        // Element mappings - must remain in order of definition in XML.
+        
         // Attribute mappings.
         descriptor.addMapping(getDirectionAttributeMapping());
         descriptor.addMapping(getModeAttributeMapping());
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getQueryParameterAttributeMapping());
         descriptor.addMapping(getOptionalAttributeMapping());
-        
-        XMLDirectMapping typeMapping = new XMLDirectMapping();
-        typeMapping.setAttributeName("m_typeName");
-        typeMapping.setGetMethodName("getTypeName");
-        typeMapping.setSetMethodName("setTypeName");
-        typeMapping.setXPath("@type");
-        descriptor.addMapping(typeMapping);
+        descriptor.addMapping(getTypeNameAttributeMapping());
+        descriptor.addMapping(getClassTypeAttributeMapping());
         
         XMLDirectMapping jdbcTypeMapping = new XMLDirectMapping();
         jdbcTypeMapping.setAttributeName("m_jdbcType");
@@ -3934,6 +3933,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         classExtractorMapping.setSetMethodName("setClassExtractorName");
         classExtractorMapping.setXPath("orm:class-extractor/@class");
         return classExtractorMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getClassTypeAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_typeName");
+        mapping.setGetMethodName("getTypeName");
+        mapping.setSetMethodName("setTypeName");
+        mapping.setXPath("@class");
+        return mapping;
     }
     
     /**

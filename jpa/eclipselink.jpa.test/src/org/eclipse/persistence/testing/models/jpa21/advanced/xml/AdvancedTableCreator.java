@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,20 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     10/09/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
- *     11/19/2012-2.5 Guy Pelletier 
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/28/2012-2.5 Guy Pelletier 
- *       - 374688: JPA 2.1 Converter support
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa21.advanced;
+package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -34,7 +24,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 public class AdvancedTableCreator extends TogglingFastTableCreator {
     public AdvancedTableCreator() {
-        setName("JPA21EmployeeProject");
+        setName("JPA21XMLEmployeeProject");
 
         addTableDefinition(buildADDRESSTable());
         addTableDefinition(buildDEPTTable());
@@ -59,10 +49,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSHOETAGTable());
         addTableDefinition(buildSPRINTERTable());
     }
-    
+        
     public TableDefinition buildADDRESSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_ADDRESS");
+        table.setName("JPA21_XML_ADDRESS");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("ADDRESS_ID");
@@ -156,28 +146,28 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildDEPT_EMPTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_DEPT_JPA21_EMPLOYEE");
+        table.setName("JPA21_XML_DEPT_EMP");
 
         FieldDefinition field = new FieldDefinition();
-        field.setName("Department_DEPT_ID");
+        field.setName("DEPT_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_DEPT.ID");
+        field.setForeignKeyFieldName("JPA21_XML_DEPT.ID");
         table.addField(field);
         
         field = new FieldDefinition();
-        field.setName("managers_EMP_ID");
+        field.setName("MANAGERS_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
         
         return table;   
@@ -185,7 +175,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildDEPTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_DEPT");
+        table.setName("JPA21_XML_DEPT");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -222,10 +212,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-
+    
     public TableDefinition buildEMPLOYEETable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_EMPLOYEE");
+        table.setName("JPA21_XML_EMPLOYEE");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -295,7 +285,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_ADDRESS.ADDRESS_ID");
+        field.setForeignKeyFieldName("JPA21_XML_ADDRESS.ADDRESS_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -306,7 +296,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -327,7 +317,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_DEPT.ID");
+        field.setForeignKeyFieldName("JPA21_XML_DEPT.ID");
         table.addField(field);
         
         field = new FieldDefinition();
@@ -345,7 +335,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildENDORSEMENTSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_ENDORSEMENTS");
+        table.setName("JPA21_XML_ENDORSEMENTS");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ATHLETE_ID");
@@ -355,7 +345,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(true);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
         
         field = new FieldDefinition();
@@ -366,7 +356,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(true);
-        field.setForeignKeyFieldName("JPA21_ENDORSER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_ENDORSER.ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -381,10 +371,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-    
+
     public TableDefinition buildENDORSERTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_ENDORSER");
+        table.setName("JPA21_XML_ENDORSER");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -408,10 +398,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-    
+
     public TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_LPROJECT");
+        table.setName("JPA21_XML_LPROJECT");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("PROJ_ID");
@@ -421,7 +411,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_PROJECT.PROJ_ID");
+        field.setForeignKeyFieldName("JPA21_XML_PROJECT.PROJ_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -439,7 +429,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildORGANIZERTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_ORGANIZER");
+        table.setName("JPA21_XML_ORGANIZER");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -469,7 +459,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_RACE.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RACE.ID");
         table.addField(field);
         
         field = new FieldDefinition();
@@ -497,7 +487,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildPHONENUMBERTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_PHONENUMBER");
+        table.setName("JPA21_XML_PHONENUMBER");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("OWNER_ID");
@@ -507,7 +497,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -545,7 +535,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
     public TableDefinition buildPROJECT_EMPTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_EMP_PROJ");
+        table.setName("JPA21_XML_EMP_PROJ");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("EMPLOYEES_EMP_ID");
@@ -555,7 +545,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -566,15 +556,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_PROJECT.PROJ_ID");
+        field.setForeignKeyFieldName("JPA21_XML_PROJECT.PROJ_ID");
         table.addField(field);
 
         return table;
     }
-
+    
     public TableDefinition buildPROJECT_PROPSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_PROJ_PROPS");
+        table.setName("JPA21_XML_PROJ_PROPS");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("PROJ_ID");
@@ -584,7 +574,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_PROJECT.PROJ_ID");
+        field.setForeignKeyFieldName("JPA21_XML_PROJECT.PROJ_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -602,7 +592,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildPROJECTTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_PROJECT");
+        table.setName("JPA21_XML_PROJECT");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("PROJ_ID");
@@ -652,7 +642,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -670,7 +660,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
     public TableDefinition buildRACETable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RACE");
+        table.setName("JPA21_XML_RACE");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -697,7 +687,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildRESPONSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RESPONS");
+        table.setName("JPA21_XML_RESPONS");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -707,7 +697,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -722,10 +712,10 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
         return table;
     }
-
+    
     public TableDefinition buildRUNNER_ACSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNER_ACS");
+        table.setName("JPA21_XML_RUNNER_ACS");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ATHLETE_ID");
@@ -735,7 +725,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -763,7 +753,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildRUNNER_PBSTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNER_PBS");
+        table.setName("JPA21_XML_RUNNER_PBS");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("RUNNER_ID");
@@ -773,7 +763,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
     
         field = new FieldDefinition();
@@ -801,7 +791,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildRUNNERS_RACESTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNERS_RACES");
+        table.setName("RUNNERS_RACES");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("RUNNER_ID");
@@ -811,7 +801,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
         
         field = new FieldDefinition();
@@ -822,15 +812,15 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(false);
         field.setUnique(false);
         field.setIsIdentity(false);
-        field.setForeignKeyFieldName("JPA21_RACE.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RACE.ID");
         table.addField(field);
-            
+        
         return table;
     }
     
     public TableDefinition buildRUNNERTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_RUNNER");
+        table.setName("JPA21_XML_RUNNER");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -927,7 +917,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildSALARYTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_SALARY");
+        table.setName("JPA21_XML_SALARY");
 
         FieldDefinition field = new FieldDefinition();
         field.setName("EMP_ID");
@@ -938,7 +928,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setUnique(false);
         field.setShouldAllowNull(false);
-        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
         table.addField(field);
 
         field = new FieldDefinition();
@@ -968,7 +958,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildSHOETable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_SHOE");
+        table.setName("JPA21_XML_SHOE");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -1018,7 +1008,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(false);
         field.setShouldAllowNull(true);
-        field.setForeignKeyFieldName("JPA21_SHOE_TAG.ID");
+        field.setForeignKeyFieldName("JPA21_XML_SHOE_TAG.ID");
         table.addField(field);
         
         field = new FieldDefinition();
@@ -1029,7 +1019,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(false);
         field.setShouldAllowNull(true);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
         
         return table;
@@ -1037,7 +1027,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildSHOETAGTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_SHOE_TAG");
+        table.setName("JPA21_XML_SHOE_TAG");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("ID");
@@ -1064,7 +1054,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
     
     public TableDefinition buildSPRINTERTable() {
         TableDefinition table = new TableDefinition();
-        table.setName("JPA21_SPRINTER");
+        table.setName("JPA21_XML_SPRINTER");
     
         FieldDefinition field = new FieldDefinition();
         field.setName("SPRINTER_ID");
@@ -1074,7 +1064,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsPrimaryKey(true);
         field.setUnique(false);
         field.setIsIdentity(true);
-        field.setForeignKeyFieldName("JPA21_RUNNER.ID");
+        field.setForeignKeyFieldName("JPA21_XML_RUNNER.ID");
         table.addField(field);
     
         return table;

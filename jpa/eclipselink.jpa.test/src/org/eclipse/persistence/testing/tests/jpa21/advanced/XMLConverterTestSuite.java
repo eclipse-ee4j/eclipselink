@@ -14,6 +14,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -38,18 +40,18 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerInfo;
 import org.eclipse.persistence.testing.models.jpa21.advanced.xml.RunnerStatus;
 
 public class XMLConverterTestSuite extends JUnitTestCase {
-    protected static final String XML_PU = "xml-default";
-
     public XMLConverterTestSuite() {}
     
     public XMLConverterTestSuite(String name) {
         super(name);
     }
     
+    /**
+     * Return the the persistence unit name for this test suite.
+     */
     @Override
-    public void setUp () {
-        super.setUp();
-        clearCache();
+    public String getPersistenceUnitName() {
+        return "xml-default";
     }
     
     public static Test suite() {
@@ -65,7 +67,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
      * Test that converters are set.
      */
     public void testXMLConverters() {
-        EntityManager em = createEntityManager(XML_PU);
+        EntityManager em = createEntityManager();
             
         try {
             beginTransaction(em);
@@ -107,7 +109,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
                 
             // Clear the cache
             em.clear();
-            clearCache(XML_PU);
+            clearCache();
     
             Runner runnerRefreshed = em.find(Runner.class, runner.getId());
             assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);

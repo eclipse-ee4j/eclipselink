@@ -10,14 +10,14 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import static org.eclipse.persistence.annotations.ExistenceType.ASSUME_NON_EXISTENCE;
 
 @Entity
 @Table(name="JPA21_LPROJECT")

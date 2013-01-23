@@ -14,6 +14,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -54,8 +56,6 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 public class XMLForeignKeyTestSuite extends JUnitTestCase {
-    protected static final String XML_DDL_PU = "xml-ddl";
-    
     public XMLForeignKeyTestSuite() {}
     
     public XMLForeignKeyTestSuite(String name) {
@@ -70,10 +70,12 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
         assertTrue("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was set as [" + constraint.getForeignKeyDefinition() + " ], but was expecting [" + definition + " ]", constraint.getForeignKeyDefinition().equals(definition));
     }
     
+    /**
+     * Return the the persistence unit name for this test suite.
+     */
     @Override
-    public void setUp () {
-        super.setUp();
-        clearCache();
+    public String getPersistenceUnitName() {
+        return "xml-ddl";
     }
     
     public static Test suite() {
@@ -96,7 +98,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests an inheritance primary key foreign key setting. 
      */
     public void testInheritancePrimaryKeyForeignKey() {
-        ClassDescriptor sprinterDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Sprinter.class);
+        ClassDescriptor sprinterDescriptor = getPersistenceUnitServerSession().getDescriptor(Sprinter.class);
         DatabaseTable table = sprinterDescriptor.getTable("JPA21_XML_DDL_SPRINTER");
         
         assertForeignKeyConstraint("XML_Sprinter_Foreign_Key", "FOREIGN KEY (SPRINTER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
@@ -106,7 +108,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests an inheritance primary key foreign key setting. 
      */
     public void testCollectionTableForeignKey() {
-        ClassDescriptor runnerDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Runner.class);
+        ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         DirectCollectionMapping mapping = (DirectCollectionMapping) runnerDescriptor.getMappingForAttributeName("personalBests");
         DatabaseTable table = mapping.getReferenceTable();
         
@@ -117,7 +119,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests a join table foreign key settings. 
      */
     public void testJoinTableForeignKeys() {
-        ClassDescriptor runnerDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Runner.class);
+        ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         ManyToManyMapping mapping = (ManyToManyMapping) runnerDescriptor.getMappingForAttributeName("races");
         DatabaseTable table = mapping.getRelationTable();
         
@@ -129,7 +131,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests a map key foreign key setting. 
      */
     public void testMapKeyForeignKey() {
-        ClassDescriptor runnerDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Runner.class);
+        ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         OneToManyMapping mapping = (OneToManyMapping) runnerDescriptor.getMappingForAttributeName("shoes");
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = keyMapping.getForeignKeyFields().get(0).getTable();
@@ -141,13 +143,13 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests a many to one foreign key setting. 
      */
     public void testManyToOneForeignKey() {
-        ClassDescriptor shoeDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Shoe.class);
+        ClassDescriptor shoeDescriptor = getPersistenceUnitServerSession().getDescriptor(Shoe.class);
         OneToOneMapping mapping = (OneToOneMapping) shoeDescriptor.getMappingForAttributeName("runner");
         DatabaseTable table = mapping.getForeignKeyFields().get(0).getTable();
         
         assertForeignKeyConstraint("XMLShoes_Runner_Foreign_Key", "FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)", table);
         
-        ClassDescriptor organizerDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Organizer.class);
+        ClassDescriptor organizerDescriptor = getPersistenceUnitServerSession().getDescriptor(Organizer.class);
         mapping = (OneToOneMapping) organizerDescriptor.getMappingForAttributeName("race");
         table = mapping.getForeignKeyFields().get(0).getTable();
         
@@ -158,7 +160,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
      * Tests an element collection foreign key settings.
      */
     public void testElementCollectionForeignKeys() {
-        ClassDescriptor runnerDescriptor = JUnitTestCase.getServerSession(XML_DDL_PU).getDescriptor(Runner.class);
+        ClassDescriptor runnerDescriptor = getPersistenceUnitServerSession().getDescriptor(Runner.class);
         DirectMapMapping mapping = (DirectMapMapping) runnerDescriptor.getMappingForAttributeName("endorsements");
         OneToOneMapping keyMapping = (OneToOneMapping) ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getKeyMapping();
         DatabaseTable table = mapping.getReferenceTable();
@@ -182,7 +184,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
     public void testReadAndWriteDDLObjects() {
         // Load scripts for this PU are built for MySql
         if (getPlatform().isMySQL()) {
-            EntityManager em = createEntityManager(XML_DDL_PU);
+            EntityManager em = createEntityManager();
                 
             try {
                 beginTransaction(em);
@@ -224,7 +226,7 @@ public class XMLForeignKeyTestSuite extends JUnitTestCase {
                     
                 // Clear the cache
                 em.clear();
-                clearCache(XML_DDL_PU);
+                clearCache();
         
                 Runner runnerRefreshed = em.find(Runner.class, runner.getId());
                 assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);

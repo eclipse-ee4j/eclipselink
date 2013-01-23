@@ -941,47 +941,34 @@
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
-      <xsd:element name="sequence-generator" type="orm:sequence-generator" 
-                   minOccurs="0"/>
-      <xsd:element name="table-generator" type="orm:table-generator" 
-                   minOccurs="0"/>
-      <xsd:element name="uuid-generator" type="orm:uuid-generator" 
-                   minOccurs="0"/>
+      <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
+      <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
+      <xsd:element name="uuid-generator" type="orm:uuid-generator" minOccurs="0"/>
       <xsd:group ref="orm:partitioning-group"/>
-      <xsd:element name="named-query" type="orm:named-query" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="named-native-query" type="orm:named-native-query" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-query" type="orm:named-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-native-query" type="orm:named-native-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-stored-procedure-query" type="orm:named-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="sql-result-set-mapping" 
-                   type="orm:sql-result-set-mapping" 
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="query-redirectors" type="orm:query-redirectors" minOccurs="0" maxOccurs="1"/>
-      <xsd:element name="exclude-default-listeners" type="orm:emptyType" 
-                   minOccurs="0"/>
-      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" 
-                   minOccurs="0"/>
-      <xsd:element name="entity-listeners" type="orm:entity-listeners" 
-                   minOccurs="0"/>
+      <xsd:element name="exclude-default-listeners" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="exclude-superclass-listeners" type="orm:emptyType" minOccurs="0"/>
+      <xsd:element name="entity-listeners" type="orm:entity-listeners" minOccurs="0"/>
       <xsd:element name="pre-persist" type="orm:pre-persist" minOccurs="0"/>
-      <xsd:element name="post-persist" type="orm:post-persist" 
-                   minOccurs="0"/>
+      <xsd:element name="post-persist" type="orm:post-persist" minOccurs="0"/>
       <xsd:element name="pre-remove" type="orm:pre-remove" minOccurs="0"/>
       <xsd:element name="post-remove" type="orm:post-remove" minOccurs="0"/>
       <xsd:element name="pre-update" type="orm:pre-update" minOccurs="0"/>
       <xsd:element name="post-update" type="orm:post-update" minOccurs="0"/>
       <xsd:element name="post-load" type="orm:post-load" minOccurs="0"/>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="attribute-override" type="orm:attribute-override" 
-                   minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="association-override" 
-                   type="orm:association-override"
-                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="convert" type="orm:convert" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -2109,7 +2096,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
-    <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="class" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
@@ -3655,10 +3642,13 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="result-class" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="result-set-mapping" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="parameter" type="orm:stored-procedure-parameter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="result-class" type="xsd:string"/>
+        <xsd:element name="result-set-mapping" type="xsd:string"/>
+        <xsd:element name="hint" type="orm:query-hint"/>
+        <xsd:element name="parameter" type="orm:stored-procedure-parameter"/>
+      </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
     <xsd:attribute name="result-class" type="xsd:string"/>
@@ -4853,12 +4843,16 @@
 
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="direction" type="orm:direction-type"/>
     <xsd:attribute name="mode" type="orm:parameter-mode"/>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
     <xsd:attribute name="optional" type="xsd:boolean"/>
     <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="class" type="xsd:string"/>
     <xsd:attribute name="jdbc-type" type="xsd:integer"/>
     <xsd:attribute name="jdbc-type-name" type="xsd:string"/>
   </xsd:complexType>

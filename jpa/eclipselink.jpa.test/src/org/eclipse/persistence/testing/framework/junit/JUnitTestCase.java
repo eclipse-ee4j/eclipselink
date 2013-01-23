@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/17/2010-2.2 Guy Pelletier 
  *       - 329008: Support dynamic context creation without persistence.xml
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework.junit;
 
@@ -463,6 +465,10 @@ public abstract class JUnitTestCase extends TestCase {
     
     public static ServerSession getServerSession(String persistenceUnitName, Map properties) {
         return ((org.eclipse.persistence.jpa.JpaEntityManager)getEntityManagerFactory(persistenceUnitName, properties).createEntityManager()).getServerSession();        
+    }
+    
+    public ServerSession getPersistenceUnitServerSession() {
+        return getServerSession(getPersistenceUnitName());
     }
     
     public Map getPersistenceProperties() {

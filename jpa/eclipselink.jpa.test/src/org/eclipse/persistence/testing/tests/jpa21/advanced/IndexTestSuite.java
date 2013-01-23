@@ -10,6 +10,8 @@
  * Contributors:
  *     11/22/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+ *     01/23/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -23,18 +25,18 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 public class IndexTestSuite extends JUnitTestCase {
-    protected static final String DDL_PU = "ddl";
-    
     public IndexTestSuite() {}
     
     public IndexTestSuite(String name) {
         super(name);
     }
     
+    /**
+     * Return the the persistence unit name for this test suite.
+     */
     @Override
-    public void setUp () {
-        super.setUp();
-        clearCache();
+    public String getPersistenceUnitName() {
+        return "ddl";
     }
     
     public static Test suite() {
@@ -53,7 +55,7 @@ public class IndexTestSuite extends JUnitTestCase {
      * mapping issues.
      */
     public void testDDLPersistenceUnit() {
-        EntityManager em = createEntityManager(DDL_PU);
+        EntityManager em = createEntityManager();
             
         try {
             beginTransaction(em);
