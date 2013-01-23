@@ -576,6 +576,8 @@
         <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
         <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence21.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
+        <mkdir dir="${build.dir}/hermes/${classes.dir}"/>
+        <unzip src="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar" dest="${build.dir}/hermes/${classes.dir}"/>
         <jar jarfile="${eclipselink.jar}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
@@ -590,16 +592,22 @@
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
-                <include name="org.eclipse.persistence.jpa.jpql*.jar"/>
+
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
+                <exclude name="*.jpa.jpql*.jar"/>
                 <exclude name="*source*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
+            <!-- Include hermes runtime Only -->
+            <fileset dir="${build.dir}/hermes/${classes.dir}">
+                <include name="**/*"/>
+                <exclude name="**/tools*/**"/>
+            </fileset>
             <!-- JPA 2.0/2.1 concurrent dev solution: New classes from javax.persistence 2.0 & 2.1 -->
             <fileset
                 dir="${build.dir}/javax.persistence/${classes.dir}"
