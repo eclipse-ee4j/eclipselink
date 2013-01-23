@@ -97,6 +97,9 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Used for subselects. */
     protected SQLSelectStatement parentStatement;
+    
+    /** It is used by subselect to re-normalize joins */
+    protected Map<Expression, Expression> optimizedClonedExpressions;
 
     public SQLSelectStatement() {
         this.fields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
@@ -820,6 +823,32 @@ public class SQLSelectStatement extends SQLStatement {
 
     public boolean isSubSelect() {
         return (getParentStatement() != null);
+    }
+    
+    /**
+     * INTERNAL:
+     * It is used by subqueries to avoid duplicate joins. 
+     */
+    public Map<Expression, Expression> getOptimizedClonedExpressions() {
+        // Lazily Initialized only to be used by subqueries.
+        if (optimizedClonedExpressions == null) {
+            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+        }
+        
+        return optimizedClonedExpressions;
+    }
+    
+    /**
+     * INTERNAL:
+     * It is used by subqueries to avoid duplicate joins. 
+     */
+    public void addOptimizedClonedExpressions(Expression originalKey, Expression optimizedValue) {
+        // Lazily Initialized only to be used by subqueries.
+        if (optimizedClonedExpressions == null) {
+            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+        }
+        
+        optimizedClonedExpressions.put(originalKey, optimizedValue);
     }
 
     /**
