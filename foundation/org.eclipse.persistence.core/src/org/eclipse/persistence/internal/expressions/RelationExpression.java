@@ -501,6 +501,10 @@ public class RelationExpression extends CompoundExpression {
         if (first.isQueryKeyExpression()
                 && (((QueryKeyExpression)first).getBaseExpression() != null)
                 && ((QueryKeyExpression)first).getBaseExpression().isQueryKeyExpression()) {
+            // Do not optimize for subselect if it is using parent builder, and needs to clone.
+            if(normalizer.getStatement().isSubSelect() && normalizer.getStatement().getParentStatement().getBuilder().equals(first.getBuilder())) {
+                return null;
+            }
             QueryKeyExpression mappingExpression = (QueryKeyExpression)((QueryKeyExpression)first).getBaseExpression();
             if ((mappingExpression.getBaseExpression() != null)
                     && mappingExpression.getBaseExpression().isObjectExpression()

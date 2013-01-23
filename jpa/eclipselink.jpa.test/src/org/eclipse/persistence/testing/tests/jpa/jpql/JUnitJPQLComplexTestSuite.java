@@ -166,6 +166,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("complexExistsTest");
         tests.add("complexNotExistsTest");
         tests.add("complexExistsSubqueryJoinTest");
+        tests.add("complexMultipleExistsSubqueryTest");
         tests.add("complexInSubqueryJoinTest");
         tests.add("complexInSubqueryJoinInTest");
         tests.add("complexMemberOfTest");
@@ -1639,6 +1640,25 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Assert.assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
 
+    }
+    
+    public void complexMultipleExistsSubqueryTest()
+    {
+        Collection allEmps = getServerSession().readAllObjects(Employee.class);
+        List expectedResult = new ArrayList();
+        for (Iterator i = allEmps.iterator(); i.hasNext();) {
+            Employee e = (Employee)i.next();
+            if (e.getManager() != null) {
+                expectedResult.add(e);
+            }
+        }
+
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT e from Employee e " 
+                + " WHERE EXISTS (SELECT e1.id FROM Employee e1 WHERE e.manager.id = e1.id) "
+                + " OR EXISTS (SELECT e2.id FROM Employee e2 WHERE e.manager.id = e2.manager.id AND e.id <> e2.id)";
+        List result = em.createQuery(ejbqlString).getResultList();
+        Assert.assertTrue("Complex Multiple Exists SubQuery test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexExistsSubqueryJoinTest()
