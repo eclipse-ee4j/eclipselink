@@ -2969,9 +2969,9 @@
 
     <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
 
-    <target name="server-build-xml-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-xml-composite-advanced-jar,server-build-xml-composite-advanced-ear"/>
+    <target name="server-build-xml-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-ejb-xml-composite-advanced-jar,server-build-xml-composite-advanced-ear"/>
 
-    <target name="server-build-xml-extended-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-xml-extended-composite-advanced-jar,server-build-xml-extended-composite-advanced-ear"/>
+    <target name="server-build-xml-extended-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-jpa20-client-jar,server-build-ejb-xml-extended-composite-advanced-jar,server-build-xml-extended-composite-advanced-ear"/>
 
     <target name="server-build-ejb-composite-advanced-jar">
         <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
@@ -3831,6 +3831,7 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-validation">
