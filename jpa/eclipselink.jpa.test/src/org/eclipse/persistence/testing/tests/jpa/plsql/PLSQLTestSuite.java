@@ -20,6 +20,16 @@ import javax.persistence.Query;
 
 import junit.framework.*;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.helper.DatabaseType;
+import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleArray;
+import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLParameter;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
+import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLargument;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.plsql.Address;
@@ -37,7 +47,8 @@ public class PLSQLTestSuite extends JUnitTestCase {
         suite.addTest(new PLSQLTestSuite("testTableOut"));
         suite.addTest(new PLSQLTestSuite("testEmpRecordInOut"));
         suite.addTest(new PLSQLTestSuite("testConsultant"));
-        return suite;
+         suite.addTest(new PLSQLTestSuite("testOracleTypeProcessing"));
+       return suite;
     }
     
     public PLSQLTestSuite(String name) {
@@ -387,6 +398,68 @@ public class PLSQLTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             em.createQuery("Select c from Consultant c").getResultList();
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
+    }
+    
+    /**
+     * Test processing of OracleObject and OracleArray annotations.
+     * 
+     * @see OracleArray
+     * @see OracleObject
+     */
+    public void testOracleTypeProcessing() {
+        if (!getServerSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createNamedQuery("TEST_ORACLE_TYPES");
+            assertNotNull("EntityManager could not create query [TEST_ORACLE_TYPES]", query);
+            assertTrue("Expected EJBQueryImpl but was [" + query.getClass().getName() + "]", query instanceof EJBQueryImpl);
+            DatabaseCall call = ((EJBQueryImpl) query).getDatabaseQuery().getCall();
+            assertNotNull("The DatabaseCall was not set on the query", call);
+            assertTrue("Expected PLSQLStoredProcedureCall but was [" + call.getClass().getName() + "]", call instanceof PLSQLStoredProcedureCall);
+            PLSQLStoredProcedureCall plsqlCall = (PLSQLStoredProcedureCall) call;
+            List<PLSQLargument> args = plsqlCall.getArguments();
+            assertTrue("Expected 2 arguments, but was [" + args.size() + "]", args.size() == 2);
+            boolean foundINArg = false;
+            boolean foundOUTArg = false;
+            for (PLSQLargument arg : args) {
+                if (arg.name.equals("P_IN")) {
+                	foundINArg = true;
+                	assertNotNull("databaseType for arg P_IN is null", arg.databaseType);
+                	assertTrue("Expected arg P_IN to be an OracleArrayType, but was [" + arg.databaseType.getClass().getName() + "]",  arg.databaseType instanceof OracleArrayType);
+                	OracleArrayType arrayType = (OracleArrayType) arg.databaseType;
+                	assertTrue("Expected arg P_IN to have databaseType set with type name VARRAY_NUMERO_UNO, but was [" + arrayType.getTypeName() + "]", arrayType.getTypeName().equals("VARRAY_NUMERO_UNO"));
+                	assertNotNull("Expected VARRAY_NUMERO_UNO to have nested type VARCHAR, but was null", arrayType.getNestedType());
+                	assertTrue("Expected VARRAY_NUMERO_UNO to have nested type VARCHAR, but was [" + arrayType.getNestedType().getTypeName() + "]", arrayType.getNestedType().getTypeName().equals("VARCHAR"));
+                } else if (arg.name.equals("P_OUT")) {
+                	foundOUTArg = true;
+                	assertNotNull("databaseType for arg P_OUT is null", arg.databaseType);
+                	assertTrue("Expected arg P_OUT to be an OracleObjectType, but was [" + arg.databaseType.getClass().getName() + "]",  arg.databaseType instanceof OracleObjectType);
+                	OracleObjectType objectType = (OracleObjectType) arg.databaseType;
+                	assertTrue("Expected arg P_OUT to have databaseType set with type name OBJECT_NUMERO_DOS, but was [" + objectType.getTypeName() + "]", objectType.getTypeName().equals("OBJECT_NUMERO_DOS"));
+                	assertTrue("Expected OBJECT_NUMERO_DOS to have 2 fields, but was [" + objectType.getFields().size() + "]", objectType.getFields().size() == 2);
+                	for (String key : objectType.getFields().keySet()) {
+                		DatabaseType dbType = objectType.getFields().get(key);
+                		if (key.equals("OO_FLD1")) {
+                        	assertTrue("Expected field OO_FLD1 to have databaseType NUMERIC, but was [" + dbType.getTypeName() + "]", dbType.getTypeName().equals("NUMERIC"));
+                		} else if (key.equals("OO_FLD2")) {
+                        	assertTrue("Expected field OO_FLD2 to have databaseType NUMERIC, but was [" + dbType.getTypeName() + "]", dbType.getTypeName().equals("NUMERIC"));
+                		} else {
+                			fail("Expected OBJECT_NUMERO_DOS to have fields OO_FLD1 and OO_FLD2 but encountered field [" + key + "]");
+                		}
+                		
+                	}
+                } else {
+                	fail("Expected arg name to be one of P_IN or P_OUT, but was [" + arg.name + "]");
+                }
+            }
+            assertTrue("IN arg P_IN was not processed", foundINArg);
+            assertTrue("OUT arg P_OUT was not processed", foundOUTArg);
         } finally {
             closeEntityManagerAndTransaction(em);
         }

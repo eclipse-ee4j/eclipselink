@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -65,19 +65,29 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     }
 
     public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
-    	// Validate.
-    	if (!hasCompatibleType()) {
-    		throw QueryException.compatibleTypeNotSet(this);
-    	}
-    	if ((getTypeName() == null) || getTypeName().equals("")) {
-    		throw QueryException.typeNameNotSet(this);
-    	}
+        // Validate.
+        if ((getTypeName() == null) || getTypeName().equals("")) {
+            throw QueryException.typeNameNotSet(this);
+        }
         sb.append("  ");
         sb.append(databaseTypeHelper.buildTarget(inArg));
         sb.append(" ");
         sb.append(getTypeName());
         sb.append(" := :");
         sb.append(inArg.inIndex);
+        sb.append(";");
+        sb.append(NL);
+    }
+    
+    public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
+        // Validate.
+        if ((getTypeName() == null) || getTypeName().equals("")) {
+            throw QueryException.typeNameNotSet(this);
+        }
+        sb.append("  ");
+        sb.append(databaseTypeHelper.buildTarget(outArg));
+        sb.append(" ");
+        sb.append(getTypeName());
         sb.append(";");
         sb.append(NL);
     }

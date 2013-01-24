@@ -81,6 +81,8 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredPro
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
@@ -120,6 +122,8 @@ public class XMLEntityMappings extends ORMetadata {
     private List<NamedStoredFunctionQueryMetadata> m_namedStoredFunctionQueries;
     private List<NamedPLSQLStoredProcedureQueryMetadata> m_namedPLSQLStoredProcedureQueries;
     private List<NamedPLSQLStoredFunctionQueryMetadata> m_namedPLSQLStoredFunctionQueries;
+    private List<OracleObjectTypeMetadata> m_oracleObjectTypes;
+    private List<OracleArrayTypeMetadata> m_oracleArrayTypes;
     private List<PLSQLRecordMetadata> m_plsqlRecords;
     private List<PLSQLTableMetadata> m_plsqlTables;
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters;
@@ -408,11 +412,23 @@ public class XMLEntityMappings extends ORMetadata {
     public List<PinnedPartitioningMetadata> getPinnedPartitioning() {
         return m_pinnedPartitioning;
     }
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<OracleArrayTypeMetadata> getOracleArrayTypes() {
+        return m_oracleArrayTypes;
+    }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<OracleObjectTypeMetadata> getOracleObjectTypes() {
+        return m_oracleObjectTypes;
+    }
+    
     public List<PLSQLRecordMetadata> getPLSQLRecords() {
         return m_plsqlRecords;
     }
@@ -791,16 +807,28 @@ public class XMLEntityMappings extends ORMetadata {
             m_project.addSQLResultSetMapping(sqlResultSetMapping);
         }
         
+        // Add the Oracle object types to the project.
+        for (OracleObjectTypeMetadata oType : m_oracleObjectTypes) {
+            oType.initXMLObject(m_file, this);
+            m_project.addComplexMetadataType(oType);
+        }
+        
+        // Add the Oracle array types to the project.
+        for (OracleArrayTypeMetadata aType : m_oracleArrayTypes) {
+            aType.initXMLObject(m_file, this);
+            m_project.addComplexMetadataType(aType);
+        }
+        
         // Add the PLSQL types to the project.
         for (PLSQLRecordMetadata record : m_plsqlRecords) {
             record.initXMLObject(m_file, this);
-            m_project.addPLSQLComplexType(record);
+            m_project.addComplexMetadataType(record);
         }
         
         // Add the PLSQL tables to the project.
         for (PLSQLTableMetadata table : m_plsqlTables) {
             table.initXMLObject(m_file, this);
-            m_project.addPLSQLComplexType(table);
+            m_project.addComplexMetadataType(table);
         }
     }
     
@@ -1143,6 +1171,18 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public void setOracleArrayTypes(List<OracleArrayTypeMetadata> arrayTypes) {
+        m_oracleArrayTypes = arrayTypes;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setOracleObjectTypes(List<OracleObjectTypeMetadata> objectTypes) {
+        m_oracleObjectTypes = objectTypes;
+    }
+
     public void setPLSQLRecords(List<PLSQLRecordMetadata> records) {
         m_plsqlRecords = records;
     }

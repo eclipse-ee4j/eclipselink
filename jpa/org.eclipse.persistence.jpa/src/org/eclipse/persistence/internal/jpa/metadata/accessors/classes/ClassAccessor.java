@@ -143,6 +143,8 @@ import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCop
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.nosql.NoSqlMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.OracleArrayTypeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.OracleObjectTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLRecordMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
@@ -155,6 +157,10 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.ObjectAccessor;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleArray;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleArrays;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleObject;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleObjects;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecords;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTable;
@@ -217,6 +223,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<MappedSuperclassAccessor> m_mappedSuperclasses = new ArrayList<MappedSuperclassAccessor>();
+    private List<OracleObjectTypeMetadata> m_oracleObjectTypes = new ArrayList<OracleObjectTypeMetadata>();
+    private List<OracleArrayTypeMetadata> m_oracleArrayTypes = new ArrayList<OracleArrayTypeMetadata>();
     private List<PLSQLRecordMetadata> m_plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
     private List<PLSQLTableMetadata> m_plsqlTables = new ArrayList<PLSQLTableMetadata>();
     
@@ -1105,6 +1113,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Initialize lists of objects.
         initXMLObjects(m_associationOverrides, accessibleObject);
         initXMLObjects(m_attributeOverrides, accessibleObject);
+        initXMLObjects(m_oracleObjectTypes, accessibleObject);
+        initXMLObjects(m_oracleArrayTypes, accessibleObject);
         initXMLObjects(m_plsqlRecords, accessibleObject);
         initXMLObjects(m_plsqlTables, accessibleObject);
         
@@ -1179,6 +1189,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // ORMetadata list merging. 
         m_associationOverrides = mergeORObjectLists(m_associationOverrides, accessor.getAssociationOverrides());
         m_attributeOverrides = mergeORObjectLists(m_attributeOverrides, accessor.getAttributeOverrides());
+        m_oracleObjectTypes = mergeORObjectLists(m_oracleObjectTypes, accessor.getOracleObjectTypes());
+        m_oracleArrayTypes = mergeORObjectLists(m_oracleArrayTypes, accessor.getOracleArrayTypes());
         m_plsqlRecords = mergeORObjectLists(m_plsqlRecords, accessor.getPLSQLRecords());
         m_plsqlTables = mergeORObjectLists(m_plsqlTables, accessor.getPLSQLTables());
         
@@ -1275,7 +1287,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         processProperties();
      
         // Process the PLSQL type metadata.
-        processPLSQLTypes();
+        processComplexMetadataTypes();
+
         
         // Process the MappedSuperclass(es) metadata now after all our. There 
         // may be several MappedSuperclasses for any given Entity or Embeddable.
@@ -1576,46 +1589,80 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
-     * Process record and table types.
+     * Process PL/SQL record and table types, Oracle object array and XMLType types.
      */
-    public void processPLSQLTypes() {
+    public void processComplexMetadataTypes() {
         // PLSQL types.
         
         // Process the XML first.
         for (PLSQLRecordMetadata record : m_plsqlRecords) {
-            getProject().addPLSQLComplexType(record);
+            getProject().addComplexMetadataType(record);
         }
         
         // Process the annotations.
         MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
         if (records != null) {
             for (Object record : (Object[]) records.getAttribute("value")) { 
-                getProject().addPLSQLComplexType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
+                getProject().addComplexMetadataType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
             }
         }
         
         MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
         if (record != null) {
-            getProject().addPLSQLComplexType(new PLSQLRecordMetadata(record, this));
+            getProject().addComplexMetadataType(new PLSQLRecordMetadata(record, this));
         }
         
         // Process the XML first.
         for (PLSQLTableMetadata table : m_plsqlTables) {
-            getProject().addPLSQLComplexType(table);
+            getProject().addComplexMetadataType(table);
         }
         
         // Process the annotations.
         MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
         if (tables != null) {
             for (Object table : (Object[]) tables.getAttribute("value")) { 
-                getProject().addPLSQLComplexType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
+                getProject().addComplexMetadataType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
             }
         }
         
         MetadataAnnotation table = getAnnotation(PLSQLTable.class);
         if (table != null) {
-            getProject().addPLSQLComplexType(new PLSQLTableMetadata(table, this));
+            getProject().addComplexMetadataType(new PLSQLTableMetadata(table, this));
         }
+        
+        // Oracle advanced JDBC types.
+        
+        // Process XML.
+        for (OracleObjectTypeMetadata objectType : m_oracleObjectTypes) {
+            getProject().addComplexMetadataType(objectType);
+        }
+        // Process the annotations.
+        MetadataAnnotation objectTypes = getAnnotation(OracleObjects.class);
+        if (objectTypes != null) {
+            for (Object objectType : (Object[]) objectTypes.getAttribute("value")) { 
+                getProject().addComplexMetadataType(new OracleObjectTypeMetadata((MetadataAnnotation) objectType, this));
+            }
+        }
+        MetadataAnnotation objectType = getAnnotation(OracleObject.class);
+        if (objectType != null) {
+            getProject().addComplexMetadataType(new OracleObjectTypeMetadata(objectType, this));
+        }
+        
+        // Process XML.
+        for (OracleArrayTypeMetadata arrayType : m_oracleArrayTypes) {
+            getProject().addComplexMetadataType(arrayType);
+        }
+        // Process the annotations.
+        MetadataAnnotation arrayTypes = getAnnotation(OracleArrays.class);
+        if (arrayTypes != null) {
+            for (Object arrayType : (Object[]) arrayTypes.getAttribute("value")) { 
+                getProject().addComplexMetadataType(new OracleArrayTypeMetadata((MetadataAnnotation) arrayType, this));
+            }
+        }
+        MetadataAnnotation arrayType = getAnnotation(OracleArray.class);
+        if (arrayType != null) {
+            getProject().addComplexMetadataType(new OracleArrayTypeMetadata(arrayType, this));
+        }        
     }
     
     /**
@@ -1904,5 +1951,32 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     public boolean usesVirtualAccess() {
         return getAccessType().equals(EL_ACCESS_VIRTUAL);
+    }
+    /**
+     * Returns the list of OracleObjectType instances.
+     */
+    public List<OracleObjectTypeMetadata> getOracleObjectTypes() {
+        return m_oracleObjectTypes;
+    }
+
+    /**
+     * Sets the list of OracleObjectType instances.
+     */
+    public void setOracleObjectTypes(List<OracleObjectTypeMetadata> oracleObjectTypes) {
+        m_oracleObjectTypes = oracleObjectTypes;
+    }
+
+    /**
+     * Returns the list of OracleArrayType instances.
+     */
+    public List<OracleArrayTypeMetadata> getOracleArrayTypes() {
+        return m_oracleArrayTypes;
+    }
+
+    /**
+     * Sets the list of OracleArrayType instances.
+     */
+    public void setOracleArrayTypes(List<OracleArrayTypeMetadata> oracleArrayTypes) {
+        m_oracleArrayTypes = oracleArrayTypes;
     }
 }

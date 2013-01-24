@@ -26,6 +26,7 @@ public class XMLPLSQLTestSuite extends PLSQLTestSuite {
         suite.addTest(new XMLPLSQLTestSuite("testTableOut"));
         suite.addTest(new XMLPLSQLTestSuite("testEmpRecordInOut"));
         suite.addTest(new XMLPLSQLTestSuite("testConsultant"));
+        suite.addTest(new PLSQLTestSuite("testOracleTypeProcessing"));
         return suite;
     }
     

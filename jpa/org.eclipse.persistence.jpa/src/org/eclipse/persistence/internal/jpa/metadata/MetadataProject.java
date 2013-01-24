@@ -138,7 +138,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterM
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.ComplexTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
@@ -286,8 +286,9 @@ public class MetadataProject {
     private Map<String, ConverterAccessor> m_converterAccessors;
     private Map<MetadataClass, ConverterAccessor> m_autoApplyConvertAccessors;
     
-    // Store PLSQL record and table types by name, to allow reuse.
-    private Map<String, PLSQLComplexTypeMetadata> m_plsqlComplexTypes;
+    // Store PLSQL record and table types, Oracle object types,
+    // array types and XMLType types by name, to allow reuse.
+    private Map<String, ComplexTypeMetadata> m_complexMetadataTypes;
     
     // Store partitioning policies by name, to allow reuse.
     private Map<String, AbstractPartitioningMetadata> m_partitioningPolicies;
@@ -367,7 +368,7 @@ public class MetadataProject {
         m_converterAccessors = new HashMap<String, ConverterAccessor>();
         m_autoApplyConvertAccessors = new HashMap<MetadataClass, ConverterAccessor>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
-        m_plsqlComplexTypes = new HashMap<String, PLSQLComplexTypeMetadata>();
+        m_complexMetadataTypes = new HashMap<String, ComplexTypeMetadata>();
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
         m_virtualClasses = new HashMap<String, ClassAccessor>();
         m_accessorsWithDerivedId = new HashMap<String, ClassAccessor>();
@@ -659,12 +660,12 @@ public class MetadataProject {
 
     /**
      * INTERNAL:
-     * Add the named PLSQL type.
+     * Add the named PLSQL or Oracle complex metadata type.
      */
-    public void addPLSQLComplexType(PLSQLComplexTypeMetadata type) {
+    public void addComplexMetadataType(ComplexTypeMetadata type) {
         // Check for another type with the same name.
-        if (type.shouldOverride(m_plsqlComplexTypes.get(type.getName()))) {
-            m_plsqlComplexTypes.put(type.getName(), type);
+        if (type.shouldOverride(m_complexMetadataTypes.get(type.getName()))) {
+            m_complexMetadataTypes.put(type.getName(), type);
         }
     }
     
@@ -1199,10 +1200,10 @@ public class MetadataProject {
     
     /**
      * INTERNAL:
-     * Return the named PLSQL type.
+     * Return the named PLSQL or Oracle complex metadata type.
      */
-    public PLSQLComplexTypeMetadata getPLSQLComplexType(String name) {
-        return m_plsqlComplexTypes.get(name);
+    public ComplexTypeMetadata getComplexTypeMetadata(String name) {
+        return m_complexMetadataTypes.get(name);
     }
     
     /**

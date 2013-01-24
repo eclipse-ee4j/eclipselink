@@ -61,7 +61,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
-import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.ComplexTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
@@ -268,8 +268,7 @@ public abstract class ORMetadata {
             try {
                 return OraclePLSQLTypes.valueOf(type);
             } catch (Exception alsoInvalid) {
-                PLSQLComplexTypeMetadata typeMetadata = getProject().getPLSQLComplexType(type);
-                
+                ComplexTypeMetadata typeMetadata = getProject().getComplexTypeMetadata(type);
                 if (typeMetadata != null) {
                     return typeMetadata.process();
                 }
