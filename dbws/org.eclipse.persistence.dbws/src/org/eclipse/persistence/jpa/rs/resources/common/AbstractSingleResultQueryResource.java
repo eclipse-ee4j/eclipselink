@@ -1,25 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.net.URI;
 import java.util.List;
 
 import javax.persistence.Query;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -29,24 +24,20 @@ import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-// Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_OCTET_STREAM})
-@Path("/{context}/singleResultQuery/")
-public class SingleResultQueryResource extends AbstractResource {
-    @GET
-    @Path("{name}")
-    public Response namedQuerySingleResult(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQuerySingleResult(persistenceUnit, name, hh, ui, ui.getBaseUri());
-    }
-
+/**
+ * @author gonural
+ *
+ */
+public abstract class AbstractSingleResultQueryResource extends AbstractResource {
     @SuppressWarnings("rawtypes")
-    protected Response namedQuerySingleResult(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
+    protected Response namedQuerySingleResult(@SuppressWarnings("unused") String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -61,7 +52,7 @@ public class SingleResultQueryResource extends AbstractResource {
             SingleResultQueryList list = populateReportQueryResponse(queryResults, reportItems);
             if (list != null) {
                 List<JAXBElement> item = list.getFields();
-                if ((item!= null) && (item.size() == 1)) {
+                if ((item != null) && (item.size() == 1)) {
                     // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery
                     // If there is only one item in the select clause and if value of that item is binary, we will create a response with
                     // that binary data without converting its to Base64.
@@ -79,7 +70,7 @@ public class SingleResultQueryResource extends AbstractResource {
                 // something went wrong with the descriptors, return error
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
-        } 
+        }
         Object queryResults = query.getSingleResult();
         return Response.ok(new StreamingOutputMarshaller(app, queryResults, hh.getAcceptableMediaTypes())).build();
     }

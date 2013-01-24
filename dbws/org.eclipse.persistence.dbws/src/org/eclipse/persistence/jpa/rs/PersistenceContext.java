@@ -73,26 +73,26 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
+import org.eclipse.persistence.jpa.rs.util.IdHelper;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
+import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
+import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
+import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
+import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryListItem;
+import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaLangMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaMathMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.JavaUtilMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListItemMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.MultiResultQueryListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.SimpleHomogeneousListMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.metadatasources.SingleResultQueryListMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryListItem;
-import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
-import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.DynamicXMLMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.IdHelper;
-import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
-import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
-import org.eclipse.persistence.jpa.rs.util.metadatasources.LinkMetadataSource;
-import org.eclipse.persistence.jpa.rs.util.PreLoginMappingAdapter;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.RelationshipLinkAdapter;
-import org.eclipse.persistence.jpa.rs.util.ResourceLocalTransactionWrapper;
-import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -853,7 +853,7 @@ public class PersistenceContext {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Query buildQuery(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
+    public Query buildQuery(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints) {
         EntityManager em = getEmf().createEntityManager(tenantId);
         Query query = em.createNamedQuery(name);
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
