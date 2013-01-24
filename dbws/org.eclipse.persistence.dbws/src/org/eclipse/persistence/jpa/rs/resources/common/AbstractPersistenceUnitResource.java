@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,7 @@
  *
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.StringWriter;
 import java.net.URI;
@@ -18,18 +18,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
@@ -49,6 +42,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -58,18 +52,12 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{context}/metadata/")
-public class PersistenceUnitResource extends AbstractResource {
-
-    @GET
-    @Path("entity/{descriptorAlias}")
-    public Response getDescriptorMetadata(@PathParam("context") String persistenceUnit, @PathParam("descriptorAlias") String descriptorAlias, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        return getDescriptorMetadata(persistenceUnit, descriptorAlias, hh, uriInfo.getBaseUri());
-    }
-
-    protected Response getDescriptorMetadata(String persistenceUnit, String descriptorAlias, HttpHeaders hh, URI baseURI) {
+/**
+ * @author gonural
+ *
+ */
+public class AbstractPersistenceUnitResource extends AbstractResource {
+    protected Response getDescriptorMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, String descriptorAlias, HttpHeaders hh, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -93,19 +81,8 @@ public class PersistenceUnitResource extends AbstractResource {
             }
         }
     }
-    
-    @GET
-    public Response getTypes(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        return getTypes(persistenceUnit, hh, uriInfo.getBaseUri());
-    }
 
-    @GET
-    @Path("query")
-    public Response getQueriesMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        return getQueriesMetadata(persistenceUnit, hh, uriInfo.getBaseUri());
-    }
-    
-    protected Response getQueriesMetadata(String persistenceUnit, HttpHeaders hh, URI baseURI) {
+    protected Response getQueriesMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -125,13 +102,7 @@ public class PersistenceUnitResource extends AbstractResource {
         }
     }
 
-    @GET
-    @Path("query/{queryName}")
-    public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        return getQueryMetadata(persistenceUnit, queryName, hh, uriInfo.getBaseUri());
-    }
-    
-    protected Response getQueryMetadata(String persistenceUnit, String queryName, HttpHeaders hh, URI baseURI) {
+    protected Response getQueryMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, String queryName, HttpHeaders hh, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -157,7 +128,7 @@ public class PersistenceUnitResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    public Response getTypes(String persistenceUnit, HttpHeaders hh, URI baseURI) {
+    public Response getTypes(@SuppressWarnings("unused") String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -184,7 +155,7 @@ public class PersistenceUnitResource extends AbstractResource {
             return rb.build();
         }
     }
-    
+
     protected void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
         String target = null;
         if (mapping.isCollectionMapping()) {
@@ -203,7 +174,7 @@ public class PersistenceUnitResource extends AbstractResource {
         }
         descriptor.getAttributes().add(new Attribute(mapping.getAttributeName(), target));
     }
-    
+
     protected void addQueries(List<Query> queryList, PersistenceContext app, String javaClassName) {
         Map<String, List<DatabaseQuery>> queries = app.getJpaSession().getQueries();
         List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
@@ -222,7 +193,7 @@ public class PersistenceUnitResource extends AbstractResource {
             queryList.add(getQuery(queryIterator.next(), app));
         }
     }
-    
+
     protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
         Descriptor returnDescriptor = new Descriptor();
         returnDescriptor.setName(descriptor.getAlias());
@@ -283,7 +254,7 @@ public class PersistenceUnitResource extends AbstractResource {
         }
         return returnQuery;
     }
-    
+
     protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
         Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class };
         JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
@@ -294,5 +265,5 @@ public class PersistenceUnitResource extends AbstractResource {
         marshaller.marshal(metadata, writer);
         return writer.toString();
     }
-    
+
 }

@@ -40,15 +40,15 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jpa.rs.EntityResource;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-import org.eclipse.persistence.jpa.rs.PersistenceResource;
-import org.eclipse.persistence.jpa.rs.PersistenceUnitResource;
-import org.eclipse.persistence.jpa.rs.QueryResource;
-import org.eclipse.persistence.jpa.rs.SingleResultQueryResource;
-import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.EntityResource;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceUnitResource;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.QueryResource;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.SingleResultQueryResource;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 import org.eclipse.persistence.jpars.test.model.auction.StaticBid;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
@@ -546,81 +546,6 @@ public class TestService {
         }
     }
 
-    /*
-        @Test
-        public void testDeleteStaticRelationship() throws URISyntaxException {
-            EntityResource resource = new EntityResource();
-            resource.setPersistenceFactory(factory);
-            Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-            PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
-
-            StaticBid bid = (StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
-            StaticUser user = bid.getUser();
-
-            try {
-                Response output = resource.removeAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
-                        generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
-
-                String result = stringifyResults((StreamingOutputMarshaller) output.getEntity());
-                context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-
-                bid = (StaticBid) context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
-
-                assertTrue(bid.getUser() == null);
-            } finally {
-                context.updateOrAddAttribute(null, "StaticBid", StaticModelDatabasePopulator.BID1_ID, null, "user", user, null);
-            }
-        }
-
-
-        @Test
-        public void testUpdateAndRemoveStaticCollectionRelationship() throws URISyntaxException {
-            EntityResource resource = new EntityResource();
-            resource.setPersistenceFactory(factory);
-            Map<String, Object> properties = new HashMap<String, Object>();
-            properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-            PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
-
-            StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
-            StaticBid bid = new StaticBid();
-            bid.setAmount(100);
-            bid.setId(1000);
-            context.create(null, bid);
-
-            TestURIInfo ui = new TestURIInfo();
-            ui.addMatrixParameter("bids", "partner", "auction");
-            resource.setOrAddAttribute("jpars_auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids",
-                    generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
-            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-
-            auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
-
-            boolean found = false;
-            for (StaticBid sbid: auction.getBids()){
-                if (sbid.getId() == bid.getId()){
-                    found = true;
-                }
-            }
-
-            assertTrue("The new bid was not found", found);
-
-            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-            bid = (StaticBid)context.find("StaticBid", bid.getId());
-            resource.removeAttribute("jpars_auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids",
-                    generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
-            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-
-            auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
-            found = false;
-            for (StaticBid sbid: auction.getBids()){
-                if (sbid.getId() == bid.getId()){
-                    found = true;
-                }
-            }
-            assertFalse("The removed bid was found", found);
-        }
-    */
     @SuppressWarnings("rawtypes")
     @Test
     public void testStaticReportQuery() throws URISyntaxException {
