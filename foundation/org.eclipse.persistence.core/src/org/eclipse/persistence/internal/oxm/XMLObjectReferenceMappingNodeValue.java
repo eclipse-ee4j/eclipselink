@@ -161,9 +161,9 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
             	Field fkField = (Field) xmlObjectReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
                 if(null == fkField) {
                 	Descriptor targetDescriptor = (Descriptor) session.getDescriptor(targetObject);
-                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, ((CoreField) targetDescriptor.getPrimaryKeyFields().get(0)).getName(), targetDescriptor.getNamespaceResolver(), Object.class);
+                    fieldValue = marshalRecord.getMarshaller().getContext().getValueByXPath(targetObject, ((CoreField) targetDescriptor.getPrimaryKeyFields().get(0)).getName(), targetDescriptor.getNamespaceResolver(), Object.class);
                 } else {
-                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+                    fieldValue = marshalRecord.getMarshaller().getContext().getValueByXPath(targetObject, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
                 }
             }
             if(null == fieldValue) {

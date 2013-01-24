@@ -21,21 +21,23 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
+
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLParser;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
@@ -43,7 +45,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.eclipse.persistence.oxm.attachment.*;
 
 /**
  * <p>Class used to unmarshal XML to objects.
@@ -120,7 +121,6 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
 
     };
 
-    private XMLContext xmlContext;
     private XMLUnmarshallerHandler xmlUnmarshallerHandler;
     private PlatformUnmarshaller platformUnmarshaller;
     private boolean schemasAreInitialized;
@@ -168,14 +168,14 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
     }
 
     protected XMLUnmarshaller(XMLContext xmlContext, Map<String, Boolean> parserFeatures) {
-        setXMLContext(xmlContext);
+        super(xmlContext);
         stringBuffer = new StrBuffer();
         initialize(parserFeatures);
         setErrorHandler(DEFAULT_ERROR_HANDLER);
     }
 
     private void initialize(Map<String, Boolean> parserFeatures) {
-	    DatabaseSession session = xmlContext.getSession(0);
+	    CoreSession session = context.getSession();
 	    XMLPlatform xmlPlatform = (XMLPlatform)session.getDatasourceLogin().getDatasourcePlatform();
 	    platformUnmarshaller = xmlPlatform.newPlatformUnmarshaller(this, parserFeatures);
 	    platformUnmarshaller.setWhitespacePreserving(false);
@@ -191,9 +191,9 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
             Iterator xmlDescriptors;
             XMLDescriptor xmlDescriptor;
             XMLSchemaReference xmlSchemaReference;
-            int numberOfSessions = xmlContext.getSessions().size();
+            int numberOfSessions = context.getSessions().size();
             for (int x = 0; x < numberOfSessions; x++) {
-                xmlDescriptors = ((DatabaseSession)xmlContext.getSessions().get(x)).getDescriptors().values().iterator();
+                xmlDescriptors = ((CoreSession)context.getSessions().get(x)).getDescriptors().values().iterator();
                 URL schemaURL;
                 while (xmlDescriptors.hasNext()) {
                     xmlDescriptor = (XMLDescriptor)xmlDescriptors.next();
@@ -243,14 +243,14 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
      * of XMLUnmarshaller.
      */
     public XMLContext getXMLContext() {
-        return xmlContext;
+        return getContext();
     }
 
     /** 
      * Set the XMLContext used by this instance of XMLUnmarshaller.
      */
     public void setXMLContext(XMLContext value) {
-        xmlContext =  value;
+        context =  value;
     }
     
     /**
@@ -806,7 +806,7 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
     
     @Override
     public XMLUnmarshaller clone() {
-        XMLUnmarshaller clone = new XMLUnmarshaller(xmlContext);
+        XMLUnmarshaller clone = new XMLUnmarshaller(context);
         clone.setAttachmentUnmarshaller(attachmentUnmarshaller);
         clone.setEntityResolver(getEntityResolver());
         clone.setErrorHandler(getErrorHandler());

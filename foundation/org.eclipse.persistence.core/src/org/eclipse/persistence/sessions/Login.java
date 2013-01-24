@@ -30,7 +30,7 @@ import org.eclipse.persistence.platform.database.DatabasePlatform;
  * <p>
  * @see DatabaseLogin
  */
-public interface Login extends CoreLogin {
+public interface Login extends CoreLogin<Platform> {
 
     /**
      * PUBLIC:

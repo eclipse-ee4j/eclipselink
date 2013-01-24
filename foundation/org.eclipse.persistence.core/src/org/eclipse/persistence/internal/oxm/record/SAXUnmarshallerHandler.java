@@ -27,7 +27,6 @@ import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
@@ -269,12 +268,12 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
-            session = xmlContext.getReadSession(xmlDescriptor);
+            session = xmlContext.getSession(xmlDescriptor);
             
             UnmarshalRecord unmarshalRecord;
             if (isPrimitiveType) {
                 unmarshalRecord = new XMLRootRecord(primitiveWrapperClass);
-                unmarshalRecord.setSession((AbstractSession) unmarshaller.getXMLContext().getSession(0));
+                unmarshalRecord.setSession((CoreAbstractSession) unmarshaller.getContext().getSession());
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             } else if (xmlDescriptor.hasInheritance()) {
                 unmarshalRecord = new UnmarshalRecordImpl(null);
@@ -308,10 +307,10 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                         throw DescriptorException.missingClassIndicatorField((XMLRecord) unmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                     }
                 }
-                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord)xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
                 unmarshalRecord = wrapper.getUnmarshalRecord();
             } else {
-                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+                org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((CoreAbstractSession) session);
                 unmarshalRecord = wrapper.getUnmarshalRecord();
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             }

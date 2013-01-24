@@ -256,7 +256,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                                 }
                             }
                             frag.setXPath(xpath);
-                            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+                            Context xmlContext = unmarshalRecord.getUnmarshaller().getContext();
                             xmlDescriptor = xmlContext.getDescriptorByGlobalType(frag);
                         }
                     }

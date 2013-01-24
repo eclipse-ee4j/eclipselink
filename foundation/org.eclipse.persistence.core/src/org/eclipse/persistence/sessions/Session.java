@@ -48,7 +48,7 @@ import org.eclipse.persistence.logging.SessionLogEntry;
  * @see org.eclipse.persistence.sessions.server.ServerSession
  * @see org.eclipse.persistence.sessions.server.ClientSession
  */
-public interface Session extends CoreSession<ClassDescriptor, Login> {
+public interface Session extends CoreSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> {
 
     /**
      * ADVANCED:

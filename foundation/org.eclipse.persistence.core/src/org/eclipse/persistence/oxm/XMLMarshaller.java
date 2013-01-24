@@ -102,7 +102,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     private String schemaLocation;
     private String noNamespaceSchemaLocation;
     private XMLTransformer transformer;
-    private XMLContext xmlContext;
     private XMLMarshalListener marshalListener;
     private XMLAttachmentMarshaller attachmentMarshaller;
     private ErrorHandler errorHandler;
@@ -175,7 +174,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     * @param session A single session
     */
     public XMLMarshaller(XMLContext xmlContext) {
-        setXMLContext(xmlContext);
+        super(xmlContext);
         initialize();
     }
 
@@ -196,14 +195,14 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
      * of XMLMarshaller.
      */
     public XMLContext getXMLContext() {
-        return xmlContext;
+        return getContext();
     }
 
     /**
      * Set the XMLContext used by this instance of XMLMarshaller.
      */
     public void setXMLContext(XMLContext value) {
-        xmlContext = value;
+        context = value;
     }
 
     public ErrorHandler getErrorHandler() {
@@ -351,7 +350,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         
         if(isXMLRoot){
             try{
-    	        session = xmlContext.getSession(((Root)object).getObject());
+    	        session = context.getSession(((Root)object).getObject());
     	        if(session != null){
     	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
@@ -362,13 +361,13 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             }
         }else{
             Class objectClass = object.getClass();
-            session = xmlContext.getSession(objectClass);
+            session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
 
        
         //if this is a simple xml root, the session and descriptor will be null
-        if (session == null ||  !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
+        if (session == null ||  !context.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
             if (result instanceof StreamResult) {
                 StreamResult streamResult = (StreamResult) result;
                 Writer writer = streamResult.getWriter();
@@ -547,7 +546,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             	if(session == null || xmlDescriptor == null){             
 	                if(isXMLRoot){
 	                    try{
-	            	        session = xmlContext.getSession(((Root)object).getObject());
+	            	        session = context.getSession(((Root)object).getObject());
 	            	        if(session != null){
 	            	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
 	                	    }
@@ -558,7 +557,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
 	                    }
 	                }else{
                             Class objectClass = object.getClass();
-                            session = xmlContext.getSession(objectClass);
+                            session = context.getSession(objectClass);
                             xmlDescriptor = getDescriptor(objectClass, session);
 	                }
             	}
@@ -573,7 +572,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                 record.setOutputStream(outputStream);
             
                 //if this is a simple xml root, the session and descriptor will be null
-                if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+                if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
                     marshal(object, record, session, xmlDescriptor, isXMLRoot);    
                 } else {
                     try {
@@ -677,7 +676,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             rootNamespace = ((Root)object).getNamespaceURI();
         	if(session == null || xmlDescriptor == null){
 	            try{
-	                session = xmlContext.getSession(((Root)object).getObject());
+	                session = context.getSession(((Root)object).getObject());
 	                if(session != null){
 	                    xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
 	                }
@@ -716,13 +715,13 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                 return;
             }
             if(session == null || xmlDescriptor == null){
-                session = xmlContext.getSession(objectClass);
+                session = context.getSession(objectClass);
                 xmlDescriptor = getDescriptor(objectClass, session);
             }
         }
 
         //if this is a simple xml root, the session and descriptor will be null
-        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             marshal(object, writerRecord, session, xmlDescriptor, isXMLRoot);    
         } else {
             try {
@@ -788,7 +787,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         XMLDescriptor xmlDescriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((Root)object).getObject());        	    
+        	    session = context.getSession(((Root)object).getObject());        	    
         	    if(session != null){
         	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
@@ -799,12 +798,12 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             }
         }else{
             Class objectClass = object.getClass();
-            session = xmlContext.getSession(objectClass);
+            session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
         
         //if it's a simple xml root then session and descriptor will be null
-        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
             ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();
             contentHandlerRecord.setMarshaller(this);
             contentHandlerRecord.setContentHandler(contentHandler);
@@ -866,7 +865,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             XMLDescriptor xmlDescriptor = null;
             if(isXMLRoot){
             	try{
-            	    session = xmlContext.getSession(((Root)object).getObject());
+            	    session = context.getSession(((Root)object).getObject());
             	    if(session != null){
             	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
             	    }
@@ -877,13 +876,13 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                 }
             }else{
                 Class objectClass = object.getClass();
-                session = xmlContext.getSession(objectClass);
+                session = context.getSession(objectClass);
                 xmlDescriptor = getDescriptor(objectClass, session);
             }
             
             
             //if this is a simple xml root, descriptor and session will be null
-            if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
+            if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
                 NodeRecord nodeRecord = new NodeRecord(node);
                 nodeRecord.setMarshaller(this);
 
@@ -1058,7 +1057,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         XMLDescriptor xmlDescriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((Root)object).getObject());
+        	    session = context.getSession(((Root)object).getObject());
         	    if(session != null){
         	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
@@ -1069,7 +1068,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             }
         }else{
             Class objectClass = object.getClass();
-            session = xmlContext.getSession(objectClass);
+            session = context.getSession(objectClass);
             xmlDescriptor = getDescriptor(objectClass, session);
         }
         
@@ -1176,7 +1175,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         	treeObjectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();     
         }
         if(session == null){
-        	session = (AbstractSession) xmlContext.getSession(0);
+        	session = (AbstractSession) context.getSession();
         }
         marshalRecord.setSession(session);
         
@@ -1326,12 +1325,12 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     protected Document objectToXML(Object object, XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
-        AbstractSession session = xmlContext.getSession(descriptor);
-        DocumentPreservationPolicy docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+        AbstractSession session = context.getSession(descriptor);
+        DocumentPreservationPolicy docPresPolicy = context.getDocumentPreservationPolicy(session);
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
-                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
+                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, context.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
                 if (this.attachmentMarshaller != null) {
                     xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
@@ -1356,11 +1355,11 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     }
 
     protected Node objectToXMLNode(Object object, Node rootNode, AbstractSession session,XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
-        DocumentPreservationPolicy docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+        DocumentPreservationPolicy docPresPolicy = context.getDocumentPreservationPolicy(session);
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = null;
             if (!isXMLRoot) {
-                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
+                xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, context.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
                 if (this.attachmentMarshaller != null) {
                     xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
@@ -1419,7 +1418,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         XMLDescriptor descriptor = null;
         if(isXMLRoot){
         	try{
-        	    session = xmlContext.getSession(((Root)object).getObject());
+        	    session = context.getSession(((Root)object).getObject());
         	    if(session != null){
         	        descriptor = getDescriptor(((Root)object).getObject(), session);
         	    }
@@ -1430,7 +1429,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             }
         }else{
             Class objectClass = object.getClass();
-        	session = xmlContext.getSession(objectClass);
+        	session = context.getSession(objectClass);
         	descriptor = getDescriptor(objectClass, session);
         }
         
@@ -1442,7 +1441,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         }
 
         if(docPresPolicy == null) {
-            docPresPolicy = xmlContext.getDocumentPreservationPolicy(session);
+            docPresPolicy = context.getDocumentPreservationPolicy(session);
         }
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent, session);
@@ -1480,7 +1479,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         this.copyNamespaces(descriptor.getNamespaceResolver(), resolver);
         boolean shouldCallSetAttributeNS = false;
         boolean isRootDocumentFragment = false;
-        AbstractSession session = xmlContext.getSession(descriptor);
+        AbstractSession session = context.getSession(descriptor);
         if (xmlRow != null) {
             isRootDocumentFragment = (xmlRow.getDOM().getNodeType() == Node.DOCUMENT_FRAGMENT_NODE);
         }
@@ -1524,7 +1523,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
 
         XMLObjectBuilder bldr = (XMLObjectBuilder) descriptor.getObjectBuilder();
 
-        AbstractSession objectSession = xmlContext.getSession(object);
+        AbstractSession objectSession = context.getSession(object);
         xmlRow.setSession(objectSession);
         xmlRow.addXsiTypeAndClassIndicatorIfRequired(descriptor, null, null, originalObject, object, isXMLRoot, true);
         xmlRow.setMarshaller(this);
@@ -1569,7 +1568,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     * Return the descriptor for the root object.
     */
     protected XMLDescriptor getDescriptor(Object object) throws XMLMarshalException {
-        XMLDescriptor descriptor = (XMLDescriptor) xmlContext.getSession(object).getDescriptor(object);
+        XMLDescriptor descriptor = (XMLDescriptor) context.getSession(object).getDescriptor(object);
         if (descriptor == null) {
             throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
         }
@@ -1623,7 +1622,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         XMLDescriptor descriptor = null;
 
         try {
-            AbstractSession session = xmlContext.getSession(object.getObject());
+            AbstractSession session = context.getSession(object.getObject());
             if(null == session) {
                 return null;
             }
@@ -1708,7 +1707,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
 
     @Override
     public XMLMarshaller clone() {
-        XMLMarshaller clone = new XMLMarshaller(xmlContext);
+        XMLMarshaller clone = new XMLMarshaller(context);
         clone.setAttachmentMarshaller(attachmentMarshaller);
         clone.setEncoding(getEncoding());
         clone.setFormattedOutput(isFormattedOutput());

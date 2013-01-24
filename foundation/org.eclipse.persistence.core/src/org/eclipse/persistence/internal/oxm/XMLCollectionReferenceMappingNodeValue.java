@@ -190,7 +190,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 if (fieldValue == null) {
                     if(null != objectValue) {
                     	Field fkField = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
-                        fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(objectValue, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
+                        fieldValue = marshalRecord.getMarshaller().getContext().getValueByXPath(objectValue, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
                     }
                     if(null == fieldValue) {
                         break;

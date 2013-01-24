@@ -113,7 +113,7 @@ import org.eclipse.persistence.sessions.serializers.Serializer;
  *    </ul>
  * @see DatabaseSessionImpl
  */
-public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform> implements org.eclipse.persistence.sessions.Session, CommandProcessor, java.io.Serializable, java.lang.Cloneable {
+public abstract class AbstractSession extends CoreAbstractSession<ClassDescriptor, Login, Platform, Project, SessionEventManager> implements org.eclipse.persistence.sessions.Session, CommandProcessor, java.io.Serializable, java.lang.Cloneable {
     /** ExceptionHandler handles database exceptions. */
     transient protected ExceptionHandler exceptionHandler;
 

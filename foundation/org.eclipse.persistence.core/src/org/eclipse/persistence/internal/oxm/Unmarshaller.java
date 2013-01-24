@@ -24,6 +24,12 @@ public abstract class Unmarshaller<
     MEDIA_TYPE extends MediaType,
     UNMARSHALLER_HANDLER extends UnmarshallerHandler> {
 
+    protected CONTEXT context;
+
+    public Unmarshaller(CONTEXT context) {
+        this.context = context;
+    }
+
     public abstract XMLAttachmentUnmarshaller getAttachmentUnmarshaller();
 
     /**
@@ -34,8 +40,16 @@ public abstract class Unmarshaller<
     public abstract String getAttributePrefix();
 
     /**
-     * Get the ErrorHandler set on this XMLUnmarshaller
-     * @return the ErrorHandler set on this XMLUnmarshaller
+     * Return the instance of XMLContext that was used to create this instance
+     * of Unmarshaller.
+     */
+    public CONTEXT getContext() {
+        return context;
+    }
+
+    /**
+     * Get the ErrorHandler set on this Unmarshaller
+     * @return the ErrorHandler set on this Unmarshaller
      */
     public abstract ErrorHandler getErrorHandler();
 
@@ -47,7 +61,7 @@ public abstract class Unmarshaller<
     public abstract ID_RESOLVER getIDResolver();
 
     /**
-     * Get the MediaType for this xmlUnmarshaller.
+     * Get the MediaType for this unmarshaller.
      * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
      * If not set the default is MediaType.APPLICATION_XML
      * @return MediaType
@@ -98,13 +112,7 @@ public abstract class Unmarshaller<
     public abstract String getValueWrapper();
 
     /**
-     * Return the instance of XMLContext that was used to create this instance
-     * of XMLUnmarshaller.
-     */
-    public abstract CONTEXT getXMLContext();
-
-    /**
-     * Return if this XMLUnmarshaller should try to automatically determine
+     * Return if this Unmarshaller should try to automatically determine
      * the MediaType of the document (instead of using the MediaType set
      * by setMediaType)
      */

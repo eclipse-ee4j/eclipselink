@@ -93,7 +93,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         } else {
             CoreSession childSession = null;
             try {
-                childSession = marshaller.getXMLContext().getSession(objectValue);
+                childSession = marshaller.getContext().getSession(objectValue);
             } catch (XMLMarshalException e) {
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, objectValue, session, namespaceResolver);
                 return true;
@@ -302,7 +302,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     protected Descriptor findReferenceDescriptor(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts, Mapping mapping, UnmarshalKeepAsElementPolicy policy) {
     	Descriptor referenceDescriptor = super.findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, mapping, policy);
         if (referenceDescriptor == null) {
-            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext(); 
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getContext(); 
             XPathQName xpathQName = new XPathQName(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), unmarshalRecord.isNamespaceAware());
             referenceDescriptor = (Descriptor) xmlContext.getDescriptor(xpathQName);
             // Check if descriptor is for a wrapper, if it is null it out and let continue

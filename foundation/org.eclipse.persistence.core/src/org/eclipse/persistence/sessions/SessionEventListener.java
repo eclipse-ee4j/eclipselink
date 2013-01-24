@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
+import org.eclipse.persistence.core.sessions.CoreSessionEventListener;
 
 /**
  * <p><b>Purpose</b>: Used to support session events.
@@ -22,7 +22,7 @@ import java.util.*;
  * @see Session#getEventManager()
  * @see SessionEvent
  */
-public interface SessionEventListener extends EventListener {
+public interface SessionEventListener extends CoreSessionEventListener {
 
     /**
      * PUBLIC:

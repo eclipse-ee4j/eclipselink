@@ -13,9 +13,10 @@
 package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.sessions.CoreLogin;
+import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 
-public interface Login extends CoreLogin {
+public interface Login<PLATFORM extends CorePlatform> extends CoreLogin<PLATFORM> {
 
     public DocumentPreservationPolicy getDocumentPreservationPolicy();
 

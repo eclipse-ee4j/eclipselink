@@ -96,7 +96,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
     	Descriptor returnDescriptor = null;
         //try xsi:type
         if(atts != null){
-            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getContext();
             String schemaType = null;
             if(unmarshalRecord.isNamespaceAware()){                
             	schemaType = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);

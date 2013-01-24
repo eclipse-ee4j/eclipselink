@@ -15,6 +15,7 @@ package org.eclipse.persistence.sessions;
 import java.util.*;
 import java.io.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.core.sessions.CoreSessionEventManager;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -28,7 +29,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
  * @see Session#getEventManager()
  * @see SessionEvent
  */
-public class SessionEventManager implements Cloneable, Serializable {
+public class SessionEventManager extends CoreSessionEventManager<SessionEventListener> implements Cloneable, Serializable {
     protected List<SessionEventListener> listeners;
     protected Session session;
 

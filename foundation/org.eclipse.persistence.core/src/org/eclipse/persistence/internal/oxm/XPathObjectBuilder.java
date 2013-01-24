@@ -22,8 +22,10 @@ import java.util.Map.Entry;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
+import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.AnyAttributeMapping;
@@ -59,7 +61,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 
-public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession> implements ObjectBuilder {
+public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession, CoreField, CoreMapping> implements ObjectBuilder {
 
     public static final String CYCLE_RECOVERABLE = "com.sun.xml.bind.CycleRecoverable";
     public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";    
@@ -266,6 +268,16 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
 
     public List<ContainerValue> getDefaultEmptyContainerValues() {
         return this.defaultEmptyContainerValues;
+    }
+
+    @Override
+    public CoreDescriptor getDescriptor() {
+        return descriptor;
+    }
+
+    @Override
+    public CoreMapping getMappingForField(CoreField field) {
+        throw new UnsupportedOperationException();
     }
 
     public List<NullCapableValue> getNullCapableValues() {
@@ -566,11 +578,5 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
 
         return hasValue;
     }
-
-    @Override
-    public CoreDescriptor getDescriptor() {
-        return descriptor;
-    }
-
 
 }
