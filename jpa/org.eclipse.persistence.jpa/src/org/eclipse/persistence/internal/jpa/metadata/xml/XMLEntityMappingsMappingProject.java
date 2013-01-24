@@ -2823,7 +2823,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Attribute mappings
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getCompatibleTypeAttributeMapping());
         descriptor.addMapping(getJavaTypeAttributeMapping());
         
         return descriptor;
@@ -2838,7 +2837,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(OracleArrayTypeMetadata.class);
         
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getCompatibleTypeAttributeMapping());
         descriptor.addMapping(getJavaTypeAttributeMapping());
         
         descriptor.addMapping(getNestedTypeMapping());
