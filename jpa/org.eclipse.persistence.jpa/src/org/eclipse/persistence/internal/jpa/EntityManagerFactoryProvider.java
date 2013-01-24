@@ -17,6 +17,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/16/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/24/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -479,24 +481,34 @@ public class EntityManagerFactoryProvider {
     }
     
     protected static void writeDDLsToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType) {
-        // Ensure that the appLocation string ends with  File.separator 
-        appLocation = addFileSeperator(appLocation);
+        // Ensure that the appLocation string ends with File.separator if 
+        // specified. In JPA there is no default for app location, however, if 
+        // the user did specify one, we'll use it.
+        String appLocationPrefix = (appLocation == null) ? "" : addFileSeperator(appLocation); 
         
-        if (createDDLJdbc != null && ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
-            if (createDDLJdbc instanceof Writer) {
+        if (ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
+            if (createDDLJdbc == null) {
+                // Using EclipseLink properties, the create script has a default.
+                // Using JPA properties, the user must specify the target else an exception must be thrown.
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-create-script-target-not-specified"));
+            } else if (createDDLJdbc instanceof Writer) {
                 mgr.outputCreateDDLToWriter((Writer) createDDLJdbc);
             } else {
                 // Assume it is a String file name.
-                mgr.outputCreateDDLToFile(appLocation + createDDLJdbc);
+                mgr.outputCreateDDLToFile(appLocationPrefix + createDDLJdbc);
             }
         }
 
-        if (dropDDLJdbc != null && ddlType.equals(TableCreationType.DROP) || ddlType.equals(TableCreationType.DROP_AND_CREATE)) {
-            if (dropDDLJdbc instanceof Writer) {
+        if (ddlType.equals(TableCreationType.DROP) || ddlType.equals(TableCreationType.DROP_AND_CREATE)) {
+            if (dropDDLJdbc == null) {
+                // Using EclipseLink properties, the drop script has a default.
+                // Using JPA properties, the user must specify the target else an exception must be thrown.
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-drop-script-target-not-specified"));
+            } else if (dropDDLJdbc instanceof Writer) {
                 mgr.outputDropDDLToWriter((Writer) dropDDLJdbc);
             } else {
                 // Assume it is a String file name.
-                mgr.outputDropDDLToFile(appLocation + dropDDLJdbc);
+                mgr.outputDropDDLToFile(appLocationPrefix + dropDDLJdbc);
             }
         }
 

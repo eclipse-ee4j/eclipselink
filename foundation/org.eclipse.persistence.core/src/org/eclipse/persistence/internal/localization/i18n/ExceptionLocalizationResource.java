@@ -19,6 +19,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     01/24/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -203,6 +205,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21-ddl-source-script-not-found", "The source script: {0} for the generateSchema call was not found."},
                                            { "jpa21-ddl-source-script-sql-exception", "An error occured executing {0} from the source ddl generation script: {1}."},
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occured with the source ddl generation script: {0}."},
+                                           { "jpa21-ddl-drop-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-drop-script-target] property."},
+                                           { "jpa21-ddl-create-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-create-script-target] property."},
                                            //criteria API IllegalArgumentExceptions
                                            { "jpa_criteriaapi_no_corresponding_element_in_result", "Element {0} does not correspond to an element in the query result."},
                                            { "jpa_criteriaapi_invalid_result_index", "index {0} invalid for result list of size {1}."},
