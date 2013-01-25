@@ -259,7 +259,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         subclassEntityAccessors.add(currentEntityAccessor);
         
         if (! parentClass.isObject()) {
-            while (! parentClass.isObject()) {
+            while (parentClass != null && ! parentClass.isObject()) {
                 if (getProject().hasEntity(parentClass)) {
                     // Our parent is an entity.
                     EntityAccessor parentEntityAccessor = getProject().getEntityAccessor(parentClass);
