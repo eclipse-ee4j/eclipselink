@@ -185,7 +185,7 @@ public class EmbeddableAccessor extends ClassAccessor {
         MetadataClass parentClass = getJavaClass().getSuperclass();
         List<String> genericTypes = getJavaClass().getGenericType();
         
-        while (! parentClass.isObject()) {
+        while (parentClass != null && ! parentClass.isObject()) {
             // Our parent might be a mapped superclass, check and add as needed.
             addPotentialMappedSuperclass(parentClass, addMappedSuperclassAccessors);
                 
