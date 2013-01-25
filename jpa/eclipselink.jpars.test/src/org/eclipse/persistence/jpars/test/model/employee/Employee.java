@@ -11,7 +11,6 @@
 package org.eclipse.persistence.jpars.test.model.employee;
 
 import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.EAGER;
 import static javax.persistence.FetchType.LAZY;
 
 import java.util.ArrayList;
@@ -103,8 +102,7 @@ public class Employee {
     @OneToMany(mappedBy = "manager")
     private List<Employee> managedEmployees = new ArrayList<Employee>();
 
-    @OneToMany(mappedBy = "employee", cascade = ALL, fetch = EAGER)
-    @PrivateOwned
+    @OneToMany(mappedBy = "employee", cascade = ALL, fetch = LAZY)
     private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
 
     @OneToOne(cascade = ALL, fetch = LAZY)

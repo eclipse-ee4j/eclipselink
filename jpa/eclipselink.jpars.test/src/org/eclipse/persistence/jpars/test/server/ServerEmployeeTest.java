@@ -535,6 +535,117 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null,  MediaType.APPLICATION_JSON_TYPE, "v1.2");
     }
 
+    @Test
+    public void testReadEmployeeWithAddressLazyFetchOne2OneXML() throws Exception {
+        readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    @Test
+    public void testReadEmployeeWithAddressLazyFetchOne2OneJSON() throws Exception {
+        readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Test
+    public void testReadEmployeeWithPhoneNumbersLazyFetchOne2ManyXML() throws Exception {
+        readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    @Test
+    public void testReadEmployeeWithPhoneNumbersLazyFetchOne2ManyJSON() throws Exception {
+        readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    private void readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType mediaType) throws Exception {
+        // phone numbers on employee object is annoted to be LAZY fetch
+        // Create an employee without any phone numbers, and make sure that read emmployee response doesn't contain phone numbers,
+        // then add a phone number to the employee and re-read the employee to make sure that the response contains a link to the phone number
+        // even if it is fetched lazily.
+
+        // create an employee
+        Employee employee = new Employee();
+        employee.setFirstName("Louis");
+        employee.setLastName("Armstrong");
+
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee create failed.", employee);
+        assertTrue(employee.getPhoneNumbers().isEmpty());
+
+        // create a cell phone number for this employee
+        PhoneNumber cell = new PhoneNumber();
+        cell.setId(employee.getId());
+        cell.setNumber("613-200 1234");
+        cell.setType("cell");
+        cell.setEmployee(employee);
+        cell = RestUtils.restCreate(context, cell, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", cell);
+        assertTrue("613-200 1234".equals(cell.getNumber()));
+
+        // update employee with cell number
+        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", cell, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
+
+        // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell";
+        assertTrue(result.contains(cellLinkHref));
+
+        // read employee with phone numbers
+        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
+        // make sure employee has a phone number
+        assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
+
+        // delete employee (cascade deletes phone number)
+        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+
+
+    private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
+        // address on employee object is annoted to be LAZY fetch
+        // Create an employee without any address, and make sure that read employee response doesn't contain address,
+        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address
+        // even if it is fetched lazily.
+
+        // create an employee
+        Employee employee = new Employee();
+        employee.setFirstName("Diana");
+        employee.setLastName("Krall");
+
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee create failed.", employee);
+        assertTrue(employee.getAddress() == null);
+
+        // create an address for this employee
+        EmployeeAddress address = new EmployeeAddress();
+        address.setCity("Toronto");
+        address.setStreet("Queen street");
+        address.setPostalCode("ON");
+        address.setCountry("CA");
+        address.setPostalCode("H0H 0H0");
+
+        address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee address create failed.", address);
+        assertTrue("Queen street".equals(address.getStreet()));
+        assertTrue("H0H 0H0".equals(address.getPostalCode()));
+
+        // update employee with address
+        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "address", address, DEFAULT_PU, mediaType, null, true);
+        assertNotNull(result);
+
+        // make sure that response from restUpdateBidirectionalRelationship contains newly added address in employee object
+        String addressLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress/" + address.getId();
+        assertTrue(result.contains(addressLinkHref));
+
+        // read employee with an addresss
+        String employeeWithAddress = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
+        assertNotNull("Employee read failed.", employeeWithAddress);
+        // make sure employee has address
+        assertTrue(employeeWithAddress.contains(addressLinkHref));
+
+        // delete employee (cascade deletes address)
+        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+
     private void getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType mediaType) throws Exception {
         EmployeeAddress address = new EmployeeAddress("Newyork City", "USA", "NY", "10005", "Wall Street");
         byte[] manhattan = RestUtils.convertImageToByteArray("manhattan.png");
