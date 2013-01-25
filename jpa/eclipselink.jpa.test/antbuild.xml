@@ -389,6 +389,7 @@
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${resource.jar}'"/>
         <echo message="   '${junit.lib}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.antlr_*.jar'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/org.eclipse.persistence.nosql_*.jar'"/>
@@ -403,6 +404,7 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${resource.jar}"/>
             <pathelement path="${junit.lib}"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.antlr_*.jar"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
@@ -461,14 +463,12 @@
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
         <echo message="   'compile.path'"/>
-        <echo message="   '${jpatest.2.common.plugins.dir}/${resource.jar}'"/>
         <echo message="   '${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}'"/>
         <echo message="   '../../../extension.lib.external/mongo.jar'"/>
         <echo message="  "/>
         <path id="compile.server.path">
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${resource.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
             <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
@@ -1439,8 +1439,8 @@
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
          <path id="run.oracle.nosql.classpath">
-            <!-- pathelement path="${jpatest.2.oracle.nosqltest.dir}/${classes.dir}"/>
-            <pathelement path="${jpatest.2.oracle.nosql.dir}/${classes.dir}"/ -->
+            <pathelement path="${jpatest.2.oracle.nosqltest.dir}/${classes.dir}"/>
+            <pathelement path="${jpatest.2.oracle.nosql.dir}/${classes.dir}"/>
             <path refid="compile.path"/>
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
             <pathelement path="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
