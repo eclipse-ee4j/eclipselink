@@ -53,7 +53,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
                         query = "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id"),
         @NamedQuery(
                         name="Employee.salaryMax", 
-                        query="SELECT e.id, max(e.salary) from Employee e GROUP BY e.id, e.salary"),
+                        query="SELECT e.id, max(e.salary) AS max_salary from Employee e GROUP BY e.id, e.salary"),
         @NamedQuery(
                         name="Employee.count", 
                         query="SELECT count(e) FROM Employee e")                        

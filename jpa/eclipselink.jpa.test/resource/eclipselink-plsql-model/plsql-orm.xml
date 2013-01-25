@@ -29,6 +29,10 @@
             <parameter name="P_EMP" direction="IN_OUT" database-type="PLSQL_P.PLSQL_EMP_REC"/>
             <parameter name="P_CITY" direction="OUT" database-type="VARCHAR_TYPE"/>
     </named-plsql-stored-procedure-query>       
+    <named-plsql-stored-procedure-query name="TEST_ORACLE_TYPES" procedure-name="FAKE_PACK.OBJECT_TEST">
+            <parameter name="P_IN"  direction="IN" database-type="VARRAY_NUMERO_UNO"/>
+            <parameter name="P_OUT" direction="OUT" database-type="OBJECT_NUMERO_DOS"/>
+    </named-plsql-stored-procedure-query>       
     <named-plsql-stored-function-query name="PLSQL_SIMPLE_IN_FUNC" function-name="PLSQL_SIMPLE_IN_FUNC">
             <parameter name="P_VARCHAR" database-type="VARCHAR_TYPE"/>
             <parameter name="P_BOOLEAN" database-type="PLSQLBoolean"/>
@@ -71,6 +75,16 @@
     </plsql-record>
     <plsql-table name="PLSQL_P.PLSQL_ADDRESS_LIST" compatible-type="PLSQL_P_PLSQL_ADDRESS_LIST" nested-type="PLSQL_P.PLSQL_ADDRESS_REC"/>
     <plsql-table name="PLSQL_P.PLSQL_PHONE_LIST" compatible-type="PLSQL_P_PLSQL_PHONE_LIST" nested-type="PLSQL_P.PLSQL_PHONE_REC"/>
+    <oracle-array name="VARRAY_NUMERO_UNO" nestedType="VARCHAR"/>
+    <oracle-array name="VARRAY_NUMERO_DOS" nestedType="NUMBER"/>
+    <oracle-object name="OBJECT_NUMERO_UNO">
+        <field name="OO_FLD1" database-type="VARCHAR_TYPE"/>
+        <field name="OO_FLD2" database-type="NUMERIC_TYPE"/>
+    </oracle-object>
+    <oracle-object name="OBJECT_NUMERO_DOS">
+        <field name="OO_FLD1" database-type="NUMERIC_TYPE"/>
+        <field name="OO_FLD2" database-type="NUMERIC_TYPE"/>
+    </oracle-object>
     <entity class="Employee" access="FIELD">
         <struct name="PLSQL_P_PLSQL_EMP_REC">
                 <field>EMP_ID</field>

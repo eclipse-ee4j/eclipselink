@@ -735,6 +735,8 @@
             <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query"/>
             <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query"/>
             <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query"/>
+            <xsd:element name="oracle-object" type="orm:oracle-object"/>
+            <xsd:element name="oracle-array" type="orm:oracle-array"/>
             <xsd:element name="plsql-record" type="orm:plsql-record"/>
             <xsd:element name="plsql-table" type="orm:plsql-table"/>
             <xsd:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping"/>
@@ -951,6 +953,8 @@
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="oracle-object" type="orm:oracle-object" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="oracle-array" type="orm:oracle-array" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" type="orm:sql-result-set-mapping" minOccurs="0" maxOccurs="unbounded"/>
@@ -2442,6 +2446,8 @@
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="oracle-object" type="orm:oracle-object" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="oracle-array" type="orm:oracle-array" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>      
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
@@ -3396,6 +3402,8 @@
       <xsd:element name="named-stored-function-query" type="orm:named-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>            
       <xsd:element name="named-plsql-stored-procedure-query" type="orm:named-plsql-stored-procedure-query" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="named-plsql-stored-function-query" type="orm:named-plsql-stored-function-query" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="oracle-object" type="orm:oracle-object" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="oracle-array" type="orm:oracle-array" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-record" type="orm:plsql-record" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="plsql-table" type="orm:plsql-table" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="sql-result-set-mapping" 
@@ -3855,6 +3863,87 @@
   
   <!-- **************************************************** -->
   
+  <xsd:complexType name="oracle-object">
+    <xsd:annotation>
+      <xsd:documentation>
+		/** 
+		 * An OracleObject annotation is used to define an Oracle database OBJECT type.
+		 * This type can be used within PLSQL procedure calls.
+		 * 
+		 * @see NamedPLSQLStoredProcedureQuery
+		 * @author David McCann
+		 * @since EclipseLink 2.5
+		 */
+		@Target({TYPE})
+		@Retention(RUNTIME)
+		public @interface OracleObject {
+		
+		    /**
+		     * (Required) The name of the OBJECT type in the database.
+		     */
+		    String name();
+		    
+		    /**
+		     * (Optional) The Java class to map the OBJECT type to.
+		     * This class must be mapped using a @Struct annotation.
+		     */
+		    Class javaType() default void.class;
+		    
+		    /**
+		     * (Required) Defines the fields in the record type.
+		     */
+		    PLSQLParameter[] fields();
+		}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="field" type="orm:plsql-parameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="java-type" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+  
+  <xsd:complexType name="oracle-array">
+    <xsd:annotation>
+      <xsd:documentation>
+       /** 
+        * An OracleArray annotation is used to define an Oracle database VARRAY type.
+        * This type can be used within PLSQL procedure calls.
+        * 
+        * @see NamedPLSQLStoredProcedureQuery
+        * @author David McCann
+        * @since EclipseLink 2.5
+        */ 
+        @Target({TYPE})
+		@Retention(RUNTIME)
+		public @interface OracleArray {
+		    /**
+		     * (Required) The name of the VARRAY type in the database.
+		     */
+		    String name();
+		
+		    /**
+		     * (Optional) The name of the database type this VARRAY holds onto.
+		     */
+		    String nestedType() default "VARCHAR_TYPE";
+		    
+		    /**
+		     * (Optional) The Java Collection class to map the VARRAY to.
+		     * This can be any valid Collection implementation.
+		     */
+		    Class javaType() default ArrayList.class;
+		}
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="java-type" type="xsd:string"/>
+    <xsd:attribute name="nested-type" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
   <xsd:complexType name="plsql-record">
     <xsd:annotation>
       <xsd:documentation>

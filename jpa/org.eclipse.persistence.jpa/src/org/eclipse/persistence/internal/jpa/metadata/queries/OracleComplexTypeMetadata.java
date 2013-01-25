@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,7 +8,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation
+ *     David McCann - Jan.10, 2013 - 2.5.0 - initial API and implementation
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -18,7 +18,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 /**
  * INTERNAL:
- * Object to hold onto a PLSQL complex type meta-data.
+ * Object to hold onto Oracle complex type meta-data.
  * 
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
@@ -30,18 +30,17 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  *   'companion' annotation needed for processing.
  * - methods should be preserved in alphabetical order.
  * 
- * @author James Sutherland
- * @since EclipseLink 2.3
+ * @author David McCann
+ * @since EclipseLink 2.5
  */
-public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
-    private String compatibleType;
+public abstract class OracleComplexTypeMetadata extends ComplexTypeMetadata {
     private String javaType;
     
     /**
      * INTERNAL:
      * Used for XML loading.
      */
-    public PLSQLComplexTypeMetadata(String element) {
+    public OracleComplexTypeMetadata(String element) {
         super(element);
     }
     
@@ -49,11 +48,9 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
      * INTERNAL:
      * Used for annotation loading.
      */
-    public PLSQLComplexTypeMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
+    public OracleComplexTypeMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
         super(record, accessor);
-        
-        this.compatibleType = (String) record.getAttribute("compatibleType");
-        this.javaType = (String) record.getAttribute("javaType");        
+        this.javaType = (String) record.getAttribute("javaType");
     }
     
     /**
@@ -61,29 +58,9 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
      */
     @Override
     public boolean equals(Object objectToCompare) {
-        if (objectToCompare instanceof PLSQLRecordMetadata) {
-            PLSQLRecordMetadata parameter = (PLSQLRecordMetadata) objectToCompare;
-            
-            if (! valuesMatch(this.name, parameter.getName())) {
-                return false;
-            }
-            
-            if (! valuesMatch(this.compatibleType, parameter.getCompatibleType())) {
-                return false;
-            }
-            
-            return valuesMatch(this.javaType, parameter.getJavaType());
-        }
-        
-        return false;
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public String getCompatibleType() {
-        return compatibleType;
+        return super.equals(objectToCompare) &&
+                objectToCompare instanceof OracleComplexTypeMetadata &&
+                valuesMatch(this.javaType, ((OracleComplexTypeMetadata) objectToCompare).getJavaType());
     }
 
     /**
@@ -100,19 +77,10 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
     @Override
     protected void process(ComplexDatabaseType type) {
         type.setTypeName(this.name);
-        type.setCompatibleType(this.compatibleType);
         
         if (this.javaType != null) {
             type.setJavaType(getJavaClass(getMetadataClass(this.javaType)));
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setCompatibleType(String compatibleType) {
-        this.compatibleType = compatibleType;
     }
     
     /**
@@ -122,11 +90,11 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
     public void setJavaType(String javaType) {
         this.javaType = javaType;
     }
-    
+
     /**
-     * Indicates an instance of PLSQLComplexTypeMetadata.
+     * Indicates an instance of OracleComplexTypeMetadata.
      */
-    public boolean isPLSQLComplexTypeMetadata() {
+    public boolean isOracleComplexTypeMetadata() {
         return true;
     }
 }

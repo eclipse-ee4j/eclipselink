@@ -20,6 +20,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     01/24/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -33,6 +35,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -82,6 +85,8 @@ public class DDLTestSuite extends JUnitTestCase {
         suite.addTest(new DDLTestSuite("testPersistenceGenerateSchemaNoConnection"));
         suite.addTest(new DDLTestSuite("testPersistenceGenerateSchemaDropOnlyScript"));
         suite.addTest(new DDLTestSuite("testPersistenceGenerateSchemaUsingProvidedWriters"));
+        suite.addTest(new DDLTestSuite("testRootTargetScriptFileName"));
+        suite.addTest(new DDLTestSuite("testIllegalArgumentExceptionWithNoScriptTargetProvided"));
         
         return suite;
     }
@@ -90,8 +95,9 @@ public class DDLTestSuite extends JUnitTestCase {
      * Test the generate schema feature from the Persistence API. 
      */
     public void testPersistenceGenerateSchemaUseConnection() {
+        Map properties = new HashMap();
         // Get database properties will pick up test.properties database connection details.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-use-conn-session");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
         properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
@@ -131,7 +137,9 @@ public class DDLTestSuite extends JUnitTestCase {
             // Now create an entity manager and build some objects for this PU using
             // the same session name. Create the schema on the database with the 
             // target scripts built previously.
-            properties = JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
+            properties = new HashMap();
+            // Get database properties will pick up test.properties database connection details.
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
             properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-no-conn-session");
             properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, true);
             properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_SOURCE, GENERATE_SCHEMA_NO_CONNECTION_DROP_TARGET);
@@ -236,8 +244,9 @@ public class DDLTestSuite extends JUnitTestCase {
      * Test the generate schema feature from the Persistence API. 
      */
     public void testPersistenceGenerateSchemaUsingProvidedWriters() {
+        Map properties = new HashMap();
         // Get database properties will pick up test.properties database connection details.
-        Map properties = JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName());
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-using-provided-writers");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
         properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
@@ -251,5 +260,38 @@ public class DDLTestSuite extends JUnitTestCase {
         } catch (IOException e) {
             fail("Error occurred: " + e);
         }
+    }
+    
+    public void testRootTargetScriptFileName() {
+        Map properties = new HashMap();
+        // Get database properties will pick up test.properties database connection details.
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
+        properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
+        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "/temp-generate-schema-drop.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "/temp-generate-schema-create.jdbc");
+         
+        Persistence.generateSchema(getPersistenceUnitName(), properties);
+    }
+    
+    public void testIllegalArgumentExceptionWithNoScriptTargetProvided() {
+        Map properties = new HashMap();
+        // Get database properties will pick up test.properties database connection details.
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "testIllegalArgumentExceptionWithNoScriptTargetsProvided");
+        properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_CREATE);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
+        
+        try {
+            Persistence.generateSchema(getPersistenceUnitName(), properties);
+        } catch (PersistenceException exception) {
+            assertTrue("IllegalArgumentException not thrown", exception.getCause() instanceof IllegalArgumentException);
+            return;
+        }
+        
+        fail("Illegal Argument Exception was not thrown when a target script name not provided.");
     }
 }

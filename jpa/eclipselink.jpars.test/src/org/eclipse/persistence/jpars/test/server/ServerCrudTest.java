@@ -843,8 +843,7 @@ public class ServerCrudTest {
         assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
 
         // remove relationship between bid and the new user
-        String removedUser = RestUtils.restRemoveBidirectionalRelationship(context, String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", DEFAULT_PU,
-                MediaType.APPLICATION_JSON_TYPE, null, null, true);
+        String removedUser = RestUtils.restRemoveBidirectionalRelationship(String.valueOf(bid.getId()), StaticBid.class.getSimpleName(), "user", DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, null, null);
         if (removedUser != null) {
             System.out.println(removedUser);
         }

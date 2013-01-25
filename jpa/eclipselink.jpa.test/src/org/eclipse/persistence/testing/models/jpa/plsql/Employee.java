@@ -29,6 +29,10 @@ import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQuery;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQueries;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQuery;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleArray;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleArrays;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleObject;
+import org.eclipse.persistence.platform.database.oracle.annotations.OracleObjects;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLParameter;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
 
@@ -63,6 +67,11 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
                 parameters = {
                     @PLSQLParameter(name = "P_EMP", direction=Direction.IN_OUT, databaseType = "PLSQL_P.PLSQL_EMP_REC"),
                     @PLSQLParameter(name = "P_CITY", direction=Direction.OUT, databaseType = "VARCHAR_TYPE")
+        }),
+        @NamedPLSQLStoredProcedureQuery(name = "TEST_ORACLE_TYPES", procedureName = "FAKE_PACK.OBJECT_TEST",
+        	parameters = {
+        		@PLSQLParameter(name = "P_IN",  direction=Direction.IN,  databaseType = "VARRAY_NUMERO_UNO"),
+        		@PLSQLParameter(name = "P_OUT", direction=Direction.OUT, databaseType = "OBJECT_NUMERO_DOS")
         })
 })
 @NamedPLSQLStoredFunctionQuery(name = "PLSQL_SIMPLE_IN_FUNC", functionName = "PLSQL_SIMPLE_IN_FUNC",
@@ -89,6 +98,24 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
             @PLSQLParameter(name="PHONES", databaseType = "PLSQL_P.PLSQL_PHONE_LIST")
         }
 )
+@OracleArrays( {
+	@OracleArray(name="VARRAY_NUMERO_UNO", nestedType="VARCHAR"),
+	@OracleArray(name="VARRAY_NUMERO_DOS", nestedType="NUMBER")
+})
+@OracleObjects({
+	@OracleObject(name="OBJECT_NUMERO_UNO", 
+			fields={
+				@PLSQLParameter(name="OO_FLD1", databaseType="VARCHAR_TYPE"),
+				@PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
+			}
+	),
+	@OracleObject(name="OBJECT_NUMERO_DOS", 
+		fields={
+			@PLSQLParameter(name="OO_FLD1", databaseType="NUMERIC_TYPE"),
+			@PLSQLParameter(name="OO_FLD2", databaseType="NUMERIC_TYPE")
+		}
+	)
+})
 /**
  * Used to test simple PLSQL record types.
  * 

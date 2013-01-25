@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -7,10 +7,9 @@
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *      dclarke/tware - initial 
+ *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -24,12 +23,6 @@ import java.util.Set;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -53,25 +46,17 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 /**
- * PersistenceResource 
- * @author tware
+ * @author gonural
  *
  */
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/")
-public class PersistenceResource extends AbstractResource {
+public abstract class AbstractPersistenceResource extends AbstractResource {
 
-    @GET
-    public Response getContexts(@Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
-        return getContexts(hh, uriInfo.getBaseUri());
-    }
-
-    protected Response getContexts(HttpHeaders hh, URI baseURI) throws JAXBException {
+    protected Response getContexts(@SuppressWarnings("unused") String version, HttpHeaders hh, URI baseURI) throws JAXBException {
         Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
         Iterator<String> contextIterator = contexts.iterator();
         List<Link> links = new ArrayList<Link>();
@@ -85,14 +70,9 @@ public class PersistenceResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
     }
 
-    @POST
-    @Produces(MediaType.WILDCARD)
-    public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return callSessionBeanInternal(hh, ui, is);
-    }
-
     @SuppressWarnings("rawtypes")
-    protected Response callSessionBeanInternal(HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    protected Response callSessionBeanInternal(@SuppressWarnings("unused") String version, HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException {
         SessionBeanCall call = null;
         call = unmarshallSessionBeanCall(is);
 
