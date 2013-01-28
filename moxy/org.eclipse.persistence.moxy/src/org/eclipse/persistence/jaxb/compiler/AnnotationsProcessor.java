@@ -230,6 +230,7 @@ public class AnnotationsProcessor {
     private boolean hasSwaRef;
     
     private List<String> referencedByTransformer;
+    private boolean hasXmlBindings = false;
 
     public AnnotationsProcessor(Helper helper) {
         this.helper = helper;
@@ -1762,7 +1763,7 @@ public class AnnotationsProcessor {
             JavaField nextField = fieldIt.next();
             int modifiers = nextField.getModifiers();
 
-            if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic)) {
+            if (!Modifier.isTransient(modifiers) && ((Modifier.isPublic(nextField.getModifiers()) && onlyPublic) || !onlyPublic ||hasJAXBAnnotations(nextField))) {
                 if (!Modifier.isStatic(modifiers)) {
                     if ((onlyExplicit && hasJAXBAnnotations(nextField)) || !onlyExplicit) {
                          property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
@@ -2918,8 +2919,8 @@ public class AnnotationsProcessor {
     }
 
     public ArrayList getPublicMemberPropertiesForClass(JavaClass cls, TypeInfo info) {
-        ArrayList<Property> fieldProperties = getFieldPropertiesForClass(cls, info, false);
-        ArrayList<Property> methodProperties = getPropertyPropertiesForClass(cls, info, false);
+        ArrayList<Property> fieldProperties = getFieldPropertiesForClass(cls, info, !hasXmlBindings());
+        ArrayList<Property> methodProperties = getPropertyPropertiesForClass(cls, info, !hasXmlBindings());
 
         // filter out non-public properties that aren't annotated
         ArrayList<Property> publicFieldProperties = new ArrayList<Property>();
@@ -4678,4 +4679,11 @@ public class AnnotationsProcessor {
         this.xmlAccessorFactorySupport = value;
     }
 
+    public void setHasXmlBindings(boolean b) {
+        this.hasXmlBindings = true;
+    }
+    
+    public boolean hasXmlBindings() {
+        return this.hasXmlBindings;
+    }
 }
