@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -48,6 +50,13 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
      * Indicates whether alter is supported
      */
     public boolean isAlterSupported(AbstractSession session) {
+        return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean isTableSequenceDefinition() {
         return false;
     }
 

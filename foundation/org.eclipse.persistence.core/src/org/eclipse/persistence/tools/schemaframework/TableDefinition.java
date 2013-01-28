@@ -17,6 +17,8 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  *******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -255,20 +258,18 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * This is done separately from the create because of dependencies.
      */
     public Writer buildConstraintCreationWriter(AbstractSession session, ForeignKeyConstraint foreignKey, Writer writer) throws ValidationException {
-        if (! foreignKey.disableForeignKey()) {
-            try {
-                writer.write("ALTER TABLE " + getFullName());
-                writer.write(" ADD CONSTRAINT ");
-                if (!session.getPlatform().shouldPrintConstraintNameAfter()) {
-                    writer.write(foreignKey.getName() + " ");
-                }
-                foreignKey.appendDBString(writer, session);
-                if (session.getPlatform().shouldPrintConstraintNameAfter()) {
-                    writer.write(" CONSTRAINT " + foreignKey.getName());
-                }
-            } catch (IOException ioException) {
-                throw ValidationException.fileError(ioException);
+        try {
+            writer.write("ALTER TABLE " + getFullName());
+            writer.write(" ADD CONSTRAINT ");
+            if (!session.getPlatform().shouldPrintConstraintNameAfter()) {
+                writer.write(foreignKey.getName() + " ");
             }
+            foreignKey.appendDBString(writer, session);
+            if (session.getPlatform().shouldPrintConstraintNameAfter()) {
+                writer.write(" CONSTRAINT " + foreignKey.getName());
+            }
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
         }
         
         return writer;
@@ -382,6 +383,15 @@ public class TableDefinition extends DatabaseObjectDefinition {
     }
 
     /**
+     * PUBLIC:
+     * Return the schema associated with this table.
+     */
+    @Override
+    public String getDatabaseSchema() {
+        return getTable().getTableQualifier();
+    }
+    
+    /**
      * INTERNAL:
      * Set the end of the sql create statement - the part after the field list.
      */
@@ -470,6 +480,36 @@ public class TableDefinition extends DatabaseObjectDefinition {
             throw ValidationException.fileError(ioException);
         }
         
+        return writer;
+    }
+    
+    /**
+     * INTERNAL:
+     * Build the create schema DDL.
+     */
+    protected Writer buildDatabaseSchemaCreationWriter(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) {
+        try {
+            writer.write(session.getPlatform().getCreateDatabaseSchemaString(getDatabaseSchema()));
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+
+        // Tag that we created a schema (to avoid creating it again)
+        createdDatabaseSchemas.add(getDatabaseSchema());
+        return writer;
+    }
+    
+    /**
+     * INTERNAL:
+     * Build the drop schema DDL.
+     */
+    protected Writer buildDatabaseSchemaDeletionWriter(AbstractSession session, Writer writer) {
+        try {
+            writer.write(session.getPlatform().getDropDatabaseSchemaString(getDatabaseSchema()));
+        } catch (IOException ioException) {
+            throw ValidationException.fileError(ioException);
+        }
+
         return writer;
     }
     
@@ -794,8 +834,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
 
         if (session.getPlatform().supportsForeignKeyConstraints()) {
             for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-                buildConstraintCreationWriter(session, foreignKey, schemaWriter).toString();
-                writeLineSeperator(session, schemaWriter);
+                if (! foreignKey.disableForeignKey()) {
+                    buildConstraintCreationWriter(session, foreignKey, schemaWriter).toString();
+                    writeLineSeperator(session, schemaWriter);
+                }
             }
         }
     }
@@ -809,6 +851,24 @@ public class TableDefinition extends DatabaseObjectDefinition {
         createForeignConstraintsOnDatabase(session);
     }
 
+    /**
+     * INTERNAL:
+     * Execute the DDL to create the database schema for this object.
+     */
+    @Override
+    public void createDatabaseSchema(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) throws EclipseLinkException {
+        buildDatabaseSchemaCreationWriter(session, writer, createdDatabaseSchemas);
+    }
+    
+    /**
+     * INTERNAL:
+     * Execute the DDL to create the database schema for this object.
+     */
+    @Override
+    public void createDatabaseSchemaOnDatabase(AbstractSession session, Set<String> createdDatabaseSchemas) throws EclipseLinkException {        
+        session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDatabaseSchemaCreationWriter(session, new StringWriter(), createdDatabaseSchemas).toString()));
+    }
+    
     void createUniqueConstraintsOnDatabase(final AbstractSession session) throws ValidationException, DatabaseException {       
         if ((!session.getPlatform().supportsUniqueKeyConstraints())
                 || getUniqueKeys().isEmpty()
@@ -827,7 +887,9 @@ public class TableDefinition extends DatabaseObjectDefinition {
         }
 
         for (ForeignKeyConstraint foreignKey : getForeignKeyMap().values()) {
-            session.priviledgedExecuteNonSelectingCall(new SQLCall(buildConstraintCreationWriter(session, foreignKey, new StringWriter()).toString()));
+            if (! foreignKey.disableForeignKey()) {
+                session.priviledgedExecuteNonSelectingCall(new SQLCall(buildConstraintCreationWriter(session, foreignKey, new StringWriter()).toString()));
+            }
         }
     }
 
@@ -927,6 +989,24 @@ public class TableDefinition extends DatabaseObjectDefinition {
         return "DROP TABLE " + this.getName();
     }
 
+    /**
+     * INTERNAL:
+     * Execute the DDL to drop the database schema for this object.
+     */
+    @Override
+    public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {
+        buildDatabaseSchemaDeletionWriter(session, writer);
+    }
+    
+    /**
+     * INTERNAL:
+     * Execute the DDL to drop the database schema for this object.
+     */
+    @Override
+    public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {        
+        session.priviledgedExecuteNonSelectingCall(new SQLCall(buildDatabaseSchemaDeletionWriter(session, new StringWriter()).toString()));
+    }
+    
     /**
      * INTERNAL:
      * Execute the SQL alter table constraint creation string.
@@ -1119,7 +1199,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public List<UniqueKeyConstraint> getUniqueKeys() {
         return uniqueKeys;
     }
-
+    
     /**
      * PUBLIC:
      */
@@ -1214,6 +1294,15 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public void setUserDefinedForeignKeyConstraints(Map<String, ForeignKeyConstraint> foreignKeyConstraints) {
         foreignKeyMap = foreignKeyConstraints;
         hasUserDefinedForeignKeyConstraints = true;
+    }
+    
+    /**
+     * If this table has a schema (and catalog specified) make sure it is
+     * created.
+     */
+    @Override
+    public boolean shouldCreateDatabaseSchema(Set<String> createdDatabaseSchemas) {
+        return hasDatabaseSchema() && ! createdDatabaseSchemas.contains(getDatabaseSchema());
     }
     
     /**

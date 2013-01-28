@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -138,7 +140,6 @@ public class TableCreator {
      */
     public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
         createTables(session, schemaManager, build, true);
-        
     }
 
     /**
@@ -309,17 +310,17 @@ public class TableCreator {
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean dontReplaceSequenceTable) {
-        replaceTables(session, schemaManager, dontReplaceSequenceTable, false);
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean createSequenceTables) {
+        replaceTables(session, schemaManager, createSequenceTables, false);
     }
     
     /**
      * Recreate the tables on the database.
      * This will drop the tables if they exist and recreate them.
      */
-    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean dontReplaceSequenceTable, boolean dontReplaceSequences) {
+    public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean createSequenceTables, boolean createSequences) {
         replaceTablesAndConstraints(schemaManager, session);
-        schemaManager.createOrReplaceSequences(dontReplaceSequenceTable, dontReplaceSequences);
+        schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
     }
     
     protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
@@ -383,7 +384,7 @@ public class TableCreator {
         if (session.getProject().usesSequencing()) {
             Sequence sequence = session.getLogin().getDefaultSequence();
             if (sequence instanceof TableSequence) {
-                sequenceTableName = ((TableSequence)sequence).getTableName();
+                sequenceTableName = ((TableSequence)sequence).getQualifiedTableName();
             }
         }
         return sequenceTableName;
@@ -408,7 +409,6 @@ public class TableCreator {
         } finally {
             setIgnoreDatabaseException(ignore);            
         }
-        
     }
     
     /**

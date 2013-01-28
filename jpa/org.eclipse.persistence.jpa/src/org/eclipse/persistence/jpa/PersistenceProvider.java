@@ -18,6 +18,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.jpa;
 
@@ -54,7 +56,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
     /**
      * Internal method to return the entity manager factory.
      */
-    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties){
+    protected EntityManagerFactoryImpl createEntityManagerFactoryImpl(PersistenceUnitInfo puInfo, Map properties, boolean requiresConnection){
         if (puInfo != null) {
             boolean isNew = false;
             String uniqueName = null; // the name the uniquely defines the pu
@@ -132,7 +134,8 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             EntityManagerFactoryImpl factory = null;
             try {
                 factory = new EntityManagerFactoryImpl(emSetupImpl, properties);
-        
+                emSetupImpl.setRequiresConnection(requiresConnection);
+                
                 // This code has been added to allow validation to occur without actually calling createEntityManager
                 if (emSetupImpl.shouldGetSessionOnCreateFactory(properties)) {
                     factory.getDatabaseSession();
@@ -172,7 +175,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         if (checkForProviderProperty(nonNullProperties)){
             String name = (emName == null) ? "" : emName;
             JPAInitializer initializer = getInitializer(name, nonNullProperties);
-            return createEntityManagerFactoryImpl(initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties);
+            return createEntityManagerFactoryImpl(initializer.findPersistenceUnitInfo(name, nonNullProperties), nonNullProperties, true);
         }
 
         // Not EclipseLink so return null;
@@ -204,10 +207,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
             // generating only to script. Since the user may have connected with 
             // specific database credentials for DDL generation or even provided
             // a specific connection, close the emf once we're done.
-            EntityManagerFactoryImpl emf = createEntityManagerFactoryImpl(info, properties);
-            EntityManager em = emf.createEntityManager(properties, false);
-            em.close();
-            emf.close();
+            createEntityManagerFactoryImpl(info, properties, false).close();
         }
     }
     

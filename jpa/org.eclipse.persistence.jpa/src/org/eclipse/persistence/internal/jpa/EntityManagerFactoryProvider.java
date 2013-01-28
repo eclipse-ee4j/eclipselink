@@ -19,6 +19,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/24/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -119,7 +121,7 @@ public class EntityManagerFactoryProvider {
         } else if (ddlType == TableCreationType.DROP) {
             mgr.dropDefaultTables();
         } else if  (ddlType == TableCreationType.DROP_AND_CREATE) {
-            mgr.replaceDefaultTables(true, true); 
+            mgr.replaceDefaultTables(true, false, true); 
         } else if (ddlType == TableCreationType.EXTEND) { 
             mgr.extendDefaultTables(true);
         }
@@ -191,6 +193,10 @@ public class EntityManagerFactoryProvider {
         }
         
         return value;
+    }
+    
+    public static boolean hasConfigProperty(String propertyKey, Map overrides) {
+        return getConfigProperty(propertyKey, overrides) != null;
     }
     
     protected static Object getConfigProperty(String propertyKey, Map overrides){
@@ -513,9 +519,7 @@ public class EntityManagerFactoryProvider {
         }
 
         mgr.setCreateSQLFiles(false);
-        // When running in the application server environment always ensure that
-        // we write out both the drop and create table files.
-        generateDefaultTables(mgr, TableCreationType.DROP_AND_CREATE);
+        generateDefaultTables(mgr, ddlType);
         mgr.closeDDLWriter();
     }
 }

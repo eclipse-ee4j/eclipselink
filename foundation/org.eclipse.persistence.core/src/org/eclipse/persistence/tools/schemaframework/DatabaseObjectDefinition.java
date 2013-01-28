@@ -13,10 +13,14 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.*;
+import java.util.Set;
+
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.exceptions.*;
@@ -93,6 +97,26 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
 
     /**
      * INTERNAL:
+     * Execute the DDL to create the database schema for this object.
+     * Does nothing at this level, subclasses that support this must override
+     * this method.
+     * 
+     * @see TableDefinition
+     */
+    public void createDatabaseSchema(AbstractSession session, Writer writer, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
+    
+    /**
+     * INTERNAL:
+     * Execute the DDL to create the database schema for this object.
+     * Does nothing at this level, subclasses that support this must override
+     * this method.
+     * 
+     * @see TableDefinition
+     */
+    public void createDatabaseSchemaOnDatabase(AbstractSession session, Set<String> createdDatabaseSchemas) throws EclipseLinkException {}
+    
+    /**
+     * INTERNAL:
      * Either drop from the database directly or write the statement to a file.
      * Database objects are root level entities such as tables, views, procs, sequences...
      */
@@ -113,13 +137,21 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
      * INTERNAL:
      * Execute the DDL to create this object.
      */
-    public void createOnDatabase(AbstractSession session) throws EclipseLinkException {
+    public void createOnDatabase(AbstractSession session) throws EclipseLinkException {        
         session.priviledgedExecuteNonSelectingCall(new SQLCall(buildCreationWriter(session, new StringWriter()).toString()));
         
         if (shouldCreateVPDCalls(session)) {
             session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationPolicyWriter(session, new StringWriter()).toString()));
             session.priviledgedExecuteNonSelectingCall(new SQLCall(buildVPDCreationFunctionWriter(session, new StringWriter()).toString()));
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Subclasses who care should override this method, e.g. TableDefinition.
+     */
+    public boolean shouldCreateDatabaseSchema(Set<String> createdDatabaseSchemas) {
+        return false;
     }
     
     /**
@@ -130,6 +162,26 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         return false;
     }
 
+    /**
+     * INTERNAL:
+     * Execute the DDL to drop the database schema for this object.      
+     * Does nothing at this level, subclasses that support this must override
+     * this method.
+     * 
+     * @see TableDefinition
+     */
+    public void dropDatabaseSchema(AbstractSession session, Writer writer) throws EclipseLinkException {}
+    
+    /**
+     * INTERNAL:
+     * Execute the DDL to drop the database schema for this object.
+     * Does nothing at this level, subclasses that support this must override
+     * this method.
+     * 
+     * @see TableDefinition
+     */
+    public void dropDatabaseSchemaOnDatabase(AbstractSession session) throws EclipseLinkException {}
+    
     /**
      * INTERNAL:
      * Execute the DDL to drop the object.
@@ -159,6 +211,16 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         }
     }
 
+    /**
+     * PUBLIC:
+     * Return the database schema associated with this database object. 
+     * 
+     * @see TableDefinition
+     */
+    public String getDatabaseSchema() {
+        return null;
+    }
+    
     /**
      * INTERNAL:
      * Most major databases support a creator name scope.
@@ -190,6 +252,13 @@ public abstract class DatabaseObjectDefinition implements Cloneable, Serializabl
         return qualifier;
     }
 
+    /**
+     * INTERNAL:
+     * Return true is this database object definition has a schema definition.
+     */
+    protected boolean hasDatabaseSchema() {
+        return getDatabaseSchema() != null && ! getDatabaseSchema().equals("");
+    }
     
     /**
      * Execute any statements required after the creation of the object

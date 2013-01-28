@@ -23,6 +23,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/11/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1503,8 +1505,8 @@ public class PersistenceUnitProperties {
     public static final String SCHEMA_DATABASE_GENERATION = "database";
     
     /**
-     * The parameter value <code>"both"</code> 
-     * <p>For use with the <code>"eclipselink.ddl-generation.output-mode"</code> property.</p>
+     * The parameter value <code>"database-and-scripts"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-target"</code> property.</p>
      * <p>Specifies that DDL will be written to file(s) and the database.</p>
      * 
      * @see #SCHEMA_GENERATION_TARGET
@@ -1512,6 +1514,86 @@ public class PersistenceUnitProperties {
      * @see #SCHEMA_DROP_SCRIPT_TARGET
      */
     public static final String SCHEMA_DATABASE_AND_SCRIPTS_GENERATION = "database-and-scripts";
+    
+    /**
+     * The javax.persistence.schema-generation-source property specifies whether
+     * schema generation is to occur on the basis of the object/relational 
+     * mapping metadata, DDL scripts, or a combination of the two. The values 
+     * for this property are "metadata", "scripts", "metadata-then-scripts", 
+     * "scripts-then-metadata". If this property is not specified, and scripts 
+     * are specified by the javax.persistence.ddl-create-script-source and 
+     * javax.persistence.ddl-drop-script-source properties, scripts (only) will 
+     * be used for schema generation; otherwise if this property is not 
+     * specified, schema generation will occur on the basis of the 
+     * object/relational mapping metadata (only). The "metadata-then-scripts" 
+     * and "scripts-then-metadata" values specify that a combination of metadata 
+     * and scripts is to be used, and the order in which this use is to occur. 
+     * If either of these values is specified and the resulting database actions 
+     * are not disjoint, the results are undefined and schema generation may fail.
+     */
+    public static final String SCHEMA_GENERATION_SOURCE = "javax.persistence.schema-generation-source";
+    
+    /**
+     * The parameter value <code>"metadata"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-source"</code> property.</p>
+     * <p>Specifies that DDL generation source will come from the metadata only.</p>
+     * 
+     * @see #SCHEMA_GENERATION_SOURCE
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     */
+    public static final String SCHEMA_METADATA_SOURCE_GENERATION = "metadata";
+    
+    /**
+     * The parameter value <code>"scripts"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-source"</code> property.</p>
+     * <p>Specifies that DDL generation source will come from scripts only.</p>
+     * 
+     * @see #SCHEMA_GENERATION_SOURCE
+     * @see #SCHEMA_CREATE_SCRIPT_SOURCE
+     * @see #SCHEMA_DROP_SCRIPT_SOURCE
+     */
+    public static final String SCHEMA_SCRIPTS_SOURCE_GENERATION = "scripts";
+    
+    /**
+     * The parameter value <code>"metadata-then-scripts"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-source"</code> property.</p>
+     * <p>Specifies that DDL generation source will come from the metadata first
+     * followed with the scripts.</p>
+     * 
+     * @see #SCHEMA_GENERATION_SOURCE
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     * @see #SCHEMA_CREATE_SCRIPT_SOURCE
+     * @see #SCHEMA_DROP_SCRIPT_SOURCE
+     */
+    public static final String SCHEMA_METADATA_SCRIPTS_SOURCE_GENERATION = "metadata-then-scripts";
+    
+    /**
+     * The parameter value <code>"scripts-then-metadata"</code> 
+     * <p>For use with the <code>"javax.persistence.schema-generation-source"</code> property.</p>
+     * <p>Specifies that DDL generation source will come from the scripts first
+     * followed with the metadata.</p>
+     * 
+     * @see #SCHEMA_GENERATION_SOURCE
+     * @see #SCHEMA_CREATE_SCRIPT_TARGET
+     * @see #SCHEMA_DROP_SCRIPT_TARGET
+     * @see #SCHEMA_CREATE_SCRIPT_SOURCE
+     * @see #SCHEMA_DROP_SCRIPT_SOURCE
+     */
+    public static final String SCHEMA_SCRIPTS_METADATA_SOURCE_GENERATION = "scripts-then-metadata";
+    
+    /**
+     * The javax.persistence.create-database-schemas property specifies whether
+     * the persistence provider is to create the database schema(s) in addition 
+     * to creating database objects such as tables, sequences, constraints, etc. 
+     * The value of this boolean property should be set to true if the 
+     * persistence provider is to create schemas in the database or to generate 
+     * DDL that contains "CREATE SCHEMA" commands. If this property is not 
+     * supplied, the provider should not attempt to create database schemas. 
+     * This property may also be specified in Java SE environments.
+     */
+    public static final String SCHEMA_CREATE_DATABASE_SCHEMAS = "javax.persistence.create-database-schemas";
     
     /**
      * The property <code>"javax.persistence.ddl-create-script-target"</code>

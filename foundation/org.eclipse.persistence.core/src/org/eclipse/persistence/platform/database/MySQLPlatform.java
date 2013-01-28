@@ -12,6 +12,8 @@
  *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU 
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.platform.database;
 
@@ -516,6 +518,14 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     protected String getCreateTempTableSqlPrefix() {
         return "CREATE TEMPORARY TABLE IF NOT EXISTS ";
+    }
+    
+    /**
+     * Return the drop schema definition. Subclasses should override as needed.
+     */
+    @Override
+    public String getDropDatabaseSchemaString(String schema) {
+        return "DROP SCHEMA " + schema + " IF EXISTS";
     }
 
     /**

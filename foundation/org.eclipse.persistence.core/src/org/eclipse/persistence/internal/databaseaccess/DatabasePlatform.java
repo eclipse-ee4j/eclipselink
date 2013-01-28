@@ -16,6 +16,8 @@
  *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -1107,6 +1109,20 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getDefaultSequenceTableName() {
         return "SEQUENCE";
+    }
+    
+    /**
+     * Return the create schema SQL syntax. Subclasses should override as needed.
+     */
+    public String getCreateDatabaseSchemaString(String schema) {
+        return "CREATE SCHEMA " + schema;
+    }
+    
+    /**
+     * Return the drop schema SQL syntax. Subclasses should override as needed.
+     */
+    public String getDropDatabaseSchemaString(String schema) {
+        return "DROP SCHEMA " + schema;
     }
     
     /**

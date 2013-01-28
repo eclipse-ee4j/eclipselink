@@ -35,6 +35,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     01/24/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/04/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -459,12 +461,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jpars_could_not_find_persistence_context", "A JPA-RS call is requesting persistence context: [{0}].  That persistence context is not found."},
         { "jpars_could_not_find_class_in_persistence_unit", "Type: [{0}] cannot be found in persistence unit: [{1}]."},
         { "jpars_could_bootstrap_persistence_context", "Persistence Context: [{0}] could not be bootstrapped."},
-        { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},
-        { "unknown_ddl_generation", "Unknown eclipselink.ddl-generation value provided [{0}] for the persistence unit [{1}]. Valid options are: [{2}]" },
-        { "unknown_ddl_generation_mode", "Unknown eclipselink.ddl-generation.output-mode value provided [{0}] for the persistence unit [{1}]. Valid options are: [{2}]" },
-        { "unknown_schema_generation_action", "Unknown javax.persistence.schema-generation-action value provided [{0}] for the persistence unit [{1}]. Valid options are: [{2}]" },
-        { "unknown_schema_generation_target", "Unknown javax.persistence.schema-generation-target value provided [{0}] for the persistence unit [{1}]. Valid options are: [{2}]" },
-
+        { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},        
+        { "ddl_generation_unknown_property_value", "Unknown {0} value provided [{1}] for the persistence unit [{2}]. Valid options are: [{3}]" },
+        
         // MESSAGES end
         
         
@@ -752,10 +751,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metamodel_type_collection_empty.MSGID", "TOP-50250" },                                            
         { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" },        
         { "entity_not_available_during_merge.MSGID", "TOP-50247"},
-        { "unknown_ddl_generation.MSGID", "TOP-50252" },
-        { "unknown_ddl_generation_mode.MSGID", "TOP-50253" },
-        { "unknown_schema_generation_action.MSGID", "TOP-50254" },
-        { "unknown_schema_generation_target.MSGID", "TOP-50255" },
+        
+        { "unknown_ddl_generation_property.MSGID", "TOP-50252" }
         
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

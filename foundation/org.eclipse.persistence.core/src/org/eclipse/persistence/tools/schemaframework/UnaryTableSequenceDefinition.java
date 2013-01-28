@@ -106,4 +106,12 @@ public class UnaryTableSequenceDefinition extends SequenceDefinition {
             return (UnaryTableSequence)((DefaultSequence)sequence).getDefaultSequence();
         }
     }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public boolean isTableSequenceDefinition() {
+        return true;
+    }
 }

@@ -113,6 +113,8 @@
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
+            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation-source" value="scripts"/>
             <property name="javax.persistence.ddl-drop-script-source" value="META-INF/jpa21-xml-ddl-model-source-drop.jdbc"/>
             <property name="javax.persistence.ddl-create-script-source" value="META-INF/jpa21-xml-ddl-model-source-create.jdbc"/>
         </properties>
@@ -123,6 +125,35 @@
         <!-- through code, e.g. eclipselink.session-name                      -->
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    
+    <persistence-unit name="ddl-schema-template" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!-- Users of this PU are expected to provide any relevant properties -->
+        <!-- through code, e.g. eclipselink.session-name                      -->
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Runner</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.RunnerInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.RunnerStatus</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Shoe</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.ShoeTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Sprinter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Responsibility</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Organizer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Athlete</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
     
