@@ -201,7 +201,7 @@ public abstract class AbstractSynchronizationListener {
                 // Log the fact that we got invoked
                 getTransactionController().logTxStateTrace(uow, "TX_afterCompletion", status);
                 //Cr#3452053
-                session.startOperationProfile(SessionProfiler.JtsAfterCompletion);
+                this.session.startOperationProfile(SessionProfiler.JtsAfterCompletion);
                 // The uow should still be active even in rollback case
                 if (!uow.isActive()) {
                     throw TransactionException.inactiveUnitOfWork(uow);
@@ -222,6 +222,18 @@ public abstract class AbstractSynchronizationListener {
                     getSession().releaseJTSConnection();
                     uow.afterExternalTransactionRollback();
                 }
+                
+                // Clean up by releasing the uow and client session
+                if (uow.shouldResumeUnitOfWorkOnTransactionCompletion() && getTransactionController().canMergeUnitOfWork_impl(status)){
+                    uow.synchronizeAndResume();
+                    uow.setSynchronized(false);
+                } else {
+                    uow.release();
+                    // Release the session explicitly
+                    if (getSession().isClientSession() || (getSession().isSessionBroker() && ((SessionBroker)getSession()).isClientSessionBroker())) {
+                        getSession().release();
+                    }
+                }
             } catch (RuntimeException exception) {
                 // Log the exception if it has not already been logged, or is a non-EclipseLink exception
                 if (!(exception instanceof EclipseLinkException && ((EclipseLinkException)exception).hasBeenLogged())) {
@@ -229,28 +241,16 @@ public abstract class AbstractSynchronizationListener {
                 }
                 handleException(exception);
             } finally {
-                session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
+                getTransactionController().removeUnitOfWork(getTransactionKey());
+                this.session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
+                setUnitOfWork(null);
+                setSession(null);
             }
-    
-            // Clean up by releasing the uow and client session
-            if (uow.shouldResumeUnitOfWorkOnTransactionCompletion() && getTransactionController().canMergeUnitOfWork_impl(status)){
-                uow.synchronizeAndResume();
-                uow.setSynchronized(false);
-            }else{
-                uow.release();
-                // Release the session explicitly
-                if (getSession().isClientSession() || (getSession().isSessionBroker() && ((SessionBroker)getSession()).isClientSessionBroker())) {
-                    getSession().release();
-                }
-            }
-            getTransactionController().removeUnitOfWork(getTransactionKey());
-            setUnitOfWork(null);
-            setSession(null);
         }
         if(getTransactionController().isSequencingCallbackRequired()) {
             getTransactionController().removeSequencingListener(getTransactionKey());
-            sequencingCallback = null;
-            sequencingCallbackMap = null;
+            this.sequencingCallback = null;
+            this.sequencingCallbackMap = null;
         }
         setTransaction(null);
         setTransactionKey(null);

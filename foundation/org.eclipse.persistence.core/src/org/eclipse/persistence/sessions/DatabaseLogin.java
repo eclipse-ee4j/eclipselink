@@ -239,6 +239,28 @@ public class DatabaseLogin extends DatasourceLogin {
     }
 
     /**
+     * PUBLIC:
+     * Used for table creation. Most databases do not create an index automatically for
+     * foreign key columns.  Normally it is recommended to index foreign key columns.
+     * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
+     * 
+     * @return whether an index should be created explicitly for foreign key constraints
+     */
+    public boolean shouldCreateIndicesOnForeignKeys() {
+        return getPlatform().shouldCreateIndicesOnForeignKeys();
+    }
+
+    /**
+     * PUBLIC:
+     * Used for table creation. Most databases do not create an index automatically for
+     * foreign key columns.  Normally it is recommended to index foreign key columns.
+     * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
+     */
+    public void setShouldCreateIndicesOnForeignKeys(boolean shouldCreateIndicesOnForeignKeys) {
+        getPlatform().setShouldCreateIndicesOnForeignKeys(shouldCreateIndicesOnForeignKeys);
+    }
+
+    /**
      * INTERNAL:
      * Return whether the specified driver is being used.
      */

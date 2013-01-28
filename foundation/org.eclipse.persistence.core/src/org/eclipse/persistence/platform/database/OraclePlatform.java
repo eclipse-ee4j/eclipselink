@@ -394,6 +394,14 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public String getProcedureCallTail() {
         return "; END;";
     }
+    
+    /**
+     * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
+     */
+    @Override
+    public String getDropCascadeString() {
+        return " CASCADE CONSTRAINTS";
+    }
 
     @Override
     public String getSelectForUpdateString() {

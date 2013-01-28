@@ -17,7 +17,7 @@ import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.SessionProfilerAdapter;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink 1.0
  * @author James Sutherland
  */
-public class PerformanceProfiler implements Serializable, Cloneable, SessionProfiler {
+public class PerformanceProfiler extends SessionProfilerAdapter implements Serializable, Cloneable {
     protected List<Profile> profiles;
     transient protected AbstractSession session;
     protected boolean shouldLogProfile;
@@ -239,6 +239,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName) {
         long endTime = System.nanoTime();
         Long startTime = getOperationStartTimes().get(operationName);
@@ -281,6 +282,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      * INTERNAL:
      * End the operation timing.
      */
+    @Override
     public void endOperationProfile(String operationName, DatabaseQuery query, int weight) {
         endOperationProfile(operationName);
     }
@@ -398,6 +400,7 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
      *
      * @return the execution result of the query.
      */
+    @Override
     public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session) {
         long profileStartTime = System.nanoTime();
         long nestedProfileStartTime = getProfileTime();
@@ -560,20 +563,6 @@ public class PerformanceProfiler implements Serializable, Cloneable, SessionProf
             }
         } catch (IOException ioe) {
         }
-    }
-
-    //not implemented, for DMSPerformanceProfiler only
-    public void update(String operationName, Object value) {
-        ;
-    }
-
-    public void occurred(String operationName) {
-    }
-    
-    public void occurred(String operationName, DatabaseQuery query) {
-    }
-
-    public void setProfileWeight(int weight) {
     }
 
     public int getProfileWeight() {

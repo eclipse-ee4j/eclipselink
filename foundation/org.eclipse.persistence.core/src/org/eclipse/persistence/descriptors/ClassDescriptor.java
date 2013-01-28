@@ -3199,7 +3199,7 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
             readObjectQuery.setSelectionCriteria(getObjectBuilder().getPrimaryKeyExpression());
             queryManager.setReadObjectQuery(readObjectQuery);
         }
-        queryManager.getReadObjectQuery().setName("readObject");
+        queryManager.getReadObjectQuery().setName("read" + getJavaClass().getSimpleName());
 
         if (!queryManager.hasInsertQuery()) {
             // Prepare insert query always.

@@ -2518,6 +2518,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateCacheStatementSettings(m);
             updateTemporalMutableSetting(m);
             updateTableCreationSettings(m);
+            updateIndexForeignKeys(m);
             if (!session.hasBroker()) {
                 updateAllowZeroIdSetting(m);
             }
@@ -3173,6 +3174,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String tableCreationSuffix = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TABLE_CREATION_SUFFIX, m, session);
         if (tableCreationSuffix != null && tableCreationSuffix.length()>0) {
             session.getPlatform().setTableCreationSuffix(tableCreationSuffix);
+        }
+    }
+    
+    /**
+     * Sets shouldCreateIndicesOnForeignKeys DDL generation option.
+     */
+    protected void updateIndexForeignKeys(Map m) {
+        String indexForeignKeys = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DDL_GENERATION_INDEX_FOREIGN_KEYS, m, this.session);
+        if (indexForeignKeys != null && (indexForeignKeys.length() > 0)) {
+            if (indexForeignKeys.equalsIgnoreCase("true") ){
+                this.session.getProject().getLogin().setShouldCreateIndicesOnForeignKeys(true);
+            } else if (indexForeignKeys.equalsIgnoreCase("false")){
+                this.session.getProject().getLogin().setShouldCreateIndicesOnForeignKeys(false);
+            } else {
+                this.session.handleException(ValidationException.invalidBooleanValueForProperty(indexForeignKeys, PersistenceUnitProperties.DDL_GENERATION_INDEX_FOREIGN_KEYS));
+            }
         }
     }
 

@@ -486,7 +486,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (defaultQueryCachePolicy != null) {
             for (List<DatabaseQuery> queries : getQueries().values()) {
                 for (DatabaseQuery query : queries) {
-                    if (query.isReadQuery()) {
+                    if (query.isReadQuery() && (query.getDescriptor() != null) && !query.getDescriptor().getCachePolicy().isIsolated()) {
                         ReadQuery readQuery = (ReadQuery)query;
                         if (!readQuery.shouldCacheQueryResults()) {
                             readQuery.setQueryResultsCachePolicy(defaultQueryCachePolicy.clone());

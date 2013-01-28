@@ -4446,6 +4446,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @see #commit()
      */
     public void release() {
+        if (isDead()) {
+            return;
+        }
         log(SessionLog.FINER, SessionLog.TRANSACTION, "release_unit_of_work");
         if (this.eventManager != null) {
             this.eventManager.preReleaseUnitOfWork();
@@ -4479,6 +4482,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (this.eventManager != null) {
             this.eventManager.postReleaseUnitOfWork();
         }
+        incrementProfile(SessionProfiler.UowReleased);
         if (exception != null) {
             throw exception;
         }

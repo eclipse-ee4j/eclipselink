@@ -241,6 +241,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     protected DataPartitioningCallback partitioningCallback;
 
+    /** Allows auto-indexing for foreign keys to be set. */
+    protected boolean shouldCreateIndicesOnForeignKeys;
+
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -911,6 +914,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesJDBCBatchWriting(usesJDBCBatchWriting());
         databasePlatform.setUsesNativeBatchWriting(usesNativeBatchWriting());
         databasePlatform.setUsesStreamsForBinding(usesStreamsForBinding());
+        databasePlatform.shouldCreateIndicesOnForeignKeys = this.shouldCreateIndicesOnForeignKeys;
         databasePlatform.printOuterJoinInWhereClause = this.printOuterJoinInWhereClause;
         databasePlatform.printInnerJoinInWhereClause = this.printInnerJoinInWhereClause;
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
@@ -991,6 +995,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getCreateViewString() {
         return "CREATE VIEW ";
+    }
+    
+    /**
+     * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
+     */
+    public String getDropCascadeString() {
+        return "";
     }
     
     /**
@@ -1981,6 +1992,26 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public boolean shouldCreateIndicesOnUniqueKeys() {
         return false;
+    }
+
+    /**
+     * Used for table creation. Most databases do not create an index automatically for
+     * foreign key columns.  Normally it is recommended to index foreign key columns.
+     * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
+     * 
+     * @return whether an index should be created explicitly for foreign key constraints
+     */
+    public boolean shouldCreateIndicesOnForeignKeys() {
+        return shouldCreateIndicesOnForeignKeys;
+    }
+
+    /**
+     * Used for table creation. Most databases do not create an index automatically for
+     * foreign key columns.  Normally it is recommended to index foreign key columns.
+     * This allows for foreign key indexes to be configured, by default foreign keys are not indexed.
+     */
+    public void setShouldCreateIndicesOnForeignKeys(boolean shouldCreateIndicesOnForeignKeys) {
+        this.shouldCreateIndicesOnForeignKeys = shouldCreateIndicesOnForeignKeys;
     }
     
     /**

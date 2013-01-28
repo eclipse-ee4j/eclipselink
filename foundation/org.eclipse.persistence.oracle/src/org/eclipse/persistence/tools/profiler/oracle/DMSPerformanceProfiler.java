@@ -296,7 +296,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Link to the dms Event api occurred().
      */
-    public void occurred(String operationName) {
+    public void occurred(String operationName, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
             ((Event)event).occurred();
@@ -307,11 +307,11 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
-    public void occurred(String operationName, DatabaseQuery query){
+    public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
         Sensor event = getSensorByName(operationName);
         if (event != null) {
             ((Event)event).occurred();
-            occurred(query.getMonitorName());
+            occurred(query.getMonitorName(), session);
         }
     }
 

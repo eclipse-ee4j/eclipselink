@@ -439,7 +439,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      */
     public Writer buildDeletionWriter(AbstractSession session, Writer writer) throws ValidationException {
         try {
-            writer.write("DROP TABLE " + getFullName());
+            writer.write("DROP TABLE " + getFullName() + session.getPlatform().getDropCascadeString());
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
@@ -884,6 +884,19 @@ public class TableDefinition extends DatabaseObjectDefinition {
                 }
             }
         }
+        // Foreign keys
+        if (session.getPlatform().shouldCreateIndicesOnForeignKeys()) {
+            // indices for columns in foreign key constraint declarations
+            for (ForeignKeyConstraint foreignKey : getForeignKeys()) {
+                IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
+                if (writer == null) {
+                    index.createOnDatabase(session);
+                } else {
+                    index.buildCreationWriter(session, writer);
+                    writeLineSeperator(session, writer);
+                }
+            }
+        }
         // Indexes
         for (IndexDefinition index : getIndexes()) {
             if (writer == null) {
@@ -1036,6 +1049,23 @@ public class TableDefinition extends DatabaseObjectDefinition {
                         index.buildDeletionWriter(session, writer);
                         writeLineSeperator(session, writer);
                     }
+                }
+            }
+        }
+        // Foreign keys
+        if (session.getPlatform().shouldCreateIndicesOnForeignKeys()) {
+            // indices for columns in foreign key constraint declarations
+            for (ForeignKeyConstraint foreignKey : getForeignKeys()) {
+                IndexDefinition index = buildIndex(session, foreignKey.getName(), foreignKey.getSourceFields(), false);
+                if (writer == null) {
+                    try {
+                        index.dropFromDatabase(session);
+                    } catch (Exception notThere) {
+                        //ignore
+                    }
+                } else {
+                    index.buildDeletionWriter(session, writer);
+                    writeLineSeperator(session, writer);
                 }
             }
         }

@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.*;
 
 /**
@@ -34,7 +35,9 @@ public interface SessionProfiler {
     public static final String CacheSize = "Info:CacheSize";//TODO
     
     public static final String ClientSessionCreated = "Counter:ClientSessionCreates";
+    public static final String ClientSessionReleased = "Counter:ClientSessionReleases";
     public static final String UowCreated = "Counter:UnitOfWorkCreates";
+    public static final String UowReleased = "Counter:UnitOfWorkReleases";
     public static final String UowCommits = "Counter:UnitOfWorkCommits";
     public static final String UowRollbacks = "Counter:UnitOfWorkRollbacks";
     public static final String OptimisticLockException = "Counter:OptimisticLocks";
@@ -92,7 +95,7 @@ public interface SessionProfiler {
      *
      * @return the execution result of the query.
      */
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, org.eclipse.persistence.internal.sessions.AbstractSession session);
+    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -122,13 +125,13 @@ public interface SessionProfiler {
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
-    public void occurred(String operationName);
+    public void occurred(String operationName, AbstractSession session);
     
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
-    public void occurred(String operationName, DatabaseQuery query);
+    public void occurred(String operationName, DatabaseQuery query, AbstractSession session);
 
     /**
      * INTERNAL:

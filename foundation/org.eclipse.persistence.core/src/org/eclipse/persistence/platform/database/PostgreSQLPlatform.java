@@ -420,6 +420,14 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public String getAssignmentString() {
         return ":= ";
     }
+    
+    /**
+     * Allows DROP TABLE to cascade dropping of any dependent constraints if the database supports this option.
+     */
+    @Override
+    public String getDropCascadeString() {
+        return " CASCADE";
+    }
 
     @Override
     public void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType, boolean shouldPrintFieldIdentityClause) throws IOException {

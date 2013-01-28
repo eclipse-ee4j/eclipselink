@@ -2175,6 +2175,17 @@ public class PersistenceUnitProperties {
      * @see #DDL_BOTH_GENERATION
      */
     public static final String DDL_GENERATION_MODE = "eclipselink.ddl-generation.output-mode";
+
+    /**
+     * The <code>"eclipselink.ddl-generation.index-foreign-keys"</code> property.
+     * Configures if an index should be automatically generated for foreign key constraints.
+     * It is normally recommended to have an index for a foreign key.
+     * By default indexes are not generated, most database also do not auto generate indexes, although some do.
+     * Values: "true" or "false" (default).
+     * 
+     * @see #DDL_GENERATION
+     */
+    public static final String DDL_GENERATION_INDEX_FOREIGN_KEYS = "eclipselink.ddl-generation.index-foreign-keys";
     
     /**
      * The parameter value <code>"sql-script"</code>

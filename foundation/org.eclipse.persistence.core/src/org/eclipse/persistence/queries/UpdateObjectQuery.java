@@ -90,7 +90,9 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      */
     protected void prepare() {
         super.prepare();
-
+        if (this.name == null) {
+            this.name = "update" + this.descriptor.getJavaClass().getSimpleName();
+        }
         getQueryMechanism().prepareUpdateObject();
     }
     

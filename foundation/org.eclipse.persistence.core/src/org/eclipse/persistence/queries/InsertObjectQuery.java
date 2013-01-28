@@ -105,7 +105,9 @@ public class InsertObjectQuery extends WriteObjectQuery {
      */
     protected void prepare() {
         super.prepare();
-
+        if (this.name == null) {
+            this.name = "insert" + this.descriptor.getJavaClass().getSimpleName();
+        }
         getQueryMechanism().prepareInsertObject();
     }
         

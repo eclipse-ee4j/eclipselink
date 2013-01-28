@@ -14,6 +14,7 @@ package org.eclipse.persistence.tools.profiler;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.*;
 
 import org.eclipse.persistence.queries.*;
@@ -45,8 +46,8 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
      * The profiler can be registered with a session to log performance information on queries.
      */
     public PerformanceMonitor() {
-        this.operationTimings = new Hashtable();
-        this.operationStartTimesByThread = new Hashtable();
+        this.operationTimings = new ConcurrentHashMap();
+        this.operationStartTimesByThread = new ConcurrentHashMap();
         this.lastDumpTime = System.currentTimeMillis();
         this.dumpTime = 60000; // 1 minute
         this.profileWeight = SessionProfiler.ALL;
@@ -191,8 +192,8 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
         startOperationProfile(TIMER + query.getMonitorName());
         startOperationProfile(TIMER + query.getClass().getSimpleName());
-        occurred(COUNTER + query.getClass().getSimpleName());
-        occurred(COUNTER + query.getMonitorName());
+        occurred(COUNTER + query.getClass().getSimpleName(), session);
+        occurred(COUNTER + query.getMonitorName(), session);
         try {
             return session.internalExecuteQuery(query, (AbstractRecord)row);
         } finally {
@@ -232,7 +233,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         this.operationTimings.put(operationName, value);
     }
 
-    public void occurred(String operationName) {
+    public void occurred(String operationName, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.NORMAL) {
             return;
         }
@@ -246,12 +247,12 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         }
     }
 
-    public void occurred(String operationName, DatabaseQuery query) {
+    public void occurred(String operationName, DatabaseQuery query, AbstractSession session) {
         if (this.profileWeight < SessionProfiler.NORMAL) {
             return;
         }
-        occurred(operationName);
-        occurred(COUNTER + query.getMonitorName() + ":" + operationName.substring(COUNTER.length(), operationName.length()));
+        occurred(operationName, session);
+        occurred(COUNTER + query.getMonitorName() + ":" + operationName.substring(COUNTER.length(), operationName.length()), session);
     }
 
     /**

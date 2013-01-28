@@ -859,7 +859,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         
         // Configure default query cache for all named queries.
         QueryResultsCachePolicy defaultQueryCachePolicy = session.getProject().getDefaultQueryResultsCachePolicy();
-        if (defaultQueryCachePolicy != null) {
+        if (defaultQueryCachePolicy != null && !getDescriptor().getCachePolicy().isIsolated()) {
             for (List<DatabaseQuery> queries : getQueries().values()) {
                 for (DatabaseQuery query : queries) {
                     if (query.isReadQuery()) {

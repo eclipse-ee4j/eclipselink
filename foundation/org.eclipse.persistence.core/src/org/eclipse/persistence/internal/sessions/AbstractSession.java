@@ -1407,7 +1407,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void incrementProfile(String operationName) {
         if (this.isInProfile) {
-            getProfiler().occurred(operationName);
+            getProfiler().occurred(operationName, this);
         }
     }
 
@@ -1417,7 +1417,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void incrementProfile(String operationName, DatabaseQuery query) {
         if (this.isInProfile) {
-            getProfiler().occurred(operationName, query);
+            getProfiler().occurred(operationName, query, this);
         }
     }
 

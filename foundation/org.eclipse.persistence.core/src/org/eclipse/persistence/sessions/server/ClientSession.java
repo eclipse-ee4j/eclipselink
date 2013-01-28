@@ -634,6 +634,7 @@ public class ClientSession extends AbstractSession {
         if (this.eventManager != null) { 
             this.eventManager.postReleaseClientSession();
         }
+        incrementProfile(SessionProfiler.ClientSessionReleased);
     }
     
     /**

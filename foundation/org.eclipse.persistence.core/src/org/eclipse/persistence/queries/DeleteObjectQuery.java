@@ -325,8 +325,10 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
      */
     protected void prepare() {
         super.prepare();
-
         this.usesOptimisticLocking = shouldUseOptimisticLocking(this.object);
+        if (this.name == null) {
+            this.name = "delete" + this.descriptor.getJavaClass().getSimpleName();
+        }
         getQueryMechanism().prepareDeleteObject();
     }
 
