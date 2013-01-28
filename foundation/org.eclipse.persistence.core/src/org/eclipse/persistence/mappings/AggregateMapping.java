@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -171,7 +173,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return null;
         }
-        if (isNewObject) { // only true if cloningSession is UOW as this signature only exists in this mapping.
+        if (cloningSession.isUnitOfWork() && isNewObject) { // only true if cloningSession is UOW as this signature only exists in this mapping.
             ((UnitOfWorkImpl)cloningSession).addNewAggregate(attributeValue);
         }
 

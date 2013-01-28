@@ -269,6 +269,7 @@ public class QueryHintsHandler {
             addHint(new ScrollableCursorHint());
             addHint(new CursorSizeHint());
             addHint(new FetchGroupHint());
+            addHint(new FetchGraphHint());
             addHint(new FetchGroupNameHint());
             addHint(new FetchGroupDefaultHint());
             addHint(new FetchGroupAttributeHint());
@@ -999,6 +1000,40 @@ public class QueryHintsHandler {
         }
     }
     
+    protected static class FetchGraphHint extends Hint {
+        FetchGraphHint() {
+            super(QueryHints.JPA_FETCH_GROUP, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                if(valueToApply != null) {
+                    if (valueToApply instanceof String){
+                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        if (eg != null){
+                            FetchGroup fg = eg.toFetchGroup();
+                            fg.setShouldLoadAll(true);
+                            ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                        }else{
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
+                        }
+                    }else if (valueToApply instanceof EntityGraphImpl){
+                        FetchGroup fg = ((EntityGraphImpl)valueToApply).getAttributeGroup().toFetchGroup();
+                        fg.setShouldLoadAll(true);
+                        ((ObjectLevelReadQuery)query).setFetchGroup(fg);
+                    }else{
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GROUP, valueToApply}));
+                    }
+                } else {
+                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
     protected static class FetchGroupAttributeHint extends Hint {
         FetchGroupAttributeHint() {
             super(QueryHints.FETCH_GROUP_ATTRIBUTE, "");
@@ -1054,6 +1089,36 @@ public class QueryHintsHandler {
                     ((ObjectLevelReadQuery)query).setLoadGroup(((AttributeGroup)valueToApply).toLoadGroup());
                 } else {
                     ((ObjectLevelReadQuery)query).setLoadGroup(null);
+                }
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+            return query;
+        }
+    }
+    
+    protected static class LoadGraphHint extends Hint {
+        LoadGraphHint() {
+            super(QueryHints.JPA_LOAD_GRAPH, "");
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                if(valueToApply != null) {
+                    if (valueToApply instanceof String){
+                        AttributeGroup eg = activeSession.getAttributeGroups().get(valueToApply);
+                        if (eg != null){
+                            ((ObjectLevelReadQuery)query).setLoadGroup(eg.toLoadGroup());
+                        }else{
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{valueToApply}));
+                        }
+                    }else if (valueToApply instanceof EntityGraphImpl){
+                        ((ObjectLevelReadQuery)query).setLoadGroup(((EntityGraphImpl)valueToApply).getAttributeGroup().toLoadGroup());
+                    }else{
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GROUP, valueToApply}));
+                    }
+                } else {
+                    ((ObjectLevelReadQuery)query).setFetchGroup(null);
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));

@@ -1316,6 +1316,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample2());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
@@ -1353,6 +1354,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample3());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
@@ -1370,6 +1372,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample5());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }

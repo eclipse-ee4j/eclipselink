@@ -23,6 +23,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -38,6 +39,7 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(CriteriaQueryMetamodelTestSuite.suite());
         fullSuite.addTest(DDLTestSuite.suite());
         fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
+        fullSuite.addTest(EntityGraphTestSuite.suite());
         
         return fullSuite;
     }

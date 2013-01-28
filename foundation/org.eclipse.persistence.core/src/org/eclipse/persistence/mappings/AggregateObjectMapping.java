@@ -15,6 +15,8 @@
  *       - 371950: Metadata caching 
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -649,7 +651,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @return
      */
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
-        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, refreshCascade, cloningSession, isExisting);
+        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, refreshCascade, cloningSession, !isExisting);
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
             ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());

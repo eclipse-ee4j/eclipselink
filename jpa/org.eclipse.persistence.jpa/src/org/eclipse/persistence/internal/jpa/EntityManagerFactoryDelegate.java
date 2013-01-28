@@ -743,11 +743,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
     }
 
-
-    // TODO: JPA 2.1 API
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
+        this.getAbstractSession().getAttributeGroups().put(graphName, ((EntityGraphImpl)entityGraph).getAttributeGroup());
+        this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(((EntityGraphImpl)entityGraph).getAttributeGroup());
     }
 
 }

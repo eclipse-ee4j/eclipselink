@@ -13,6 +13,8 @@
  *        - 259993: As part 2) During mergeClonesAfterCompletion() 
  *        If the the acquire and release threads are different 
  *        switch back to the stored acquire thread stored on the mergeManager.
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -677,7 +679,7 @@ public class MergeManager {
         if (unitOfWork.isObjectDeleted(clone)) {
             return clone;
         }
-        
+        ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
         boolean requiresToRegisterInParent = false;
@@ -689,7 +691,6 @@ public class MergeManager {
                 requiresToRegisterInParent = true;
             }
         }
-        ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(descriptor, false, false);
         CacheKey cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, parentSession, unitOfWork);
         
@@ -845,7 +846,7 @@ public class MergeManager {
                 // #6, 7 - referenced objects
                 // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.                
             } else if (descriptor.getFullyMergeEntity() && objectChangeSet.hasChanges()){
-                objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, false, false);
+                objectBuilder.mergeIntoObject(original, objectChangeSet, false, clone, this, targetSession, false, true, true);
             } else {
                 // #1, 2, 3 existing objects, new objects with originals
                 // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 

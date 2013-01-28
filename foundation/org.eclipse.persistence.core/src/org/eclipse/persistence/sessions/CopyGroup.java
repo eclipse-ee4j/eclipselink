@@ -10,6 +10,8 @@
  * Contributors:
  *     ailitchev - Bug 244124 - Added to handle copying using AttributeGroup
  *                              Functionality copied from ObjectCopyPolicy 
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -239,7 +241,7 @@ public class CopyGroup extends AttributeGroup {
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
         cascadeTree();
         if(group == null) {
-            super.addAttribute(attributeNameOrPath, null);
+            super.addAttribute(attributeNameOrPath, (AttributeGroup)null);
         } else {
             addAttribute(attributeNameOrPath, group.toCopyGroup());
         }

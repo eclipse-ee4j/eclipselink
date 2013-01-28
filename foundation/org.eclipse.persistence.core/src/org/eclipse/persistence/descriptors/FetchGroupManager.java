@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
@@ -355,6 +356,12 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      */
     public FetchGroup getFetchGroup(String groupName) {
         FetchGroup fg =  this.fetchGroups.get(groupName);
+        if (fg == null){
+            AttributeGroup ag = this.descriptor.getAttributeGroup(groupName);
+            if (ag != null){
+                fg = ag.toFetchGroup();
+            }
+        }
         if (fg == null && getDescriptor().isChildDescriptor()) {
             ClassDescriptor current = this.descriptor;
 
@@ -362,6 +369,12 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                 ClassDescriptor parent = current.getInheritancePolicy().getParentDescriptor();
                 if (parent.hasFetchGroupManager()) {
                     fg = parent.getFetchGroupManager().getFetchGroup(groupName);
+                }
+                if (fg == null){
+                    AttributeGroup ag = parent.getAttributeGroup(groupName);
+                    if (ag != null){
+                        fg = ag.toFetchGroup();
+                    }
                 }
                 current = parent;
             }

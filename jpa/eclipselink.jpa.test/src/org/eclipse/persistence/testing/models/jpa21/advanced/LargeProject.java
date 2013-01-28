@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -24,6 +26,9 @@ import javax.persistence.Table;
 @DiscriminatorValue("L")
 public class LargeProject extends Project {
     private double m_budget;
+    
+    @ManyToOne(fetch=FetchType.LAZY)
+    protected Employee executive;
     
     public LargeProject() {
         super();
@@ -41,4 +46,19 @@ public class LargeProject extends Project {
     public void setBudget(double budget) { 
         this.m_budget = budget; 
     }
+
+    /**
+     * @return the executive
+     */
+    public Employee getExecutive() {
+        return executive;
+    }
+
+    /**
+     * @param executive the executive to set
+     */
+    public void setExecutive(Employee executive) {
+        this.executive = executive;
+    }
+
 }

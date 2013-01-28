@@ -140,6 +140,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
 
     /** Stores predefine reusable queries.*/
     transient protected Map<String, List<DatabaseQuery>> queries;
+    
+    /**
+     * Stores predefined reusable AttributeGroups.
+     */
+    protected Map<String, AttributeGroup> attributeGroups;
 
     /** Stores predefined not yet parsed JPQL queries.*/
     protected boolean jpaQueriesProcessed = false;
@@ -2852,6 +2857,22 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         }
         return queries;
     }
+    
+    /**
+     * ADVANCED:
+     * Return an attribute group of a particular name.
+     */
+    
+    /**
+     * ADVANCED
+     * Return all predefined attribute groups
+     */
+    public Map<String, AttributeGroup> getAttributeGroups(){
+        if (this.attributeGroups == null){
+            this.attributeGroups = new HashMap<String, AttributeGroup>(5);
+        }
+        return this.attributeGroups;
+    }
 
     /**
      * INTERNAL:
@@ -2956,6 +2977,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         return null;
     }
 
+    /**
+     * Returns an AttributeGroup by name
+     */
+    
     /**
      * INTERNAL:
      * Return the Sequencing object used by the session.

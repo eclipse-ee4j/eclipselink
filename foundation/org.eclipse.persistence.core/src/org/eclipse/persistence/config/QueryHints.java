@@ -649,7 +649,16 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.FetchGroup#setShouldLoad(boolean)
      */
     public static final String FETCH_GROUP_LOAD = "eclipselink.fetch-group.load";
-
+    
+    /**
+     * "javax.persistence.fetchgraph"
+     * <p> Configures a jpa entity graph to be used as a fetch graph template.   
+     * Those attributes included in the entity graph will have their values fetched and populated.
+     * Attributes of the represented entity that are not present in the entity graph will be treated
+     * as FetchType.LAZY.
+     */
+    public static final String JPA_FETCH_GROUP = "javax.persistence.fetchgraph";
+    
     /**
      * "eclipselink.fetch-group.default"
      * <p>Configures the query not to use the default fetch group.
@@ -678,6 +687,15 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLoadGroup(org.eclipse.persistence.queries.LoadGroup)
      */
     public static final String LOAD_GROUP = "eclipselink.load-group";
+    
+    /**
+     * "javax.persistence.loadgraph"
+     * <p> Configures a jpa entity graph to be used as a load graph template.   
+     * Those attributes included in the entity graph will have their values fetched and populated.
+     * Attributes of the represented entity that are not present in the entity graph will be loaded based
+     * on their mapping based FetchType settings.
+     */
+    public static final String JPA_LOAD_GRAPH = "javax.persistence.loadgraph";
     
     /**
      * "eclipselink.load-group.attribute"

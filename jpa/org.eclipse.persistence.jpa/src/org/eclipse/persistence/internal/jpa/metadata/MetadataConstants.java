@@ -117,6 +117,7 @@ public class MetadataConstants {
     public static final String JPA_UNIQUE_CONSTRAINT = "javax.persistence.UniqueConstraint";
     public static final String JPA_VERSION = "javax.persistence.Version";
     public static final String JPA_STATIC_METAMODEL = "javax.persistence.metamodel.StaticMetamodel.class";
+    public static final String JPA_ENTITY_GRAPH = "javax.persistence.NamedEntityGraph";
     
     /** JPA AccessType enum values */
     public static final String JPA_ACCESS_FIELD = "FIELD";

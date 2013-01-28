@@ -28,6 +28,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityResult;
+import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -128,7 +129,7 @@ public class Project implements Serializable {
         return m_properties; 
     }
     
-    @OneToOne(cascade = {CascadeType.MERGE})
+    @OneToOne(cascade = {CascadeType.MERGE}, fetch=FetchType.LAZY)
     @JoinColumn(name="LEADER_ID")
     public Employee getTeamLeader() {
         return m_teamLeader; 

@@ -21,6 +21,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     01/24/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -216,7 +218,15 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa_criteriaapi_alias_reused", "More than one selection item uses the same alias name.  Duplicate names used were: {0}"},
                                            { "cannot_read_through_txn_for_unsynced_pc", "The property was set to join this persistence context to the currently active transaction but this is not a SYNCHRONIZED persistence context."},
                                            { "unable_to_unwrap_jpa", "Provider does not support unwrapping {0} to {1}"},
-                                           { "argument_keyed_named_query_with_JPA", "Multiple queries with name: {0} exist but names must be unique when using EntityManagerFactory.addNamedQuery()"}
+                                           { "argument_keyed_named_query_with_JPA", "Multiple queries with name: {0} exist but names must be unique when using EntityManagerFactory.addNamedQuery()"},
+                                           { "null_argument_get_attributegroup", "Search name for AttributeGroup must not be null."},
+                                           { "add_attribute_key_was_null", "When specifying an AttributeGroup for a subclass of an attribute's type the type parameter must not be null"},
+                                           { "managed_component_not_found", "An attribute: {1} listed in entity graph: {0} references a subgraph named: {2} which can not be found."},
+                                           { "only_one_root_subgraph", "Only the root subgraph may be listed without a type.  Any subgraphs that represent subclasses must have the type set."},
+                                           { "subclass_sought_not_a_managed_type", "subgraph type sought: {0} is not a managed type for this attribute: {1}."},
+                                           { "attribute_is_not_map_with_managed_key", "Can not added key subgraph to entity graph as attribute : {0} in class : {1} is not a Map with a managed type key."},
+                                           { "no_entity_graph_of_name", "No EntityGraph exists with name {0}"},
+                                           { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"}
                                            
                                         };
     /**

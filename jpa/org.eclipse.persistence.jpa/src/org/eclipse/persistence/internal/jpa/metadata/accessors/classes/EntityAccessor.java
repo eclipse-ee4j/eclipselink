@@ -99,14 +99,18 @@
  *       - 395406: Fix nightly static weave test errors
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     09 Jan 2013-2.5 Gordon Yorke
+ *       - 397772: JPA 2.1 Entity Graph Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.lang.reflect.Modifier;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
@@ -115,6 +119,7 @@ import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -133,6 +138,7 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListen
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -142,6 +148,9 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.queries.AttributeGroup;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
@@ -156,6 +165,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPH;
 
 /**
  * An entity accessor.
@@ -671,6 +681,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Finally, process the mapping accessors on this entity (and all those 
         // from super classes that apply to us).
         processMappingAccessors();
+        
+        processEntityGraphs();
     }
     
     /**
@@ -1037,6 +1049,80 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         getProject().addAlias(m_entityName, getDescriptor());
     }
     
+    /**
+     * INTERNAL:
+     * Process/collect the named queries on this accessor and add them to the 
+     * project for later processing.
+     */
+    protected void processEntityGraphs() {
+        // Process the named query annotations.
+        // Look for a @NamedQueries.
+        MetadataAnnotation entityGraphAnno = getAnnotation(JPA_ENTITY_GRAPH);
+        if (entityGraphAnno != null){
+            Map<String, Map<String,AttributeGroup>> managedAttributeGraphs = new HashMap<String, Map<String,AttributeGroup>>();
+            AttributeGroup entityGraph = new AttributeGroup((String) entityGraphAnno.getAttributeString("name"), getDescriptorJavaClass().getName());
+            //build list of managedComponents
+            for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
+                String name = (String) ((MetadataAnnotation)managedComponent).getAttributeString("name");
+                String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
+                AttributeGroup subGraph = new AttributeGroup(name, type);
+                
+                Map<String, AttributeGroup> groups = managedAttributeGraphs.get(name);
+                if (groups == null){
+                    groups = new HashMap<String, AttributeGroup>();
+                    managedAttributeGraphs.put(name,  groups);
+                }
+                groups.put(type, subGraph);
+            }
+            //process root components
+            for (Object component : ((Object[])entityGraphAnno.getAttributeArray("attributes"))){
+                String name = (String) ((MetadataAnnotation)component).getAttributeString("value");
+                String managedComponent = (String) ((MetadataAnnotation)component).getAttribute("subgraphName");
+                if (managedComponent != null){
+                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
+                    if (managed != null){
+                        entityGraph.addAttribute(name, managed.values());
+                    }else{
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), name, managedComponent}));
+                    }
+                }else{
+                    entityGraph.addAttribute(name);
+                }
+                managedComponent = (String) ((MetadataAnnotation)component).getAttribute("managedKey");
+                if (managedComponent != null){
+                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
+                    if (managed != null){
+                        entityGraph.getItem(name).addKeyGroups(managed.values());
+                    }else{
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), name, managedComponent}));
+                    }
+                }
+            }
+            //process managed components
+            for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
+                String name = (String) ((MetadataAnnotation)managedComponent).getAttribute("name");
+                String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
+                AttributeGroup subgraph = managedAttributeGraphs.get(name).get(type);
+                for (Object component : ((Object[])((MetadataAnnotation)managedComponent).getAttributeArray("attributes"))){
+                    String componentName = (String) ((MetadataAnnotation)component).getAttributeString("value");
+                    String managedComponentName = (String) ((MetadataAnnotation)component).getAttribute("subgraphName");
+                    if (managedComponentName != null){
+                        Map<String, AttributeGroup> managed = managedAttributeGraphs.get(componentName);
+                        if (managed != null){
+                            subgraph.addAttribute(componentName, managed.values());
+                        }else{
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), componentName, managedComponent}));
+                        }
+                    }else{
+                        subgraph.addAttribute(componentName);
+                    }
+                }
+            }
+            getProject().getProject().getAttributeGroups().add(entityGraph);
+        }
+    }
+    
+
     /**
      * INTERNAL:
      * Process index information for the given metadata descriptor.

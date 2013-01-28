@@ -18,6 +18,7 @@
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.io.Serializable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -39,8 +40,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -66,6 +71,33 @@ import static javax.persistence.GenerationType.*;
 import static javax.persistence.ParameterMode.INOUT;
 import static javax.persistence.ParameterMode.OUT;
 import static javax.persistence.ParameterMode.REF_CURSOR;
+
+@NamedEntityGraphs(
+        {@NamedEntityGraph(
+                attributeNodes={
+                        @NamedAttributeNode("address"),
+                        @NamedAttributeNode(value="projects", subgraph="projects")
+                },
+                subgraphs={
+                        @NamedSubgraph(
+                                name="projects",
+                                attributeNodes={
+                                        @NamedAttributeNode("teamLeader"),
+                                        @NamedAttributeNode("properties")
+                                }
+                        ),
+                        @NamedSubgraph(
+                                name="projects",
+                                type=LargeProject.class,
+                                attributeNodes={
+                                    @NamedAttributeNode("executive")
+                                }
+                        )
+                }
+        )
+        }
+)
+
 
 @Entity
 @Table(name="JPA21_EMPLOYEE")

@@ -434,6 +434,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         table.addField(field);
     
+        field = new FieldDefinition();
+        field.setName("EXEC_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        table.addField(field);
+    
         return table;
     }
     
