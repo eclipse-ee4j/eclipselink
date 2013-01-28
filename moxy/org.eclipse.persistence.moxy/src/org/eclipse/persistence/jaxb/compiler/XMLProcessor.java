@@ -122,6 +122,7 @@ public class XMLProcessor {
     public void processXML(AnnotationsProcessor annotationsProcessor, JavaModelInput jModelInput, TypeMappingInfo[] typeMappingInfos, JavaClass[] originalJavaClasses) {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
+        this.aProcessor.setHasXmlBindings(true);
         Map<String, XmlEnum> xmlEnumMap = new HashMap<String, XmlEnum>();
         aProcessor.init(originalJavaClasses, typeMappingInfos);
 
