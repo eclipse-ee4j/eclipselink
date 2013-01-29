@@ -69,6 +69,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
     private SAXDocumentBuilder documentBuilder;
     private Locator2 locator;
+    private boolean isNil;
     
     public SAXUnmarshallerHandler(XMLContext xmlContext) {
         super();
@@ -303,10 +304,10 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 unmarshalRecord.setDocumentLocator(xmlReader.getLocator());
             }
             unmarshalRecord.setAttributes(atts);
-
-            if(atts != null && null != atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {
-                unmarshalRecord.setNil(true);
-            }
+            
+            boolean hasNilAttribute = (atts != null && null != atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE));                       
+            unmarshalRecord.setNil(isNil || hasNilAttribute);
+          
             unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             
             unmarshalRecord.startDocument();
@@ -360,5 +361,11 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     public UnmarshalKeepAsElementPolicy getKeepAsElementPolicy() {
         return this.keepAsElementPolicy;
     }
+
+	@Override
+	public void setNil(boolean isNil) {
+		this.isNil = isNil;
+		
+	}
 
 }

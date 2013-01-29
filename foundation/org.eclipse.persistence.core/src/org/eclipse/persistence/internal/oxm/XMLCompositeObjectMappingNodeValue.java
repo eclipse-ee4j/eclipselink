@@ -328,7 +328,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xmlReader.setLexicalHandler(aHandler);
                 }
             } else {
-                if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
+            	if(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil()){
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
                     XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();

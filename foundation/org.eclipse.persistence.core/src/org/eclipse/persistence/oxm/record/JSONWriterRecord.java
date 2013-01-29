@@ -843,6 +843,8 @@ public class JSONWriterRecord extends MarshalRecord {
         public void endEntity(String name) throws SAXException {}
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
+		@Override
+		public void setNil(boolean isNil) {}
 
     }
 

@@ -372,7 +372,7 @@ public class WriterRecord extends MarshalRecord {
                 writePrefixMappings();
             } catch (IOException e) {
                 throw XMLMarshalException.marshalException(e);
-            }
+            }        	
         }
 
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
@@ -500,6 +500,8 @@ public class WriterRecord extends MarshalRecord {
         }
 
         protected void writeCharacters(char[] chars, int start, int length) {
+		
+
             try {
                 for (int x = start; x < length; x++) {
                     writer.write(chars[x]);
@@ -522,6 +524,9 @@ public class WriterRecord extends MarshalRecord {
         public void endEntity(String name) throws SAXException {}
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
+		@Override
+		public void setNil(boolean isNil) {}
+
 
     }
 

@@ -93,8 +93,9 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
        } else {
            Object valueFromReader = this.parent.getXMLReader().getValue(getCharacters(), attributeClassification);
            
-           if(parent.isNil() && nullPolicy.isNullRepresentedByXsiNil()){
+           if(parent.isNil() && parent.getXMLReader().isNullRepresentedByXsiNil(nullPolicy)){
                value = null;
+               isCollection = isCollection && parent.getXMLReader().isInCollection();
            }
            else{
                if(null != valueFromReader) {

@@ -47,6 +47,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
@@ -65,6 +66,8 @@ public class JSONReader extends XMLReaderAdapter {
     private boolean includeRoot;
     private String textWrapper;
     private Class unmarshalClass;
+    private boolean isInCollection;
+
 
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper){
         this(attrPrefix, nr, namespaceAware, includeRoot, namespaceSeparator, errorHandler, textWrapper, null);        
@@ -159,11 +162,21 @@ public class JSONReader extends XMLReaderAdapter {
     		if(includeRoot){
     			parse((CommonTree) tree.getChild(0));
     		}else{
-    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
-    			for(int x=0, size=children; x<size; x++) {
-    	           parse((CommonTree) tree.getChild(x));
-    	        }
-    			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
+    			if(children == 1){
+    				CommonTree ct = (CommonTree) tree.getChild(0);
+    				if(ct != null && ct.getType() == JSONLexer.NULL){
+    					contentHandler.setNil(true);
+    				}
+    				contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+    				parse(ct);
+	    			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
+    			}else{
+	    			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+	    			for(int x=0, size=children; x<size; x++) {
+	    	           parse((CommonTree) tree.getChild(x));
+	    	        }
+	    			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);
+    			}
     		}
     		contentHandler.endDocument();
         } else if(tree.getType() == JSONLexer.ARRAY){
@@ -272,10 +285,13 @@ public class JSONReader extends XMLReaderAdapter {
              		      break;
                 	}
                 }
+                if(valueTree != null && valueTree.getType() == JSONLexer.NULL){
+                	contentHandler.setNil(true);
+                }
              
                 contentHandler.startElement(uri, localName, localName, attributes.setTree(valueTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
                 parse(valueTree);
-                contentHandler.endElement(uri, localName, localName);                
+                contentHandler.endElement(uri, localName, localName);
             }
             break;
         }
@@ -342,8 +358,28 @@ public class JSONReader extends XMLReaderAdapter {
                     }
             	}
             }
+            startCollection();
+            
+            if(size == 1){
+				CommonTree ct = (CommonTree) tree.getChild(0);
+				if(ct != null && ct.getType() == JSONLexer.NULL){
+					contentHandler.setNil(true);
+				}
+				if(!isTextValue){
+		         	   contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(ct, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+		         	   }
+		               parse(ct);
+		               if(!isTextValue){
+		                  contentHandler.endElement(uri, parentLocalName, parentLocalName);
+		               }
+			}else{
+            
+            
             for(int x=0; x<size; x++) {
         	   CommonTree nextChildTree = (CommonTree) tree.getChild(x);
+        	   if(nextChildTree.getType() == JSONLexer.NULL){
+        		   ((UnmarshalRecord)contentHandler).setNil(true);
+        	   }
         	   if(!isTextValue){
          	   contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
          	   }
@@ -352,7 +388,9 @@ public class JSONReader extends XMLReaderAdapter {
                   contentHandler.endElement(uri, parentLocalName, parentLocalName);
                }
             } 
-                       
+            }
+            endCollection();
+
             break;
         }
         default: {
@@ -361,6 +399,23 @@ public class JSONReader extends XMLReaderAdapter {
             }
         }
         }
+    }
+    
+    public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
+    	return true;    	
+    }
+    
+    
+    private void startCollection(){
+    	isInCollection = true;
+    }
+       
+    private void endCollection(){
+    	isInCollection = false;
+    }
+    
+    public boolean isInCollection(){
+    	return isInCollection;
     }
     
     private boolean isTextValue(String localName){
@@ -563,13 +618,9 @@ public class JSONReader extends XMLReaderAdapter {
         @Override
         protected Attribute[] attributes() {
             if(null == attributes) {
-                
-                if(tree.getType() == JSONLexer.NULL){
-                    attributes = new Attribute[1];
-                    attributes[0] = new Attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
-                    return attributes;
-
-                }
+            	if(tree.getType() == JSONLexer.NULL){
+            		return NO_ATTRIBUTES;
+            	}
                 if(tree.getType() == JSONLexer.OBJECT) {
                     ArrayList<Attribute> attributesList = new ArrayList<Attribute>(tree.getChildCount());
                     for(int x=0; x<tree.getChildCount(); x++) {

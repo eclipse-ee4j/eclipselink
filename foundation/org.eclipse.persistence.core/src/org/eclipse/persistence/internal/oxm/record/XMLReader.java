@@ -33,6 +33,7 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -293,7 +294,18 @@ public class XMLReader implements org.xml.sax.XMLReader {
     public Object getValue(CharSequence characters, Class<?> dataType) {
         return null;
     }
+    
+    public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy){
+    	return nullPolicy.isNullRepresentedByXsiNil();    	
+    }
 
+    
+    public boolean isInCollection(){
+    	return true;
+    }
+ 
+
+    
     /**
      * Performance Optimization:
      * It is expensive to change the LexicalHandler on the underlying XMLReader

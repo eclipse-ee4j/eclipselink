@@ -26,5 +26,11 @@ public interface ExtendedContentHandler extends ContentHandler {
      * If this method is called other characters methods must not be called.
      */
     void characters(CharSequence characters) throws SAXException;
+    
+    /**
+     * This method can be used to track that the current element is nil 
+     * @param isNil
+     */
+    void setNil(boolean isNil);
 
 }

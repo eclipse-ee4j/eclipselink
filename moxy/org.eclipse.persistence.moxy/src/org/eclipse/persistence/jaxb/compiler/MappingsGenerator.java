@@ -940,14 +940,14 @@ public class MappingsGenerator {
                    // handle null policy set via xml metadata
                    if (property.isSetNullPolicy()) {
                 	   ((XMLCompositeCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(property, namespace.getNamespaceResolverForDescriptor()));
-                   } else if (property.isNillable()){
+                   } else if (next.isNillable() && property.isNillable()){
                 	   ((XMLCompositeCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                 	   ((XMLCompositeCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
                    }
                 } else if(nestedMapping.isAbstractCompositeDirectCollectionMapping()){   
                 	 if (next.isSetNullPolicy()) {
                 		 ((XMLCompositeDirectCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(next, namespace.getNamespaceResolverForDescriptor()));
-                     } else if (next.isNillable()){
+                     } else if (next.isNillable() && property.isNillable()){
                     	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                     	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
                      }
@@ -957,7 +957,7 @@ public class MappingsGenerator {
                 } else if(nestedMapping instanceof XMLBinaryDataCollectionMapping){   
                	    if (next.isSetNullPolicy()) {
             		    ((XMLBinaryDataCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(next, namespace.getNamespaceResolverForDescriptor()));
-                    } else if (next.isNillable()){
+                    } else if (next.isNillable() && property.isNillable()){
                 	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                 	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
                     }

@@ -101,4 +101,6 @@ public class MarshalRecordContentHandler implements ExtendedContentHandler {
         }
     }
 
+    @Override
+    public void setNil(boolean isNil) {}
 }

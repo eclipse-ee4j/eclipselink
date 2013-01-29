@@ -198,17 +198,22 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
 
         String value = unmarshalRecord.getCharacters().toString();
-        Object collection = unmarshalRecord.getContainerInstance(this);
         unmarshalRecord.resetStringBuffer();
 
         if (xmlField.usesSingleNode()) {
             StringTokenizer stringTokenizer = new StringTokenizer(value);
-            while (stringTokenizer.hasMoreTokens()) {
+            Object collection = unmarshalRecord.getContainerInstance(this);
+            while (stringTokenizer.hasMoreTokens()) {            	
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
         } else {
-            addUnmarshalValue(unmarshalRecord, value, collection);            
-        }
+            if(!unmarshalRecord.getXMLReader().isInCollection() && unmarshalRecord.isNil() ){
+            	unmarshalRecord.setAttributeValueNull(this);	
+            }else{
+                Object collection = unmarshalRecord.getContainerInstance(this);
+                addUnmarshalValue(unmarshalRecord, value, collection);
+            }  
+        }    
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
@@ -222,15 +227,19 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
         } else {            
-            if (xmlField.getLastXPathFragment().nameIsText()) {
-                addUnmarshalValue(unmarshalRecord, value, collection);
+            if (xmlField.getLastXPathFragment().nameIsText()) {            	
+            	if(!unmarshalRecord.getXMLReader().isInCollection() && unmarshalRecord.isNil() ){
+            		unmarshalRecord.setAttributeValueNull(this);
+            	} else{
+                    addUnmarshalValue(unmarshalRecord, value, collection);
+            	}  
             }
         }
     }
 
     private void addUnmarshalValue(UnmarshalRecord unmarshalRecord, Object value, Object collection) {
       
-        if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {            
+        if (unmarshalRecord.isNil() && unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeDirectCollectionMapping.getNullPolicy())){
             value = null;           
         } else if (!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value)) {
             value = null;
