@@ -3,11 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>@groupId@</groupId>
   <artifactId>@artifactId@</artifactId>
+  <version>@version@</version>
   <packaging>jar</packaging>
   <name>@artifactName@</name>
   <description>EclipseLink subversion revision @svn.revision@</description>
-  <version>@version@</version>
   <url>http://www.eclipse.org/eclipselink</url>
+  <organization>
+    <name>Eclipse.org - EclipseLink Project</name>
+    <url>http://www.eclipse.org/eclipselink</url>
+  </organization>
   <issueManagement>
     <system>bugzilla</system>
     <url>https://bugs.eclipse.org/bugs</url>
@@ -39,8 +43,23 @@
       <comments>Standard Eclipse Distribution License</comments>
     </license>
   </licenses>
+  <scm>
+    <connection>scm:git:http://git.eclipse.org/eclipselink/eclipselink.runtime.git</connection>
+    <url>http://git.eclipse.org/eclipselink/eclipselink.runtime.git</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>PeterKrogh</id>
+      <name>Peter Krogh</name>
+      <email>peter.krogh@oracle.com</email>
+      <organization>Eclipse.org - EclipseLink Project</organization>
+      <organizationUrl>http://www.eclipse.org/eclipselink</organizationUrl>
+      <roles>
+        <role>Project Manager</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
   @dependencies@
 </project>
-
-
-
