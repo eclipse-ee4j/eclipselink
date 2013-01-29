@@ -1,0 +1,13 @@
+{
+   "id":108765,
+   "firstName":"John",
+   "lastName":"Smith",
+   "expertiseAreas":[
+       {
+            "subject": "rest"
+       },
+       {
+            "subject":"xml"
+       }       
+   ]
+}

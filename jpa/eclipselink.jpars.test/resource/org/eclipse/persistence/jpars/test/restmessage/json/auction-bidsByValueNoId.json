@@ -1,0 +1,17 @@
+{
+    "bids":[
+        {
+            "amount":300.0
+        },
+        {
+            "amount":500.0
+        }
+    ],
+    "description":"another famous Picasso paint",
+    "endPrice":1000000.0,
+    "id":101023,
+    "image":"The_Old_Guitarist.jpeg",
+    "name":"The Old Guitarist",
+    "sold":false,
+    "startPrice":10000.0
+}

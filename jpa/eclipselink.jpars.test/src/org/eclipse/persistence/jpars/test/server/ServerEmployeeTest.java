@@ -555,6 +555,14 @@ public class ServerEmployeeTest {
         readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType.APPLICATION_JSON_TYPE);
     }
     
+    @Test(expected = RestCallFailedException.class)
+    public void testCreateEmployeeWithPhoneNumbersNonIdempotent() throws Exception {
+        String employee = RestUtils.getJSONMessage("employee-expertiseByValueNoId.json");
+        // The expertise object contained by the employee object has generated id field, and create is idempotent.
+        // So, create operation on employee with expertise list should fail.
+        RestUtils.restCreateWithSequence(employee, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+    }
+  
     private void readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType mediaType) throws Exception {
         // phone numbers on employee object is annoted to be LAZY fetch
         // Create an employee without any phone numbers, and make sure that read emmployee response doesn't contain phone numbers,

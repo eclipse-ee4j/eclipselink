@@ -286,6 +286,26 @@ public class RestUtils {
         return resultObject;
     }
 
+    
+    public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, object.toString());
+        Status status = response.getClientResponseStatus();
+        if (status == Status.BAD_REQUEST) {
+            throw new RestCallFailedException(status);
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+    
     /**
      * Rest delete.
      *
