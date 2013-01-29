@@ -200,4 +200,6 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     public void appendChildNode(Node parentNode, Node childNode) {
         parentNode.appendChild(childNode);
     }
+    @Override
+    public void setNil(boolean isNil) {}
 }

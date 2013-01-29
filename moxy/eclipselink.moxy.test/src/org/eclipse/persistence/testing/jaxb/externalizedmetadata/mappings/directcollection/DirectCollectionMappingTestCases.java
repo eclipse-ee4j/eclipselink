@@ -93,6 +93,14 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
         return ctrlEmp;
     }
  
+    /**
+     * Create the control Employee.
+     */
+    public Object getJSONReadControlObject() {
+    	Employee emp = (Employee) getWriteControlObject();
+    	emp.privateData = null;
+	    return emp;
+    }
     
     public Object getWriteControlObject() {
     	if(writeCtrlObject == null){
@@ -108,6 +116,8 @@ public class DirectCollectionMappingTestCases extends JAXBWithJSONTestCases {
     	return writeCtrlObject;        
    
     }
+    
+   
     
     public Map getProperties(){
 		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/directcollection/eclipselink-oxm.xml");

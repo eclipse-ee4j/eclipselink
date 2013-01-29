@@ -44,6 +44,10 @@ public abstract class DeferredContentHandler implements ExtendedContentHandler, 
         this.parent = parentRecord;
     }
 
+
+    @Override
+    public void setNil(boolean isNil) {}
+    
     protected abstract void processEmptyElement() throws SAXException;
 
     protected abstract void processComplexElement() throws SAXException;

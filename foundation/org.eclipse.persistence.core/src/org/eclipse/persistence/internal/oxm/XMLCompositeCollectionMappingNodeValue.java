@@ -93,9 +93,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
                 if(xmlDescriptor == null){
-                	if (xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+                	if (unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy())){
                 		if(unmarshalRecord.isNil()){
-                            getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
                             return true;
                 		}
                     } else if(xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)){ 
@@ -156,9 +155,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     xmlReader.setContentHandler(aHandler);
                     xmlReader.setLexicalHandler(aHandler);
                 }
-            } else if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
-                getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
-            } else {
+            } else if (!(unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(nullPolicy) && unmarshalRecord.isNil())) {            	
             	Field xmlFld = (Field) this.xmlCompositeCollectionMapping.getField();
                 if (xmlFld.hasLastXPathFragment()) {
                     unmarshalRecord.setLeafElementType(xmlFld.getLastXPathFragment().getLeafElementType());
@@ -177,8 +174,13 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
-        if(unmarshalRecord.isNil() && xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()){
-            unmarshalRecord.resetStringBuffer();
+        if(unmarshalRecord.isNil() && unmarshalRecord.getXMLReader().isNullRepresentedByXsiNil(xmlCompositeCollectionMapping.getNullPolicy())){
+        	if(unmarshalRecord.getXMLReader().isInCollection()){
+        		unmarshalRecord.addAttributeValue(this, null);
+        	}else{
+        		unmarshalRecord.setAttributeValueNull(this);
+        	}
+            unmarshalRecord.resetStringBuffer();        	
             return;
         }
         if (null == unmarshalRecord.getChildRecord()) {

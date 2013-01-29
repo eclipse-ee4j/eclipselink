@@ -160,6 +160,8 @@ public interface UnmarshalRecord<
 
     public void setAttributeValue(Object object, Mapping mapping);
 
+    public void setAttributeValueNull(ContainerValue containerValue);
+
     public void setChildRecord(UnmarshalRecord unmarshalRecord);
 
     public void setContainerInstance(int index, Object containerInstance);

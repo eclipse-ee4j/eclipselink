@@ -17,6 +17,7 @@ import org.eclipse.persistence.testing.jaxb.xmlelement.model.EmptyJSONArrayTestC
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCasesNS;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.SpecialCharacterTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelement.nulls.NullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.order.ElementOrderingTestCases;
 
 import junit.framework.Test;
@@ -34,6 +35,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(XmlElementNillableTextTestCases.class);
         suite.addTestSuite(FullTestCases.class);
         suite.addTestSuite(FullTestCasesNS.class);
+        suite.addTestSuite(NullTestCases.class);
         suite.addTestSuite(EmptyCollectionTestCases.class);
         suite.addTestSuite(EmptyJSONArrayTestCases.class);
         suite.addTestSuite(SpecialCharacterTestCases.class);

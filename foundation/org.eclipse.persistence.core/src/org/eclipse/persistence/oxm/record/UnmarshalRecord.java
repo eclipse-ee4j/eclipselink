@@ -424,6 +424,10 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
     public void setAttributeValue(Object object, Mapping mapping) {
         unmarshalRecord.setAttributeValue(object, mapping);
     }
+    @Override
+    public void setAttributeValueNull(ContainerValue containerValue) {
+        unmarshalRecord.setAttributeValueNull(containerValue);
+    }
 
     @Override
     public void setChildRecord(org.eclipse.persistence.internal.oxm.record.UnmarshalRecord childRecord) {

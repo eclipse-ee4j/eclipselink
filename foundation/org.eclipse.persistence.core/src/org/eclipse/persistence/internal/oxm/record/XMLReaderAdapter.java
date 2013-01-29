@@ -205,6 +205,9 @@ public abstract class XMLReaderAdapter extends XMLReader {
             contentHandler.characters(characters.toString().toCharArray(), 0, characters.length());
         }
 
+        @Override
+        public void setNil(boolean isNil) {}
+
     }
 
     protected static abstract class IndexedAttributeList implements Attributes {
