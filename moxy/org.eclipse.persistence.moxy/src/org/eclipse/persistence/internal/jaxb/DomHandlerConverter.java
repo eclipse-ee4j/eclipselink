@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jaxb;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.DomHandler;
@@ -64,9 +65,10 @@ public class DomHandlerConverter implements XMLConverter {
     public void initialize(DatabaseMapping mapping, Session session) {
         try {
             ConversionManager cMgr = session.getDatasourcePlatform().getConversionManager();
-            Class<? extends DomHandler> domHandlerClass = cMgr.convertClassNameToClass(domHandlerClassName);
+            Class<? extends DomHandler> domHandlerClass = PrivilegedAccessHelper.getClassForName(domHandlerClassName, true, cMgr.getLoader());
 
-            this.domHandler = domHandlerClass.newInstance();
+            Constructor cons = PrivilegedAccessHelper.getDeclaredConstructorFor(domHandlerClass, new Class[]{}, true);
+            this.domHandler = (DomHandler)PrivilegedAccessHelper.invokeConstructor(cons, new Object[]{});
 
             Method createUnmarshallerMethod = PrivilegedAccessHelper.getDeclaredMethod(domHandlerClass, "createUnmarshaller", new Class[]{ValidationEventHandler.class});
             resultType = PrivilegedAccessHelper.getMethodReturnType(createUnmarshallerMethod);

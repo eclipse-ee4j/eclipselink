@@ -2698,12 +2698,12 @@ public class AnnotationsProcessor {
                 if (((next.getName().startsWith(GET_STR) && next.getName().length() > 3) || (next.getName().startsWith(IS_STR) && next.getName().length() > 2)) && next.getParameterTypes().length == 0 && next.getReturnType() != helper.getJavaClass(java.lang.Void.class)) {
                     int modifiers = next.getModifiers();
                     
-                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic || hasJAXBAnnotations(next))) {
                        propertyMethods.add(next);
                     } 
                 } else if (next.getName().startsWith(SET_STR) && next.getName().length() > 3 && next.getParameterTypes().length == 1) {
                     int modifiers = next.getModifiers();
-                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic)) {
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && ((onlyPublic && Modifier.isPublic(next.getModifiers())) || !onlyPublic || hasJAXBAnnotations(next))) {
                         propertyMethods.add(next);
                     }
                 }
