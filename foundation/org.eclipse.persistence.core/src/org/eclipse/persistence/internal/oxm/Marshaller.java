@@ -22,6 +22,12 @@ public abstract class Marshaller<
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper> {
 
+    protected CONTEXT context;
+
+    public Marshaller(CONTEXT context) {
+        this.context = context;
+    }
+
     public abstract XMLAttachmentMarshaller getAttachmentMarshaller();
 
     /**
@@ -34,6 +40,14 @@ public abstract class Marshaller<
      * Return this Marshaller's CharacterEscapeHandler.
      */
     public abstract CharacterEscapeHandler getCharacterEscapeHandler();
+
+    /**
+     * Return the instance of Context that was used to create this instance
+     * of Marshaller.
+     */
+    public CONTEXT getContext() {
+        return context;
+    }
 
     /**
      * Get the encoding set on this Marshaller
@@ -77,12 +91,6 @@ public abstract class Marshaller<
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
      */
     public abstract String getValueWrapper();
-
-    /**
-     * Return the instance of XMLContext that was used to create this instance
-     * of XMLMarshaller.
-     */
-    public abstract CONTEXT getXMLContext();
 
     /**
      * Get this Marshaller's XML Header.

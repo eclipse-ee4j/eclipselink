@@ -14,14 +14,38 @@ package org.eclipse.persistence.core.sessions;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 
 public abstract class CoreProject <
-   DESCRIPTOR extends CoreDescriptor
+   DESCRIPTOR extends CoreDescriptor,
+   LOGIN extends CoreLogin,
+   SESSION extends CoreSession
    > implements Serializable {
 
 	public abstract void addDescriptor(DESCRIPTOR descriptor);
+
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this project to actual class-based settings.
+     * This will also reset any class references to the version of the class from the class loader.
+     */
+    public abstract void convertClassNamesToClasses(ClassLoader classLoader);
+
+    /**
+     * PUBLIC:
+     * Factory method to create session.
+     * This returns an implementor of the CoreSession interface, which can be used to login
+     * and add descriptors from other projects.  The CoreSession interface however should be used for
+     * reading and writing once connected for complete portability.
+     */
+    public abstract SESSION createDatabaseSession();
+
+    /**
+     * PUBLIC:
+     * Return the login, the login holds any database connection information given.
+     * This return the Login interface and may need to be cast to the datasource specific implementation.
+     */
+	public abstract LOGIN getDatasourceLogin();
 
     /**
      * PUBLIC:
@@ -36,10 +60,11 @@ public abstract class CoreProject <
      */
     public abstract List<DESCRIPTOR> getOrderedDescriptors();
     
+
     /**
-     * INTERNAL:
-     * Convert all the class-name-based settings in this project to actual class-based settings.
-     * This will also reset any class references to the version of the class from the class loader.
+     * PUBLIC:
+     * Set the login to be used to connect to the database for this project.
      */
-    public abstract void convertClassNamesToClasses(ClassLoader classLoader);
+    public abstract void setLogin(LOGIN datasourceLogin);
+
 }

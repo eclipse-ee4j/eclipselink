@@ -34,7 +34,7 @@ import org.eclipse.persistence.sessions.DatasourceLogin;
  * @see org.eclipse.persistence.oxm.platform.DOMPlatform
  *
  */
-public class XMLLogin extends DatasourceLogin implements Login {
+public class XMLLogin extends DatasourceLogin implements Login<Platform> {
     private boolean equalNamespaceResolvers;
 
     private DocumentPreservationPolicy documentPreservationPolicy;

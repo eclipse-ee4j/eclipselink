@@ -161,7 +161,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             if (fieldValue == null) {
                 if(null != value) {
                 	Field f2 = (Field) xmlCollectionReferenceMapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
-                    fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(value, f2.getXPath(), f2.getNamespaceResolver(), Object.class);
+                    fieldValue = marshalRecord.getMarshaller().getContext().getValueByXPath(value, f2.getXPath(), f2.getNamespaceResolver(), Object.class);
                 }
                 if(null == fieldValue) {
                     return false;

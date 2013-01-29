@@ -263,17 +263,22 @@ public class DDLTestSuite extends JUnitTestCase {
     }
     
     public void testRootTargetScriptFileName() {
-        Map properties = new HashMap();
-        // Get database properties will pick up test.properties database connection details.
-        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
-        properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
-        properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "/temp-generate-schema-drop.jdbc");
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "/temp-generate-schema-create.jdbc");
-         
-        Persistence.generateSchema(getPersistenceUnitName(), properties);
+        // Since the nightlies run on MySql on a machine we do not own nor
+        // control, avoid this test since we do not have file permission at the
+        // root level.
+        if (! getPlatform().isMySQL()) {
+            Map properties = new HashMap();
+            // Get database properties will pick up test.properties database connection details.
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+            properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
+            properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
+            properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "/temp-generate-schema-drop.jdbc");
+            properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "/temp-generate-schema-create.jdbc");
+             
+            Persistence.generateSchema(getPersistenceUnitName(), properties);
+        }
     }
     
     public void testIllegalArgumentExceptionWithNoScriptTargetProvided() {

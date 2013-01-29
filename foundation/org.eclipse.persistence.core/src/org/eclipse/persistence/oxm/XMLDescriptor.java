@@ -897,7 +897,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     
     private void setDeclaredTypeOnXMLRoot(Root xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, Unmarshaller unmarshaller){
     	XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
-    	Descriptor desc = unmarshaller.getXMLContext().getDescriptor(xpathQName);
+    	Descriptor desc = unmarshaller.getContext().getDescriptor(xpathQName);
     	if(desc != null){
     		xmlRoot.setDeclaredType(desc.getJavaClass());
     	}

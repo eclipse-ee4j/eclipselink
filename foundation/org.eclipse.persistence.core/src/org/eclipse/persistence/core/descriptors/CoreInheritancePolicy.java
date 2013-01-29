@@ -92,6 +92,12 @@ public abstract class CoreInheritancePolicy<
     
     /**
      * INTERNAL:
+     * Return the parent descriptor.
+     */
+    public abstract DESCRIPTOR getParentDescriptor();
+
+    /**
+     * INTERNAL:
      */
     public abstract boolean hasClassExtractor();
     

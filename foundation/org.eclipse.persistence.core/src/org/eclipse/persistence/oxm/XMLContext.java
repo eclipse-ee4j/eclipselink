@@ -12,9 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,11 +26,9 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Context;
-import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.accessor.OrmAttributeAccessor;
 import org.eclipse.persistence.internal.oxm.documentpreservation.DescriptorLevelDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
@@ -48,10 +46,8 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
@@ -86,12 +82,11 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  *  @see org.eclipse.persistence.oxm.XMLValidator
  *
  */
-public class XMLContext extends Context<AbstractSession, XMLDescriptor, NamespaceResolver, DatabaseSession> {
+public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField, NamespaceResolver, Project, DatabaseSession, SessionEventListener> {
 
-    private volatile XMLContextState xmlContextState;
 
     XMLContext(XMLContextState xmlContextState) {
-        this.xmlContextState = xmlContextState;
+        this.contextState = xmlContextState;
     }
 
     /**
@@ -146,7 +141,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      *            and load sessions.
      */
     public XMLContext(String sessionNames, ClassLoader classLoader, String xmlResource) {
-        xmlContextState = new XMLContextState(this, sessionNames, classLoader, xmlResource);
+        contextState = new XMLContextState(this, sessionNames, classLoader, xmlResource);
     }
 
     /**
@@ -181,7 +176,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
     public XMLContext(Project project, ClassLoader classLoader, SessionEventListener sessionEventListener) {
         Collection<SessionEventListener> sessionEventListeners = new ArrayList<SessionEventListener>(1);
         sessionEventListeners.add(sessionEventListener);
-        xmlContextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
+        contextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
     }
 
     /**
@@ -194,7 +189,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * @see SessionEventManager
      */
     public XMLContext(Project project, ClassLoader classLoader, Collection<SessionEventListener> sessionEventListeners) {
-        xmlContextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
+        contextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
     }
 
     public XMLContext(Collection projects) {
@@ -202,7 +197,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
     }
     
     public XMLContext(Collection projects, ClassLoader classLoader) {
-        xmlContextState = new XMLContextState(this, projects, classLoader);
+        contextState = new XMLContextState(this, projects, classLoader);
     }
 
     /**
@@ -212,7 +207,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * implementation.
      */
     public XMLContextState getXMLContextState() {
-        return (XMLContextState) xmlContextState;
+        return (XMLContextState) contextState;
     }
 
     /**
@@ -224,7 +219,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      */
     public void setXMLContextState(XMLContextState xcs) {
         synchronized(this) {
-            this.xmlContextState = xcs;
+            this.contextState = xcs;
         }
     }
 
@@ -233,7 +228,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * associated with this XMLContext.
      */
     public void addSession(DatabaseSession sessionToAdd) {
-        xmlContextState.addSession(sessionToAdd);
+        getXMLContextState().addSession(sessionToAdd);
     }
 
     /**
@@ -295,7 +290,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * when a non-shared cache is desired.
      */
     public AbstractSession getReadSession(Object object) {
-        return xmlContextState.getReadSession(object);
+        return getSession(object);
     }
 
     /**
@@ -309,7 +304,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * when a non-shared cache is desired.
      */
     public AbstractSession getReadSession(Class clazz) {
-        return xmlContextState.getReadSession(clazz);
+        return super.getSession(clazz);
     }
 
     /**
@@ -323,14 +318,14 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * when a non-shared cache is desired.
      */
     public AbstractSession getReadSession(XMLDescriptor xmlDescriptor) {
-        return xmlContextState.getReadSession(xmlDescriptor);
+        return super.getSession(xmlDescriptor);
     }
 
     /**
      * INTERNAL: Return the EclipseLink session used to marshal.
      */
     public List getSessions() {
-        return xmlContextState.getSessions();
+        return getXMLContextState().getSessions();
     }
 
     /**
@@ -340,7 +335,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * </code>
      */
     public DatabaseSession getSession(int index) {
-        return xmlContextState.getSession(index);
+        return getXMLContextState().getSession(index);
     }
 
     /**
@@ -349,7 +344,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * XML Context, this method will return the first match.
      */
     public AbstractSession getSession(Object object) {
-        return xmlContextState.getSession(object);
+        return super.getSession(object);
     }
 
     /**
@@ -358,7 +353,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * Context, this method will return the first match.
      */
     public AbstractSession getSession(Class clazz) {
-        return xmlContextState.getSession(clazz);
+        return super.getSession(clazz);
     }
 
     /**
@@ -367,14 +362,14 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * the XML Context, this method will return the first match.
      */
     public AbstractSession getSession(XMLDescriptor xmlDescriptor) {
-        return xmlContextState.getSession(xmlDescriptor);
+        return super.getSession(xmlDescriptor);
     }
 
     /**
      * INTERNAL:
      */
     public void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor) {
-        xmlContextState.storeXMLDescriptorByQName(xmlDescriptor, null);
+        contextState.storeDescriptorByQName(xmlDescriptor, null);
     }
 
     /**
@@ -382,8 +377,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(QName qName) {
-    	XPathQName xpathQName = new XPathQName(qName, true);
-    	return xmlContextState.getDescriptor(xpathQName);
+        return super.getDescriptor(qName);
     }
 
     /**
@@ -391,11 +385,11 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * the QName parameter.
      */
     public XMLDescriptor getDescriptor(XPathQName xpathQName) {
-    	return xmlContextState.getDescriptor(xpathQName);
+    	return super.getDescriptor(xpathQName);
     }
     
     public void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
-        xmlContextState.addDescriptorByQName(qName, descriptor);
+        contextState.addDescriptorByQName(qName, descriptor);
     }
     
     /**
@@ -403,7 +397,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * XPathFragment parameter.
      */
     public XMLDescriptor getDescriptorByGlobalType(XPathFragment xPathFragment) {
-        return xmlContextState.getDescriptorByGlobalType(xPathFragment);
+        return super.getDescriptorByGlobalType(xPathFragment);
     }
 
     /**
@@ -421,7 +415,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
     }
 
     public void setupDocumentPreservationPolicy(DatabaseSession session) {
-        xmlContextState.setupDocumentPreservationPolicy(session);
+        getXMLContextState().setupDocumentPreservationPolicy(session);
     }
 
     /**
@@ -430,7 +424,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * policy that requires unmarshalling from a Node.
      */
     public boolean hasDocumentPreservation() {
-        return xmlContextState.hasDocumentPreservation();
+        return getXMLContextState().hasDocumentPreservation();
     }
     
     /**
@@ -556,55 +550,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * @return The object corresponding to the XPath or null if no result was found.
      */
     public <T> T getValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        if (null == xPath || null == object) {
-            return null;
-        }
-        if (".".equals(xPath)) {
-            return (T) object;
-        }
-        Session session = this.getSession(object);
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object);
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, XMLConstants.XPATH_SEPARATOR);
-        T value = getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
-        if (null == value) {
-            DatabaseMapping selfMapping = xmlDescriptor.getObjectBuilder().getMappingForField(new XMLField(String.valueOf(XMLConstants.DOT)));
-            if (null != selfMapping) {
-                return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(),
-                        new StringTokenizer(xPath, XMLConstants.XPATH_SEPARATOR), ((XMLDescriptor) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
-            }
-        }
-        return value;
-    }
-
-    private <T> T getValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
-        
-        if (null != queryResult) {
-            DatabaseMapping mapping = queryResult.mapping;
-            Object owner = queryResult.owner;
-            Integer index = queryResult.index;
-            
-            if (null != owner) {
-                Object childObject = null;
-                if (mapping.isCollectionMapping()) {
-                    Object collection = mapping.getAttributeValueFromObject(owner);
-                    if (List.class.isAssignableFrom(collection.getClass())) {
-                        List list = (List) collection;
-                        if (null == index) {
-                            return (T) collection;
-                        }
-                        if (index >= list.size()) {
-                            return null;
-                        }
-                        childObject = list.get(index);
-                    }
-                } else {
-                    childObject = mapping.getAttributeValueFromObject(owner);
-                }
-                return (T) childObject;
-            }
-        }
-        return null;
+        return super.getValueByXPath(object, xPath, namespaceResolver, returnType);
     }
 
     /**
@@ -636,53 +582,9 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      * @param value The value to be set.
      */
     public void setValueByXPath(Object object, String xPath, NamespaceResolver namespaceResolver, Object value) { 
-        Session session = this.getSession(object); 
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(object); 
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/"); 
-        setValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, value); 
+        super.setValueByXPath(object, xPath, namespaceResolver, value);
     } 
 
-    private void setValueByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Object value) {
-        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
-        
-        if (null != queryResult) {
-            DatabaseMapping mapping = queryResult.mapping;
-            Object owner = queryResult.owner;
-            Integer index = queryResult.index;
-
-            if (null != owner) {
-                if (mapping.isCollectionMapping()) {
-                    Object childObject = null;
-                    Object collection = mapping.getAttributeValueFromObject(owner);
-                    if (List.class.isAssignableFrom(collection.getClass())) {
-                        List list = (List) collection;
-                        if (null == index) {
-                            // We are setting the whole collection, not an element in the collection
-                            if (value.getClass().isArray()) {
-                                ArrayList newList = new ArrayList();
-                                int length = Array.getLength(value);
-                                for (int i = 0; i < length; i++) {
-                                    newList.add(Array.get(value, i));
-                                }
-                                value = newList;
-                            }
-                            mapping.setAttributeValueInObject(owner, value);
-                            return;
-                        }
-                        if (index >= list.size()) {
-                            return;
-                        }
-                        // Set into collection
-                        list.set(index, value);
-                        mapping.setAttributeValueInObject(owner, list);
-                        return;
-                    }
-                } else {
-                    mapping.setAttributeValueInObject(owner, value);
-                }
-            }
-        }
-    }
 
     /**
      * Create a new object instance for a given XML namespace and name.
@@ -738,217 +640,42 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
      *      if no result was found.
      */
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        Session session = this.getSession(parentObject);
-        XMLDescriptor xmlDescriptor = (XMLDescriptor) session.getDescriptor(parentObject);
-        StringTokenizer stringTokenizer = new StringTokenizer(xPath, "/");
-        return createByXPath(parentObject, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
+        return super.createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
 
-    private <T> T createByXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver, Class<T> returnType) {
-        XPathQueryResult queryResult = getMappingForXPath(object, objectBuilder, stringTokenizer, namespaceResolver);
 
-        if (null != queryResult.mapping) {
-            ClassDescriptor refDescriptor = queryResult.mapping.getReferenceDescriptor();
-            if (null != refDescriptor) {
-                return (T) refDescriptor.getInstantiationPolicy().buildNewInstance();
-            }
-        }
-        return null;
-    }
+    private static class XMLContextState extends ContextState<AbstractSession, XMLDescriptor, Project, DatabaseSession, SessionEventListener> {
 
-    private class XPathQueryResult {
-        /*
-         * Mapping corresponding to the XPath query
-         */
-        private DatabaseMapping mapping;
-
-        /*
-         * Mapping's owning object
-         */
-        private Object owner;
-
-        /*
-         * Index into mapping, from XPath query (may be null)
-         */
-        private Integer index;
-    }
-
-    private XPathQueryResult getMappingForXPath(Object object, ObjectBuilder objectBuilder, StringTokenizer stringTokenizer, NamespaceResolver namespaceResolver) {
-        XPathQueryResult queryResult = new XPathQueryResult();
-
-        String xPath = "";
-        XMLField xmlField = new XMLField();
-        xmlField.setNamespaceResolver(namespaceResolver);
-        while (stringTokenizer.hasMoreElements()) {
-            String nextToken = stringTokenizer.nextToken();
-            xmlField.setXPath(xPath + nextToken);
-            xmlField.initialize();
-            DatabaseMapping mapping = objectBuilder.getMappingForField(xmlField);
-            if (null == mapping) {
-                // XPath might have indexes, while the mapping's XPath may not,
-                // so remove them and look again
-                XPathFragment xPathFragment = new XPathFragment(nextToken);
-                int xmlFieldIndex = xmlField.getXPathFragment().getIndexValue();
-                int fragmentIndex = xPathFragment.getIndexValue();
-                if (xmlFieldIndex > 0 || fragmentIndex > 0) {
-                    int index = xmlFieldIndex - 1;
-                    if (index < 0) {
-                        index = fragmentIndex - 1;
-                    }
-                    String xPathNoIndexes = removeIndexesFromXPath(xmlField.getXPath());
-                    xmlField.setXPath(xPathNoIndexes);
-                    xmlField.initialize();
-                    mapping = objectBuilder.getMappingForField(xmlField);
-                    if (null == mapping) {
-                        // Try adding /text()
-                        xmlField.setXPath(xPathNoIndexes + XMLConstants.XPATH_SEPARATOR + XMLConstants.TEXT);
-                        xmlField.initialize();
-                        mapping = objectBuilder.getMappingForField(xmlField);
-                    }
-                    if (null != mapping) {
-                        if (xmlField.getXPath().endsWith(XMLConstants.TEXT) || !stringTokenizer.hasMoreElements()) {
-                            // End of the line, we found a mapping so return it
-                            queryResult.mapping = mapping;
-                            queryResult.owner = object;
-                            queryResult.index = index;
-                            return queryResult;
-                        } else {
-                            // We need to keep looking -- get the mapping value,
-                            // then recurse into getMappingForXPath with new root object
-                            Object childObject = mapping.getAttributeValueFromObject(object);
-                            if (mapping.isCollectionMapping()) {
-                                Object collection = mapping.getAttributeValueFromObject(object);
-                                if (null != collection  && List.class.isAssignableFrom(collection.getClass())) {
-                                    List list = (List) collection;
-                                    if (index >= list.size()) {
-                                        // Index used in query is out of range, no matches
-                                        return null;
-                                    }
-                                    childObject = list.get(index);
-                                }
-                            }
-                            if (null == childObject) {
-                                childObject = mapping.getReferenceDescriptor().getObjectBuilder().buildNewInstance();
-                            }
-                            ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                            return getMappingForXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver);
-                        }
-                    }
-                }
-            } else {
-                if (!stringTokenizer.hasMoreElements()) {
-                    // End of the line, we found a mapping so return it
-                    queryResult.mapping = mapping;
-                    queryResult.owner = object;
-                    return queryResult;
-                } else {
-                    // We need to keep looking -- get the mapping value,
-                    // then recurse into getMappingForXPath with new root object
-                    Object childObject = mapping.getAttributeValueFromObject(object);
-                    if (mapping.isCollectionMapping()) {
-                        Object collection = mapping.getAttributeValueFromObject(object);
-                        if (null != collection && List.class.isAssignableFrom(collection.getClass())) {
-                            List list = (List) collection;
-                            if (0 >= list.size()) {
-                                return null;
-                            }
-                            childObject = list.get(0);
-                        }
-                    }
-                    if (null == childObject) {
-                        childObject = mapping.getReferenceDescriptor().getObjectBuilder().buildNewInstance();
-                    }
-                    ObjectBuilder childObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
-                    return getMappingForXPath(childObject, childObjectBuilder, stringTokenizer, namespaceResolver);
-                }
-            }
-            xPath = xPath + nextToken + XMLConstants.XPATH_SEPARATOR;
-        }
-        return null;
-    }
-
-    private String removeIndexesFromXPath(String xpathWithIndexes) {
-        String newXPath = xpathWithIndexes;
-        while (newXPath.contains(XMLConstants.XPATH_INDEX_OPEN)) {
-            int open = newXPath.lastIndexOf(XMLConstants.XPATH_INDEX_OPEN);
-            int closed = newXPath.lastIndexOf(XMLConstants.XPATH_INDEX_CLOSED);
-            newXPath = newXPath.substring(0, open) + newXPath.substring(closed + 1);
-        }
-        return newXPath;
-    }
-
-    public static class XMLContextState {
-
-        private XMLContext xmlContext;
-        private List sessions;
-        private Map descriptorsByQName;
-        private Map descriptorsByGlobalType;
+        private List<DatabaseSession> sessions;
         private boolean hasDocumentPreservation = false;
-        private Collection<SessionEventListener> sessionEventListeners;
 
-        private XMLContextState(XMLContext xmlContext, Collection<Project> projects, ClassLoader classLoader) {
-            this.xmlContext = xmlContext;
-            Iterator iterator = projects.iterator();
+        protected XMLContextState(XMLContext xmlContext, Collection<Project> projects, ClassLoader classLoader) {
+            this.context = xmlContext;
             sessions = new ArrayList(projects.size());
-            descriptorsByQName = new HashMap();
-            descriptorsByGlobalType = new HashMap();
-            while(iterator.hasNext()) {
-                Project project = (Project)iterator.next();
-                if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                    XMLPlatform platform = new SAXPlatform();
-                    platform.getConversionManager().setLoader(classLoader);
-                    project.setLogin(new XMLLogin(platform));
-                }
+            Iterator<Project> iterator = projects.iterator();
+            while (iterator.hasNext()) {
+                Project project = iterator.next();
+                preLogin(project, classLoader);
                 DatabaseSession session = project.createDatabaseSession();
 
-                // turn logging for this session off and leave the global session up
-                // Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
+                // turn logging for this session off and leave the global
+                // session up
+                // Note: setting level to SEVERE or WARNING will printout
+                // stacktraces for expected exceptions
                 session.setLogLevel(SessionLog.OFF);
                 // don't turn off global static logging
-                //AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());
-                //AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
-                setupDocumentPreservationPolicy(session);
-                session.login();
+                // AbstractSessionLog.getLog().log(AbstractSessionLog.INFO,
+                // "ox_turn_global_logging_off", getClass());
+                // AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
+                setupSession(session);
                 sessions.add(session);
-                storeXMLDescriptorsByQName(session);
-                
+                storeDescriptorsByQName(session);
             }
-        }
-
-        private XMLContextState(XMLContext xmlContext, Project project, ClassLoader classLoader, Collection<SessionEventListener> sessionEventListeners) {
-            this.xmlContext = xmlContext;
-            if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
-                XMLPlatform platform = new SAXPlatform();
-                platform.getConversionManager().setLoader(classLoader);
-                project.setLogin(new XMLLogin(platform));
-            }
-            sessions = new ArrayList(1);
-            DatabaseSession session = project.createDatabaseSession();
-            
-            // if an event listener was passed in as a parameter, register it with the event manager
-            if (sessionEventListeners != null) {
-                for(SessionEventListener sessionEventListener : sessionEventListeners) {
-                    session.getEventManager().addListener(sessionEventListener);
-                }
-            }
-
-            // turn logging for this session off and leave the global session up
-            // Note: setting level to SEVERE or WARNING will printout stacktraces for expected exceptions
-            session.setLogLevel(SessionLog.OFF);
-            // don't turn off global static logging
-            //AbstractSessionLog.getLog().log(AbstractSessionLog.INFO, "ox_turn_global_logging_off", getClass());
-            //AbstractSessionLog.getLog().setLevel(AbstractSessionLog.OFF);
-            setupDocumentPreservationPolicy(session);
-
-            session.login();
-            sessions.add(session);
-            descriptorsByQName = new HashMap();
-            descriptorsByGlobalType = new HashMap();
-            storeXMLDescriptorsByQName(session);
         }
 
         private XMLContextState(XMLContext xmlContext, String sessionNames, ClassLoader classLoader, String xmlResource) {
-            this.xmlContext = xmlContext;
+            super();
+            this.context = xmlContext;
             XMLSessionConfigLoader loader = null;
             if (xmlResource != null) {
                 loader = new XMLSessionConfigLoader(xmlResource);
@@ -965,19 +692,15 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                 index++;
             }
             for (int x = index - 1; x >= 0; x--) {
-                storeXMLDescriptorsByQName((DatabaseSession) sessions.get(x));
+                storeDescriptorsByQName(sessions.get(x));
             }
         }
 
-        private void addDescriptorByQName(QName qName, XMLDescriptor descriptor) {
-        	XPathQName xpathQName = new XPathQName(qName, true);
-        	addDescriptorByQName(xpathQName, descriptor);
+        protected XMLContextState(XMLContext xmlContext, Project project,
+                ClassLoader classLoader,
+                Collection<SessionEventListener> sessionEventListeners) {
+            super(xmlContext, project, classLoader, sessionEventListeners);
         }
-        
-        private void addDescriptorByQName(XPathQName qName, XMLDescriptor descriptor) {
-            descriptorsByQName.put(qName, descriptor);
-        }
-        
 
         /**
          * INTERNAL: Add and initialize a new session to the list of sessions
@@ -990,19 +713,30 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             }
             DatabaseSession session = sessionToAdd.getProject().createDatabaseSession();
             if (sessionToAdd.getEventManager().hasListeners()) {
-                List listeners = sessionToAdd.getEventManager().getListeners();
+                List<SessionEventListener> listeners = sessionToAdd.getEventManager().getListeners();
                 int listenersSize = listeners.size();
                 for (int x = 0; x < listenersSize; x++) {
-                    session.getEventManager().addListener((SessionEventListener) listeners.get(x));
+                    session.getEventManager().addListener(listeners.get(x));
                 }
             }
             session.setExceptionHandler(sessionToAdd.getExceptionHandler());
             session.setLogLevel(SessionLog.OFF);
-            this.setupDocumentPreservationPolicy(session);
-            session.login();
+            setupSession(session);
+            if(null == sessions) {
+                sessions = new ArrayList<DatabaseSession>();
+            }
+            if(null != this.session) {
+                sessions.add(this.session);
+            }
             sessions.add(session);
 
-            storeXMLDescriptorsByQName(session);
+            storeDescriptorsByQName(session);
+        }
+ 
+        @Override
+        protected void setupSession(DatabaseSession session) {
+            session.login();
+            setupDocumentPreservationPolicy(session);
         }
 
         private DatabaseSession buildSession(String sessionName, ClassLoader classLoader, XMLSessionConfigLoader sessionLoader) throws XMLMarshalException {
@@ -1018,10 +752,10 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             }
             DatabaseSession session = dbSession.getProject().createDatabaseSession();
             if (dbSession.getEventManager().hasListeners()) {
-                List listeners = dbSession.getEventManager().getListeners();
+                List<SessionEventListener> listeners = dbSession.getEventManager().getListeners();
                 int listenersSize = listeners.size();
                 for (int x = 0; x < listenersSize; x++) {
-                    session.getEventManager().addListener((SessionEventListener) listeners.get(x));
+                    session.getEventManager().addListener(listeners.get(x));
                 }
             }
             session.setExceptionHandler(dbSession.getExceptionHandler());
@@ -1031,103 +765,12 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             return session;
         }
 
-        /**
-         * INTERNAL: Return the XMLDescriptor with the default root mapping matching
-         * the QName parameter.
-         */
-        private XMLDescriptor getDescriptor(XPathQName qName) {
-            return (XMLDescriptor) descriptorsByQName.get(qName);
-        }
-        
-        /**
-         * INTERNAL: Return the XMLDescriptor with the default root mapping matching
-         * the QName parameter.
-         */
-        private XMLDescriptor getDescriptor(QName qName) {
-        	XPathQName xpathQName = new XPathQName(qName, true);
-        	return (XMLDescriptor) descriptorsByQName.get(xpathQName);
-        }
-
-        /**
-         * INTERNAL: Return the XMLDescriptor mapped to the global type matching the
-         * XPathFragment parameter.
-         */
-        private XMLDescriptor getDescriptorByGlobalType(XPathFragment xPathFragment) {
-            return (XMLDescriptor) this.descriptorsByGlobalType.get(xPathFragment);
-        }
-
-        /**
-         * INTERNAL:
-         * Return the session corresponding to this class. Since the class
-         * may be mapped by more that one of the projects used to create the XML
-         * Context, this method will return the first match.
-         *
-         * The session will be a unit of work if document preservation is not
-         * enabled.  This method will typically  be used for unmarshalling
-         * when a non-shared cache is desired.
-         */
-        private AbstractSession getReadSession(Class clazz) {
-            if (null == clazz) {
-                return null;
+        @Override
+        protected DatabaseSession getSession() {
+            if(null == sessions) {
+                return super.getSession();
             }
-            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
-                AbstractSession next = ((AbstractSession) sessions.get(x));
-                XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(clazz);
-                if (xmlDescriptor != null) {
-                    return next;
-                }
-            }
-            throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
-        }
-
-        /**
-         * INTERNAL:
-         * Return the session corresponding to this XMLDescriptor. Since
-         * the class may be mapped by more that one of the projects used to create
-         * the XML Context, this method will return the first match.
-         *
-         * The session will be a unit of work if document preservation is not
-         * enabled.  This method will typically  be used for unmarshalling
-         * when a non-shared cache is desired.
-         */
-        private AbstractSession getReadSession(Descriptor xmlDescriptor) {
-            if (null == xmlDescriptor) {
-                return null;
-            }
-            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
-                AbstractSession next = ((AbstractSession) sessions.get(x));
-                if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
-                    // we don't currently support document preservation
-                    // and non-shared cache (via unit of work)
-                    return next;
-                }
-            }
-            throw XMLMarshalException.descriptorNotFoundInProject(xmlDescriptor.getJavaClass().getName());
-        }
-
-        /**
-         * INTERNAL: Return the session corresponding to this object. Since the
-         * object may be mapped by more that one of the projects used to create the
-         * XML Context, this method will return the first match.
-         *
-         * The session will be a unit of work if document preservation is not
-         * enabled.  This method will typically  be used for unmarshalling
-         * when a non-shared cache is desired.
-         */
-        private AbstractSession getReadSession(Object object) {
-            if (null == object) {
-                return null;
-            }
-            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
-                AbstractSession next = ((AbstractSession) sessions.get(x));
-                XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(object);
-                if (xmlDescriptor != null) {
-                    // we don't currently support document preservation
-                    // and non-shared cache (via unit of work)
-                    return next;
-                }
-            }
-            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
+            return sessions.get(0);
         }
 
         /**
@@ -1135,9 +778,13 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
          * may be mapped by more that one of the projects used to create the XML
          * Context, this method will return the first match.
          */
-        private AbstractSession getSession(Class clazz) {
+        @Override
+        protected AbstractSession getSession(Class clazz) {
             if (null == clazz) {
                 return null;
+            }
+            if (null == sessions) {
+                return super.getSession(clazz);
             }
             for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
@@ -1149,45 +796,17 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
         }
 
         /**
-         * INTERNAL: <code>
-         * XMLContext xmlContext = new XMLContext("path0:path1");<br>
-         * DatabaseSession session = xmlContext.getSession(0);  // returns session for path0<br>
-         * </code>
-         */
-        private DatabaseSession getSession(int index) {
-            if (null == sessions) {
-                return null;
-            }
-            return (DatabaseSession) sessions.get(index);
-        }
-
-        /**
-         * INTERNAL: Return the session corresponding to this object. Since the
-         * object may be mapped by more that one of the projects used to create the
-         * XML Context, this method will return the first match.
-         */
-        public AbstractSession getSession(Object object) {
-            if (null == object) {
-                return null;
-            }
-            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
-                AbstractSession next = ((AbstractSession) sessions.get(x));
-                if (next.getDescriptor(object) != null) {
-                    return next;
-                }
-            }
-            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
-        }
-
-
-        /**
          * INTERNAL: Return the session corresponding to this XMLDescriptor. Since
          * the class may be mapped by more that one of the projects used to create
          * the XML Context, this method will return the first match.
          */
-        private AbstractSession getSession(XMLDescriptor xmlDescriptor) {
+        @Override
+        protected AbstractSession getSession(XMLDescriptor xmlDescriptor) {
             if (null == xmlDescriptor) {
                 return null;
+            }
+            if(null == sessions) {
+                return super.getSession(xmlDescriptor);
             }
             for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
                 AbstractSession next = ((AbstractSession) sessions.get(x));
@@ -1198,11 +817,46 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             throw XMLMarshalException.descriptorNotFoundInProject(xmlDescriptor.getJavaClass().getName());
         }
 
-        /**
-         * INTERNAL: Return the EclipseLink session used to marshal.
-         */
-        private List getSessions() {
+        private List<DatabaseSession> getSessions() {
+            if(null == sessions) {
+                return Collections.singletonList(session);
+            }
             return sessions;
+        }
+
+        /**
+         * INTERNAL: <code>
+         * XMLContext xmlContext = new XMLContext("path0:path1");<br>
+         * DatabaseSession session = xmlContext.getSession(0);  // returns session for path0<br>
+         * </code>
+         */
+        private DatabaseSession getSession(int index) {
+            if (null == sessions) {
+                return session;
+            }
+            return sessions.get(index);
+        }
+
+        /**
+         * INTERNAL: Return the session corresponding to this object. Since the
+         * object may be mapped by more that one of the projects used to create the
+         * XML Context, this method will return the first match.
+         */
+        @Override
+        protected AbstractSession getSession(Object object) {
+            if (null == object) {
+                return null;
+            }
+            if (null == sessions) {
+                return super.getSession(object);
+            }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                if (next.getDescriptor(object) != null) {
+                    return next;
+                }
+            }
+            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
         }
 
         /**
@@ -1214,12 +868,21 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
             return this.hasDocumentPreservation;
         }
 
+        @Override
+        protected void preLogin(Project project, ClassLoader classLoader) {
+            if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
+                XMLPlatform platform = new SAXPlatform();
+                platform.getConversionManager().setLoader(classLoader);
+                project.setLogin(new XMLLogin(platform));
+            }
+        }
+
         private void setupDocumentPreservationPolicy(DatabaseSession session) {
             XMLLogin login = (XMLLogin) session.getDatasourceLogin();
             if (login.getDocumentPreservationPolicy() == null) {
                 Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
                 while (iterator.hasNext()) {
-                    XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
+                    Descriptor xmlDescriptor = (Descriptor) iterator.next();
                     if (xmlDescriptor.shouldPreserveDocument()) {
                         login.setDocumentPreservationPolicy(new DescriptorLevelDocumentPreservationPolicy());
                         break;
@@ -1230,92 +893,21 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, Namespac
                 login.setDocumentPreservationPolicy(new NoDocumentPreservationPolicy());
             }
             
-            login.getDocumentPreservationPolicy().initialize(xmlContext);
+            login.getDocumentPreservationPolicy().initialize(context);
 
             if (login.getDocumentPreservationPolicy().shouldPreserveDocument() && !hasDocumentPreservation) {
                 hasDocumentPreservation = true;
             }
         }
 
-        /**
-         * INTERNAL:
-         */
-        private void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor, Platform platform) {
-            XPathQName descriptorQName;
-            String defaultRootName;
+    }
 
-            List tableNames = xmlDescriptor.getTableNames();
-            for (int i = 0; i < tableNames.size(); i++) {
-                defaultRootName = (String) tableNames.get(i);
-
-                if (null != defaultRootName) {
-                    int index = defaultRootName.indexOf(':');
-                    String defaultRootLocalName = defaultRootName.substring(index + 1);
-                    if(defaultRootLocalName != null && !(defaultRootLocalName.equals(XMLConstants.EMPTY_STRING))){
-                        if (index > -1) {
-                            String defaultRootPrefix = defaultRootName.substring(0, index);
-                            String defaultRootNamespaceURI = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(defaultRootPrefix);
-                            descriptorQName = new XPathQName(defaultRootNamespaceURI, defaultRootLocalName, true);
-                        } else {
-                            if(xmlDescriptor.getNamespaceResolver() != null) {
-                                descriptorQName = new XPathQName(xmlDescriptor.getNamespaceResolver().getDefaultNamespaceURI(), defaultRootLocalName, true);
-                            } else {
-                                descriptorQName = new XPathQName(defaultRootLocalName, true);
-                            }
-                        }
-                        if (!xmlDescriptor.hasInheritance() || xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                        	addDescriptorByQName(descriptorQName, xmlDescriptor);
-                        } else {
-                            //this means we have a descriptor that is a child in an inheritance hierarchy
-                            storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor(), platform);
-                            XMLDescriptor existingDescriptor = (XMLDescriptor) getDescriptor(descriptorQName);
-                            if (existingDescriptor == null) {
-                            	addDescriptorByQName(descriptorQName, xmlDescriptor);
-                            }
-                        }
-                    }
-                }
-            }
-
-            XMLSchemaReference xmlSchemaReference = xmlDescriptor.getSchemaReference();
-            if (null != xmlSchemaReference) {
-                String schemaContext = xmlSchemaReference.getSchemaContext();
-                if ((xmlSchemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlSchemaReference.getType() == XMLSchemaReference.SIMPLE_TYPE)) {
-                    if ((null != schemaContext) && (schemaContext.lastIndexOf('/') == 0)) {
-                        schemaContext = schemaContext.substring(1, schemaContext.length());
-                        XPathFragment typeFragment = new XPathFragment(schemaContext);
-                        if (null != xmlDescriptor.getNamespaceResolver()) {
-                           String uri = xmlDescriptor.getNamespaceResolver().resolveNamespacePrefix(typeFragment.getPrefix());
-                           if(uri == null && xmlSchemaReference.getSchemaContextAsQName() != null){
-                               uri = xmlSchemaReference.getSchemaContextAsQName().getNamespaceURI();
-                           }
-                           typeFragment.setNamespaceURI(uri);
-                        }
-                        this.descriptorsByGlobalType.put(typeFragment, xmlDescriptor);
-                    } else {
-                        QName qname = xmlSchemaReference.getSchemaContextAsQName();
-                        if (qname != null) {
-                            if (xmlDescriptor.isWrapper() && xmlDescriptor.getJavaClassName().contains("ObjectWrapper")) {
-                                return;
-                            }
-                            XPathFragment typeFragment = new XPathFragment();
-                            typeFragment.setLocalName(qname.getLocalPart());
-                            typeFragment.setNamespaceURI(qname.getNamespaceURI());
-                            this.descriptorsByGlobalType.put(typeFragment, xmlDescriptor);
-                        }
-                    }
-                }
-            }
+    @Override
+    protected XMLField createField(String path) {
+        if(null == path) {
+            return new XMLField();
         }
-
-        private void storeXMLDescriptorsByQName(DatabaseSession session) {
-            Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
-            while (iterator.hasNext()) {
-                XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
-                storeXMLDescriptorByQName(xmlDescriptor, session.getDatasourcePlatform());
-            }
-        }
-
+        return new XMLField(path);
     }
 
 }

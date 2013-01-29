@@ -160,7 +160,7 @@ public class JAXBBinder extends Binder {
             
             boolean shouldWrapInJAXBElement = true;
             
-            Descriptor desc = (Descriptor) xmlBinder.getMarshaller().getXMLContext().getSession(0).getClassDescriptor(updatedObj);
+            Descriptor desc = (Descriptor) xmlBinder.getMarshaller().getXMLContext().getSession().getClassDescriptor(updatedObj);
             
             if (desc == null) {
                 return updatedObj;

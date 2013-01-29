@@ -637,7 +637,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
    
     public void initializeDescriptor(XMLDescriptor descriptor){
-        AbstractSession theSession = (AbstractSession)getXmlContext().getSession(0);
+        AbstractSession theSession = (AbstractSession)getXmlContext().getSession();
         //do initialization for new descriptor;        
         descriptor.preInitialize(theSession);
         descriptor.initialize(theSession);
@@ -807,7 +807,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
 
     public XMLConversionManager getXmlConversionManager() {
-        XMLConversionManager xcm = (XMLConversionManager) getXmlContext().getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
+        XMLConversionManager xcm = (XMLConversionManager) getXmlContext().getSession().getDatasourceLogin().getDatasourcePlatform().getConversionManager();
         xcm.setTrimGMonth(true);
         return xcm;
     }

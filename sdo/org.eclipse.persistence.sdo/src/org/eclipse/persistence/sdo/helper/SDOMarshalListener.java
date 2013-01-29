@@ -178,7 +178,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
                 List nextDOSettings = changeSummary.getOldValues(nextModifiedDO);
                 DOMRecord row = new DOMRecord(csNode);
                 
-                Session session = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlContext().getSession(0);
+                Session session = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlContext().getSession();
                 row.setSession((AbstractSession) session);
 
                 //Iterate through SDOSettings for the current modified Object
@@ -235,7 +235,7 @@ public class SDOMarshalListener implements XMLMarshalListener {
         if (value == null) {
             //Marshal out xsi:nil=true   
             DOMRecord row = new DOMRecord(csNode);
-            Session session = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlContext().getSession(0);
+            Session session = ((SDOXMLHelper)typeHelper.getHelperContext().getXMLHelper()).getXmlContext().getSession();
             row.setSession((AbstractSession) session);
             marshalNilAttribute(prop, row);                            
             return;

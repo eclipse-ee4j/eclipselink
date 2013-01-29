@@ -95,6 +95,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmltype.proporder.MissingPropTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.none.NoneTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.FieldAndPropertyTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.IgnoreInvalidNonPublicFieldTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.XmlVirtualAccessMethodsTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateEmptyTestCases.class);

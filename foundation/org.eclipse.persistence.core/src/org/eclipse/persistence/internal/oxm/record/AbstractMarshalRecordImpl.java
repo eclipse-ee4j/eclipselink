@@ -210,7 +210,7 @@ public class AbstractMarshalRecordImpl<
                 String xmlRootUri = xr.getNamespaceURI();
 
                 XPathQName qName = new XPathQName(xmlRootUri, xmlRootLocalName, namespaceAware);
-                Descriptor xdesc = marshaller.getXMLContext().getDescriptor(qName);
+                Descriptor xdesc = marshaller.getContext().getDescriptor(qName);
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
                     if (writeTypeAttribute) {

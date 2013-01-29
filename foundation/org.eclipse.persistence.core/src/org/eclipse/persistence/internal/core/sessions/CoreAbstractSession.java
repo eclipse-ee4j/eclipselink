@@ -16,13 +16,17 @@ import java.util.Map;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.sessions.CoreLogin;
+import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.core.sessions.CoreSession;
+import org.eclipse.persistence.core.sessions.CoreSessionEventManager;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 
 public abstract class CoreAbstractSession<
     DESCRIPTOR extends CoreDescriptor,
     LOGIN extends CoreLogin,
-    PLATFORM extends CorePlatform> implements CoreSession<DESCRIPTOR, LOGIN> {
+    PLATFORM extends CorePlatform,
+    PROJECT extends CoreProject,
+    SESSION_EVENT_MANAGER extends CoreSessionEventManager> implements CoreSession<DESCRIPTOR, LOGIN, PLATFORM, PROJECT, SESSION_EVENT_MANAGER> {
 
     /**
      * INTERNAL:

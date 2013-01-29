@@ -879,7 +879,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
 
-            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
+            ((XMLLogin)xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
             return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
         }
@@ -1021,7 +1021,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             platform.getConversionManager().setLoader(loader);
             XMLContext xmlContext = new XMLContext((Project)proj, loader, sessionEventListeners());
 
-            ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
+            ((XMLLogin)xmlContext.getSession().getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
            
             JAXBContextState contextState = new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
@@ -1176,7 +1176,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         private void updateNamespaces(){
         	
-        	Collection descriptors = xmlContext.getSession(0).getDescriptors().values();
+        	Collection descriptors = xmlContext.getSession().getDescriptors().values();
         	Iterator iter = descriptors.iterator();
         	
         	while(iter.hasNext()){
@@ -1191,7 +1191,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 Iterator iter = refClasses.iterator();
                 while(iter.hasNext()){
                     Class nextClass = (Class) iter.next();
-                    Descriptor desc = (Descriptor) xmlContext.getSession(0).getProject().getDescriptor(nextClass);
+                    Descriptor desc = (Descriptor) xmlContext.getSession().getProject().getDescriptor(nextClass);
                     processXMLDescriptor(processed, desc, nr);
                 }
             }
@@ -1327,7 +1327,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 return;
             }
 
-            Iterator descriptors = xmlContext.getSession(0).getProject().getOrderedDescriptors().iterator();
+            Iterator descriptors = xmlContext.getSession().getProject().getOrderedDescriptors().iterator();
 
             //Add schema types generated for mapped domain classes
             while (descriptors.hasNext()) {

@@ -66,7 +66,7 @@ import org.eclipse.persistence.sessions.server.*;
  *
  * @see DatabaseLogin
  */
-public class Project extends CoreProject<ClassDescriptor> implements Serializable, Cloneable {
+public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession> implements Serializable, Cloneable {
     protected String name;
     protected Login datasourceLogin;
     protected Map<Class, ClassDescriptor> descriptors;
@@ -767,6 +767,7 @@ public class Project extends CoreProject<ClassDescriptor> implements Serializabl
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
+    @Override
     public Login getDatasourceLogin() {
         return datasourceLogin;
     }

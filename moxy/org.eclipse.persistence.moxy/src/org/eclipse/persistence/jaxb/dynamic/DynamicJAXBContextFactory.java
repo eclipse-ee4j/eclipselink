@@ -353,7 +353,7 @@ public class DynamicJAXBContextFactory {
      * and replaced with XML_GREGORIAN_CALENDAR.
      */
     private static void fixDateTimeConversion(DynamicJAXBContext ctx) {
-        XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager();
+        XMLConversionManager conversionManager = (XMLConversionManager) ctx.getXMLContext().getSession().getDatasourcePlatform().getConversionManager();
 
         Map defaultXmlTypes = conversionManager.getDefaultXMLTypes();
         defaultXmlTypes.remove(Constants.DATE_TIME_QNAME);

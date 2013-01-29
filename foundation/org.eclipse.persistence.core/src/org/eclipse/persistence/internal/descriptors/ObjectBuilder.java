@@ -72,7 +72,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Sati
  * @since TOPLink/Java 1.0
  */
-public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSession> implements Cloneable, Serializable {
+public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSession, DatabaseField, DatabaseMapping> implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     /** Mappings keyed by attribute name. */
     protected Map<String, DatabaseMapping> mappingsByAttribute;

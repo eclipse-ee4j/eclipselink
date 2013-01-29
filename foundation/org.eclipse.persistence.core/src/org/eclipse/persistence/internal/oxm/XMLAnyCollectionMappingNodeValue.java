@@ -192,7 +192,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     	 
     	 CoreAbstractSession childSession = null;
     	 try {
-    		 childSession= marshaller.getXMLContext().getSession(value);
+    		 childSession= marshaller.getContext().getSession(value);
          } catch (XMLMarshalException e) {               
              return SIMPLE_FRAGMENT;
          }
@@ -211,7 +211,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             // Mixed Content
             Object collection = unmarshalRecord.getContainerInstance(this);
             startElementProcessText(unmarshalRecord, collection);
-            Context xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
+            Context xmlContext = unmarshalRecord.getUnmarshaller().getContext();
 
             //used to only check xsitype when usesXMLRoot was true???
             Descriptor workingDescriptor = findReferenceDescriptor(xPathFragment, unmarshalRecord, atts, xmlAnyCollectionMapping, xmlAnyCollectionMapping.getKeepAsElementPolicy());
@@ -377,7 +377,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             marshalRecord.node((org.w3c.dom.Node) value, marshalRecord.getNamespaceResolver());
         } else {
             try {
-                childSession = marshaller.getXMLContext().getSession(value);
+                childSession = marshaller.getContext().getSession(value);
             } catch (XMLMarshalException e) {               
                 marshalSimpleValue(xmlRootFragment, marshalRecord, originalValue, object, value, session, namespaceResolver);
                 return true;

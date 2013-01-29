@@ -472,7 +472,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	                nodeVal = null;
 	            }
 	  
-	            Object obj = ((XMLConversionManager) xmlContext.getSession(0).getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
+	            Object obj = ((XMLConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
 	            Root xmlRoot = new XMLRoot();
 	            xmlRoot.setObject(obj);
 	            String lName = xmlRow.getDOM().getLocalName();
@@ -488,7 +488,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	
 	        // for XMLObjectReferenceMappings we need a non-shared cache, so
 	        // try and get a Unit Of Work from the XMLContext
-	        CoreAbstractSession readSession = xmlContext.getReadSession(referenceClass);
+	        CoreAbstractSession readSession = xmlContext.getSession(referenceClass);
 	
 	        Descriptor descriptor = (Descriptor)readSession.getDescriptor(referenceClass);
 	        if (descriptor == null) {
