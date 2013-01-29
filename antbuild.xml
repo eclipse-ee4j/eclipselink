@@ -592,7 +592,6 @@
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
-
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>

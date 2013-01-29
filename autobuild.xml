@@ -37,7 +37,7 @@
 *  automated build process using Hudson for EclipseLink at Eclipse and is intended
 *  to be called by Hudson (generic user).
 *
-*  All publishing commands are now in a separate xml file (publishbuild.xml)
+*  All publishing commands are now external to this file (see eclipselink.releng: publish.sh)
 *================================================================================= -->
 <project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
@@ -733,8 +733,9 @@
             </fileset>
         </copy>
         <!-- Copy for maven to run -->
-        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
-        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"        failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"       failonerror="false"/>
+        <!-- copy todir="${tmp.maven.dir}" file="${basedir}/uploadToSonatypeOSS.xml" failonerror="false"/ -->
     </target>
 
     <target name="publish-milestone-maven">
