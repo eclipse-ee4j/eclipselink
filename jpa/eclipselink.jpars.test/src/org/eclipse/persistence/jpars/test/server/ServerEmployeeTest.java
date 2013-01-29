@@ -35,6 +35,7 @@ import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.LargeProject;
+import org.eclipse.persistence.jpars.test.model.employee.Office;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.model.employee.SmallProject;
 import org.eclipse.persistence.jpars.test.util.DBUtils;
@@ -562,10 +563,28 @@ public class ServerEmployeeTest {
         // So, create operation on employee with expertise list should fail.
         RestUtils.restCreateWithSequence(employee, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
-  
+
+    @Test(expected = RestCallFailedException.class)
+    public void testCreateOfficeWithEmployeeNonIdempotent() throws Exception {
+        String office = RestUtils.getJSONMessage("office-employeeByValueNoId.json");
+        RestUtils.restCreateWithSequence(office, Office.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+    }
+    
+    @Test
+    public void testCreateEmployeeWithOfficeManyToOneInverseMapping() throws Exception {
+        String msg = RestUtils.getJSONMessage("employee-officeByValueNoId.json");
+        // office should be ignored (inverse mapping) and employee should be created successfully
+        Employee employee = RestUtils.restCreate(context, msg, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        assertNotNull(employee);
+        assertTrue(employee.getId() == 121098);
+        assertNull(employee.getOffice());
+        
+        RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.2");
+    }
+
     private void readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType mediaType) throws Exception {
         // phone numbers on employee object is annoted to be LAZY fetch
-        // Create an employee without any phone numbers, and make sure that read emmployee response doesn't contain phone numbers,
+        // Create an employee without any phone numbers, and make sure that read emmployee response doesn't contatTruein phone numbers,
         // then add a phone number to the employee and re-read the employee to make sure that the response contains a link to the phone number  
         // even if it is fetched lazily.
         

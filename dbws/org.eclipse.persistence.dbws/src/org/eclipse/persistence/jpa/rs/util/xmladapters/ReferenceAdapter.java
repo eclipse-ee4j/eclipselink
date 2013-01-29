@@ -102,31 +102,37 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         }
 
         if ((null == link) || ((link != null) && (link.getHref() == null))) {
-            ClassDescriptor descriptor = context.getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
-            if (persistenceWeavedRest instanceof FetchGroupTracker && JpaHelper.getDatabaseSession(context.getEmf()).doesObjectExist(persistenceWeavedRest)){
-                if (context.doesExist(null, persistenceWeavedRest)){
-                    FetchGroup fetchGroup = new FetchGroup();
-                    for (DatabaseMapping mapping: descriptor.getMappings()){
-                        if (!(mapping instanceof XMLInverseReferenceMapping)){
-                            fetchGroup.addAttribute(mapping.getAttributeName());
+            if (persistenceWeavedRest != null) {
+                ClassDescriptor descriptor = context.getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
+                if (persistenceWeavedRest instanceof FetchGroupTracker && JpaHelper.getDatabaseSession(context.getEmf()).doesObjectExist(persistenceWeavedRest)) {
+                    if (context.doesExist(null, persistenceWeavedRest)) {
+                        FetchGroup fetchGroup = new FetchGroup();
+                        for (DatabaseMapping mapping : descriptor.getMappings()) {
+                            if (!(mapping instanceof XMLInverseReferenceMapping)) {
+                                fetchGroup.addAttribute(mapping.getAttributeName());
+                            }
                         }
+                        (new FetchGroupManager()).setObjectFetchGroup(persistenceWeavedRest, fetchGroup, null);
                     }
-                    (new FetchGroupManager()).setObjectFetchGroup(persistenceWeavedRest, fetchGroup, null);
                 }
+                return (T) persistenceWeavedRest;
             }
-            return (T) persistenceWeavedRest;
         }
-        // Construct object from the href
-        String uri = link.getHref().replace("\\/", "/");
-        String entityType = uri.substring(uri.indexOf("/entity/"),
-                uri.lastIndexOf('/'));
-        entityType = entityType.substring(entityType.lastIndexOf("/") + 1);
-        String entityId = uri.substring(uri.lastIndexOf("/") + 1);
-        ClassDescriptor descriptor = context.getDescriptor(entityType);
-        Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
 
-        T foundEntity = (T) getObjectById(entityType, id);
-        return foundEntity;
+        // Construct object from the href
+        if ((link != null) && (link.getHref() != null)) {
+            String uri = link.getHref().replace("\\/", "/");
+            String entityType = uri.substring(uri.indexOf("/entity/"), uri.lastIndexOf('/'));
+            entityType = entityType.substring(entityType.lastIndexOf("/") + 1);
+            String entityId = uri.substring(uri.lastIndexOf("/") + 1);
+            ClassDescriptor descriptor = context.getDescriptor(entityType);
+            Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
+
+            T foundEntity = (T) getObjectById(entityType, id);
+            return foundEntity;
+        }
+
+        return null;
     }
 
     private Object getObjectById(String entityType, Object id) throws Exception {
@@ -136,6 +142,6 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         }
         // It is an error if the object referred by a link in unmarshal doesn't
         // exist, so throw exception
-        throw new JPARSException(LoggingLocalization.buildMessage("object_referred_by_link_does_not_exist", new Object[]{entityType, id}));
+        throw new JPARSException(LoggingLocalization.buildMessage("object_referred_by_link_does_not_exist", new Object[] { entityType, id }));
     }
 }

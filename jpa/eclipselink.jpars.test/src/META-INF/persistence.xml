@@ -15,7 +15,7 @@
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="jpars_auction-static-local" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticUser</class>
@@ -50,7 +50,7 @@
             <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="jpars_phonebook" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
@@ -65,7 +65,7 @@
             <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
-    
+
     <persistence-unit name="jpars_employee-static" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.employee.Employee</class>
@@ -76,6 +76,7 @@
         <class>org.eclipse.persistence.jpars.test.model.employee.Project</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.SmallProject</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Expertise</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Office</class>
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>

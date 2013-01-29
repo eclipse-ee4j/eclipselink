@@ -133,10 +133,8 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             }
 
             ClassLoader cl = jpaSession.getPlatform().getConversionManager().getLoader();
-            descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
-
             for (DatabaseMapping mapping : descriptorMappings) {
-                if (jpaDescriptor != null && mapping.isXMLMapping()){
+                if (jpaDescriptor != null && mapping.isXMLMapping()) {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
                         DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
                         if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
@@ -145,7 +143,12 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 // Convert all ForeignReferenceMappings that are visible in JPA
                                 // to ChoiceMapping to allow a link to be returned instead of the whole Object
                                 // XMLInverseMappings are ignored in JAXB, so we should not convert those
-                                convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
+                                if (descriptor != null) {
+                                    DatabaseMapping existingMapping = descriptor.getMappingForAttributeName(jpaMapping.getAttributeName());
+                                    if ((existingMapping != null) && (!(existingMapping instanceof XMLInverseReferenceMapping))) {
+                                        convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
+                                    }
+                                }
                             }
                         }
                     }

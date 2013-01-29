@@ -306,6 +306,32 @@ public class RestUtils {
         }
     }
     
+    @SuppressWarnings("unchecked")
+    public static <T> T  restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, object.toString());
+        Status status = response.getClientResponseStatus();
+        if (status != Status.CREATED) {
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        T resultObject = null;
+        try {
+            resultObject = (T) context.unmarshalEntity(type, mediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e) {
+            fail("Exception thrown unmarshalling: " + e);
+        }
+        return resultObject;
+    }
+    
     /**
      * Rest delete.
      *

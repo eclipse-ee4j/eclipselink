@@ -1,0 +1,8 @@
+{
+   "id":121098,
+   "firstName":"John",
+   "lastName":"Smith",
+   "office": {
+       "location": "Ottawa"
+    }
+}

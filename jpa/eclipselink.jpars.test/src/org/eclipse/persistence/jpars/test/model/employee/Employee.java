@@ -11,6 +11,7 @@
 package org.eclipse.persistence.jpars.test.model.employee;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.LAZY;
 
 import java.util.ArrayList;
@@ -92,6 +93,7 @@ public class Employee {
 
     @Version
     private Long version;
+    
     @ManyToMany
     @JoinTable(joinColumns = @JoinColumn(name = "EMP_ID"), inverseJoinColumns = @JoinColumn(name = "PROJ_ID"), name = "JPARS_PROJ_EMP")
     private List<Project> projects = new ArrayList<Project>();
@@ -123,6 +125,10 @@ public class Employee {
 
     @OneToMany(mappedBy="employee", cascade=CascadeType.ALL)
     private List<Expertise> expertiseAreas = new ArrayList<Expertise>();
+    
+    @ManyToOne(cascade = PERSIST, fetch = LAZY)
+    @JoinColumn(name = "OFFICE_ID")
+    private Office office;
     
     public Employee() {
     }
@@ -285,6 +291,14 @@ public class Employee {
 
     public void setExpertiseAreas(List<Expertise> expertiseAreas) {
         this.expertiseAreas = expertiseAreas;
+    }
+
+    public Office getOffice() {
+        return office;
+    }
+
+    public void setOffice(Office office) {
+        this.office = office;
     }
 
     public String toString() {
