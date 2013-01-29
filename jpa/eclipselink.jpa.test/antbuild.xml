@@ -1947,7 +1947,7 @@
     <!-- Runs jpa srg test on Spring. -->
     <target name="test-spring-srg" depends="clean-test, config-classpath">
         <property name="is.spring" value="true"/>
-        <antcall target="all" inheritRefs="true"/>
+        <antcall target="build" inheritRefs="true"/>
         <antcall target="run-spring-test" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"/>
             <param name="TEST_AGENT" value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
@@ -3014,19 +3014,19 @@
 
         <copyfile src="${jpatest.basedir}/resource/eclipselink-xml-composite-advanced-model-member_3/orm.xml" dest="${jpatest.basedir}/resource/eclipselink-xml-composite-advanced-model-member_3/server/orm.xml" forceoverwrite="true"/>
 
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
             <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_1"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
             <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_2"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
             <param name="MODEL_NAME" value="eclipselink-xml-composite-advanced-model-member_3"/>
         </antcall>
@@ -3061,19 +3061,19 @@
         <copy todir="${jpatest.basedir}/resource/eclipselink-xml-extended-composite-advanced-model-member_3/server" overwrite="true" failonerror="false">
             <fileset dir="${jpatest.basedir}/resource/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_3/" includes="eclipselink-orm.xml, advanced-extended-entity-mappings_3.xml"/>
         </copy>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced"/>
             <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"/>
             <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_1"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"/>
             <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_2"/>
         </antcall>
-        <antcall target="server-build-ejb-jar" inheritRefs="true">
+        <antcall target="server-build-jpa20-ejb-jar" inheritRefs="true">
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"/>
             <param name="MODEL_NAME" value="eclipselink-xml-extended-composite-advanced-model-member_3"/>
         </antcall>
