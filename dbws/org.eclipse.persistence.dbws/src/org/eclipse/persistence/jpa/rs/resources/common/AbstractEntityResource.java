@@ -33,6 +33,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -111,6 +113,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     protected Response create(@SuppressWarnings("unused") String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
         if (app == null) {
@@ -142,6 +145,46 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
         }
 
+        // maintain idempotence on PUT by disallowing sequencing in relationships
+        List<DatabaseMapping> mappings = descriptor.getMappings();
+        if ((mappings != null) && (!mappings.isEmpty())) {
+            for (DatabaseMapping mapping : mappings) {
+                if (mapping instanceof ForeignReferenceMapping) {
+                    ForeignReferenceMapping fkMapping = (ForeignReferenceMapping) mapping;
+                    if ((fkMapping.isCascadePersist()) || (fkMapping.isCascadeMerge())) {
+                        ClassDescriptor referenceDescriptor = fkMapping.getReferenceDescriptor();
+                        if (referenceDescriptor != null) {
+                            if (referenceDescriptor instanceof RelationalDescriptor) {
+                                RelationalDescriptor relDesc = (RelationalDescriptor) referenceDescriptor;
+                                AbstractDirectMapping relSequenceMapping = relDesc.getObjectBuilder().getSequenceMapping();
+                                if (relSequenceMapping != null) {
+                                    Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
+                                    if (value != null) {
+                                        if (value instanceof ValueHolder) {
+                                            ValueHolder holder = (ValueHolder) value;
+                                            if (holder != null) {
+                                                Object obj = holder.getValue();
+                                                if (obj != null) {
+                                                    JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                    return Response.status(Status.BAD_REQUEST).build();
+                                                }
+                                            }
+                                        } else if (value instanceof Collection) {
+                                            if (!(((Collection) value).isEmpty())) {
+                                                JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
+                                                return Response.status(Status.BAD_REQUEST).build();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // No sequencing in relationships, we can create the object now...
         app.create(getMatrixParameters(uriInfo, persistenceUnit), entity);
         ResponseBuilder rb = Response.status(Status.CREATED);
         rb.entity(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes()));

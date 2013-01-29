@@ -111,6 +111,9 @@ public class TestService {
 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpars_auction-static-local", properties);
             context = factory.bootstrapPersistenceContext("jpars_auction-static-local", emf, RestUtils.getServerURI(), false);
+            if (context == null) {
+                throw new Exception("Persistence context could not be created.");
+            }
 
             StaticModelDatabasePopulator.populateDB(emf);
 
@@ -138,6 +141,7 @@ public class TestService {
         em.getTransaction().commit();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUpdateUserList() throws URISyntaxException {
         EntityResource resource = new EntityResource();
@@ -190,6 +194,7 @@ public class TestService {
         clearData();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUpdatePhoneNumberList() throws URISyntaxException {
         EntityResource resource = new EntityResource();
@@ -534,7 +539,7 @@ public class TestService {
             Response output = resource.setOrAddAttribute("jpars_auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user",
                     generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
 
-            String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+            stringifyResults((StreamingOutputMarshaller)output.getEntity());
             context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
             StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
@@ -546,16 +551,14 @@ public class TestService {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void testStaticReportQuery() throws URISyntaxException {
         QueryResource resource = new QueryResource();
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        @SuppressWarnings("unused")
         PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
-
-        Long count = (Long) ((List) context.queryMultipleResults(null, "User.count", null, null)).get(0);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);

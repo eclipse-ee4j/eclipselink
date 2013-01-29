@@ -19,6 +19,7 @@ import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -119,6 +120,9 @@ public class Employee {
     @ElementCollection
     @CollectionTable(name = "JPARS_RESPONS")
     private List<String> responsibilities = new ArrayList<String>();
+
+    @OneToMany(mappedBy="employee", cascade=CascadeType.ALL)
+    private List<Expertise> expertiseAreas = new ArrayList<Expertise>();
 
     public Employee() {
     }
@@ -273,6 +277,14 @@ public class Employee {
 
     public void removeResponsibility(String responsibility) {
         getResponsibilities().remove(responsibility);
+    }
+
+    public List<Expertise> getExpertiseAreas() {
+        return expertiseAreas;
+    }
+
+    public void setExpertiseAreas(List<Expertise> expertiseAreas) {
+        this.expertiseAreas = expertiseAreas;
     }
 
     public String toString() {

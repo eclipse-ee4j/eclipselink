@@ -166,7 +166,7 @@ public class ServerCrudTest {
         user.setName("Joe");
         user.setId(100);
         user = restCreate(user, "StaticUser", StaticUser.class);
-        assertTrue("Wrong big retrieved.", user.getName().equals("Joe"));
+        assertTrue("Wrong user retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
         restDelete(user.getId(), "StaticUser", StaticUser.class);
@@ -186,7 +186,7 @@ public class ServerCrudTest {
         user.setName("Joe");
         user.setId(101);
         user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
-        assertTrue("Wrong big retrieved.", user.getName().equals("Joe"));
+        assertTrue("Wrong user retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
         restDelete(user.getId(), "StaticUser", StaticUser.class);
@@ -264,9 +264,9 @@ public class ServerCrudTest {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
         bid.setAmount(120);
         bid = restUpdate(bid, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
-        assertTrue("Wrong big retrieved.", bid.getAmount() == 120);
+        assertTrue("Wrong bid retrieved.", bid.getAmount() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
-        assertTrue("Wrong big retrieved in db.", bid.getAmount() == 120);
+        assertTrue("Wrong bid retrieved in db.", bid.getAmount() == 120);
         bid.setAmount(110);
         bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
     }
@@ -848,6 +848,14 @@ public class ServerCrudTest {
             System.out.println(removedUser);
         }
         dbDelete(newUser);
+    }
+
+    @Test(expected = RestCallFailedException.class)
+    public void testCreateEmployeeWithPhoneNumbersNonIdempotent() throws Exception {
+        String auction = RestUtils.getJSONMessage("auction-bidsByValueNoId.json");
+        // The bid contained by the auction object has generated id field, and create is idempotent.
+        // So, create operation on auction with bid list should fail.
+        RestUtils.restCreateWithSequence(auction, StaticAuction.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
     private static void dbCreate(Object object) {
