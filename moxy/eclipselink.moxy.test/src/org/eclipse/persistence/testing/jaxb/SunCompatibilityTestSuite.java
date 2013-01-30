@@ -36,6 +36,7 @@ public class SunCompatibilityTestSuite extends TestCase {
         suite.addTestSuite(PackageLevelAccessorTestCases.class);
         //suite.addTestSuite(NonELCharacterEscapeHandlerTestCases.class); // added back to DOM/SAX testsuites
         suite.addTestSuite(NonELIDResolverTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.sun.idresolver.collection.NonELIDResolverTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         suite.addTest(XmlLocationTestSuite.suite());
         suite.addTestSuite(XmlAccessorFactorySupportTestCases.class);

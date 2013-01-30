@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root id="0">
+   <test-object>
+      <id>1</id>
+      <name>FOO</name>
+      <single>4</single>
+      <ref>2</ref>
+      <ref>3</ref>
+   </test-object>
+   <test-object>
+      <id>4</id>
+      <name>SINGLE</name>
+   </test-object>
+   <test-object>
+      <id>2</id>
+      <name>BAR</name>
+   </test-object>
+   <test-object>
+      <id>3</id>
+      <name>BAZ</name>
+   </test-object>
+</root>
