@@ -198,7 +198,32 @@ public class ReferenceResolver {
                 if(!mapping.isWriteOnly()) {
                     for (Iterator pkIt = ((Vector)reference.getPrimaryKey()).iterator(); pkIt.hasNext();) {
                         CacheId primaryKey = (CacheId) pkIt.next();
-                        value = getValue(session, reference, primaryKey, handler);
+
+                        if (userSpecifiedResolver != null) {
+                            final Callable c;
+                            try {
+                                if (primaryKey.getPrimaryKey().length > 1) {
+                                    Map<String, Object> idWrapper = new HashMap<String, Object>();
+                                    for (int y = 0; y < primaryKey.getPrimaryKey().length; y++) {
+                                        ObjectReferenceMapping refMapping = (ObjectReferenceMapping) reference.getMapping();
+                                        String idName = (String) refMapping.getReferenceDescriptor().getPrimaryKeyFieldNames().get(y);
+                                        Object idValue = primaryKey.getPrimaryKey()[y];
+                                        idWrapper.put(idName, idValue);
+                                    }
+                                    c = userSpecifiedResolver.resolve(idWrapper, reference.getTargetClass());
+                                } else {
+                                    c = userSpecifiedResolver.resolve(primaryKey.getPrimaryKey()[0], reference.getTargetClass());
+                                }
+                                if (c != null) {
+                                    value = c.call();
+                                }
+                            } catch (Exception e) {
+                                throw XMLMarshalException.unmarshalException(e);
+                            }
+                        } else {
+                            value = getValue(session, reference, primaryKey, handler);
+                        }
+                        
                         if (value != null) {
                              cPolicy.addInto(value, container, session);
                         }
