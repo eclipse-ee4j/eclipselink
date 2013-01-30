@@ -1,0 +1,29 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="collection">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element ref="string"/>
+                     <xsd:element ref="enum"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:choice>
+            <xsd:element ref="string"/>
+            <xsd:element ref="enum"/>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="root"/>
+   <xsd:element name="string" type="xsd:string"/>
+   <xsd:element name="enum" type="myEnum"/>
+   <xsd:simpleType name="myEnum">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="FOO"/>
+         <xsd:enumeration value="BAR"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>
