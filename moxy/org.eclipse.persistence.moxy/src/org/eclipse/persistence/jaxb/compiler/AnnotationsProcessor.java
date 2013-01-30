@@ -3056,14 +3056,13 @@ public class AnnotationsProcessor {
 
         info.setClassName(javaClass.getQualifiedName());
         Class restrictionClass = String.class;
+        QName restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));
 
         if (helper.isAnnotationPresent(javaClass, XmlEnum.class)) {
             XmlEnum xmlEnum = (XmlEnum) helper.getAnnotation(javaClass, XmlEnum.class);
             restrictionClass = xmlEnum.value();
       	    JavaClass restrictionJavaClass= helper.getJavaClass(restrictionClass);
 
-            
-      	    QName restrictionBase = null;
       	    boolean restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
       	    if(!restrictionIsEnum){
         	     restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));                  
@@ -3084,8 +3083,8 @@ public class AnnotationsProcessor {
 	                 restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
 	            }
             }
-            info.setRestrictionBase(restrictionBase);
-        }
+        } 
+        info.setRestrictionBase(restrictionBase);
      
         for (Iterator<JavaField> fieldIt = javaClass.getDeclaredFields().iterator(); fieldIt.hasNext();) {
             JavaField field = fieldIt.next();

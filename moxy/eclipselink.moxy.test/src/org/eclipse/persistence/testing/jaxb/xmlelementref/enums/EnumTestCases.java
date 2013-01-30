@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementref.enums;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class EnumTestCases extends JAXBWithJSONTestCases {
@@ -49,5 +53,11 @@ public class EnumTestCases extends JAXBWithJSONTestCases {
         root.getStringOrEnum().add(registry.createEnum(MyEnum.BAR));
         return root;
     }
-
+    
+    public void testSchemaGen() throws Exception {
+        List<InputStream> controlSchemas = new ArrayList<InputStream>();        
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlelementref/enum.xsd");
+        controlSchemas.add(is);     
+        super.testSchemaGen(controlSchemas);
+    }    
 }
