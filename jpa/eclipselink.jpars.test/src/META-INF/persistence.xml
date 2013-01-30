@@ -76,6 +76,7 @@
         <class>org.eclipse.persistence.jpars.test.model.employee.Project</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.SmallProject</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Expertise</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Office</class>
         <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
