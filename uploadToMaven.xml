@@ -91,11 +91,13 @@
         <property name="maven.2.buildsys.dir"       value="${maven.build.location}/buildsystem"/>
 
         <!-- Custom task definitions -->
-        <property name="custom.tasks.lib" value="${maven.2.buildsys.dir}/ant_customizations.jar"/>
-        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
-        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
-        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
-        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+        <property name="custom.tasks.lib"                 value="${maven.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class"           value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class"   value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <property name="custom.stripqualifier.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.StripQualifier"/>
+        <taskdef name="say"            classname="${custom.echo.task.class}"           classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle"   classname="${custom.selectbundle.task.class}"   classpath="${custom.tasks.lib}"/>
+        <taskdef name="stripQualifier" classname="${custom.stripqualifier.task.class}" classpath="${custom.tasks.lib}"/>
 
         <echo message="maven.2.pojo.dir  (eclipselink.jar) = ${maven.2.pojo.dir}"/>
         <echo message="maven.2.common.plugins.dir (common) = ${maven.2.common.plugins.dir}"/>
@@ -166,15 +168,42 @@
         <echo message="hermes.version     = ${hermes.version}"/>
 
         <!-- Need to generate _.mvn.version from _.version -->
-        <!-- Should publish with a stripped down 3-part version rather than the 4-part OSGi version -->
-        <echo message="jpaapi.mvn.version     = ${jpaapi.mvn.version}"/>
-        <echo message="sdoapi.mvn.version     = ${sdoapi.mvn.version}"/>
-        <echo message="antlr.mvn.version      = ${antlr.mvn.version}"/>
-        <echo message="asm.mvn.version        = ${asm.mvn.version}"/>
-        <echo message="oracleddl.mvn.version  = ${oracleddl.mvn.version}"/>
-        <echo message="oraclebndl.mvn.version = ${oraclebndl.mvn.version}"/>
-        <echo message="oraclenosql.mvn.version= ${oraclenosql.mvn.version}"/>
-        <echo message="hermes.mvn.version     = ${hermes.mvn.version}"/>
+        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
+        <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
+        <!-- than the 4-part OSGi version. However, if the bundle versioning is such that only  -->
+        <!-- the qualifier will change on a rebuild (convienient for publishing OSGi-ified jars -->
+        <!-- but against OSGi spec) then we will either violate Maven's "once published, never  -->
+        <!-- changes" rule, or newer bundles will never be published.                           -->
+        <stripQualifier input="${sdoapi.version}"      property="sdoapi.mvn.version"/>
+        <stripQualifier input="${antlr.version}"       property="antlr.mvn.version"/>
+        <stripQualifier input="${asm.version}"         property="asm.mvn.version"/>
+        <!-- In addition these jars are special cases:                                         -->
+        <!--   Hermes versioning has changed, so will move into the regular build section soon -->
+        <!--   OracleDDL may follow suit                                                       -->
+        <!--   The Oracle bundles only build periodically, so the bundle version needs to be   -->
+        <!--   'discovered' but they should be published as part of the build                  -->
+        <stripQualifier input="${hermes.version}"      property="hermes.mvn.version"/>
+        <stripQualifier input="${oracleddl.version"    property="oracleddl.mvn.version"/>
+        <stripQualifier input="${oraclebndl.version}"  property="oraclebndl.mvn.version"/>
+        <stripQualifier input="${oraclenosql.version}" property="oraclenosql.mvn.version"/>
+
+        <say  message="jpaapi.mvn.version     = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version     = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
+        <say  message="antlr.mvn.version      = ${antlr.mvn.version}"       if="antlr.mvn.version"/>
+        <say  message="asm.mvn.version        = ${asm.mvn.version}"         if="asm.mvn.version"/>
+        <say  message="oracleddl.mvn.version  = ${oracleddl.mvn.version}"   if="oracleddl.mvn.version"/>
+        <say  message="oraclebndl.mvn.version = ${oraclebndl.mvn.version}"  if="oraclebndl.mvn.version"/>
+        <say  message="oraclenosql.mvn.version= ${oraclenosql.mvn.version}" if="oraclenosql.mvn.version"/>
+        <say  message="hermes.mvn.version     = ${hermes.mvn.version}"      if="hermes.mvn.version"/>
+        <say  message="jpaapi.mvn.version     : Property not set!"      unless="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version     : Property not set!"      unless="sdoapi.mvn.version"/>
+        <say  message="antlr.mvn.version      : Property not set!"      unless="antlr.mvn.version"/>
+        <say  message="asm.mvn.version        : Property not set!"      unless="asm.mvn.version"/>
+        <say  message="oracleddl.mvn.version  : Property not set!"      unless="oracleddl.mvn.version"/>
+        <say  message="oraclebndl.mvn.version : Property not set!"      unless="oraclebndl.mvn.version"/>
+        <say  message="oraclenosql.mvn.version: Property not set!"      unless="oraclenosql.mvn.version"/>
+        <say  message="hermes.mvn.version     : Property not set!"      unless="hermes.mvn.version"/>
+
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -295,7 +324,7 @@
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-release-artifact-no-src">
-            <param name="repo.dir"        value="/${maven.repo.dir}/commonj/sdo/${sdoapi.prefix}/${sdoapi.version}"/>
+            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${sdoapi.prefix}/${sdoapi.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.version}"/>
