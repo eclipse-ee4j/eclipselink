@@ -2401,6 +2401,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
+    
+    /**
+     * INTERNAL:
+     * returns the javax.persistence.LockModeType string value set on this query.
+     */
+    public String getLockModeType(){
+        return this.lockModeType;
+    }
 
     /**
      * INTERNAL:

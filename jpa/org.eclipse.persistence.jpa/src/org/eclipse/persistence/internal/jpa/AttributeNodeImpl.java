@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import java.util.Map;
+
 import javax.persistence.AttributeNode;
+import javax.persistence.Subgraph;
 
 
 /**
@@ -34,6 +37,16 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
 
     public String getAttributeName() {
         return currentAttribute;
+    }
+
+    public Map<Class, Subgraph> getSubgraphs() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Map<Class, Subgraph> getKeySubgraphs() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -1913,7 +1913,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setShouldOrderUpdates(this.shouldOrderUpdates);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
-            if (txn != null  && syncType.equals(SynchronizationType.SYNCHRONIZED)) {
+            if (txn != null  && (syncType == null || syncType.equals(SynchronizationType.SYNCHRONIZED))) {
                 // if there is an active txn we must register with it on
                 // creation of PC
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);

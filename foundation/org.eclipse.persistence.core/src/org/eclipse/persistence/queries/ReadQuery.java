@@ -56,6 +56,9 @@ public abstract class ReadQuery extends DatabaseQuery {
 
     /** Optimization: temporarily stores cached query results while they are being built in a cloned query */
     protected transient Object temporaryCachedQueryResults = null;
+    
+    /** Stores the JPA maxResult settings for a NamedQuery */
+    protected int maxResults;
 
     /**
      * PUBLIC:
@@ -171,6 +174,15 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public long getQueryId() {
         return this.queryId;
+    }
+
+    /**
+     * INTERNAL:
+     * returns the JPA max results that may have been set on a NamedQuery
+     * @return the maxResults
+     */
+    public int getInternalMax() {
+        return maxResults;
     }
 
     /**
@@ -385,6 +397,14 @@ public abstract class ReadQuery extends DatabaseQuery {
      */
     public void setQueryId(long id) {
         this.queryId = id;
+    }
+
+    /**
+     * INTERNAL:
+     * sets the JPA max results that may have been set on a NamedQuery
+     */
+    public void setInternalMax(int max) {
+        this.maxResults = max;
     }
 
     /**

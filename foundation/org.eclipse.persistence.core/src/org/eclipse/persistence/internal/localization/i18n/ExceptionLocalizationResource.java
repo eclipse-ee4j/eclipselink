@@ -226,7 +226,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "subclass_sought_not_a_managed_type", "subgraph type sought: {0} is not a managed type for this attribute: {1}."},
                                            { "attribute_is_not_map_with_managed_key", "Can not added key subgraph to entity graph as attribute : {0} in class : {1} is not a Map with a managed type key."},
                                            { "no_entity_graph_of_name", "No EntityGraph exists with name {0}"},
-                                           { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"}
+                                           { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"},
+                                           { "operation_not_supported", "Calling {0} on a {1} is not supported by the specification."},
+                                           { "pu_configured_for_resource_local", "Unable to create EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."}
                                            
                                         };
     /**

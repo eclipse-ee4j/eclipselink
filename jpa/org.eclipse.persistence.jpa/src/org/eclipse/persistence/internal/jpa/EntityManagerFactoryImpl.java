@@ -289,14 +289,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED, true);
+        return createEntityManagerImpl(null, null, true);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED, true);
+        return createEntityManagerImpl(properties, null, true);
     }
     
     /**
@@ -305,7 +305,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * E.g. when coming from generateSchema for SCRIPTS only.
      */
     public EntityManager createEntityManager(Map properties, boolean requiresConnection) {
-        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED, requiresConnection);
+        return createEntityManagerImpl(properties, null, requiresConnection);
     }
 
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {

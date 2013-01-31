@@ -46,6 +46,8 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
@@ -278,14 +280,14 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(null, null);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(properties, null);
     }
 
     public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
@@ -311,6 +313,9 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                     }
                 }
             }
+        }
+        if (syncType != null && !session.hasExternalTransactionController()){
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("pu_configured_for_resource_local"));
         }
         return new EntityManagerImpl(this, properties, syncType);
     }
@@ -723,6 +728,12 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     
     public void addNamedQuery(String name, Query query) {
         DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
+        if (((QueryImpl)query).lockMode != null){
+            ((ObjectLevelReadQuery)unwrapped).setLockModeType(((QueryImpl)query).lockMode.name(), session);
+        }
+        if (unwrapped.isReadQuery()){
+            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResults()));
+        }
         this.getServerSession().addQuery(name, unwrapped, true);
     }
 

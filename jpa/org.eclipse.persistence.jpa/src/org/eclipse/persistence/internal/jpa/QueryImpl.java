@@ -215,7 +215,7 @@ public class QueryImpl {
         }
 
         // Set a pessimistic locking on the query if specified.
-        if (this.lockMode != null) {
+        if (this.lockMode != null && !this.lockMode.equals(LockModeType.NONE)) {
             // We need to throw TransactionRequiredException if there is no
             // active transaction
             this.entityManager.checkForTransaction(true);
@@ -333,6 +333,12 @@ public class QueryImpl {
                     // have to continually prepare on each usage
                     this.databaseQuery.checkPrepare(this.entityManager.getActiveSessionIfExists(), new DatabaseRecord());
                 }
+                if (this.databaseQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.databaseQuery).getLockModeType() != null){
+                    this.lockMode = LockModeType.valueOf(((ObjectLevelReadQuery)this.databaseQuery).getLockModeType());
+                }
+                if (this.databaseQuery.isReadQuery()){
+                    this.maxResults = ((ReadQuery)this.databaseQuery).getInternalMax();
+                }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));
             }
@@ -405,8 +411,8 @@ public class QueryImpl {
         try {
             entityManager.verifyOpen();
 
-            if (!getDatabaseQueryInternal().isReadQuery()) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+            if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
             }
 
             return this.lockMode;
@@ -729,8 +735,8 @@ public class QueryImpl {
         try {
             entityManager.verifyOpen();
 
-            if (!getDatabaseQueryInternal().isReadQuery()) {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
+            if (!getDatabaseQueryInternal().isObjectLevelReadQuery()) {
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("invalid_lock_query", (Object[]) null));
             }
 
             this.lockMode = lockMode;

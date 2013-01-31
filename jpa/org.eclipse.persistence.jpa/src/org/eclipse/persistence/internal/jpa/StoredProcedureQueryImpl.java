@@ -56,6 +56,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.localization.EclipseLinkLocalization;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -728,7 +729,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     public StoredProcedureQueryImpl setFirstResult(int startPosition) {
-        return (StoredProcedureQueryImpl) super.setFirstResult(startPosition);
+        throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_not_supported", new Object[]{"setFirstResult", "StoredProcedureQuery"}));
     }
     
     /**
@@ -785,7 +786,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     public StoredProcedureQueryImpl setMaxResults(int maxResult) {
-        return (StoredProcedureQueryImpl) super.setMaxResults(maxResult);
+        throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_not_supported", new Object[]{"setMaxResults", "StoredProcedureQuery"}));
     }
 
     /**
