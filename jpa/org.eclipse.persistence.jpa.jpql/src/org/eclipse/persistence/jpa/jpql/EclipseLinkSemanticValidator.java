@@ -140,6 +140,14 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected PathType validPathExpressionTypeForInExpression() {
+		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected PathType validPathExpressionTypeForStringExpression() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
 	}

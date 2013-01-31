@@ -1530,7 +1530,22 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param expression The {@link InExpression} to validate
 	 */
 	protected void validateInExpression(InExpression expression) {
-		expression.getExpression().accept(this);
+
+		// Validate the left expression
+		if (expression.hasExpression()) {
+			Expression stringExpression = expression.getExpression();
+
+			// Special case for state field path expression
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(stringExpression);
+
+			if (pathExpression != null) {
+				validateStateFieldPathExpression(pathExpression, validPathExpressionTypeForInExpression());
+			}
+			else {
+				stringExpression.accept(this);
+			}
+		}
+
 		expression.getInItems().accept(this);
 	}
 
@@ -2458,6 +2473,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected void validateWhereClause(WhereClause expression) {
 		super.visit(expression);
+	}
+
+	/**
+	 * Returns the type of path expression that is valid for the expression being tested by an
+	 * <code><b>IN</b></code> expression; which is the left expression.
+	 *
+	 * @return By default, any field (without collection) is allowed
+	 */
+	protected PathType validPathExpressionTypeForInExpression() {
+		return PathType.ANY_FIELD;
 	}
 
 	/**
