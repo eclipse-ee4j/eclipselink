@@ -33,7 +33,6 @@ cd('/')
 cd('Security/base_domain/User/weblogic')
 set('Name','%%WL_USR%%')
 cmo.setPassword('%%WL_PWD%%')
-cmo.setExalogicOptimizationsEnabled(true)
 
 #===========================================================================
 # Write the domain and close the domain template.

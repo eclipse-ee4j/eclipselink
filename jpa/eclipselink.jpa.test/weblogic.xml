@@ -67,6 +67,10 @@
         <contains string="${server.version}" substring="10.3.0"/>
     </condition>
 
+    <condition property="WLS_SETUP_PY" value="wls_main_setup.py" else="wls_setup.py">
+        <contains string="${server.version}" substring="main"/>
+    </condition>
+
     <path id="wls.path">
         <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
     </path>
@@ -177,7 +181,7 @@
     <!-- This creates datasource on non-derby database and deploy to the server. -->
     <target name="weblogic-non-derby-setup" unless="is.derby">
         <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_setup.py"/>
+            <arg line="${jpatest.basedir}/${temp.dir}/${WLS_SETUP_PY}"/>
             <classpath>
                 <path refid="wls.path"/>
             </classpath>
