@@ -675,7 +675,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                     session.getCommitManager().addObjectToDelete(object);
                 } else {
                     // PERF: Avoid query execution if already deleted.
-                    if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                    if (session.getCommitManager().isCommitCompletedInPostOrIgnore(object)) {
                         return;
                     }
                     if (this.isCascadeOnDeleteSetOnDatabase && !hasRelationTableMechanism() && session.isUnitOfWork()) {
@@ -798,7 +798,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
                     ((UnitOfWorkImpl)session).getCascadeDeleteObjects().add(objectInMemory);
                 }
                 // PERF: Avoid query execution if already deleted.
-                if (session.getCommitManager().isCommitCompletedOrInPost(objectInMemory)) {
+                if (session.getCommitManager().isCommitCompletedInPostOrIgnore(objectInMemory)) {
                     return;
                 }
                 DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
@@ -1099,7 +1099,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         }
         AbstractSession session = query.getSession();
         // PERF: Avoid query execution if already written.
-        if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+        if (session.getCommitManager().isCommitCompletedInPostOrIgnore(object)) {
             return;
         }
         ObjectChangeSet changeSet = null;
@@ -1177,7 +1177,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // PERF: Only write dependent object if they are new.
             if ((!query.shouldCascadeOnlyDependentParts()) || (changeSet == null) || changeSet.isNew()) {
                 // PERF: Avoid query execution if already written.
-                if (session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                if (session.getCommitManager().isCommitCompletedInPostOrIgnore(object)) {
                     return;
                 }
                 WriteObjectQuery writeQuery = new WriteObjectQuery();

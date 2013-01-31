@@ -140,7 +140,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         boolean isUnitOfWork = session.isUnitOfWork();
         try {
             // Check if the object has already been deleted, then no work is required.
-            if (commitManager.isCommitCompletedOrInPost(object)) {
+            if (commitManager.isCommitCompletedInPostOrIgnore(object)) {
                 return object;
             }
             ClassDescriptor descriptor = this.descriptor;
@@ -177,7 +177,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                 Set dependencies = ((UnitOfWorkImpl)session).getDeletionDependencies(object);
                 if (dependencies != null) {
                     for (Object dependency : dependencies) {
-                        if (!commitManager.isCommitCompletedOrInPost(dependency)) {
+                        if (!commitManager.isCommitCompletedInPostOrIgnore(dependency)) {
                             ClassDescriptor dependencyDescriptor = session.getDescriptor(dependency);
                             // PERF: Get the descriptor query, to avoid extra query creation.
                             DeleteObjectQuery deleteQuery = dependencyDescriptor.getQueryManager().getDeleteQuery();

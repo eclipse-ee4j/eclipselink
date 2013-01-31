@@ -41,6 +41,8 @@ public class CommitManager {
     protected static final Integer POST = Integer.valueOf(2);
     /** The commit is complete for the object. */
     protected static final Integer COMPLETE = Integer.valueOf(3);
+    /** This object should be ignored. */
+    protected static final Integer IGNORE = Integer.valueOf(4);
     
     /** Set of objects that had partial row written to resolve constraints. */
     protected Map shallowCommits;
@@ -508,9 +510,9 @@ public class CommitManager {
      * This should be called by any query that is writing an object,
      * if true the query should not write the object.
      */
-    public boolean isCommitCompletedOrInPost(Object object) {
+    public boolean isCommitCompletedInPostOrIgnore(Object object) {
         Integer state = getCommitState().get(object);
-        return (state == COMPLETE) || (state == POST);
+        return (state == COMPLETE) || (state == POST) || (state == IGNORE);
     }
 
     /**
@@ -553,6 +555,10 @@ public class CommitManager {
             reinitialize();
             return;
         }
+    }
+    
+    public void markIgnoreCommit(Object object){
+        getCommitState().put(object, IGNORE);
     }
 
     /**

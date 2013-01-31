@@ -937,7 +937,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
                     Object object = containerPolicy.unwrapIteratorResult(wrappedObject);
                     if (cascade){
                         // PERF: Avoid query execution if already deleted.
-                        if (!session.getCommitManager().isCommitCompletedOrInPost(object)) {
+                        if (!session.getCommitManager().isCommitCompletedInPostOrIgnore(object)) {
                             DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                             deleteQuery.setIsExecutionClone(true);
                             deleteQuery.setObject(object);

@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.privateowned.*;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -57,6 +58,7 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new PrivateOwnedJUnitTestCase("testOneToOnePrivateOwnedFromExistingObjectUsingClassic"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testPrivateOwnedCycleWithOneToMany"));
         suite.addTest(new PrivateOwnedJUnitTestCase("testDeleteAll"));
+        suite.addTest(new PrivateOwnedJUnitTestCase("testDeleteObjectOneByOne"));
         return suite;
     }
 
@@ -1074,6 +1076,35 @@ public class PrivateOwnedJUnitTestCase extends JUnitTestCase {
         } finally{
             counter.remove();
             rollbackTransaction(em);
+        }
+        
+    }
+    
+    // Bug 395630
+    public void testDeleteObjectOneByOne(){
+        EntityManager em = createEntityManager();
+        CollectionMapping mapping = (CollectionMapping)getServerSession().getDescriptor(Engine.class).getMappingForAttributeName("sparkPlugs");
+        boolean deleteOneByOne = mapping.mustDeleteReferenceObjectsOneByOne();
+        
+        mapping.setMustDeleteReferenceObjectsOneByOne(true);
+        try{
+            beginTransaction(em);
+            Engine eng = new Engine();
+            eng.setSerialNumber(2222);
+            em.persist(eng);
+            SparkPlug plug = new SparkPlug();
+            plug.setSerialNumber(1111);
+            eng.addSparkPlug(plug);
+            em.persist(plug);
+            em.flush();
+            
+            plug = new SparkPlug();
+            plug.setSerialNumber(3333);
+            eng.addSparkPlug(plug);
+            em.remove(eng);
+            commitTransaction(em);
+        } finally {
+            mapping.setMustDeleteReferenceObjectsOneByOne(deleteOneByOne);
         }
         
     }

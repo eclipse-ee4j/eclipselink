@@ -1059,7 +1059,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 Object wrappedObject = cp.nextEntry(iterator, session);
                 Object object = cp.unwrapIteratorResult(wrappedObject);
                 // PERF: Avoid query execution if already deleted.
-                if (!session.getCommitManager().isCommitCompletedOrInPost(object) || this.containerPolicy.propagatesEventsToCollection()) {
+                if (!session.getCommitManager().isCommitCompletedInPostOrIgnore(object) || this.containerPolicy.propagatesEventsToCollection()) {
                     DeleteObjectQuery deleteQuery = new DeleteObjectQuery();
                     deleteQuery.setIsExecutionClone(true);
                     deleteQuery.setObject(object);
