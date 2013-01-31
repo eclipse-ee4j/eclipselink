@@ -1,0 +1,18 @@
+<root>
+   <map1>
+	   <entry>
+	      <key>key1</key>
+		  <value>value1</value>
+		</entry>
+   </map1>
+   <map2>
+      <entry>
+         <key>10</key>
+         <value>
+             <thing1>aaa</thing1>
+             <thing2>bbb</thing2>
+         </value>
+      </entry>
+     
+   </map2>
+</root>

@@ -1084,6 +1084,10 @@ public class XMLProcessor {
             namespace = xmlElement.getNamespace();
             if (xmlElement.getXmlElementWrapper() != null) {
                 oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
+                if(oldProperty.isMap()){
+                	name = xmlElement.getXmlElementWrapper().getName();
+                    namespace = xmlElement.getXmlElementWrapper().getNamespace();
+                }
             }
         }
 

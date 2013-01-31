@@ -2695,7 +2695,7 @@ public class MappingsGenerator {
                 	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
 
-                if (isAny) {
+                if (isAny || property.isMap()) {
                     xPath = xPath.substring(0, xPath.length() - 1);
                     xmlField = new XMLField(xPath);
                     return xmlField;

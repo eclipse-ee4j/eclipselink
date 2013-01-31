@@ -1,0 +1,15 @@
+{"root":{
+   "map1":{
+      "entry":[
+         {"key":"key1",
+	  "value":"value1"
+	  }
+	]},
+    "map2":{
+       "entry":[
+          {
+	   "key":10,
+	  "value":{"thing1":"aaa","thing2":"bbb"} 
+	  }
+        ]}
+}}
