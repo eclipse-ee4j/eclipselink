@@ -1,0 +1,7 @@
+<ns0:foo xmlns:ns0="FOO">
+   <ns0:map>
+     <entry>
+        <key>A</key>
+        <value>a</value></entry>
+   </ns0:map>
+</ns0:foo>

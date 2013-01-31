@@ -30,6 +30,8 @@ import org.eclipse.persistence.testing.jaxb.jaxbfragment.JAXBFragmentTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperExternalTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperTestCases;
+import org.eclipse.persistence.testing.jaxb.map.MapNamespaceBarTestCases;
+import org.eclipse.persistence.testing.jaxb.map.MapNamespaceFooTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.DefaultNSPrefixMapperSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperContextTestCases;
@@ -152,6 +154,9 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(MapTestCases.class);
         suite.addTestSuite(MapElementWrapperTestCases.class);
         suite.addTestSuite(MapElementWrapperExternalTestCases.class);
+        suite.addTestSuite(MapNamespaceBarTestCases.class);
+        suite.addTestSuite(MapNamespaceFooTestCases.class);
+        		
         return suite;
     }
 

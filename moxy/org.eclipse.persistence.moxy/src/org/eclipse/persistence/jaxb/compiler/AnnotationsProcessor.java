@@ -3198,6 +3198,11 @@ public class AnnotationsProcessor {
         String name = XMLProcessor.DEFAULT;
         String namespace = XMLProcessor.DEFAULT;
         QName qName = null;
+        
+        if(property.isMap()){
+        	isDefaultNamespaceAllowed = false;
+        }
+        
         if (helper.isAnnotationPresent(element, XmlAttribute.class)) {
             XmlAttribute xmlAttribute = (XmlAttribute) helper.getAnnotation(element, XmlAttribute.class);
             name = xmlAttribute.name();
