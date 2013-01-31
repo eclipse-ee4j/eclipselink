@@ -3170,7 +3170,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if (!initialPass && uow.getDeletedObjects().containsKey(object)){
                 return;
             }
-            uow.getDeletedObjects().put(object, object);
+            // do not delete private owned objects that do not exist
+            if (uow.doesObjectExist(object)){
+                uow.getDeletedObjects().put(object, object);
+            } else {
+                uow.getCommitManager().markIgnoreCommit(object);
+            }
         }
         if (this.descriptor.hasMappingsPostCalculateChanges()){
             for (DatabaseMapping mapping : this.descriptor.getMappingsPostCalculateChanges()){

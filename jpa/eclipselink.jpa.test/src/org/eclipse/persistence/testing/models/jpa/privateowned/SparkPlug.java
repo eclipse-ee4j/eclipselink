@@ -27,7 +27,7 @@ public class SparkPlug {
         valueColumnName="SEQ_COUNT",
         pkColumnValue="SPARK_PLUG_SEQ"
     )
-    protected int id;
+    protected Integer id;
     
     @ManyToOne
     protected Engine engine; // non-private owned M:1
@@ -51,11 +51,11 @@ public class SparkPlug {
         this.engine = engine;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

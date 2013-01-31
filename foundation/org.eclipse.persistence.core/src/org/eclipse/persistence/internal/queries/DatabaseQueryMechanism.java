@@ -206,7 +206,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         CommitManager commitManager = getSession().getCommitManager();
 
         // if the object has already been committed, no work is required
-        if (commitManager.isCommitCompletedOrInPost(object)) {
+        if (commitManager.isCommitCompletedInPostOrIgnore(object)) {
             return object;
         }
 
@@ -279,7 +279,7 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
         }
         // If the object has already been committed, no work is required
         // need to check for the object to ensure insert wasn't completed already.
-        if (commitManager.isCommitCompletedOrInPost(object)) {
+        if (commitManager.isCommitCompletedInPostOrIgnore(object)) {
             return object;
         }
         try {
