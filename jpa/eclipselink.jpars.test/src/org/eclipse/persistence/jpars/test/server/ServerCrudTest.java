@@ -99,7 +99,7 @@ public class ServerCrudTest {
     public void testReadXML() throws RestCallFailedException, URISyntaxException {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
-        assertTrue("Wrong big in DB.", bid.getAmount() == bid2.getAmount());
+        assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
 
     /**
@@ -146,9 +146,9 @@ public class ServerCrudTest {
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
         bid.setAmount(120);
         bid = restUpdate(bid, "StaticBid", StaticBid.class, true);
-        assertTrue("Wrong big retrieved.", bid.getAmount() == 120);
+        assertTrue("Wrong bid retrieved.", bid.getAmount() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
-        assertTrue("Wrong big retrieved in db.", bid.getAmount() == 120);
+        assertTrue("Wrong bid retrieved in db.", bid.getAmount() == 120);
         assertTrue("No auction for Bid in db", bid.getAuction() != null);
         bid.setAmount(110);
         bid = restUpdate(bid, "StaticBid", StaticBid.class, true);

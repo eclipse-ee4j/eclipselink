@@ -9,7 +9,7 @@
  *
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.resources.versioned;
+package org.eclipse.persistence.jpa.rs.resources;
 
 import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
 

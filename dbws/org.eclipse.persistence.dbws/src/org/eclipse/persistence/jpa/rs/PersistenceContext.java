@@ -48,6 +48,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -71,6 +72,7 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.config.ConfigDefaults;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
@@ -138,6 +140,8 @@ public class PersistenceContext {
     protected URI baseURI = null;
 
     protected TransactionWrapper transaction = null;
+    
+    private Boolean weavingEnabled = null;
 
     protected PersistenceContext() {
     }
@@ -168,6 +172,13 @@ public class PersistenceContext {
             emf.close();
         }
         setBaseURI(defaultURI);
+    }
+
+    public boolean isWeavingEnabled() {
+        if (this.weavingEnabled == null) {
+            this.weavingEnabled = getWeavingProperty();
+        }
+        return this.weavingEnabled;
     }
 
     /**
@@ -218,7 +229,7 @@ public class PersistenceContext {
     }
 
     /**
-     * Create a JAXBConext based on the EntityManagerFactory for this PersistenceContext
+     * Create a JAXBContext based on the EntityManagerFactory for this PersistenceContext
      * @param session
      * @return
      */
@@ -1035,7 +1046,7 @@ public class PersistenceContext {
             for (DatabaseMapping mapping: descriptor.getMappings()){
                 if (mapping instanceof XMLInverseReferenceMapping){
                     // we require Fetch groups to handle relationships
-                    throw new JPARSException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
+                    throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
                 }
             }
         }
@@ -1228,5 +1239,39 @@ public class PersistenceContext {
             throw new JPARSException(ex.getMessage());
         }
         return adapters;
+    }
+    
+    
+    private boolean getWeavingProperty() {
+        // Initialize the properties with their defaults first
+        boolean restWeavingEnabled = true;
+        boolean fetchGroupWeavingEnabled = true;
+        boolean weavingEnabled = true;
+
+        Map<String, Object> properties = this.emf.getProperties();
+
+        for (Map.Entry<String, Object> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+
+            if (key.equals(PersistenceUnitProperties.WEAVING)) {
+                if (!("true".equalsIgnoreCase((String) value)) && !("static".equalsIgnoreCase((String) value))) {
+                    weavingEnabled = false;
+                }
+            }
+
+            if (key.equals(PersistenceUnitProperties.WEAVING_REST)) {
+                if (!("true".equalsIgnoreCase((String) value))) {
+                    restWeavingEnabled = false;
+                }
+            }
+
+            if (key.equals(PersistenceUnitProperties.WEAVING_FETCHGROUPS)) {
+                if (!("true".equalsIgnoreCase((String) value))) {
+                    fetchGroupWeavingEnabled = false;
+                }
+            }
+        }
+        return (weavingEnabled && restWeavingEnabled && fetchGroupWeavingEnabled);
     }
 }

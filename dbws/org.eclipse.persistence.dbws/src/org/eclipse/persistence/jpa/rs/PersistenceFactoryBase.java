@@ -29,6 +29,8 @@ import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationException;
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 /**
@@ -129,6 +131,11 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 JPARSLogger.exception("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()}, e);
             }
         }
+        
+        if (!app.isWeavingEnabled()) {
+            throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] { persistenceUnit }));
+        }
+        
         return app;
     }
 

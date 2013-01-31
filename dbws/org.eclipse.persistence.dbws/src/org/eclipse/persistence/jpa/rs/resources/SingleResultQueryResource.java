@@ -9,12 +9,11 @@
  *
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.resources.versioned;
+package org.eclipse.persistence.jpa.rs.resources;
+
 import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,26 +23,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractSingleResultQueryResource;
 
 /**
  * @author gonural
  *
  */
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " +  SERVICE_VERSION_FORMAT +"}/{context}/query/")
-public class QueryResource extends AbstractQueryResource {
-
-    @POST
-    @Path("{name}")
-    public Response namedQueryUpdate(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQueryUpdateInternal(version, persistenceUnit, name, hh, ui);
-    }
+//Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_OCTET_STREAM })
+@Path("/{version : " +SERVICE_VERSION_FORMAT + "}/{context}/singleResultQuery/")
+public class SingleResultQueryResource extends AbstractSingleResultQueryResource {
     
     @GET
     @Path("{name}")
-    public Response namedQuery(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQueryInternal(version, persistenceUnit, name, hh, ui);
+    public Response namedQuerySingleResult(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+        return namedQuerySingleResult(version, persistenceUnit, name, hh, ui, ui.getBaseUri());
     }
 }
