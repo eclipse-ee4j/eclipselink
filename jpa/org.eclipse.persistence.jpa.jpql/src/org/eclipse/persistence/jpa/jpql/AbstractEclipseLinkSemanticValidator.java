@@ -318,6 +318,15 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected PathType validPathExpressionTypeForInExpression() {
+		// Loosen up the JPA spec restriction because ANTLR parser used to allow it
+		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected Boolean validateThirdPartyStateFieldPathExpression(StateFieldPathExpression expression) {
 
 		Boolean valid = null;
