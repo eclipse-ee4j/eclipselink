@@ -904,7 +904,7 @@ public class AnnotationsProcessor {
                 }
                 // an XmlElementWrapper can only appear on a Collection or Array
                 if (property.getXmlElementWrapper() != null) {
-                    if (!helper.isCollectionType(property.getType()) && !property.getType().isArray()) {
+                    if (!helper.isCollectionType(property.getType()) && !property.getType().isArray() && !helper.isMapType(property.getType())) {
                         throw JAXBException.invalidElementWrapper(property.getPropertyName());
                     }
                 }
@@ -1939,7 +1939,7 @@ public class AnnotationsProcessor {
             }
             
         } else {
-            property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getPackageInfoForPackage(cls).getNamespaceInfo(), info));
+            property.setSchemaName(getQNameForProperty(property, propertyName, javaHasAnnotations, getPackageInfoForPackage(cls).getNamespaceInfo(), info));
         }
 
         ptype = property.getActualType();
@@ -3193,7 +3193,7 @@ public class AnnotationsProcessor {
         return userDefinedSchemaTypes;
     }
 
-    public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
+    public QName getQNameForProperty(Property property, String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
         String uri = info.getClassNamespace();
         String name = XMLProcessor.DEFAULT;
         String namespace = XMLProcessor.DEFAULT;
@@ -3227,6 +3227,11 @@ public class AnnotationsProcessor {
                 XmlElement xmlElement = (XmlElement) helper.getAnnotation(element, XmlElement.class);
                 name = xmlElement.name();
                 namespace = xmlElement.namespace();
+            }
+            if (property.isMap() && helper.isAnnotationPresent(element, XmlElementWrapper.class)) {
+       		    XmlElementWrapper xmlElementWrapper = (XmlElementWrapper) helper.getAnnotation(element, XmlElementWrapper.class);
+                name = xmlElementWrapper.name();
+                namespace = xmlElementWrapper.namespace();
             }
 
             if (name.equals(XMLProcessor.DEFAULT)) {

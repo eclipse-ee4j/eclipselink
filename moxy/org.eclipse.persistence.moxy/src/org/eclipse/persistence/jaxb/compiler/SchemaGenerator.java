@@ -508,7 +508,7 @@ public class SchemaGenerator {
                         parentType = ((ComplexType)parentCompositor.getOwner());
                     }
                 // deal with the XmlElementWrapper case
-                } else if (!isChoice && next.isSetXmlElementWrapper()) {
+                } else if (!isChoice && !next.isMap() && next.isSetXmlElementWrapper()) {
                     AddToSchemaResult asr = addXmlElementWrapperToSchema(next, currentSchema, compositor);
                     // if returned object is null there is nothing to do
                     if (asr == null) {

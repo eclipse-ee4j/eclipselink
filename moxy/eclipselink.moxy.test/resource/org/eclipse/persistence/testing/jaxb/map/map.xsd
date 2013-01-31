@@ -1,0 +1,41 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="map1">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="entry">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element minOccurs="0" name="key" type="xsd:string"/>
+                           <xsd:element minOccurs="0" name="value" type="xsd:string"/>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element minOccurs="0" name="map2">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="entry">
+                     <xsd:complexType>
+                        <xsd:sequence>
+                           <xsd:element minOccurs="0" name="key" type="xsd:int"/>
+                           <xsd:element minOccurs="0" name="value" type="complexValue"/>
+                        </xsd:sequence>
+                     </xsd:complexType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="complexValue">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="thing1" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="thing2" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="root"/>
+</xsd:schema>
