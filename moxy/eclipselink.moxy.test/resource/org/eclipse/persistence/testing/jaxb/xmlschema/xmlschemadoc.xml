@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" targetNamespace="someTargetNamespace">
-    <complexType name="testComplexType"/>
-</schema>
+<ns0:schema xmlns:ns0="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" targetNamespace="someTargetNamespace">
+    <ns0:complexType name="testComplexType"/>
+</ns0:schema>

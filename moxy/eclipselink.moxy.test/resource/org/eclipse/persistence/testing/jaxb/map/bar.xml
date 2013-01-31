@@ -1,0 +1,8 @@
+<ns1:bar xmlns:ns1="BAR">
+   <ns1:map>
+      <entry>
+        <key>B</key>
+        <value>b</value>
+      </entry>
+   </ns1:map>
+</ns1:bar>
