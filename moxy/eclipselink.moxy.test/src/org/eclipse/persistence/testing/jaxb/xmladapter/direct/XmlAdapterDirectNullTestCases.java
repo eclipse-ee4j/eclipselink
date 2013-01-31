@@ -130,9 +130,7 @@ public class XmlAdapterDirectNullTestCases extends JAXBWithJSONTestCases {
             super.testObjectToXMLDocument();
         }catch(MarshalException me){
             Throwable nestedException = me.getLinkedException();
-            assertTrue("Nested exception should be a XMLMarshalException but was " + nestedException.getClass().getName(), nestedException instanceof XMLMarshalException);
-            Throwable actualException = ((XMLMarshalException)nestedException).getInternalException();
-            assertTrue("Nested exception should be a ConversionException but was " + actualException.getClass().getName(), actualException instanceof ConversionException);
+            assertTrue("Nested exception should be a ConversionException but was " + nestedException.getClass().getName(), nestedException instanceof ConversionException);
             return;
         }
         fail("An exception should have been thrown");

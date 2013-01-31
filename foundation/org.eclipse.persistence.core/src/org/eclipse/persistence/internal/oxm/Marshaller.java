@@ -12,34 +12,71 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.platform.xml.XMLTransformer;
 
+/**
+ *
+ */
 public abstract class Marshaller<
     CONTEXT extends Context,
     MEDIA_TYPE extends MediaType,
     NAMESPACE_PREFIX_MAPPER extends NamespacePrefixMapper> {
 
+    private static String DEFAULT_INDENT = "   "; // default indent is three spaces;
+
+    private CharacterEscapeHandler charEscapeHandler;
     protected CONTEXT context;
+    private String encoding;
+    private boolean equalUsingIdenity;
+    private boolean formattedOutput;
+    private String indentString;
+    protected NAMESPACE_PREFIX_MAPPER mapper;
+    private XMLMarshalListener marshalListener;
+    protected Properties marshalProperties;
 
     public Marshaller(CONTEXT context) {
         this.context = context;
+        this.encoding = Constants.DEFAULT_XML_ENCODING;
+        this.equalUsingIdenity = true;
+        this.formattedOutput = true;
+        this.indentString = DEFAULT_INDENT;
+    }
+
+    /**
+     * Copy constructor
+     */
+    protected Marshaller(Marshaller marshaller) {
+        this.charEscapeHandler = marshaller.getCharacterEscapeHandler();
+        this.context = (CONTEXT) marshaller.getContext();
+        this.encoding = marshaller.getEncoding();
+        this.equalUsingIdenity = marshaller.isEqualUsingIdenity();
+        this.formattedOutput = marshaller.isFormattedOutput();
+        this.indentString = marshaller.getIndentString();
+        this.mapper = (NAMESPACE_PREFIX_MAPPER) marshaller.getNamespacePrefixMapper();
+        this.marshalListener = marshaller.getMarshalListener();
+        if(marshaller.marshalProperties != null) {
+            marshalProperties = new Properties();
+            for(Entry entry : marshalProperties.entrySet()) {
+                marshalProperties.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     public abstract XMLAttachmentMarshaller getAttachmentMarshaller();
 
     /**
-     * Value that will be used to prefix attributes.  
-     * Ignored marshalling XML.
-     */
-    public abstract String getAttributePrefix();
-
-    /**
      * Return this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
      */
-    public abstract CharacterEscapeHandler getCharacterEscapeHandler();
+    public CharacterEscapeHandler getCharacterEscapeHandler() {
+        return this.charEscapeHandler;
+    }
 
     /**
      * Return the instance of Context that was used to create this instance
@@ -50,81 +87,133 @@ public abstract class Marshaller<
     }
 
     /**
-     * Get the encoding set on this Marshaller
-     * If the encoding has not been set the default UTF-8 will be used
+     * Get the encoding set on this Marshaller.  If the encoding has not been 
+     * set the default UTF-8 will be used
      */
-    public abstract String getEncoding();
+    public String getEncoding() {
+        return encoding;
+    }
 
     /**
-     * Return the String that will be used to perform indenting in marshalled documents.
-     * Default is &quot;   &quot; (three spaces).
+     * Return the String that will be used to perform indenting in marshalled
+     * documents.  Default is &quot;   &quot; (three spaces).
      */
-    public abstract String getIndentString();
+    public String getIndentString() {
+        return indentString;
+    }
 
-    public abstract XMLMarshalListener getMarshalListener();
+    public XMLMarshalListener getMarshalListener() {
+        return this.marshalListener;
+    }
 
     /**
-     * Get the MediaType for this xmlMarshaller.
-     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * If not set the default is MediaType.APPLICATION_XML
-     * @return MediaType
+     * Get the media type for this Marshaller.
      */
     public abstract MEDIA_TYPE getMediaType();
 
     /**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      */
-    public abstract NAMESPACE_PREFIX_MAPPER getNamespacePrefixMapper();
+    public NAMESPACE_PREFIX_MAPPER getNamespacePrefixMapper() {
+        return mapper;
+    }
 
     /**
      * Return the property for a given key, if one exists.
      */
-   public abstract Object getProperty(Object key);
+   public Object getProperty(Object key) {
+       if(null == marshalProperties) {
+           return null;
+       }
+       return marshalProperties.get(key);
+   }
     
     /**
      * INTERNAL
-     * @return the transformer instance for this marshaller
+     * @return the transformer instance for this Marshaller
      */
     public abstract XMLTransformer getTransformer();
 
     /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings
-     */
-    public abstract String getValueWrapper();
-
-    /**
-     * Get this Marshaller's XML Header.
-     */
-    public abstract String getXmlHeader();
-
-    /**
      * INTERNAL
      */
-    public abstract boolean isEqualUsingIdenity();
+    public boolean isEqualUsingIdenity() {
+        return equalUsingIdenity;
+    }
 
     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored marshalling XML.   
+    * Returns if this Marshaller should format the output.  By default this is 
+    * set to true and the marshalled output will be formatted.
+    * @return if this Marshaller should format the output
+    */
+    public boolean isFormattedOutput() {
+        return formattedOutput;
+    }
+
+    /**
+     * Determine if the root not should be marshalled.  This property may 
+     * ignored for media types that require a root node such as XML. 
      */
     public abstract boolean isIncludeRoot();
 
     /**
-     * Property to determine if size 1 any collections should be treated as collections
-     * Ignored marshalling XML.
+     * Property to determine if size 1 any collections should be treated as 
+     * collections.
      */
     public abstract boolean isReduceAnyArrays();
 
     /**
-     * Get the namespace separator used during marshal operations.
-     * If mediaType is application/json '.' is the default
-     * Ignored marshalling XML.
+     * Set this Marshaller's CharacterEscapeHandler.
+     * @since 2.3.3
      */
-    public abstract char getNamespaceSeparator();
+    public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
+        this.charEscapeHandler = c;
+    }
 
     /**
-     * Name of the property to determine if empty collections should be marshalled as []   
-     * Ignored marshalling XML.
+     * Set the encoding on this Marshaller.  If the encoding is not set the 
+     * default UTF-8 will be used.
+     * @param newEncoding the encoding to set on this Marshaller
      */
-    public abstract boolean isMarshalEmptyCollections();
+    public void setEncoding(String newEncoding) {
+        this.encoding = newEncoding;
+    }
+
+    /**
+     * INTERNAL
+     */
+    public void setEqualUsingIdenity(boolean equalUsingIdenity) {
+        this.equalUsingIdenity = equalUsingIdenity;
+    }
+
+    /**
+     * Set if this XMLMarshaller should format the XML
+     * By default this is set to true and the XML marshalled will be formatted.
+     * @param shouldFormat if this XMLMarshaller should format the XML
+     */
+    public void setFormattedOutput(boolean shouldFormat) {
+        this.formattedOutput = shouldFormat;
+    }
+
+    /**
+     * Set the String that will be used to perform indenting in marshalled 
+     * documents.
+     * @since 2.3.3
+     */
+    public void setIndentString(String s) {
+        this.indentString = s;
+    }
+
+    public void setMarshalListener(XMLMarshalListener listener) {
+        this.marshalListener = listener;
+    }
+
+    /**
+     * NamespacePrefixMapper that can be used during marshal (instead of those 
+     * set in the project meta data)
+     */
+    public void setNamespacePrefixMapper(NAMESPACE_PREFIX_MAPPER mapper) {
+        this.mapper = mapper;
+    }
 
 }

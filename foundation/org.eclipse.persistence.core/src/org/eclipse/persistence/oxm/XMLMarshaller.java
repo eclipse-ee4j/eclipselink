@@ -12,66 +12,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
-import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Map.Entry;
 import java.util.Properties;
 
-import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
-import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
-import org.eclipse.persistence.internal.oxm.record.DOMReader;
-import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.attachment.*;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
-import org.eclipse.persistence.oxm.record.JSONFormattedWriterRecord;
-import org.eclipse.persistence.oxm.record.FormattedOutputStreamRecord;
-import org.eclipse.persistence.oxm.record.FormattedWriterRecord;
-import org.eclipse.persistence.oxm.record.JSONWriterRecord;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
-import org.eclipse.persistence.oxm.record.OutputStreamRecord;
-import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord;
-import org.eclipse.persistence.oxm.record.WriterRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
-import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformException;
-import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-import org.eclipse.persistence.platform.xml.XMLTransformer;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p>Class used to marshal object to XML.
@@ -97,97 +58,22 @@ import org.xml.sax.ext.LexicalHandler;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePrefixMapper> implements Cloneable {
-    private final static String DEFAULT_XML_VERSION = "1.0";
-    private String schemaLocation;
-    private String noNamespaceSchemaLocation;
-    private XMLTransformer transformer;
-    private XMLMarshalListener marshalListener;
-    private XMLAttachmentMarshaller attachmentMarshaller;
-    private ErrorHandler errorHandler;
-    private Properties marshalProperties;
-    private Schema schema;
-    private MediaType mediaType = MediaType.APPLICATION_XML;
-    private char namespaceSeparator = XMLConstants.DOT;
-    private String attributePrefix;
-    private boolean includeRoot;
-    private boolean marshalEmptyCollections;
-    private boolean reduceAnyArrays;
-    private String valueWrapper = XMLConstants.VALUE_WRAPPER;
-    
-    private NamespacePrefixMapper mapper;
-    private String indentString;
-    private CharacterEscapeHandler charEscapeHandler;
-    private String xmlHeader;
-    private boolean equalUsingIdenity = true;
+public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, XMLContext, XMLDescriptor, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
 
-    private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
-    private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
-    private static final String GET_XML_EVENT_WRITER_METHOD_NAME = "getXMLEventWriter";
-    private static final String XML_STREAM_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLStreamWriterRecord";
-    private static final String XML_EVENT_WRITER_RECORD_CLASS_NAME = "org.eclipse.persistence.oxm.record.XMLEventWriterRecord";
-    private static final String XML_STREAM_WRITER_CLASS_NAME = "javax.xml.stream.XMLStreamWriter";
-    private static final String XML_EVENT_WRITER_CLASS_NAME = "javax.xml.stream.XMLEventWriter";
-    private static final String DOM_TO_STREAM_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.DomToXMLStreamWriter";
-    private static final String DOM_TO_EVENT_WRITER_CLASS_NAME = "org.eclipse.persistence.internal.oxm.record.DomToXMLEventWriter";
-    private static final String WRITE_TO_STREAM_METHOD_NAME = "writeToStream";
-    private static final String WRITE_TO_EVENT_WRITER_METHOD_NAME = "writeToEventWriter";
-
-    private static Class staxResultClass;
-    private static Method staxResultGetStreamWriterMethod;
-    private static Method staxResultGetEventWriterMethod;
-    private static Constructor xmlStreamWriterRecordConstructor;
-    private static Constructor xmlEventWriterRecordConstructor;
-    private static Method writeToStreamMethod;
-    private static Method writeToEventWriterMethod;
-    private static Class domToStreamWriterClass;
-    private static Class domToEventWriterClass;
-
-    static {
-        try {
-            staxResultClass = PrivilegedAccessHelper.getClassForName(STAX_RESULT_CLASS_NAME);
-            if(staxResultClass != null) {
-                staxResultGetStreamWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_STREAM_WRITER_METHOD_NAME, new Class[]{});
-                staxResultGetEventWriterMethod = PrivilegedAccessHelper.getDeclaredMethod(staxResultClass, GET_XML_EVENT_WRITER_METHOD_NAME, new Class[]{});
-            }
-            Class streamWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_RECORD_CLASS_NAME);
-            Class streamWriterClass = PrivilegedAccessHelper.getClassForName(XML_STREAM_WRITER_CLASS_NAME);
-            xmlStreamWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(streamWriterRecordClass, new Class[]{streamWriterClass}, true);
-
-            Class eventWriterRecordClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_RECORD_CLASS_NAME);
-            Class eventWriterClass = PrivilegedAccessHelper.getClassForName(XML_EVENT_WRITER_CLASS_NAME);
-            xmlEventWriterRecordConstructor = PrivilegedAccessHelper.getConstructorFor(eventWriterRecordClass, new Class[]{eventWriterClass}, true);
-            
-            domToStreamWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_STREAM_WRITER_CLASS_NAME);
-            writeToStreamMethod = PrivilegedAccessHelper.getMethod(domToStreamWriterClass, WRITE_TO_STREAM_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, streamWriterClass}, true);
-            
-            domToEventWriterClass = PrivilegedAccessHelper.getClassForName(DOM_TO_EVENT_WRITER_CLASS_NAME);
-            writeToEventWriterMethod = PrivilegedAccessHelper.getMethod(domToEventWriterClass, WRITE_TO_EVENT_WRITER_METHOD_NAME, new Class[] {ClassConstants.NODE, ClassConstants.STRING, ClassConstants.STRING, eventWriterClass}, true);
-            
-        } catch (Exception ex) {
-            // Do nothing
-        }
+    /**
+     * Create a new XMLMarshaller based on the specified session
+     * @param session A single session
+     */
+    public XMLMarshaller(XMLContext xmlContext) {
+        super(xmlContext);
+        setMediaType(MediaType.APPLICATION_XML);
     }
 
     /**
-    * Create a new XMLMarshaller based on the specified session
-    * @param session A single session
-    */
-    public XMLMarshaller(XMLContext xmlContext) {
-        super(xmlContext);
-        initialize();
-    }
-
-    private void initialize() {
-        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        transformer = xmlPlatform.newXMLTransformer();
-        setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
-        setFormattedOutput(true);
-        marshalProperties = new Properties();
-        includeRoot = true;
-        marshalEmptyCollections = true;
-        reduceAnyArrays = false;
-        indentString = "   "; // default indent is three spaces
+     * Copy constructor
+     */
+    protected XMLMarshaller(XMLMarshaller xmlMarshaller) {
+        super(xmlMarshaller);
     }
 
     /**
@@ -205,93 +91,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         context = value;
     }
 
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
-
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
-    }
-
-    /**
-    * Returns if this XMLMarshaller should format the XML
-    * By default this is set to true and the XML marshalled will be formatted.
-    * @return if this XMLMarshaller should format the XML
-    */
-    public boolean isFormattedOutput() {
-        return transformer.isFormattedOutput();
-    }
-
-    /**
-    * Set if this XMLMarshaller should format the XML
-    * By default this is set to true and the XML marshalled will be formatted.
-    * @param shouldFormat if this XMLMarshaller should format the XML
-    */
-    public void setFormattedOutput(boolean shouldFormat) {
-        transformer.setFormattedOutput(shouldFormat);
-    }
-
-    /**
-       * Get the encoding set on this XMLMarshaller
-       * If the encoding has not been set the default UTF-8 will be used
-       * @return the encoding set on this XMLMarshaller
-       */
-    public String getEncoding() {
-        return transformer.getEncoding();
-    }
-
-    /**
-       * Set the encoding on this XMLMarshaller
-       * If the encoding is not set the default UTF-8 will be used
-       * @param newEncoding the encoding to set on this XMLMarshaller
-       */
-    public void setEncoding(String newEncoding) {
-        transformer.setEncoding(newEncoding);        
-    }
-
-    /**
-     * Set the MediaType for this xmlMarshaller.
-     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * @param mediaType
-     */
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;        
-    }    
-    
-    /**
-     * Get the MediaType for this xmlMarshaller.
-     * See org.eclipse.persistence.oxm.MediaType for the media types supported by EclipseLink MOXy
-     * If not set the default is MediaType.APPLICATION_XML
-     * @return MediaType
-     */
-    public MediaType getMediaType(){
-    	return mediaType;
-    }
-
-    /**
-      * Get the schema location set on this XMLMarshaller
-      * @return the schema location specified on this XMLMarshaller
-      */
-    public String getSchemaLocation() {
-        return schemaLocation;
-    }
-
-    /**
-      * Set the schema location on this XMLMarshaller
-      * @param newSchemaLocation the schema location to be seton this XMLMarshaller
-      */
-    public void setSchemaLocation(String newSchemaLocation) {
-        schemaLocation = newSchemaLocation;
-    }
-
-    /**
-      * Get the no namespace schema location set on this XMLMarshaller
-      * @return the no namespace schema location specified on this XMLMarshaller
-      */
-    public String getNoNamespaceSchemaLocation() {
-        return noNamespaceSchemaLocation;
-    }
-
     /**
      * Return a properties object for a given instance of the
      * XMLMarshaller.
@@ -299,37 +98,14 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
      * @return
      */
     public Properties getProperties() {
+        if(null == marshalProperties) {
+            marshalProperties = new Properties();
+        }
         return marshalProperties;
     }
 
-    /**
-     * Return the property for a given key, if one exists.
-     *
-     * @parm key
-     * @return
-     */
-    public Object getProperty(Object key) {
-        return marshalProperties.get(key);
-    }
-
-    /**
-      * Set the no namespace schema location on this XMLMarshaller
-      * @param newNoNamespaceSchemaLocation no namespace schema location to be seton this XMLMarshaller
-      */
-    public void setNoNamespaceSchemaLocation(String newNoNamespaceSchemaLocation) {
-        noNamespaceSchemaLocation = newNoNamespaceSchemaLocation;
-    }
-
     public void setXMLMarshalHandler(XMLMarshalListener marshalListener) {
-        this.marshalListener = marshalListener;
-    }
-
-    public XMLMarshalListener getMarshalListener() {
-        return this.marshalListener;
-    }
-
-    public void setMarshalListener(XMLMarshalListener listener) {
-        this.marshalListener = listener;
+        setMarshalListener(marshalListener);
     }
 
     /**
@@ -365,76 +141,9 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             xmlDescriptor = getDescriptor(objectClass, session);
         }
 
-       
         //if this is a simple xml root, the session and descriptor will be null
         if (session == null ||  !context.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
-            if (result instanceof StreamResult) {
-                StreamResult streamResult = (StreamResult) result;
-                Writer writer = streamResult.getWriter();
-                if (writer != null) {
-                    marshal(object, writer, session, xmlDescriptor);
-                } else if (streamResult.getOutputStream() != null) {
-                    marshal(object, streamResult.getOutputStream(), session, xmlDescriptor);
-                } else {
-                    try {
-                        File f;
-                        try {
-                            f = new File(new URL(streamResult.getSystemId()).toURI());
-                        } catch(MalformedURLException malformedURLException) {
-                            try {
-                                f = new File(streamResult.getSystemId());
-                            } catch(Exception e) {
-                                throw malformedURLException;
-                            }
-                        }
-                        writer = new FileWriter(f);
-                        try {
-                        	marshal(object, writer, session, xmlDescriptor);
-                        } finally {
-                            writer.close();
-                        }
-                    } catch (Exception e) {
-                        throw XMLMarshalException.marshalException(e);
-                    }
-                }
-            }else if (result instanceof DOMResult) {
-                DOMResult domResult = (DOMResult) result;
-                // handle case where the node is null
-                if (domResult.getNode() == null) {
-                    domResult.setNode(this.objectToXML(object));
-                } else {
-                    marshal(object, domResult.getNode());
-                }
-            } else if (result instanceof SAXResult) {
-                SAXResult saxResult = (SAXResult) result;
-                marshal(object, saxResult.getHandler());
-            } else {
-                if (result.getClass().equals(staxResultClass)) {
-                    try {
-                        Object xmlStreamWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetStreamWriterMethod, result);
-                        if (xmlStreamWriter != null) {
-                            MarshalRecord record = (MarshalRecord)PrivilegedAccessHelper.invokeConstructor(xmlStreamWriterRecordConstructor, new Object[]{xmlStreamWriter});
-                            record.setMarshaller(this);
-                            marshal(object, record, session, xmlDescriptor, isXMLRoot);                            
-                            return;
-                        } else {
-                            Object xmlEventWriter = PrivilegedAccessHelper.invokeMethod(staxResultGetEventWriterMethod, result);
-                            if(xmlEventWriter != null) {
-                                MarshalRecord record = (MarshalRecord)PrivilegedAccessHelper.invokeConstructor(xmlEventWriterRecordConstructor, new Object[]{xmlEventWriter});
-                                record.setMarshaller(this);
-                                marshal(object, record, session, xmlDescriptor, isXMLRoot);
-                                return;
-                            }
-                        }
-                    } catch (Exception e) {
-                        throw XMLMarshalException.marshalException(e);
-                    }
-                }
-                java.io.StringWriter writer = new java.io.StringWriter();
-                marshal(object, writer);
-                javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
-                transformer.transform(source, result);
-            }
+            super.marshal(object, result);
             return;
         }
         try {
@@ -442,6 +151,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             
             if ((result instanceof SAXResult) && (isFragment())) {
                 FragmentContentHandler fragmentHandler = new FragmentContentHandler(((SAXResult) result).getHandler());
+                getTransformer(); // Ensure transformer is initialized
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -456,7 +166,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                     transformer.setVersion(oldVersion);
                 } else {
                     transformer.transform(document, fragmentHandler);
-
                 }
             } else {
                 if (result.getClass().equals(staxResultClass)) {
@@ -484,11 +193,11 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                                 return;
                             }
                         }
-
                     } catch(Exception e) {
                         throw XMLMarshalException.marshalException(e);
                     }
                 }
+                getTransformer(); // Ensure transformer is initialized 
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -510,570 +219,18 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         }
     }
 
-    /**
-    * PUBLIC:
-    * Convert the given object to XML and update the given outputStream with that XML Document
-    * @param object the object to marshal
-    * @param outputStream the outputStream to marshal the object to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    */
-    public void marshal(Object object, OutputStream outputStream) throws XMLMarshalException {
-    	marshal (object, outputStream, null, null);
-    }
-    
-    private void marshal(Object object, OutputStream outputStream, AbstractSession session, XMLDescriptor xmlDescriptor) throws XMLMarshalException {
-    	 if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){            	
-         	object = ((JSONWithPadding)object).getObject();            	
-         }
-        if ((object == null) || (outputStream == null)) {
-            throw XMLMarshalException.nullArgumentException();
+    @Override
+    protected Node getNode(Object object, Node parentNode, AbstractSession session, XMLDescriptor xmlDescriptor, boolean isXMLRoot) {
+        Node node = super.getNode(object, parentNode, session, xmlDescriptor, isXMLRoot);
+        if(null != node) {
+            return node;
         }
-        try {
-            String encoding = getEncoding();
-            boolean isXMLRoot = false;
-            String version = DEFAULT_XML_VERSION;
-            if (object instanceof Root) {
-                isXMLRoot = true;
-                Root xroot = (Root) object;
-                version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
-                encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
-            }
-            if(MediaType.APPLICATION_JSON == mediaType) {
-                marshal(object, new OutputStreamWriter(outputStream, encoding), session, xmlDescriptor);
-                return;
-            }
-            if(encoding.equals(XMLConstants.DEFAULT_XML_ENCODING)){
-            	if(session == null || xmlDescriptor == null){             
-	                if(isXMLRoot){
-	                    try{
-	            	        session = context.getSession(((Root)object).getObject());
-	            	        if(session != null){
-	            	            xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-	                	    }
-	                   }catch (XMLMarshalException marshalException) {
-	                        if (!isSimpleXMLRoot((Root) object)) {
-	                        	throw marshalException;    
-	                        }                
-	                    }
-	                }else{
-                            Class objectClass = object.getClass();
-                            session = context.getSession(objectClass);
-                            xmlDescriptor = getDescriptor(objectClass, session);
-	                }
-            	}
-                OutputStreamRecord record;
-                if (isFormattedOutput()) {
-                	record = new FormattedOutputStreamRecord();                	
-                } else {
-            	    record = new OutputStreamRecord();                	
-                }
-                       
-                record.setMarshaller(this);
-                record.setOutputStream(outputStream);
-            
-                //if this is a simple xml root, the session and descriptor will be null
-                if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-                    marshal(object, record, session, xmlDescriptor, isXMLRoot);    
-                } else {
-                    try {
-                        Node xmlDocument = null;
-                        String rootUri = null;
-                        String rootLocalName = null;
-                        if(isXMLRoot && session == null) {
-                            xmlDocument = (Node)((Root)object).getObject();
-                            rootUri = ((Root)object).getNamespaceURI();
-                            rootLocalName = ((Root)object).getLocalName();
-                        } else {
-                            xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
-                        }
-                        record.setSession(session);
-                        if (isFragment()) {
-                            if(xmlDescriptor == null){
-                                record.node(xmlDocument, null, rootUri, rootLocalName );
-                            }else{
-                                record.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootUri, rootLocalName );
-                            }
-                        } else {
-                            record.startDocument(encoding, version);
-                            record.node(xmlDocument, record.getNamespaceResolver(), rootUri, rootLocalName);
-                            record.endDocument();
-                        }
-                    } catch (XMLPlatformException e) {
-                        throw XMLMarshalException.marshalException(e);
-                    }
-                }
-                record.flush();
-            }else{
-            	OutputStreamWriter writer = new OutputStreamWriter(outputStream, encoding);
-                marshal(object, writer);
-                writer.flush();
-            }
-        } catch (UnsupportedEncodingException exception) {
-            throw XMLMarshalException.marshalException(exception);
-        } catch (Exception ex) {
-            throw XMLMarshalException.marshalException(ex);
+        if(null != session && context.getDocumentPreservationPolicy(session).shouldPreserveDocument()) {
+            return objectToXMLNode(object, parentNode, session, xmlDescriptor, isXMLRoot);
         }
-    }
-    
-    /**
-    * PUBLIC:
-    * Convert the given object to XML and update the given writer with that XML Document
-    * @param object the object to marshal
-    * @param writer the writer to marshal the object to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    */
-    public void marshal(Object object, Writer writer) throws XMLMarshalException {
-    	marshal(object, writer, null, null);        
+        return null;
     }
 
-    private void marshal(Object object, Writer writer, AbstractSession session, XMLDescriptor xmlDescriptor) throws XMLMarshalException {
-        if ((object == null) || (writer == null)) {
-            throw XMLMarshalException.nullArgumentException();
-        }
-        boolean isXMLRoot = false;
-        String version = DEFAULT_XML_VERSION;
-        String encoding = getEncoding();
-        String callbackName = null;
-        if(object instanceof JSONWithPadding){
-		    callbackName = ((JSONWithPadding)object).getCallbackName();
-        	object = ((JSONWithPadding)object).getObject();
-        	if(object == null){
-        		throw XMLMarshalException.nullArgumentException();
-        	}
-        }
-        
-        if (object instanceof Root) {
-            isXMLRoot = true;
-            Root xroot = (Root) object;
-            version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
-            encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
-        }
-
-        
-        MarshalRecord writerRecord;
-        writer = new BufferedWriter(writer);
-        if (isFormattedOutput()) {
-            if(MediaType.APPLICATION_JSON == mediaType) {                          
-                writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
-            } else {
-                writerRecord = new FormattedWriterRecord();
-                ((FormattedWriterRecord) writerRecord).setWriter(writer);
-            }
-        } else {
-            if(MediaType.APPLICATION_JSON == mediaType) {
-                writerRecord = new JSONWriterRecord(writer, callbackName);                
-            } else {
-                writerRecord = new WriterRecord();
-                ((WriterRecord) writerRecord).setWriter(writer);
-            }
-        }
-        writerRecord.setMarshaller(this);
-
-        String rootName = null;
-        String rootNamespace = null;
-        if(isXMLRoot){
-            rootName = ((Root)object).getLocalName();
-            rootNamespace = ((Root)object).getNamespaceURI();
-        	if(session == null || xmlDescriptor == null){
-	            try{
-	                session = context.getSession(((Root)object).getObject());
-	                if(session != null){
-	                    xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-	                }
-	            }catch (XMLMarshalException marshalException) {
-	                if (!isSimpleXMLRoot((Root) object)) {
-	                    throw marshalException;
-	                }
-	            }
-        	}
-        }else{
-            Class objectClass = object.getClass();
-            if(object instanceof Collection) {
-                try {
-                    writerRecord.startCollection();
-                    for(Object o : (Collection) object) {
-                        marshal(o, writerRecord);
-                    }
-                    writerRecord.endCollection();
-                    writer.flush();
-                } catch(IOException e) {
-                    throw XMLMarshalException.marshalException(e);
-                }
-                return;
-            } else if(objectClass.isArray()) {
-                try {
-                    writerRecord.startCollection();
-                    int arrayLength = Array.getLength(object);
-                    for(int x=0; x<arrayLength; x++) {
-                        marshal(Array.get(object, x), writerRecord);
-                    }
-                    writerRecord.endCollection();
-                    writer.flush();
-                } catch(IOException e) {
-                    throw XMLMarshalException.marshalException(e);
-                }
-                return;
-            }
-            if(session == null || xmlDescriptor == null){
-                session = context.getSession(objectClass);
-                xmlDescriptor = getDescriptor(objectClass, session);
-            }
-        }
-
-        //if this is a simple xml root, the session and descriptor will be null
-        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-            marshal(object, writerRecord, session, xmlDescriptor, isXMLRoot);    
-        } else {
-            try {
-                Node xmlDocument = null;
-                if(isXMLRoot && session == null) {
-                    xmlDocument = (Node)((Root)object).getObject();
-                } else {
-                    xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
-                }
-                writerRecord.setSession(session);
-                if (isFragment()) {
-                    if(xmlDescriptor == null){
-                        writerRecord.node(xmlDocument, null,  rootNamespace, rootName);    
-                    }else{
-                        writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootNamespace, rootName);
-                    }
-                    
-                } else {
-                    writerRecord.startDocument(encoding, version);
-                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver(), rootNamespace, rootName);
-                    writerRecord.endDocument();
-                }
-            } catch (XMLPlatformException e) {
-                throw XMLMarshalException.marshalException(e);
-            }
-        }
-        try {
-            writer.flush();
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
-    }
-    
-    /**
-    * PUBLIC:
-    * Convert the given object to XML and update the given contentHandler with that XML Document
-    * @param object the object to marshal
-    * @param contentHandler the contentHandler which the specified object should be marshalled to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    */
-    public void marshal(Object object, ContentHandler contentHandler) throws XMLMarshalException {
-        marshal(object, contentHandler, null);
-    }
-
-    /**
-     * PUBLIC:
-     * Convert the given object to XML and update the given contentHandler with that XML Document
-     * @param object the object to marshal
-     * @param contentHandler the contentHandler which the specified object should be marshalled to
-     * @throws XMLMarshalException if an error occurred during marshalling
-     */
-    public void marshal(Object object, ContentHandler contentHandler, LexicalHandler lexicalHandler) throws XMLMarshalException {
-        if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
-        	object = ((JSONWithPadding)object).getObject();
-        }
-        
-        if ((object == null) || (contentHandler == null)) {
-            throw XMLMarshalException.nullArgumentException();
-        }
-        boolean isXMLRoot = (object instanceof Root);
-        
-        AbstractSession session = null;
-        XMLDescriptor xmlDescriptor = null;
-        if(isXMLRoot){
-        	try{
-        	    session = context.getSession(((Root)object).getObject());        	    
-        	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-        	    }
-        	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((Root) object)) {
-                	throw marshalException;    
-                }                
-            }
-        }else{
-            Class objectClass = object.getClass();
-            session = context.getSession(objectClass);
-            xmlDescriptor = getDescriptor(objectClass, session);
-        }
-        
-        //if it's a simple xml root then session and descriptor will be null
-        if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-            ContentHandlerRecord contentHandlerRecord = new ContentHandlerRecord();
-            contentHandlerRecord.setMarshaller(this);
-            contentHandlerRecord.setContentHandler(contentHandler);
-            contentHandlerRecord.setLexicalHandler(lexicalHandler);
-            marshal(object, contentHandlerRecord, session, xmlDescriptor,isXMLRoot);
-            return;
-        }
-
-        try {
-            Node xmlDocument = null; 
-            String name = null;
-            String namespace= null;
-            if(session == null) {
-                //indicated we're marshalling a node
-                xmlDocument = (Node)((Root)object).getObject();
-                namespace = ((Root)object).getNamespaceURI();
-                name = ((Root)object).getLocalName();
-            } else {
-                xmlDocument = objectToXML(object, xmlDescriptor, isXMLRoot);
-            }
-            DOMReader reader = new DOMReader();
-            reader.setProperty("http://xml.org/sax/properties/lexical-handler", lexicalHandler);
-            if (isFragment()) {
-                FragmentContentHandler fragmentHandler = new FragmentContentHandler(contentHandler);
-                reader.setContentHandler(fragmentHandler);
-            } else {
-                reader.setContentHandler(contentHandler);
-            }
-            reader.parse(xmlDocument, namespace, name);
-        } catch (XMLPlatformException e) {
-            throw XMLMarshalException.marshalException(e);
-        } catch (org.xml.sax.SAXNotRecognizedException e) {
-            //won't be thrown
-        } catch (SAXNotSupportedException e) {
-            //won't be thrown
-        } catch (org.xml.sax.SAXException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
-    }
-
-    /**
-    * PUBLIC:
-    * Convert the given object to XML and update the given node with that XML Document
-    * @param object the object to marshal
-    * @param node the node which the specified object should be marshalled to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    */
-    public void marshal(Object object, Node node) throws XMLMarshalException {
-    	if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
-        	object = ((JSONWithPadding)object).getObject();
-        }
-    	if ((object == null) || (node == null)) {
-            throw XMLMarshalException.nullArgumentException();
-        }
-        try {           
-            boolean isXMLRoot = (object instanceof Root);
-                 
-            AbstractSession session = null;
-            XMLDescriptor xmlDescriptor = null;
-            if(isXMLRoot){
-            	try{
-            	    session = context.getSession(((Root)object).getObject());
-            	    if(session != null){
-            	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-            	    }
-            	}catch (XMLMarshalException marshalException) {
-                    if (!isSimpleXMLRoot((Root) object)) {
-                    	throw marshalException;    
-                    }                
-                }
-            }else{
-                Class objectClass = object.getClass();
-                session = context.getSession(objectClass);
-                xmlDescriptor = getDescriptor(objectClass, session);
-            }
-            
-            
-            //if this is a simple xml root, descriptor and session will be null
-            if (!(isXMLRoot && ((Root)object).getObject() instanceof Node) && ((session == null) || !context.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-                NodeRecord nodeRecord = new NodeRecord(node);
-                nodeRecord.setMarshaller(this);
-
-                if (!isXMLRoot) {
-                    if ((null == xmlDescriptor.getDefaultRootElement()) && (node.getNodeType() == Node.ELEMENT_NODE) && (xmlDescriptor.getSchemaReference() != null) && (xmlDescriptor.getSchemaReference().getType() == XMLSchemaReference.COMPLEX_TYPE)) {
-                        Attr typeAttr = ((Element) node).getAttributeNodeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
-                        if (typeAttr == null) {
-                            NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
-                            String xsiPrefix = null;
-                            if (null == namespaceResolver) {
-                                namespaceResolver = new NamespaceResolver();
-                                xmlDescriptor.setNamespaceResolver(namespaceResolver);
-                            } else {
-                                xsiPrefix = namespaceResolver.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                            }
-
-                            if (null == xsiPrefix) {
-                                xsiPrefix = namespaceResolver.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-                            }
-
-                            String value = xmlDescriptor.getSchemaReference().getSchemaContext();
-
-                            ((Element) node).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                            ((Element) node).setAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, value);
-
-                        } else {
-                            String value = xmlDescriptor.getSchemaReference().getSchemaContext();
-                            typeAttr.setValue(value);
-                        }
-                    }
-                }
-                marshal(object, nodeRecord, session, xmlDescriptor, isXMLRoot);
-                return;
-            }
-
-            //If preserving document, may return the cached doc. Need to
-            //Copy contents of the cached doc to the supplied node.
-            Node doc = null;
-            if(isXMLRoot && session == null) {
-                doc = (Node)((Root)object).getObject();
-            } else {
-                doc = objectToXMLNode(object, node, session, xmlDescriptor, isXMLRoot);
-            }
-            
-             if (isXMLRoot) {
-            	 Root xmlRootObject = (Root)object;                 
-                 if(node.getNodeType() == Node.DOCUMENT_NODE){        
-                     transformChildren(doc, ((Document)node),((Document)node),xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName() );
-                 }else{
-                     transformChildren(doc, node.getOwnerDocument(), node, xmlRootObject.getNamespaceURI(), xmlRootObject.getLocalName());
-                 }
-            } else {
-                if(doc.getNodeType() == Node.DOCUMENT_NODE){
-                    doc = ((Document)doc).getDocumentElement();
-                }
-                
-                if(node.getNodeType() == Node.DOCUMENT_NODE){
-                    Node imported = ((Document)node).importNode(doc, true);
-                    node.appendChild(imported);
-                }else{
-                    Node imported = node.getOwnerDocument().importNode(doc, true);
-                    node.appendChild(imported);
-                }
-            }
-        } catch (Exception exception) {
-            if (exception instanceof XMLMarshalException) {
-                throw (XMLMarshalException) exception;
-            } else {
-                throw XMLMarshalException.marshalException(exception);
-            }
-        }
-    }
-    
-    private void transformChildren(Node sourceNode, Document targetDoc, Node targetNode,  String namespace, String name){
-        Element sourceElement = null;
-        String xmlRootQualifiedName = name;
-        if(sourceNode.getNodeType() == Node.DOCUMENT_NODE){
-            sourceElement = ((Document)sourceNode).getDocumentElement();
-        }else if(sourceNode.getNodeType() == Node.ELEMENT_NODE){
-            sourceElement = (Element)sourceNode;
-        }
-        
-        NamespaceResolver sourceNR = new NamespaceResolver();
-        sourceNR.setDOM(sourceElement);
-        
-        NamespaceResolver targetNR = new NamespaceResolver();
-        targetNR.setDOM(targetDoc.getDocumentElement());
-               
-        String prefix = getPrefix(namespace, sourceNR, sourceElement);
-        if(prefix != null && prefix.length() >0){
-            xmlRootQualifiedName = prefix + ':' + name;            
-        }
-        
-        Element newElement = targetDoc.createElementNS(namespace, xmlRootQualifiedName);
-        if(prefix != null && prefix.length() >0 && targetNR.resolveNamespaceURI(namespace) == null){
-            newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, namespace);
-        }
-        targetNode.appendChild(newElement);
-
-        copyAttributes(sourceElement.getAttributes(),sourceElement, newElement, sourceNR, targetNR);
-
-        NodeList children = sourceElement.getChildNodes();
-        if(children != null){
-            int childrenSize= children.getLength();
-            for(int i =0; i<childrenSize; i++){
-                Node nextChild = children.item(i);                
-                Node imported = targetDoc.importNode(nextChild, true);
-                newElement.appendChild(imported);
-            }
-        }
-     
-                
-     
-    }
-    private String getPrefix(String namespace, NamespaceResolver sourceNR, Element sourceElement){
-        if(namespace == null){
-            return null;
-        }
-        String prefix = sourceNR.resolveNamespaceURI(namespace);
-        if(prefix == null){     
-            String defaultNamespace = sourceElement.getAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE);
-            if(defaultNamespace == null){
-                prefix = sourceNR.generatePrefix();    
-            }else if(defaultNamespace != namespace){
-                prefix = sourceNR.generatePrefix();
-            }else{
-                prefix = XMLConstants.EMPTY_STRING;
-            }
-            
-        }
-        return prefix;
-    }
-        
-    private void copyAttributes(NamedNodeMap attrs, Element sourceElement, Element newElement, NamespaceResolver sourceNR, NamespaceResolver targetNR){
-        for (int i=0; i<attrs.getLength(); i++) {
-            Attr nextAttr = (Attr) attrs.item(i);
-            String name = nextAttr.getLocalName();
-            String uri = nextAttr.getNamespaceURI();
-            if(!javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(name)){
-                String prefix = getPrefix(uri, sourceNR, sourceElement);               
-                if(prefix != null && prefix.length() > 0){
-                    name = prefix + ':' +name;
-                    //if this is a newly generated prefix it needs to be written out
-                    if(targetNR.resolveNamespaceURI(uri) == null){                       
-                        newElement.setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + ':' + prefix, uri);
-                    }
-                }
-                
-            }
-            newElement.setAttributeNS(uri, name, nextAttr.getValue());
-        }
-    }
-    
-
-    /**
-     * Convert the given object to XML and update the given marshal record with
-     * that XML Document.
-     * @param object the object to marshal
-     * @param marshalRecord the marshalRecord to marshal the object to
-     */
-    public void marshal(Object object, MarshalRecord marshalRecord) {        
-        if(object instanceof JSONWithPadding && MediaType.APPLICATION_XML == mediaType){
-        	object = ((JSONWithPadding)object).getObject();
-        }
-        if ((object == null) || (marshalRecord == null)) {
-            throw XMLMarshalException.nullArgumentException();
-        }
-        
-        boolean isXMLRoot = (object instanceof Root);
-        
-        AbstractSession session = null;
-        XMLDescriptor xmlDescriptor = null;
-        if(isXMLRoot){
-        	try{
-        	    session = context.getSession(((Root)object).getObject());
-        	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((Root)object).getObject(), session);
-        	    }
-        	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((Root) object)) {
-                	throw marshalException;    
-                }                
-            }
-        }else{
-            Class objectClass = object.getClass();
-            session = context.getSession(objectClass);
-            xmlDescriptor = getDescriptor(objectClass, session);
-        }
-        
-        marshal(object, marshalRecord, session, xmlDescriptor, isXMLRoot);
-    }
     
     /**
      * Convert the given object to XML and update the given marshal record with
@@ -1084,236 +241,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
     protected void marshal(Object object, AbstractSession session, MarshalRecord marshalRecord) {
         boolean isXMLRoot = (object instanceof Root);
         marshal(object, marshalRecord, session, getDescriptor(object, isXMLRoot), isXMLRoot);
-    }
-
-    /**
-     * Convert the given object to XML and update the given marshal record with
-     * that XML Document.
-     * @param object the object to marshal
-     * @param marshalRecord the marshalRecord to marshal the object to
-     * @param descriptor the XMLDescriptor for the object being marshalled
-     */
-    private void marshal(Object object, MarshalRecord marshalRecord, AbstractSession session, XMLDescriptor descriptor, boolean isXMLRoot) {
-        if(null != schema) {
-            marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
-        }
-        if (this.attachmentMarshaller != null) {
-            marshalRecord.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
-        }
-        marshalRecord.setMarshaller(this);
-        
-        if(this.mapper == null) {
-            addDescriptorNamespacesToXMLRecord(descriptor, marshalRecord);
-        } else if(this.mapper != null) {
-            if(descriptor == null){
-                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, null));
-            }else{
-                marshalRecord.setNamespaceResolver(new PrefixMapperNamespaceResolver(mapper, descriptor.getNamespaceResolver()));
-            }
-            marshalRecord.setCustomNamespaceMapper(true);
-        }
-        
-        org.eclipse.persistence.internal.oxm.NamespaceResolver nr = marshalRecord.getNamespaceResolver();
-        Root root = null;
-        if(isXMLRoot) {
-            root = (Root)object;
-        }
-        marshalRecord.beforeContainmentMarshal(object);
-        if (!isFragment()) {
-            String encoding = getEncoding();
-            String version = DEFAULT_XML_VERSION;
-            if (!isXMLRoot && descriptor!= null) {
-                marshalRecord.setLeafElementType(descriptor.getDefaultRootElementType());
-            } else {
-                if (root.getEncoding() != null) {
-                    encoding = root.getEncoding();
-                }
-                if (root.getXMLVersion() != null) {
-                    version = root.getXMLVersion();
-                }
-            }
-            marshalRecord.startDocument(encoding, version);
-        }
-        if (getXmlHeader() != null) {
-            marshalRecord.writeHeader();
-        }
-        if(isXMLRoot) {
-            if(root.getObject() instanceof Node) {
-                marshalRecord.node((Node)root.getObject(), new NamespaceResolver(), root.getNamespaceURI(), root.getLocalName());
-                marshalRecord.endDocument();
-                return;
-            }
-        }
-        XPathFragment rootFragment = buildRootFragment(object, descriptor, isXMLRoot, marshalRecord);
-        
-        String schemaLocation = getSchemaLocation();
-        String noNsSchemaLocation = getNoNamespaceSchemaLocation();
-        boolean isNil = false;
-        if (isXMLRoot) {
-            object = root.getObject();
-            if (root.getSchemaLocation() != null) {
-                schemaLocation = root.getSchemaLocation();
-            }
-            if (root.getNoNamespaceSchemaLocation() != null) {
-                noNsSchemaLocation = root.getNoNamespaceSchemaLocation();
-            }
-            marshalRecord.setLeafElementType(root.getSchemaType());
-            isNil = root.isNil();
-        }
-           
-        String xsiPrefix = null;
-        if ((null != getSchemaLocation()) || (null != getNoNamespaceSchemaLocation()) || (isNil)) {
-            xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            if (null == xsiPrefix) {
-                xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-                nr.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            }
-        }        
-
-        TreeObjectBuilder treeObjectBuilder = null;
-        if (descriptor != null) {
-        	treeObjectBuilder = (TreeObjectBuilder) descriptor.getObjectBuilder();     
-        }
-        if(session == null){
-        	session = (AbstractSession) context.getSession();
-        }
-        marshalRecord.setSession(session);
-        
-        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING))) {
-            marshalRecord.startPrefixMappings(nr);
-            if (!isXMLRoot && descriptor != null && descriptor.getNamespaceResolver() == null && rootFragment.hasNamespace()) {
-                // throw an exception if the name has a : in it but the namespaceresolver is null
-                throw XMLMarshalException.namespaceResolverNotSpecified(rootFragment.getShortName());
-            }
-            
-            if(isIncludeRoot()){
-                marshalRecord.openStartElement(rootFragment, nr);
-            }
-            if (null != schemaLocation) {
-                marshalRecord.attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_LOCATION, xsiPrefix, schemaLocation);
-            }
-            if (null != noNsSchemaLocation) {
-                marshalRecord.attributeWithoutQName(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix, noNsSchemaLocation);
-            }
-            if (isNil) {
-                marshalRecord.nilSimple(nr);
-            }
-
-            marshalRecord.namespaceDeclarations(nr);
-            
-            if (descriptor != null && !isNil) {            	   	        
-                marshalRecord.addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
-                treeObjectBuilder.marshalAttributes(marshalRecord, object, session);
-            }
-            
-            if(isIncludeRoot()){            	
-                marshalRecord.closeStartElement();
-            }
-        }else{
-        	//no rootfragment
-        	marshalRecord.marshalWithoutRootElement(treeObjectBuilder,object, descriptor, root, isXMLRoot);
-        }
-        if (treeObjectBuilder != null && !isNil) {
-            treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment);
-        } else if (isXMLRoot) {
-             if(object != null && !isNil) {
-            	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
-        	        	
-            		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
-                      if(type != null) {
-                    	  xsiPrefix = nr.resolveNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                          if (null == xsiPrefix) {
-                              xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;                        	  
-                        	  marshalRecord.namespaceDeclaration(xsiPrefix, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                          }                    	  
-                    	  marshalRecord.namespaceDeclaration(XMLConstants.SCHEMA_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-                    	  String typeValue = type.getLocalPart();
-                    	  if(marshalRecord.isNamespaceAware()){
-                    		  typeValue = XMLConstants.SCHEMA_PREFIX + marshalRecord.getNamespaceSeparator() + typeValue;
-                    	  }
-                          marshalRecord.attribute(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
-                      }
-            	 }
-            	
-                marshalRecord.characters(root.getSchemaType(), object, null, false);
-            }
-        }
-
-        if (null != rootFragment && !(rootFragment.getLocalName().equals(XMLConstants.EMPTY_STRING)) && isIncludeRoot()) {
-            
-            marshalRecord.endElement(rootFragment, nr);
-            marshalRecord.endPrefixMappings(nr);
-        }
-        if (!isFragment() ) {
-            marshalRecord.endDocument();
-        }
-        marshalRecord.afterContainmentMarshal(null, isXMLRoot ? root : object);
-    }
-
-    private XPathFragment buildRootFragment(Object object, XMLDescriptor descriptor, boolean isXMLRoot, MarshalRecord marshalRecord) {
-        XPathFragment rootFragment = null;
-        if (isXMLRoot) {
-            String xmlRootUri = ((Root) object).getNamespaceURI();
-            String xmlRootLocalName = ((Root) object).getLocalName();
-            rootFragment = new XPathFragment();
-            rootFragment.setLocalName(xmlRootLocalName);           
-            rootFragment.setNamespaceURI(xmlRootUri);
-            rootFragment.setNamespaceAware(marshalRecord.isNamespaceAware());
-            rootFragment.setNamespaceSeparator(marshalRecord.getNamespaceSeparator());           
-            
-            if (xmlRootUri != null) {
-                if (descriptor != null) {
-                    String xmlRootPrefix = marshalRecord.getNamespaceResolver().resolveNamespaceURI(xmlRootUri);
-                    if (xmlRootPrefix == null && !(xmlRootUri.equals(marshalRecord.getNamespaceResolver().getDefaultNamespaceURI()))) {
-                        xmlRootPrefix = marshalRecord.getNamespaceResolver().generatePrefix();
-                        marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
-                    }
-                    if(xmlRootPrefix == null) {
-                        rootFragment.setXPath(xmlRootLocalName);
-                    } else {
-                    	 rootFragment.setPrefix(xmlRootPrefix);
-                    }
-                } else {
-                	if(marshalRecord.isNamespaceAware()){
-                        String xmlRootPrefix = "ns0";
-                        marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
-                        rootFragment.setXPath(xmlRootPrefix + marshalRecord.getNamespaceSeparator() + xmlRootLocalName);
-                	}else{
-                		rootFragment.setXPath(xmlRootLocalName);
-                	}
-                }
-            }
-        } else {
-            XMLField defaultRootField = descriptor.getDefaultRootElementField();
-            if(defaultRootField != null){            	
-            	rootFragment = defaultRootField.getXPathFragment();            	
-            }
-        }
-        return rootFragment;
-    }
-    
-    private boolean isSimpleXMLRoot(Root xmlRoot) {
-        Class xmlRootObjectClass = xmlRoot.getObject().getClass();
-
-        if (XMLConversionManager.getDefaultJavaTypes().get(xmlRootObjectClass) != null || ClassConstants.List_Class.isAssignableFrom(xmlRootObjectClass) || ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(xmlRootObjectClass) || ClassConstants.DURATION.isAssignableFrom(xmlRootObjectClass)) {
-            return true;
-        } else if(xmlRoot.getObject() instanceof org.w3c.dom.Node) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-    * PUBLIC:
-    * Convert the given object to an XML Document
-    * @param object the object to marshal
-    * @return the document which the specified object has been marshalled to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    */
-    public Document objectToXML(Object object) throws XMLMarshalException {
-        boolean isXMLRoot = (object instanceof Root);
-        XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
-        return objectToXML(object, xmlDescriptor, isXMLRoot);
     }
 
     /**
@@ -1339,19 +266,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
-        MarshalRecord marshalRecord = new NodeRecord();
-        marshalRecord.setMarshaller(this);
-        marshal(object, marshalRecord, session, descriptor, isXMLRoot);
-        return marshalRecord.getDocument();
-    }
-
-    /**
-     * INTERNAL:
-     * Like ObjectToXML but is may also return a document fragment instead of a document in the
-     * case of a non-root object.
-     */
-    protected Node objectToXMLNode(Object object, AbstractSession session, XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
-        return objectToXMLNode(object, null, session, descriptor, isXMLRoot);
+        return super.objectToXML(object, descriptor, isXMLRoot);
     }
 
     protected Node objectToXMLNode(Object object, Node rootNode, AbstractSession session,XMLDescriptor descriptor, boolean isXMLRoot) throws XMLMarshalException {
@@ -1375,29 +290,9 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
                 return doc;
             }
         }
-        MarshalRecord marshalRecord = new NodeRecord();
-        marshalRecord.setMarshaller(this);
-        marshalRecord.getNamespaceResolver().setDOM(rootNode);
-        marshal(object, marshalRecord, session, descriptor, isXMLRoot);
-        return marshalRecord.getDocument();
+        return super.objectToXMLNode(object, rootNode, session, descriptor, isXMLRoot);
     }
 
-    private void addDescriptorNamespacesToXMLRecord(XMLDescriptor xmlDescriptor, AbstractMarshalRecord record) {
-        if (null == xmlDescriptor) {
-            return;
-        }
-        copyNamespaces(xmlDescriptor.getNamespaceResolver(), record.getNamespaceResolver());
-    }
-    
-    private void copyNamespaces(org.eclipse.persistence.internal.oxm.NamespaceResolver source, org.eclipse.persistence.internal.oxm.NamespaceResolver target) {
-        if (null != source && null != target) {            
-            if(source.hasPrefixesToNamespaces()) {
-                target.getPrefixesToNamespaces().putAll(source.getPrefixesToNamespaces());
-            }
-            target.setDefaultNamespaceURI(source.getDefaultNamespaceURI());
-        }
-    }
-    
     /**
     * PUBLIC:
     * Convert the given object to descendants of the parent element
@@ -1432,8 +327,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         	session = context.getSession(objectClass);
         	descriptor = getDescriptor(objectClass, session);
         }
-        
-        
 
         String localRootName = descriptor.getDefaultRootElement();
         if (null == localRootName) {
@@ -1455,13 +348,12 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         marshalRecord.setMarshaller(this);
         marshal(object, marshalRecord, session, descriptor, isXMLRoot);
         return marshalRecord.getDocument();
-
     }
 
     /**
-    * INTERNAL:
-    * Convert the given object to an XML Document
-    */
+     * INTERNAL:
+     * Convert the given object to an XML Document
+     */
     public Document objectToXML(Object object, XMLDescriptor descriptor, XMLRecord xmlRow, boolean isXMLRoot, DocumentPreservationPolicy docPresPolicy) {
         return objectToXML(object, null, descriptor, xmlRow, isXMLRoot, docPresPolicy);
     }
@@ -1531,7 +423,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             ((Element) xmlRow.getDOM()).setAttributeNS(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI, javax.xml.XMLConstants.XMLNS_ATTRIBUTE + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         }
         xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
-                
       
         document = xmlRow.getDocument();
 
@@ -1563,53 +454,6 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
         }
     }
 
-    /**
-    * INTERNAL:
-    * Return the descriptor for the root object.
-    */
-    protected XMLDescriptor getDescriptor(Object object) throws XMLMarshalException {
-        XMLDescriptor descriptor = (XMLDescriptor) context.getSession(object).getDescriptor(object);
-        if (descriptor == null) {
-            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
-        }
-
-        return descriptor;
-    }
-
-    /**
-     * INTERNAL:
-     * Return the descriptor for the root object.
-     */
-     protected XMLDescriptor getDescriptor(Object object, AbstractSession session) throws XMLMarshalException {
-         XMLDescriptor descriptor = (XMLDescriptor) session.getDescriptor(object);
-         if (descriptor == null) {
-             throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
-         }
-
-         return descriptor;
-     }
-     
-     /**
-      * INTERNAL:
-      * Return the descriptor for the root object.
-      */
-      private XMLDescriptor getDescriptor(Class clazz, AbstractSession session) throws XMLMarshalException {
-          XMLDescriptor descriptor = (XMLDescriptor) session.getDescriptor(clazz);
-          if (descriptor == null) {
-              throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
-          }
-
-          return descriptor;
-      }
-    
-    protected XMLDescriptor getDescriptor(Object object, boolean isXMLRoot) {
-        if (isXMLRoot) {
-            return getDescriptor((Root) object);
-        } else {
-            return getDescriptor(object);
-        }
-    }
-    
     protected XMLDescriptor getDescriptor(Object object, AbstractSession session, boolean isXMLRoot) {
         if (isXMLRoot) {
             return getDescriptor((Root) object, session);
@@ -1617,234 +461,11 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
             return getDescriptor(object, session);
         }
     }
-    
-    protected XMLDescriptor getDescriptor(Root object) throws XMLMarshalException {
-        XMLDescriptor descriptor = null;
-
-        try {
-            AbstractSession session = context.getSession(object.getObject());
-            if(null == session) {
-                return null;
-            }
-            descriptor = (XMLDescriptor) session.getDescriptor(object.getObject());
-        } catch (XMLMarshalException marshalException) {
-            if ((descriptor == null) && isSimpleXMLRoot(object)) {
-                return null;
-            }
-            throw marshalException;
-        }
-
-        if (descriptor == null) {
-            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
-        }
-
-        return descriptor;
-    }
-    
-    protected XMLDescriptor getDescriptor(Root object, AbstractSession session) throws XMLMarshalException {
-        XMLDescriptor descriptor = null;
-
-        try {
-            if(null == session) {
-                return null;
-            }
-            descriptor = (XMLDescriptor) session.getDescriptor(object.getObject());
-        } catch (XMLMarshalException marshalException) {
-            if ((descriptor == null) && isSimpleXMLRoot(object)) {
-                return null;
-            }
-            throw marshalException;
-        }
-
-        if (descriptor == null) {
-            throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
-        }
-
-        return descriptor;
-    }
-
-    /**
-    * PUBLIC:
-    * Set if this should marshal to a fragment.  If true an XML header string is not written out.
-    * @param fragment if this should marshal to a fragment or not
-    */
-    public void setFragment(boolean fragment) {
-        transformer.setFragment(fragment);
-    }
-
-    /**
-    * PUBLIC:
-    * Returns if this should marshal to a fragment.  If true an XML header string is not written out.
-    * @return if this should marshal to a fragment or not
-    */
-    public boolean isFragment() {
-        return mediaType == MediaType.APPLICATION_XML  && transformer.isFragment();
-    }
-
-    public void setAttachmentMarshaller(XMLAttachmentMarshaller atm) {
-        this.attachmentMarshaller = atm;
-    }
-
-    public XMLAttachmentMarshaller getAttachmentMarshaller() {
-        return this.attachmentMarshaller;
-    }
-
-    /**
-     * INTERNAL
-     * @return the transformer instance for this marshaller
-     */
-    public XMLTransformer getTransformer() {
-        return transformer;
-    }
-
-    public Schema getSchema() {
-        return schema;
-    }
-
-    public void setSchema(Schema schema) {
-        this.schema = schema;
-    }
 
     @Override
     public XMLMarshaller clone() {
-        XMLMarshaller clone = new XMLMarshaller(context);
-        clone.setAttachmentMarshaller(attachmentMarshaller);
-        clone.setEncoding(getEncoding());
-        clone.setFormattedOutput(isFormattedOutput());
-        clone.setFragment(transformer.isFragment());
-        clone.setMediaType(getMediaType());
-        clone.setMarshalListener(marshalListener);
-        clone.setNoNamespaceSchemaLocation(noNamespaceSchemaLocation);
-        clone.setAttributePrefix(getAttributePrefix());
-        clone.setCharacterEscapeHandler(getCharacterEscapeHandler());
-        clone.setIncludeRoot(isIncludeRoot());
-        clone.setIndentString(getIndentString());
-        clone.setMarshalEmptyCollections(isMarshalEmptyCollections());
-        clone.setNamespacePrefixMapper(getNamespacePrefixMapper());
-        clone.setNamespaceSeparator(getNamespaceSeparator());
-        clone.setValueWrapper(getValueWrapper());
-        for(Entry entry : marshalProperties.entrySet()) {
-            clone.getProperties().put(entry.getKey(), entry.getValue());
-        }
-        if(null != schema) {
-            clone.setSchema(schema);
-        }
-        clone.setSchemaLocation(schemaLocation);
-        return clone;
+        return new XMLMarshaller(this);
     }
-    /**
-     * Value that will be used to prefix attributes.  
-     * Ignored marshalling XML.   
-     * @return
-     * @since 2.4
-     */
-    public String getAttributePrefix() {
-        return attributePrefix;
-    }
-    
-    /**
-     * Value that will be used to prefix attributes.  
-     * Ignored marshalling XML.
-     * @since 2.4	 
-     */
-    public void setAttributePrefix(String attributePrefix) {
-        this.attributePrefix = attributePrefix;
-    }
-    
-    /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
-     * @since 2.4	 
-     */	
-    public String getValueWrapper() {
-        return valueWrapper;
-    }
-
-    /**
-     * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
-     * @since 2.4	 
-     */
-    public void setValueWrapper(String valueWrapper) {
-        this.valueWrapper = valueWrapper;
-    }
-    
-    /**
-     * Name of the property to determine if empty collections should be marshalled as []   
-     * Ignored marshalling XML.  
-     * @since 2.4	 
-     */	
-    public boolean isMarshalEmptyCollections() {
-        return marshalEmptyCollections;
-    }
-    
-    /**
-     * Name of the property to determine if empty collections should be marshalled as []    
-     * Ignored marshalling XML.  
-     * @since 2.4	 
-     */
-    public void setMarshalEmptyCollections(Boolean marshalEmptyCollections) {
-        this.marshalEmptyCollections = marshalEmptyCollections;
-    }
-    
-    /**
-     * Property to determine if size 1 any collections should be treated as collections
-     * Ignored marshalling XML.
-     */
-    public boolean isReduceAnyArrays() {
-        return reduceAnyArrays;
-    }
-
-    /**
-     * Property to determine if size 1 any collections should be treated as collections
-     * Ignored marshalling XML.
-     */
-    public void setReduceAnyArrays(boolean reduceAnyArrays) {
-        this.reduceAnyArrays = reduceAnyArrays;
-    }
-
-     /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored marshalling XML.   
-     * @return
-     * @since 2.4
-     */
-    public boolean isIncludeRoot() {
-        if(mediaType == MediaType.APPLICATION_JSON){
-            return includeRoot;
-        }
-        return true;
-    }
-
-    /**
-     * Determine if the @XMLRootElement should be marshalled when present.  
-     * Ignored marshalling XML.   
-     * @return
-     * @since 2.4
-     */
-    public void setIncludeRoot(boolean includeRoot) {
-         this.includeRoot = includeRoot;
-    }
-
-    /**
-     * Get the namespace separator used during marshal operations.
-     * If mediaType is application/json '.' is the default
-     * Ignored marshalling XML.   
-     * @since 2.4
-     */
-    public char getNamespaceSeparator() {    	
-        return namespaceSeparator;
-    }
-
-    /**
-     * Set the namespace separator used during marshal operations.
-     * If mediaType is application/json '.' is the default
-     * Ignored marshalling XML.   
-     * @since 2.4
-     */
-	public void setNamespaceSeparator(char namespaceSeparator) {
-		this.namespaceSeparator = namespaceSeparator;
-	}
 
 	/**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
@@ -1852,7 +473,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
      * @return
      */
     public void setNamespacePrefixMapper(NamespacePrefixMapper mapper) {
-        this.mapper = mapper;
+        super.setNamespacePrefixMapper(mapper);
     }
 
     /**
@@ -1861,79 +482,7 @@ public class XMLMarshaller extends Marshaller<XMLContext, MediaType, NamespacePr
      * @return
      */
     public NamespacePrefixMapper getNamespacePrefixMapper() {
-        return this.mapper;
-    }
-
-    /**
-     * Return the String that will be used to perform indenting in marshalled documents.
-     * Default is &quot;   &quot; (three spaces).
-     * @since 2.3.3
-     */
-    public String getIndentString() {
-        return this.indentString;
-    }
-
-    /**
-     * Set the String that will be used to perform indenting in marshalled documents.
-     * @since 2.3.3
-     */
-    public void setIndentString(String s) {
-        this.indentString = s;
-    }
-
-    /**
-     * Return this Marshaller's CharacterEscapeHandler.
-     * @since 2.3.3
-     */
-    public CharacterEscapeHandler getCharacterEscapeHandler() {
-        return this.charEscapeHandler;
-    }
-
-    /**
-     * Set this Marshaller's CharacterEscapeHandler.
-     * @since 2.3.3
-     */
-    public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
-        this.charEscapeHandler = c;
-    }
-
-    /**
-     * Get this Marshaller's XML Header.
-     * @since 2.4
-     */
-    public String getXmlHeader() {
-        return xmlHeader;
-    }
-
-    /**
-     * <p>
-     * Set this Marshaller's XML Header.  This header string will appear after
-     * the XML processing instruction (&lt;?xml ...&gt;), but before the start 
-     * of the document's data.
-     * </p>
-     * 
-     * <p>
-     * This feature is only supported when marshalling to Stream, Writer,
-     * or StreamResult.
-     * </p>
-     * @since 2.4
-     */
-    public void setXmlHeader(String xmlHeader) {
-        this.xmlHeader = xmlHeader;
-    }
-
-    /**
-     * INTERNAL
-     */
-    public boolean isEqualUsingIdenity() {
-        return equalUsingIdenity;
-    }
-
-    /**
-     * INTERNAL
-     */
-    public void setEqualUsingIdenity(boolean equalUsingIdenity) {
-        this.equalUsingIdenity = equalUsingIdenity;
+        return super.getNamespacePrefixMapper();
     }
 
 }

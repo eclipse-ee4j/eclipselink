@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.w3c.dom.Document;

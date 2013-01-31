@@ -24,21 +24,19 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-public class ValidatingMarshalRecord extends MarshalRecord {
+public class ValidatingMarshalRecord extends MarshalRecord<Marshaller> {
 
     private MarshalRecord marshalRecord;
     private ContentHandlerRecord validatingRecord;
@@ -225,7 +223,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     }
 
     @Override
-    public Element getDOM() {
+    public Node getDOM() {
         return marshalRecord.getDOM();
     }
 
@@ -281,12 +279,12 @@ public class ValidatingMarshalRecord extends MarshalRecord {
     }
 
     @Override
-    public AbstractSession getSession() {
+    public CoreAbstractSession getSession() {
         return marshalRecord.getSession();
     }
 
     @Override
-    public void setSession(AbstractSession session) {
+    public void setSession(CoreAbstractSession session) {
         super.setSession(session);
         validatingRecord.setSession(session);
         marshalRecord.setSession(session);

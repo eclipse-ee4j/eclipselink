@@ -22,14 +22,15 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -38,11 +39,9 @@ import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -58,7 +57,7 @@ import org.w3c.dom.Node;
  *
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSession, DatabaseField, Marshaller, NamespaceResolver> implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<AbstractSession, DatabaseField, Marshaller, NamespaceResolver> {
+public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends AbstractMarshalRecordImpl<CoreAbstractSession, DatabaseField, MARSHALLER, NamespaceResolver> implements org.eclipse.persistence.internal.oxm.record.MarshalRecord<CoreAbstractSession, DatabaseField, MARSHALLER, NamespaceResolver> {
     private ArrayList<XPathNode> groupingElements;
     private HashMap positionalNodes;
 
@@ -98,8 +97,9 @@ public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSe
         throw XMLMarshalException.operationNotSupported("getDocument");
     }
 
-    public Element getDOM() {
-        throw XMLMarshalException.operationNotSupported("getDOM");
+    @Override
+    public Node getDOM() {
+        return null;
     }
 
     /**
@@ -130,7 +130,7 @@ public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSe
         return null;
     }
     
-    public void setSession(AbstractSession session) {
+    public void setSession(CoreAbstractSession session) {
         super.setSession(session);
         if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
             this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
@@ -244,7 +244,7 @@ public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSe
     /**
      * INTERNAL
      */
-    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){    
+    public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){    
     }
     
     /**
@@ -743,7 +743,7 @@ public abstract class MarshalRecord extends AbstractMarshalRecordImpl<AbstractSe
     /**
      * A Stack-like List, used to detect object cycles during marshal operations.
      */
-    public class CycleDetectionStack<E> extends AbstractList<Object> {
+    public static class CycleDetectionStack<E> extends AbstractList<Object> {
 
         private Object[] data = EMPTY_CYCLE_DATA;
         

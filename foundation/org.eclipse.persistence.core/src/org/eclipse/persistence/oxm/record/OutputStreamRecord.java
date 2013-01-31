@@ -26,6 +26,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -59,7 +60,7 @@ import org.xml.sax.ext.LexicalHandler;
  * </code></p>
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public class OutputStreamRecord extends MarshalRecord {
+public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
     protected static byte[] OPEN_XML_PI_AND_VERSION_ATTRIBUTE;
     protected static byte[] OPEN_ENCODING_ATTRIBUTE;
     protected static byte[] CLOSE_PI;

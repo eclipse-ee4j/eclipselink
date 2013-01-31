@@ -25,8 +25,8 @@ import java.util.Set;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
@@ -59,7 +59,7 @@ import org.xml.sax.ext.LexicalHandler;
  * </code></p>
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public class WriterRecord extends MarshalRecord {
+public class WriterRecord extends MarshalRecord<XMLMarshaller> {
 
     protected Writer writer;
     protected boolean isStartElementOpen = false;
@@ -529,7 +529,7 @@ public class WriterRecord extends MarshalRecord {
     }
 
     @Override
-    public void setMarshaller(Marshaller marshaller) {
+    public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
     }

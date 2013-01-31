@@ -27,9 +27,9 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 public class PrefixMapperNamespaceResolver extends NamespaceResolver {
 
     private NamespacePrefixMapper prefixMapper;
-    private NamespaceResolver contextualNamespaces;
+    private org.eclipse.persistence.internal.oxm.NamespaceResolver contextualNamespaces;
     
-    public PrefixMapperNamespaceResolver(NamespacePrefixMapper mapper, NamespaceResolver nestedResolver) {
+    public PrefixMapperNamespaceResolver(NamespacePrefixMapper mapper, org.eclipse.persistence.internal.oxm.NamespaceResolver nestedResolver) {
         prefixMapper = mapper;
         String[] declarations = mapper.getContextualNamespaceDecls();
         

@@ -276,7 +276,12 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     public String getDefaultNamespaceURI() {
-        return defaultNamespaceURI;
+        if(null != defaultNamespaceURI) {
+            return defaultNamespaceURI;
+        } else if(dom != null) {
+            return XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(dom, null);
+        }
+        return null;
     }
 
     private static class IteratorEnumeration implements Enumeration {

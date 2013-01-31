@@ -24,12 +24,12 @@ import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Marshaller;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
+import org.eclipse.persistence.internal.oxm.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XMLMarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
@@ -64,7 +64,7 @@ import org.xml.sax.ext.LexicalHandler;
  * </code></p>
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
-public class JSONWriterRecord extends MarshalRecord {
+public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     protected Writer writer;
     protected boolean isStartElementOpen = false;
@@ -100,7 +100,7 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    public void setMarshaller(Marshaller marshaller) {
+    public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
         encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
@@ -575,7 +575,8 @@ public class JSONWriterRecord extends MarshalRecord {
      /**
       * INTERNAL:
       */
-     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
+     @Override
+     public void marshalWithoutRootElement(ObjectBuilder treeObjectBuilder, Object object, Descriptor descriptor, Root root, boolean isXMLRoot){
     	 if(treeObjectBuilder != null){
              addXsiTypeAndClassIndicatorIfRequired(descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
              treeObjectBuilder.marshalAttributes(this, object, session);
