@@ -9,9 +9,15 @@
  *
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs.resources.versioned;
+
+package org.eclipse.persistence.jpa.rs.resources;
+
 import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
 
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.naming.NamingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,8 +29,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBException;
 
-import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractPersistenceResource;
 
 /**
  * @author gonural
@@ -32,18 +39,17 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
  */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-@Path("/{version : " +  SERVICE_VERSION_FORMAT +"}/{context}/query/")
-public class QueryResource extends AbstractQueryResource {
-
-    @POST
-    @Path("{name}")
-    public Response namedQueryUpdate(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQueryUpdateInternal(version, persistenceUnit, name, hh, ui);
-    }
+@Path("/{version : " + SERVICE_VERSION_FORMAT + "}/")
+public class PersistenceResource extends AbstractPersistenceResource {
 
     @GET
-    @Path("{name}")
-    public Response namedQuery(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        return namedQueryInternal(version, persistenceUnit, name, hh, ui);
+    public Response getContexts(@PathParam("version") String version, @Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
+        return getContexts(version, hh, uriInfo.getBaseUri());
+    }
+
+    @POST
+    @Produces(MediaType.WILDCARD)
+    public Response callSessionBean(@PathParam("version") String version, @Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        return callSessionBeanInternal(version, hh, ui, is);
     }
 }

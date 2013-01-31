@@ -29,6 +29,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.IllegalArgumentExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IllegalStateExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.InvocationTargetExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.JAXBExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSConfigurationExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.MalformedURLExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NamingExceptionMapper;
@@ -65,11 +66,11 @@ public class JPARSApplication extends Application {
         c.add(org.eclipse.persistence.jpa.rs.resources.unversioned.QueryResource.class);
 
         // Versioned Resources (resources that do have version in the url)
-        c.add(org.eclipse.persistence.jpa.rs.resources.versioned.PersistenceResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.versioned.PersistenceUnitResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.versioned.EntityResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.versioned.SingleResultQueryResource.class);
-        c.add(org.eclipse.persistence.jpa.rs.resources.versioned.QueryResource.class);
+        c.add(org.eclipse.persistence.jpa.rs.resources.PersistenceResource.class);
+        c.add(org.eclipse.persistence.jpa.rs.resources.PersistenceUnitResource.class);
+        c.add(org.eclipse.persistence.jpa.rs.resources.EntityResource.class);
+        c.add(org.eclipse.persistence.jpa.rs.resources.SingleResultQueryResource.class);
+        c.add(org.eclipse.persistence.jpa.rs.resources.QueryResource.class);
 
         // Exception Mapping
         c.add(ClassNotFoundExceptionMapper.class);
@@ -93,6 +94,7 @@ public class JPARSApplication extends Application {
         c.add(QueryTimeoutExceptionMapper.class);
         c.add(RollbackExceptionMapper.class);
         c.add(TransactionRequiredExceptionMapper.class);
+        c.add(JPARSConfigurationExceptionMapper.class);
 
         classes = Collections.unmodifiableSet(c);
     }
