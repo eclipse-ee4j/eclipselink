@@ -7,7 +7,7 @@
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
-        <exclude-unlisted-classes/>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
@@ -23,7 +23,7 @@
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
-        <exclude-unlisted-classes/>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -39,7 +39,7 @@
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.User</class>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Auction</class>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Bid</class>
-        <exclude-unlisted-classes/>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
@@ -54,7 +54,7 @@
     <persistence-unit name="jpars_phonebook" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
-        <exclude-unlisted-classes/>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
@@ -77,7 +77,7 @@
         <class>org.eclipse.persistence.jpars.test.model.employee.SmallProject</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Expertise</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Office</class>
-        <exclude-unlisted-classes/>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
@@ -85,4 +85,24 @@
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
     </persistence-unit>
+
+    <!-- persistence-unit name="jpars_place" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.place.Place</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/place-orm.xml"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+        </properties>
+    </persistence-unit-->
+
 </persistence>

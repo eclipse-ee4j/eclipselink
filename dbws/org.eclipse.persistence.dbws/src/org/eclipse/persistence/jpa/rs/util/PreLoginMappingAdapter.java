@@ -132,7 +132,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 }
             }
 
-            ClassLoader cl = jpaSession.getPlatform().getConversionManager().getLoader();
+            ClassLoader cl = jpaSession.getDatasourcePlatform().getConversionManager().getLoader();
             for (DatabaseMapping mapping : descriptorMappings) {
                 if (jpaDescriptor != null && mapping.isXMLMapping()) {
                     if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
