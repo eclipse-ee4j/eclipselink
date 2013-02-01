@@ -21,6 +21,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
@@ -34,7 +35,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.sessions.DatabaseSession;
 
 
 /**
@@ -46,7 +46,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 public class DynamicXMLMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
-    public DynamicXMLMetadataSource(DatabaseSession session, String packageName) {
+    public DynamicXMLMetadataSource(AbstractSession session, String packageName) {
         ObjectFactory objectFactory = new ObjectFactory();
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(packageName);

@@ -192,7 +192,7 @@ public class PersistenceContext {
      * @param session
      */
     @SuppressWarnings("rawtypes")
-    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, DatabaseSession session) {
+    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, AbstractSession session) {
         Set<String> packages = new HashSet<String>();
         Iterator<Class> i = session.getDescriptors().keySet().iterator();
         while (i.hasNext()){
@@ -233,7 +233,7 @@ public class PersistenceContext {
      * @param session
      * @return
      */
-    protected JAXBContext createDynamicJAXBContext(DatabaseSession session) throws JAXBException, IOException {
+    protected JAXBContext createDynamicJAXBContext(AbstractSession session) throws JAXBException, IOException {
         JAXBContext jaxbContext = (JAXBContext) session.getProperty(JAXBContext.class.getName());
         if (jaxbContext != null) {
             return jaxbContext;
@@ -241,7 +241,7 @@ public class PersistenceContext {
 
         Map<String, Object> properties = createJAXBProperties(session);      
 
-        ClassLoader cl = session.getPlatform().getConversionManager().getLoader();
+        ClassLoader cl = session.getDatasourcePlatform().getConversionManager().getLoader();
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(cl, properties);
 
         session.setProperty(JAXBContext.class.getName(), jaxbContext);
@@ -281,7 +281,7 @@ public class PersistenceContext {
      * @throws IOException
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected Map<String, Object> createJAXBProperties(DatabaseSession session) throws IOException {
+    protected Map<String, Object> createJAXBProperties(AbstractSession session) throws IOException {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         List<Object> metadataLocations = new ArrayList<Object>();
 
