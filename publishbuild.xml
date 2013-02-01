@@ -58,7 +58,7 @@
             depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag"
     />
     <target name="init" depends="pre-init, common-init"/>
-<!-- 
+<!--
 publish would need:
 
 variables setup by handoff file"
@@ -230,7 +230,7 @@ access to eclipse install (knowledge of blddeps default)
     </target>
 
     <!--  =====  Build Publish Targets -->
-    <target name="publish-build" depends="publish-init, publish-artifacts, publish-maven, publish-p2-site, cleanup-old-builds"/>
+    <target name="publish-build" depends="publish-init, publish-artifacts, publish-maven, publish-p2-site, publish-SonatypeOSS, cleanup-old-builds"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.dir}"/>
@@ -243,6 +243,10 @@ access to eclipse install (knowledge of blddeps default)
 
     <target name="publish-maven" depends="init">
         <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+    </target>
+
+    <target name="publish-SonatypeOSS" depends="init">
+        <ant antfile="uploadToSonatypeOSS.xml" dir="${build.root.dir}" target="upload-maven-all"/>
     </target>
 
     <target name="publish-p2-site" depends="fix-permission">
@@ -537,10 +541,19 @@ access to eclipse install (knowledge of blddeps default)
         <!-- Copy for maven to run -->
         <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
         <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToSonatypeOSS.xml" failonerror="false"/>
     </target>
 
     <target name="publish-milestone-maven" depends="init">
         <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/>
+    </target>
+
+    <target name="publish-milestone-SonatypeOSS" depends="init">
+        <property name="OSS.snapshot.url"   value="https://oss.sonatype.org/content/repositories/snapshots"/>
+        <property name="OSS.mc.staging.url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+            <property name="OSS.repo.dir" value="${OSS.mc.staging.url}"/>
+        </ant>
     </target>
 
 </project>
