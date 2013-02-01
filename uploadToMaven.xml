@@ -183,7 +183,7 @@
         <!--   The Oracle bundles only build periodically, so the bundle version needs to be   -->
         <!--   'discovered' but they should be published as part of the build                  -->
         <stripQualifier input="${hermes.version}"      property="hermes.mvn.version"/>
-        <stripQualifier input="${oracleddl.version"    property="oracleddl.mvn.version"/>
+        <stripQualifier input="${oracleddl.version}"    property="oracleddl.mvn.version"/>
         <stripQualifier input="${oraclebndl.version}"  property="oraclebndl.mvn.version"/>
         <stripQualifier input="${oraclenosql.version}" property="oraclenosql.mvn.version"/>
 
