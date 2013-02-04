@@ -249,7 +249,7 @@
                 <path refid="wls.path"/>
             </classpath>
         </java>
-        <delete dir="${jpatest.basedir}/${temp.dir}"/>
+        <!--delete dir="${jpatest.basedir}/${temp.dir}"/-->
     </target>
 
     <!-- Deploy the application ear to the server.
