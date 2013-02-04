@@ -568,7 +568,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         properties.put(URL_KEY, url);
     }
 
-    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Connection getConnection() {
         if (conn == null ) {
             String driverClassName = getDriver();
@@ -661,7 +661,7 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         properties.put(PLATFORM_CLASSNAME_KEY, platformClassname);
 
     }
-    @SuppressWarnings({"unchecked"/*, "rawtypes"*/})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public DatabasePlatform getDatabasePlatform() {
         if (databasePlatform == null) {
             String platformClassname = getPlatformClassname();

@@ -41,54 +41,67 @@ public class XRDynamicEntity_CollectionWrapper extends XRDynamicEntity implement
         return DPM;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean add(Object e) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).add(e);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean addAll(Collection<? extends Object> c) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).addAll(c);
     }
 
+    @SuppressWarnings("unchecked")    
     public void clear() {
         ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).clear();
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean contains(Object o) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).contains(o);
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean containsAll(Collection<?> c) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).containsAll(c);
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean isEmpty() {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).isEmpty();
     }
 
+    @SuppressWarnings("unchecked")    
     public Iterator<Object> iterator() {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).iterator();
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean remove(Object o) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).remove(o);
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean removeAll(Collection<?> c) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).removeAll(c);
     }
 
+    @SuppressWarnings("unchecked")    
     public boolean retainAll(Collection<?> c) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).retainAll(c);
     }
 
+    @SuppressWarnings("unchecked")    
     public int size() {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).size();
     }
 
+    @SuppressWarnings("unchecked")    
     public Object[] toArray() {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).toArray();
     }
 
+    @SuppressWarnings("unchecked")    
     public <T> T[] toArray(T[] a) {
         return ((Collection<Object>)propertiesMap.get(ITEMS_PROPERTY).getValue()).toArray(a);
     }

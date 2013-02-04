@@ -668,7 +668,7 @@ public class OracleObjecttypeTestSuite {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void getEmployeesByProvWithAddress() throws SQLException  {
         Invocation invocation = new Invocation("getEmployeesByProv");
@@ -690,7 +690,7 @@ public class OracleObjecttypeTestSuite {
             comparer.isNodeEqual(controlDoc, doc));
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void getEmployeesByProvWithStruct() throws SQLException  {
         Invocation invocation = new Invocation("getEmployeesByProv");

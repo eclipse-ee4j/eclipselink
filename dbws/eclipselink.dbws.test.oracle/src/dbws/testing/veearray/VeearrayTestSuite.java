@@ -457,7 +457,7 @@ public class VeearrayTestSuite {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void getVeeArrayEmployees() {
         Invocation invocation = new Invocation("getVeeArrayEmployees");
@@ -512,7 +512,7 @@ public class VeearrayTestSuite {
           "</employee>" +
         "</employee-collection>";
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void updateVeeArrayPhones() throws SQLException {
         Invocation invocation = new Invocation("updateVeeArrayPhones");
@@ -576,7 +576,7 @@ public class VeearrayTestSuite {
       "</phones>" +
     "</employee>";
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void resetVeeArrayPhones() {
         Invocation invocation = new Invocation("updateVeeArrayPhones");

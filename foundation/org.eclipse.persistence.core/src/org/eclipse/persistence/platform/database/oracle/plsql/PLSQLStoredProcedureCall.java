@@ -556,7 +556,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                     if (type == XMLType) {
                         super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), type.getTypeName());
                     } else {
-            		super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
+                        super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
                     }
                 } else {
                     ComplexDatabaseType complexType = (ComplexDatabaseType) type;

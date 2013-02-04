@@ -39,7 +39,7 @@ import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTIO
  * This API only supports EclipseLink 1.x format deployment XML
  */
 
-@SuppressWarnings({"unchecked"/*, "rawtypes"*/})
+@SuppressWarnings({"rawtypes"})
 public class ProjectHelper {
     /**
      * INTERNAL: Fix the given EclipseLink OR and OX projects so that the

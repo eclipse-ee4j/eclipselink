@@ -74,6 +74,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
 
+    @SuppressWarnings("serial")
     @BeforeClass
     public static void setUp() throws WSDLException {
         if (conn == null) {

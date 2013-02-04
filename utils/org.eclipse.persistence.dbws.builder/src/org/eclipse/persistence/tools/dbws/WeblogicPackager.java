@@ -57,6 +57,7 @@ public class WeblogicPackager extends WarPackager {
     }
 
     // WebLogic_10_Platform
+    @SuppressWarnings("unchecked")
     public static void buildDatabaseSessionConfig(SessionConfigs ts, DatabaseSessionConfig tmpConfig,
         DBWSBuilder builder) {
         ProjectConfig orProject = tmpConfig.getPrimaryProject();

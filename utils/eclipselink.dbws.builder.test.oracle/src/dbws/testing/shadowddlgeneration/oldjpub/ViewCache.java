@@ -34,7 +34,7 @@ import dbws.testing.shadowddlgeneration.oldjpub.OracleTypes;
 import dbws.testing.shadowddlgeneration.oldjpub.SqlName;
 import static dbws.testing.shadowddlgeneration.oldjpub.Util.ALL_ARGUMENTS;
 
-@SuppressWarnings({"unchecked"/*,"rawtypes"*/})
+@SuppressWarnings({"unchecked","rawtypes"})
 public class ViewCache implements Externalizable {
 
     static final String VIEW_CACHE_PREFIX = "viewcachefor";

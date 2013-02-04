@@ -24,7 +24,7 @@ public class Employee {
     public Integer id;
     public String firstName;
     public String lastName;
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public Collection phones = new NonSynchronizedVector();
 
     @Override

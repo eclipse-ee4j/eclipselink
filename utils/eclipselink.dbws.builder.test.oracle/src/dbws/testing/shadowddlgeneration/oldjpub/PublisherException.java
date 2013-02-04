@@ -12,6 +12,7 @@
  ******************************************************************************/
 package dbws.testing.shadowddlgeneration.oldjpub;
 
+@SuppressWarnings("serial")
 public class PublisherException extends Exception {
 
     PublisherException() {

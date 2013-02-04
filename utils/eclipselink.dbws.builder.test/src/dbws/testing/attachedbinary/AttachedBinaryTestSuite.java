@@ -158,7 +158,7 @@ public class AttachedBinaryTestSuite extends DBWSTestSuite {
 
     public static SOAPAttachmentHandler attachmentHandler = new SOAPAttachmentHandler();
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes"})
     @Test
     public void findAll() throws IOException {
         Invocation invocation = new Invocation("findAll_attachedbinaryType");

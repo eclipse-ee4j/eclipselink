@@ -45,6 +45,7 @@ public class DBWSBuilderModelProject extends Project {
 
     protected NamespaceResolver ns;
 
+    @SuppressWarnings("rawtypes")
     public DBWSBuilderModelProject() {
         setName("DBWSBuilderModelProject");
 
