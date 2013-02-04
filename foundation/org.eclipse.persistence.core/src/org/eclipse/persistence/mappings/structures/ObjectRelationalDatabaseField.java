@@ -50,6 +50,21 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
         this.sqlTypeName = "";
     }
 
+    /*
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual 
+     * class-based settings. This method is implemented by subclasses as 
+     * necessary.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+        
+        if (nestedTypeField != null) {
+            nestedTypeField.convertClassNamesToClasses(classLoader);
+        }
+    }
+
     /**
      * ADVANCED:
      * For ARRAY and STRUCT fields, this is the user defined type for the field.
