@@ -485,12 +485,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexInTest5() {
 
    	 EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("SELECT lp from LargeProject lp WHERE lp.teamMembers IN :employeeTypes");
+   	 Query query = em.createQuery("SELECT e from Employee e WHERE e.responsibilities IN :responsibilities");
 
-   	 List<Object> types = new ArrayList<Object>();
-   	 types.add(LargeProject.class);
-   	 types.add(SmallProject.class);
-   	 query.setParameter("employeeTypes", types);
+   	 List<String> types = new ArrayList<String>();
+   	 types.add("responsibilities1");
+   	 types.add("responsibilities2");
+   	 query.setParameter("responsibilities", types);
 
    	 query.getResultList();
    	 closeEntityManager(em);
@@ -1660,7 +1660,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Assert.assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
 
     }
-    
+
     public void complexMultipleExistsSubqueryTest()
     {
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
@@ -1673,7 +1673,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT e from Employee e " 
+        String ejbqlString = "SELECT e from Employee e "
                 + " WHERE EXISTS (SELECT e1.id FROM Employee e1 WHERE e.manager.id = e1.id) "
                 + " OR EXISTS (SELECT e2.id FROM Employee e2 WHERE e.manager.id = e2.manager.id AND e.id <> e2.id)";
         List result = em.createQuery(ejbqlString).getResultList();
