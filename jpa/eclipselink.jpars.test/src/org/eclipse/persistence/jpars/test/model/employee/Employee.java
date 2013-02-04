@@ -50,14 +50,20 @@ import org.eclipse.persistence.annotations.PrivateOwned;
                 name = "Employee.getManager",
                 query = "select u.firstName, u.lastName, u.manager from Employee u"),
         @NamedQuery(
-                        name = "Employee.getManagerById",
-                        query = "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id"),
+                name = "Employee.getManagerById",
+                query = "select u.firstName, u.lastName, u.manager from Employee u where u.id = :id"),
         @NamedQuery(
-                        name="Employee.salaryMax", 
-                        query="SELECT e.id, max(e.salary) AS max_salary from Employee e GROUP BY e.id, e.salary"),
+                name = "Employee.salaryMax",
+                query = "SELECT e.id, max(e.salary) AS max_salary from Employee e GROUP BY e.id, e.salary"),
         @NamedQuery(
-                        name="Employee.count", 
-                        query="SELECT count(e) FROM Employee e")                        
+                name = "Employee.count",
+                query = "SELECT count(e) FROM Employee e"),
+        @NamedQuery(
+                name = "Employee.getPhoneNumbers",
+                query = "SELECT e.firstName, e.lastName, pn FROM Employee e JOIN e.phoneNumbers pn"),
+        @NamedQuery(
+                name = "Employee.findAll", 
+                query = "SELECT e FROM Employee e ORDER BY e.id")
 })
 @Entity
 @Table(name = "JPARS_EMPLOYEE")

@@ -132,7 +132,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
             }
         }
         
-        if (!app.isWeavingEnabled()) {
+        if ((app != null) && (!app.isWeavingEnabled())) {
             throw new JPARSConfigurationException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[] { persistenceUnit }));
         }
         
