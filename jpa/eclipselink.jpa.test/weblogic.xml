@@ -67,8 +67,8 @@
         <contains string="${server.version}" substring="10.3.0"/>
     </condition>
 
-    <condition property="WLS_SETUP_PY" value="wls_main_setup.py" else="wls_setup.py">
-        <contains string="${server.version}" substring="main"/>
+    <condition property="WLS_SETUP_PY" value="wls_exalogic_setup.py" else="wls_setup.py">
+        <contains string="${server.version}" substring="exalogic"/>
     </condition>
 
     <path id="wls.path">
