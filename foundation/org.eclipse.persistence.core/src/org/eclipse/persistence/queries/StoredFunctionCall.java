@@ -12,11 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
+import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * <b>Purpose</b>: Used to define a platform independent function call.
@@ -85,7 +87,7 @@ public class StoredFunctionCall extends StoredProcedureCall {
         if (session.getPlatform().supportsStoredFunctions()) {
             super.prepareInternal(session);
         } else {
-            throw ValidationException.platformDoesNotSupportStoredFunctions(Helper.getShortClassName(session.getPlatform()));
+            throw ValidationException.platformDoesNotSupportStoredFunctions(getShortClassName(session.getPlatform()));
         }
     }
 
@@ -121,6 +123,41 @@ public class StoredFunctionCall extends StoredProcedureCall {
         getParameters().set(0, field);
     }
 
+    /**
+     * PUBLIC:
+     * Define the ObjectRelationalDatabaseField to be substituted for the function return.
+     * The type is the JDBC type code, this is dependent on the type required by the procedure.
+     * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
+     * The javaType is the mapped Class that has an ObjectRelationalDataTypeDescriptor for the ARRAY
+     * or STRUCT type typeName
+     */
+    public void setResult(int type, String typeName, Class javaType) {
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
+        field.setSqlType(type);
+        field.setSqlTypeName(typeName);
+        field.setType(javaType);
+        getParameters().set(0, field);
+    }    
+
+    /**
+     * PUBLIC:
+     * Define the ObjectRelationalDatabaseField to be substituted for the function return.  This
+     * will typically be called for ARRAY types.
+     * The type is the JDBC type code, this is dependent on the type required by the procedure.
+     * The typeName is the JDBC type name, this may be required for ARRAY types.
+     * The javaType is the mapped Class that has an ObjectRelationalDataTypeDescriptor for the ARRAY
+     * type typeName
+     * The nestedType is a database field representing the type the ARRAY holds onto.
+     */
+    public void setResult(int type, String typeName, Class javaType, DatabaseField nestedType) {
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
+        field.setSqlType(type);
+        field.setSqlTypeName(typeName);
+        field.setType(javaType);
+        field.setNestedTypeField(nestedType);
+        getParameters().set(0, field);
+    }
+    
     /**
      * PUBLIC:
      * Define the field name to be substitute for the function return.

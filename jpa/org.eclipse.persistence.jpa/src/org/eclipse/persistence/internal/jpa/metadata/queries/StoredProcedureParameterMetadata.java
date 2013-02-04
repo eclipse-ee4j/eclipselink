@@ -30,9 +30,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
+import static java.sql.Types.STRUCT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
@@ -94,6 +96,26 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     }
     
     /**
+     * Builds an ObjectRelationalDatabaseField based on a given OracleArrayTypeMetadata
+     * instance.
+     * 
+     * @param aType OracleArrayTypeMetadata instance to be used to construct the field
+     * @return an ObjectRelationalDatabaseField instance
+     */
+    protected ObjectRelationalDatabaseField buildNestedField(OracleArrayTypeMetadata aType) {
+        ObjectRelationalDatabaseField dbFld = new ObjectRelationalDatabaseField("");
+        String nestedType = aType.getNestedType();
+        dbFld.setSqlTypeName(nestedType);
+        for (OracleObjectTypeMetadata oType : getEntityMappings().getOracleObjectTypes()) {
+            if (oType.getName().equals(nestedType)) {
+                dbFld.setSqlType(STRUCT);
+                dbFld.setTypeName(oType.getJavaType());
+            }
+        }
+        return dbFld;
+    }
+
+    /**
      * INTERNAL:
      */
     @Override
@@ -133,6 +155,23 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
         
         return false;
+    }
+    
+    /**
+     * Returns the OracleArrayTypeMetadata instance for a given class name, or null
+     * if none exists.
+     * 
+     * @param javaClassName  class name used to look up the OracleArrayTypeMetadata instance
+     * @return  the OracleArrayTypeMetadata instance with javaType matching javaClassName, 
+     * or null if none exists.
+     */
+    protected OracleArrayTypeMetadata getArrayTypeMetadata(String javaClassName) {
+        for (OracleArrayTypeMetadata aType : getEntityMappings().getOracleArrayTypes()) {
+            if (aType.getJavaType().equals(javaClassName)) {
+                return aType;
+            }
+        }
+        return null;
     }
     
     /**
@@ -210,7 +249,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected boolean hasJdbcType() {
-        return m_jdbcType != null && m_jdbcType.equals(-1);
+        return m_jdbcType != null && ! m_jdbcType.equals(-1);
     }
     
     /**
@@ -225,6 +264,13 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     protected boolean hasType() {
         return !m_type.isVoid();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean hasTypeName() {
+        return m_typeName != null && ! m_typeName.equals("");
     }
     
     /**
@@ -303,7 +349,11 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 if (callByIndex) {
                     call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));
                 } else {
-                    call.addNamedArgument(m_name, m_queryParameter, getJavaClass(m_type));
+                    if (hasJdbcType() && hasJdbcTypeName()) {
+                        call.addNamedArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                    } else {
+                        call.addNamedArgument(m_name, m_queryParameter, getJavaClass(m_type));
+                    }
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 if (callByIndex) {
@@ -329,7 +379,11 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
                 } else {
-                    call.addNamedOutputArgument(m_name, m_queryParameter, getJavaClass(m_type));
+                    if (hasJdbcType() && hasJdbcTypeName()) {
+                        call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                    } else {
+                        call.addNamedOutputArgument(m_name, m_queryParameter, getJavaClass(m_type));
+                    }
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 if (callByIndex) {
@@ -358,7 +412,11 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
                 } else {
-                    call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                    if (hasJdbcType() && hasJdbcTypeName()) {
+                        call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                    } else {
+                        call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                    }
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
                 if (callByIndex) {
@@ -415,7 +473,16 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         
         // Process the function parameter
         if (hasType()) {
-            call.setResult(m_name, getJavaClass(m_type));
+            if (hasJdbcType() && hasJdbcTypeName()) {
+                OracleArrayTypeMetadata aType = null;
+                if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
+                    call.setResult(m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                } else {
+                    call.setResult(m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                }
+            } else {
+                call.setResult(m_name, getJavaClass(m_type));
+            }
         } else if (hasJdbcType() && hasJdbcTypeName()) {
             call.setResult(m_name, m_jdbcType, m_jdbcTypeName);
         } else if (hasJdbcType()) {
@@ -425,155 +492,6 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
     }
 
-    /**
-     * INTERNAL:
-     */
-    /*
-     * SAVED
-    public void process(StoredProcedureCall call, boolean callByIndex, boolean functionReturn, int index) {
-        // Process the procedure parameter name, defaults to the argument field name.
-        if (m_name == null || m_name.equals("")) {
-            if (m_queryParameter == null || m_queryParameter.equals("")) {
-                // JPA 2.1 make the query parameter positional
-                callByIndex = true;
-                m_queryParameter = String.valueOf(index);
-            } else {
-                // EclipseLink support, a query parameter is required to be specified.
-                // TODO: Log a message when defaulting.
-                m_name = m_queryParameter;
-            }
-        }
-
-        // There is no such thing as queryParameter in JPA's version.
-        if (m_queryParameter == null || m_queryParameter.equals("")) {
-            m_queryParameter = m_name;
-        }
-        
-        if ((m_optional != null) && m_optional) {
-            call.addOptionalArgument(m_queryParameter);
-        }
-        
-        String parameterMode = (m_direction == null) ? m_mode : m_direction;
-        
-        // Process the parameter mode
-        if (functionReturn) {
-            if (hasType()) {
-                ((StoredFunctionCall)call).setResult(m_name, getJavaClass(m_type));
-            } else if (hasJdbcType() && hasJdbcTypeName()) {
-                ((StoredFunctionCall)call).setResult(m_name, m_jdbcType, m_jdbcTypeName);
-            } else if (hasJdbcType()) {
-                ((StoredFunctionCall)call).setResult(m_name, m_jdbcType);
-            } else {
-                ((StoredFunctionCall)call).setResult(m_name);                
-            }
-        } else if (parameterMode == null || parameterMode.equals(ParameterMode.IN.name())) {
-            // TODO: Log a defaulting message if parameterMode is null.
-            if (hasType()) {
-                if (callByIndex) {
-                    call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));
-                } else {
-                    call.addNamedArgument(m_name, m_queryParameter, getJavaClass(m_type));
-                }
-            } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (callByIndex) {
-                    call.addUnamedArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
-                    call.addNamedArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                }
-            } else if (hasJdbcType()) {
-                if (callByIndex) {
-                    call.addUnamedArgument(m_queryParameter, m_jdbcType);
-                } else {
-                    call.addNamedArgument(m_name, m_queryParameter, m_jdbcType);
-                }
-            } else {
-                if (callByIndex) {
-                    call.addUnamedArgument(m_queryParameter);
-                } else {
-                    call.addNamedArgument(m_name, m_queryParameter);
-                }
-            }
-        } else if (parameterMode.equals(ParameterMode.OUT.name())) {
-            if (hasType()) {
-                if (callByIndex) {
-                    call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
-                } else {
-                    call.addNamedOutputArgument(m_name, m_queryParameter, getJavaClass(m_type));
-                }
-            } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (callByIndex) {
-                    call.addUnamedOutputArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
-                    call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                }
-            } else if (hasJdbcType()) {
-                if (callByIndex) {
-                    call.addUnamedOutputArgument(m_queryParameter, m_jdbcType);
-                } else {
-                    call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType);
-                }
-            } else {
-                if (callByIndex) {
-                    call.addUnamedOutputArgument(m_queryParameter);
-                } else {
-                    call.addNamedOutputArgument(m_name, m_queryParameter);
-                }
-            }
-            
-            //set the project level settings on the argument's database fields
-            setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1));
-        } else if (parameterMode.equals(Direction.IN_OUT.name()) || parameterMode.equals(ParameterMode.INOUT.name())) {
-            if (hasType()) {
-                if (callByIndex) {
-                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
-                } else {
-                    call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
-                }
-            } else if (hasJdbcType() && hasJdbcTypeName()) {
-                if (callByIndex) {
-                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                } else {
-                    call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
-                }
-            } else if (hasJdbcType()) {
-                if (callByIndex) {
-                    call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType);
-                } else {
-                    call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType);
-                }
-            } else {
-                if (callByIndex) {
-                    call.addUnamedInOutputArgument(m_queryParameter);
-                } else {
-                    call.addNamedInOutputArgument(m_name, m_queryParameter);
-                }
-            }
-            
-            //set the project level settings on the argument's out database field
-            Object[] array = (Object[])call.getParameters().get(call.getParameters().size() - 1);
-            if (array[0] == array[1]){
-                array[1] = ((DatabaseField)array[1]).clone();
-            }
-            
-            setDatabaseFieldSettings((DatabaseField) array[1]);
-        } else if (parameterMode.equals(Direction.OUT_CURSOR.name()) || parameterMode.equals(ParameterMode.REF_CURSOR.name())) {
-            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
-            
-            if (callByIndex) {
-                call.useUnnamedCursorOutputAsResultSet();
-            } else {
-                call.useNamedCursorOutputAsResultSet(m_queryParameter);
-            }
-            
-            // There are multiple cursor output parameters, then do not use the 
-            // cursor as the result set. This will be set to true in the calls
-            // above so we must do the multiple cursor call before hand.
-            if (multipleCursors) {
-                call.setIsCursorOutputProcedure(false);
-            }
-        }
-    }
-    */
     /**
      * INTERNAL:
      * set the project level settings on the database fields
