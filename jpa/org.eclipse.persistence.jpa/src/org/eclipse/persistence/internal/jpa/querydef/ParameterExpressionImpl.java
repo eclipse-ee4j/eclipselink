@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import javax.persistence.criteria.ParameterExpression;
@@ -25,7 +38,6 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, Integer position){
         super(metamodel, javaType, new ExpressionBuilder().getParameter(position.toString(), javaType));
         this.position = position;
-        this.name = String.valueOf(position);
     }
 
     public void findRootAndParameters(CommonAbstractCriteriaImpl query){
@@ -70,6 +82,9 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
 
     @Override
     public int hashCode() {
+        if (position != null){
+            return position.hashCode();
+        }
         if (this.name == null) this.name = "";
         return this.name.hashCode();
     }
@@ -96,10 +111,18 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
             return false;
         ParameterExpressionImpl other = (ParameterExpressionImpl) obj;
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null){
                 return false;
-        } else if (!name.equals(other.name))
+            } else if (position == null){
+                if (other.position != null){
+                    return false;
+                }
+            } else if (!position.equals(other.position)){
+                return false;
+            }
+        } else if (!name.equals(other.name)){
             return false;
+        } 
         return true;
     }
 

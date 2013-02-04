@@ -856,7 +856,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
         
-        return this.setParameter(param.getName(), value, temporalType);
+        return this.setParameter(getParameterId(param), value, temporalType);
     }
     
     /**
@@ -874,7 +874,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
         
-        return this.setParameter(param.getName(), value, temporalType);
+        return this.setParameter(getParameterId(param), value, temporalType);
     }
     
     /**
@@ -891,7 +891,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
         
-        return this.setParameter(param.getName(), value);
+        return this.setParameter(getParameterId(param), value);
     }
     
     /**

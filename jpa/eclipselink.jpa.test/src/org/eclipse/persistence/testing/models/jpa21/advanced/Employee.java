@@ -43,6 +43,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.NamedSubgraph;
@@ -105,6 +107,16 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
     name="JPA21_SALARY",
     pkJoinColumns=@PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
 )
+@NamedQueries({
+@NamedQuery(
+    name="jpa21Employee.findAllEmployeesByFirstNameAndLastNamePos",
+    query="SELECT employee FROM Employee employee WHERE employee.firstName = ?1 AND employee.lastName = ?2"
+),
+@NamedQuery(
+        name="jpa21Employee.findAllEmployeesByFirstNameAndLastNameName",
+        query="SELECT employee FROM Employee employee WHERE employee.firstName = :firstName AND employee.lastName = :lastName"
+    )
+})
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
         name="ReadUsingMultipleResultSetMappings",

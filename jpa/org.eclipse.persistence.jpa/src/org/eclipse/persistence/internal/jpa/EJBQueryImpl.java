@@ -475,7 +475,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
-        return this.setParameter(param.getName(), value, temporalType);
+        return this.setParameter(getParameterId(param), value, temporalType);
     }
     
     /**
@@ -492,7 +492,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public TypedQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
-        return this.setParameter(param.getName(), value, temporalType);
+        return this.setParameter(getParameterId(param), value, temporalType);
     }
     
     /**
@@ -509,7 +509,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public <T> TypedQuery setParameter(Parameter<T> param, T value) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
-        return this.setParameter(param.getName(), value);
+        return this.setParameter(getParameterId(param), value);
     }
     
     /**
