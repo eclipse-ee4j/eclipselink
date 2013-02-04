@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -201,10 +200,9 @@ public abstract class AbstractEntityResource extends AbstractResource {
             }
             return Response.status(Status.NOT_FOUND).build();
         }
-        MediaType contentType = mediaType(hh.getRequestHeader(HttpHeaders.CONTENT_TYPE));
         Object entity = null;
         try {
-            entity = app.unmarshalEntity(type, contentType, in);
+            entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
             return Response.status(Status.BAD_REQUEST).build();
