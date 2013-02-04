@@ -582,9 +582,119 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.2");
     }
 
+    @Test
+    public void testQueryEmployeeWithPhoneNumbersJSON() throws Exception {
+        queryEmployeeWithPhoneNumbers(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Test
+    public void testQueryEmployeeWithPhoneNumbersXML() throws Exception {
+        queryEmployeeWithPhoneNumbers(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    @Test
+    public void testQueryEmployeeFindAllJSON() throws Exception {
+        queryEmployeeFindAll(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    @Test
+    public void testQueryEmployeeFindAllXML() throws Exception {
+        queryEmployeeFindAll(MediaType.APPLICATION_XML_TYPE);
+    }
+
+    private void queryEmployeeFindAll(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Billie");
+        employee1.setLastName("Holiday");
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee create failed.", employee1);
+
+        // create another employee
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Ella");
+        employee2.setLastName("Fitzgerald");
+        employee2.setGender(Gender.Female);
+        employee2 = RestUtils.restUpdate(context, employee2, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee create failed.", employee2);
+
+        // query employee
+        String queryResult = RestUtils.restNamedMultiResultQuery("Employee.findAll", DEFAULT_PU, null, null, mediaType, null);
+        assertNotNull("Query all employees failed.", queryResult);
+
+        assertTrue(queryResult.contains(employee1.getFirstName()));
+        assertTrue(queryResult.contains(employee1.getLastName()));
+
+        assertTrue(queryResult.contains(employee2.getFirstName()));
+        assertTrue(queryResult.contains(employee1.getLastName()));
+
+        // delete employees
+        RestUtils.restDelete(new Integer(employee1.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+        RestUtils.restDelete(new Integer(employee2.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+
+    private void queryEmployeeWithPhoneNumbers(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setFirstName("Betty");
+        employee.setLastName("Carter");
+        employee.setGender(Gender.Female);
+        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
+        assertNotNull("Employee create failed.", employee);
+
+        // create a cell phone number for this employee
+        PhoneNumber cell = new PhoneNumber();
+        cell.setId(employee.getId());
+        cell.setNumber("342-144 0304");
+        cell.setType("cell");
+        cell.setEmployee(employee);
+        cell = RestUtils.restCreate(context, cell, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", cell);
+        assertTrue("342-144 0304".equals(cell.getNumber()));
+
+        // update employee with cell number
+        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", cell, DEFAULT_PU, mediaType,
+                "employee", true);
+        assertNotNull(result);
+
+        // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
+        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell";
+        assertTrue(result.contains(cellLinkHref));
+
+        // create a work phone number
+        PhoneNumber workPhone = new PhoneNumber();
+        workPhone.setId(employee.getId());
+        workPhone.setNumber("342-144 9345");
+        workPhone.setType("work");
+        workPhone.setEmployee(employee);
+        workPhone = RestUtils.restCreate(context, workPhone, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Phone number create failed.", workPhone);
+        assertTrue("342-144 9345".equals(workPhone.getNumber()));
+
+        // update employee with work phone number
+        result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", workPhone, DEFAULT_PU, mediaType, "employee",
+                true);
+        assertNotNull(result);
+        // make sure that response from restUpdateBidirectionalRelationship contains work phone number AND cell number in employee object
+        String workPhoneLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+work";
+        assertTrue(result.contains(workPhoneLinkHref));
+        assertTrue(result.contains(cellLinkHref));
+
+        // query employee with phone numbers
+        String queryResult = RestUtils.restNamedMultiResultQuery("Employee.getPhoneNumbers", DEFAULT_PU, null, null, mediaType, null);
+        assertNotNull("Query employee with phone numbers failed.", queryResult);
+
+        // make sure employee has 2 phone numbers
+        assertTrue(queryResult.contains(workPhoneLinkHref));
+        assertTrue(queryResult.contains(cellLinkHref));
+
+        // delete employee (cascade deletes phone numbers)
+        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+
     private void readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType mediaType) throws Exception {
         // phone numbers on employee object is annoted to be LAZY fetch
-        // Create an employee without any phone numbers, and make sure that read emmployee response doesn't contatTruein phone numbers,
+        // Create an employee without any phone numbers, and make sure that read employee response doesn't contain phone numbers,
         // then add a phone number to the employee and re-read the employee to make sure that the response contains a link to the phone number
         // even if it is fetched lazily.
 
