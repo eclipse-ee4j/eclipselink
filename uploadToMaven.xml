@@ -190,7 +190,8 @@
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
         <!-- the discovered "(bundle).version" (after release) -->
-        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
+   <!-- Temporarily disable until I can fix StripQualifier not to overwrtie previously set properties -->
+        <!-- stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/ -->
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
         <!-- a rebuild (convienient for publishing OSGi-ified jars but against OSGi spec) then  -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
