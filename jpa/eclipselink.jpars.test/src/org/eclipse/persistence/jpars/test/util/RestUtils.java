@@ -271,7 +271,12 @@ public class RestUtils {
         }
         uri.append("/entity/" + type);
         WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, os.toString());
+        ClientResponse response = null;
+        if (mediaType.equals(MediaType.APPLICATION_JSON_TYPE)) {
+            response = webResource.type(mediaType).accept("application/json;charset=UTF-8").put(ClientResponse.class, os.toString());
+        } else {
+            response = webResource.type(mediaType).accept(mediaType).put(ClientResponse.class, os.toString());
+        }
         Status status = response.getClientResponseStatus();
         if (status != Status.CREATED) {
             throw new RestCallFailedException(status);

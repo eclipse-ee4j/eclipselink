@@ -60,7 +60,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
         this(context, result, mediaType(acceptedTypes));
     }
 
-  @Override
+    @Override
     public void write(OutputStream output) throws IOException, WebApplicationException {
         if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
             output.write((byte[])result);
@@ -91,7 +91,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     throw new WebApplicationException();
                 }
             } 
-            
+
             if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
                 // could not marshall, try serializing
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -106,52 +106,38 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             }
         }
     }
-    
-  
+
+
     /**
-    * Identify the preferred {@link MediaType} from the list provided. This
-    * will check for JSON string or {@link MediaType} first then XML.
-    * 
-    * @param types
-    *            List of {@link String} or {@link MediaType} values;
-    * @return selected {@link MediaType}
-    * @throws WebApplicationException
-    *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON or XML
-    *             values are found.
-    */
-    public static MediaType mediaType(List<?> types) {
-        JPARSLogger.fine("jpars_requested_type", new Object[]{types});
-        for (int i=0;i<types.size();i++){
-            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_JSON_TYPE})){
-                return MediaType.APPLICATION_JSON_TYPE;
-            }
-            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_XML_TYPE})){
-                return MediaType.APPLICATION_XML_TYPE;
-            }
-            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_OCTET_STREAM_TYPE})){
-                return MediaType.APPLICATION_OCTET_STREAM_TYPE;
+     * Identify the preferred {@link MediaType} from the list provided. This
+     * will check for JSON string or {@link MediaType} first then XML.
+     * 
+     * @param types
+     *            List of {@link MediaType} values;
+     * @return selected {@link MediaType}
+     * @throws WebApplicationException
+     *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON or XML
+     *             values are found.
+     */
+    public static MediaType mediaType(List<MediaType> types) {
+        if ((types != null) && (!types.isEmpty())) {
+            JPARSLogger.fine("jpars_requested_type", new Object[] { types });
+            for (int i = 0; i < types.size(); i++) {
+                MediaType aMediaType = types.get(i);
+                if (aMediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+                    return MediaType.APPLICATION_JSON_TYPE;
+                }
+                if (aMediaType.isCompatible(MediaType.APPLICATION_XML_TYPE)) {
+                    return MediaType.APPLICATION_XML_TYPE;
+                }
+                if (aMediaType.isCompatible(MediaType.APPLICATION_OCTET_STREAM_TYPE)) {
+                    return MediaType.APPLICATION_OCTET_STREAM_TYPE;
+                }
             }
         }
         throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
     }
-    
-    protected static boolean isCompatible(Object type, MediaType[] types){
-        if (type instanceof String){
-            for (MediaType comparisonType:types){
-                if (comparisonType.toString().equals((String)type)){
-                    return true;
-                }
-            }
-        } else {
-            for (MediaType comparisonType:types){
-                if (comparisonType.isCompatible((MediaType)type)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
+
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
         Marshaller marshaller = context.getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
