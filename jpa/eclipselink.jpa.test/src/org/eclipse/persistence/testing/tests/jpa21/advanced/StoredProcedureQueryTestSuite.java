@@ -303,7 +303,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 boolean result = query.execute();
                 
-                assertTrue("Parameter list was empty, expecting 2.", query.getParameters().size() == 2);
+                assertTrue("Parameter list size was incorrect, actual: " + query.getParameters().size() + ", expecting 3.", query.getParameters().size() == 3);
                 
                 Object parameterValue = query.getParameterValue("new_p_code_v");
                 assertTrue("The IN parameter value was not preserved, expected: " + postalCodeCorrection + ", actual: " + parameterValue, parameterValue.equals(postalCodeCorrection));
@@ -800,7 +800,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 clearCache();
                 
                 StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_Mapped_Named", "address-column-result-map");
-                query.registerStoredProcedureParameter("address_id_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
                 
                 Object[] values = (Object[]) query.setParameter("address_id_v", address.getId()).getSingleResult();
                 assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));

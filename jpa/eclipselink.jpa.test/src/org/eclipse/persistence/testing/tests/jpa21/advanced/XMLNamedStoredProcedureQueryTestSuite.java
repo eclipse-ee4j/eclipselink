@@ -115,7 +115,7 @@ public class XMLNamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             try {
                 beginTransaction(em);
-                em.createNamedStoredProcedureQuery("XMLReadAddressWithResultClass").setParameter("ADDRESS_ID", 1).executeUpdate();
+                em.createNamedStoredProcedureQuery("XMLReadAddressWithResultClass").setParameter("address_id_v", 1).executeUpdate();
                 commitTransaction(em);
             } catch (IllegalStateException e) {
                 if (isTransactionActive(em)){

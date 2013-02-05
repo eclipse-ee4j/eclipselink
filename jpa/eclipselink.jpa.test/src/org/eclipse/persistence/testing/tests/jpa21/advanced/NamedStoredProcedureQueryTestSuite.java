@@ -106,7 +106,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             try {
                 beginTransaction(em);
-                em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("ADDRESS_ID", 1).executeUpdate();
+                em.createNamedStoredProcedureQuery("ReadAddressWithResultClass").setParameter("address_id_v", 1).executeUpdate();
                 commitTransaction(em);
             } catch (IllegalStateException e) {
                 if (isTransactionActive(em)){
