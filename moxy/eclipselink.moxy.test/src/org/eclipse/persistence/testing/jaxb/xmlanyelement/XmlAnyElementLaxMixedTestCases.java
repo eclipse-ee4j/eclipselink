@@ -28,11 +28,15 @@ import org.w3c.dom.Element;
 
 public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
 	   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixed.xml";
+	   private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixedWrite.xml";
 	   private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixed.json";
+	   private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employeeLaxMixedWrite.json";
 	    
 	    public XmlAnyElementLaxMixedTestCases(String name) throws Exception {
 	        super(name);
 	        setControlDocument(XML_RESOURCE);
+	        setWriteControlDocument(XML_WRITE_RESOURCE);
+	        setWriteControlJSON(JSON_WRITE_RESOURCE);
 	        setControlJSON(JSON_RESOURCE);
 	        Class[] classes = new Class[2];
 	        classes[0] = EmployeeLaxMixed.class;
@@ -195,4 +199,7 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
 	    
 	    public void testObjectToXMLDocument() throws Exception {    	
 	    }
+	    
+	    public void testRoundTrip() throws Exception{}
+
 }

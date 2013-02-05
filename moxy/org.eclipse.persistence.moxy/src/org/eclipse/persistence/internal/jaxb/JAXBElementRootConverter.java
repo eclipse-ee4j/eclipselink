@@ -91,6 +91,7 @@ public class JAXBElementRootConverter implements XMLConverter {
                 root.setLocalName(element.getName().getLocalPart());
                 root.setNamespaceURI(element.getName().getNamespaceURI());
                 root.setObject(element.getValue());
+                root.setDeclaredType(element.getDeclaredType());
                 return root;
         	}
         }
