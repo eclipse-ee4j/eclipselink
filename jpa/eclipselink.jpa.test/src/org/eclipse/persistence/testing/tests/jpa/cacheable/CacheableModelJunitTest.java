@@ -1299,7 +1299,6 @@ public class CacheableModelJunitTest extends JUnitTestCase {
         try{
             ForceProtectedEntityWithComposite cte = em.find(ForceProtectedEntityWithComposite.class, m_forcedProtectedEntityCompositId);
             CacheableRelationshipsEntity cre = em.find(CacheableRelationshipsEntity.class, m_cacheableRelationshipsEntityId);
-            System.out.println("====the size of the collection is 1--" + cre.getProtectedEmbeddables().size());
             ProtectedEmbeddable pe = cte.getProtectedEmbeddable();
         
             ServerSession session = em.unwrap(ServerSession.class);
@@ -1310,8 +1309,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             assertNotNull("ForceProtectedEntityWithComposite was not found in the cache", cachedCPE);
             assertNotNull("CacheableRelationshipsEntity was not found in the cache", cachedCRE);
             cachedCPE.getProtectedEmbeddable().setName("NewName"+System.currentTimeMillis());
-            System.out.println("====the size of the collection is 2--" + cachedCRE.getProtectedEmbeddables().size());
-            //follwoing code is commented out due to bug 336651
+            //following code is commented out due to bug 336651
             //cachedCRE.getProtectedEmbeddables().get(0).setName("NewName"+System.currentTimeMillis());
             em = createDSEntityManager();
             beginTransaction(em);

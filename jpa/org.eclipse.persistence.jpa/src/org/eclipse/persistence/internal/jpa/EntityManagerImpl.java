@@ -696,6 +696,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
+            if (lockMode != null && !lockMode.equals(LockModeType.NONE)){
+                checkForTransaction(true);
+            }
             AbstractSession session = this.databaseSession;
             ClassDescriptor descriptor = session.getDescriptor(entityClass);
             // PERF: Avoid uow creation for read-only.
@@ -2621,8 +2624,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public LockModeType getLockMode(Object entity) {
         try {
             verifyOpen();
+            checkForTransaction(true);
             UnitOfWorkImpl uowImpl = getActivePersistenceContext(checkForTransaction(false));
             LockModeType lockMode = LockModeType.NONE;
+
             if (!contains(entity, uowImpl)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_getLockMode_of_not_managed_object", new Object[] { entity }));
             }

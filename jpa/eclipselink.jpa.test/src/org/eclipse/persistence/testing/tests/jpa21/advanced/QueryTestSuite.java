@@ -13,9 +13,12 @@
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -39,10 +42,11 @@ public class QueryTestSuite extends JUnitTestCase {
         
         suite.addTest(new QueryTestSuite("testSetup"));
         
-        // These tests call stored procedures that return a result set. 
         suite.addTest(new QueryTestSuite("testQueryParameterPositional"));
         suite.addTest(new QueryTestSuite("testQueryParameterNamed"));
         suite.addTest(new QueryTestSuite("testTypedQueryParameter"));
+        suite.addTest(new QueryTestSuite("testLockMode"));
+        suite.addTest(new QueryTestSuite("testIncorrectCreateCriteriaQuery"));
         
         return suite;
     }    
@@ -95,6 +99,27 @@ public class QueryTestSuite extends JUnitTestCase {
         assertTrue("Parameter did not return correct type", parameter.getParameterType().equals(String.class));
     }
     
+    public void testLockMode(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("update Employee e set e.firstName = 'Tom'");
+        try{
+            query.getLockMode();
+            fail("Exception not thrown when getting lock mode from an update query.");
+        } catch (IllegalStateException e){}
+        try{
+            query.setLockMode(LockModeType.OPTIMISTIC);
+            fail("Exception not thrown when setting lock mode for an update query.");
+        } catch (IllegalStateException e){}
+    }
     
+    public void testIncorrectCreateCriteriaQuery(){
+        EntityManager em = createEntityManager();
+        try {
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Object> cquery = qbuilder.createQuery();
+            em.createQuery(cquery);
+            fail("IllegalArgumentException not thrown for incorrect create of CriteraQuery.");
+        } catch (IllegalArgumentException e){}
+    }
     
 }

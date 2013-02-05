@@ -41,6 +41,7 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         fullSuite.addTest(EntityGraphTestSuite.suite());
         fullSuite.addTest(QueryTestSuite.suite());
+        fullSuite.addTest(EntityManagerTestSuite.suite());
         
         return fullSuite;
     }

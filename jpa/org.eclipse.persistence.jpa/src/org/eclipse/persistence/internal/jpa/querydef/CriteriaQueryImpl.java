@@ -561,7 +561,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                         query.setExpressionBuilder(list.get(0).getBuilder());
                     }
                 } else if (this.roots == null || this.roots.isEmpty()) {
-                    throw new IllegalStateException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
+                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY"));
                 }
 
             } else {

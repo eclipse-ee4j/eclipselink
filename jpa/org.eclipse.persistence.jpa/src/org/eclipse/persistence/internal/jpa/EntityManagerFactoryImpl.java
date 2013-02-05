@@ -432,6 +432,9 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      *             if the entity manager factory has been closed.
      */
     public PersistenceUnitUtil getPersistenceUnitUtil() {
+        if (!delegate.isOpen()){
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("getpersistenceunitutil_called_on_closed_emf"));
+        }
         return delegate;
     }
 

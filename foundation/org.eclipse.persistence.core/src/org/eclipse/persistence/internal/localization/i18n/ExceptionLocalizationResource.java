@@ -186,6 +186,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "criteria_no_constructor_found", "An exception occured looking on class: {0} for constructor using selection criteria types as arguments.  If this CriteriaQuery was not intended to be a constructor query please verify that the selection matches the return type."},
                                            { "MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT", "'multiSelect' was invoked on a CriteriaQuery with a primitive result type.  Either the return type is incorrect or 'select' should be used instead."},
                                            { "CRITERIA_NON_LITERAL_PASSED_TO_IN", "'in(Expression<?>... values)' was invoked with an expression type: {0} that was neither a literal nor a parameter.  This is not supported."},
+                                           { "CRITERIA_NO_ROOT_FOR_COMPOUND_QUERY", "Attempting to create a Criteria query with no Root."},
                                            { "NO_PARAMETER_WITH_NAME", "No parameter with name : {0} was found within the query: {1}."},
                                            { "NO_PARAMETER_WITH_INDEX", "No parameter with index : {0} was found within the query: {1}."},
                                            { "INCORRECT_PARAMETER_TYPE", "The parameter at index : {0} was not of type: {1}."},
@@ -230,8 +231,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "no_entity_graph_of_name", "No EntityGraph exists with name {0}"},
                                            { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"},
                                            { "operation_not_supported", "Calling {0} on a {1} is not supported by the specification."},
-                                           { "pu_configured_for_resource_local", "Unable to create EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."}
-                                           
+                                           { "pu_configured_for_resource_local", "Unable to create EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."},
+                                           { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."}                                           
                                         };
     /**
      * Return the lookup table.

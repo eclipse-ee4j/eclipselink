@@ -58,6 +58,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         
         // These tests call stored procedures that return a result set. 
         suite.addTest(new EntityManagerFactoryTestSuite("testAddNamedQuery"));
+        suite.addTest(new EntityManagerFactoryTestSuite("testGetPersistenceUnitUtilOnCloseEMF"));
         
         return suite;
     }
@@ -109,6 +110,15 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         for (int i = firstResult.size()-1; i> -1; --i){
             assertEquals("Results do not match", firstResult.get(i).getId(), secondResult.get(i).getId());
         }
+    }
+    
+    public void testGetPersistenceUnitUtilOnCloseEMF(){
+        EntityManagerFactory emf = getEntityManagerFactory();
+        closeEntityManagerFactory();
+        try{
+            emf.getPersistenceUnitUtil();
+            fail("IllegalStateException not thrown when calling getPersistenceUnitUtil on a closed EMF.");
+        } catch (IllegalStateException e){}
     }
     
 }
