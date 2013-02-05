@@ -645,6 +645,10 @@ public class MappingsGenerator {
             }
             
             if (reference != null ||  componentType.isArray()){
+            	  if (property.isXmlIdRef() || property.isSetXmlJoinNodes()) {
+                      return generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, componentType);
+                  }
+            	
                 return generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, componentType.getQualifiedName());
             }
             return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
@@ -2466,11 +2470,33 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        mapping.setReferenceClassName(referenceClass.getQualifiedName());
+        String referenceClassName = referenceClass.getQualifiedName();
+        
 
         JavaClass collectionType = property.getType();
+
+        if (collectionType.isArray()){
+            JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
+            JavaClass componentType = collectionType.getComponentType();
+            if(componentType.isArray()) {
+                Class adaptedClass = classToGeneratedClasses.get(componentType.getName());
+                referenceClassName = adaptedClass.getName();
+                accessor.setAdaptedClassName(referenceClassName);
+                JavaClass baseComponentType = getBaseComponentType(componentType);
+                if (baseComponentType.isPrimitive()){
+                    Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
+                    accessor.setComponentClass(primitiveClass);
+                } else {
+                    accessor.setComponentClassName(baseComponentType.getQualifiedName());
+                }
+            } else {
+                accessor.setComponentClassName(componentType.getQualifiedName());
+            }
+            mapping.setAttributeAccessor(accessor);
+        }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
+        mapping.setReferenceClassName(referenceClassName);
         
         // here we need to setup source/target key field associations
         if (property.isSetXmlJoinNodes()) {

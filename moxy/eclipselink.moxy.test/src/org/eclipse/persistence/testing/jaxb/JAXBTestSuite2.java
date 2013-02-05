@@ -45,6 +45,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementE
 import org.eclipse.persistence.testing.jaxb.xmlenum.InvalidEnumValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumRootElemTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.array.XmlIdRefArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectWhitespaceTestCases;
@@ -67,6 +68,7 @@ public class JAXBTestSuite2 extends TestCase {
         // suite.addTestSuite(XmlSchemaTypeDateTestCases.class);
         // suite.addTestSuite(XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
+        suite.addTestSuite(XmlIdRefArrayTestCases.class);
         suite.addTestSuite(XmlIdRefObjectTestCases.class);
         suite.addTestSuite(XmlIdRefObjectWhitespaceTestCases.class);
         suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
