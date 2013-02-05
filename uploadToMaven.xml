@@ -30,6 +30,8 @@
 *     mmeswani - initial API and implementation (checked in by tware)
 *     egwin    - updated variables as they have changed in the rest of the system
 *                updated svnversion to not break build, and default if exec fails
+*     egwin    - updated for publishing to Maven Central, add ability to override
+*                destination URL (to pub elsewhere override ${maven.repo.url})
 #******************************************************************************/-->
 <!-- Variables Needed:
 *         release.version - need three tokens: Major.Minor.Service
@@ -59,8 +61,10 @@
 
     <!-- "maven dir" defined for later use ensuring only single upload occurs -->
     <property name="maven.repo.dir" value="${eclipselink.root.download.dir}/maven.repo"/>
-    <!-- The repository where maven artifacts will be uploaded -->
-    <artifact:remoteRepository id="eclipselink.repository" url="file:///${maven.repo.dir}" />
+    <!-- Setup a generic URL variable that can be overridden for publishing to other locations -->
+    <property name="maven.repo.url" value="file:///${maven.repo.dir}"/>
+    <!-- The default repository where maven artifacts will be uploaded -->
+    <artifact:remoteRepository id="eclipselink.repository" url="${maven.repo.url}" />
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
