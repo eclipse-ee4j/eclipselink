@@ -14,16 +14,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-
 import java.util.Vector;
+
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 public class PersistenceContentHandler implements ContentHandler {
     private static final String NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence";
@@ -148,7 +148,8 @@ public class PersistenceContentHandler implements ContentHandler {
                 persistenceUnitInfo.getManagedClassNames().add(string);
                 return;
             } else if (ELEMENT_EXCLUDE_UNLISTED_CLASSES.equals(localName)) {
-                if (string.equals("true") || string.equals("1")){
+                if (string.equals("true") || string.equals("1") || string.equals("")){
+                    // default <exclude-unlisted-classes/>  to true as well (an empty string)
                     persistenceUnitInfo.setExcludeUnlistedClasses(true);
                 } else {
                     persistenceUnitInfo.setExcludeUnlistedClasses(false);
