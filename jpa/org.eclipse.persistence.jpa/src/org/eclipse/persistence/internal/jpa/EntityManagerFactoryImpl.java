@@ -291,14 +291,14 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager() {
-        return createEntityManagerImpl(null, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(null, null);
     }
 
     /**
      * PUBLIC: Returns an EntityManager for this deployment.
      */
     public EntityManager createEntityManager(Map properties) {
-        return createEntityManagerImpl(properties, SynchronizationType.SYNCHRONIZED);
+        return createEntityManagerImpl(properties, null);
     }
 
     public EntityManager createEntityManager(SynchronizationType synchronizationType) {
