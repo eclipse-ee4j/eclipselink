@@ -22,6 +22,8 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Organizer</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Responsibility</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Endorser</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Item</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.Order</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>

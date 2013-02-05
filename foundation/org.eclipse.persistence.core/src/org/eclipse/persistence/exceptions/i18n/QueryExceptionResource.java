@@ -17,6 +17,8 @@
  *       - 341940: Add disable/enable allowing native queries
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls 
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -189,7 +191,9 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6173", "Connection pool [{0}] failed to fail-over, all servers are dead."},
        { "6174", "No value was provided for the session property [{0}]. This exception is possible when using additional criteria or tenant discriminator columns without specifying the associated contextual property. These properties must be set through Entity Manager, Entity Manager Factory or persistence unit properties. If using native EclipseLink, these properties should be set directly on the session."},
        { "6175", "Native SQL queries have been disabled. This is done either by setting the persistence unit property '" + PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES + "' to false or having at least one multitenant entity defined in your persistence unit. Check your persistence unit specification. To allow native sql queries, set this property to true. Alternatively, individual queries may bypass this setting by setting the '" + QueryHints.ALLOW_NATIVE_SQL_QUERY + "' query hint to true."},
-       { "6176", "An exception was thrown while initializing the constructor from the class [{0}]:  [{1}]"}
+       { "6176", "An exception was thrown while initializing the constructor from the class [{0}]:  [{1}]"},
+       { "6177", "The column result [{0}] was not found in the results of the query."}
+       
     };
 
     /**

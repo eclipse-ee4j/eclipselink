@@ -9,11 +9,14 @@
  *
  * Contributors:
  *     tware - initial implementation 
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
 
+import javax.persistence.ColumnResult;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
@@ -27,10 +30,13 @@ import javax.persistence.criteria.Root;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Item;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Order;
 
 public class QueryTestSuite extends JUnitTestCase {
 
@@ -55,6 +61,8 @@ public class QueryTestSuite extends JUnitTestCase {
         suite.addTest(new QueryTestSuite("testCriteriaGetGroupList"));
         suite.addTest(new QueryTestSuite("testCriteriaIsNegated"));
         suite.addTest(new QueryTestSuite("testCriteriaGetJoinType"));
+        suite.addTest(new QueryTestSuite("testConstructorResultQuery"));
+        
         return suite;
     }    
     
@@ -129,6 +137,47 @@ public class QueryTestSuite extends JUnitTestCase {
         } catch (IllegalArgumentException e){}
     }
     
+    public void testConstructorResultQuery() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            
+            Item item = new Item();
+            item.setName("Nails");
+            
+            Order order = new Order();
+            order.setQuantity(500);
+            
+            order.setItem(item);
+            
+            em.persist(item);
+            em.persist(order);
+            
+            commitTransaction(em);
+            
+            // Mapped column results are:
+            // @ColumnResult(name = "O_ID", type=String.class), 
+            // @ColumnResult(name = "O_QUANTITY"), 
+            // @ColumnResult(name = "O_ITEM_NAME") 
+            
+            // NOTE: expecting O_ITEM_NAME but the query is returning O_ITEM.
+            
+            em.createNativeQuery("SELECT o.ORDER_ID AS 'O_ID', o.QUANTITY AS 'O_QUANTITY', i.NAME AS 'O_ITEM' FROM JPA21_ORDER o, JPA21_ITEM i WHERE o.ITEM_ID = i.ID", "OrderConstructorResult").getResultList();
+        
+            fail("No exceptions thrown. Expecting a QueryException (and not a NPE)");
+        } catch (NullPointerException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("Null pointer exception caught on constructor result query.");
+        } catch (QueryException e) {
+            assertTrue(e.getErrorCode() == QueryException.COLUMN_RESULT_NOT_FOUND);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
     public void testGetFlushMode(){
         EntityManager em = createEntityManager();
         Query query = em.createQuery("select e from Employee e");

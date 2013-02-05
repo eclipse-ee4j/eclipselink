@@ -17,6 +17,8 @@
  *       - 341940: Add disable/enable allowing native queries
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls 
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -198,6 +200,7 @@ public class QueryException extends ValidationException {
     public final static int MISSING_CONTEXT_PROPERTY_FOR_PROPERTY_PARAMETER_EXPRESSION = 6174;
     public static final int NATIVE_SQL_QUERIES_ARE_DISABLED = 6175;
     public final static int EXCEPTION_WHILE_LOADING_CONSTRUCTOR = 6176;
+    public final static int COLUMN_RESULT_NOT_FOUND = 6177;
     
     /**
      * INTERNAL:
@@ -1430,6 +1433,14 @@ public class QueryException extends ValidationException {
         return queryException;
     }
 
+    public static QueryException columnResultNotFound(DatabaseField dbField) {
+        Object[] args = { dbField };
+
+        QueryException queryException = new QueryException(ExceptionMessageGenerator.buildMessage(QueryException.class, COLUMN_RESULT_NOT_FOUND, args));
+        queryException.setErrorCode(COLUMN_RESULT_NOT_FOUND);
+        return queryException;
+    }
+    
     public static QueryException compatibleTypeNotSet(DatabaseType type) {
         Object[] args = { type };
 

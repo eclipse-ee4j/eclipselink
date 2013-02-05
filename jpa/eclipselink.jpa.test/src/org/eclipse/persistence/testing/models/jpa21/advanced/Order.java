@@ -1,0 +1,92 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at 
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException 
+ ******************************************************************************/ 
+package org.eclipse.persistence.testing.models.jpa21.advanced;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@SqlResultSetMapping(
+    name="OrderConstructorResult",
+    classes = {
+        @ConstructorResult(
+            targetClass = Order.class,
+            columns = { 
+                @ColumnResult(name = "O_ID"), 
+                @ColumnResult(name = "O_QUANTITY"), 
+                @ColumnResult(name = "O_ITEM_NAME") 
+            }
+        )
+    }
+)
+@Entity
+@Table(name="JPA21_ORDER")
+public class Order {
+    @Id
+    @GeneratedValue
+    @Column(name="ORDER_ID")
+    private Integer orderId;
+    
+    @Basic
+    private int quantity;
+    
+    @OneToOne
+    @JoinColumn(name = "ITEM_ID")
+    private Item item;
+
+    @Transient
+    private String itemName;
+    
+    public Order() {}
+    
+    // Constructor result
+    public Order(Integer id, Integer quantity, String itemName) {
+        this.orderId = id;
+        this.quantity = quantity;
+        this.itemName = itemName;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+    
+    public Integer getOrderId() { 
+        return orderId; 
+    }
+    
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+    
+    public void setOrderId(Integer id) { 
+        this.orderId = id; 
+    }
+    
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+}

@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -181,7 +183,13 @@ public class ConstructorResult extends SQLResult {
             DatabaseField resultField = result.getColumn();
             
             if (resultField.getType() == null) {
-                constructorArgTypes[i] = record.get(resultField).getClass();    
+                Object recordResultField = record.get(resultField);
+                
+                if (recordResultField == null) {
+                    throw QueryException.columnResultNotFound(resultField);
+                } else {
+                    constructorArgTypes[i] = recordResultField.getClass();
+                }
             } else {
                 constructorArgTypes[i] = resultField.getType();
             }

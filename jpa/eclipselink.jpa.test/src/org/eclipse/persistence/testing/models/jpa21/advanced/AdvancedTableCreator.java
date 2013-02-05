@@ -20,6 +20,8 @@
  *       - 374688: JPA 2.1 Converter support
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     02/06/2013-2.5 Guy Pelletier 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -58,6 +60,8 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSHOETable());
         addTableDefinition(buildSHOETAGTable());
         addTableDefinition(buildSPRINTERTable());
+        addTableDefinition(buildITEMTable());
+        addTableDefinition(buildORDERTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -409,6 +413,33 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildITEMTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_ITEM");
+    
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(true);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("NAME");
+        field.setTypeName("VARCHAR");
+        field.setSize(40);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+        
+        return table;
+    }
+    
     public TableDefinition buildLARGEPROJECTTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA21_LPROJECT");
@@ -443,6 +474,45 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("JPA21_EMPLOYEE.EMP_ID");
+        table.addField(field);
+    
+        return table;
+    }
+    
+    public TableDefinition buildORDERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA21_ORDER");
+
+        FieldDefinition field = new FieldDefinition();
+        field.setName("ORDER_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(false);
+        field.setIsPrimaryKey(true);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("QUANTITY");
+        field.setTypeName("NUMBER");
+        field.setSize(15);
+        field.setSubSize(0);
+        field.setIsPrimaryKey(false);
+        field.setIsIdentity(false);
+        field.setUnique(false);
+        field.setShouldAllowNull(false);
+        table.addField(field);
+    
+        field = new FieldDefinition();
+        field.setName("ITEM_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_ITEM.ID");
         table.addField(field);
     
         return table;
