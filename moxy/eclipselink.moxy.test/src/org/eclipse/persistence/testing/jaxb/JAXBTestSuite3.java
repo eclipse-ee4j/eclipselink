@@ -16,30 +16,17 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
-import org.eclipse.persistence.testing.jaxb.cycle.CycleRecoverableTestCases;
-import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
-import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNSTestCases;
-import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNoWrapperTestCases;
-import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByPackageWithIndexTestCases;
-import org.eclipse.persistence.testing.jaxb.jaxbfragment.JAXBFragmentTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
-import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperExternalTestCases;
-import org.eclipse.persistence.testing.jaxb.map.MapElementWrapperTestCases;
-import org.eclipse.persistence.testing.jaxb.map.MapNamespaceBarTestCases;
-import org.eclipse.persistence.testing.jaxb.map.MapNamespaceFooTestCases;
-import org.eclipse.persistence.testing.jaxb.map.MapTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.DefaultNSPrefixMapperSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperContextTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperMapTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
 import org.eclipse.persistence.testing.jaxb.properties.PropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
-import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.DefaultValueTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.JSONUnmarshalAutoDetectTestCases;
@@ -75,9 +62,6 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.helper.JAXBHelperTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases.class);
         
-        suite.addTest(org.eclipse.persistence.testing.jaxb.substitution.SubstitutionTestSuite.suite());
-
-        suite.addTest(org.eclipse.persistence.testing.jaxb.innerclasses.InnerClassTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.inheritance.interfaces.InterfacesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.MarshalSchemaValidationTestCases.class);
@@ -106,8 +90,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateEmptyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.NonNegativeIntegerSchemaTypeTestCases.class);
-        suite.addTest(RefreshTestSuite.suite());
-        
+                
         suite.addTestSuite(JAXBContextByClassArrayWithIndexTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
@@ -133,8 +116,6 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(XMLBindingsWithExternalMetadataTestCases.class);
         suite.addTestSuite(XMLSchemaModelTestCases.class);
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);
-        suite.addTest(CollectionsTestSuite.suite());
-        suite.addTest(DefaultValueTestSuite.suite());
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(PrefixMapperMapTestCases.class);
@@ -142,20 +123,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(DefaultNSPrefixMapperSimpleTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);
-        suite.addTestSuite(PropertyTestCases.class);        
-        suite.addTest(SunCompatibilityTestSuite.suite());
-        
-        suite.addTestSuite(JAXBEmployeeTestCases.class);
-        suite.addTestSuite(JAXBEmployeeNoWrapperTestCases.class);
-        suite.addTestSuite(JAXBEmployeeNSTestCases.class);
-        suite.addTestSuite(JAXBFragmentTestCases.class);
-        suite.addTest(org.eclipse.persistence.testing.jaxb.eventhandler.EventHandlerTestSuite.suite());
-        
-        suite.addTestSuite(MapTestCases.class);
-        suite.addTestSuite(MapElementWrapperTestCases.class);
-        suite.addTestSuite(MapElementWrapperExternalTestCases.class);
-        suite.addTestSuite(MapNamespaceBarTestCases.class);
-        suite.addTestSuite(MapNamespaceFooTestCases.class);
+        suite.addTestSuite(PropertyTestCases.class);               
         		
         return suite;
     }
