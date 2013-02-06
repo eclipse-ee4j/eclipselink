@@ -169,6 +169,9 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the list of grouping expressions
      */
     public List<Expression<?>> getGroupList(){
+        if (this.groupBy == null){
+            this.groupBy = new ArrayList<Expression<?>>();
+        }
         return this.groupBy;
     }
 
