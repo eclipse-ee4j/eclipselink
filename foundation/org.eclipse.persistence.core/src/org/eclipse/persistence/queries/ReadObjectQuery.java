@@ -505,7 +505,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 return null;
             }
             ResultSetMetaData metaData = resultSet.getMetaData();
-            return this.descriptor.getObjectBuilder().buildObjectFromResultSet(this, null, resultSet, session, accessor, metaData, platform);
+            return this.descriptor.getObjectBuilder().buildObjectFromResultSet(this, null, resultSet, session, accessor, metaData, platform, call.getFields(), call.getFieldsArray());
         } catch (SQLException exception) {
             exceptionOccured = true;
             DatabaseException commException = accessor.processExceptionForCommError(session, exception, call);

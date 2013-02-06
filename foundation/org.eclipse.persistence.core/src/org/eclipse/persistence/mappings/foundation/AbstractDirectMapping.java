@@ -633,6 +633,40 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
     /**
      * INTERNAL:
+     * Same as getObjectValue method, but without checking fieldValue's class.
+     * Used in case the fieldValue class is already known to be the same as attributeClassification.
+     */
+    public Object getObjectValueWithoutClassCheck(Object fieldValue, Session session) {
+        if ((fieldValue == null) && (this.nullValue != null)) {// Translate default null value
+            return this.nullValue;
+        }
+        // PERF: Direct variable access.
+        Object attributeValue = fieldValue;
+
+        // Allow for user defined conversion to the object value.
+        if (this.converter != null) {
+            attributeValue = this.converter.convertDataValueToObjectValue(attributeValue, session);
+        } else {
+            // PERF: Avoid conversion check when not required.
+            if (attributeValue == null) {
+                if (!this.bypassDefaultNullValueCheck) {                    
+                    try {
+                        attributeValue = session.getDatasourcePlatform().convertObject(null, this.attributeClassification);
+                    } catch (ConversionException e) {
+                        throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                    }
+                }
+            }
+        }
+        if (attributeValue == null) {// Translate default null value, conversion may have produced null.
+            attributeValue = this.nullValue;
+        }
+
+        return attributeValue;
+    }
+
+    /**
+     * INTERNAL:
      */
     @Override
     public boolean isAbstractDirectMapping() {
@@ -1191,13 +1225,14 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     @Override
     public Object valueFromResultSet(ResultSet resultSet, ObjectBuildingQuery query, AbstractSession session, DatabaseAccessor accessor, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform) throws SQLException {
         if (this.attributeObjectClassification == ClassConstants.STRING) {
-            return resultSet.getString(columnNumber);
+            return getObjectValueWithoutClassCheck(resultSet.getString(columnNumber), session);
         } else if (this.attributeObjectClassification == ClassConstants.LONG) {
-            return resultSet.getLong(columnNumber);
+            return getObjectValueWithoutClassCheck(resultSet.getLong(columnNumber), session);
         } else if (this.attributeObjectClassification == ClassConstants.INTEGER) {
-            return resultSet.getInt(columnNumber);
+            return getObjectValueWithoutClassCheck(resultSet.getInt(columnNumber), session);
         }
-        return accessor.getObject(resultSet, getField(), metaData, columnNumber, platform, true, session);
+        Object fieldValue = accessor.getObject(resultSet, getField(), metaData, columnNumber, platform, true, session);
+        return getObjectValue(fieldValue, session);
     }
 
     protected abstract void writeValueIntoRow(AbstractRecord row, DatabaseField field, Object value);

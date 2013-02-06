@@ -1904,19 +1904,33 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * so can avoid many of the normal checks, only queries that have this criteria
      * can use this method of building objects.
      */
-    public Object buildObjectFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform) throws SQLException {
+    public Object buildObjectFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform, Vector fieldsList, DatabaseField[] fieldsArray) throws SQLException {
         ClassDescriptor descriptor = this.descriptor;
-        DatabaseMapping primaryKeyMapping = this.primaryKeyMappings.get(0);
-        Object primaryKey = primaryKeyMapping.valueFromResultSet(resultSet, query, executionSession, accessor, metaData, 1, platform);
+        int pkFieldsSize = descriptor.getPrimaryKeyFields().size();
+        DatabaseMapping primaryKeyMapping = null;
+        AbstractRecord row = null;
+        Object[] values = null;
+        Object primaryKey;
+        if (isSimple && pkFieldsSize == 1) {
+            primaryKeyMapping = this.primaryKeyMappings.get(0);
+            primaryKey = primaryKeyMapping.valueFromResultSet(resultSet, query, executionSession, accessor, metaData, 1, platform);
+        } else {
+            values = new Object[fieldsArray.length];
+            row = new ArrayRecord(fieldsList, fieldsArray, values);
+            accessor.populateRow(fieldsArray, values, resultSet, metaData, executionSession, 0, pkFieldsSize);
+            primaryKey = extractPrimaryKeyFromRow(row, executionSession);
+        }
 
         UnitOfWorkImpl unitOfWork = null;
         AbstractSession session = executionSession;
         boolean isolated = !descriptor.getCachePolicy().isSharedIsolation();
         if (session.isUnitOfWork()) {
             unitOfWork = (UnitOfWorkImpl)executionSession;
+            isolated |= unitOfWork.wasTransactionBegunPrematurely() && descriptor.shouldIsolateObjectsInUnitOfWorkEarlyTransaction();
         }
         
         CacheKey cacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, query.isCacheCheckComplete());
+        CacheKey cacheKeyToUse = cacheKey;
         CacheKey parentCacheKey = null;
         Object object = cacheKey.getObject();
         try {
@@ -1928,6 +1942,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 // Need to lookup in the session.
                 session = unitOfWork.getParentIdentityMapSession(query);
                 parentCacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, query.isCacheCheckComplete());
+                cacheKeyToUse = parentCacheKey;
                 object = parentCacheKey.getObject();
             }
             // If the object is not in the cache, it needs to be built, this is building in the unit of work if isolated.
@@ -1944,12 +1959,34 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 }
                 
-                primaryKeyMapping.setAttributeValueInObject(object, primaryKey);
                 List mappings = descriptor.getMappings();            
                 int size = mappings.size();
-                for (int index = 1; index < size; index++) {
-                    DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-                    mapping.readFromResultSetIntoObject(resultSet, object, query, session, accessor, metaData, index + 1, platform);
+                
+                if (isSimple) {
+                    int shift = descriptor.getTables().size() * pkFieldsSize;
+                    if (primaryKeyMapping != null) {
+                        // simple primary key - set pk directly through the mapping
+                        primaryKeyMapping.setAttributeValueInObject(object, primaryKey);
+                    } else {
+                        // composite primary key - set pk using pkRow
+                        boolean isTargetProtected = session.isProtectedSession();
+                        for (int index = 0; index < pkFieldsSize; index++) {
+                            DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                            mapping.readFromRowIntoObject(row, joinManager, object, cacheKeyToUse, query, session, isTargetProtected);
+                        }
+                    }
+                    // set the rest using mappings directly
+                    for (int index = pkFieldsSize; index < size; index++) {
+                        DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                        mapping.readFromResultSetIntoObject(resultSet, object, query, session, accessor, metaData, index + shift, platform);
+                    }
+                } else {
+                    boolean isTargetProtected = session.isProtectedSession();
+                    accessor.populateRow(fieldsArray, values, resultSet, metaData, session, pkFieldsSize, fieldsArray.length);
+                    for (int index = 0; index < size; index++) {
+                        DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+                        mapping.readFromRowIntoObject(row, joinManager, object, cacheKeyToUse, query, session, isTargetProtected);
+                    }
                 }
                 
                 ((PersistenceEntity)object)._persistence_setId(primaryKey);
@@ -1960,6 +1997,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
             if ((unitOfWork != null) && !isolated) {
                 // Need to clone the object in the unit of work.
+                // TODO: Doesn't work all the time
+                // With one setup (jpa2.performance tests) produces a shallow clone (which is good enough for isSimple==true case only),
+                // in other (jpa.advanced tests) - just a brand new empty object.
                 Object clone = instantiateWorkingCopyClone(object, unitOfWork);
                 ((PersistenceEntity)clone)._persistence_setId(cacheKey.getKey());
                 unitOfWork.getCloneMapping().put(clone, clone);

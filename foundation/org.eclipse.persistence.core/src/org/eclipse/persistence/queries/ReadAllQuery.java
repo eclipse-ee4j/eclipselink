@@ -479,14 +479,14 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         call = this.queryMechanism.cursorSelectAllRows();
         Statement statement = call.getStatement();
         ResultSet resultSet = call.getResult();
-        DatabaseAccessor accessor = (DatabaseAccessor)((List<Accessor>)this.accessors).get(0);
+        DatabaseAccessor accessor = (DatabaseAccessor)getAccessor();
         boolean exceptionOccured = false;
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
             List results = new ArrayList();
             ObjectBuilder builder = this.descriptor.getObjectBuilder();
             while (resultSet.next()) {
-                results.add(builder.buildObjectFromResultSet(this, this.joinedAttributeManager, resultSet, session, accessor, metaData, platform));
+                results.add(builder.buildObjectFromResultSet(this, this.joinedAttributeManager, resultSet, session, accessor, metaData, platform, call.getFields(), call.getFieldsArray()));
             }
             return results;
         } catch (SQLException exception) {

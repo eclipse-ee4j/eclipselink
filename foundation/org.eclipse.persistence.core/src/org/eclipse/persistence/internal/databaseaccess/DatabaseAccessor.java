@@ -1076,6 +1076,18 @@ public class DatabaseAccessor extends DatasourceAccessor {
         // Row creation is optimized through sharing the same fields for the entire result set.
         return new ArrayRecord(fields, fieldsArray, values);
     }
+    public void populateRow(DatabaseField[] fieldsArray, Object[] values, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session, int startIndex, int endIndex) throws DatabaseException {
+        // PERF: Pass platform and optimize data flag.
+        DatabasePlatform platform = getPlatform();
+        boolean optimizeData = platform.shouldOptimizeDataConversion();
+        for (int index = startIndex; index < endIndex; index++) {
+            DatabaseField field = fieldsArray[index];
+            // Field can be null for fetch groups.
+            if (field != null) {
+                values[index] = getObject(resultSet, field, metaData, index + 1, platform, optimizeData, session);
+            }
+        }
+    }
 
     /**
      * INTERNAL:

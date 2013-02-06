@@ -2723,7 +2723,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * singleton primary key, direct mapped, simple type, no inheritance, uow isolated objects.
      */
     public void setIsResultSetOptimizedQuery(boolean isResultSetOptimizedQuery) {
-        this.isResultSetOptimizedQuery = isResultSetOptimizedQuery;
+        if (this.isResultSetOptimizedQuery != isResultSetOptimizedQuery) {
+            setIsPrepared(false);
+            this.isResultSetOptimizedQuery = isResultSetOptimizedQuery;
+        }
     }
     
     /**
