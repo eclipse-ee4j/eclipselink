@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
@@ -19,6 +21,8 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -48,6 +52,9 @@ public class QueryTestSuite extends JUnitTestCase {
         suite.addTest(new QueryTestSuite("testLockMode"));
         suite.addTest(new QueryTestSuite("testIncorrectCreateCriteriaQuery"));
         suite.addTest(new QueryTestSuite("testGetFlushMode"));
+        suite.addTest(new QueryTestSuite("testCriteriaGetGroupList"));
+        suite.addTest(new QueryTestSuite("testCriteriaIsNegated"));
+        suite.addTest(new QueryTestSuite("testCriteriaGetJoinType"));
         return suite;
     }    
     
@@ -130,6 +137,40 @@ public class QueryTestSuite extends JUnitTestCase {
         } catch (NullPointerException npe){
             fail("NPE thrown on getFlushMode()");
         }
+    }
+    
+    public void testCriteriaGetGroupList(){
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaQuery query = qb.createQuery(Employee.class);
+        List groupList = query.getGroupList();
+        assertNotNull("getGroupList returned null.", groupList);
+    }
+    
+    public void testCriteriaIsNegated(){
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+
+        Boolean result = qbuilder.equal(qbuilder.literal("1"), "1").isNegated();
+        assertFalse(result);
+
+        result = qbuilder.equal(qbuilder.literal("1"), "1").not().isNegated();
+        assertTrue(result);
+
+        result = qbuilder.not(qbuilder.equal(qbuilder.literal("1"), "1")).isNegated();
+        assertTrue(result);
+        
+        result = qbuilder.disjunction().not().isNegated();
+        assertTrue(result);
+    }
+    
+    public void testCriteriaGetJoinType(){
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        Root<Employee> employee = query.from(Employee.class);
+        JoinType jt =  employee.join("phoneNumbers", JoinType.LEFT).getJoinType();
+        assertEquals("The join type was incorect.", jt, JoinType.LEFT);
     }
     
 }

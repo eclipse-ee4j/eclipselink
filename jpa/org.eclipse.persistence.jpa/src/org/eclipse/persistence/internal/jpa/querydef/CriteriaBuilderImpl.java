@@ -479,7 +479,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             parentNode = ((InternalSelection)restriction).getCurrentNode().not();
             compoundExpressions = buildList(restriction);
         }
-        return new CompoundExpressionImpl(this.metamodel, parentNode, compoundExpressions, name);
+        CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, parentNode, compoundExpressions, name);
+        expr.setIsNegated(true);
+        return expr;
     }
 
     /**

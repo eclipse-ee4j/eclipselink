@@ -38,6 +38,8 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  */
 public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> implements Predicate{
     
+    protected boolean isNegated = false;
+    
     public <T> CompoundExpressionImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, (Class<Boolean>)ClassConstants.BOOLEAN, expressionNode, compoundExpressions);
     }
@@ -75,14 +77,16 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
         return new ArrayList();
     }
 
+    
     /**
      * Has negation been applied to the predicate.
      * 
      * @return boolean indicating if the predicate has been negated
      */
     public boolean isNegated(){
-        return false;
+        return isNegated;
     }
+    
     /**
      * Apply negation to the predicate.
      * 
@@ -91,8 +95,16 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public Predicate not(){
         List<Expression<?>> list = new ArrayList();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
+        CompoundExpressionImpl expr = new CompoundExpressionImpl(this.metamodel, this.currentNode.not(), list, "not");
+        expr.setIsNegated(true);
+        return expr;
     }
+    
+    
+    protected void setIsNegated(boolean isNegated){
+        this.isNegated = isNegated;
+    }
+    
     /**
      * @param operator the operator to set
      */

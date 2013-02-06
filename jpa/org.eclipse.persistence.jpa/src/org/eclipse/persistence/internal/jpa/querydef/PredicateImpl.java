@@ -37,7 +37,6 @@ import javax.persistence.metamodel.Metamodel;
 public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
     
     protected BooleanOperator booloperator;
-    protected boolean isNegated = false;
     
     public <T> PredicateImpl (Metamodel metamodel, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> parentExpressions, BooleanOperator operator){
         super(metamodel, expressionNode, parentExpressions);
@@ -64,30 +63,25 @@ public class PredicateImpl extends CompoundExpressionImpl implements Predicate {
         return (List<Expression<Boolean>>) this.expressions;
     }
 
-    
-    /**
-     * Has negation been applied to the predicate.
-     * 
-     * @return boolean indicating if the predicate has been negated
-     */
-    public boolean isNegated(){
-        return isNegated;
-    }
     /**
      * Apply negation to the predicate.
      * 
      * @return the negated predicate
      */
     public Predicate not(){
+        PredicateImpl predicateImpl = null;
         if (this.currentNode == null){
-            return new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+            predicateImpl = new PredicateImpl(this.metamodel, null, null, BooleanOperator.OR);
+            predicateImpl.setIsNegated(true);
+            return predicateImpl;
         }
         List<Expression<?>> list = new ArrayList();
         list.add(this);
-        return new PredicateImpl(this.metamodel, this.currentNode.not(), list, this.booloperator);
+        predicateImpl = new PredicateImpl(this.metamodel, this.currentNode.not(), list, this.booloperator);
+        predicateImpl.setIsNegated(true);
+        return predicateImpl;
     }
-    
-    
+
     /**
      * @param operator the operator to set
      */
