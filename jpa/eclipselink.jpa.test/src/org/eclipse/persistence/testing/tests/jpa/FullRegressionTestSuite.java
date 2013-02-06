@@ -48,7 +48,7 @@ import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggrega
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
+//import org.eclipse.persistence.testing.tests.jpa.deployment.CompositeEnumerationTest;
 import org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAPITests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupMergeWithCacheTests;
@@ -251,9 +251,9 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase.suite());
 
         // OSGi Deployment
-        try {
-            fullSuite.addTestSuite(CompositeEnumerationTest.class);
-        } catch (Throwable ignore) {} // OSgi may not be on classpath.
+        //try {
+        //    fullSuite.addTestSuite(CompositeEnumerationTest.class);
+        //} catch (Throwable ignore) {} // OSgi may not be on classpath.
 
         // JPA 2.0 Metamodel model
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelTestSuite.suite());

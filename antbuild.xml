@@ -394,9 +394,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.weaving}"          target="jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="jar"/>
 

@@ -651,6 +651,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/deployment/CompositeEnumerationTest.java"/>
             <classpath>
                 <path refid="compile.path"/>
             </classpath>
@@ -675,6 +676,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/deployment/CompositeEnumerationTest.java"/>
             <classpath>
                 <path refid="jpa21.compile.path"/>
             </classpath>
