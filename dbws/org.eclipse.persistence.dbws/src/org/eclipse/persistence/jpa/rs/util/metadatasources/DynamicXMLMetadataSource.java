@@ -35,6 +35,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 
 
 /**
@@ -120,8 +121,14 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         if (mapping.isObjectReferenceMapping()){
             xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
         } else if (mapping.isCollectionMapping()){
-            xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
-            xmlElement.setContainerType(((CollectionMapping)mapping).getContainerPolicy().getContainerClassName());
+            if (mapping.isEISMapping()) {
+                // No way to find out the type of the collection from EIS mappings, currently, so just set the container policy here...
+                // It will be fine for simple collections
+                xmlElement.setContainerType(((AbstractCompositeDirectCollectionMapping)mapping).getContainerPolicy().getContainerClassName());
+            } else{
+                xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
+                xmlElement.setContainerType(((CollectionMapping)mapping).getContainerPolicy().getContainerClassName());
+            }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
         }

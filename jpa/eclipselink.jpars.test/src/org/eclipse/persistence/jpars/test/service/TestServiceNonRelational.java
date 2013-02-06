@@ -14,12 +14,14 @@ package org.eclipse.persistence.jpars.test.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
@@ -33,37 +35,29 @@ import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.RestUtils;
-import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.Test;
 
 public class TestServiceNonRelational {
-    private static PersistenceFactoryBase factory;
-    private static PersistenceContext context;
-    private static final String DEFAULT_PU = "jpars_place"; 
-    
-    @BeforeClass
-    public static void setup(){
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
-        factory = null;
-        try{
-            factory = new PersistenceFactoryBase();
-            properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-            properties.put(PersistenceUnitProperties.WEAVING, "static");
-            properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
-            properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-            context = factory.get(DEFAULT_PU, RestUtils.getServerURI(), properties);
-            if (context == null) {
-                throw new Exception("Persistence context could not be created.");
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            fail(e.toString());
+    PersistenceFactoryBase factory = null;;
+    PersistenceContext context = null;
+    private static final String PLACE_PU = "jpars_place";
+    private static final String ZIPS_PU = "jpars_zip";
+
+    @After
+    public void resetContext() {
+        if (factory != null) {
+            factory.close();
+            factory = null;
+        }
+        if (context != null) {
+            context.stop();
         }
     }
-    
+
     @Test
     public void testMarshallPlace() throws Exception {
+        setContext(PLACE_PU);
         PersistenceResource resource = new PersistenceResource();
         resource.setPersistenceFactory(factory);
         DynamicEntity place = (DynamicEntity) context.newEntity("Place");
@@ -73,19 +67,60 @@ public class TestServiceNonRelational {
         place = (DynamicEntity) context.unmarshalEntity("Place", MediaType.APPLICATION_JSON_TYPE, stream);
         (new FetchGroupManager()).setObjectFetchGroup(place, null, null);
         String state = place.get("state");
-        assertNotNull("State of place is null.", place.get("state"));
+        assertNotNull("State of place is null.", state);
         assertTrue("Ontario".equals(state));
     }
-    
-    public static InputStream serializeToStream(Object object, PersistenceContext context, MediaType mediaType){
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testMarshallZips() throws Exception {
+        setContext(ZIPS_PU);
+        PersistenceResource resource = new PersistenceResource();
+        resource.setPersistenceFactory(factory);
+        DynamicEntity zips = (DynamicEntity) context.newEntity("Zips");
+        zips.set("state", "ON");
+        zips.set("city", "Ottawa");
+        zips.set("pop", new Integer(6055));
+        zips.set("id", "1234");
+
+        List<Double> loc = new ArrayList<Double>();
+        loc.add(new Double(45.4214));
+        loc.add(new Double(75.6919));
+        zips.set("loc", loc);
+
+        context.create(null, zips);
+        InputStream stream = serializeToStream(zips, context, MediaType.APPLICATION_XML_TYPE);
+        zips = (DynamicEntity) context.unmarshalEntity("Zips", MediaType.APPLICATION_XML_TYPE, stream);
+        (new FetchGroupManager()).setObjectFetchGroup(zips, null, null);
+        String state = zips.get("state");
+        assertNotNull("State of place is null.", state);
+        assertTrue("ON".equals(state));
+
+        String id = zips.get("id");
+        assertNotNull("id is null.", id);
+        assertTrue("1234".equals(id));
+        assertTrue("Unexpected number of objects in loc", (((Collection) zips.get("loc")).size() == 2));
+    }
+
+    private static InputStream serializeToStream(Object object, PersistenceContext context, MediaType mediaType) throws Exception {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
-            context.marshallEntity(object, mediaType, os);
-        } catch (Exception e){
-            e.printStackTrace();
-            fail(e.toString());
-        }
+        context.marshallEntity(object, mediaType, os);
         ByteArrayInputStream stream = new ByteArrayInputStream(os.toByteArray());
         return stream;
+    }
+
+    private void setContext(String persistenceUnit) throws Exception {
+        context = null;
+        Map<String, Object> properties = new HashMap<String, Object>();
+        ExamplePropertiesLoader.loadProperties(properties);
+        factory = new PersistenceFactoryBase();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        properties.put(PersistenceUnitProperties.WEAVING, "static");
+        properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+        context = factory.get(persistenceUnit, RestUtils.getServerURI(), properties);
+        if (context == null) {
+            throw new Exception("Persistence context could not be created.");
+        }
     }
 }

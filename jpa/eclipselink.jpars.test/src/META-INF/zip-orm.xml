@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="2.4"
+    xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm http://www.eclipse.org/eclipselink/xsds/eclipselink_orm_2_4.xsd">
+    <named-query name="Zips.findAll">
+        <query>select z from Zips z</query>
+    </named-query>
+
+    <entity access="VIRTUAL" class="org.eclipse.persistence.jpars.test.model.dynamic.Zips">
+        <no-sql data-format="MAPPED" data-type="zips"/>
+        <attributes>
+            <id attribute-type="java.lang.String" name="id">
+                <field name="_id"/>
+            </id>
+            <basic attribute-type="java.lang.String" name="state">
+                <field name="state"/>
+            </basic>
+            <basic attribute-type="java.lang.Integer" name="pop">
+                <field name="pop"/>
+            </basic>
+            <basic attribute-type="java.lang.String" name="city">
+                <field name="city"/>
+            </basic>
+            <element-collection attribute-type="java.util.Vector" name="loc" target-class="java.lang.Double">
+                <field name="loc"/>
+            </element-collection>
+        </attributes>
+    </entity>
+</entity-mappings>

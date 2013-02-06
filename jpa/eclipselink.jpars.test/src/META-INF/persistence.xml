@@ -103,6 +103,25 @@
             <property name="javax.persistence.jdbc.user" value="test"/>
             <property name="javax.persistence.jdbc.password" value="test"/>
         </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_zip" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.place.Zips</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/zip-orm.xml"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+        </properties>
     </persistence-unit-->
 
 </persistence>
