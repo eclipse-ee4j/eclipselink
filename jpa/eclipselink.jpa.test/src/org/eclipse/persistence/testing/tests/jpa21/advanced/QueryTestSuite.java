@@ -47,7 +47,7 @@ public class QueryTestSuite extends JUnitTestCase {
         suite.addTest(new QueryTestSuite("testTypedQueryParameter"));
         suite.addTest(new QueryTestSuite("testLockMode"));
         suite.addTest(new QueryTestSuite("testIncorrectCreateCriteriaQuery"));
-        
+        suite.addTest(new QueryTestSuite("testGetFlushMode"));
         return suite;
     }    
     
@@ -120,6 +120,16 @@ public class QueryTestSuite extends JUnitTestCase {
             em.createQuery(cquery);
             fail("IllegalArgumentException not thrown for incorrect create of CriteraQuery.");
         } catch (IllegalArgumentException e){}
+    }
+    
+    public void testGetFlushMode(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select e from Employee e");
+        try{
+            query.getFlushMode();
+        } catch (NullPointerException npe){
+            fail("NPE thrown on getFlushMode()");
+        }
     }
     
 }

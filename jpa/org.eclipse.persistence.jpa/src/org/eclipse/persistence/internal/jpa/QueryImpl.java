@@ -955,7 +955,8 @@ public class QueryImpl {
     public FlushModeType getFlushMode() {
         try {
             entityManager.verifyOpen();
-            if (getDatabaseQueryInternal().getFlushOnExecute())
+            Boolean flushOnExecute = getDatabaseQueryInternal().getFlushOnExecute();
+            if ((flushOnExecute == null) || flushOnExecute)
                 return FlushModeType.AUTO;
             return FlushModeType.COMMIT;
         } catch (RuntimeException e) {
