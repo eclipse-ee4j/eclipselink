@@ -30,6 +30,8 @@
 *     mmeswani - initial API and implementation (checked in by tware)
 *     egwin    - updated variables as they have changed in the rest of the system
 *                updated svnversion to not break build, and default if exec fails
+*     egwin    - updated for publishing to Maven Central, add ability to override
+*                destination URL (to pub elsewhere override ${maven.repo.url})
 #******************************************************************************/-->
 <!-- Variables Needed:
 *         release.version - need three tokens: Major.Minor.Service
@@ -59,8 +61,10 @@
 
     <!-- "maven dir" defined for later use ensuring only single upload occurs -->
     <property name="maven.repo.dir" value="${eclipselink.root.download.dir}/maven.repo"/>
-    <!-- The repository where maven artifacts will be uploaded -->
-    <artifact:remoteRepository id="eclipselink.repository" url="file:///${maven.repo.dir}" />
+    <!-- Setup a generic URL variable that can be overridden for publishing to other locations -->
+    <property name="maven.repo.url" value="file:///${maven.repo.dir}"/>
+    <!-- The default repository where maven artifacts will be uploaded -->
+    <artifact:remoteRepository id="eclipselink.repository" url="${maven.repo.url}" />
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -258,7 +262,7 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with thier own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.sdoapi"        value="${dep.grp}commonj.sdo${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.antlr${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
