@@ -284,7 +284,7 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with thier own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.sdoapi"        value="${dep.grp}commonj.sdo${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.antlr${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
