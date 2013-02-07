@@ -124,6 +124,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
+import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -166,6 +167,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPH;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_GRAPHS;
 
 /**
  * An entity accessor.
@@ -1057,55 +1059,80 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processEntityGraphs() {
         // Process the named query annotations.
         // Look for a @NamedQueries.
-        MetadataAnnotation entityGraphAnno = getAnnotation(JPA_ENTITY_GRAPH);
+        MetadataAnnotation entityGraphsAnno = getAnnotation(JPA_ENTITY_GRAPHS);
+        if (entityGraphsAnno != null){
+            Object[] entityGraphs = entityGraphsAnno.getAttributeArray("value");
+            for (Object entityGraph : entityGraphs){
+                
+                processEntityGraph((MetadataAnnotation)entityGraph);
+            }
+        }else{
+            MetadataAnnotation entityGraphAnno = getAnnotation(JPA_ENTITY_GRAPH);
+            if (entityGraphAnno != null){
+                processEntityGraph(entityGraphAnno);
+            }
+        }
+    }
+    
+    protected void processEntityGraph(MetadataAnnotation entityGraphAnno){
         if (entityGraphAnno != null){
             Map<String, Map<String,AttributeGroup>> managedAttributeGraphs = new HashMap<String, Map<String,AttributeGroup>>();
-            AttributeGroup entityGraph = new AttributeGroup((String) entityGraphAnno.getAttributeString("name"), getDescriptorJavaClass().getName());
+            String name = (String) entityGraphAnno.getAttributeString("name");
+            if (name == null || name.equals("")){
+                name = getEntityName();
+            }
+            AttributeGroup entityGraph = new AttributeGroup(name, getDescriptorJavaClass().getName());
             //build list of managedComponents
             for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
-                String name = (String) ((MetadataAnnotation)managedComponent).getAttributeString("name");
+                String subname = (String) ((MetadataAnnotation)managedComponent).getAttributeString("name");
                 String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
-                AttributeGroup subGraph = new AttributeGroup(name, type);
+                AttributeGroup subGraph = new AttributeGroup(subname, type);
                 
-                Map<String, AttributeGroup> groups = managedAttributeGraphs.get(name);
+                Map<String, AttributeGroup> groups = managedAttributeGraphs.get(subname);
                 if (groups == null){
                     groups = new HashMap<String, AttributeGroup>();
-                    managedAttributeGraphs.put(name,  groups);
+                    managedAttributeGraphs.put(subname,  groups);
                 }
                 groups.put(type, subGraph);
             }
+            //process addAllAttributeNodes
+            if ((Boolean) entityGraphAnno.getAttributeBoolean("includeAllAttributes", false)){
+                for (MappingAccessor accessor : getDescriptor().getMappingAccessors()){
+                    entityGraph.addAttribute(accessor.getAttributeName());
+                }
+            }
             //process root components
-            for (Object component : ((Object[])entityGraphAnno.getAttributeArray("attributes"))){
-                String name = (String) ((MetadataAnnotation)component).getAttributeString("value");
-                String managedComponent = (String) ((MetadataAnnotation)component).getAttribute("subgraphName");
+            for (Object component : ((Object[])entityGraphAnno.getAttributeArray("attributeNodes"))){
+                String attrname = (String) ((MetadataAnnotation)component).getAttributeString("value");
+                String managedComponent = (String) ((MetadataAnnotation)component).getAttribute("subgraph");
                 if (managedComponent != null){
-                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
+                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(attrname);
                     if (managed != null){
-                        entityGraph.addAttribute(name, managed.values());
+                        entityGraph.addAttribute(attrname, managed.values());
                     }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), name, managedComponent}));
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), attrname, managedComponent}));
                     }
                 }else{
-                    entityGraph.addAttribute(name);
+                    entityGraph.addAttribute(attrname);
                 }
-                managedComponent = (String) ((MetadataAnnotation)component).getAttribute("managedKey");
+                managedComponent = (String) ((MetadataAnnotation)component).getAttribute("keySubgraph");
                 if (managedComponent != null){
                     Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
                     if (managed != null){
-                        entityGraph.getItem(name).addKeyGroups(managed.values());
+                        entityGraph.getItem(attrname).addKeyGroups(managed.values());
                     }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), name, managedComponent}));
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), attrname, managedComponent}));
                     }
                 }
             }
             //process managed components
             for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
-                String name = (String) ((MetadataAnnotation)managedComponent).getAttribute("name");
+                String subname = (String) ((MetadataAnnotation)managedComponent).getAttribute("name");
                 String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
-                AttributeGroup subgraph = managedAttributeGraphs.get(name).get(type);
-                for (Object component : ((Object[])((MetadataAnnotation)managedComponent).getAttributeArray("attributes"))){
+                AttributeGroup subgraph = managedAttributeGraphs.get(subname).get(type);
+                for (Object component : ((Object[])((MetadataAnnotation)managedComponent).getAttributeArray("attributeNodes"))){
                     String componentName = (String) ((MetadataAnnotation)component).getAttributeString("value");
-                    String managedComponentName = (String) ((MetadataAnnotation)component).getAttribute("subgraphName");
+                    String managedComponentName = (String) ((MetadataAnnotation)component).getAttribute("subgraph");
                     if (managedComponentName != null){
                         Map<String, AttributeGroup> managed = managedAttributeGraphs.get(componentName);
                         if (managed != null){
@@ -1116,10 +1143,23 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     }else{
                         subgraph.addAttribute(componentName);
                     }
+                    managedComponent = (String) ((MetadataAnnotation)component).getAttribute("keySubgraph");
+                    if (managedComponent != null){
+                        Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
+                        if (managed != null){
+                            entityGraph.getItem(componentName).addKeyGroups(managed.values());
+                        }else{
+                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), componentName, managedComponent}));
+                        }
+                    }
                 }
             }
-            getProject().getProject().getAttributeGroups().add(entityGraph);
+            if (getProject().getProject().getAttributeGroups().containsKey(entityGraph.getName())){
+                throw new IllegalStateException(ExceptionLocalization.buildMessage("named_entity_graph_exists", new Object[]{entityGraph.getName(), getClassName()}));
+            }
+            getProject().getProject().getAttributeGroups().put(entityGraph.getName(), entityGraph);
         }
+
     }
     
 

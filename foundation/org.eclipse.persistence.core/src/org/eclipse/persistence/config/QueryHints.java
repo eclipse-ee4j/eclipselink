@@ -657,7 +657,7 @@ public class QueryHints {
      * Attributes of the represented entity that are not present in the entity graph will be treated
      * as FetchType.LAZY.
      */
-    public static final String JPA_FETCH_GROUP = "javax.persistence.fetchgraph";
+    public static final String JPA_FETCH_GRAPH = "javax.persistence.fetchgraph";
     
     /**
      * "eclipselink.fetch-group.default"

@@ -496,8 +496,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 }
             }
         }
-        for (AttributeGroup group : getProject().getAttributeGroups()){
-            this.attributeGroups.put(group.getName(), group);
+        for (AttributeGroup group : getProject().getAttributeGroups().values()){
+            getAttributeGroups().put(group.getName(), group);
             this.getDescriptor(group.getType()).addAttributeGroup(group);
         }
     }

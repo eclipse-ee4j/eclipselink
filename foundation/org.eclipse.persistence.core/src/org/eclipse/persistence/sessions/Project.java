@@ -124,7 +124,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected List<DatabaseQuery> queries;
 
     /** List of named AttributeGroups - once Project is initialized, these are copied to the Session. */
-    protected List<AttributeGroup> attributeGroups = null;
+    protected Map<String, AttributeGroup> attributeGroups = null;
 
     /** List of queries from JPA that need special processing before execution. */
     protected List<DatabaseQuery> jpaQueries;
@@ -186,7 +186,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.queries = new ArrayList<DatabaseQuery>();
         this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         this.metamodelIdClassMap = new HashMap<String, List<String>>();
-        this.attributeGroups = new ArrayList<AttributeGroup>();
+        this.attributeGroups = new HashMap<String, AttributeGroup>();
     }
 
     /**
@@ -331,7 +331,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * INTERNAL:
      * List of named AttributesGroups that will be copied to the session at initialization time.
      */
-    public List<AttributeGroup> getAttributeGroups(){
+    public Map<String, AttributeGroup> getAttributeGroups(){
         return this.attributeGroups;
     }
     
@@ -513,7 +513,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
             ClassDescriptor descriptor = (ClassDescriptor)ordered.next();
             descriptor.convertClassNamesToClasses(classLoader);
         }
-        for (AttributeGroup group : this.getAttributeGroups()){
+        for (AttributeGroup group : this.getAttributeGroups().values()){
             group.convertClassNamesToClasses(classLoader);
         }
         // Clear old descriptors to allow rehash on new classes.

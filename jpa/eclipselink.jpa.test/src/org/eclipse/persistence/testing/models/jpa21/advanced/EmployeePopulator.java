@@ -1330,6 +1330,7 @@ public class EmployeePopulator {
         }
 
         LargeProject largeProject = basicLargeProjectExample2();
+        largeProject.setExecutive(employeeExample15());
         registerObject(largeProject, "0002");
         return largeProject;
     }
@@ -1340,6 +1341,7 @@ public class EmployeePopulator {
         }
 
         LargeProject largeProject = basicLargeProjectExample3();
+        largeProject.setExecutive(employeeExample15());
         registerObject(largeProject, "0003");
         return largeProject;
     }

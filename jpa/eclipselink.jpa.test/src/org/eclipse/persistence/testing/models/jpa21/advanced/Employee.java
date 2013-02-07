@@ -84,7 +84,6 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
                         @NamedSubgraph(
                                 name="projects",
                                 attributeNodes={
-                                        @NamedAttributeNode("teamLeader"),
                                         @NamedAttributeNode("properties")
                                 }
                         ),

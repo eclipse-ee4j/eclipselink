@@ -1002,7 +1002,7 @@ public class QueryHintsHandler {
     
     protected static class FetchGraphHint extends Hint {
         FetchGraphHint() {
-            super(QueryHints.JPA_FETCH_GROUP, "");
+            super(QueryHints.JPA_FETCH_GRAPH, "");
         }
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
@@ -1022,7 +1022,7 @@ public class QueryHintsHandler {
                         fg.setShouldLoadAll(true);
                         ((ObjectLevelReadQuery)query).setFetchGroup(fg);
                     }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GROUP, valueToApply}));
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GRAPH, valueToApply}));
                     }
                 } else {
                     ((ObjectLevelReadQuery)query).setFetchGroup(null);
@@ -1115,7 +1115,7 @@ public class QueryHintsHandler {
                     }else if (valueToApply instanceof EntityGraphImpl){
                         ((ObjectLevelReadQuery)query).setLoadGroup(((EntityGraphImpl)valueToApply).getAttributeGroup().toLoadGroup());
                     }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GROUP, valueToApply}));
+                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("not_usable_passed_to_entitygraph_hint", new Object[]{QueryHints.JPA_FETCH_GRAPH, valueToApply}));
                     }
                 } else {
                     ((ObjectLevelReadQuery)query).setFetchGroup(null);

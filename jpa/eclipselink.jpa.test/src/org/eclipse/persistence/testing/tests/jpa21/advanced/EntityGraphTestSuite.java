@@ -83,19 +83,39 @@ public class EntityGraphTestSuite extends JUnitTestCase {
      * a single result set. 
      */
     public void testSimpleGraph() {
-/*        EntityManager em = createEntityManager();
+        EntityManager em = createEntityManager();
         
-        Employee result = (Employee) em.createQuery("Select e from Employee e join treat(e.projects as LargeProject) p where p.executive is Not Null").setHint(QueryHints.FETCH_GROUP, em.getEntityGraph("Employee")).getResultList().get(0);
+        Employee result = (Employee) em.createQuery("Select e from Employee e join treat(e.projects as LargeProject) p where p.executive is Not Null and e != p.executive").setHint(QueryHints.JPA_FETCH_GRAPH, em.getEntityGraph("Employee")).getResultList().get(0);
         PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
-        assertFalse("fetchgroup failed to be applied", util.isLoaded(result, "department"));
-        assertTrue("Fetch Group was not applied", util.isLoaded(result, "projects"));
+        assertFalse("fetchgroup failed to be applied: department is loaded", util.isLoaded(result, "department"));
+        assertTrue("Fetch Group was not applied: projects is not loaded", util.isLoaded(result, "projects"));
         for (Project project : result.getProjects()){
-            assertFalse("fetchgroup failed to be applied", util.isLoaded(project, "teamLeader"));
+            assertFalse("fetchgroup failed to be applied : teamLeader is loaded", util.isLoaded(project, "teamLeader"));
+            assertTrue("fetchgroup failed to be applied: properties is not loaded", util.isLoaded(project, "properties"));
             if (project instanceof LargeProject){
-                assertTrue("Fetch Group was not applied", util.isLoaded(project, "executive"));
+                assertTrue("Fetch Group was not applied: executive is not loaded", util.isLoaded(project, "executive"));
             }
         }
         em.close();
-*/    }
+    }
     
+    public void testInheritanceGraph(){
+        
+    }
+    
+    public void testLoadGraph(){
+        
+    }
+    
+    public void testLoadFetchGraph(){
+    }
+    public void testNestedFetchGroup(){
+        
+    }
+    public void testEmbeddedFetchGroup(){
+        
+    }
+    public void testEmbededNestedFetchGroup(){
+        
+    }
 }

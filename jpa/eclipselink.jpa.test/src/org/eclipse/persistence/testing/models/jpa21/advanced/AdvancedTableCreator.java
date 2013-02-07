@@ -658,7 +658,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.setName("JPA21_PROJ_PROPS");
 
         FieldDefinition field = new FieldDefinition();
-        field.setName("PROJ_ID");
+        field.setName("Project_PROJ_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);

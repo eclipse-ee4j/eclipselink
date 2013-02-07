@@ -138,6 +138,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         if (descriptor == null) {
             return null;
         }
+        if (descriptor.hasFetchGroupManager()){
+            if (!descriptor.getFetchGroupManager().isAttributeFetched(entity, attributeName)){
+                return false;
+            }
+        }
         DatabaseMapping mapping = descriptor.getMappingForAttributeName(attributeName);
         if (mapping == null) {
             return null;
