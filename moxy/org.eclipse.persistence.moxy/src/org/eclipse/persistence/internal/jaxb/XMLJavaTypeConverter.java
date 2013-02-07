@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.sessions.Session;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
@@ -260,11 +262,21 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         }
 
         try {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
-            } else {
-                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
-            }
+        	try {
+	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+	                xmlAdapter = (XmlAdapter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getXmlAdapterClass()));
+	            } else {
+	                xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.newInstanceFromClass(getXmlAdapterClass());
+	            }
+        	} catch (IllegalAccessException e) {
+	            Constructor ctor = null;
+	            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+	            	ctor = AccessController.doPrivileged(new PrivilegedGetConstructorFor(xmlAdapterClass, new Class[0], true));	            			            
+	            } else {
+	            	ctor = PrivilegedAccessHelper.getDeclaredConstructorFor(xmlAdapterClass, new Class[0], true);
+	            }
+	            xmlAdapter = (XmlAdapter) PrivilegedAccessHelper.invokeConstructor(ctor, new Object[0]);
+	        }
         } catch (Exception ex) {
             throw JAXBException.adapterClassCouldNotBeInstantiated(getXmlAdapterClassName(), ex);
         }

@@ -40,6 +40,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.AdapterWithIn
 import org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics.GenericAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.list.XmlAdapterListMultipleBarTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.list.XmlAdapterListSingleBarTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.list.XmlAdapterNestedListSingleBarTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.map.JAXBMapWithAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.PackageLevelAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.adapters.PackageLevelAdaptersTestCases;
@@ -70,6 +71,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(XmlAdapterElementRefTestCases.class);
         suite.addTestSuite(XmlAdapterHexBinaryTestCases.class);
         suite.addTestSuite(XmlAdapterListSingleBarTestCases.class);
+        suite.addTestSuite(XmlAdapterNestedListSingleBarTestCases.class);
         suite.addTestSuite(XmlAdapterListMultipleBarTestCases.class);
         suite.addTestSuite(AdapterWithElementsTestCases.class);
         suite.addTestSuite(AdapterWithGenericsTestCases.class);
