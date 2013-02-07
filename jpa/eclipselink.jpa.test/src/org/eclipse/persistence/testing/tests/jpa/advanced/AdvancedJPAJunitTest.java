@@ -53,6 +53,8 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -225,6 +227,10 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             
             // Run this test only when the JPA 2.0 specification is enabled on the server, or we are in SE mode with JPA 2.0 capability
             suite.addTest(new AdvancedJPAJunitTest("testMetamodelMinimalSanityTest"));
+            
+            suite.addTest(new AdvancedJPAJunitTest("testProjectToEmployeeWithBatchFetchJoinFetch"));
+            suite.addTest(new AdvancedJPAJunitTest("testEmployeeToPhoneNumberWithBatchFetchJoinFetch"));
+            suite.addTest(new AdvancedJPAJunitTest("testEmployeeToAddressWithBatchFetchJoinFetch"));
         }
         
         return suite;
@@ -2534,6 +2540,125 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         } catch (Exception e) {
             fail("An error occurred: " + e.getMessage());
         } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 400022
+     * Test batch fetch with join fetch with batching on a M:M
+     */
+    public void testProjectToEmployeeWithBatchFetchJoinFetch() {
+        EntityManager em = createEntityManager();        
+        try {
+            Query query = em.createQuery("SELECT p FROM Project p", Project.class);
+            query.setHint(QueryHints.BATCH, "p.teamMembers");
+            query.setHint(QueryHints.BATCH, "p.teamMembers.projects");
+            query.setHint(QueryHints.BATCH, "p.teamMembers.phoneNumbers.owner");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.FETCH, "p.teamMembers.address");
+            query.setHint(QueryHints.FETCH, "p.teamMembers.phoneNumbers");
+
+            List<Project> results = query.getResultList();
+            for (Project project : results) {
+                assertNotNull("Project cannot be null", project);
+                Collection<Employee> employees = project.getTeamMembers();
+                for (Employee employee : employees) {
+                    assertNotNull("Employee cannot be null", employee);
+                }
+            }
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 400022
+     * Test batch fetch with join fetch on a 1:M
+     */
+    public void testEmployeeToPhoneNumberWithBatchFetchJoinFetch() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            
+            Employee emp1 = new Employee();
+            emp1.setMale();
+            emp1.setFirstName("Mickey");
+            emp1.setLastName("O'Neil");
+            
+            Employee emp2 = new Employee();
+            emp2.setMale();
+            emp2.setFirstName("Tony");
+            emp2.setLastName("Bullet Tooth");
+            
+            em.persist(emp1);
+            em.persist(emp2);
+            
+            em.flush();
+            
+            Query query = em.createQuery("SELECT e FROM Employee e", Employee.class);
+            query.setHint(QueryHints.BATCH, "e.projects");
+            query.setHint(QueryHints.BATCH, "e.projects.teamMembers");
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers.owner");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.FETCH, "e.address");
+            query.setHint(QueryHints.FETCH, "e.phoneNumbers");
+
+            List<Employee> results = query.getResultList();
+            for (Employee employee : results) {
+                assertNotNull("Employee cannot be null", employee);
+                Collection<PhoneNumber> phoneNumbers = employee.getPhoneNumbers();
+                for (PhoneNumber phoneNumber : phoneNumbers) {
+                    assertNotNull("PhoneNumber cannot be null", phoneNumber);
+                }
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Bug 400022
+     * Test batch fetch with join fetch on a 1:1
+     */
+    public void testEmployeeToAddressWithBatchFetchJoinFetch() {
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            
+            Employee emp1 = new Employee();
+            emp1.setMale();
+            emp1.setFirstName("Mickey");
+            emp1.setLastName("O'Neil");
+            
+            Employee emp2 = new Employee();
+            emp2.setMale();
+            emp2.setFirstName("Tony");
+            emp2.setLastName("Bullet Tooth");
+            
+            em.persist(emp1);
+            em.persist(emp2);
+            
+            em.flush();
+            
+            Query query = em.createQuery("SELECT e FROM Employee e", Employee.class);
+            query.setHint(QueryHints.BATCH, "e.projects");
+            query.setHint(QueryHints.BATCH, "e.projects.teamMembers");
+            query.setHint(QueryHints.BATCH, "e.phoneNumbers.owner");
+            query.setHint(QueryHints.BATCH_TYPE, BatchFetchType.IN);
+            query.setHint(QueryHints.FETCH, "e.address");
+            query.setHint(QueryHints.FETCH, "e.phoneNumbers");
+
+            List<Employee> results = query.getResultList();
+            for (Employee employee : results) {
+                assertNotNull("Employee cannot be null", employee);
+                String addrString = String.valueOf(employee.getAddress());
+            }
+        } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }

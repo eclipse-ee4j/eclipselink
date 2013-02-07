@@ -949,6 +949,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             for (Object objectsIterator = queryContainerPolicy.iteratorFor(results); queryContainerPolicy.hasNext(objectsIterator);) {
                 Object eachReferenceObject = queryContainerPolicy.next(objectsIterator, session);
                 AbstractRecord row = rowsIterator.next();
+                // Handle duplicate rows in the ComplexQueryResult being replaced with null, as a
+                // result of duplicate filtering being true for constructing the ComplexQueryResult
+                while (row == null && rowsIterator.hasNext()) {
+                    row = rowsIterator.next();
+                }
                 Object eachReferenceKey = extractKeyFromTargetRow(row, session);
                 
                 Object container = referenceObjectsByKey.get(eachReferenceKey);

@@ -581,28 +581,32 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                             offset = index * -1;
                         }
                         AbstractRecord row = parentRows.get(offset + index);
-                        Object foreignKey = extractBatchKeyFromRow(row, session);
-                        if (foreignKey == null) {
-                            // Ignore null foreign keys.
-                            count--;
-                        } else {
-                            cachedObject = checkCacheForBatchKey(row, foreignKey, batchedObjects, batchQuery, originalQuery, session);
-                            if (cachedObject != null) {
-                                // Avoid fetching things a cache hit occurs for.
-                                count--;                                
+                        // Handle duplicate rows in the ComplexQueryResult being replaced with null, as a
+                        // result of duplicate filtering being true for constructing the ComplexQueryResult
+                        if (row != null) {
+                            Object foreignKey = extractBatchKeyFromRow(row, session);
+                            if (foreignKey == null) {
+                                // Ignore null foreign keys.
+                                count--;
                             } else {
-                                // Ensure the same id is not selected twice.
-                                if (foreignKeys.contains(foreignKey)) {
-                                    count--;
+                                cachedObject = checkCacheForBatchKey(row, foreignKey, batchedObjects, batchQuery, originalQuery, session);
+                                if (cachedObject != null) {
+                                    // Avoid fetching things a cache hit occurs for.
+                                    count--;                                
                                 } else {
-                                    Object[] key = ((CacheId)foreignKey).getPrimaryKey();
-                                    Object foreignKeyValue = key[0];
-                                    // Support composite keys using nested IN.
-                                    if (key.length > 1) {
-                                        foreignKeyValue = Arrays.asList(key);
+                                    // Ensure the same id is not selected twice.
+                                    if (foreignKeys.contains(foreignKey)) {
+                                        count--;
+                                    } else {
+                                        Object[] key = ((CacheId)foreignKey).getPrimaryKey();
+                                        Object foreignKeyValue = key[0];
+                                        // Support composite keys using nested IN.
+                                        if (key.length > 1) {
+                                            foreignKeyValue = Arrays.asList(key);
+                                        }
+                                        foreignKeyValues.add(foreignKeyValue);
+                                        foreignKeys.add(foreignKey);
                                     }
-                                    foreignKeyValues.add(foreignKeyValue);
-                                    foreignKeys.add(foreignKey);
                                 }
                             }
                         }
