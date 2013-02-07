@@ -91,6 +91,7 @@ public class PhoneNumber implements Serializable {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+        this.id = employee.getId();
     }
 
     public static class ID implements Serializable {
