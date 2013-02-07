@@ -138,44 +138,46 @@ public class QueryTestSuite extends JUnitTestCase {
     }
     
     public void testConstructorResultQuery() {
-        EntityManager em = createEntityManager();
-        
-        try {
-            beginTransaction(em);
+        if (getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
             
-            Item item = new Item();
-            item.setName("Nails");
+            try {
+                beginTransaction(em);
+                
+                Item item = new Item();
+                item.setName("Nails");
+                
+                Order order = new Order();
+                order.setQuantity(500);
+                
+                order.setItem(item);
+                
+                em.persist(item);
+                em.persist(order);
+                
+                commitTransaction(em);
+                
+                // Mapped column results are:
+                // @ColumnResult(name = "O_ID", type=String.class), 
+                // @ColumnResult(name = "O_QUANTITY"), 
+                // @ColumnResult(name = "O_ITEM_NAME") 
+                
+                // NOTE: expecting O_ITEM_NAME but the query is returning O_ITEM.
+                
+                em.createNativeQuery("SELECT o.ORDER_ID AS 'O_ID', o.QUANTITY AS 'O_QUANTITY', i.NAME AS 'O_ITEM' FROM JPA21_ORDER o, JPA21_ITEM i WHERE o.ITEM_ID = i.ID", "OrderConstructorResult").getResultList();
             
-            Order order = new Order();
-            order.setQuantity(500);
-            
-            order.setItem(item);
-            
-            em.persist(item);
-            em.persist(order);
-            
-            commitTransaction(em);
-            
-            // Mapped column results are:
-            // @ColumnResult(name = "O_ID", type=String.class), 
-            // @ColumnResult(name = "O_QUANTITY"), 
-            // @ColumnResult(name = "O_ITEM_NAME") 
-            
-            // NOTE: expecting O_ITEM_NAME but the query is returning O_ITEM.
-            
-            em.createNativeQuery("SELECT o.ORDER_ID AS 'O_ID', o.QUANTITY AS 'O_QUANTITY', i.NAME AS 'O_ITEM' FROM JPA21_ORDER o, JPA21_ITEM i WHERE o.ITEM_ID = i.ID", "OrderConstructorResult").getResultList();
-        
-            fail("No exceptions thrown. Expecting a QueryException (and not a NPE)");
-        } catch (NullPointerException e) {
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                fail("No exceptions thrown. Expecting a QueryException (and not a NPE)");
+            } catch (NullPointerException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                fail("Null pointer exception caught on constructor result query.");
+            } catch (QueryException e) {
+                assertTrue(e.getErrorCode() == QueryException.COLUMN_RESULT_NOT_FOUND);
+            } finally {
+                closeEntityManager(em);
             }
-            
-            fail("Null pointer exception caught on constructor result query.");
-        } catch (QueryException e) {
-            assertTrue(e.getErrorCode() == QueryException.COLUMN_RESULT_NOT_FOUND);
-        } finally {
-            closeEntityManager(em);
         }
     }
     public void testGetFlushMode(){
