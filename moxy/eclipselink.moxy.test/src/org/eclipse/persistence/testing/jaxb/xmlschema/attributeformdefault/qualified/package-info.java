@@ -10,7 +10,7 @@
  * Contributors:
  * Denise Smith - 2.3
  ******************************************************************************/
-@XmlSchema(namespace = "myns", attributeFormDefault=XmlNsForm.QUALIFIED)
+@XmlSchema(namespace = "myns", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,attributeFormDefault=XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.qualified;
 
 import javax.xml.bind.annotation.XmlSchema;

@@ -3173,7 +3173,7 @@ public class AnnotationsProcessor {
         } else {
             info.setNamespace(defaultTargetNamespace);
         }
-        if (!info.isElementFormQualified() || info.isAttributeFormQualified()) {
+      if (!info.isElementFormQualified() ){
             isDefaultNamespaceAllowed = false;
         }
         return info;
@@ -3221,6 +3221,7 @@ public class AnnotationsProcessor {
             } else {
                 if (namespaceInfo.isAttributeFormQualified()) {
                     qName = new QName(uri, name);
+                    isDefaultNamespaceAllowed = false;    
                 } else {
                     qName = new QName(name);
                 }
