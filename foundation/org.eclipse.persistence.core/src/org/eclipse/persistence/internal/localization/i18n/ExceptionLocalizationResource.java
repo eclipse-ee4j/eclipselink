@@ -232,10 +232,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "not_usable_passed_to_entitygraph_hint", "value {1} passed to query hint {0} is not appropriate for this query hint"},
                                            { "operation_not_supported", "Calling {0} on a {1} is not supported by the specification."},
                                            { "pu_configured_for_resource_local", "Unable to create EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."},
-            
-                              { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
-       
-                                   { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."}
+                                           { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
+                                           { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
+                                           { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." }
                                            
 										};
     /**
@@ -245,3 +244,4 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
         return contents;
     }
 }
+

@@ -110,6 +110,9 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      *          not been obtained through correlation 
      */
     public From<Z, X> getCorrelationParent() {
+        if (this.correlatedParent == null){
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_get_from_non_correlated_query"));
+        }
         return this.correlatedParent;
     }
 

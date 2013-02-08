@@ -24,6 +24,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
@@ -62,7 +63,7 @@ public class QueryTestSuite extends JUnitTestCase {
         suite.addTest(new QueryTestSuite("testCriteriaIsNegated"));
         suite.addTest(new QueryTestSuite("testCriteriaGetJoinType"));
         suite.addTest(new QueryTestSuite("testConstructorResultQuery"));
-        
+        suite.addTest(new QueryTestSuite("testCriteriaIsCorelated"));
         return suite;
     }    
     
@@ -222,6 +223,19 @@ public class QueryTestSuite extends JUnitTestCase {
         Root<Employee> employee = query.from(Employee.class);
         JoinType jt =  employee.join("phoneNumbers", JoinType.LEFT).getJoinType();
         assertEquals("The join type was incorect.", jt, JoinType.LEFT);
+    }
+    
+    public void testCriteriaIsCorelated(){
+        EntityManager em = createEntityManager();
+        CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+        CriteriaQuery query = qbuilder.createQuery(Employee.class);
+        From<Employee, Employee> employee = query.from(Employee.class);
+        boolean isCorr = employee.isCorrelated();
+        assertFalse(isCorr);
+        try{
+            employee.getCorrelationParent();
+            fail("proper exception not thrown when calling getCorrelationParent on non-correlated from.");
+        } catch (IllegalStateException e){}
     }
     
 }
