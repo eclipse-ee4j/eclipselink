@@ -123,7 +123,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 143;//6;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 145;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
     public static final int METAMODEL_ALL_TYPES = 51;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;
@@ -297,6 +297,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             suite.addTest(new MetamodelMetamodelTest("testType_getPersistenceType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testType_getJavaType_Method"));
             suite.addTest(new MetamodelMetamodelTest("testOutOfSpecificationInternalAPI"));
+            suite.addTest(new MetamodelMetamodelTest("testMapAttribute_getDeclaredPluralAttributesForEmbeddable"));
             // Not implemented yet
             //suite.addTest(new MetamodelMetamodelTest("testObscureInvalidStateUnitTests"));
         }
@@ -6328,6 +6329,31 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //iae.printStackTrace();
             exceptionThrown = true;
             assertTrue("IllegalArgumentException expected on transient type attribute should not be in subclass for managedType.getAttribute()",exceptionThrown);            
+        } finally {
+            cleanup(em);
+        }
+    }
+    
+    public void testMapAttribute_getDeclaredPluralAttributesForEmbeddable(){
+        boolean exceptionThrown = false;
+        EntityManager em = null;
+        try {
+            em = privateTestSetup();
+            assertNotNull(em);
+            Metamodel metamodel = em.getMetamodel();
+            EmbeddableTypeImpl<Observation> observation_ = (EmbeddableTypeImpl)metamodel.embeddable(Observation.class);
+            Set<PluralAttribute<Observation, ?, ?>> pluralAtrributes = observation_.getDeclaredPluralAttributes();
+            boolean foundDetails = false;
+            boolean foundLocations = false;
+            for (PluralAttribute<Observation, ?, ?> attribute: pluralAtrributes){
+                if (attribute.getName().equals("details")){
+                    foundDetails = true;
+                } else if (attribute.getName().equals("locations")){
+                    foundLocations = true;
+                }
+            }
+            assertTrue("Map ElementCollection Plural Attribute not found.", foundDetails);
+            assertTrue("Collection ElementCollection Plural Attribute not found.", foundLocations);
         } finally {
             cleanup(em);
         }

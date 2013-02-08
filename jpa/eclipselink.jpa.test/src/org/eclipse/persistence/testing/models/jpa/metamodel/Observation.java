@@ -13,8 +13,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
+import java.util.List;
 import java.util.Map;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.ManyToMany;
@@ -40,7 +42,7 @@ public class Observation {
         this.details = details;
     }
 */
-
+    
     public ObservationDetail getDetail() {
         return detail;
     }
@@ -53,6 +55,12 @@ public class Observation {
     private String date;
     
     private String text;
+    
+    @ElementCollection
+    private Map<ObservationDetail, String> details;
+    
+    @ElementCollection
+    private List<String> locations;
     
     public Observation() {        
     }
@@ -76,7 +84,21 @@ public class Observation {
         this.text = text;
     }
 
+    public Map<ObservationDetail, String> getDetails() {
+        return details;
+    }
 
+    public void setDetails(Map<ObservationDetail, String> details) {
+        this.details = details;
+    }
+
+    public List<String> getLocations() {
+        return locations;
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
+    }
     
 }
 

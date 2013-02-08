@@ -385,7 +385,6 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         Set<PluralAttribute<X, ?, ?>> declaredAttributes = new LinkedHashSet<PluralAttribute<X, ?, ?>>();
         // The set is a copy of the underlying metamodel attribute set - we will remove all SingularAttribute(s)
         for(PluralAttribute<? super X, ?, ?>  anAttribute :pluralAttributes) {
-            if(((TypeImpl)anAttribute.getElementType()).isManagedType()) {
                 // check for declarations in the hierarchy and don't add if declared above
                 //if(!((ManagedTypeImpl)anAttribute.getElementType()).hasDeclaredAttribute(anAttribute.getName())) {
                 // add attributes that don't have superclasses automatically
@@ -398,7 +397,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
                         declaredAttributes.add((PluralAttribute<X, ?, ?>)anAttribute);
                     }
                 }
-            }
+
         }
         return declaredAttributes;
     }
