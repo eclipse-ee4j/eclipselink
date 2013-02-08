@@ -8,10 +8,24 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * Denise Smith - 2.3
+ * Denise Smith - February 8, 2013
  ******************************************************************************/
-@XmlSchema(namespace = "myns", elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED, attributeFormDefault=XmlNsForm.UNQUALIFIED)
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified;
 
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+public class RootWithAttribute {
+
+	 @XmlAttribute
+	 public String child;
+	 
+	 public boolean equals(Object obj){
+		 if(obj instanceof RootWithAttribute){
+			 RootWithAttribute compareobject = (RootWithAttribute)obj;
+			 return child.equals(compareobject.child);
+		 }
+		 return false;
+	 }
+}

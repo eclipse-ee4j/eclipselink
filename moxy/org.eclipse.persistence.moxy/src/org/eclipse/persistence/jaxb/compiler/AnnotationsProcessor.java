@@ -2281,8 +2281,6 @@ public class AnnotationsProcessor {
      * @return
      */
     private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
-        String propertyName = property.getPropertyName();
-
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
@@ -3175,7 +3173,7 @@ public class AnnotationsProcessor {
         } else {
             info.setNamespace(defaultTargetNamespace);
         }
-        if (!info.isElementFormQualified() || info.isAttributeFormQualified()) {
+      if (!info.isElementFormQualified() ){
             isDefaultNamespaceAllowed = false;
         }
         return info;
@@ -3223,6 +3221,7 @@ public class AnnotationsProcessor {
             } else {
                 if (namespaceInfo.isAttributeFormQualified()) {
                     qName = new QName(uri, name);
+                    isDefaultNamespaceAllowed = false;    
                 } else {
                     qName = new QName(name);
                 }
