@@ -112,6 +112,7 @@ public class Employee {
     private List<Employee> managedEmployees = new ArrayList<Employee>();
 
     @OneToMany(mappedBy = "employee", cascade = ALL, fetch = LAZY)
+    @PrivateOwned
     private List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
 
     @OneToOne(cascade = ALL, fetch = LAZY)

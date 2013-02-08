@@ -1,0 +1,17 @@
+{
+   "firstName": "Jacob",
+   "gender": "Male",
+   "id": 743627,
+   "lastName": "Smith",
+   "responsibilities": [],
+   "salary": 0,
+   "managedEmployees": [],
+   "phoneNumbers": [
+      {
+         "id": 743627,
+         "type": "cell",
+         "areaCode": "613"
+      }
+   ],
+   "projects": []
+}

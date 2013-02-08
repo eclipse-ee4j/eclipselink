@@ -58,10 +58,9 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      *
      * @param jpaSession the jpa session
      */
-    public PreLoginMappingAdapter(AbstractSession jpaSession){
+    public PreLoginMappingAdapter(AbstractSession jpaSession) {
         this.jpaSession = jpaSession;
     }
-
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.internal.jaxb.SessionEventListener#preLogin(org.eclipse.persistence.sessions.SessionEvent)
@@ -69,10 +68,11 @@ public class PreLoginMappingAdapter extends SessionEventListener {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void preLogin(SessionEvent event) {
         Project project = event.getSession().getProject();
-        for (Object descriptorAlias: project.getAliasDescriptors().keySet()){
-            ClassDescriptor descriptor = (ClassDescriptor)project.getAliasDescriptors().get(descriptorAlias);
+        ClassLoader cl = jpaSession.getDatasourcePlatform().getConversionManager().getLoader();
+        for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
+            ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
             Class<?> descriptorClass = descriptor.getJavaClass();
-            if (PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)){
+            if (PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)) {
                 XMLCompositeCollectionMapping relationshipMapping = new XMLCompositeCollectionMapping();
                 relationshipMapping.setAttributeName("_persistence_relationshipInfo");
                 relationshipMapping.setGetMethodName("_persistence_getRelationships");
@@ -100,17 +100,17 @@ public class PreLoginMappingAdapter extends SessionEventListener {
 
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
             Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
-            for (DatabaseMapping mapping: descriptorMappings){
-                if (mapping.isXMLMapping()){
-                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()){
-                        if (mapping.isAbstractCompositeCollectionMapping()){
-                            XMLInverseReferenceMapping inverseMapping = ((XMLCompositeCollectionMapping)mapping).getInverseReferenceMapping();
-                            if (inverseMapping != null){
+            for (DatabaseMapping mapping : descriptorMappings) {
+                if (mapping.isXMLMapping()) {
+                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
+                        if (mapping.isAbstractCompositeCollectionMapping()) {
+                            XMLInverseReferenceMapping inverseMapping = ((XMLCompositeCollectionMapping) mapping).getInverseReferenceMapping();
+                            if (inverseMapping != null) {
                                 break;
                             }
-                        } else  if (mapping.isAbstractCompositeObjectMapping()){
-                            XMLInverseReferenceMapping inverseMapping = ((XMLCompositeObjectMapping)mapping).getInverseReferenceMapping();
-                            if (inverseMapping != null){
+                        } else if (mapping.isAbstractCompositeObjectMapping()) {
+                            XMLInverseReferenceMapping inverseMapping = ((XMLCompositeObjectMapping) mapping).getInverseReferenceMapping();
+                            if (inverseMapping != null) {
                                 break;
                             }
                         }
@@ -124,29 +124,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                         ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
                                         DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
                                         convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            ClassLoader cl = jpaSession.getDatasourcePlatform().getConversionManager().getLoader();
-            for (DatabaseMapping mapping : descriptorMappings) {
-                if (jpaDescriptor != null && mapping.isXMLMapping()) {
-                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
-                        DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
-                        if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
-                            ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
-                            if (jpaMapping != null) {
-                                // Convert all ForeignReferenceMappings that are visible in JPA
-                                // to ChoiceMapping to allow a link to be returned instead of the whole Object
-                                // XMLInverseMappings are ignored in JAXB, so we should not convert those
-                                if (descriptor != null) {
-                                    DatabaseMapping existingMapping = descriptor.getMappingForAttributeName(jpaMapping.getAttributeName());
-                                    if ((existingMapping != null) && (!(existingMapping instanceof XMLInverseReferenceMapping))) {
-                                        convertMappingToXMLChoiceMapping(descriptor, jpaMapping, cl);
                                     }
                                 }
                             }
@@ -178,6 +155,29 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 }
             }
         }
+
+        for (Object descriptorAlias : project.getAliasDescriptors().keySet()) {
+            ClassDescriptor descriptor = (ClassDescriptor) project.getAliasDescriptors().get(descriptorAlias);
+            ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
+            Vector<DatabaseMapping> descriptorMappings = (Vector<DatabaseMapping>) descriptor.getMappings().clone();
+
+            for (DatabaseMapping mapping : descriptorMappings) {
+                if (mapping.isXMLMapping()) {
+                    if (mapping.isAbstractCompositeObjectMapping() || mapping.isAbstractCompositeCollectionMapping()) {
+                        if (jpaDescriptor != null) {
+                            DatabaseMapping dbMapping = jpaDescriptor.getMappingForAttributeName(mapping.getAttributeName());
+                            if ((dbMapping != null) && (dbMapping instanceof ForeignReferenceMapping)) {
+                                ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
+                                if (jpaMapping != null) {
+                                    ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
+                                    convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -185,17 +185,18 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * @param originMapping
      * @param targetMapping
      */
-    public static void copyAccessorToMapping(DatabaseMapping originMapping, DatabaseMapping targetMapping){
-        if (originMapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+    private static void copyAccessorToMapping(DatabaseMapping originMapping, DatabaseMapping targetMapping) {
+        if (originMapping.getAttributeAccessor().isVirtualAttributeAccessor()) {
             VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
             accessor.setGetMethodName(originMapping.getGetMethodName());
             accessor.setSetMethodName(originMapping.getSetMethodName());
             targetMapping.setAttributeAccessor(accessor);
-        } if (originMapping.getAttributeAccessor().isValuesAccessor()){
+        }
+        if (originMapping.getAttributeAccessor().isValuesAccessor()) {
             ValuesAccessor accessor = new ValuesAccessor(originMapping);
             accessor.setAttributeName(originMapping.getAttributeAccessor().getAttributeName());
             targetMapping.setAttributeAccessor(accessor);
-        }else {
+        } else {
             targetMapping.setAttributeName(originMapping.getAttributeName());
             targetMapping.setGetMethodName(originMapping.getGetMethodName());
             targetMapping.setSetMethodName(originMapping.getSetMethodName());
@@ -209,21 +210,23 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * @param mapping
      * @param mappedBy
      */
-    protected static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, String mappedBy){
-        if (!(mapping.isXMLMapping() && (mapping.isAbstractCompositeCollectionMapping() || mapping.isAbstractCompositeObjectMapping()))){
+    private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, String mappedBy) {
+        if (!(mapping.isXMLMapping())) {
             return;
         }
+
         XMLInverseReferenceMapping jaxbInverseMapping = new XMLInverseReferenceMapping();
         copyAccessorToMapping(mapping, jaxbInverseMapping);
         jaxbInverseMapping.setProperties(mapping.getProperties());
         jaxbInverseMapping.setIsReadOnly(mapping.isReadOnly());
         jaxbInverseMapping.setMappedBy(mappedBy);
-        if (mapping.isAbstractCompositeCollectionMapping()){
+        if (mapping.isAbstractCompositeCollectionMapping()) {
             jaxbInverseMapping.setContainerPolicy(mapping.getContainerPolicy());
-            jaxbInverseMapping.setReferenceClass(((XMLCompositeCollectionMapping)mapping).getReferenceClass());
-        } else if (mapping.isAbstractCompositeObjectMapping()){
-            jaxbInverseMapping.setReferenceClass(((XMLCompositeObjectMapping)mapping).getReferenceClass());
+            jaxbInverseMapping.setReferenceClass(((XMLCompositeCollectionMapping) mapping).getReferenceClass());
+        } else if (mapping.isAbstractCompositeObjectMapping()) {
+            jaxbInverseMapping.setReferenceClass(((XMLCompositeObjectMapping) mapping).getReferenceClass());
         }
+
         jaxbDescriptor.removeMappingForAttributeName(mapping.getAttributeName());
         jaxbDescriptor.addMapping(jaxbInverseMapping);
     }
@@ -235,13 +238,13 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * @param jpaMapping the jpa mapping
      * @param cl the classloader
      */
-    protected static void convertMappingToXMLChoiceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping jpaMapping, ClassLoader cl) {
+    private static void convertMappingToXMLChoiceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping jpaMapping, ClassLoader cl) {
         if ((jpaMapping != null) && (jaxbDescriptor != null)) {
+            String attributeName = jpaMapping.getAttributeName();
             DatabaseMapping jaxbMapping = jaxbDescriptor.getMappingForAttributeName(jpaMapping.getAttributeName());
             if (!(jaxbMapping.isXMLMapping() && (jaxbMapping.isAbstractCompositeCollectionMapping() || jaxbMapping.isAbstractCompositeObjectMapping()))) {
                 return;
             }
-            String attributeName = jpaMapping.getAttributeName();
             String adapterClassName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(jpaMapping.getReferenceDescriptor().getJavaClassName());
             try {
                 if (jaxbMapping.isAbstractCompositeObjectMapping()) {
