@@ -20,6 +20,7 @@
 package org.eclipse.persistence.internal.jpa.metadata.transformers;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -60,8 +61,14 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
      */
     public WriteTransformerMetadata(MetadataAnnotation writeTransformer, MetadataAccessor accessor) {
         super(writeTransformer, accessor);
-        
-        m_column = new ColumnMetadata((MetadataAnnotation) writeTransformer.getAttribute("column"), accessor);
+        Object column = writeTransformer.getAttribute("column");
+        //Bug#391251 : If column annotation is provided, use that
+        if (column != null) {
+            m_column = new ColumnMetadata((MetadataAnnotation) column, accessor);
+        } else {
+            m_column = new 
+            ColumnMetadata(accessor.getAccessibleObject().getAnnotation(MetadataConstants.JPA_COLUMN), accessor);
+        }
     }
     
     /**

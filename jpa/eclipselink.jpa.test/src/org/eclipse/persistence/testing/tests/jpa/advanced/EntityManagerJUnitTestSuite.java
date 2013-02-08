@@ -12045,6 +12045,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             east.setId(100);
             east.setHeight(8);
             east.setWidth(5);
+            int year = 2013;
+            int month = 1;            
+            int day = 30;
+            east.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
             east.setRoom(room);
             room.addDoor(east);
             

@@ -2609,6 +2609,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldROOM_ID.setShouldAllowNull(true);
         table.addField(fieldROOM_ID);
         
+        FieldDefinition fieldSALE_DATE = new FieldDefinition();
+        fieldSALE_DATE.setName("SALE_DATE");
+        fieldSALE_DATE.setTypeName("DATE");
+        fieldSALE_DATE.setSize(23);
+        fieldSALE_DATE.setShouldAllowNull(true);
+        fieldSALE_DATE.setIsPrimaryKey(false);
+        fieldSALE_DATE.setUnique(false);
+        fieldSALE_DATE.setIsIdentity(false);
+        table.addField(fieldSALE_DATE);
+        
         ForeignKeyConstraint foreignKeyCMP3_DOOR_CMP3_ROOM = new ForeignKeyConstraint();
         foreignKeyCMP3_DOOR_CMP3_ROOM.setName("CMP3_DOOR_CMP3_ROOM");
         foreignKeyCMP3_DOOR_CMP3_ROOM.setTargetTable("CMP3_ROOM");

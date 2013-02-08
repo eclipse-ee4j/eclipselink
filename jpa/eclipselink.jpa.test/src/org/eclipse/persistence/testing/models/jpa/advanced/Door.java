@@ -14,13 +14,24 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.sql.Date;
+import java.util.Calendar;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.eclipse.persistence.annotations.Mutable;
+import org.eclipse.persistence.annotations.ReadTransformer;
+import org.eclipse.persistence.annotations.WriteTransformer;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.Session;
 
 @Entity
 @Table(name="CMP3_DOOR")
@@ -64,6 +75,53 @@ public class Door implements Serializable, Cloneable {
     public void setRoom(Room room) {
         this.room = room;
     }
+    
+    @Transient
+    public Date getSaleDate() {
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getWarrantyDate());
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR) - 1;
+        return Helper.dateFromYearMonthDate(year, month, day);
+    }
+    
+    public void setSaleDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR) + 1;
+        setWarrantyDate(Helper.dateFromYearMonthDate(year, month, day));
+    }
+    
+
+    // Bug#391251 : Test for @Column annotation given outside @WriteTransformer annotation
+    @Mutable(false)
+    @ReadTransformer(method="calcWarrantyDate")
+    @WriteTransformer(method="getSaleDate")
+    @Column(name="SALE_DATE")
+    private Date WarrantyDate; 
+    
+    public Date getWarrantyDate() {
+        return this.WarrantyDate;
+    }
+    
+    public void setWarrantyDate(Date date) {
+        this.WarrantyDate = date;
+    }
+        
+    public Date calcWarrantyDate(Record row, Session session) {
+        Date date = (Date) ( session.getDatasourcePlatform().convertObject(row.get("SALE_DATE"), java.sql.Date.class ));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR) + 1;
+        return Helper.dateFromYearMonthDate(year, month, day);
+    }
+
     
     public boolean isRoomInstanceInitialized() {
         try {

@@ -92,6 +92,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Cost;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Department;
+import org.eclipse.persistence.testing.models.jpa.advanced.Door;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
@@ -196,6 +197,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
+        suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
 
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
         
@@ -1985,6 +1987,61 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
     
     public void testClassBasedTransformationMapping() {
         internalTestTransformationMapping("overtimeHours");
+    }
+    
+    //Bug#391251 : Test for @Column outside WriteTransformer annotation
+    public void testTransformationMappingWithColumnAnnotation() {
+        Door door = new Door();
+        door.setId(100);
+        door.setHeight(8);
+        door.setWidth(5);
+        door.setRoom(null);
+        int year = 2013;
+        int month = 1;            
+        int day = 30;
+        door.setSaleDate(Helper.dateFromYearMonthDate(year, month - 1, day));
+       
+        EntityManager em = createEntityManager();                
+        beginTransaction(em);
+        try {    
+            em.persist(door);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        int id = door.getId();
+        String errorMsg = "";
+        try {
+            this.clearCache();
+            em = createEntityManager();
+            door = em.find(Door.class, 100);           
+            Calendar calendarSaleDate = Calendar.getInstance(); 
+            calendarSaleDate.setTime(door.getSaleDate());
+            if(calendarSaleDate.get(Calendar.YEAR) != year || calendarSaleDate.get(Calendar.MONTH) != (month - 1) || calendarSaleDate.get(Calendar.DAY_OF_MONTH) != day) {
+               errorMsg = "saleDate = " + door.getSaleDate().toString() + " is wrong";
+            }  
+        } catch (RuntimeException ex) {
+            fail("Failed to fetch data for testTransformationMappingWithColumnAnnotation" + ex.getMessage());
+        }
+        
+        // clean up
+        beginTransaction(em);
+        try {    
+            door = em.find(Door.class, door.getId());
+            em.remove(door);
+            commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+        if (errorMsg.length() != 0 ) {
+            fail(errorMsg);
+        }
     }
     
     protected void internalTestTransformationMapping(String attributeName) {
