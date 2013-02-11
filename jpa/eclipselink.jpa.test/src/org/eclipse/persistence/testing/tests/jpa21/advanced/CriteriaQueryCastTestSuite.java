@@ -12,7 +12,6 @@
  *     02/08/2013-2.5 Chris Delahunt
  *       - 374771 - JPA 2.1 TREAT support
  ******************************************************************************/
- ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.math.BigInteger;
