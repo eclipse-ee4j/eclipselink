@@ -1665,23 +1665,7 @@ public class SchemaGenerator {
         }
         // Check to see if it's a collection 
         TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
-        String typeName = null;
-        if (property.isXmlId()) {
-            // handle user-set schema-type
-            if (property.getSchemaType() != null) {
-                typeName = getTypeName(property, property.getActualType(), schema);                    
-            } else {
-                // default to xsd:ID
-                typeName = XMLConstants.SCHEMA_PREFIX + COLON + ID;
-            }
-        } else if (property.isXmlIdRef()) {
-            typeName = XMLConstants.SCHEMA_PREFIX + COLON + IDREF;
-        } else if (info != null && !info.isComplexType()) {
-            typeName = info.getSimpleType().getName();
-        } else {
-            typeName = getTypeName(property, property.getActualType(), schema);                    
-        }
-
+        String typeName = getTypeNameForComponent(property, schema, property.getActualType(), attribute, false);
         if (isCollectionType(property)) {
             if(!property.isXmlList() && null != property.getXmlPath() && property.getXmlPath().contains("/")) {
                 attribute.setType(typeName);
@@ -2148,7 +2132,7 @@ public class SchemaGenerator {
         
         JavaClass javaType = property.getActualType();                    
         element.setName(elementName.getLocalPart());
-        String typeName = getTypeNameForElement(property, schema, javaType, element);
+        String typeName = getTypeNameForComponent(property, schema, javaType, element, true);
 
         if (property.getGenericType() != null) {
             if (property.isXmlList()) {
@@ -2258,10 +2242,10 @@ public class SchemaGenerator {
      * @param property the Property that the type name will be based on
      * @param schema the schema currently being built
      * @param javaClass the given Property's 'actual' type
-     * @param element the element being generated for the given Property
+     * @param sc the element or attribute being generated for the given Property
      * @return a type name based on the given Property, or null if not obtainable
      */
-    private String getTypeNameForElement(Property property, Schema schema, JavaClass javaClass, Element element) {
+    private String getTypeNameForComponent(Property property, Schema schema, JavaClass javaClass, SimpleComponent sc, boolean isElement) {
         String typeName = null;
         if (property.isXmlId()) {
             // handle user-set schema-type
@@ -2286,10 +2270,10 @@ public class SchemaGenerator {
                 if (typeName == null) {
                     // need to add complex-type locally, or reference global element
                     if (!info.hasRootElement()) {
-                        if (info.isComplexType()) {
-                            element.setComplexType(info.getComplexType());
+                        if (isElement && info.isComplexType()) {
+                            ((Element)sc).setComplexType(info.getComplexType());
                         } else {
-                            element.setSimpleType(info.getSimpleType());
+                        	sc.setSimpleType(info.getSimpleType());
                         }
                     }
                 } else {
