@@ -50,11 +50,22 @@ public class PLSQLCursor extends ComplexDatabaseType implements OraclePLSQLType,
     }
 
     @Override
+    public int computeInIndex(PLSQLargument inArg, int newIndex, ListIterator<PLSQLargument> i) {
+        inArg.inIndex = newIndex;
+        return newIndex;
+    }
+
+    @Override
     public int computeOutIndex(PLSQLargument outArg, int newIndex, ListIterator<PLSQLargument> iterator) {
         outArg.outIndex = newIndex;
         return newIndex;
     }
 
+    @Override
+    public void buildInDeclare(StringBuilder sb, PLSQLargument inArg) {
+        // nothing to do for CURSOR
+    }
+    
     @Override
     public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg) {
         if ((getTypeName() == null) || getTypeName().equals("")) {
