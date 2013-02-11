@@ -1387,13 +1387,13 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      * @param value (RelationalDescriptor)
      * @since EclipseLink 1.2 for the JPA 2.0 Reference Implementation 
      */
-    public void addMappedSuperclass(String key, ClassDescriptor value) {
+    public void addMappedSuperclass(String key, ClassDescriptor value, boolean replace) {
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
             this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
         }
         // Avoid replacing the current RelationalDescriptor that may have mappings set
-        if(!this.mappedSuperclassDescriptors.containsKey(key)) {
+        if(replace || !this.mappedSuperclassDescriptors.containsKey(key)) {
             this.mappedSuperclassDescriptors.put(key, value);
         }
     }

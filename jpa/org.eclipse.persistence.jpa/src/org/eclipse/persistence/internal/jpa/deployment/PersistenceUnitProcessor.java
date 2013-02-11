@@ -61,6 +61,7 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTER;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
 
 /**
@@ -481,6 +482,13 @@ public class PersistenceUnitProcessor {
     }
     
     /**
+     * Return if a given class is annotated with @Entity.
+     */
+    public static MetadataAnnotation getMappedSuperclassAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(JPA_MAPPED_SUPERCLASS);
+    }
+    
+    /**
      * Return the @StaticMetamodel annotation on the given class.
      */
     public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
@@ -513,6 +521,14 @@ public class PersistenceUnitProcessor {
      */
     public static boolean isStaticMetamodelClass(MetadataClass candidateClass) {
         return candidateClass.isAnnotationPresent(JPA_STATIC_METAMODEL);
+    }
+    
+    
+    /**
+     * Return if a given class is annotated with @MappedSuperclass.
+     */
+    public static boolean isMappedSuperclass(MetadataClass candidateClass){
+        return candidateClass.isAnnotationPresent(JPA_MAPPED_SUPERCLASS);
     }
     
     /**

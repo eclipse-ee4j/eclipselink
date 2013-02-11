@@ -550,6 +550,9 @@ public class MetadataProject {
         mappedSuperclass.processParentClass();
         
         m_mappedSuperclasseAccessors.put(mappedSuperclass.getJavaClassName(), mappedSuperclass);
+        
+        // add the mapped superclass to keep track of it in case it is not processed later (has no subclasses).  
+        m_session.getProject().addMappedSuperclass(mappedSuperclass.getJavaClassName(), mappedSuperclass.getDescriptor().getClassDescriptor(), false);
     }
 
     /**
@@ -643,7 +646,7 @@ public class MetadataProject {
              * but we do not need it until metamodel processing time avoiding a _persistence_new call.
              * See MetamodelImpl.initialize()
              */
-            m_session.getProject().addMappedSuperclass(accessor.getJavaClassName(), metadataDescriptor.getClassDescriptor());
+            m_session.getProject().addMappedSuperclass(accessor.getJavaClassName(), metadataDescriptor.getClassDescriptor(), true);
         }
     }
     
