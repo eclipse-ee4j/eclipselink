@@ -19,8 +19,12 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredFunctionCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 
 /**
  * INTERNAL:
@@ -121,6 +125,20 @@ public class PLSQLParameterMetadata extends ORMetadata {
     }
     
     /**
+     * Return the DataType enum constant for the String type name.  If type is
+     * not a JDBCType, OraclePLSQLType, PLSQLCursor or a ComplexMetadataType,
+     * the type will be wrapped in a PLSQLrecord.
+     */
+    @Override
+    protected DatabaseType getDatabaseTypeEnum(String type) {
+        // handle cursors
+        if (Direction.OUT_CURSOR.name().equals(m_direction)) {
+            return new PLSQLCursor(type);
+        }
+        return super.getDatabaseTypeEnum(type);
+    }
+    
+    /**
      * INTERNAL:
      * Used for OX mapping.
      */
@@ -197,12 +215,19 @@ public class PLSQLParameterMetadata extends ORMetadata {
         
         // Process the parameter direction
         if (functionReturn) {
-            if (getLength() != null) {
-                ((PLSQLStoredFunctionCall)call).setResult(type, getLength());
-            } else if (getPrecision() != null) {
-                ((PLSQLStoredFunctionCall)call).setResult(type, getPrecision(), getScale());
-            } else {
-                ((PLSQLStoredFunctionCall)call).setResult(type);
+            // check for cursor return type
+            if (Direction.OUT_CURSOR.name().equals(m_direction)) {
+                // the constructor by default adds a RETURN argument, so remove it
+                ((PLSQLStoredFunctionCall)call).getArguments().remove(0);
+                ((PLSQLStoredFunctionCall)call).useNamedCursorOutputAsResultSet(Direction.OUT_CURSOR.name(), type);
+            } else {       
+                if (getLength() != null) {
+                    ((PLSQLStoredFunctionCall)call).setResult(type, getLength());
+                } else if (getPrecision() != null) {
+                    ((PLSQLStoredFunctionCall)call).setResult(type, getPrecision(), getScale());
+                } else {
+                    ((PLSQLStoredFunctionCall)call).setResult(type);
+                }
             }
         } else if (m_direction == null || m_direction.equals(Direction.IN.name())) {
             // TODO: Log a defaulting message if m_direction is null.
@@ -234,7 +259,7 @@ public class PLSQLParameterMetadata extends ORMetadata {
             if (call.getParameterTypes().contains(call.OUT_CURSOR)) {
                 multipleCursors = true;
             }
-            call.useNamedCursorOutputAsResultSet(procedureParameterName);
+            call.useNamedCursorOutputAsResultSet(procedureParameterName, type);
             // There are multiple cursor output parameters, then do not use the cursor as the result set.
             if (multipleCursors) {
                 call.setIsCursorOutputProcedure(false);

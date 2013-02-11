@@ -108,14 +108,14 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         // Build the stored procedure call.
         PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall();
         
-        // Process the stored procedure parameters.
-        for (PLSQLParameterMetadata parameter : getParameters()) {
-            parameter.process(call, false);
-        }
-        
         // Process the return parameter.
         if (getReturnParameter() != null) {
             getReturnParameter().process(call, true);
+        }
+        
+        // Process the stored procedure parameters.
+        for (PLSQLParameterMetadata parameter : getParameters()) {
+            parameter.process(call, false);
         }
         
         // Process the procedure name.
