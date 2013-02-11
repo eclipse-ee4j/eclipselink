@@ -117,4 +117,12 @@ public class OracleObjectTypeMetadata extends OracleComplexTypeMetadata {
     public void setFields(List<PLSQLParameterMetadata> fields) {
         this.fields = fields;
     }
+    
+    /**
+     * Indicates an instance of OracleObjectTypeMetadata.
+     * @return
+     */
+    public boolean isOracleObjectTypeMetadata() {
+        return true;
+    }
 }

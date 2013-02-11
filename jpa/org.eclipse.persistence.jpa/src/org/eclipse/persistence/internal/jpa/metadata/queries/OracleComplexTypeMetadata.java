@@ -97,4 +97,20 @@ public abstract class OracleComplexTypeMetadata extends ComplexTypeMetadata {
     public boolean isOracleComplexTypeMetadata() {
         return true;
     }
+    
+    /**
+     * Indicates an instance of OracleArrayTypeMetadata.
+     * @return
+     */
+    public boolean isOracleArrayTypeMetadata() {
+        return false;
+    }
+    
+    /**
+     * Indicates an instance of OracleObjectTypeMetadata.
+     * @return
+     */
+    public boolean isOracleObjectTypeMetadata() {
+        return false;
+    }
 }

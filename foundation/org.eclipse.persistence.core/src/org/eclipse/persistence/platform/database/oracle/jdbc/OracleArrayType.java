@@ -47,11 +47,6 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     }
 
     @Override
-    public boolean isCollection() {
-        return true;
-    }
-
-    @Override
     public boolean isJDBCType() {
         return true;
     }
@@ -60,9 +55,32 @@ public class OracleArrayType extends ComplexDatabaseType implements Cloneable {
     public boolean isComplexDatabaseType() {
         return true;
     }
+    
+    @Override
+    public boolean isArray() {
+        return true;
+    }
 
     public int getSqlCode() {
         return ARRAY;
+    }
+    
+    /**
+     * Oracle ARRAY types don't have a compatible type like PL/SQL
+     * types do, so we will use the type name
+     */
+    @Override
+    public String getCompatibleType() {
+        return typeName;
+    }
+    
+    /**
+     * Oracle ARRAY types don't have a compatible type like PL/SQL
+     * types do, so we will use the type name
+     */
+    @Override
+    public void setCompatibleType(String compatibleType) {
+        this.typeName = compatibleType;
     }
 
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {

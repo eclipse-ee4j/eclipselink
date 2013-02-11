@@ -89,4 +89,12 @@ public class OracleArrayTypeMetadata extends OracleComplexTypeMetadata {
     public void setNestedType(String nestedType) {
         this.nestedType = nestedType;
     }
+    
+    /**
+     * Indicates an instance of OracleArrayTypeMetadata.
+     * @return
+     */
+    public boolean isOracleArrayTypeMetadata() {
+        return true;
+    }
 }

@@ -47,6 +47,7 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
     public void setFields(Map<String, DatabaseType> fields) {
         this.fields = fields;
     }
+    
     @Override
     public boolean isJDBCType() {
         return true;
@@ -57,9 +58,33 @@ public class OracleObjectType extends ComplexDatabaseType implements Cloneable {
         return true;
     }
 
-    public int getSqlCode() {
-        return Types.JAVA_OBJECT;
+    @Override
+    public boolean isStruct() {
+        return true;
     }
+    
+    public int getSqlCode() {
+        return Types.STRUCT;
+    }
+    
+    /**
+     * Oracle STRUCT types don't have a compatible type like PL/SQL
+     * types do, so we will use the type name
+     */
+    @Override
+    public String getCompatibleType() {
+        return typeName;
+    }
+    
+    /**
+     * Oracle STRUCT types don't have a compatible type like PL/SQL
+     * types do, so we will use the type name
+     */
+    @Override
+    public void setCompatibleType(String compatibleType) {
+        this.typeName = compatibleType;
+    }
+
     public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call) {
     	// no-op
     }

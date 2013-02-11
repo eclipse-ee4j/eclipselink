@@ -50,6 +50,14 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
     public boolean isCollection() {
         return false;
     }
+    
+    public boolean isStruct() {
+        return false;
+    }
+    
+    public boolean isArray() {
+        return false;
+    }
 
     /**
      * Indicates if a given subclass represents a PL/SQL cursor.

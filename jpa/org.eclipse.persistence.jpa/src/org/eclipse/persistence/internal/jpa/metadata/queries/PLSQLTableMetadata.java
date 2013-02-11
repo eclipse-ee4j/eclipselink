@@ -96,4 +96,11 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     public void setNestedType(String nestedType) {
         this.nestedType = nestedType;
     }
+
+    /**
+     * Indicates an instance of PLSQLTableMetadata.
+     */
+    public boolean isPLSQLTableMetadata() {
+        return true;
+    }
 }

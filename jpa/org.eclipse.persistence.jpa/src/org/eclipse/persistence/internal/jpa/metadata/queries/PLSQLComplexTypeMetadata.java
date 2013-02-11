@@ -129,4 +129,18 @@ public abstract class PLSQLComplexTypeMetadata extends ComplexTypeMetadata {
     public boolean isPLSQLComplexTypeMetadata() {
         return true;
     }
+    
+    /**
+     * Indicates an instance of PLSQLRecordMetadata.
+     */
+    public boolean isPLSQLRecordMetadata() {
+        return false;
+    }
+
+    /**
+     * Indicates an instance of PLSQLTableMetadata.
+     */
+    public boolean isPLSQLTableMetadata() {
+        return false;
+    }
 }

@@ -137,4 +137,11 @@ public class PLSQLRecordMetadata extends PLSQLComplexTypeMetadata {
     public void setFields(List<PLSQLParameterMetadata> fields) {
         this.fields = fields;
     }
+    
+    /**
+     * Indicates an instance of PLSQLRecordMetadata.
+     */
+    public boolean isPLSQLRecordMetadata() {
+        return true;
+    }
 }
