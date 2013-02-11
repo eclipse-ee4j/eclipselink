@@ -22,6 +22,12 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
+import static java.sql.Types.STRUCT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
+
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -33,12 +39,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
-
-import static java.sql.Types.STRUCT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
 
 /**
  * INTERNAL:
@@ -114,7 +114,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
         return dbFld;
     }
-
+    
     /**
      * INTERNAL:
      */
@@ -173,7 +173,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         }
         return null;
     }
-    
+
     /**
      * INTERNAL:
      * Used for OX mapping.
@@ -350,7 +350,12 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));
                 } else {
                     if (hasJdbcType() && hasJdbcTypeName()) {
-                        call.addNamedArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        OracleArrayTypeMetadata aType = null;
+                        if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
+                            call.addNamedArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                        } else {
+                            call.addNamedArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        }
                     } else {
                         call.addNamedArgument(m_name, m_queryParameter, getJavaClass(m_type));
                     }
@@ -380,7 +385,12 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
                 } else {
                     if (hasJdbcType() && hasJdbcTypeName()) {
-                        call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        OracleArrayTypeMetadata aType = null;
+                        if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
+                            call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                        } else {
+                            call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                        }
                     } else {
                         call.addNamedOutputArgument(m_name, m_queryParameter, getJavaClass(m_type));
                     }
