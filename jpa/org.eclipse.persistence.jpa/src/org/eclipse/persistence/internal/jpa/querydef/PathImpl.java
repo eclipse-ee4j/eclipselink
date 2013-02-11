@@ -38,7 +38,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @since EclipseLink 1.2
  */
 
-public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>{
+public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>, Cloneable{
     protected Path<?> pathParent;
     
     // Although this is an Object type only Attributes that implement Bindable are passed to this class
@@ -122,4 +122,11 @@ public class PathImpl<X> extends ExpressionImpl<X> implements Path<X>{
         ((PathImpl)this.pathParent).findRootAndParameters(query);
     }
 
+    protected Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException excecption) {
+            return null;
+        }
+    }
 }

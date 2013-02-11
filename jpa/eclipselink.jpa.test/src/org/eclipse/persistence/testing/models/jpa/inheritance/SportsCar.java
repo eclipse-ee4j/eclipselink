@@ -14,6 +14,9 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
+
 import javax.persistence.*;
 
 @Entity
@@ -25,6 +28,7 @@ public class SportsCar extends Car {
     public static int PRE_PERSIST_COUNT = 0;
     
     private int maxSpeed;
+    private Person user;
 
     @Column(name="MAX_SPEED")
     public int getMaxSpeed() {
@@ -38,5 +42,14 @@ public class SportsCar extends Car {
     
     public void setMaxSpeed(int speed) {
         maxSpeed = speed;
+    }
+    
+    @OneToOne(mappedBy ="car", fetch=LAZY)
+    public Person getUser() {
+        return user;
+    }
+    
+    public void setUser(Person user) {
+        this.user = user;
     }
 }

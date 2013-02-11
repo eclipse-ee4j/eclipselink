@@ -82,6 +82,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
         //suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
+        //Downcast/treat support
+        suite.addTest(CriteriaQueryCastTestSuite.suite());
 
         return suite;
     }
@@ -372,6 +374,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
                 new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
+        if (testSQL == null) {
+            fail("UPDATE Criteria expected: \""+baseSQL+"\" got null with databasecalls: "+testQuery.getDatabaseQuery().getDatasourceCalls());
+        }
 
         if (!testSQL.equals(baseSQL)) {
             fail("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
@@ -450,6 +455,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     public void testCriteriaDeleteCompareSQL() {
         EntityManager em = createEntityManager();
+        
         JpaEntityManager jpaEM = JpaHelper.getEntityManager((EntityManager)em.getDelegate());
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("DELETE FROM PhoneNumber phone where phone.owner.firstName is not null");
         String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
