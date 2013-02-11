@@ -16,7 +16,6 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 //javase imports
 import java.sql.CallableStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,7 +41,6 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
-import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import static org.eclipse.persistence.internal.helper.DatabaseType.DatabaseTypeHelper.databaseTypeHelper;
@@ -504,28 +502,31 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         for (PLSQLargument inArg : inArguments) {
             DatabaseType type = inArg.databaseType;
             if (!type.isComplexDatabaseType()) {
-                super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode());
+                // for XMLType, we need to set type name parameter (will be "XMLTYPE")
+                if (type == XMLType) {
+                    super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), type.getTypeName());
+                } else {
+                    super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode());
+                }
             } else {
                 ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                 if (inArg.inIndex != MIN_VALUE) {
-                	if (type instanceof OracleObjectType) {
-                        super.addNamedArgument(inArg.name, inArg.name, Types.STRUCT, complexType.getCompatibleType());
-                	} else if (complexType instanceof OracleArrayType) {
-                        DatabaseType nestedType = ((OracleArrayType) type).getNestedType();
+                	if (complexType.isStruct()) {
+                        super.addNamedArgument(inArg.name, inArg.name, complexType.getSqlCode(), complexType.getTypeName());
+                	} else if (complexType.isArray()) {
+                        DatabaseType nestedType = ((OracleArrayType) complexType).getNestedType();
                         if (nestedType != null) {
-                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(inArg.name);
-                            field.setSqlType(Types.STRUCT);
-                            if (nestedType.isComplexDatabaseType()) {
-                                field.setSqlTypeName(((ComplexDatabaseType) nestedType).getCompatibleType());
-                            }
-                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType(), field);
+                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
+                            field.setSqlType(nestedType.getSqlCode());
+                            field.setSqlTypeName(nestedType.getTypeName());
+                            super.addNamedArgument(inArg.name, inArg.name, complexType.getSqlCode(), complexType.getTypeName(), field);
                         } else {
-                            super.addNamedArgument(inArg.name, inArg.name, type.getConversionCode(), complexType.getCompatibleType());
+                            super.addNamedArgument(inArg.name, inArg.name, complexType.getSqlCode(), complexType.getTypeName());
                         }
-                	} else if (type instanceof PLSQLCollection) {
-                        DatabaseType nestedType = ((PLSQLCollection) type).getNestedType();
+                	} else if (complexType.isCollection()) {
+                        DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
                         if (nestedType != null) {
-                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(inArg.name);
+                            ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField("");
                             field.setSqlType(nestedType.getConversionCode());
                             if (nestedType.isComplexDatabaseType()) {
                                 field.setSqlTypeName(((ComplexDatabaseType) nestedType).getCompatibleType());
@@ -561,42 +562,42 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 } else {
                     ComplexDatabaseType complexType = (ComplexDatabaseType) type;
                     if (outArg.outIndex != MIN_VALUE) {
-                        if (complexType instanceof OracleArrayType) {
+                        if (complexType.isStruct()) {
+                            super.addNamedOutputArgument(outArg.name, outArg.name, complexType.getSqlCode(), complexType.getTypeName(), complexType.getJavaType());
+                        } else if (complexType.isArray()) {
                             DatabaseType nestedType = ((OracleArrayType) complexType).getNestedType();
                             if (nestedType != null) {
-                                ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
-                                nestedField.setSqlType(Types.STRUCT);
+                                ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField("");
+                                nestedField.setSqlType(nestedType.getSqlCode());
                                 if (nestedType.isComplexDatabaseType()) {
                                     ComplexDatabaseType complexNestedType = (ComplexDatabaseType) nestedType;
                                     nestedField.setType(complexNestedType.getJavaType());
                                     nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
                                 }
-                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType(), nestedField);
+                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType(), nestedField);
                             } else {
-                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getTypeName(), complexType.getJavaType());
+                            	super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getTypeName(), complexType.getJavaType());
                             }
-                        } else if (complexType instanceof OracleObjectType) {
-                        	super.addNamedOutputArgument(outArg.name, outArg.name, Types.STRUCT, complexType.getTypeName(), complexType.getJavaType());
-                        } else if (complexType instanceof PLSQLCollection) {
+                        } else if (complexType.isCollection()) {
                             DatabaseType nestedType = ((PLSQLCollection) complexType).getNestedType();
                             if (nestedType != null) {
                                 ObjectRelationalDatabaseField nestedField = new ObjectRelationalDatabaseField(outArg.name);
-                                nestedField.setSqlType(nestedType.getConversionCode());
+                                nestedField.setSqlType(nestedType.getSqlCode());
                                 if (nestedType.isComplexDatabaseType()) {
                                     ComplexDatabaseType complexNestedType = (ComplexDatabaseType) nestedType;
                                     nestedField.setType(complexNestedType.getJavaType());
                                     nestedField.setSqlTypeName(complexNestedType.getCompatibleType());
                                 }
-                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType(), complexType.getJavaType(), nestedField);
+                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getCompatibleType(), complexType.getJavaType(), nestedField);
                             } else {
-                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType());
+                                super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getCompatibleType());
                             }
                         } else if (complexType.hasCompatibleType()) {
-                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode(), complexType.getCompatibleType(), complexType.getJavaType());
+                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode(), complexType.getCompatibleType(), complexType.getJavaType());
                         } else {
                             // If there is no STRUCT type set, then the output is
                             // expanded, so one output for each field.
-                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getConversionCode());
+                            super.addNamedOutputArgument(outArg.name, outArg.name, type.getSqlCode());
                         }
                     }
                 }
@@ -614,9 +615,11 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inOutArguments = getArguments(arguments, INOUT);
         inArguments.addAll(inOutArguments);
         List<PLSQLargument> outArguments = getArguments(arguments, OUT);
+        Collections.sort(inArguments, new InArgComparer());
         for (PLSQLargument arg : inArguments) {
             arg.databaseType.buildInDeclare(sb, arg);
         }
+        Collections.sort(outArguments, new OutArgComparer());
         for (PLSQLargument arg : outArguments) {
             arg.databaseType.buildOutDeclare(sb, arg);
         }
@@ -641,10 +644,10 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             return;
         }
         processed.add(type);
-        if (type instanceof PLSQLCollection) {
+        if (type.isCollection()) {
             DatabaseType nestedType = ((PLSQLCollection)type).getNestedType();
             addNestedFunctionsForArgument(functions, argument, nestedType, processed);
-        } else if (type instanceof PLSQLrecord) {
+        } else if (type.isRecord()) {
             for (PLSQLargument field : ((PLSQLrecord)type).getFields()) {
                 DatabaseType nestedType = field.databaseType;
                 addNestedFunctionsForArgument(functions, argument, nestedType, processed);
@@ -1246,5 +1249,41 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      */
     public void setArguments(List<PLSQLargument> arguments) {
         this.arguments = arguments;
+    }
+    
+    /**
+     * Class responsible for comparing PLSQLargument instances based on
+     * the inIndex property.
+     *
+     */
+    static class InArgComparer implements Comparator<PLSQLargument> {
+        @Override
+        public int compare(PLSQLargument arg0, PLSQLargument arg1) {
+            if (arg0.inIndex < arg1.inIndex) {
+                return -1;
+            }
+            if (arg0.inIndex > arg1.inIndex) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+    
+    /**
+     * Class responsible for comparing PLSQLargument instances based on
+     * the outIndex property.
+     *
+     */
+    static class OutArgComparer implements Comparator<PLSQLargument> {
+        @Override
+        public int compare(PLSQLargument arg0, PLSQLargument arg1) {
+            if (arg0.inIndex < arg1.outIndex) {
+                return -1;
+            }
+            if (arg0.inIndex > arg1.outIndex) {
+                return 1;
+            }
+            return 0;
+        }
     }
 }
