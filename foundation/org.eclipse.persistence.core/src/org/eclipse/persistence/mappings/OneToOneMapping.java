@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,8 +9,10 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier   
+ *     05/14/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     02/11/2013-2.5 Guy Pelletier 
+ *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -82,6 +84,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected boolean isOneToOnePrimaryKeyRelationship = false;
     
     /**
+     * Keep track of which fields are insertable and updatable.
+     */
+    protected HashSet<DatabaseField> insertableFields = new HashSet<DatabaseField>();
+    protected HashSet<DatabaseField> updatableFields = new HashSet<DatabaseField>();
+    
+    /**
      * Mode for writeFromObjectIntoRowInternal method
      */
     protected static enum ShallowMode {
@@ -110,7 +118,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public boolean isRelationalMapping() {
         return true;
     }
-
+    
     /**
      * INTERNAL:
      * Used when initializing queries for mappings that use a Map.
@@ -1077,6 +1085,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             getDescriptor().addPreDeleteMapping(this);
         }
         
+        // Capture our foreign key field specifications here. We need to build
+        // the fields first to ensure they have a table associated with them. 
+        // Also must be careful to not set the flags based on a previously
+        // built field (multiple mappings to the same field) since we need to
+        // capture the flags from the field set directly on this mapping.
+        for (DatabaseField field : getForeignKeyFields()) {
+            DatabaseField builtField = getDescriptor().buildField(field, keyTableForMapKey);
+            
+            if (builtField == field || builtField.isTranslated()) {
+                // same instance or translated, look at the built field.
+                updateInsertableAndUpdatableFields(builtField);    
+            } else {
+                // previously built field and not translated, look at the original field.
+                updateInsertableAndUpdatableFields(field);
+            }
+        }
+        
         if (this.mechanism != null) {
             if (this.mechanism.hasRelationTable()) {
                 if(!this.foreignKeyFields.isEmpty() || !this.sourceToTargetKeyFields.isEmpty() || !this.targetToSourceKeyFields.isEmpty()) {
@@ -1400,6 +1425,13 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public void rehashFieldDependancies(AbstractSession session) {
         setSourceToTargetKeyFields(Helper.rehashMap(getSourceToTargetKeyFields()));
+        
+        // Go through the fks again and make updates for any translated fields.
+        for (DatabaseField field : getSourceToTargetKeyFields().keySet()) {
+            if (field.isTranslated()) {
+                updateInsertableAndUpdatableFields(field);
+            }
+        }
     }
     
     /**
@@ -1408,7 +1440,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      * used as a key in a map.  This will typically be true if there are any parts to this mapping
      * that are not read-only.
      */
-    public boolean requiresDataModificationEventsForMapKey(){
+    public boolean requiresDataModificationEventsForMapKey() {
         return true;
     }
 
@@ -1559,6 +1591,22 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public boolean shouldVerifyDelete() {
         return shouldVerifyDelete;
     }
+    
+    /**
+     * INTERNAL:
+     * By default returns true. Will also return true if:
+     * 1 - WriteType is INSERT and the field is insertable.
+     * 2 - WriteType is UPDATE and the field is updatable.
+     */
+    protected boolean shouldWriteField(DatabaseField field, WriteType writeType) {
+        if (writeType.equals(WriteType.INSERT)) {
+            return insertableFields.contains(field);
+        } else if (writeType.equals(WriteType.UPDATE)) {
+            return updatableFields.contains(field);
+        } else {
+            return true; // UNDEFINED, default is to write.
+        }
+    }
 
     /**
      * INTERNAL
@@ -1568,7 +1616,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     public boolean isCascadedLockingSupported() {
         return true;
     }
-         
+    
     /**
      * INTERNAL:
      * Return if this mapping support joining.
@@ -1592,6 +1640,26 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */    
     public Object unwrapKey(Object key, AbstractSession session){
         return getDescriptor().getObjectBuilder().unwrapObject(key, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the field to the updatable and/or insertable list. Remove any 
+     * previous field under the same name, otherwise shouldn't matter if we 
+     * leave an old name (before translation) in the list as it should 'never' 
+     * be used anyway.
+     */
+    protected void updateInsertableAndUpdatableFields(DatabaseField field) {
+        insertableFields.remove(field);
+        updatableFields.remove(field);
+    
+        if (field.isInsertable()) {
+            insertableFields.add(field);
+        }
+    
+        if (field.isUpdatable()) {
+            updatableFields.add(field);
+        }
     }
 
     /**
@@ -1725,9 +1793,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
-        writeFromObjectIntoRowInternal(object, databaseRow, session, null);
+        writeFromObjectIntoRowInternal(object, databaseRow, session, null, writeType);
     }
-
+    
     /**
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
@@ -1737,13 +1805,14 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      *   UpdateAfterInsert - nullable fields added with with their non-null values from object, non nullable fields (and nullable with null values) are ignored;
      *   UpdateBeforeDelete - the same fields as for UpdateAfterShallowInsert - but all values are nulls.
      */
-    protected void writeFromObjectIntoRowInternal(Object object, AbstractRecord databaseRow, AbstractSession session, ShallowMode mode) {
+    protected void writeFromObjectIntoRowInternal(Object object, AbstractRecord databaseRow, AbstractSession session, ShallowMode mode, WriteType writeType) {
         List<DatabaseField> foreignKeyFields = getForeignKeyFields();
         if (mode != null) {
             List<DatabaseField> nonNullableFields = null;
+            
             for (DatabaseField field : foreignKeyFields) {
                 if (field.isNullable()) {
-                    if (mode == ShallowMode.Insert) {
+                    if (mode == ShallowMode.Insert && shouldWriteField(field, writeType)) {
                         // add a nullable field with a null value
                         databaseRow.add(field, null);
                     }
@@ -1751,9 +1820,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     if (nonNullableFields == null) {
                         nonNullableFields = new ArrayList<DatabaseField>();
                     }
+                    
                     nonNullableFields.add(field);
                 }
             }
+            
             if (nonNullableFields == null) {
                 // all foreignKeyFields are nullable
                 if (mode == ShallowMode.Insert) {
@@ -1778,21 +1849,23 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                 }
             }
         }
+        
         Object attributeValue = getAttributeValueFromObject(object);
         // If the value holder has the row, avoid instantiation and just use it.
         AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
         if (referenceRow == null) {
             // Extract from object.
             Object referenceObject = getRealAttributeValueFromAttribute(attributeValue, object, session);
-            int size = foreignKeyFields.size();
-            for (int index = 0; index < size; index++) {
-                DatabaseField sourceKey = foreignKeyFields.get(index);
+            
+            for (DatabaseField sourceKey : foreignKeyFields) {    
                 Object referenceValue = null;
+                
                 // If privately owned part is null then method cannot be invoked.
                 if (referenceObject != null) {
                     DatabaseField targetKey = this.sourceToTargetKeyFields.get(sourceKey);
                     referenceValue = this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
                 }
+                
                 if (mode == null) {
                     // EL Bug 319759 - if a field is null, then the update call cache should not be used
                     if (referenceValue == null) {
@@ -1811,13 +1884,16 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                         }
                     }
                 }
-                databaseRow.add(sourceKey, referenceValue);
+
+                // Check updatable and insertable based on the write type.
+                if (shouldWriteField(sourceKey, writeType)) {
+                    databaseRow.add(sourceKey, referenceValue);
+                }
             }
         } else {
-            int size = foreignKeyFields.size();
-            for (int index = 0; index < size; index++) {
-                DatabaseField sourceKey = foreignKeyFields.get(index);
+            for (DatabaseField sourceKey : foreignKeyFields) {
                 Object referenceValue = referenceRow.get(sourceKey);
+                
                 if (mode == null) {
                     // EL Bug 319759 - if a field is null, then the update call cache should not be used
                     if (referenceValue == null) {
@@ -1836,7 +1912,11 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                         }
                     }
                 }
-                databaseRow.add(sourceKey, referenceValue);
+                
+                // Check updatable and insertable based on the write type.
+                if (shouldWriteField(sourceKey, writeType)) {
+                    databaseRow.add(sourceKey, referenceValue);
+                }
             }
         }
     }
@@ -1851,7 +1931,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
-        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.Insert);
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.Insert, WriteType.INSERT);
     }
 
     /**
@@ -1864,7 +1944,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (this.isReadOnly || (!this.isForeignKeyRelationship) || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
             return;
         }
-        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateAfterInsert);
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateAfterInsert, WriteType.UNDEFINED);
     }
 
     /**
@@ -1877,7 +1957,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (this.isReadOnly || (!this.isForeignKeyRelationship) || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
             return;
         }
-        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateBeforeDelete);
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateBeforeDelete, WriteType.UNDEFINED);
     }
     
     /**
@@ -1925,10 +2005,12 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             return;
         }
 
-        for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
+        for (Enumeration fieldsEnum = getForeignKeyFields().elements(); fieldsEnum.hasMoreElements();) {
             DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-            databaseRow.add(sourceKey, null);
+
+            if (shouldWriteField(sourceKey, WriteType.INSERT)) {
+                databaseRow.add(sourceKey, null);
+            }
         }
     }
 

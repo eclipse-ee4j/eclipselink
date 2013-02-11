@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 371950: Metadata caching 
  *     10/25/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     02/11/2013-2.5 Guy Pelletier 
+ *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1561,6 +1563,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                     }
                 }
                 
+                sourceField.setIsTranslated(true);
                 fieldTranslation.put(aggregateField, sourceField);
             }
          

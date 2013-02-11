@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,8 +12,10 @@
  *     tware - added handling of database delimiters
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     05/30/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     02/11/2013-2.5 Guy Pelletier 
+ *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
@@ -101,6 +103,11 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * used to represent the value when it has not being defined
      */
     public static final int NULL_SQL_TYPE = MIN_VALUE;
+    
+    /**
+     * Returns true if this field was translated.
+     */
+    protected boolean isTranslated = false;
 
     public DatabaseField() {
         this("", new DatabaseTable());
@@ -430,6 +437,13 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
     
     /**
+     * Return true if this database field is a translation.
+     */
+    public boolean isTranslated() {
+        return this.isTranslated;
+    }
+    
+    /**
      * Used for generating DDL. Returns true if the field is a unique key. 
      */
     public boolean isUnique() {
@@ -489,6 +503,13 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      */
     public void setInsertable(boolean isInsertable) {
         this.isInsertable = isInsertable;
+    }
+    
+    /**
+     * Set the isTranslated flag.
+     */
+    public void setIsTranslated(boolean isTranslated) {
+        this.isTranslated = isTranslated;
     }
     
     /**

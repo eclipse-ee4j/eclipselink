@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     02/06/2013-2.5 Guy Pelletier 
- *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException 
+ *       - 382503: Use of @ConstructorResult with createNativeQuery(sqlString, resultSetMapping) results in NullPointerException
+ *     02/11/2013-2.5 Guy Pelletier 
+ *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with 
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -51,9 +53,13 @@ public class Order {
     private int quantity;
     
     @OneToOne
-    @JoinColumn(name = "ITEM_ID")
+    @JoinColumn(name = "ITEM_ID", insertable=true, updatable=false)
     private Item item;
 
+    @OneToOne
+    @JoinColumn(name = "ITEM_PAIR_ID", insertable=false, updatable=true)
+    private Item itemPair;
+    
     @Transient
     private String itemName;
     
@@ -70,6 +76,10 @@ public class Order {
         return item;
     }
     
+    public Item getItemPair() {
+        return itemPair;
+    }
+    
     public Integer getOrderId() { 
         return orderId; 
     }
@@ -82,11 +92,19 @@ public class Order {
         this.item = item;
     }
     
+    public void setItemPair(Item itemPair) {
+        this.itemPair = itemPair;
+    }
+    
     public void setOrderId(Integer id) { 
         this.orderId = id; 
     }
     
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+    
+    public String toString() {
+        return "Order [" + orderId + "]";
     }
 }

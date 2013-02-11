@@ -514,6 +514,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setIsIdentity(false);
         field.setForeignKeyFieldName("JPA21_ITEM.ID");
         table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("ITEM_PAIR_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_ITEM.ID");
+        table.addField(field);
     
         return table;
     }

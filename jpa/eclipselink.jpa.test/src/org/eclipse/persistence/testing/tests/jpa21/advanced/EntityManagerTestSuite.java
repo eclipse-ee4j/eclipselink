@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     tware - initial implementation
+ *     02/11/2013-2.5 Guy Pelletier 
+ *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -24,6 +26,8 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.EmployeePopulator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Item;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Order;
 
 public class EntityManagerTestSuite extends JUnitTestCase {
     
@@ -39,6 +43,7 @@ public class EntityManagerTestSuite extends JUnitTestCase {
         
         suite.addTest(new EntityManagerTestSuite("testSetup"));
         suite.addTest(new EntityManagerTestSuite("testGetLockModeForObject"));
+        suite.addTest(new EntityManagerTestSuite("testNonInsertableAndUpdatable121Mappings"));
         
         return suite;
     }    
@@ -71,5 +76,63 @@ public class EntityManagerTestSuite extends JUnitTestCase {
             fail("TransactionRequiredException not thrown for find(Class, Object, LockModeType) with no transction open.");
 
         } catch (TransactionRequiredException e){}
+    }
+    
+    public void testNonInsertableAndUpdatable121Mappings() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            
+            Order order = new Order();
+            order.setQuantity(10);
+            
+            Item item = new Item();
+            item.setName("Party Balloons");
+            order.setItem(item);
+            
+            Item itemPair = new Item();
+            itemPair.setName("Ribbons");
+            order.setItemPair(itemPair);
+            
+            em.persist(order);
+            em.persist(item);
+            em.persist(itemPair);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache();
+            
+            // Now try to read it back and update.
+            beginTransaction(em);
+            
+            order = em.find(Order.class, order.getOrderId());
+            
+            assertTrue("The item pair was inserted", order.getItemPair() == null);
+            order.setItemPair(em.merge(itemPair));
+            
+            Item newItem = new Item();
+            newItem.setName("Party Boots");
+            order.setItem(newItem);
+            
+            em.persist(newItem);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache();
+            
+            order = em.find(Order.class, order.getOrderId());
+            
+            assertTrue("The item pair was not updated.", order.getItemPair() != null);
+            assertTrue("Orginal item was replaced", order.getItem().getItemId().equals(item.getItemId()));
+            assertFalse("New item replaced original item", order.getItem().getItemId().equals(newItem.getItemId()));
+            
+        } catch (IllegalStateException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+        } finally {
+            closeEntityManager(em);
+        }
     }
 }
