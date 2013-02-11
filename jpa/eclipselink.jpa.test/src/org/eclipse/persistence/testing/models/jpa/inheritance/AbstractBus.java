@@ -26,7 +26,7 @@ import javax.persistence.MappedSuperclass;
  * Note there are multiple generics in the declaration here, some of which are not used.  These were added
  * as a test for bug 336133.  Please do not remove
  */
-public abstract class AbstractBus<H extends TireInfo<J>, I extends TireInfo<J>, J> extends FueledVehicle {
+public abstract class AbstractBus<H extends TireInfo<J>, I extends TireInfoMappedSuperclass, J> extends FueledVehicle {
     public static int PRE_PERSIST_COUNT = 0;
 
     protected Collection<I> tires = new ArrayList<I>();

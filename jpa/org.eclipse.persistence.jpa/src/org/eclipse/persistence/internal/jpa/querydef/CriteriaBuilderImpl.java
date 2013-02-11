@@ -41,6 +41,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.Predicate.BooleanOperator;
+import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type.PersistenceType;
 
@@ -762,7 +763,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(this.internalLiteral(y));
+        list.add(expressionY);
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThan");
     }
 
@@ -783,7 +784,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(this.internalLiteral(y));
+        list.add(expressionY);
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThan(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThan");
     }
 
@@ -804,7 +805,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(this.internalLiteral(y));
+        list.add(expressionY);
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().greaterThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "greaterThanEqual");
     }
 
@@ -825,7 +826,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
         List list = new ArrayList();
         list.add(x);
-        list.add(this.internalLiteral(y));
+        list.add(expressionY);
         return new CompoundExpressionImpl(this.metamodel, ((ExpressionImpl)x).getCurrentNode().lessThanEqual(((ExpressionImpl)expressionY).getCurrentNode()), list, "lessThanEqual");
     }
 
@@ -2456,38 +2457,93 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     }
 
     public <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        JoinImpl parentJoin = (JoinImpl)join;
+        Join joinImpl = new JoinImpl<X, V>(parentJoin, this.metamodel.managedType(type), this.metamodel, 
+                type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
+        parentJoin.joins.add(joinImpl);
+        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        parentJoin.isJoin = false;
+        return joinImpl;
     }
 
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        CollectionJoinImpl parentJoin = (CollectionJoinImpl)join;
+        CollectionJoin joinImpl = null;
+        if (join instanceof BasicCollectionJoinImpl) {
+            joinImpl = new BasicCollectionJoinImpl<X, E>(parentJoin, this.metamodel, type, 
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+        } else {
+            joinImpl = new CollectionJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+                    type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
+        }
+        parentJoin.joins.add(joinImpl);
+        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        parentJoin.isJoin = false;
+        return joinImpl;
     }
 
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        SetJoinImpl parentJoin = (SetJoinImpl)join;
+        SetJoin joinImpl = null;
+        if (join instanceof BasicSetJoinImpl) {
+            joinImpl = new BasicSetJoinImpl<X, E>(parentJoin, this.metamodel, type, 
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+        } else {
+            joinImpl = new SetJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+                    type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
+        }
+        parentJoin.joins.add(joinImpl);
+        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        parentJoin.isJoin = false;
+        return joinImpl;
     }
 
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        ListJoinImpl parentJoin = (ListJoinImpl)join;
+        ListJoin joinImpl = null;
+        if (join instanceof BasicListJoinImpl) {
+            joinImpl = new BasicListJoinImpl<X, E>(parentJoin, this.metamodel, type, 
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+        } else {
+            joinImpl = new ListJoinImpl<X, E>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+                    type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
+        }
+        parentJoin.joins.add(joinImpl);
+        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        parentJoin.isJoin = false;
+        return joinImpl;
     }
 
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        MapJoinImpl parentJoin = (MapJoinImpl)join;
+        MapJoin joinImpl = null;
+        if (join instanceof BasicMapJoinImpl) {
+            joinImpl = new BasicMapJoinImpl<X, K, V>(parentJoin, this.metamodel, type, 
+                    parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType()); 
+        } else {
+            joinImpl = new MapJoinImpl<X, K, V>((Path)join, this.metamodel.managedType(type), this.metamodel, 
+                    type, parentJoin.currentNode.treat(type), parentJoin.getModel(), parentJoin.getJoinType());
+        }
+        parentJoin.joins.add(joinImpl);
+        ((FromImpl)joinImpl).isJoin = parentJoin.isJoin;
+        parentJoin.isJoin = false;
+        return joinImpl;
     }
 
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        //Handle all the paths that might get passed in.:
+        PathImpl parentPath = (PathImpl)path;
+        PathImpl newPath = (PathImpl)parentPath.clone();
+        newPath.currentNode = newPath.currentNode.treat(type);
+        newPath.pathParent = parentPath;
+        newPath.javaType = type;
+        return newPath;
     }
 
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        RootImpl parentRoot = (RootImpl)root;
+        EntityType entity = this.metamodel.entity(type);
+        return new RootImpl<T>(entity, this.metamodel, type, parentRoot.currentNode.treat(type), entity);
     }    
 }
 
