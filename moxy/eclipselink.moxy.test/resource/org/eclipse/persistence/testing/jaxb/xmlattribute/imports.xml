@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:person xmlns:ns0="testNamespace" id="thirdThing">
+   <ns0:name>theName</ns0:name>
+</ns0:person>

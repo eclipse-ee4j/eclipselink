@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="testNamespace" elementFormDefault="qualified" targetNamespace="testNamespace">
+   <xsd:import schemaLocation="schema2.xsd"/>
+   <xsd:complexType name="person">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="identifierType"/>
+   </xsd:complexType>
+   <xsd:element name="person" type="ns0:person"/>
+</xsd:schema>
