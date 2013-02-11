@@ -142,6 +142,27 @@ public class StoredProcedureCall extends DatabaseCall {
     
     /**
      * PUBLIC:
+     * Define the inout argument to the stored procedure and the field/argument name to be substituted for it.
+     * The procedureParameterName is the name of the procedure argument expected.
+     * The argumentFieldName is the field or argument name to be used to pass to the procedure.
+     * The type is the JDBC type code, this is dependent on the type required by the procedure.
+     * The typeName is the JDBC type name, this may be required for ARRAY or STRUCT types.
+     * The javaType is the mapped Class that has an ObjectRelationalDataTypeDescriptor for the ARRAY
+     * or STRUCT type typeName
+     * The nestedType is a DatabaseField with type information set to match the VARRAYs object types
+     */
+    public void addNamedArgument(String procedureParameterName, String argumentFieldName, int type, String typeName, Class javaType, DatabaseField nestedType) {
+        getProcedureArgumentNames().add(procedureParameterName);
+        ObjectRelationalDatabaseField field = new ObjectRelationalDatabaseField(argumentFieldName);
+        field.setSqlType(type);
+        field.setType(javaType);
+        field.setSqlTypeName(typeName);
+        field.setNestedTypeField(nestedType);
+        appendIn(field);
+    }
+    
+    /**
+     * PUBLIC:
      * Define the output argument to the stored procedure and the field/argument name to be substitute for it.
      * The procedureParameterName is the name of the procedure argument expected.
      * The argumentFieldName is the field or argument name to be used to pass to the procedure.
