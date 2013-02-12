@@ -14,14 +14,20 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.xml.sax.ErrorHandler;
 
 public abstract class Unmarshaller<
+    ABSTRACT_SESSION extends CoreAbstractSession,
     CONTEXT extends Context,
+    DESCRIPTOR extends Descriptor,
     ID_RESOLVER extends IDResolver,
     MEDIA_TYPE extends MediaType,
+    ROOT extends Root,
     UNMARSHALLER_HANDLER extends UnmarshallerHandler> {
 
     protected CONTEXT context;
@@ -29,6 +35,21 @@ public abstract class Unmarshaller<
     public Unmarshaller(CONTEXT context) {
         this.context = context;
     }
+
+    /**
+     * INTERNAL
+     */
+    public abstract ROOT createRoot();
+
+    /**
+     * INTERNAL
+     */
+    public abstract UnmarshalRecord createRootUnmarshalRecord(Class clazz);
+
+    /**
+     * INTERNAL
+     */
+    public abstract UnmarshalRecord createUnmarshalRecord(DESCRIPTOR descriptor, ABSTRACT_SESSION session);
 
     public abstract XMLAttachmentUnmarshaller getAttachmentUnmarshaller();
 

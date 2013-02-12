@@ -33,9 +33,12 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
+import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
+import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.w3c.dom.Node;
@@ -72,7 +75,7 @@ import org.xml.sax.XMLReader;
  *
  * @see org.eclipse.persistence.oxm.XMLContext
  */
-public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaType, XMLUnmarshallerHandler> implements Cloneable {
+public class XMLUnmarshaller extends Unmarshaller<AbstractSession, XMLContext, XMLDescriptor, IDResolver, MediaType, XMLRoot, XMLUnmarshallerHandler> implements Cloneable {
     public static final int NONVALIDATING = XMLParser.NONVALIDATING;
     public static final int SCHEMA_VALIDATION = XMLParser.SCHEMA_VALIDATION;
     public static final int DTD_VALIDATION = XMLParser.DTD_VALIDATION;
@@ -843,6 +846,35 @@ public class XMLUnmarshaller extends Unmarshaller<XMLContext, IDResolver, MediaT
      */
     public void setIDResolver(IDResolver idResolver) {
         this.idResolver = idResolver;
+    }
+
+    /**
+     * INTERNAL
+     * @since 2.5.0
+     */
+    public XMLRoot createRoot() {
+        return new XMLRoot();
+    }
+
+    /**
+     * INTERNAL
+     * @since 2.5.0
+     */
+    @Override
+    public UnmarshalRecord createRootUnmarshalRecord(Class clazz) {
+        XMLRootRecord rootUnmarshalRecord = new XMLRootRecord(clazz);
+        rootUnmarshalRecord.setSession((AbstractSession) context.getSession());
+        return rootUnmarshalRecord;
+    }
+
+    /**
+     * INTERNAL
+     * @since 2.5.0
+     */
+    @Override
+    public UnmarshalRecord createUnmarshalRecord(XMLDescriptor xmlDescriptor, AbstractSession session) {
+        org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
+        return wrapper.getUnmarshalRecord();
     }
 
 }

@@ -27,8 +27,6 @@ import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.oxm.unmapped.UnmappedContentHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.w3c.dom.Node;
@@ -109,7 +107,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 object = this.descriptor.wrapObjectInXMLRoot(this.rootRecord, this.unmarshaller.isResultAlwaysXMLRoot());
             } else if(documentBuilder != null) {
                 Node node = documentBuilder.getDocument().getDocumentElement();
-                Root root = new XMLRoot();
+                Root root = unmarshaller.createRoot();
                 root.setLocalName(node.getLocalName());
                 root.setNamespaceURI(node.getNamespaceURI());
                 root.setObject(node);
@@ -273,7 +271,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             
             UnmarshalRecord unmarshalRecord;
             if (isPrimitiveType) {
-                unmarshalRecord = new XMLRootRecord(primitiveWrapperClass);
+                unmarshalRecord = unmarshaller.createRootUnmarshalRecord(primitiveWrapperClass);
                 unmarshalRecord.setSession((CoreAbstractSession) unmarshaller.getContext().getSession());
                 unmarshalRecord.setXMLReader(this.getXMLReader());
             } else if (xmlDescriptor.hasInheritance()) {
