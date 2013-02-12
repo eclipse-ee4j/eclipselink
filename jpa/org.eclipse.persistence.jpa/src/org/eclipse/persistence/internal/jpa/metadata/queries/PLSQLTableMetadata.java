@@ -35,7 +35,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
  */
 public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     private String nestedType;
-    private boolean isNestedTable = false;
+    private Boolean isNestedTable;
     
     /**
      * INTERNAL:
@@ -53,6 +53,7 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         super(record, accessor);
                 
         this.nestedType = (String) record.getAttribute("nestedType");
+        this.isNestedTable = (Boolean) record.getAttributeBooleanDefaultFalse("isNestedTable");
     }
     
     /**
@@ -63,7 +64,7 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         if (objectToCompare instanceof PLSQLTableMetadata) {
             PLSQLTableMetadata parameter = (PLSQLTableMetadata) objectToCompare;            
             
-            if (this.isNestedTable != parameter.isNestedTable()) {
+            if (! valuesMatch(this.isNestedTable, parameter.isNestedTable())) {
                 return false;
             }
             if (! valuesMatch(this.nestedType, parameter.getNestedType())) {
@@ -72,6 +73,14 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         }
         
         return super.equals(objectToCompare);
+    }
+    
+    /**
+     * Indicates if the instance represents a Nested Table (as opposed to Varray).
+     * Defaults to false, i.e. Varray.
+     */
+    public Boolean getNestedTable() {
+        return isNestedTable;
     }
     
     /**
@@ -87,7 +96,7 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
      * Defaults to false, i.e. Varray.
      */
     public boolean isNestedTable() {
-        return isNestedTable;
+        return getNestedTable() != null && getNestedTable();
     }
     
     /**
@@ -106,7 +115,7 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
      * Set boolean that indicates if the instance represents a Nested Table 
      * (as opposed to Varray)
      */
-    public void setIsNestedTable(boolean isNestedTable) {
+    public void setNestedTable(Boolean isNestedTable) {
         this.isNestedTable = isNestedTable;
     }
     

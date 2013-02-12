@@ -2880,8 +2880,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         XMLDirectMapping isNestedTableMapping = new XMLDirectMapping();
         isNestedTableMapping.setAttributeName("isNestedTable");
-        isNestedTableMapping.setGetMethodName("isNestedTable");
-        isNestedTableMapping.setSetMethodName("setIsNestedTable");
+        isNestedTableMapping.setGetMethodName("getNestedTable");
+        isNestedTableMapping.setSetMethodName("setNestedTable");
         isNestedTableMapping.setXPath("@nested-table");
         descriptor.addMapping(isNestedTableMapping);
         
