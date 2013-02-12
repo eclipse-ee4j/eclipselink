@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:childPrefix="namespace2" xmlns:ns0="namespace3" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="namespace2">
+   <xsd:import namespace="namespace3" schemaLocation="schema3.xsd"/>
+   <xsd:complexType name="child">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="id" type="xsd:string"/>
+         <xsd:element minOccurs="0" ref="ns0:otherThing"/>
+      </xsd:sequence>
+      <xsd:attribute name="href" type="xsd:anyURI" use="required"/>
+   </xsd:complexType>
+   <xsd:element name="child" type="childPrefix:child"/>
+</xsd:schema>

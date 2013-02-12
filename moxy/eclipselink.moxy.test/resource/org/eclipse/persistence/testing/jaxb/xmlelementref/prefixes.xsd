@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="namespace2" xmlns:test="http://www.test.org" elementFormDefault="qualified" targetNamespace="http://www.test.org">
+   <xsd:import namespace="namespace2" schemaLocation="schema2.xsd"/>
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:element ref="ns0:child"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="test:root"/>
+</xsd:schema>
