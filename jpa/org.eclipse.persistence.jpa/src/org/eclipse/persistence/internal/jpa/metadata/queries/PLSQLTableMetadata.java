@@ -64,7 +64,7 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         if (objectToCompare instanceof PLSQLTableMetadata) {
             PLSQLTableMetadata parameter = (PLSQLTableMetadata) objectToCompare;            
             
-            if (! valuesMatch(this.isNestedTable, parameter.isNestedTable())) {
+            if (! valuesMatch(this.isNestedTable, parameter.getNestedTable())) {
                 return false;
             }
             if (! valuesMatch(this.nestedType, parameter.getNestedType())) {
