@@ -119,6 +119,13 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	private Collection<JPQLQueryProblem> problems;
 
 	/**
+	 * This visitor determines whether the visited {@link Expression} is a subquery or not.
+	 *
+	 * @since 2.5
+	 */
+	private SubqueryVisitor subqueryVisitor;
+
+	/**
 	 * The {@link JPQLQueryBNFValidator} mapped by the BNF IDs.
 	 */
 	private Map<String, JPQLQueryBNFValidator> validators;
@@ -265,6 +272,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			messageKey,
 			messageArguments
 		);
+	}
+
+	/**
+	 * Creates the visitor that checks if the visited expression is a subquery or not..
+	 *
+	 * @return A new {@link SubqueryVisitor}
+	 * @since 2.5
+	 */
+	protected SubqueryVisitor buildSubqueryVisitor() {
+		return new SubqueryVisitor();
 	}
 
 	/**
@@ -464,6 +481,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the visitor that checks if the visited expression is a subquery or not.
+	 *
+	 * @return {@link SubqueryVisitor}
+	 * @since 2.5
+	 */
+	protected SubqueryVisitor getSubqueryVisitor() {
+		if (subqueryVisitor == null) {
+			subqueryVisitor = buildSubqueryVisitor();
+		}
+		return subqueryVisitor;
+	}
+
+	/**
 	 * Initializes this validator.
 	 */
 	protected void initialize() {
@@ -483,42 +513,20 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * Determines whether the given {@link Expression} is part of a subquery.
+	 * Determines whether the given {@link Expression} is a subquery.
 	 *
-	 * @param expression The {@link Expression} to start scanning its location
-	 * @return <code>true</code> if the given {@link Expression} is part of a subquery; <code>false</code>
-	 * if it's part of the top-level query
-	 * @since 2.4
+	 * @param expression The {@link Expression} to check its type
+	 * @return <code>true</code> if the given {@link Expression} is a subquery; <code>false</code> otherwise
+	 * @since 2.5
 	 */
 	protected boolean isSubquery(Expression expression) {
-		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		SubqueryVisitor visitor = getSubqueryVisitor();
 		try {
 			expression.accept(visitor);
-			return visitor.simpleSelectStatement != null;
+			return visitor.expression != null;
 		}
 		finally {
-			visitor.dispose();
-		}
-	}
-
-	/**
-	 * Determines whether the given {@link Expression} is part of the top-level query.
-	 *
-	 * @param expression The {@link Expression} to start scanning its location
-	 * @return <code>true</code> if the given {@link Expression} is part of the top-level query;
-	 * <code>false</code> if it's part of a subquery
-	 * @since 2.4
-	 */
-	protected boolean isTopLevelQuery(Expression expression) {
-		OwningStatementVisitor visitor = getOwningStatementVisitor();
-		try {
-			expression.accept(visitor);
-			return visitor.deleteStatement != null ||
-			       visitor.selectStatement != null ||
-			       visitor.updateStatement != null;
-		}
-		finally {
-			visitor.dispose();
+			visitor.expression = null;
 		}
 	}
 
@@ -597,6 +605,46 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		finally {
 			bypassValidator.visitor = null;
 			validator.valid = false;
+		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of a subquery.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of a subquery; <code>false</code>
+	 * if it's part of the top-level query
+	 * @since 2.4
+	 */
+	protected boolean isWithinSubquery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.simpleSelectStatement != null;
+		}
+		finally {
+			visitor.dispose();
+		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of the top-level query.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of the top-level query;
+	 * <code>false</code> if it's part of a subquery
+	 * @since 2.4
+	 */
+	protected boolean isWithinTopLevelQuery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.deleteStatement != null ||
+			       visitor.selectStatement != null ||
+			       visitor.updateStatement != null;
+		}
+		finally {
+			visitor.dispose();
 		}
 	}
 
@@ -1137,6 +1185,25 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(UpdateStatement expression) {
 			updateStatement = expression;
+		}
+	}
+
+	/**
+	 * This visitor retrieves the statement owning the visited {@link Expression}.
+	 */
+	protected static class SubqueryVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The subquery is the visited {@link Expression} is a subquery.
+		 */
+		private SimpleSelectStatement expression;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			this.expression = expression;
 		}
 	}
 }

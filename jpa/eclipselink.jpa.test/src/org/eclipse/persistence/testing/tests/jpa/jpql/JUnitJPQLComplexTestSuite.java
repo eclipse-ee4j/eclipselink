@@ -46,6 +46,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AddressType;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Buyer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Customer;
@@ -285,7 +286,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testUnion");
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
-        tests.add("testNestedArrays");
+        tests.add("testNestedArrays1");
+        tests.add("testNestedArrays2");
         tests.add("testNoSelect");
         tests.add("testHierarchicalClause");
         tests.add("testDeleteWithUnqualifiedPathExpression");
@@ -4457,7 +4459,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     // Test nested arrays.
-    public void testNestedArrays() {
+    public void testNestedArrays1() {
         if (!(getPlatform().isOracle() || getPlatform().isMySQL() || getPlatform().isPostgreSQL())) {
             warning("Nested arrays not supported on this database.");
             return;
@@ -4478,6 +4480,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("l2", "Doe");
         query.getResultList();
         closeEntityManager(em);
+    }
+
+    // Bug#400598
+    public void testNestedArrays2() {
+   	 // Incorrect validation of something being a nested array and it's not
+   	 // Note: This query does not need to be complex but it does a complex (long) query
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery(
+          "select attr from Employee attr, Address dn " +
+   	    "where (attr.id=dn.ID) and " +
+   	    "      (dn.type = :pdn) and" +
+   	    "      ((exists ( select A_0 from Employee A_0 where ( A_0.id = DN.ID ) and" +
+   	    "                                                    ( A_0.payScale IN (:V_A_0_1, :V_A_0)))) AND" +
+   	    "       (exists ( select A_1 from Employee A_1 where ( A_1.id = DN.ID ) and" +
+   	    "                                                    ( A_1.payScale = :V_A_1 )))" +
+   	    "      )");
+   	 query.setParameter("pdn",     new AddressType());
+   	 query.setParameter("V_A_0_1", SalaryRate.MANAGER);
+   	 query.setParameter("V_A_0",   SalaryRate.EXECUTIVE);
+   	 query.setParameter("V_A_1",   SalaryRate.SENIOR);
+   	 query.getResultList();
+   	 closeEntityManager(em);
     }
 
     // Test JPQL with no select clause.
