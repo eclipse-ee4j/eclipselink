@@ -170,7 +170,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -226,7 +226,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -280,7 +280,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -331,7 +331,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -387,7 +387,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -440,7 +440,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -476,7 +476,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -535,7 +535,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -586,7 +586,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -638,7 +638,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -701,7 +701,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -750,7 +750,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -803,7 +803,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -860,7 +860,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -907,7 +907,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -953,7 +953,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -994,7 +994,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1048,7 +1048,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1097,7 +1097,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1148,7 +1148,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1197,7 +1197,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1261,7 +1261,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1314,7 +1314,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1370,7 +1370,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 }

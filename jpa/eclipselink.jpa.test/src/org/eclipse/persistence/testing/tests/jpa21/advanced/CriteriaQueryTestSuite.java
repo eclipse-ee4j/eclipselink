@@ -82,8 +82,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
         //suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
-        //Downcast/treat support
-        suite.addTest(CriteriaQueryCastTestSuite.suite());
+        //Downcast/treat support - needs to be moved so it can use the JPA 2.0 models
+        //suite.addTest(CriteriaQueryCastTestSuite.suite());
 
         return suite;
     }

@@ -152,7 +152,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -201,7 +201,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -248,7 +248,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -300,7 +300,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -357,7 +357,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -411,7 +411,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -445,7 +445,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -498,7 +498,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -543,7 +543,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -588,7 +588,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -644,7 +644,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -685,7 +685,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -732,7 +732,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -780,7 +780,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -820,7 +820,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -899,7 +899,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -934,7 +934,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -969,7 +969,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1004,7 +1004,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1061,7 +1061,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1115,7 +1115,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1160,7 +1160,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1201,7 +1201,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1267,7 +1267,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1327,7 +1327,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
@@ -1388,7 +1388,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 }
