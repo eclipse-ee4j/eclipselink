@@ -327,7 +327,7 @@ public class MappingsGenerator {
                 if (namespace.length() == 0) {
                     descriptor.setDefaultRootElement(elementName);
                 } else {
-                    descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null), elementName));
+                    descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor()), elementName));
     	        }
             }
         }
@@ -465,7 +465,7 @@ public class MappingsGenerator {
                 schemaRef.setSchemaContext("/" + prefix + ":" + info.getSchemaTypeName());
                 schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName(), prefix));
             } else {
-            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), null, false);
+            	String generatedPrefix =getPrefixForNamespace(info.getClassNamespace(), desc.getNonNullNamespaceResolver(), false);
             	schemaRef.setSchemaContext("/" + getQualifiedString(generatedPrefix, info.getSchemaTypeName()));            	
             	if(generatedPrefix == null || generatedPrefix.equals(Constants.EMPTY_STRING)){
                     schemaRef.setSchemaContextAsQName(new QName(info.getClassNamespace(), info.getSchemaTypeName()));            		
@@ -826,14 +826,14 @@ public class MappingsGenerator {
                 TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
                 if (null != referenceType && referenceType.isIDSet()) {
                     Property prop = referenceType.getIDProperty();
-                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute()).getXPath();
+                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute(), false).getXPath();
                 }
                 // if the XPath is set (via xml-path) use it, otherwise figure it out
                 Field srcXPath;
                 if (next.getXmlPath() != null) {
                     srcXPath = new XMLField(next.getXmlPath());
                 } else {
-                    srcXPath = getXPathForField(next, namespace, true);
+                    srcXPath = getXPathForField(next, namespace, true, false);
                 }
                 mapping.addChoiceElement(srcXPath.getXPath(), type.getQualifiedName(), tgtXPath);
             } else {
@@ -841,7 +841,7 @@ public class MappingsGenerator {
                 if (next.getXmlPath() != null) {
                     xpath = new XMLField(next.getXmlPath());
                 } else {
-                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment() || type.isEnum());
+                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment() || type.isEnum(), false);
                 }
                 mapping.addChoiceElement(xpath, type.getQualifiedName());
                 if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
@@ -934,14 +934,14 @@ public class MappingsGenerator {
                 TypeInfo referenceType = typeInfo.get(type.getQualifiedName());
                 if (null != referenceType && referenceType.isIDSet()) {
                     Property prop = referenceType.getIDProperty();
-                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute()).getXPath();
+                    tgtXPath = getXPathForField(prop, namespace, !prop.isAttribute(), false).getXPath();
                 }
                 // if the XPath is set (via xml-path) use it, otherwise figure it out
                 Field srcXPath;
                 if (next.getXmlPath() != null) {
                     srcXPath = new XMLField(next.getXmlPath());
                 } else {
-                    srcXPath = getXPathForField(next, namespace, true);
+                    srcXPath = getXPathForField(next, namespace, true, false);
                 }
                 mapping.addChoiceElement(srcXPath.getXPath(), type.getQualifiedName(), tgtXPath);
             } else {
@@ -949,7 +949,7 @@ public class MappingsGenerator {
                 if (next.getXmlPath() != null) {
                     xpath = new XMLField(next.getXmlPath());
                 } else {
-                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || type.isEnum());
+                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || type.isEnum(), false);
                 }
                 xmlField = xpath;
                 mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
@@ -1078,7 +1078,7 @@ public class MappingsGenerator {
             if (namespace.equals("")) {
                 wrapperXPath += (wrapper.getName() + "/");
             } else {
-                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver(), null);
+                String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolver());
                 wrapperXPath += getQualifiedString(prefix, wrapper.getName() + "/");
             }
         }        
@@ -1292,7 +1292,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        mapping.setXPath(getXPathForField(property, namespaceInfo, false).getXPath());
+        mapping.setXPath(getXPathForField(property, namespaceInfo, false, false).getXPath());
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
@@ -1376,7 +1376,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        Field xmlField = getXPathForField(property, namespaceInfo, true);
+        Field xmlField = getXPathForField(property, namespaceInfo, true, false);
         mapping.setField(xmlField);
 
         if (property.getDefaultValue() != null) {
@@ -1462,7 +1462,7 @@ public class MappingsGenerator {
             }
         }
         // if the XPath is set (via xml-path) use it
-        mapping.setField(getXPathForField(property, namespaceInfo, false));
+        mapping.setField(getXPathForField(property, namespaceInfo, false, false));
         if (property.isSwaAttachmentRef()) {
             ((Field) mapping.getField()).setSchemaType(Constants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
@@ -1543,7 +1543,7 @@ public class MappingsGenerator {
             mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         }
         // if the XPath is set (via xml-path) use it
-        mapping.setField(getXPathForField(property, namespaceInfo, false));
+        mapping.setField(getXPathForField(property, namespaceInfo, false, false));
         if (property.isSwaAttachmentRef()) {
             ((Field) mapping.getField()).setSchemaType(Constants.SWA_REF_QNAME);
             mapping.setSwaRef(true);
@@ -1598,7 +1598,7 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
-        mapping.setField(getXPathForField(property, namespaceInfo, true));
+        mapping.setField(getXPathForField(property, namespaceInfo, true, false));
         if (!mapping.getXPath().equals("text()")) {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
         }
@@ -1772,7 +1772,7 @@ public class MappingsGenerator {
     	CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         initializeXMLContainerMapping(mapping);
-        Field field = getXPathForField(property, namespaceInfo, false);
+        Field field = getXPathForField(property, namespaceInfo, false, false);
 
         JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
         if(mapValueClass.isAssignableFrom(descriptorClass)){
@@ -2018,7 +2018,7 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        Field xmlField = getXPathForField(property, namespaceInfo, false);
+        Field xmlField = getXPathForField(property, namespaceInfo, false, false);
         mapping.setXPath(xmlField.getXPath());
 
         if (referenceClassName == null){                   
@@ -2124,7 +2124,7 @@ public class MappingsGenerator {
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
-        Field xmlField = getXPathForField(property, namespaceInfo, true);
+        Field xmlField = getXPathForField(property, namespaceInfo, true, false);
         mapping.setField(xmlField);
 
         if (helper.isAnnotationPresent(property.getElement(), XmlMixed.class)) {
@@ -2167,11 +2167,12 @@ public class MappingsGenerator {
         return mapping;
     }
 
-    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, String suggestedPrefix) {
-    	return getPrefixForNamespace(URI, namespaceResolver, suggestedPrefix, true);
+
+    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver) {
+    	return getPrefixForNamespace(URI, namespaceResolver, true);
     }
     
-    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, String suggestedPrefix, boolean addPrefixToNR) {
+    public String getPrefixForNamespace(String URI, NamespaceResolver namespaceResolver, boolean addPrefixToNR) {
     	String defaultNS = namespaceResolver.getDefaultNamespaceURI();
     	if(defaultNS != null && URI.equals(defaultNS)){
     		return null;
@@ -2192,10 +2193,18 @@ public class MappingsGenerator {
             if(URI.equals(globalNamespaceResolver.getDefaultNamespaceURI())) { 
                 namespaceResolver.setDefaultNamespaceURI(URI);
                 return null;
-            } else if(suggestedPrefix != null){
-        	    prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
-            }else{
-        	    prefix = globalNamespaceResolver.generatePrefix();
+            } else {            	
+            	//Bug 400536 before generating a new one check other resolvers
+            	String suggestedPrefix = null;
+                NamespaceInfo refInfo = getNamespaceInfoForURI(URI);
+            	if(refInfo != null && refInfo.getNamespaceResolver() !=null){
+            		suggestedPrefix = refInfo.getNamespaceResolver().resolveNamespaceURI(URI);
+            	}            	
+            	if(suggestedPrefix != null){
+            	    prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
+                } else{
+            	    prefix = globalNamespaceResolver.generatePrefix();
+                }
             }
         }
        
@@ -2510,14 +2519,14 @@ public class MappingsGenerator {
             String tgtXPath = null;
             if (null != referenceType && referenceType.isIDSet()) {
                 Property prop = referenceType.getIDProperty();
-                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
+                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute(), false).getXPath();
             }
             // if the XPath is set (via xml-path) use it
             Field srcXPath;
             if (property.getXmlPath() != null) {
                 srcXPath = new XMLField(property.getXmlPath());
             } else {
-                srcXPath = getXPathForField(property, namespaceInfo, true);
+                srcXPath = getXPathForField(property, namespaceInfo, true, false);
             }
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
         }
@@ -2591,14 +2600,14 @@ public class MappingsGenerator {
             TypeInfo referenceType = typeInfo.get(referenceClass.getQualifiedName());
             if (null != referenceType && referenceType.isIDSet()) {
                 Property prop = referenceType.getIDProperty();
-                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute()).getXPath();
+                tgtXPath = getXPathForField(prop, namespaceInfo, !prop.isAttribute(), false).getXPath();
             }
             // if the XPath is set (via xml-path) use it, otherwise figure it out
             Field srcXPath;
             if (property.getXmlPath() != null) {
                 srcXPath = new XMLField(property.getXmlPath());
             } else {
-                srcXPath = getXPathForField(property, namespaceInfo, true);
+                srcXPath = getXPathForField(property, namespaceInfo, true, false);
             }
             mapping.addSourceToTargetKeyFieldAssociation(srcXPath.getXPath(), tgtXPath);
         }        
@@ -2632,7 +2641,7 @@ public class MappingsGenerator {
         if(idProp != null) {
             String idXpath = idProp.getXmlPath();
             if(idXpath == null) {
-                idXpath = this.getXPathForField(idProp, namespaceInfo, !idProp.isAttribute()).getXPath();
+                idXpath = this.getXPathForField(idProp, namespaceInfo, !idProp.isAttribute(), false).getXPath();
             }
             if (referencedXmlPath.equals(idXpath)) {
                 return;
@@ -2643,7 +2652,7 @@ public class MappingsGenerator {
             for (Property xmlkeyProperty : targetInfo.getXmlKeyProperties()) {
                 String keyXpath = xmlkeyProperty.getXmlPath();
                 if(keyXpath == null) {
-                    keyXpath = this.getXPathForField(xmlkeyProperty, namespaceInfo, !xmlkeyProperty.isAttribute()).getXPath();
+                    keyXpath = this.getXPathForField(xmlkeyProperty, namespaceInfo, !xmlkeyProperty.isAttribute(), false).getXPath();
                 }
                 if (referencedXmlPath.equals(keyXpath)) {
                     matched = true;
@@ -2656,9 +2665,6 @@ public class MappingsGenerator {
         }
     }
 
-    public Field getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping) {
-        return this.getXPathForField(property, namespaceInfo, isTextMapping, false);
-    }
 
     private String prefixCustomXPath(String unprefixedXPath, Property property, NamespaceInfo nsInfo) {
         String newXPath = "";
@@ -2669,7 +2675,7 @@ public class MappingsGenerator {
             return unprefixedXPath;
         }
 
-        String prefix = getPrefixForNamespace(namespace, nsInfo.getNamespaceResolverForDescriptor(), null);
+        String prefix = getPrefixForNamespace(namespace, nsInfo.getNamespaceResolverForDescriptor());
         if (null == prefix) {
             return unprefixedXPath;
         }
@@ -2717,7 +2723,7 @@ public class MappingsGenerator {
                 if (namespace.equals("")) {
                     xPath += (wrapper.getName() + "/");
                 } else {
-                	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+                	String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
                 	xPath += getQualifiedString(prefix, wrapper.getName() + "/");
                 }
 
@@ -2734,16 +2740,10 @@ public class MappingsGenerator {
                 } else {
                     QName name = property.getSchemaName();
                     String namespace = name.getNamespaceURI();
-                    //if (namespaceInfo.isAttributeFormQualified()) {
-                    //    namespace = namespaceInfo.getNamespace();
-                    //}
-                    //if (!name.getNamespaceURI().equals("")) {
-                    //    namespace = name.getNamespaceURI();
-                    //}
                     if (namespace.equals("")) {
                         xPath += (ATT + name.getLocalPart());
                     } else {
-                        String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+                        String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
                     	xPath += ATT + getQualifiedString(prefix, name.getLocalPart());
                     }
                 }
@@ -2787,7 +2787,7 @@ public class MappingsGenerator {
                 path += TXT;
             }
         } else {
-            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null);
+            String prefix = getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor());
         	path += getQualifiedString(prefix, elementName.getLocalPart());
             if (isText) {
                 path += TXT;
@@ -2895,7 +2895,7 @@ public class MappingsGenerator {
                 } else {
                     Descriptor descriptor = type.getDescriptor();
                     String uri = next.getNamespaceURI();
-                    String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver(),null);
+                    String prefix = getPrefixForNamespace(uri, descriptor.getNamespaceResolver());
                     descriptor.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
                 }
             }
@@ -3070,7 +3070,7 @@ public class MappingsGenerator {
 	  				if(namespaceUri != Constants.EMPTY_STRING){
 	  				    prefix = resolver.resolveNamespaceURI(namespaceUri);
 	  				    if(prefix == null){
-	  					    prefix = getPrefixForNamespace(namespaceUri, resolver, null);	  					
+	  					    prefix = getPrefixForNamespace(namespaceUri, resolver);	  					
 	  				    }
 	  				}
 	  				desc.setNamespaceResolver(resolver);
@@ -3085,7 +3085,7 @@ public class MappingsGenerator {
 	                      desc.setDefaultRootElement(next.getLocalPart());
 	                  } else {
 	                      NamespaceResolver resolver = new org.eclipse.persistence.oxm.NamespaceResolver();
-	                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
+	                      String prefix = getPrefixForNamespace(namespaceUri, resolver);
 
 	                      desc.setNamespaceResolver(resolver);
                           if(nextElement.isXmlRootElement()) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:otherPrefix="namespace3" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="namespace3">
+   <xsd:complexType name="other">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="thing" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="otherThing" type="otherPrefix:other"/>
+</xsd:schema>

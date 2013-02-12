@@ -1,0 +1,9 @@
+<test:root xmlns:test="http://www.test.org" xmlns:childPrefix="namespace2" xmlns:otherPrefix="namespace3">
+   <test:name>theName</test:name>
+   <childPrefix:child childPrefix:href="this is the href">
+      <childPrefix:id>theId</childPrefix:id>
+      <otherPrefix:otherThing>
+	     <otherPrefix:thing>the other thing</otherPrefix:thing>
+       </otherPrefix:otherThing>
+   </childPrefix:child>
+</test:root>
