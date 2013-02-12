@@ -53,4 +53,12 @@ public @interface PLSQLTable {
      * This can be any valid Collection implementation.
      */
     Class javaType() default ArrayList.class;
+    
+    /**
+     * (Optional) Indicates a non-associative (nested) table.
+     * This method would typically be used when generating a constructor for the 
+     * collection in PL/SQL (as the constructors for associative arrays (Varray) 
+     * and a non-associative (nested) tables differ).
+     */
+    boolean isNestedTable() default false;
 }

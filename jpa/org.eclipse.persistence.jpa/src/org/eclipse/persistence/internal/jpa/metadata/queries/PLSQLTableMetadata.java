@@ -35,6 +35,7 @@ import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
  */
 public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     private String nestedType;
+    private boolean isNestedTable = false;
     
     /**
      * INTERNAL:
@@ -62,6 +63,9 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
         if (objectToCompare instanceof PLSQLTableMetadata) {
             PLSQLTableMetadata parameter = (PLSQLTableMetadata) objectToCompare;            
             
+            if (this.isNestedTable != parameter.isNestedTable()) {
+                return false;
+            }
             if (! valuesMatch(this.nestedType, parameter.getNestedType())) {
                 return false;
             }
@@ -79,16 +83,33 @@ public class PLSQLTableMetadata extends PLSQLComplexTypeMetadata {
     }
     
     /**
+     * Indicates if the instance represents a Nested Table (as opposed to Varray).
+     * Defaults to false, i.e. Varray.
+     */
+    public boolean isNestedTable() {
+        return isNestedTable;
+    }
+    
+    /**
      * INTERNAL:
      * Build a runtime record type from the meta-data.
      */
     public PLSQLCollection process() {
         PLSQLCollection table = new PLSQLCollection();
         super.process(table);
+        table.setIsNestedTable(isNestedTable());
         table.setNestedType(getDatabaseTypeEnum(getNestedType()));
         return table;
     }
 
+    /**
+     * Set boolean that indicates if the instance represents a Nested Table 
+     * (as opposed to Varray)
+     */
+    public void setIsNestedTable(boolean isNestedTable) {
+        this.isNestedTable = isNestedTable;
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping.

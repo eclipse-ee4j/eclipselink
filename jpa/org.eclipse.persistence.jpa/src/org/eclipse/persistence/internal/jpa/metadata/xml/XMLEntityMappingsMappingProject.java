@@ -2878,6 +2878,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         descriptor.addMapping(getNestedTypeMapping());
         
+        XMLDirectMapping isNestedTableMapping = new XMLDirectMapping();
+        isNestedTableMapping.setAttributeName("isNestedTable");
+        isNestedTableMapping.setGetMethodName("isNestedTable");
+        isNestedTableMapping.setSetMethodName("setIsNestedTable");
+        isNestedTableMapping.setXPath("@nested-table");
+        descriptor.addMapping(isNestedTableMapping);
+        
         return descriptor;
     }
     

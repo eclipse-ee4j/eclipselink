@@ -66,6 +66,15 @@ public abstract class ComplexTypeMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * The unique identifier of named subgraph metadata.
+     */
+    @Override
+    public String getIdentifier() {
+        return getName();
+    }
+
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public String getName() {

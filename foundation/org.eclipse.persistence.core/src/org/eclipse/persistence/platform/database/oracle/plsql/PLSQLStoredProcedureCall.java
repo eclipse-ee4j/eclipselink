@@ -644,7 +644,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             return;
         }
         processed.add(type);
+        boolean isNestedTable = false;
         if (type.isCollection()) {
+            isNestedTable = ((PLSQLCollection)type).isNestedTable();
             DatabaseType nestedType = ((PLSQLCollection)type).getNestedType();
             addNestedFunctionsForArgument(functions, argument, nestedType, processed);
         } else if (type.isRecord()) {
@@ -656,7 +658,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         TypeInfo info = this.typesInfo.get(type.getTypeName());
         // If the info was not found in publisher, then generate it.
         if (info == null) {
-            info = generateNestedFunction(type, argument.isNonAssociative);
+            info = generateNestedFunction(type, isNestedTable);
         }
         if (argument.direction == IN) {
             if (!functions.contains(info.sql2PlConv)) {

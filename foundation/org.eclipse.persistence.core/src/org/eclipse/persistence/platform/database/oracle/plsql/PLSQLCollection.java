@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 import org.eclipse.persistence.internal.helper.DatabaseType;
 
+/**
+ * <b>PUBLIC</b>: Marker interface for Oracle PL/SQL Collections (Nested Tables and Varrays)
+ *
+ */
 public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, OraclePLSQLType {
 
     /**
@@ -29,7 +33,11 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
      * <p>This could be a JDBC type, PLSQL type, or a PLSQL RECORD type.
      */
     protected DatabaseType nestedType;
+    protected boolean isNestedTable = false;
     
+    /**
+     * The default constructor sets javaType to ArrayList.class
+     */
     public PLSQLCollection() {
         super();
         this.javaType = ArrayList.class;
@@ -41,8 +49,17 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
         return clone;
     }
     
+    @Override
     public boolean isCollection() {
         return true;
+    }
+    
+    /**
+     * Indicates if the instance represents a Nested Table (as opposed to Varray).
+     * Defaults to false, i.e. Varray.
+     */
+    public boolean isNestedTable() {
+        return isNestedTable;
     }
     
     /**
@@ -51,6 +68,15 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
     public DatabaseType getNestedType() {
         return nestedType;
     }
+    
+    /**
+     * Set boolean that indicates if the instance represents a Nested Table 
+     * (as opposed to Varray)
+     */
+    public void setIsNestedTable(boolean isNestedTable) {
+        this.isNestedTable = isNestedTable;
+    }
+    
     /**
      * Set the database type of the value contained in the collection type.
      * <p>i.e. the OF type.
@@ -59,8 +85,9 @@ public class PLSQLCollection extends ComplexDatabaseType implements Cloneable, O
     public void setNestedType(DatabaseType nestedType) {
         this.nestedType = nestedType;
     }
+    
+    @Override
     public int getSqlCode() {
         return ARRAY;
     }
-
 }
