@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,6 +37,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -240,6 +242,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_collection_catalog", "The collection table name for the basic collection/map mapping [{0}] is being defaulted to: {1}." },
         { "metadata_default_converter_data_type", "The data type for the converter named [{2}] used with the element [{1}] in the entity [{0}] is being defaulted to [{3}]." },
         { "metadata_default_converter_object_type", "The object type for the converter named [{2}] used with the element [{1}] in the entity [{0}] is being defaulted to [{3}]." },
+        { "metadata_default_entity_graph_name", "The name for the named entity graph specification on class [{1}] is being defaulted to: {0}" },
         { "metadata_default_column", "The column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_order_column", "The order column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_key_column", "The key column name for the basic map mapping element [{0}] is being defaulted to: {1}." },

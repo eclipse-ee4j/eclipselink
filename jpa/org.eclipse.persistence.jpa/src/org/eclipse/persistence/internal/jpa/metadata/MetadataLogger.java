@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -51,6 +51,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -173,6 +175,8 @@ public class MetadataLogger {
     
     public static final String CONVERTER_DATA_TYPE = "metadata_default_converter_data_type";
     public static final String CONVERTER_OBJECT_TYPE = "metadata_default_converter_object_type";
+    
+    public static final String NAMED_ENTITY_GRAPH_NAME = "metadata_default_entity_graph_name";
     
     public static final String COLUMN = "metadata_default_column";
     public static final String PK_COLUMN = "metadata_default_pk_column";
@@ -323,6 +327,8 @@ public class MetadataLogger {
     
         addContextString(CONVERTER_DATA_TYPE);
         addContextString(CONVERTER_OBJECT_TYPE);
+        
+        addContextString(NAMED_ENTITY_GRAPH_NAME);
         
         addContextString(COLUMN);
         addContextString(PK_COLUMN);

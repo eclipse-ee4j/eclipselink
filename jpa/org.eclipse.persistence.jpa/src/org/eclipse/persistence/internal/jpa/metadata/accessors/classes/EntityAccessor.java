@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -101,16 +101,16 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.lang.reflect.Modifier;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
@@ -119,12 +119,10 @@ import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 
-import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -134,12 +132,12 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKe
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -149,9 +147,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.internal.queries.AttributeItem;
-import org.eclipse.persistence.queries.AttributeGroup;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
@@ -195,6 +190,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
+    private List<NamedEntityGraphMetadata> m_namedEntityGraphs = new ArrayList<NamedEntityGraphMetadata>();
     
     private MetadataClass m_classExtractor;
     
@@ -405,6 +401,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<NamedEntityGraphMetadata> getNamedEntityGraphs() {
+        return m_namedEntityGraphs;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public PrimaryKeyForeignKeyMetadata getPrimaryKeyForeignKey() {
         return m_primaryKeyForeignKey;
     }
@@ -503,6 +507,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
         initXMLObjects(m_indexes, accessibleObject);
         initXMLObjects(m_converts, accessibleObject);
+        initXMLObjects(m_namedEntityGraphs, accessibleObject);
     }
     
     /**
@@ -556,6 +561,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         m_primaryKeyJoinColumns = mergeORObjectLists(m_primaryKeyJoinColumns, accessor.getPrimaryKeyJoinColumns());
         m_indexes = mergeORObjectLists(m_indexes, accessor.getIndexes());
         m_converts = mergeORObjectLists(m_converts, accessor.getConverts());
+        m_namedEntityGraphs = mergeORObjectLists(m_namedEntityGraphs, accessor.getNamedEntityGraphs());
     }
     
     /**
@@ -684,6 +690,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // from super classes that apply to us).
         processMappingAccessors();
         
+        // Process the entity graph metadata.
         processEntityGraphs();
     }
     
@@ -1053,115 +1060,36 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
-     * Process/collect the named queries on this accessor and add them to the 
-     * project for later processing.
+     * Process the entity graph metadata on this entity accessor.
      */
     protected void processEntityGraphs() {
-        // Process the named query annotations.
-        // Look for a @NamedQueries.
-        MetadataAnnotation entityGraphsAnno = getAnnotation(JPA_ENTITY_GRAPHS);
-        if (entityGraphsAnno != null){
-            Object[] entityGraphs = entityGraphsAnno.getAttributeArray("value");
-            for (Object entityGraph : entityGraphs){
-                
-                processEntityGraph((MetadataAnnotation)entityGraph);
+        if (m_namedEntityGraphs.isEmpty()) {
+            // Look for an NamedEntityGraphs annotation.
+            if (isAnnotationPresent(JPA_ENTITY_GRAPHS)) {
+                for (Object entityGraph : (Object[]) getAnnotation(JPA_ENTITY_GRAPHS).getAttributeArray("value")) {
+                    new NamedEntityGraphMetadata((MetadataAnnotation) entityGraph, this).process(this);
+                }
+            } else {
+                // Look for a NamedEntityGraph annotation
+                if (isAnnotationPresent(JPA_ENTITY_GRAPH)) {
+                    new NamedEntityGraphMetadata(getAnnotation(JPA_ENTITY_GRAPH), this).process(this);
+                }
             }
-        }else{
-            MetadataAnnotation entityGraphAnno = getAnnotation(JPA_ENTITY_GRAPH);
-            if (entityGraphAnno != null){
-                processEntityGraph(entityGraphAnno);
+        } else {
+            // Process the named entity graphs from XML.
+            if (isAnnotationPresent(JPA_ENTITY_GRAPH)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(JPA_ENTITY_GRAPH), getJavaClassName(), getLocation());
+            }
+                
+            if (isAnnotationPresent(JPA_ENTITY_GRAPHS)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(JPA_ENTITY_GRAPHS), getJavaClassName(), getLocation());
+            }
+                
+            for (NamedEntityGraphMetadata entityGraph : m_namedEntityGraphs) {
+                entityGraph.process(this);
             }
         }
     }
-    
-    protected void processEntityGraph(MetadataAnnotation entityGraphAnno){
-        if (entityGraphAnno != null){
-            Map<String, Map<String,AttributeGroup>> managedAttributeGraphs = new HashMap<String, Map<String,AttributeGroup>>();
-            String name = (String) entityGraphAnno.getAttributeString("name");
-            if (name == null || name.equals("")){
-                name = getEntityName();
-            }
-            AttributeGroup entityGraph = new AttributeGroup(name, getDescriptorJavaClass().getName());
-            //build list of managedComponents
-            for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
-                String subname = (String) ((MetadataAnnotation)managedComponent).getAttributeString("name");
-                String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
-                AttributeGroup subGraph = new AttributeGroup(subname, type);
-                
-                Map<String, AttributeGroup> groups = managedAttributeGraphs.get(subname);
-                if (groups == null){
-                    groups = new HashMap<String, AttributeGroup>();
-                    managedAttributeGraphs.put(subname,  groups);
-                }
-                groups.put(type, subGraph);
-            }
-            //process addAllAttributeNodes
-            if ((Boolean) entityGraphAnno.getAttributeBoolean("includeAllAttributes", false)){
-                for (MappingAccessor accessor : getDescriptor().getMappingAccessors()){
-                    entityGraph.addAttribute(accessor.getAttributeName());
-                }
-            }
-            //process root components
-            for (Object component : ((Object[])entityGraphAnno.getAttributeArray("attributeNodes"))){
-                String attrname = (String) ((MetadataAnnotation)component).getAttributeString("value");
-                String managedComponent = (String) ((MetadataAnnotation)component).getAttribute("subgraph");
-                if (managedComponent != null){
-                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(attrname);
-                    if (managed != null){
-                        entityGraph.addAttribute(attrname, managed.values());
-                    }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), attrname, managedComponent}));
-                    }
-                }else{
-                    entityGraph.addAttribute(attrname);
-                }
-                managedComponent = (String) ((MetadataAnnotation)component).getAttribute("keySubgraph");
-                if (managedComponent != null){
-                    Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
-                    if (managed != null){
-                        entityGraph.getItem(attrname).addKeyGroups(managed.values());
-                    }else{
-                        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), attrname, managedComponent}));
-                    }
-                }
-            }
-            //process managed components
-            for (Object managedComponent : ((Object[])entityGraphAnno.getAttributeArray("subgraphs"))){
-                String subname = (String) ((MetadataAnnotation)managedComponent).getAttribute("name");
-                String type = (String) ((MetadataAnnotation)managedComponent).getAttributeClass("type", ClassConstants.Object_Class);
-                AttributeGroup subgraph = managedAttributeGraphs.get(subname).get(type);
-                for (Object component : ((Object[])((MetadataAnnotation)managedComponent).getAttributeArray("attributeNodes"))){
-                    String componentName = (String) ((MetadataAnnotation)component).getAttributeString("value");
-                    String managedComponentName = (String) ((MetadataAnnotation)component).getAttribute("subgraph");
-                    if (managedComponentName != null){
-                        Map<String, AttributeGroup> managed = managedAttributeGraphs.get(componentName);
-                        if (managed != null){
-                            subgraph.addAttribute(componentName, managed.values());
-                        }else{
-                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), componentName, managedComponent}));
-                        }
-                    }else{
-                        subgraph.addAttribute(componentName);
-                    }
-                    managedComponent = (String) ((MetadataAnnotation)component).getAttribute("keySubgraph");
-                    if (managedComponent != null){
-                        Map<String, AttributeGroup> managed = managedAttributeGraphs.get(name);
-                        if (managed != null){
-                            entityGraph.getItem(componentName).addKeyGroups(managed.values());
-                        }else{
-                            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{entityGraph.getName(), componentName, managedComponent}));
-                        }
-                    }
-                }
-            }
-            if (getProject().getProject().getAttributeGroups().containsKey(entityGraph.getName())){
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("named_entity_graph_exists", new Object[]{entityGraph.getName(), getClassName()}));
-            }
-            getProject().getProject().getAttributeGroups().put(entityGraph.getName(), entityGraph);
-        }
-
-    }
-    
 
     /**
      * INTERNAL:
@@ -1525,6 +1453,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setInheritance(InheritanceMetadata inheritance) {
         m_inheritance = inheritance;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setNamedEntityGraphs(List<NamedEntityGraphMetadata> namedEntityGraphs) {
+        m_namedEntityGraphs = namedEntityGraphs;
     }
     
     /**

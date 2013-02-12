@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,42 +8,28 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     02/08/2012-2.4 Guy Pelletier 
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     01/28/2013-2.5 Gordon Yorke 
+ *       - 397772: JPA 2.1 Entity Graph Support
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.QueryHint;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Race;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Responsibility;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
-import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerInfo;
-import org.eclipse.persistence.testing.models.jpa21.advanced.RunnerStatus;
-import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
-import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;
-import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
-import org.eclipse.persistence.testing.models.jpa21.advanced.Sprinter;
 
 public class EntityGraphTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
@@ -58,9 +44,12 @@ public class EntityGraphTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("EntityGraphTestSuite");
-        
-        // These tests call stored procedures that return a result set. 
+         
         suite.addTest(new EntityGraphTestSuite("testSimpleGraph"));
+        
+        // Add the equivalent XML tests.
+        suite.addTest(XMLEntityGraphTestSuite.suite());
+        
         return suite;
     }
     

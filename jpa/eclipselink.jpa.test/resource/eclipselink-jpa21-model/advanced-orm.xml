@@ -159,6 +159,16 @@
                 <column-result name="R_COUNT" class="Integer"/>
             </constructor-result>
         </sql-result-set-mapping>
+        <named-entity-graph>
+            <named-attribute-node name="address"/>
+            <named-attribute-node name="projects" subgraph="projects"/>
+            <subgraph name="projects">
+                <named-attribute-node name="properties"/>
+            </subgraph>
+            <subgraph name="projects" class="LargeProject">
+                <named-attribute-node name="executive"/>
+            </subgraph>
+        </named-entity-graph>
         <attributes>
             <id name="id">
                 <column name="EMP_ID" length="21"/>
@@ -304,6 +314,9 @@
         <discriminator-value>L</discriminator-value>
         <attributes>
             <basic name="budget"/>
+            <many-to-one name="executive" fetch="LAZY">
+                <join-column name="EXEC_ID"/>
+            </many-to-one>
         </attributes>
     </entity>
     

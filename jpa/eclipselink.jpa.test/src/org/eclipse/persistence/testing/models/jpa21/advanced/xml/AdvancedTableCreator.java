@@ -10,6 +10,8 @@
  * Contributors:
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
@@ -423,6 +425,17 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field.setUnique(false);
         field.setIsIdentity(false);
         table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("EXEC_ID");
+        field.setTypeName("NUMERIC");
+        field.setSize(15);
+        field.setShouldAllowNull(true);
+        field.setIsPrimaryKey(false);
+        field.setUnique(false);
+        field.setIsIdentity(false);
+        field.setForeignKeyFieldName("JPA21_XML_EMPLOYEE.EMP_ID");
+        table.addField(field);
     
         return table;
     }
@@ -567,7 +580,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.setName("JPA21_XML_PROJ_PROPS");
 
         FieldDefinition field = new FieldDefinition();
-        field.setName("PROJ_ID");
+        field.setName("XMLProject_PROJ_ID");
         field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setShouldAllowNull(false);

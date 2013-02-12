@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -93,6 +93,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     11/22/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (index metadata support)
+ *     02/12/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -154,6 +156,7 @@ import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -498,6 +501,14 @@ public class MetadataProject {
         // Grab the implemented interfaces (used when defaulting v1-1 mappings)
         m_interfacesImplementedByEntities.addAll(accessor.getJavaClass().getInterfaces());
         m_entityAccessors.put(accessor.getJavaClassName(), accessor);       
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the given entity graph (internal attribute group).
+     */
+    public void addEntityGraph(AttributeGroup entityGraph) {
+        getProject().getAttributeGroups().put(entityGraph.getName(), entityGraph);
     }
     
     /**
@@ -1347,6 +1358,14 @@ public class MetadataProject {
      */
     public boolean hasEntity(String className) {
         return m_entityAccessors.containsKey(className);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is there exist and entity graph already for the given name.
+     */
+    public boolean hasEntityGraph(String name) {
+        return getProject().getAttributeGroups().containsKey(name);
     }
     
     /**

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
@@ -139,7 +138,7 @@ public class AttributeGroup implements Serializable, Cloneable {
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public Set<String> getAttributeNames() {
         return getItems().keySet();
     }

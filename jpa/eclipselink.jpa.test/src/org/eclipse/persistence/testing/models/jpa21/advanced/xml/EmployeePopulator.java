@@ -10,6 +10,8 @@
  * Contributors:
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     02/13/2013-2.5 Guy Pelletier 
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
@@ -1234,6 +1236,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample2());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
@@ -1247,6 +1250,7 @@ public class EmployeePopulator {
         }
 
         LargeProject largeProject = basicLargeProjectExample2();
+        largeProject.setExecutive(employeeExample15());
         registerObject(largeProject, "0002");
         return largeProject;
     }
@@ -1257,6 +1261,7 @@ public class EmployeePopulator {
         }
 
         LargeProject largeProject = basicLargeProjectExample3();
+        largeProject.setExecutive(employeeExample15());
         registerObject(largeProject, "0003");
         return largeProject;
     }
@@ -1271,6 +1276,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample3());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }
@@ -1288,6 +1294,7 @@ public class EmployeePopulator {
 
         try {
             largeProject.setTeamLeader(employeeExample5());
+            largeProject.setExecutive(employeeExample15());
         } catch (Exception exception) {
             throw new RuntimeException(exception.toString());
         }

@@ -24,6 +24,8 @@
 <!--       - 322008: Improve usability of additional criteria applied to queries at the session/EM                                   -->
 <!--     03/23/2011-2.3 Guy Pelletier                                                                                                -->
 <!--       - 337323: Multi-tenant with shared schema support (part 1)                                                                -->
+<!--     02/13/2013-2.5 Guy Pelletier                                                                                                -->
+<!--       - 397772: JPA 2.1 Entity Graph Support (XML support)                                                                      -->     
 <!-- ******************************************************************************************************************************* -->
 
 <!-- Java Persistence API object-relational mapping file schema -->
@@ -973,6 +975,7 @@
       <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="convert" type="orm:convert" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="named-entity-graph" type="orm:named-entity-graph" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
@@ -3513,6 +3516,61 @@
   
   <!-- **************************************************** -->
 
+  <xsd:complexType name="named-attribute-node">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface NamedAttributeNode {
+          String value();
+          String subgraph() default "";
+          String keySubgraph() default "";
+        }
+ 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="subgraph" type="xsd:string"/>
+    <xsd:attribute name="key-subgraph" type="xsd:string"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="named-entity-graph">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface NamedEntityGraph {
+          String name() default "";
+          NamedAttributeNode[] attributeNodes() default {};
+          boolean includeAllAttributes() default false;
+          NamedSubgraph[] subgraphs() default {};
+          NamedSubGraph[] subclassSubgraphs() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="named-attribute-node" 
+                   type="orm:named-attribute-node" 
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="subgraph" 
+                   type="orm:named-subgraph" 
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="subclass-subgraph" 
+                   type="orm:named-subgraph" 
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="include-all-attributes" type="xsd:boolean"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
   <xsd:complexType name="named-native-query">
     <xsd:annotation>
       <xsd:documentation>
@@ -3665,6 +3723,31 @@
     <xsd:attribute name="returns-result-set" type="xsd:boolean"/>
     <xsd:attribute name="multiple-result-sets" type="xsd:boolean"/>
     <xsd:attribute name="call-by-index" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="named-subgraph">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface NamedSubgraph {
+          String name();
+          Class type() default void.class;
+          NamedAttributeNode[] attributeNodes();
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="named-attribute-node" 
+                   type="orm:named-attribute-node" 
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="class" type="xsd:string"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->
