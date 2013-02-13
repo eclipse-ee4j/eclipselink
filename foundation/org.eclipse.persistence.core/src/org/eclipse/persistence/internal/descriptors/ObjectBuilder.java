@@ -437,7 +437,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
-    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
+    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
 
         // PERF: Avoid synchronized enumerator as is concurrency bottleneck.
         List mappings = this.descriptor.getMappings();
@@ -448,7 +448,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         int size = mappings.size();
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            if (readAllMappings || query.shouldReadMapping(mapping)) {
+            if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
                 mapping.readFromRowIntoObject(databaseRow, joinManager, domainObject, cacheKey, query, targetSession, isTargetProtected);
             }
         }
@@ -635,6 +635,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 domainObject = concreteDescriptor.getObjectBuilder().wrapObject(domainObject, session);
             }
         }
+
         return domainObject;
     }
 
@@ -673,7 +674,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
         }
-        for (AttributeItem eachItem : group.getItems().values()) {
+        for (AttributeItem eachItem : group.getAllItems().values()) {
             final DatabaseMapping mapping = getMappingForAttributeName(eachItem.getAttributeName());
             final AttributeItem item = eachItem;
             if (mapping == null) {
@@ -833,6 +834,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 domainWasMissing = domainObject == null;
             }
 
+            FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
+
             if (domainWasMissing || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
                 if (domainObject == null || query.shouldStoreBypassCache()) {
@@ -853,15 +856,17 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
-
-                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session);
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
-                    if ((query.getEntityFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
-                        query.getEntityFetchGroup().setOnEntity(domainObject, session);
+                    if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
+                        EntityFetchGroup entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup);
+                        if (entityFetchGroup !=null){
+                            entityFetchGroup.setOnEntity(domainObject, session);
+                        }
                     }
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
@@ -883,12 +888,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
                 if ((cacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated ) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.isLockedByMergeManager()))) {
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, cacheKey, cacheKey.getObject(), query, joinManager, databaseRow, session, false);
-                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getEntityFetchGroup())))) {
+                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup))))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
-                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, query.getEntityFetchGroup(), session);
-                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session);
+                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup), session);
+                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                     if (cacheKey != null){
                         cacheForeignKeyValues(databaseRow, cacheKey, session);
                     }
@@ -958,6 +963,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 protectedObject = cacheKey.getObject();
             }
+            FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
+            FetchGroupManager fetchGroupManager = concreteDescriptor.getFetchGroupManager();
             
             if (protectedObject == null || query.shouldRetrieveBypassCache()) {
                 cacheHit = false;
@@ -990,13 +997,16 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         cachedObject = sharedCacheKey.getObject();
                     }
                 }
-                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, false, session);
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 
                 //if !protected the returned object and the domain object are the same.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     // Set the fetch group to the domain object, after built.
-                    if ((query.getEntityFetchGroup() != null) && concreteDescriptor.hasFetchGroupManager()) {
-                        query.getEntityFetchGroup().setOnEntity(protectedObject, session);
+                    if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
+                        EntityFetchGroup entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup);
+                        if (entityFetchGroup !=null){
+                            entityFetchGroup.setOnEntity(protectedObject, session);
+                        }
                     }
                 }
                 // PERF: Cache the primary key and cache key if implements PersistenceEntity.
@@ -1028,12 +1038,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session.getParent(), true);
                     //shared cache was refreshed and a refresh has been requested so lets refresh the protected object as well
                     refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, protectedObject, query, joinManager, databaseRow, session, true);
-                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(protectedObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(protectedObject, query.getEntityFetchGroup())))) {
+                } else if (fetchGroupManager != null && (fetchGroupManager.isPartialObject(protectedObject) && (!fetchGroupManager.isObjectValidForFetchGroup(protectedObject, fetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
-                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(protectedObject, query.getEntityFetchGroup(), session);
-                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, false, session);
+                    fetchGroupManager.unionEntityFetchGroupIntoObject(protectedObject, fetchGroupManager.getEntityFetchGroup(fetchGroup), session);
+                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(protectedObject, sharedCacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 }
                 // 3655915: a query with join/batch'ing that gets a cache hit
                 // may require some attributes' valueholders to be re-built.
@@ -1094,17 +1104,19 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Clean up the cached object data and only revert the fetch group data back to the cached object.
      */
     private void revertFetchGroupData(Object domainObject, ClassDescriptor concreteDescriptor, CacheKey cacheKey, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, AbstractSession session, boolean targetIsProtected) {
+        FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
+        FetchGroupManager fetchGroupManager = concreteDescriptor.getFetchGroupManager();
         //the cached object is either invalidated, or staled as the version is newer, or a refresh is explicitly set on the query.
         //clean all data of the cache object.
-        concreteDescriptor.getFetchGroupManager().reset(domainObject);
+        fetchGroupManager.reset(domainObject);
         //set fetch group reference to the cached object
-        concreteDescriptor.getFetchGroupManager().setObjectFetchGroup(domainObject, query.getEntityFetchGroup(), session);
+        fetchGroupManager.setObjectFetchGroup(domainObject, fetchGroupManager.getEntityFetchGroup(fetchGroup), session);
         // Bug 276362 - set the CacheKey's read time (to re-validate the CacheKey) before buildAttributesIntoObject is called
         cacheKey.setReadTime(query.getExecutionTime());
         //read in the fetch group data only
-        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, false, session);
+        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
         //set refresh on fetch group
-        concreteDescriptor.getFetchGroupManager().setRefreshOnFetchGroupToObject(domainObject, (query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache()));
+        fetchGroupManager.setRefreshOnFetchGroupToObject(domainObject, (query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache()));
         //set query id to prevent infinite recursion on refresh object cascade all
         cacheKey.setLastUpdatedQueryId(query.getQueryId());
         //register the object into the IM and set the write lock object if applied.
@@ -1167,6 +1179,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                                 policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
                             }
                         }
+                        
                     }
                 }
             } finally {
@@ -1721,9 +1734,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         boolean readAllMappings = query.shouldReadAllMappings();
         List mappings = this.descriptor.getMappings();
         int size = mappings.size();
+        FetchGroup executionFetchGroup = query.getExecutionFetchGroup(this.descriptor);
         for (int index = 0; index < size; index++) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
-            if (readAllMappings || query.shouldReadMapping(mapping)) {
+            if (readAllMappings || query.shouldReadMapping(mapping, executionFetchGroup)) {
                 mapping.buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, query, unitOfWork, unitOfWork);
             }
         }
@@ -1777,12 +1791,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Acquire or create the cache key as is need once the object is build anyway.
         CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, true);
         Object workingClone = unitOfWorkCacheKey.getObject();
+        FetchGroup fetchGroup = query.getExecutionFetchGroup(descriptor);
+        FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
         try {
             // If there is a clone, and it is not a refresh then just return it.
             boolean wasAClone = workingClone != null;
             boolean isARefresh = query.shouldRefreshIdentityMapResult() || (query.isLockQuery() && (!wasAClone || !query.isClonePessimisticLocked(workingClone, unitOfWork)));
             // Also need to refresh if the clone is a partial object and query requires more than its fetch group.
-            if (wasAClone && descriptor.hasFetchGroupManager() && (descriptor.getFetchGroupManager().isPartialObject(workingClone) && (!descriptor.getFetchGroupManager().isObjectValidForFetchGroup(workingClone, query.getEntityFetchGroup())))) {
+            if (wasAClone && fetchGroupManager != null && (fetchGroupManager.isPartialObject(workingClone) && (!fetchGroupManager.isObjectValidForFetchGroup(workingClone, fetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
                 isARefresh = true;
             }
             if (wasAClone && (!isARefresh)) {
@@ -1853,10 +1869,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     
             // Turn it 'off' to prevent unwanted events.
             policy.dissableEventProcessing(workingClone);
-            // Set fetch group before building object if a refresh to avoid fetching during building.
-            FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
             if (isARefresh && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
+                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
             }
             if (descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
                 // we are at this point because we have isolated protected entities to the UnitOfWork
@@ -1874,7 +1888,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
             if ((!isARefresh) && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(), unitOfWork);
+                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
             }
             Object backupClone = policy.buildBackupClone(workingClone, this, unitOfWork);
     
@@ -3827,9 +3841,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      */
     protected boolean refreshObjectIfRequired(ClassDescriptor concreteDescriptor, CacheKey cacheKey, Object domainObject, ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, AbstractSession session, boolean targetIsProtected){
         boolean cacheHit = true;
+        FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
+        FetchGroupManager fetchGroupManager = concreteDescriptor.getFetchGroupManager();
         //cached object might be partially fetched, only refresh the fetch group attributes of the query if
         //the cached partial object is not invalidated and does not contain all data for the fetch group.   
-        if (concreteDescriptor.hasFetchGroupManager() && concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject)) {
+        if (fetchGroupManager != null && fetchGroupManager.isPartialObject(domainObject)) {
             cacheHit = false;
             //only ObjectLevelReadQuery and above support partial objects
             revertFetchGroupData(domainObject, concreteDescriptor, cacheKey, (query), joinManager, databaseRow, session, targetIsProtected);
@@ -3855,7 +3871,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 cacheKey.setLastUpdatedQueryId(query.getQueryId());
                 // Bug 276362 - set the CacheKey's read time (re-validating the CacheKey) before buildAttributesIntoObject is called
                 cacheKey.setReadTime(query.getExecutionTime());
-                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, true, session);
+                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, true, session);
             }
         }
         return cacheHit;

@@ -1346,7 +1346,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
                 Object wrappedObject = cp.nextEntry(iterator, session);
                 Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
-                session.load(nestedObject, item.getGroup());
+                session.load(nestedObject, item.getGroup(nestedObject.getClass()));
             }
         }
     }

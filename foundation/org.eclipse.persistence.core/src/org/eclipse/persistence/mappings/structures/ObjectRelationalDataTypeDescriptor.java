@@ -210,7 +210,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
                     }
                 }
                 arrayValue = descriptor.getObjectBuilder().buildNewInstance();
-                descriptor.getObjectBuilder().buildAttributesIntoObject(arrayValue, null, nestedRow, query, null, false, session);
+                descriptor.getObjectBuilder().buildAttributesIntoObject(arrayValue, null, nestedRow, query, null, null, false, session);
             } else if (isNestedStructure && (arrayValue instanceof Array)){
                 arrayValue = buildContainerFromArray((Array)arrayValue, (ObjectRelationalDatabaseField)nestedType, session);
             }             

@@ -121,7 +121,7 @@ public class EISCompositeObjectMapping extends AbstractCompositeObjectMapping im
             return objectBuilder.buildObject(query, nestedRow, joinManager);
         } else {
             Object aggregateObject = objectBuilder.buildNewInstance();
-            objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, false, targetSession);
+            objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, query.getExecutionFetchGroup(objectBuilder.getDescriptor()), false, targetSession);
             return aggregateObject;
 
         }

@@ -276,7 +276,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                             ReadObjectQuery query = new ReadObjectQuery();
                             query.setSession(session);
                             value = descriptor.getObjectBuilder().buildNewInstance();
-                            descriptor.getObjectBuilder().buildAttributesIntoObject(value, null, nestedRow, query, null, false, this.getQuery().getSession());
+                            descriptor.getObjectBuilder().buildAttributesIntoObject(value, null, nestedRow, query, null, null, false, this.getQuery().getSession());
                         }
                     } else if ((value instanceof Array) && (field.isObjectRelationalDatabaseField())) {
                         value = ObjectRelationalDataTypeDescriptor.buildContainerFromArray((Array)value, (ObjectRelationalDatabaseField)field, session);

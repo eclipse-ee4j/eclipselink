@@ -140,7 +140,7 @@ public class EISCompositeCollectionMapping extends AbstractCompositeCollectionMa
             return descriptor.getObjectBuilder().buildObject(query, nestedRow, joinManager);
         } else {
             Object element = descriptor.getObjectBuilder().buildNewInstance();
-            descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentsCacheKey, nestedRow, query, joinManager, false, targetSession);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(element, parentsCacheKey, nestedRow, query, joinManager, query.getExecutionFetchGroup(descriptor), false, targetSession);
             return element;
         }
     }

@@ -5062,7 +5062,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                load(iterator.next(), group);
            }
        } else {
-           getDescriptor(objectOrCollection).getObjectBuilder().load(objectOrCollection, group, this);
+           ClassDescriptor concreteDescriptor = getDescriptor(objectOrCollection);
+           AttributeGroup concreteGroup = group.findGroup(concreteDescriptor);
+           concreteDescriptor.getObjectBuilder().load(objectOrCollection, concreteGroup, this);
        }
    }
 

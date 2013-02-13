@@ -262,10 +262,17 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
 
     /**
      * INTERNAL:
-     * Returns EntityFetchGroup that will be applied to objects returned by the query.
-     * Should not be called before preProcess - may not yet exist.
+     * Returns FetchGroup that will be applied to the query.
+     * Note that the returned fetchGroup may be updated during preProcess.
      */
-    public EntityFetchGroup getEntityFetchGroup() {
+    public FetchGroup getExecutionFetchGroup(ClassDescriptor descriptor) {
+        return null;
+    }
+
+    /**
+     * Return the load group set in the query.
+     */
+    public LoadGroup getLoadGroup() {
         return null;
     }
 
@@ -674,7 +681,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * INTERNAL:
      * Check if the mapping is part of the partial attributes.
      */
-    public boolean shouldReadMapping(DatabaseMapping mapping) {
+    public boolean shouldReadMapping(DatabaseMapping mapping, FetchGroup fetchGroup) {
         return true;
     }
 

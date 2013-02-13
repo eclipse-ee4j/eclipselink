@@ -2141,7 +2141,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         // Copy nested fetch group from the source query 
         if (targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
-            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(this.getDescriptor());
             if (sourceFG != null) {                    
                 FetchGroup targetFetchGroup = sourceFG.getGroup(getAttributeName());
                 if(targetFetchGroup != null) {

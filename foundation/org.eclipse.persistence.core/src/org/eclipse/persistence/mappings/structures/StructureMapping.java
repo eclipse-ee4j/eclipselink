@@ -83,7 +83,7 @@ public class StructureMapping extends AbstractCompositeObjectMapping {
     @Override
     protected Object buildCompositeObject(ObjectBuilder objectBuilder, AbstractRecord nestedRow, ObjectBuildingQuery query, CacheKey parentCacheKey, JoinedAttributeManager joinManager, AbstractSession targetSession) {
         Object aggregateObject = objectBuilder.buildNewInstance();
-        objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, false, targetSession);
+        objectBuilder.buildAttributesIntoObject(aggregateObject, parentCacheKey, nestedRow, query, joinManager, query.getExecutionFetchGroup(objectBuilder.getDescriptor()), false, targetSession);
         return aggregateObject;
     }
 

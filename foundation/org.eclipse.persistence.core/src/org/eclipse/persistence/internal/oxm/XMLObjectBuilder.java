@@ -50,6 +50,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.w3c.dom.Document;
@@ -285,7 +286,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if ((unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
-        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, false, query.getSession());
+        concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, null, false, query.getSession());
         if (isXmlDescriptor() && ((Descriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
             Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
             if ((pk != null) && (((CacheId) pk).getPrimaryKey().length > 0)) {
@@ -370,9 +371,9 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * Each mapping is recursed to assign values from the Record to the attributes in the domain object.
      */
     @Override
-    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
+    public void buildAttributesIntoObject(Object domainObject, CacheKey cacheKey, AbstractRecord databaseRow, ObjectBuildingQuery query, JoinedAttributeManager joinManager, FetchGroup executionFetchGroup, boolean forRefresh, AbstractSession targetSession) throws DatabaseException {
         ((XMLRecord)databaseRow).setSession(query.getSession().getExecutionSession(query));
-        super.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, forRefresh, targetSession);
+        super.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, executionFetchGroup, forRefresh, targetSession);
     }
 
     /**

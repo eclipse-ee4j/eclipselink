@@ -255,7 +255,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     protected void prepareAndVerifyInternal(FetchGroup fetchGroup, String attributePrefix) {
         addMinimalFetchGroup(fetchGroup);
         ObjectBuilder builder = this.descriptor.getObjectBuilder(); 
-        Iterator<Map.Entry<String, AttributeItem>> it = fetchGroup.getItems().entrySet().iterator();
+        Iterator<Map.Entry<String, AttributeItem>> it = fetchGroup.getAllItems().entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry<String, AttributeItem> entry = it.next();
             String name = entry.getKey();
@@ -343,8 +343,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public EntityFetchGroup getEntityFetchGroup(FetchGroup fetchGroup) {
         if(fetchGroup == null) {
             return null;
+        }else{
+            return fetchGroup.getEntityFetchGroup(this);
         }
-        return getEntityFetchGroup(fetchGroup.getAttributeNames());
     }
     
     /**

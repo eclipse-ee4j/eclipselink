@@ -380,7 +380,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 // Computed nested batch attribute expressions.
                 nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
             }
-            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup();
+            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(descriptor);
             if (sourceFG != null) {
                 // Currently FetchGroups for Aggregates not supported because EntityFetchGroup (kept on the entity) is just a list of attributes.
                 // Therefore clone the query (if not already cloned) and clear the fetch group.
@@ -400,7 +400,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         } else if (executionSession.isUnitOfWork()) {
             descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
-            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, refreshing, executionSession);
+            descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, sourceQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
         }
         return aggregate;
     }
