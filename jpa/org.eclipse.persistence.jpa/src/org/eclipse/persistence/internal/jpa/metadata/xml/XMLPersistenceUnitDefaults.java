@@ -189,8 +189,13 @@ public class XMLPersistenceUnitDefaults extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
-        
+
+        // Initialize single objects.
         initXMLObject(m_accessMethods, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_entityListeners, accessibleObject);
+        initXMLObjects(m_tenantDiscriminatorColumns, accessibleObject);
     }
     
     /**
