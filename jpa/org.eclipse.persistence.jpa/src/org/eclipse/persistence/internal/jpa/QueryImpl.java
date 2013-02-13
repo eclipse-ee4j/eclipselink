@@ -1098,7 +1098,7 @@ public class QueryImpl {
     public Object getParameterValue(int position) {
         String param = String.valueOf(position);
         if (!this.parameterValues.containsKey(param)) {
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[] { position }));
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[] { position }));
         }
         return this.parameterValues.get(param);
     }

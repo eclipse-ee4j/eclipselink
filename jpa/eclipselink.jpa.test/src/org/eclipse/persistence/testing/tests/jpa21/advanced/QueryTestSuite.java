@@ -93,7 +93,7 @@ public class QueryTestSuite extends JUnitTestCase {
         try{
             query.getParameterValue(2);
             fail("Exception not thrown for unbound parameter.");
-        } catch (IllegalArgumentException e){}
+        } catch (IllegalStateException e){}
     }
     
     public void testQueryParameterNamed(){
