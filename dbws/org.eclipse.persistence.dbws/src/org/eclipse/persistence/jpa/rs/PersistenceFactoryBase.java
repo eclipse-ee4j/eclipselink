@@ -52,9 +52,10 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @param replace
      * @return
      */
-    public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, boolean replace){
+    public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, String version, boolean replace){
         PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl)emf, baseURI);
         persistenceContext.setBaseURI(baseURI);
+        persistenceContext.setVersion(version);
         return persistenceContext;
     }
 
@@ -101,7 +102,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         return properties;
     }
 
-    public PersistenceContext get(String persistenceUnit, URI defaultURI, Map<String, Object> initializationProperties) {
+    public PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties) {
         PersistenceContext app = getDynamicPersistenceContext(persistenceUnit);
         if (app == null){
             try{
@@ -125,7 +126,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 }
     
                 if (factory != null){
-                    app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
+                    app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, version, true);
                 }
             } catch (Exception e){
                 JPARSLogger.exception("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()}, e);

@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +27,11 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.MatrixParameters;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -39,6 +42,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 public abstract class AbstractResource {
     public static final String SERVICE_VERSION_FORMAT = "v\\d\\.\\d"; 
     protected PersistenceContextFactory factory;
+
+    public static final String SERVICE_VERSION_1_0 = "v1.0"; 
 
     /**
      * Sets the persistence factory.
@@ -168,5 +173,22 @@ public abstract class AbstractResource {
             }
         }
         return jaxbElements;
+    }
+    
+    
+    protected static boolean isValidVersion(String version) {
+        if ((version == null) || (SERVICE_VERSION_1_0.equals(version))) {
+            return true;
+        }
+        return false;
+    }
+    
+    protected PersistenceContext getPersistenceContext(String persistenceUnit, URI baseURI, String version, Map<String, Object> initializationProperties) {
+        if (!isValidVersion(version)) {
+            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
+            throw new IllegalArgumentException();
+        }
+
+        return getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
     }
 }

@@ -67,6 +67,6 @@ public class AuctionPersistenceContextTests {
         ExamplePropertiesLoader.loadProperties(properties);
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmldocs/auction-persistence.xml"); 
-        PersistenceContext context = factory.get("auction", new URI("http://localhost:9090/JPA-RS/"), properties);
+        PersistenceContext context = factory.get("auction", new URI("http://localhost:9090/JPA-RS/"), null, properties);
     }
 }

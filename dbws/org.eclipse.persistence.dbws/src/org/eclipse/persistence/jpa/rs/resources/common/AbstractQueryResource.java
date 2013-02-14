@@ -37,8 +37,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public abstract class AbstractQueryResource extends AbstractResource {
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Response namedQueryUpdateInternal(@SuppressWarnings("unused") String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, ui.getBaseUri(), null);
+    protected Response namedQueryUpdateInternal(String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -49,8 +49,8 @@ public abstract class AbstractQueryResource extends AbstractResource {
     }
     
     @SuppressWarnings("unchecked")
-    protected Response namedQueryInternal(@SuppressWarnings("unused") String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, ui.getBaseUri(), null);
+    protected Response namedQueryInternal(String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();

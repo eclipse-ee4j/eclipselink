@@ -52,8 +52,8 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 public abstract class AbstractEntityResource extends AbstractResource {
 
     @SuppressWarnings({ "rawtypes" })
-    protected Response findAttribute(@SuppressWarnings("unused") String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response findAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -88,8 +88,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
 
-    protected Response find(@SuppressWarnings("unused") String version, String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response find(String version, String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -113,8 +113,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response create(@SuppressWarnings("unused") String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response create(String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -190,8 +190,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         return rb.build();
     }
 
-    protected Response update(@SuppressWarnings("unused") String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response update(String version, String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -212,8 +212,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
 
-    protected Response setOrAddAttribute(@SuppressWarnings("unused") String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response setOrAddAttribute(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -250,8 +250,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response removeAttributeInternal(@SuppressWarnings("unused") String version, String persistenceUnit, String type, String key, String attribute, String listItemId, String partner, HttpHeaders hh, UriInfo ui) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, ui.getBaseUri(), null);
+    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, String listItemId, String partner, HttpHeaders hh, UriInfo ui) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
@@ -286,8 +286,8 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response delete(@SuppressWarnings("unused") String version, String persistenceUnit, String type, String key, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo ui, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });

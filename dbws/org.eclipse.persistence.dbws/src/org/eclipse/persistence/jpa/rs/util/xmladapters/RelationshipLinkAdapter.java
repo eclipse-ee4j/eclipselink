@@ -44,7 +44,14 @@ public class RelationshipLinkAdapter extends XmlAdapter<Link, RelationshipInfo> 
         if (null == v) {
             return null;
         }
-        String href = baseURI + context.getName() + "/entity/"  + v.getOwningEntityAlias() + "/" + IdHelper.stringifyId(v.getOwningEntity(), v.getOwningEntityAlias(), context) + "/" + v.getAttributeName();
+        
+        String version = context.getVersion();
+        String href = null;
+        if (version != null) {  
+            href = baseURI + version + "/" + context.getName() + "/entity/"  + v.getOwningEntityAlias() + "/" + IdHelper.stringifyId(v.getOwningEntity(), v.getOwningEntityAlias(), context) + "/" + v.getAttributeName();
+        } else {
+            href = baseURI + context.getName() + "/entity/"  + v.getOwningEntityAlias() + "/" + IdHelper.stringifyId(v.getOwningEntity(), v.getOwningEntityAlias(), context) + "/" + v.getAttributeName();
+        }
         return new Link(v.getAttributeName(), null, href);
     }
 }

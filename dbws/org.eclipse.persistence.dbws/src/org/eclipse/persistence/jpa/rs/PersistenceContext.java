@@ -142,6 +142,8 @@ public class PersistenceContext {
     protected TransactionWrapper transaction = null;
     
     private Boolean weavingEnabled = null;
+    
+    private String version = null;
 
     protected PersistenceContext() {
     }
@@ -179,6 +181,14 @@ public class PersistenceContext {
             this.weavingEnabled = getWeavingProperty();
         }
         return this.weavingEnabled;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    protected void setVersion(String version) {
+        this.version = version;
     }
 
     /**
@@ -1228,7 +1238,7 @@ public class PersistenceContext {
                     String referenceAdapterName = RestAdapterClassWriter.constructClassNameForReferenceAdapter(clz.getName());
                     ClassLoader cl = getJpaSession().getDatasourcePlatform().getConversionManager().getLoader();
                     Class referenceAdaptorClass = Class.forName(referenceAdapterName, true, cl);
-                    Class[] argTypes = { String.class, PersistenceContext.class };
+                    Class[] argTypes = { String.class, PersistenceContext.class};
                     Constructor referenceAdaptorConstructor = referenceAdaptorClass.getDeclaredConstructor(argTypes);
                     Object[] args = new Object[] { getBaseURI().toString(), this };
                     adapters.add((XmlAdapter) referenceAdaptorConstructor.newInstance(args));

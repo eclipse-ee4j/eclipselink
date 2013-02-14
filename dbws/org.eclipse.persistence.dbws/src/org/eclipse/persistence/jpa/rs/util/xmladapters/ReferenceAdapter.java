@@ -71,7 +71,12 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
         link.setMethod("GET");
         link.setRel("self");
         String id = IdHelper.stringifyId(o, descriptor.getAlias(), context);
-        link.setHref(baseURI + context.getName() + "/entity/" + descriptor.getAlias() + "/" + id);
+        String version = context.getVersion();
+        if (version != null) {
+            link.setHref(baseURI + version + "/" + context.getName() + "/entity/" + descriptor.getAlias() + "/" + id);
+        } else {
+            link.setHref(baseURI + context.getName() + "/entity/" + descriptor.getAlias() + "/" + id);
+        }
         descriptor.getMappingForAttributeName("_persistence_href").setAttributeValueInObject(t, link);
         return link;
     }

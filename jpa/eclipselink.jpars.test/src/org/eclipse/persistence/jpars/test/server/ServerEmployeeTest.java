@@ -30,6 +30,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
@@ -65,7 +66,7 @@ public class ServerEmployeeTest {
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = new PersistenceFactoryBase();
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), true);
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
     }
 
     /**
@@ -485,26 +486,26 @@ public class ServerEmployeeTest {
         employee1.setGender(Gender.Male);
 
         // test EntityResource
-        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, true, "v1.2");
+        employee1 = RestUtils.restUpdate(context, employee1, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, true, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull("Employee1 create failed.", employee1);
 
         // test SingleResultQueryResource
-        String result = RestUtils.restNamedSingleResultQuery("Employee.count", DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.2");
+        String result = RestUtils.restNamedSingleResultQuery("Employee.count", DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull(result);
 
         // test QueryResource
-        result = RestUtils.restNamedMultiResultQuery("Employee.count", DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.2");
+        result = RestUtils.restNamedMultiResultQuery("Employee.count", DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull(result);
         
         // test PersistenceResource
-        result = RestUtils.restGetContexts(MediaType.APPLICATION_JSON_TYPE, "v1.2");
+        result = RestUtils.restGetContexts(MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull(result);
         
         // test PersistenceUnitResource
-        result = RestUtils.restGetTypes(DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, "v1.2"); 
+        result = RestUtils.restGetTypes(DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0); 
         assertNotNull(result);
         
-        RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null,  MediaType.APPLICATION_JSON_TYPE, "v1.2");
+        RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null,  MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
     }
 
     @Test
@@ -540,7 +541,7 @@ public class ServerEmployeeTest {
         assertTrue(employee.getId() == 121098);
         assertNull(employee.getOffice());
         
-        RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.2");
+        RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.0");
     }
 
     @Test
@@ -584,51 +585,6 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(new Integer(employee2.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
     }
 
-    private void readEmployeeWithPhoneNumbersLazyFetchOne2Many(MediaType mediaType) throws Exception {
-        // phone numbers on employee object is annoted to be LAZY fetch
-        // Create an employee without any phone numbers, and make sure that read employee response doesn't contain phone numbers,
-        // then add a phone number to the employee and re-read the employee to make sure that the response contains a link to the phone number  
-        // even if it is fetched lazily.
-        
-        // create an employee
-        Employee employee = new Employee();
-        employee.setFirstName("Louis");
-        employee.setLastName("Armstrong");
-
-        employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
-        assertNotNull("Employee create failed.", employee);
-        assertTrue(employee.getPhoneNumbers().isEmpty());
-
-        // create a cell phone number for this employee
-        PhoneNumber cell = new PhoneNumber();
-        cell.setId(employee.getId());
-        cell.setNumber("613-200 1234");
-        cell.setType("cell");
-        cell.setEmployee(employee);
-        cell = RestUtils.restCreate(context, cell, PhoneNumber.class.getSimpleName(), PhoneNumber.class, DEFAULT_PU, null, mediaType, true);
-        assertNotNull("Phone number create failed.", cell);
-        assertTrue("613-200 1234".equals(cell.getNumber()));
-
-        // update employee with cell number
-        String result = RestUtils.restUpdateBidirectionalRelationship(context, String.valueOf(employee.getId()), Employee.class.getSimpleName(), "phoneNumbers", cell, DEFAULT_PU, mediaType,
-                "employee", true);
-        assertNotNull(result);
-
-        // make sure that response from restUpdateBidirectionalRelationship contains newly added cell number in employee object
-        String cellLinkHref = RestUtils.getServerURI() + DEFAULT_PU + "/entity/PhoneNumber/" + employee.getId() + "+cell";
-        assertTrue(result.contains(cellLinkHref));
-
-        // read employee with phone numbers
-        String employeeWithPhoneNumbers = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
-        assertNotNull("Employee read failed.", employeeWithPhoneNumbers);
-        // make sure employee has a phone number 
-        assertTrue(employeeWithPhoneNumbers.contains(cellLinkHref));
-
-        // delete employee (cascade deletes phone number)
-        RestUtils.restDelete(new Integer(employee.getId()), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
-    }
-    
-    
     private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
         // address on employee object is annoted to be LAZY fetch
         // Create an employee without any address, and make sure that read employee response doesn't contain address,
@@ -1272,7 +1228,7 @@ public class ServerEmployeeTest {
         List<PhoneNumber> phoneNumbers = employee.getPhoneNumbers();
         assertNotNull(phoneNumbers);
         assertTrue(phoneNumbers.size()==1);
-        assertTrue(phoneNumbers.get(0).getAreaCode().equals("613"));
+        assertTrue("613".equals(phoneNumbers.get(0).getAreaCode()));
         
         // update employee
         employee.setSalary(20000);

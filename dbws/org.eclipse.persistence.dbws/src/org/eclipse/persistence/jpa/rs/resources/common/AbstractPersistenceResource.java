@@ -56,14 +56,23 @@ import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
  */
 public abstract class AbstractPersistenceResource extends AbstractResource {
 
-    protected Response getContexts(@SuppressWarnings("unused") String version, HttpHeaders hh, URI baseURI) throws JAXBException {
+    protected Response getContexts(String version, HttpHeaders hh, URI baseURI) throws JAXBException {
+        if (!isValidVersion(version)) {
+            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
         Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
         Iterator<String> contextIterator = contexts.iterator();
         List<Link> links = new ArrayList<Link>();
         String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
         while (contextIterator.hasNext()) {
             String context = contextIterator.next();
-            links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
+            if (version != null) {
+                links.add(new Link(context, mediaType, baseURI + version + "/" + context + "/metadata"));
+            } else {
+                links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
+            }
         }
         String result = null;
         result = marshallMetadata(links, mediaType);
@@ -71,8 +80,13 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Response callSessionBeanInternal(@SuppressWarnings("unused") String version, HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
+    protected Response callSessionBeanInternal(String version, HttpHeaders hh, UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
+        if (!isValidVersion(version)) {
+            JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+
         SessionBeanCall call = null;
         call = unmarshallSessionBeanCall(is);
 
@@ -86,7 +100,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
 
         PersistenceContext context = null;
         if (call.getContext() != null) {
-            context = getPersistenceFactory().get(call.getContext(), ui.getBaseUri(), null);
+            context = getPersistenceFactory().get(call.getContext(), ui.getBaseUri(), version, null);
             if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
                 return Response.status(Status.NOT_FOUND).build();

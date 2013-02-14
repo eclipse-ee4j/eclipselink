@@ -118,7 +118,7 @@ public class TestServiceNonRelational {
         properties.put(PersistenceUnitProperties.WEAVING, "static");
         properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
-        context = factory.get(persistenceUnit, RestUtils.getServerURI(), properties);
+        context = factory.get(persistenceUnit, RestUtils.getServerURI(), null, properties);
         if (context == null) {
             throw new Exception("Persistence context could not be created.");
         }

@@ -69,7 +69,7 @@ public class MarshalUnmarshalTest {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(
                 DEFAULT_PU, properties);
         context = factory.bootstrapPersistenceContext("jpars_auction-static", emf,
-                RestUtils.getServerURI(), false);
+                RestUtils.getServerURI(), null, false);
     }
 
     /**

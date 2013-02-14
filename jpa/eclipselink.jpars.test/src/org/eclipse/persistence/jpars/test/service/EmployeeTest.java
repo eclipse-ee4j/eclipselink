@@ -56,7 +56,7 @@ public class EmployeeTest {
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = new PersistenceFactoryBase();
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties),
-                RestUtils.getServerURI(), true);
+                RestUtils.getServerURI(), null, true);
     }
 
     @AfterClass
