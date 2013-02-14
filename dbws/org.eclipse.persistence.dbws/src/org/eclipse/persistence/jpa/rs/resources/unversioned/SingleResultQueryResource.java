@@ -22,7 +22,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractSingleResultQueryResource;
-
+/**
+ * PersistenceResource
+ *  
+ * @deprecated Use {@link  org.eclipse.persistence.jpa.rs.resources.SingleResultQueryResource} instead.  
+ * 
+ */
 // Fix for Bug 393320 - JPA-RS: Respect the Accept Header for a singleResultQuery 
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_OCTET_STREAM})
 @Path("/{context}/singleResultQuery/")

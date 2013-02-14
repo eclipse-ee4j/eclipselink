@@ -640,9 +640,9 @@ public class RestUtils {
         String url = RestUtils.getServerURI() + persistenceUnit + "/entity/" + type + "/"
                 + objectId + "/" + relationshipName;
         if (partner != null) {
-            url += ";" + MatrixParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
+            url += "?" + QueryParameters.JPARS_RELATIONSHIP_PARTNER + "=" + partner;
             if (listItemId != null) {
-                url += "?" + QueryParameters.JPARS_LIST_ITEM_ID + "=" + listItemId;
+                url += "&" + QueryParameters.JPARS_LIST_ITEM_ID + "=" + listItemId;
             }
         } else {
             if (listItemId != null) {

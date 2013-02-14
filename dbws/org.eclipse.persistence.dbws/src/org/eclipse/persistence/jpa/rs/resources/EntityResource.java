@@ -14,7 +14,6 @@ package org.eclipse.persistence.jpa.rs.resources;
 import static org.eclipse.persistence.jpa.rs.resources.common.AbstractResource.SERVICE_VERSION_FORMAT;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -31,8 +30,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 
-import org.eclipse.persistence.jpa.rs.MatrixParameters;
-import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractEntityResource;
 /**
  * @author gonural
@@ -76,20 +73,7 @@ public class EntityResource extends AbstractEntityResource {
     @DELETE
     @Path("{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("version") String version, @PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
-        String partner = null;
-        String listItemId = null;
-        // partner should have been a query parameter...however to make this API compatible with other APIs, it is defined as a matrix parameter here for now
-        // See Bug 396791 - https://bugs.eclipse.org/bugs/show_bug.cgi?id=396791
-        Map<String, String> matrixParams = getMatrixParameters(ui, attribute);
-        if ((matrixParams != null) && (!matrixParams.isEmpty())) {
-            partner = (String) matrixParams.get(MatrixParameters.JPARS_RELATIONSHIP_PARTNER);
-        }
-        // listItemId is a predefined keyword, so it is a query parameter by convention
-        Map<String, Object> queryParams = getQueryParameters(ui);
-        if ((queryParams != null) && (!queryParams.isEmpty())) {
-            listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
-        }
-        return removeAttributeInternal(version, persistenceUnit, type, key, attribute, listItemId, partner, hh, ui);
+        return removeAttributeInternal(version, persistenceUnit, type, key, attribute, hh, ui);
     }
 
     @DELETE

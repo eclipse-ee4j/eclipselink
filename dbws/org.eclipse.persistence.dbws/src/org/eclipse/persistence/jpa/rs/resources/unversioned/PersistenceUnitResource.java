@@ -23,7 +23,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractPersistenceUnitResource;
-
+/**
+ * PersistenceResource
+ *  
+ * @deprecated Use {@link  org.eclipse.persistence.jpa.rs.resources.PersistenceUnitResource} instead.  
+ * 
+ */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Path("/{context}/metadata/")

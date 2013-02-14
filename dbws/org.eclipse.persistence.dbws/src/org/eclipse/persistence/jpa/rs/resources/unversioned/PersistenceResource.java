@@ -32,6 +32,8 @@ import org.eclipse.persistence.jpa.rs.resources.common.AbstractPersistenceResour
 
 /**
  * PersistenceResource 
+ * @deprecated Use {@link  org.eclipse.persistence.jpa.rs.resources.PersistenceResource} instead.  
+ * 
  * @author tware
  *
  */

@@ -23,9 +23,6 @@ public class QueryParameters extends QueryHints {
     // - the predefined attributes (i.e. eclipselink query hints) are treated as query parameters
     // - anything that user sets (such as parameters of named queries, etc.) are treated as matrix parameters. 
 
-    // However, even though the "partner" is a predefined keyword, it is treated as matrix parameter and this is a bug. 
-    // It should be defined and treated as a query parameter to be consistent with the definition of the separation 
-    // between query parameters and matrix parameters. (Bug 396791 - https://bugs.eclipse.org/bugs/show_bug.cgi?id=396791)
-
     public static final String JPARS_LIST_ITEM_ID = "eclipselink.jpars.list.item-id";
+    public static final String JPARS_RELATIONSHIP_PARTNER  = "eclipselink.jpars.partner";
 }

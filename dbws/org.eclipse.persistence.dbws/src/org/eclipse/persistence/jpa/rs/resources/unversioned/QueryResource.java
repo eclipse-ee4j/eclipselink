@@ -24,7 +24,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractQueryResource;
-
+/**
+ * PersistenceResource
+ *  
+ * @deprecated Use {@link  org.eclipse.persistence.jpa.rs.resources.QueryResource} instead.  
+ * 
+ */
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 @Path("/{context}/query/")
