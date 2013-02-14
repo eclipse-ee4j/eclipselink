@@ -57,8 +57,8 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  *
  */
 public class AbstractPersistenceUnitResource extends AbstractResource {
-    protected Response getDescriptorMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, String descriptorAlias, HttpHeaders hh, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response getDescriptorMetadata(String version, String persistenceUnit, String descriptorAlias, HttpHeaders hh, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -82,8 +82,8 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Response getQueriesMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response getQueriesMetadata(String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -102,8 +102,8 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Response getQueryMetadata(@SuppressWarnings("unused") String version, String persistenceUnit, String queryName, HttpHeaders hh, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response getQueryMetadata(String version, String persistenceUnit, String queryName, HttpHeaders hh, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -128,8 +128,8 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     }
 
     @SuppressWarnings("rawtypes")
-    public Response getTypes(@SuppressWarnings("unused") String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    public Response getTypes(String version, String persistenceUnit, HttpHeaders hh, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();
@@ -141,7 +141,11 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             Iterator<Class> contextIterator = descriptors.keySet().iterator();
             while (contextIterator.hasNext()) {
                 ClassDescriptor descriptor = descriptors.get(contextIterator.next());
-                pu.getTypes().add(new Link(descriptor.getAlias(), mediaType, baseURI + persistenceUnit + "/metadata/entity/" + descriptor.getAlias()));
+                if (version != null) {
+                    pu.getTypes().add(new Link(descriptor.getAlias(), mediaType, baseURI + version + "/" + persistenceUnit + "/metadata/entity/" + descriptor.getAlias()));
+                } else {
+                    pu.getTypes().add(new Link(descriptor.getAlias(), mediaType, baseURI + persistenceUnit + "/metadata/entity/" + descriptor.getAlias()));
+                }
             }
             String result = null;
             try {

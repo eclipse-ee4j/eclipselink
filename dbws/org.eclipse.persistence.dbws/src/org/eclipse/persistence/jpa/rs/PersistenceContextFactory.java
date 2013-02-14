@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Set;
 
 public interface PersistenceContextFactory {
-    
+
     public void close();
-    
-    public PersistenceContext get(String persistenceUnit, URI defaultURI, Map<String, Object> initializationProperties);
+
+    public PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties);
 
     public Set<String> getPersistenceContextNames();
 }

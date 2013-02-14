@@ -37,8 +37,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  */
 public abstract class AbstractSingleResultQueryResource extends AbstractResource {
     @SuppressWarnings("rawtypes")
-    protected Response namedQuerySingleResult(@SuppressWarnings("unused") String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
-        PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
+    protected Response namedQuerySingleResult(String version, String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
+        PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
             return Response.status(Status.NOT_FOUND).build();

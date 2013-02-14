@@ -62,7 +62,7 @@ public class ServerCrudTest {
 
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("auction-static", emf, RestUtils.getServerURI(), false);
+        context = factory.bootstrapPersistenceContext("auction-static", emf, RestUtils.getServerURI(), null, false);
 
         StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();

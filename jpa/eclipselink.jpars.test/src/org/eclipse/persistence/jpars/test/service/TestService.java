@@ -78,7 +78,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("jpars_auction", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction", RestUtils.getServerURI(), null, properties);
         return context;
     }
 
@@ -88,7 +88,7 @@ public class TestService {
             properties.putAll(additionalProperties);
         }
         properties.put(PersistenceUnitProperties.WEAVING, "static");
-        PersistenceContext context = factory.get("jpars_phonebook", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_phonebook", RestUtils.getServerURI(), null, properties);
         return context;
     }
 
@@ -110,7 +110,7 @@ public class TestService {
             getPhoneBookPersistenceContext(properties);
 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpars_auction-static-local", properties);
-            context = factory.bootstrapPersistenceContext("jpars_auction-static-local", emf, RestUtils.getServerURI(), false);
+            context = factory.bootstrapPersistenceContext("jpars_auction-static-local", emf, RestUtils.getServerURI(), null, false);
             if (context == null) {
                 throw new Exception("Persistence context could not be created.");
             }
@@ -530,7 +530,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
         StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
         StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
@@ -558,7 +558,7 @@ public class TestService {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         @SuppressWarnings("unused")
-        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);
@@ -628,7 +628,7 @@ public class TestService {
         resource.setPersistenceFactory(factory);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), properties);
+        PersistenceContext context = factory.get("jpars_auction-static-local", RestUtils.getServerURI(), null, properties);
 
         Account account = new Account();
         account.setAccoutNumber("AAA111");

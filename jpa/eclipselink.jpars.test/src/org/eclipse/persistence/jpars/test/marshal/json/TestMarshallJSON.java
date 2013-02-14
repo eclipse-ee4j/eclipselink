@@ -43,7 +43,7 @@ public class TestMarshallJSON {
 
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext(DEFAULT_PU, emf, new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), false);
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, emf, new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), null, false);
     }
     
     @Test

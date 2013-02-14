@@ -93,9 +93,16 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
             return null;
         }
 
-        String href = baseURI + context.getName() + "/entity/"  + v.getClass().getSimpleName() + "/"
-                + IdHelper.stringifyId((DynamicEntityImpl)v, ((DynamicEntityImpl)v).getType().getName(), context);
+        String href = null;
+        String version = context.getVersion();
+
+        if (version != null) {
+            href = baseURI + version + "/" + context.getName() + "/entity/" + v.getClass().getSimpleName() + "/"
+                    + IdHelper.stringifyId((DynamicEntityImpl) v, ((DynamicEntityImpl) v).getType().getName(), context);
+        } else {
+            href = baseURI + context.getName() + "/entity/" + v.getClass().getSimpleName() + "/"
+                    + IdHelper.stringifyId((DynamicEntityImpl) v, ((DynamicEntityImpl) v).getType().getName(), context);
+        }
         return href;
     }
-
 }
