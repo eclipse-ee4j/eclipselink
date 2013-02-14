@@ -35,8 +35,8 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -226,7 +226,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
-        String partner = (String) getMatrixParameters(ui, attribute).get(MatrixParameters.JPARS_RELATIONSHIP_PARTNER);
+        String partner = getRelationshipPartner(getMatrixParameters(ui, attribute), getQueryParameters(ui));
         try {
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
@@ -250,7 +250,17 @@ public abstract class AbstractEntityResource extends AbstractResource {
         }
     }
 
-    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, String listItemId, String partner, HttpHeaders hh, UriInfo ui) {
+    protected Response removeAttributeInternal(String version, String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui) {
+        String listItemId = null;
+        Map<String, String> matrixParams = getMatrixParameters(ui, attribute);
+        Map<String, Object> queryParams = getQueryParameters(ui);
+
+        if ((queryParams != null) && (!queryParams.isEmpty())) {
+            listItemId = (String) queryParams.get(QueryParameters.JPARS_LIST_ITEM_ID);
+        }
+
+        String partner = getRelationshipPartner(matrixParams, queryParams);
+
         PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {

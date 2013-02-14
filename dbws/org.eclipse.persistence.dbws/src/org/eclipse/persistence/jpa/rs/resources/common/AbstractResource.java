@@ -191,4 +191,21 @@ public abstract class AbstractResource {
 
         return getPersistenceFactory().get(persistenceUnit, baseURI, version, initializationProperties);
     }
+
+    protected String getRelationshipPartner(Map<String, String> matrixParams, Map<String, Object> queryParams) {
+        String partner = null;
+        // Fix for Bug 396791 - JPA-RS: partner should be treated as a query parameter
+        //
+        // For backwards compatibility, we check both, matrix and query parameters.
+        if ((queryParams != null) && (!queryParams.isEmpty())) {
+            partner = (String) queryParams.get(QueryParameters.JPARS_RELATIONSHIP_PARTNER);
+        }
+
+        if (partner == null) {
+            if ((matrixParams != null) && (!matrixParams.isEmpty())) {
+                partner = (String) matrixParams.get(MatrixParameters.JPARS_RELATIONSHIP_PARTNER);
+            }
+        }
+        return partner;
+    }
 }
