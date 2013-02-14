@@ -26,7 +26,8 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 public class PersistenceContentHandler implements ContentHandler {
-    private static final String NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence";
+    private static final String NAMESPACE_URI = "http://xmlns.jcp.org/xml/ns/persistence";
+    private static final String NAMESPACE_URI_OLD = "http://java.sun.com/xml/ns/persistence";
     private static final String ELEMENT_PERSISTENCE_UNIT = "persistence-unit";
     private static final String ELEMENT_PROVIDER = "provider";
     private static final String ELEMENT_JTA_DATA_SOURCE = "jta-data-source";
@@ -73,7 +74,7 @@ public class PersistenceContentHandler implements ContentHandler {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if (NAMESPACE_URI.equals(namespaceURI)) {
+        if (NAMESPACE_URI.equals(namespaceURI) || NAMESPACE_URI_OLD.equals(namespaceURI)) {
             if (ELEMENT_PERSISTENCE_UNIT.equals(localName)) {
                 persistenceUnitInfo = new SEPersistenceUnitInfo();
                 persistenceUnitInfo.setPersistenceUnitName(atts.getValue(ATTRIBUTE_NAME));
@@ -122,7 +123,7 @@ public class PersistenceContentHandler implements ContentHandler {
         stringBuffer.delete(0, stringBuffer.length());
         readCharacters = false;
 
-        if (NAMESPACE_URI.equals(namespaceURI)) {
+        if (NAMESPACE_URI.equals(namespaceURI) || NAMESPACE_URI_OLD.equals(namespaceURI)) {
             if (ELEMENT_PROVIDER.equals(localName)) {
                 persistenceUnitInfo.setPersistenceProviderClassName(string);
                 return;
