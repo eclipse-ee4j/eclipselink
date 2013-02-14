@@ -168,12 +168,13 @@ public class XMLObjectBuilder extends ObjectBuilder {
            }
         }
 
-        XMLRecord nestedRecord = new DOMRecord(newNode);
+        DOMRecord nestedRecord = new DOMRecord(newNode);
         nestedRecord.setMarshaller(parentRecord.getMarshaller());
         nestedRecord.setLeafElementType(parentRecord.getLeafElementType());
         parentRecord.setLeafElementType((XPathQName)null);
         nestedRecord.setDocPresPolicy(policy);
         nestedRecord.setXOPPackage(parentRecord.isXOPPackage());
+        nestedRecord.setReferenceResolver(((DOMRecord) parentRecord).getReferenceResolver());
         return nestedRecord;
     }
 
@@ -235,7 +236,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
         XMLUnmarshaller unmarshaller = row.getUnmarshaller();
         Object parent = row.getOwningObject();
 
-        Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
         if (!(isXmlDescriptor() || getDescriptor().isDescriptorTypeAggregate())) {
             return super.buildObject(query, databaseRow, joinManager);
         }
@@ -290,15 +290,11 @@ public class XMLObjectBuilder extends ObjectBuilder {
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, false, query.getSession());
         if (isXmlDescriptor() && ((XMLDescriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (((CacheId) pk).getPrimaryKey().length == 0)) {
-                pk = new CacheId(new Object[]{ new WeakObjectWrapper(domainObject) });
+            Object pk = extractPrimaryKeyFromRow(databaseRow, query.getSession());
+            if ((pk != null) && (((CacheId) pk).getPrimaryKey().length > 0)) {
+                DOMRecord domRecord = (DOMRecord) databaseRow;
+                domRecord.getReferenceResolver().putValue(concreteDescriptor.getJavaClass(), pk, domainObject);
             }
-            CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
-            if (((XMLDescriptor) concreteDescriptor).shouldPreserveDocument()) {
-                key.setRecord(databaseRow);
-            }
-            key.setObject(domainObject);
-            key.releaseDeferredLock();
         }
         DocumentPreservationPolicy docPresPolicy = ((DOMRecord) row).getDocPresPolicy();
         if (docPresPolicy != null) {

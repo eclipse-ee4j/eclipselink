@@ -505,7 +505,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
 	            object = objectBuilder.buildObject(query, xmlRow, null);
 	
 	            // resolve mapping references
-	            xmlUnmarshaller.resolveReferences(readSession);
+	            xmlRow.resolveReferences(readSession, xmlUnmarshaller.getIDResolver());
 	        }
 	
 	        String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();

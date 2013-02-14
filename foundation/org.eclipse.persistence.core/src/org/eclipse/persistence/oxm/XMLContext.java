@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
@@ -370,7 +371,7 @@ public class XMLContext {
      * INTERNAL:
      */
     public void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor) {
-        xmlContextState.storeXMLDescriptorByQName(xmlDescriptor);
+        xmlContextState.storeXMLDescriptorByQName(xmlDescriptor, null);
     }
 
     /**
@@ -880,7 +881,6 @@ public class XMLContext {
         private Map descriptorsByQName;
         private Map descriptorsByGlobalType;
         private boolean hasDocumentPreservation = false;
-        private boolean requireUnitOfWork = false;
         private Collection<SessionEventListener> sessionEventListeners;
 
         private XMLContextState(XMLContext xmlContext, Collection<Project> projects, ClassLoader classLoader) {
@@ -908,6 +908,7 @@ public class XMLContext {
                 session.login();
                 sessions.add(session);
                 storeXMLDescriptorsByQName(session);
+                
             }
         }
 
@@ -1066,22 +1067,11 @@ public class XMLContext {
             if (null == clazz) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(clazz);
-                    if (xmlDescriptor != null) {
-                        // we don't currently support document preservation
-                        // and non-shared cache (via unit of work)
-                        if (requireUnitOfWork) {
-                            next = next.acquireUnitOfWork();
-                        }
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(clazz);
+                if (xmlDescriptor != null) {
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
@@ -1101,21 +1091,10 @@ public class XMLContext {
             if (null == xmlDescriptor) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
-                        // we don't currently support document preservation
-                        // and non-shared cache (via unit of work)
-                        if (requireUnitOfWork) {
-                            next = next.acquireUnitOfWork();
-                        }
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(xmlDescriptor.getJavaClass().getName());
@@ -1134,22 +1113,13 @@ public class XMLContext {
             if (null == object) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(object);
-                    if (xmlDescriptor != null) {
-                        // we don't currently support document preservation
-                        // and non-shared cache (via unit of work)
-                        if (requireUnitOfWork) {
-                            next = next.acquireUnitOfWork();
-                        }
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                XMLDescriptor xmlDescriptor = (XMLDescriptor) next.getDescriptor(object);
+                if (xmlDescriptor != null) {
+                    // we don't currently support document preservation
+                    // and non-shared cache (via unit of work)
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
@@ -1164,16 +1134,10 @@ public class XMLContext {
             if (null == clazz) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    if (next.getDescriptor(clazz) != null) {
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                if (next.getDescriptor(clazz) != null) {
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(clazz.getName());
@@ -1201,16 +1165,10 @@ public class XMLContext {
             if (null == object) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    if (next.getDescriptor(object) != null) {
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                if (next.getDescriptor(object) != null) {
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(object.getClass().getName());
@@ -1225,16 +1183,10 @@ public class XMLContext {
             if (null == xmlDescriptor) {
                 return null;
             }
-            int numberOfSessions = sessions.size();
-            if (requireUnitOfWork && 1 == numberOfSessions) {
-                AbstractSession session = (AbstractSession) sessions.get(0);
-                return session.acquireUnitOfWork();
-            } else {
-                for (int x = 0; x < numberOfSessions; x++) {
-                    AbstractSession next = ((AbstractSession) sessions.get(x));
-                    if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
-                        return next;
-                    }
+            for (int x = 0, numberOfSessions = sessions.size(); x < numberOfSessions; x++) {
+                AbstractSession next = ((AbstractSession) sessions.get(x));
+                if (next.getProject().getOrderedDescriptors().contains(xmlDescriptor)) {
+                    return next;
                 }
             }
             throw XMLMarshalException.descriptorNotFoundInProject(xmlDescriptor.getJavaClass().getName());
@@ -1282,13 +1234,10 @@ public class XMLContext {
         /**
          * INTERNAL:
          */
-        private void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor) {
+        private void storeXMLDescriptorByQName(XMLDescriptor xmlDescriptor, Platform platform) {
             XPathQName descriptorQName;
             String defaultRootName;
 
-            if(xmlDescriptor.hasReferenceMappings()) {
-                this.requireUnitOfWork = true;
-            }
             List tableNames = xmlDescriptor.getTableNames();
             for (int i = 0; i < tableNames.size(); i++) {
                 defaultRootName = (String) tableNames.get(i);
@@ -1312,7 +1261,7 @@ public class XMLContext {
                             addDescriptorByQName(descriptorQName, xmlDescriptor);
                         } else {
                             //this means we have a descriptor that is a child in an inheritance hierarchy
-                            storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor());
+                            storeXMLDescriptorByQName((XMLDescriptor) xmlDescriptor.getInheritancePolicy().getParentDescriptor(), platform);
                             XMLDescriptor existingDescriptor = (XMLDescriptor) getDescriptor(descriptorQName);
                             if (existingDescriptor == null) {
                                 addDescriptorByQName(descriptorQName, xmlDescriptor);
@@ -1357,7 +1306,7 @@ public class XMLContext {
             Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
             while (iterator.hasNext()) {
                 XMLDescriptor xmlDescriptor = (XMLDescriptor) iterator.next();
-                storeXMLDescriptorByQName(xmlDescriptor);
+                storeXMLDescriptorByQName(xmlDescriptor, session.getDatasourcePlatform());
             }
         }
 

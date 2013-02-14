@@ -28,11 +28,9 @@ import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -261,17 +259,6 @@ public class XMLUnmarshaller implements Cloneable {
     */
     public int getValidationMode() {
         return platformUnmarshaller.getValidationMode();
-    }
-
-    /**
-     * INTERNAL
-     * @param unitOfWork
-     */
-    public void resolveReferences(AbstractSession unitOfWork) {
-        ReferenceResolver resolver = ReferenceResolver.getInstance(unitOfWork);
-        if (resolver != null) {
-            resolver.resolveReferences(unitOfWork, getIDResolver(), getErrorHandler());			
-        }
     }
 
     /**

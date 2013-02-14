@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -54,6 +53,7 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.queries.DoesExistQuery;
 
 /**
  * Use an XML project for nontransactional, nonpersistent (in-memory) conversions between Java objects and XML documents.
@@ -109,7 +109,6 @@ public class XMLDescriptor extends ClassDescriptor {
 
         this.shouldOrderMappings = false;
         descriptorIsAggregate();
-        setIdentityMapSize(100);
     }
 
     /**
@@ -556,6 +555,9 @@ public class XMLDescriptor extends ClassDescriptor {
             }
         }
 
+        getCachePolicy().useNoIdentityMap();
+        getQueryManager().getDoesExistQuery().setExistencePolicy(DoesExistQuery.CheckDatabase);
+ 
         validateBeforeInitialization(session);
 
         preInitializeInheritancePolicy(session);
