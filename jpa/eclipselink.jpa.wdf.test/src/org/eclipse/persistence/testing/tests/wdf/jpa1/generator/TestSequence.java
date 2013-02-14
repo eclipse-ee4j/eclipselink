@@ -14,6 +14,9 @@
 package org.eclipse.persistence.testing.tests.wdf.jpa1.generator;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 
 import junit.framework.Assert;
 
@@ -76,18 +79,22 @@ public class TestSequence extends JPA1Base {
     }
 
     @Test
-    @Skip(databases = {MySQLPlatform.class, SQLServerPlatform.class, DerbyPlatform.class})
-    @ToBeInvestigated(databases = OraclePlatform.class, databaseNames = "org.eclipse.persistence.platform.database.MaxDBPlatform")
-    // adjust test
+    @Skip(server=true, databases = {MySQLPlatform.class, SQLServerPlatform.class, DerbyPlatform.class})
     public void testAllocSize() {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
+        
+        EntityManagerFactory emf2 = Persistence.createEntityManagerFactory("jpa1testmodel-2", EMF_PROPERTIES);
+        EntityManager em2 = emf2.createEntityManager();
+                
         try {
             em.getTransaction().begin();
+            em2.getTransaction().begin();
+            
             final Plant tree = new Plant("tree");
             final Element water = new Element("water");
             em.persist(tree); // id 1
-            em.persist(water); // id 4
+            em2.persist(water); // id 4
             Assert.assertEquals("wrong allocation", ((int) tree.getId() + 3), ((int) water.getId()));
             final Plant flower = new Plant("flower");
             final Plant grass = new Plant("grass");
@@ -97,11 +104,18 @@ public class TestSequence extends JPA1Base {
             em.persist(bush); // id 7
             Assert.assertEquals("wrong allocation", ((int) water.getId() + 3), ((int) bush.getId()));
             em.getTransaction().commit();
+            em2.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             em.close();
+            if (em2.getTransaction().isActive()) {
+                em2.getTransaction().rollback();
+            }
+            em2.close();
+            emf2.close();
         }
     }
+    
 }

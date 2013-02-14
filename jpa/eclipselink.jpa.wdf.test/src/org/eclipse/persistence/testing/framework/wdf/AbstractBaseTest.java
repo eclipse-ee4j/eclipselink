@@ -69,7 +69,7 @@ public abstract class AbstractBaseTest {
     private final JPAEnvironment environment;
     private final String puName;
     private final static DataSource dataSource;
-    private final static Map EMF_PROPERTIES;
+    protected final static Map EMF_PROPERTIES;
 
     private static boolean seesJPA2 = (LockModeType.values().length > 2);
 

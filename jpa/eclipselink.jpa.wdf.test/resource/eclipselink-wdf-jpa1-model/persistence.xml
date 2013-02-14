@@ -93,6 +93,21 @@
                    <property name="eclipselink.jdbc.batch-writing" value="JDBC"/>
 		</properties>
 	</persistence-unit>
+
+	<persistence-unit name="jpa1testmodel-2" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<non-jta-data-source>%%data-source-name%%</non-jta-data-source>
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Animal</class>
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Element</class>
+                <class>org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<properties>
+                   <property name="eclipselink.target-database" value="%%database-platform%%"/>
+		</properties>
+	</persistence-unit>
+
 	<!--
 	<persistence-unit name="jpa1testmodel_jta">
 		<description>ATS Test Persistence Unit</description>
