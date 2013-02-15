@@ -111,10 +111,9 @@ public class DDLTestSuite extends JUnitTestCase {
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-use-conn-session");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "jpa21-generate-schema-use-connection-drop.jdbc");
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "jpa21-generate-schema-use-connection-create.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-generate-schema-use-connection-drop.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-generate-schema-use-connection-create.jdbc");
          
         Persistence.generateSchema(getPersistenceUnitName(), properties);
     }
@@ -142,10 +141,9 @@ public class DDLTestSuite extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME, "MySQL");
             properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION, "5");
             properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION, "5");
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-            properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, GENERATE_SCHEMA_NO_CONNECTION_DROP_TARGET);
-            properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, GENERATE_SCHEMA_NO_CONNECTION_CREATE_TARGET);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, GENERATE_SCHEMA_NO_CONNECTION_DROP_TARGET);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, GENERATE_SCHEMA_NO_CONNECTION_CREATE_TARGET);
              
             Persistence.generateSchema(getPersistenceUnitName(), properties);
             
@@ -160,11 +158,11 @@ public class DDLTestSuite extends JUnitTestCase {
                 properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
                 properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-no-conn-session2");
                 properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, true);
-                properties.put(PersistenceUnitProperties.LOGGING_LEVEL, "FINEST");
-                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SOURCE, PersistenceUnitProperties.SCHEMA_SCRIPTS_SOURCE_GENERATION);
-                properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_SOURCE, new FileReader(new File(GENERATE_SCHEMA_NO_CONNECTION_DROP_TARGET)));
-                properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_SOURCE, new FileReader(new File(GENERATE_SCHEMA_NO_CONNECTION_CREATE_TARGET)));
+                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SOURCE, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE);
+                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE, new FileReader(new File(GENERATE_SCHEMA_NO_CONNECTION_CREATE_TARGET)));
+                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SOURCE, PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_SOURCE);
+                properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_DROP_SCRIPT_SOURCE, new FileReader(new File(GENERATE_SCHEMA_NO_CONNECTION_DROP_TARGET)));
             
                 em = createEntityManager(properties);
     
@@ -255,9 +253,8 @@ public class DDLTestSuite extends JUnitTestCase {
         properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME, "MySQL");
         properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION, "5");
         properties.put(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION, "5");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "jpa21-generate-schema-no-connection-drop-only.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-generate-schema-no-connection-drop-only.jdbc");
 
         Persistence.generateSchema(getPersistenceUnitName(), properties);
     }
@@ -271,12 +268,11 @@ public class DDLTestSuite extends JUnitTestCase {
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "generate-schema-using-provided-writers");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
         
         try {
-            properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, new FileWriter(new File("jpa21-generate-schema-using-drop-writer.jdbc")));
-            properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, new FileWriter(new File("jpa21-generate-schema-using-create-writer.jdbc")));
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, new FileWriter(new File("jpa21-generate-schema-using-drop-writer.jdbc")));
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, new FileWriter(new File("jpa21-generate-schema-using-create-writer.jdbc")));
 
             Persistence.generateSchema(getPersistenceUnitName(), properties);
         } catch (IOException e) {
@@ -294,10 +290,9 @@ public class DDLTestSuite extends JUnitTestCase {
             properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
             properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
             properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-            properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "/temp-generate-schema-drop.jdbc");
-            properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "/temp-generate-schema-create.jdbc");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "/temp-generate-schema-drop.jdbc");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "/temp-generate-schema-create.jdbc");
              
             Persistence.generateSchema(getPersistenceUnitName(), properties);
         }
@@ -309,8 +304,7 @@ public class DDLTestSuite extends JUnitTestCase {
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "testIllegalArgumentExceptionWithNoScriptTargetsProvided");
         properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION);
         
         try {
             Persistence.generateSchema(getPersistenceUnitName(), properties);
@@ -327,10 +321,9 @@ public class DDLTestSuite extends JUnitTestCase {
         // Get database properties will pick up test.properties database connection details.
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-create-only-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "jpa21-ddl-schema-create-only-create.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-create-only-create.jdbc");
         
         try {
             Persistence.generateSchema("ddl-schema-template", properties);
@@ -344,10 +337,9 @@ public class DDLTestSuite extends JUnitTestCase {
         // Get database properties will pick up test.properties database connection details.
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-only-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "jpa21-ddl-schema-drop-only-drop.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-only-drop.jdbc");
         
         try {
             Persistence.generateSchema("ddl-schema-template", properties);
@@ -362,11 +354,10 @@ public class DDLTestSuite extends JUnitTestCase {
         // Get database properties will pick up test.properties database connection details.
         properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
         properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-and-create-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_ACTION, PersistenceUnitProperties.SCHEMA_DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION);
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_DROP_SCRIPT_TARGET, "jpa21-ddl-schema-drop-and-create-drop.jdbc");
-        properties.put(PersistenceUnitProperties.SCHEMA_CREATE_SCRIPT_TARGET, "jpa21-ddl-schema-drop-and-create-create.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-and-create-drop.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-drop-and-create-create.jdbc");
         
         try {
             Persistence.generateSchema("ddl-schema-template", properties);

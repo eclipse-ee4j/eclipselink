@@ -21,28 +21,19 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     02/19/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.persistence.PersistenceException;
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.TargetDatabase;
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl.TableCreationType;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
@@ -99,15 +90,6 @@ public class EntityManagerFactoryProvider {
             emSetupImpls.put("", setup);
         }
         emSetupImpls.put(name, setup);
-    }
-
-    protected static String addFileSeperator(String appLocation) {
-        int strLength = appLocation.length();
-        if (appLocation.substring(strLength -1, strLength).equals(File.separator)) {
-            return appLocation;
-        } else {
-            return appLocation + File.separator;
-        }
     }
     
     /**
@@ -242,12 +224,12 @@ public class EntityManagerFactoryProvider {
      * @param properties User specified properties for the persistence unit
      */
     protected static void login(DatabaseSessionImpl session, Map properties, boolean requiresConnection) {
-        String ddlGenerationTarget = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_TARGET, properties);
+        String databaseGenerationAction = getConfigPropertyAsString(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION, properties);
         
         // Avoid an actual connection if we don't need one. If the user provides 
         // us with a user name and password we could connect. At minimum if they 
         // provide the platform we'll generate the DDL as if we had connected.
-        if (ddlGenerationTarget != null && ddlGenerationTarget.equals(PersistenceUnitProperties.SCHEMA_SCRIPTS_GENERATION) && ! requiresConnection) {
+        if ((databaseGenerationAction == null || databaseGenerationAction.equals(PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION)) && ! requiresConnection) {
             session.loginNoConnect();
         } else {
             String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
@@ -405,121 +387,5 @@ public class EntityManagerFactoryProvider {
                 session.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", oldPropertyNames[i]);
             }
         }
-    }
-    
-    protected static void writeDDLToDatabase(SchemaManager mgr, TableCreationType ddlType) {
-        String str = getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null ,"true");
-        boolean interactWithDB = Boolean.valueOf(str.toLowerCase()).booleanValue();
-        if (!interactWithDB){
-            return;
-        }
-        generateDefaultTables(mgr, ddlType);
-    }
-    
-    /**
-     * This method will read SQL from a reader or URL and send it through
-     * to the database. This could open up the database to SQL injection if
-     * not careful.
-     */
-    protected static void writeDDLToDatabase(DatabaseSessionImpl session, Object source, ClassLoader loader) {
-        if (source != null) {
-            Reader reader = null;
-            
-            try {
-                if (source instanceof Reader) {
-                    reader = (Reader) source;
-                } else {
-                    URL sourceURL = loader.getResource((String) source);
-                    
-                    if (sourceURL == null) {
-                        throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{source}));
-                    } else {
-                        URLConnection connection = sourceURL.openConnection();
-                        // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
-                        connection.setUseCaches(false);
-                        reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
-                    }
-                }
-            
-                if (reader != null) {
-                    StringBuffer sqlBuffer;
-                    int data = reader.read();
-                    
-                    // While there is still data to read, read line by line.
-                    while (data != -1) {
-                        sqlBuffer = new StringBuffer();
-                        char aChar = (char) data;
-        
-                        // Read till the end of the line or maybe even file.
-                        while (aChar != '\n' && data != -1) {
-                            sqlBuffer.append(aChar);
-                                
-                            // Read next character.
-                            data = reader.read();
-                            aChar = (char) data;
-                        }
-
-                        String sqlString = sqlBuffer.toString();
-                        try {
-                            session.executeNonSelectingSQL(sqlString);
-                        } catch (DatabaseException e) {
-                            // TODO: ignore for now, although the spec seems to want an exception??
-                            //throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-sql-exception", new Object[]{sqlString, source}), e); 
-                        }
-                            
-                        data = reader.read();
-                    }
-        
-                    reader.close();
-                }
-            } catch (IOException e) {
-                throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-io-exception", new Object[]{source}), e);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        // ignore.
-                    }
-                }
-            }
-        }
-    }
-    
-    protected static void writeDDLsToFiles(SchemaManager mgr, String appLocation, Object createDDLJdbc, Object dropDDLJdbc, TableCreationType ddlType) {
-        // Ensure that the appLocation string ends with File.separator if 
-        // specified. In JPA there is no default for app location, however, if 
-        // the user did specify one, we'll use it.
-        String appLocationPrefix = (appLocation == null) ? "" : addFileSeperator(appLocation); 
-        
-        if (ddlType.equals(TableCreationType.CREATE) || ddlType.equals(TableCreationType.DROP_AND_CREATE) || ddlType.equals(TableCreationType.EXTEND)) {
-            if (createDDLJdbc == null) {
-                // Using EclipseLink properties, the create script has a default.
-                // Using JPA properties, the user must specify the target else an exception must be thrown.
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-create-script-target-not-specified"));
-            } else if (createDDLJdbc instanceof Writer) {
-                mgr.outputCreateDDLToWriter((Writer) createDDLJdbc);
-            } else {
-                // Assume it is a String file name.
-                mgr.outputCreateDDLToFile(appLocationPrefix + createDDLJdbc);
-            }
-        }
-
-        if (ddlType.equals(TableCreationType.DROP) || ddlType.equals(TableCreationType.DROP_AND_CREATE)) {
-            if (dropDDLJdbc == null) {
-                // Using EclipseLink properties, the drop script has a default.
-                // Using JPA properties, the user must specify the target else an exception must be thrown.
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21-ddl-drop-script-target-not-specified"));
-            } else if (dropDDLJdbc instanceof Writer) {
-                mgr.outputDropDDLToWriter((Writer) dropDDLJdbc);
-            } else {
-                // Assume it is a String file name.
-                mgr.outputDropDDLToFile(appLocationPrefix + dropDDLJdbc);
-            }
-        }
-
-        mgr.setCreateSQLFiles(false);
-        generateDefaultTables(mgr, ddlType);
-        mgr.closeDDLWriter();
     }
 }

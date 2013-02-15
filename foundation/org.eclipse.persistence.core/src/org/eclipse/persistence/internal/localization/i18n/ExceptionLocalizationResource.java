@@ -23,6 +23,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
+ *     02/19/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -210,6 +212,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21-ddl-source-script-not-found", "The source script: {0} for the generateSchema call was not found."},
                                            { "jpa21-ddl-source-script-sql-exception", "An error occured executing {0} from the source ddl generation script: {1}."},
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occured with the source ddl generation script: {0}."},
+                                           { "jpa21-ddl-invalid-source-script-type", "The source script provided {0} is of an invalid type {0}. Valid source script types are: java.io.Reader or a string designating a file URL."},
+                                           { "jpa21-ddl-invalid-target-script-type", "The target script provided {0} is of an invalid type {0}. Valid target script types are: java.io.Writer or a string designating a file URL."},
                                            { "jpa21-ddl-drop-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-drop-script-target] property."},
                                            { "jpa21-ddl-create-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-create-script-target] property."},
                                            //criteria API IllegalArgumentExceptions

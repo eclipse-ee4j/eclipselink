@@ -47,10 +47,9 @@
             <property name="eclipselink.session-name" value="default-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
-            <property name="javax.persistence.schema-generation-target" value="scripts"/>
-            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-model-drop.jdbc"/>
-            <property name="javax.persistence.ddl-create-script-target" value="jpa21-model-create.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.scripts.drop-target" value="jpa21-model-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa21-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
@@ -89,10 +88,12 @@
             <property name="eclipselink.session-name" value="default-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
-            <property name="javax.persistence.schema-generation-target" value="database-and-scripts"/>
-            <property name="javax.persistence.ddl-drop-script-target" value="jpa21-ddl-model-drop.jdbc"/>
-            <property name="javax.persistence.ddl-create-script-target" value="jpa21-ddl-model-create.jdbc"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.scheme-generation.create-source" value="metadata"/>
+            <property name="javax.persistence.scheme-generation.drop-source" value="metadata"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.scripts.drop-target" value="jpa21-ddl-model-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa21-ddl-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
@@ -105,9 +106,8 @@
             <property name="eclipselink.session-name" value="default-xml-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-            <property name="javax.persistence.schema-generation-action" value="create"/>
-            <property name="javax.persistence.schema-generation-target" value="scripts"/>
-            <property name="javax.persistence.ddl-create-script-target" value="jpa21-xml-model-create.jdbc"/>
+            <property name="javax.persistence.schema-generation.scripts.action" value="create"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="jpa21-xml-model-create.jdbc"/>
         </properties>
     </persistence-unit>
     
@@ -120,10 +120,11 @@
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
-            <property name="javax.persistence.schema-generation-action" value="drop-and-create"/>
-            <property name="javax.persistence.schema-generation-source" value="scripts"/>
-            <property name="javax.persistence.ddl-drop-script-source" value="META-INF/jpa21-xml-ddl-model-source-drop.jdbc"/>
-            <property name="javax.persistence.ddl-create-script-source" value="META-INF/jpa21-xml-ddl-model-source-create.jdbc"/>
+            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.create-source" value="script"/>
+            <property name="javax.persistence.schema-generation.drop-source" value="script"/>
+            <property name="javax.persistence.schema-generation.drop-script-source" value="META-INF/jpa21-xml-ddl-model-source-drop.jdbc"/>
+            <property name="javax.persistence.schema-generation.create-script-source" value="META-INF/jpa21-xml-ddl-model-source-create.jdbc"/>
         </properties>
     </persistence-unit>
     
