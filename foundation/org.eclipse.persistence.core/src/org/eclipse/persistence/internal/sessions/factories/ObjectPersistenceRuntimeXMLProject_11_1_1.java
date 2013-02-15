@@ -119,10 +119,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
     public static DatabaseTypeWrapper wrapType(DatabaseType databaseType) {
         if (databaseType.isComplexDatabaseType()) {
             ComplexDatabaseType complexType = (ComplexDatabaseType)databaseType;
-            if (complexType.isJDBCType()) {
-            	if (complexType.isCollection()) {
-            		return new OracleArrayTypeWrapper(databaseType);
-            	}
+            if (complexType.isArray()) {
+                return  new OracleArrayTypeWrapper(databaseType);
+            }
+            if (complexType.isStruct()) {
             	return new OracleObjectTypeWrapper(databaseType);
             } 
             if (complexType.isRecord()) {
