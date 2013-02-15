@@ -1229,11 +1229,14 @@ public class AnnotationsProcessor {
                 values = (Class[]) PrivilegedAccessHelper.invokeMethod(valueMethod, seeAlso, new Object[] {});
             } catch (Exception ex) {
             }
-            List<String> seeAlsoClassNames = new ArrayList<String>();
-            for (Class next : values) {
-                seeAlsoClassNames.add(next.getName());
+
+            if (values != null) {
+                List<String> seeAlsoClassNames = new ArrayList<String>();                
+                for (Class next : values) {
+                    seeAlsoClassNames.add(next.getName());
+                }
+                info.setXmlSeeAlso(seeAlsoClassNames);
             }
-            info.setXmlSeeAlso(seeAlsoClassNames);
         }
     }
 
