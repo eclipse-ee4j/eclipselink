@@ -1870,6 +1870,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         databaseTypeMapping.setXPath("nested-type");
         descriptor.addMapping(databaseTypeMapping);
 
+        XMLDirectMapping isNestedTableMapping = new XMLDirectMapping();
+        isNestedTableMapping.setAttributeName("isNestedTable");
+        isNestedTableMapping.setXPath("@is-nested-table");
+        isNestedTableMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(isNestedTableMapping);
+
         return descriptor;
     }
 
