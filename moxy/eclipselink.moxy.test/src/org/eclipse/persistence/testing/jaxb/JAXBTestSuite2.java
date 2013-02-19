@@ -51,6 +51,7 @@ import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCa
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectWhitespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.interfaces.XmlElementsIdRefInterfaceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.object.XmlIdRefsObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlinlinebinary.InlineDataHandlerCollectionTestCases;
@@ -76,6 +77,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
         suite.addTestSuite(XmlElementsIdRefTestCases.class);
         suite.addTestSuite(XmlElementsSingleIdRefTestCases.class);
+        suite.addTestSuite(XmlElementsIdRefInterfaceTestCases.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(InlineDataHandlerCollectionTestCases.class);
         suite.addTestSuite(LargeInlineBinaryTestCases.class);
