@@ -138,9 +138,11 @@ public class XJCJavaFieldImpl implements JavaField {
         } catch (Exception e) {
         }
 
-        for (JAnnotationUse annotationUse : annotations) {
-            XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
-            annotationsList.add(xjcAnnotation);
+        if (annotations != null) {
+            for (JAnnotationUse annotationUse : annotations) {
+                XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
+                annotationsList.add(xjcAnnotation);
+            }
         }
         return annotationsList;
     }
