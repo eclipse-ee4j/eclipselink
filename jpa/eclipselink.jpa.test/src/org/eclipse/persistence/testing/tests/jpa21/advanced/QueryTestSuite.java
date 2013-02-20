@@ -101,7 +101,7 @@ public class QueryTestSuite extends JUnitTestCase {
         try{
             query.getParameter(1, Integer.class);
             fail("Exception not thrown for incorrect query type.");
-        } catch (IllegalStateException e){}
+        } catch (IllegalArgumentException e){}
         query = em.createNamedQuery("jpa21Employee.findAllEmployeesByFirstNameAndLastNamePos", Employee.class).setParameter(1, "Bob");
         try{
             query.getParameterValue(2);

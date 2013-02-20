@@ -986,7 +986,8 @@ public class QueryImpl {
             Parameter param = (Parameter) getInternalParameters().get(name);
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { name, this.databaseQuery }));
-
+            } else if (param.getParameterType() != null && type != null && !type.isAssignableFrom(param.getParameterType())){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { name, this.databaseQuery }));
             }
             return param;
         } catch (RuntimeException e) {
@@ -1006,7 +1007,7 @@ public class QueryImpl {
             if (param == null) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_INDEX", new Object[] { position, this.databaseQuery }));
             } else if (param.getParameterType() != null && type != null && !type.isAssignableFrom(param.getParameterType())){
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, this.databaseQuery }));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, this.databaseQuery }));
             }
             return param;
         } catch (RuntimeException e) {
