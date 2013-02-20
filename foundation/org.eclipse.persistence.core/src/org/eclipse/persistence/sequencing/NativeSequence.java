@@ -15,8 +15,6 @@ package org.eclipse.persistence.sequencing;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * <p>
