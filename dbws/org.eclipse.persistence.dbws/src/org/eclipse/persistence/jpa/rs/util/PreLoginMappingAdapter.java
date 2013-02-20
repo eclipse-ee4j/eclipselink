@@ -122,8 +122,12 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 if (jpaMapping != null) {
                                     if (jpaMapping.getMappedBy() != null) {
                                         ClassDescriptor inverseDescriptor = project.getDescriptorForAlias(jpaMapping.getReferenceDescriptor().getAlias());
-                                        DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
-                                        convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
+                                        if (inverseDescriptor != null) {
+                                            DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
+                                            if (inverseMapping != null) {
+                                                convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -170,7 +174,9 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 ForeignReferenceMapping jpaMapping = (ForeignReferenceMapping) dbMapping;
                                 if (jpaMapping != null) {
                                     ClassDescriptor jaxbDescriptor = project.getDescriptorForAlias(jpaMapping.getDescriptor().getAlias());
-                                    convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl);
+                                    if (jaxbDescriptor != null) {
+                                        convertMappingToXMLChoiceMapping(jaxbDescriptor, jpaMapping, cl);
+                                    }
                                 }
                             }
                         }
@@ -211,24 +217,26 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * @param mappedBy
      */
     private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, String mappedBy) {
-        if (!(mapping.isXMLMapping())) {
-            return;
-        }
+        if ((mapping != null) && (jaxbDescriptor != null)) {
+            if (!(mapping.isXMLMapping())) {
+                return;
+            }
 
-        XMLInverseReferenceMapping jaxbInverseMapping = new XMLInverseReferenceMapping();
-        copyAccessorToMapping(mapping, jaxbInverseMapping);
-        jaxbInverseMapping.setProperties(mapping.getProperties());
-        jaxbInverseMapping.setIsReadOnly(mapping.isReadOnly());
-        jaxbInverseMapping.setMappedBy(mappedBy);
-        if (mapping.isAbstractCompositeCollectionMapping()) {
-            jaxbInverseMapping.setContainerPolicy(mapping.getContainerPolicy());
-            jaxbInverseMapping.setReferenceClass(((XMLCompositeCollectionMapping) mapping).getReferenceClass());
-        } else if (mapping.isAbstractCompositeObjectMapping()) {
-            jaxbInverseMapping.setReferenceClass(((XMLCompositeObjectMapping) mapping).getReferenceClass());
-        }
+            XMLInverseReferenceMapping jaxbInverseMapping = new XMLInverseReferenceMapping();
+            copyAccessorToMapping(mapping, jaxbInverseMapping);
+            jaxbInverseMapping.setProperties(mapping.getProperties());
+            jaxbInverseMapping.setIsReadOnly(mapping.isReadOnly());
+            jaxbInverseMapping.setMappedBy(mappedBy);
+            if (mapping.isAbstractCompositeCollectionMapping()) {
+                jaxbInverseMapping.setContainerPolicy(mapping.getContainerPolicy());
+                jaxbInverseMapping.setReferenceClass(((XMLCompositeCollectionMapping) mapping).getReferenceClass());
+            } else if (mapping.isAbstractCompositeObjectMapping()) {
+                jaxbInverseMapping.setReferenceClass(((XMLCompositeObjectMapping) mapping).getReferenceClass());
+            }
 
-        jaxbDescriptor.removeMappingForAttributeName(mapping.getAttributeName());
-        jaxbDescriptor.addMapping(jaxbInverseMapping);
+            jaxbDescriptor.removeMappingForAttributeName(mapping.getAttributeName());
+            jaxbDescriptor.addMapping(jaxbInverseMapping);
+        }
     }
 
     /**
