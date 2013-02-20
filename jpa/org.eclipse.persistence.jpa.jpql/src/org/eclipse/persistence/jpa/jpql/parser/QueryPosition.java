@@ -20,7 +20,7 @@ import java.util.Map;
  * This object contains the cursor position within the parsed tree and within each of the {@link
  * Expression} from the root to the deepest leaf.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -37,8 +37,7 @@ public final class QueryPosition {
 	private int position;
 
 	/**
-	 * The table containing the position of each of the {@link Expression} up to
-	 * the deepest leaf.
+	 * The table containing the position of each of the {@link Expression} up to the deepest leaf.
 	 */
 	private Map<Expression, Integer> positions;
 
@@ -47,9 +46,8 @@ public final class QueryPosition {
 	 *
 	 * @param position The position of the cursor in the query
 	 */
-	QueryPosition(int position) {
+	public QueryPosition(int position) {
 		super();
-
 		this.position  = position;
 		this.positions = new HashMap<Expression, Integer>();
 	}
@@ -60,39 +58,8 @@ public final class QueryPosition {
 	 * @param expression An {@link Expression} in which the cursor is located
 	 * @param The position of the cursor within the given {@link Expression}
 	 */
-	void addPosition(Expression expression, int position) {
+	public void addPosition(Expression expression, int position) {
 		positions.put(expression, position);
-	}
-
-	void adjustPosition(AbstractExpression parent, Expression expression, int adjustedPosition) {
-
-		if (parent == null) {
-			addPosition(expression, adjustedPosition);
-			return;
-		}
-
-		int length = 0;
-
-		for (Expression child : parent.orderedChildren()) {
-
-			if (child == expression) {
-				length += adjustedPosition;
-				break;
-			}
-			else {
-				length += child.getLength();
-			}
-		}
-
-		addPosition(parent, length);
-		adjustPosition(parent.getParent(), parent, length);
-	}
-
-	QueryPosition adjustPosition(Expression expression, int newPosition) {
-		QueryPosition queryPosition = new QueryPosition(newPosition);
-		queryPosition.expression = expression;
-		queryPosition.adjustPosition((AbstractExpression) expression.getParent(), expression, newPosition);
-		return queryPosition;
 	}
 
 	/**
@@ -127,34 +94,19 @@ public final class QueryPosition {
 	}
 
 	/**
-	 * Removes the given {@link Expression} from the cached positions.
-	 *
-	 * @param expression The {@link Expression} that was registered with this object
-	 */
-	void removePosition(Expression expression) {
-		positions.remove(expression);
-	}
-
-	/**
 	 * Sets the deepest leaf where the cursor is located.
 	 *
 	 * @param expression The {@link Expression} that is the deepest leaf within the parsed tree
 	 */
-	void setExpression(Expression expression) {
+	public void setExpression(Expression expression) {
 		this.expression = expression;
 	}
 
-	QueryPosition transform(Expression leafExpression) {
-		QueryPosition queryPosition = new QueryPosition(this.position + 1);
-		queryPosition.expression = leafExpression;
-		transform(queryPosition, leafExpression);
-		return queryPosition;
-	}
-
-	private void transform(QueryPosition position, Expression expression) {
-		if (expression != null) {
-			position.addPosition(expression, getPosition(expression) + 1);
-			transform(position, expression.getParent());
-		}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return positions.toString();
 	}
 }

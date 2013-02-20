@@ -30,7 +30,17 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class BetweenExpression extends AbstractRangeExpression {
+public class BetweenExpression extends AbstractExpression {
+
+	/**
+	 * The actual <b>AND</b> identifier found in the string representation of the JPQL query.
+	 */
+	private String andIdentifier;
+
+	/**
+	 * The actual identifier found in the string representation of the JPQL query.
+	 */
+	private String betweenIdentifier;
 
 	/**
 	 * The {@link Expression} to be tested for an inclusive range of values.
@@ -38,9 +48,34 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	private AbstractExpression expression;
 
 	/**
+	 * Determines whether a whitespace was found after <b>AND</b>.
+	 */
+	private boolean hasSpaceAfterAnd;
+
+	/**
+	 * Determines whether a whitespace was found after <b>BETWEEN</b>.
+	 */
+	private boolean hasSpaceAfterBetween;
+
+	/**
+	 * Determines whether a whitespace was found after the lower bound expression.
+	 */
+	private boolean hasSpaceAfterLowerBound;
+
+	/**
+	 * The {@link Expression} representing the lower bound expression.
+	 */
+	private AbstractExpression lowerBoundExpression;
+
+	/**
 	 * The actual <b>NOT</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String notIdentifier;
+
+	/**
+	 * The {@link Expression} representing the upper bound expression.
+	 */
+	private AbstractExpression upperBoundExpression;
 
 	/**
 	 * Creates a new <code>BetweenExpression</code>.
@@ -67,10 +102,10 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void acceptChildren(ExpressionVisitor visitor) {
 		getExpression().accept(visitor);
-		super.acceptChildren(visitor);
+		getLowerBoundExpression().accept(visitor);
+		getUpperBoundExpression().accept(visitor);
 	}
 
 	/**
@@ -79,7 +114,8 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	@Override
 	protected void addChildrenTo(Collection<Expression> children) {
 		children.add(getExpression());
-		super.addChildrenTo(children);
+		children.add(getLowerBoundExpression());
+		children.add(getUpperBoundExpression());
 	}
 
 	/**
@@ -101,15 +137,55 @@ public final class BetweenExpression extends AbstractRangeExpression {
 		}
 
 		// BETWEEN x AND y
-		super.addOrderedChildrenTo(children);
+		// Identifier
+		children.add(buildStringExpression(getText()));
+
+		if (hasSpaceAfterBetween) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// Lower bound expression
+		if (lowerBoundExpression != null) {
+			children.add(lowerBoundExpression);
+		}
+
+		if (hasSpaceAfterLowerBound) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// 'AND'
+		if (andIdentifier != null) {
+			children.add(buildStringExpression(AND));
+		}
+
+		if (hasSpaceAfterAnd) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// Upper bound expression
+		if (upperBoundExpression != null) {
+			children.add(upperBoundExpression);
+		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the actual <b>AND</b> identifier found in the string representation of the JPQL query,
+	 * which has the actual case that was used.
+	 *
+	 * @return The <b>AND</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
-	@Override
-	protected String boundExpressionQueryBNFId() {
-		return InternalBetweenExpressionBNF.ID;
+	public String getActualAndIdentifier() {
+		return (andIdentifier != null) ? andIdentifier : ExpressionTools.EMPTY_STRING;
+	}
+
+	/**
+	 * Returns the actual found in the string representation of the JPQL query, which has the actual
+	 * case that was used.
+	 *
+	 * @return The identifier that was actually parsed
+	 */
+	public String getActualBetweenIdentifier() {
+		return betweenIdentifier;
 	}
 
 	/**
@@ -121,6 +197,15 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	 */
 	public String getActualNotIdentifier() {
 		return (notIdentifier != null) ? notIdentifier : ExpressionTools.EMPTY_STRING;
+	}
+
+	/**
+	 * Returns the unique identifier of the BNF for the lower and upper bound expressions.
+	 *
+	 * @return The unique identifier of the JPQL query BNF for the lower and upper bound expressions
+	 */
+	public String getBoundExpressionQueryBNFId() {
+		return InternalBetweenExpressionBNF.ID;
 	}
 
 	/**
@@ -145,10 +230,52 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	}
 
 	/**
+	 * Returns the {@link Expression} representing the lower bound expression.
+	 *
+	 * @return The expression that was parsed representing the lower bound expression
+	 */
+	public Expression getLowerBoundExpression() {
+		if (lowerBoundExpression == null) {
+			lowerBoundExpression = buildNullExpression();
+		}
+		return lowerBoundExpression;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(BetweenExpressionBNF.ID);
+	}
+
+	/**
+	 * Returns the {@link Expression} representing the upper bound expression.
+	 *
+	 * @return The expression that was parsed representing the upper bound expression
+	 */
+	public Expression getUpperBoundExpression() {
+		if (upperBoundExpression == null) {
+			upperBoundExpression = buildNullExpression();
+		}
+		return upperBoundExpression;
+	}
+
+	/**
+	 * Determines whether the identifier <b>AND</b> was part of the query.
+	 *
+	 * @return <code>true</code> if the identifier <b>AND</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasAnd() {
+		return andIdentifier != null;
+	}
+
+	/**
+	 * Determines whether the identifier <b>BETWEEN</b> was part of the query.
+	 *
+	 * @return <code>true</code> if the identifier <b>BETWEEN</b> was parsed; <code>false</code> otherwise
+	 */
+	protected boolean hasBetween() {
+		return betweenIdentifier != null;
 	}
 
 	/**
@@ -163,12 +290,74 @@ public final class BetweenExpression extends AbstractRangeExpression {
 	}
 
 	/**
+	 * Determines whether the lower bound expression was parsed.
+	 *
+	 * @return <code>true</code> if the query has the lower bound expression; <code>false</code>
+	 * otherwise
+	 */
+	public boolean hasLowerBoundExpression() {
+		return lowerBoundExpression != null &&
+		      !lowerBoundExpression.isNull();
+	}
+
+	/**
 	 * Determines whether the identifier <b>NOT</b> was part of the query.
 	 *
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
 		return notIdentifier != null;
+	}
+
+	/**
+	 * Determines whether a whitespace was found after <b>AND</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace after <b>AND</b>; <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterAnd() {
+		return hasSpaceAfterAnd;
+	}
+
+	/**
+	 * Determines whether a whitespace was found after <b>BETWEEN</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the <b>BETWEEN</b>;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterBetween() {
+		return hasSpaceAfterBetween;
+	}
+
+	/**
+	 * Determines whether a whitespace was found after the lower bound expression.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the lower bound expression;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterLowerBound() {
+		return hasSpaceAfterLowerBound;
+	}
+
+	/**
+	 * Determines whether the upper bound expression was parsed.
+	 *
+	 * @return <code>true</code> if the query has the upper bound expression; <code>false</code> otherwise
+	 */
+	public boolean hasUpperBoundExpression() {
+		return upperBoundExpression != null &&
+		      !upperBoundExpression.isNull();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return wordParser.character() == RIGHT_PARENTHESIS ||
+		       word.equalsIgnoreCase(AND)                  ||
+		       word.equalsIgnoreCase(THEN)                 ||
+		       word.equalsIgnoreCase(ELSE)                 ||
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**
@@ -183,8 +372,25 @@ public final class BetweenExpression extends AbstractRangeExpression {
 			wordParser.skipLeadingWhitespace();
 		}
 
-		// Parse 'BETWEEN x AND y'
-		super.parse(wordParser, tolerant);
+		// Parse 'BETWEEN'
+		betweenIdentifier = wordParser.moveForward(BETWEEN);
+		hasSpaceAfterBetween = (wordParser.skipLeadingWhitespace() > 0);
+
+		// Parse lower bound expression
+		lowerBoundExpression = parse(wordParser, InternalBetweenExpressionBNF.ID, tolerant);
+
+		if (lowerBoundExpression != null) {
+			hasSpaceAfterLowerBound = (wordParser.skipLeadingWhitespace() > 0);
+		}
+
+		// Parse 'AND'
+		if (!tolerant || wordParser.startsWithIdentifier(AND)) {
+			andIdentifier = wordParser.moveForward(AND);
+			hasSpaceAfterAnd = (wordParser.skipLeadingWhitespace() > 0);
+		}
+
+		// Parse upper bound expression
+		upperBoundExpression = parse(wordParser, InternalBetweenExpressionBNF.ID, tolerant);
 	}
 
 	/**
@@ -205,6 +411,36 @@ public final class BetweenExpression extends AbstractRangeExpression {
 			writer.append(SPACE);
 		}
 
-		super.toParsedText(writer, actual);
+		// Identifier
+		if (betweenIdentifier != null) {
+			writer.append(actual ? betweenIdentifier : BETWEEN);
+		}
+
+		if (hasSpaceAfterBetween) {
+			writer.append(SPACE);
+		}
+
+		// Lower bound expression
+		if (lowerBoundExpression != null) {
+			lowerBoundExpression.toParsedText(writer, actual);
+		}
+
+		if (hasSpaceAfterLowerBound) {
+			writer.append(SPACE);
+		}
+
+		// 'AND'
+		if (andIdentifier != null) {
+			writer.append(actual ? andIdentifier : AND);
+		}
+
+		if (hasSpaceAfterAnd) {
+			writer.append(SPACE);
+		}
+
+		// Upper bound expression
+		if (upperBoundExpression != null) {
+			upperBoundExpression.toParsedText(writer, actual);
+		}
 	}
 }

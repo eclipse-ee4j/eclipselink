@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -33,7 +33,7 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public SizeExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, SIZE);
 	}
 
 	/**
@@ -68,18 +68,8 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
 			return super.parse(wordParser, queryBNFId, tolerant);
 		}
 
-		String word = wordParser.word();
-
-		CollectionValuedPathExpression expression = new CollectionValuedPathExpression(this, word);
+		CollectionValuedPathExpression expression = new CollectionValuedPathExpression(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return SIZE;
 	}
 }

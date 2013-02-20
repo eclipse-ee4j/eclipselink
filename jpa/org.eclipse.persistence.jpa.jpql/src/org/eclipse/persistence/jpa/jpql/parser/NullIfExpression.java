@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * <b>NULLIF</b> returns the first expression if the two expressions are not equal. If the
  * expressions are equal, <b>NULLIF</b> returns a null value of the type of the first expression.
@@ -26,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div nowrap><b>BNF:</b> <code>nullif_expression::= NULLIF(scalar_expression, scalar_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -38,7 +36,7 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
 	 * @param parent The parent of this expression
 	 */
 	public NullIfExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, NULLIF);
 	}
 
 	/**
@@ -61,13 +59,5 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
 	@Override
 	public String parameterExpressionBNF(int index) {
 		return ScalarExpressionBNF.ID;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return NULLIF;
 	}
 }

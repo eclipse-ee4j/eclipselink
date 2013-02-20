@@ -57,8 +57,11 @@ public final class RangeVariableDeclarationFactory extends ExpressionFactory {
 		// (expression != null) skip this check when parsing the first range variable declaration
 		if (tolerant &&
 		     expression != null             &&
+		     // TODO: TOTALLY REDO THIS PART TO HANDLE A GENERIC WAY TO PARSE COMPOSITE CLAUSE IDENTIFIERS
 		    !word.equalsIgnoreCase("order") &&
 		    !word.equalsIgnoreCase("group") &&
+		    !word.equalsIgnoreCase("start") &&
+		    !word.equalsIgnoreCase("connect") &&
 		    registry.isIdentifier(word)) {
 
 			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);

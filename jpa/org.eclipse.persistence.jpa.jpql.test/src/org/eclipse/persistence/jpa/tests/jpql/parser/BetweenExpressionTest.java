@@ -112,7 +112,7 @@ public final class BetweenExpressionTest extends JPQLParserTest {
 			where(betweenExpression)
 		);
 
-		testQuery(jpqlQuery, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public final class BetweenExpressionTest extends JPQLParserTest {
 			where(betweenExpression)
 		);
 
-		testQuery(jpqlQuery, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test

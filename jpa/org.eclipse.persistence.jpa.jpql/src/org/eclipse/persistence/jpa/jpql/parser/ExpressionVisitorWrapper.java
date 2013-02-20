@@ -41,14 +41,13 @@ public abstract class ExpressionVisitorWrapper extends AnonymousExpressionVisito
 	 * Creates a new <code>ExpressionVisitorWrapper</code>.
 	 *
 	 * @param delegate The {@link ExpressionVisitor} that will have the calls delegated from this one
+	 * @exception NullPointerException The delegate {@link ExpressionVisitor} cannot be null
 	 */
 	protected ExpressionVisitorWrapper(ExpressionVisitor delegate) {
 		super();
-
 		if (delegate == null) {
 			throw new NullPointerException("The delegate ExpressionVisitor cannot be null");
 		}
-
 		this.delegate = delegate;
 	}
 

@@ -259,8 +259,7 @@ public final class ConstructorExpression extends AbstractExpression {
 		String className = wordParser.word();
 
 		if (tolerant && isIdentifier(className)) {
-			this.className        = ExpressionTools.EMPTY_STRING;
-			this.constructorItems = buildNullExpression();
+			this.className = ExpressionTools.EMPTY_STRING;
 			return;
 		}
 
@@ -283,7 +282,7 @@ public final class ConstructorExpression extends AbstractExpression {
 		// Parse the constructor items
 		constructorItems = parse(wordParser, ConstructorItemBNF.ID, tolerant);
 
-		if (hasConstructorItems()) {
+		if (constructorItems != null) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 

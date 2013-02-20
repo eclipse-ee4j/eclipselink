@@ -83,7 +83,7 @@ public final class ConnectByClause extends AbstractExpression {
 	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'CONNECT BY'
-		children.add(buildStringExpression(ORDER_BY));
+		children.add(buildStringExpression(CONNECT_BY));
 
 		if (hasSpaceAfterConnectBy) {
 			children.add(buildStringExpression(SPACE));

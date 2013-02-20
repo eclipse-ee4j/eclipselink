@@ -13,14 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.tests.jpql.parser.AllJPQLParserTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllContentAssistTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllJPQLQueryHelperTests;
+import org.eclipse.persistence.jpa.tests.jpql.tools.AllRefactoringToolTests;
 import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllEclipseLinkStateObjectTest2_1;
 import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTest1_0;
 import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTest2_0;
 import org.eclipse.persistence.jpa.tests.jpql.tools.model.AllStateObjectTests;
-import org.eclipse.persistence.jpa.tests.jpql.tools.AllContentAssistTests;
-import org.eclipse.persistence.jpa.tests.jpql.tools.AllJPQLQueryHelperTests;
-import org.eclipse.persistence.jpa.tests.jpql.tools.AllRefactoringToolTests;
-import org.eclipse.persistence.jpa.tests.jpql.parser.AllJPQLParserTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -46,6 +46,9 @@ public final class AllHermesTests {
 		super();
 	}
 
+	/**
+	 * The suite to be used by Hermes and third-party when testing with generic JPA as the provider.
+	 */
 	@SuiteClasses({
 
 		// Test JPQLQueryHelper
@@ -73,6 +76,9 @@ public final class AllHermesTests {
 	public static class DefaultTestSuite {
 	}
 
+	/**
+	 * The suite to be used by Hermes and third-party when testing with EclipseLink as the provider.
+	 */
 	@SuiteClasses({
 
 		// Test JPQLQueryHelper
@@ -102,14 +108,14 @@ public final class AllHermesTests {
 	public static class EclipseLinkTestSuite {
 	}
 
-	private static class HermesDefaultTestSuite extends DefaultTestSuite {
+	static class HermesDefaultTestSuite extends DefaultTestSuite {
 		@JPQLQueryTestHelperTestHelper
 		static JPQLQueryTestHelper buildQueryTestHelper() {
 			return new DefaultJavaJPQLQueryTestHelper();
 		}
 	}
 
-	private static final class HermesEclipseLinkTestSuite extends EclipseLinkTestSuite {
+	static final class HermesEclipseLinkTestSuite extends EclipseLinkTestSuite {
 		@JPQLQueryTestHelperTestHelper
 		static JPQLQueryTestHelper buildQueryTestHelper() {
 			return new EclipseLinkJavaJPQLQueryTestHelper();

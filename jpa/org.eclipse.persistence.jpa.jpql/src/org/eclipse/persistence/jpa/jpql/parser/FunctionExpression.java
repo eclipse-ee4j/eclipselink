@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.Paramet
  *
  * <div nowrap><b>BNF:</b> <code>func_expression ::= &lt;identifier&gt;('function_name' {, func_item}*)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author James
  */
@@ -68,8 +68,7 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	 * @param identifier The JPQL identifier
 	 */
 	public FunctionExpression(AbstractExpression parent, String identifier) {
-		super(parent);
-		setText(identifier);
+		super(parent, identifier);
 	}
 
 	/**
@@ -243,14 +242,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 			hasSpaceAfterComma = false;
 			wordParser.moveBackward(count);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return getText();
 	}
 
 	/**

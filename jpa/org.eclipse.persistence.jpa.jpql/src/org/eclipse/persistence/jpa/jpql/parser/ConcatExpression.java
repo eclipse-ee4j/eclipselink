@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The <b>CONCAT</b> function returns a string that is a concatenation of its arguments.
  * <p>
@@ -29,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap>Example: <b>SELECT</b> c.firstName <b>FROM</b> Customer c <b>HAVING</b> c.firstName = <b>CONCAT</b>(:fname, :lname)</p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -41,7 +39,7 @@ public final class ConcatExpression extends AbstractSingleEncapsulatedExpression
 	 * @param parent The parent of this expression
 	 */
 	public ConcatExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, CONCAT);
 	}
 
 	/**
@@ -64,13 +62,5 @@ public final class ConcatExpression extends AbstractSingleEncapsulatedExpression
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return CONCAT;
 	}
 }

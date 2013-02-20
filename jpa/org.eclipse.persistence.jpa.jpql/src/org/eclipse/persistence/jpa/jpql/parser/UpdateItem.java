@@ -239,7 +239,7 @@ public final class UpdateItem extends AbstractExpression {
 		// Parse new value
 		newValue = parse(wordParser, NewValueBNF.ID, tolerant);
 
-		if (!hasSpaceAfterEqualSign && hasNewValue()) {
+		if (!hasSpaceAfterEqualSign && (newValue != null)) {
 			hasSpaceAfterEqualSign = true;
 		}
 	}

@@ -407,6 +407,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 	 */
 	public void visit(AsOfClause expression) {
 		super.visit(expression);
+		// Nothing to validate semantically
 	}
 
 	/**
@@ -422,7 +423,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 	 */
 	public void visit(ConnectByClause expression) {
 		super.visit(expression);
-		// TODO: 2.5
+		// Nothing to validate semantically
 	}
 
 	/**
@@ -470,7 +471,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 	 */
 	public void visit(StartWithClause expression) {
 		super.visit(expression);
-		// TODO: 2.5
+		// Nothing to validate semantically
 	}
 
 	/**

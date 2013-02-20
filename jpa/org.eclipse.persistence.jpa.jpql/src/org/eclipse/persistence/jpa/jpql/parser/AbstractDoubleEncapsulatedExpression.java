@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see ModExpression
  * @see NullIfExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -58,9 +58,10 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * Creates a new <code>AbstractDoubleEncapsulatedExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected AbstractDoubleEncapsulatedExpression(AbstractExpression parent) {
-		super(parent);
+	protected AbstractDoubleEncapsulatedExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -248,7 +249,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		// Parse the first expression
 		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
 
-		if (hasFirstExpression()) {
+		if (firstExpression != null) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
@@ -267,7 +268,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		// Parse the second expression
 		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
-		if (!hasSecondExpression()) {
+		if (secondExpression == null) {
 			if (!hasComma && isSecondExpressionOptional()) {
 				hasSpaceAfterComma = false;
 			}

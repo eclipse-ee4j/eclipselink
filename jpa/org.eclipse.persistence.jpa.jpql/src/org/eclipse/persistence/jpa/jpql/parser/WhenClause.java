@@ -274,7 +274,7 @@ public final class WhenClause extends AbstractExpression {
 		hasSpaceAfterWhenExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'THEN'
-		if (wordParser.startsWithIdentifier(THEN)) {
+		if (!tolerant || wordParser.startsWithIdentifier(THEN)) {
 			thenIdentifier = wordParser.moveForward(THEN);
 			hasSpaceAfterThen = wordParser.skipLeadingWhitespace() > 0;
 		}

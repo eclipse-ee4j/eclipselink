@@ -211,7 +211,7 @@ public final class DeleteClause extends AbstractExpression {
 		hasSpaceAfterDelete = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'FROM'
-		if (wordParser.startsWithIdentifier(FROM)) {
+		if (!tolerant || wordParser.startsWithIdentifier(FROM)) {
 			fromIdentifier = wordParser.moveForward(FROM);
 			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
 		}

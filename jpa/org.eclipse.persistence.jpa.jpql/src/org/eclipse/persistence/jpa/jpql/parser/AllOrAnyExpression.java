@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,9 +43,11 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	 * Creates a new <code>AllOrAnyExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier Either {@link Expression#ALL ALL}, {@link Expression#ANY ANY} or {@link
+	 * Expression#SOME SOME}
 	 */
-	public AllOrAnyExpression(AbstractExpression parent) {
-		super(parent);
+	public AllOrAnyExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -83,29 +85,5 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 		SimpleSelectStatement expression = new SimpleSelectStatement(this);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-
-		switch (wordParser.character()) {
-			case 's': case 'S': {
-				return SOME;
-			}
-
-			default: {
-				switch (wordParser.character(wordParser.position() + 1)) {
-					case 'l': case 'L': {
-						return ALL;
-					}
-					default: {
-						return ANY;
-					}
-				}
-			}
-		}
 	}
 }

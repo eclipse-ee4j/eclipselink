@@ -1814,6 +1814,22 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
+	public final void test_ConditionalExpression_01() {
+
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.";
+		int position = jpqlQuery.length();
+
+		testHasOnlyTheseProposals(
+			jpqlQuery,
+			position,
+			"address", "department", "dept",
+			"embeddedAddress", "empId", "manager",
+			"managerEmployee", "name", "rooNumber",
+			"salary", "working"
+		);
+	}
+
+	@Test
 	public final void test_Constructor_01() {
 		String jpqlQuery = "SELECT ";
 		int position = jpqlQuery.length();
@@ -3315,6 +3331,62 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_01() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_02() {
+		String jpqlQuery = "SELECT e FROM Employee e ORDER B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, ORDER_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_03() {
+		String jpqlQuery = "SELECT e FROM Employee e ORDER B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e ORDER B".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_04() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_05() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_06() {
+		String jpqlQuery = "SELECT e FROM Employee e HAVING e.name = 'JPQL' ORDER B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_07() {
+		String jpqlQuery = "SELECT e FROM Employee e HAVING e.name = 'JPQL' ORDER B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_IncompleteCollectionExpressionVisitor_08() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B ORT b a";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
 	public final void test_Index_01() {
 		test_AbstractSingleEncapsulatedExpression_01(INDEX);
 	}
@@ -3365,6 +3437,55 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
+	public final void test_Invalid_01() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee e WHERE e.name IS e.".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_02() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee CONNECT BY e.name O ".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_03() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee CONNECT BY e.name O WHERE".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_04() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e".length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_05() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_06() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name IS ";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_Invalid_07() {
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name WHERE";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
 	public final void test_Is_01() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where e.managerEmployee is not ";
@@ -3378,6 +3499,20 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "select e from Employee e where (select a from e.employees) is ";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY);
+	}
+
+	@Test
+	public final void test_Is_03() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee e WHERE e.name IS ".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NULL, IS_NOT_NULL, IS_NOT_EMPTY);
+	}
+
+	@Test
+	public final void test_Is_04() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS WHERE";
+		int position = "SELECT e FROM Employee e WHERE e.name IS ".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NULL, IS_NOT_NULL, IS_NOT_EMPTY);
 	}
 
 	@Test

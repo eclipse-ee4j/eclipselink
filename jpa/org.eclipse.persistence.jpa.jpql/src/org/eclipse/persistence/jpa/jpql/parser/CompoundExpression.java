@@ -187,7 +187,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 		// Parse the right expression
 		rightExpression = parse(wordParser, rightExpressionBNF(), tolerant);
 
-		if (!hasSpaceAfterIdentifier && hasRightExpression()) {
+		if (!hasSpaceAfterIdentifier && (rightExpression != null)) {
 			hasSpaceAfterIdentifier = true;
 		}
 	}

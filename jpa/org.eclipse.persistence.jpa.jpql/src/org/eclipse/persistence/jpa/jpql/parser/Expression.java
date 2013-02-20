@@ -844,19 +844,17 @@ public interface Expression {
 	boolean isAncestor(Expression expression);
 
 	/**
-	 * Creates a list representing this expression and its children. In order to add every piece of
-	 * the expression.
+	 * Returns the list representing this {@link Expression} and its children.
 	 *
 	 * @return The {@link Expression Expressions} representing this {@link Expression}
 	 */
 	ListIterable<Expression> orderedChildren();
 
 	/**
-	 * Retrieves the <code>Expression</code> located at the given position using the actual
-	 * query, which may have extra whitespace.
+	 * Retrieves the <code>Expression</code> located at the given position using the actual query,
+	 * which may have extra whitespace.
 	 *
-	 * @param position The array has one element and is the position of the {@link Expression}
-	 * to retrieve
+	 * @param position The array has one element and is the position of the {@link Expression} to retrieve
 	 */
 	void populatePosition(QueryPosition queryPosition, int position);
 

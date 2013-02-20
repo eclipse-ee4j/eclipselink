@@ -13,14 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * One of the aggregate functions. The arguments must be numeric. <b>AVG</b> returns <code>Double</code>.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= AVG([DISTINCT] state_field_path_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,7 +30,7 @@ public final class AvgFunction extends AggregateFunction {
 	 * @param parent The parent of this expression
 	 */
 	public AvgFunction(AbstractExpression parent) {
-		super(parent);
+		super(parent, AVG);
 	}
 
 	/**
@@ -40,13 +38,5 @@ public final class AvgFunction extends AggregateFunction {
 	 */
 	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return AVG;
 	}
 }

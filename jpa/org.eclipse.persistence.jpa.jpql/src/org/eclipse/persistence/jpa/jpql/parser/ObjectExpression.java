@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * Stand-alone identification variables in the <b>SELECT</b> clause may optionally be qualified by
  * the <b>OBJECT</b> operator. The <b>SELECT</b> clause must not use the <b>OBJECT</b> operator to
@@ -22,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= OBJECT(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,7 +32,7 @@ public final class ObjectExpression extends EncapsulatedIdentificationVariableEx
 	 * @param parent The parent of this expression
 	 */
 	public ObjectExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, OBJECT);
 	}
 
 	/**
@@ -50,13 +48,5 @@ public final class ObjectExpression extends EncapsulatedIdentificationVariableEx
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ObjectExpressionBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return OBJECT;
 	}
 }

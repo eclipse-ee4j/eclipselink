@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>CASE(e.name AS VARCHAR(20))</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -37,8 +37,7 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 	 * @param identifier The database type
 	 */
 	public DatabaseType(AbstractExpression parent, String databaseType) {
-		super(parent);
-		setText(databaseType);
+		super(parent, databaseType);
 	}
 
 	/**
@@ -69,14 +68,6 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 	@Override
 	public String parameterExpressionBNF(int index) {
 		return NumericLiteralBNF.ID;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return getText();
 	}
 
 	/**

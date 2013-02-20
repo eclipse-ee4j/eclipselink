@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * One of the aggregate functions. The arguments must correspond to orderable state-field types
  * (i.e., numeric types, string types, character types, or date types). The return type of this
@@ -22,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= MAX([DISTINCT] state_field_path_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,7 +32,7 @@ public final class MaxFunction extends AggregateFunction {
 	 * @param parent The parent of this expression
 	 */
 	public MaxFunction(AbstractExpression parent) {
-		super(parent);
+		super(parent, MAX);
 	}
 
 	/**
@@ -42,13 +40,5 @@ public final class MaxFunction extends AggregateFunction {
 	 */
 	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return MAX;
 	}
 }

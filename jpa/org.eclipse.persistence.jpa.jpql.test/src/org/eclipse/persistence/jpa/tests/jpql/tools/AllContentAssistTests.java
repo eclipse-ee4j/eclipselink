@@ -64,6 +64,7 @@ public final class AllContentAssistTests {
 
 	@SuiteClasses({
 		EclipseLinkContentAssistTest2_4.class,
+		EclipseLinkContentAssistTest2_5.class,
 		EclipseLinkContentAssistExtensionTest.class
 	})
 	@RunWith(JPQLTestRunner.class)

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.tools;
 
+import java.util.List;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
@@ -22,6 +23,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
@@ -37,6 +39,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -61,7 +64,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("unused") // unused used for the import statement: see bug 330740
+@SuppressWarnings({"nls", "unused"}) // unused used for the import statement: see bug 330740
 public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisitor
                                              implements EclipseLinkExpressionVisitor {
 
@@ -97,6 +100,14 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	@Override
 	protected ConditionalExpressionCompletenessVisitor buildConditionalExpressionCompletenessVisitor() {
 		return new ConditionalExpressionCompletenessVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected EndingQueryPositionBuilder buildEndingQueryPositionBuilder() {
+		return new EndingQueryPositionBuilder();
 	}
 
 	/**
@@ -143,6 +154,14 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected IncompleteCollectionExpressionVisitor buildIncompleteCollectionExpressionVisitor() {
+		return new IncompleteCollectionExpressionVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected OrderByClauseSelectStatementHelper buildOrderByClauseSelectStatementHelper() {
 		return new OrderByClauseSelectStatementHelper();
 	}
@@ -169,6 +188,17 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	@Override
 	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
 		return new WhereClauseSelectStatementHelper();
+	}
+
+	/**
+	 * Returns the enum constant of the EclipseLink version specified in the {@link JPQLQueryContext}.
+	 *
+	 * @return The EclipseLink version specified or the default version (i.e. the version of the
+	 * current release)
+	 * @since 2.5
+	 */
+	protected EclipseLinkVersion getEcliseLinkVersion() {
+		return EclipseLinkVersion.value(getProviderVersion());
 	}
 
 	protected TableExpressionVisitor getTableExpressionVisitor() {
@@ -228,7 +258,60 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	public void visit(AsOfClause expression) {
 		super.visit(expression);
-		// TODO
+		int position = getPosition(expression) - corrections.peek();
+
+		// Within "AS OF"
+		if (isPositionWithin(position, AS_OF)) {
+			proposals.addIdentifier(AS_OF);
+		}
+		// After "AS OF"
+		else if (expression.hasSpaceAfterIdentifier()) {
+
+			int length = AS_OF.length() + SPACE_LENGTH;
+
+			// Right after "AS OF "
+			if (position == length) {
+				addIdentifier(SCN);
+				addIdentifier(TIMESTAMP);
+
+				if (!expression.hasScn() &&
+				    !expression.hasTimestamp()) {
+
+					addAllIdentificationVariables();
+					addAllFunctions(ScalarExpressionBNF.ID);
+				}
+			}
+			// After "AS OF SCN" or "AS OF TIMESTAMP"
+			else if (expression.hasScn() ||
+			         expression.hasSpaceAfterIdentifier()) {
+
+				// SCN
+				if (expression.hasScn() && isPositionWithin(position, length, SCN)) {
+					proposals.addIdentifier(SCN);
+					proposals.addIdentifier(TIMESTAMP);
+				}
+				// TIMESTAMP
+				else if (expression.hasTimestamp() && isPositionWithin(position, length, TIMESTAMP)) {
+					proposals.addIdentifier(SCN);
+					proposals.addIdentifier(TIMESTAMP);
+				}
+				else {
+
+					if (expression.hasScn()) {
+						length += SCN.length();
+					}
+					else if (expression.hasTimestamp()) {
+						length += TIMESTAMP.length();
+					}
+
+					// After "AS OF SCN " or "AS OF TIMESTAMP "
+					if (expression.hasSpaceAfterCategory()) {
+						addAllIdentificationVariables();
+						addAllFunctions(ScalarExpressionBNF.ID);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -281,7 +364,23 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	public void visit(ConnectByClause expression) {
 		super.visit(expression);
-		// TODO: 2.5
+		int position = getPosition(expression) - corrections.peek();
+
+		// Within "CONNECT BY"
+		if (isPositionWithin(position, CONNECT_BY)) {
+			proposals.addIdentifier(CONNECT_BY);
+		}
+		// After "CONNECT BY"
+		else if (expression.hasSpaceAfterConnectBy()) {
+
+			int length = CONNECT_BY.length() + SPACE_LENGTH;
+
+			// Right after "CONNECT BY "
+			if (position == length) {
+				addAllIdentificationVariables();
+				addAllFunctions(CollectionValuedPathExpressionBNF.ID);
+			}
+		}
 	}
 
 	/**
@@ -374,7 +473,53 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	public void visit(HierarchicalQueryClause expression) {
 		super.visit(expression);
-		// TODO: 2.5
+		int position = getPosition(expression) - corrections.peek();
+
+		// At the beginning of the clause
+		if (position == 0) {
+			addIdentifier(START_WITH);
+
+			if (!expression.hasStartWithClause()) {
+				addIdentifier(CONNECT_BY);
+			}
+		}
+		else {
+			int length = 0;
+
+			// After the start with clause
+			if (expression.hasStartWithClause()) {
+				length += length(expression.getStartWithClause());
+
+				// Right after the start with clause
+				if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
+					addIdentifier(CONNECT_BY);
+				}
+				// After the start with clause
+				else if (expression.hasSpaceAfterStartWithClause()) {
+					length++;
+
+					// Right after the start with clause
+					if (position == length) {
+						addIdentifier(CONNECT_BY);
+					}
+				}
+			}
+
+			length += length(expression.getConnectByClause());
+
+			// Right after the connect by clause
+			if (hasVirtualSpace() && (position == length + SPACE_LENGTH)) {
+				addIdentifier(ORDER_SIBLINGS_BY);
+			}
+			// After the connect by clause
+			else if (expression.hasSpaceAfterConnectByClause()) {
+				length++;
+
+				if (position == length) {
+					addIdentifier(ORDER_SIBLINGS_BY);
+				}
+			}
+		}
 	}
 
 	/**
@@ -819,6 +964,180 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		}
 	}
 
+	protected static class EndingQueryPositionBuilder extends AbstractContentAssistVisitor.EndingQueryPositionBuilder
+	                                                  implements EclipseLinkExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(AsOfClause expression) {
+
+			if (expression.hasExpression()) {
+				expression.getExpression().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(CastExpression expression) {
+
+			if (expression.hasScalarExpression() &&
+			   !expression.hasAs() &&
+			   !expression.hasDatabaseType() &&
+			   !expression.hasRightParenthesis()) {
+
+				expression.getExpression().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ConnectByClause expression) {
+
+			if (expression.hasExpression()) {
+				expression.getExpression().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(DatabaseType expression) {
+			queryPosition.setExpression(expression);
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ExtractExpression expression) {
+
+			if (expression.hasEncapsulatedExpression() &&
+			   !expression.hasRightParenthesis()) {
+
+				expression.getExpression().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(HierarchicalQueryClause expression) {
+
+			if (expression.hasOrderSiblingsByClause()) {
+				expression.getOrderSiblingsByClause().accept(this);
+			}
+			else if (expression.hasConnectByClause()) {
+				expression.getConnectByClause().accept(this);
+				if (expression.hasSpaceAfterConnectByClause()) {
+					virtualSpace = true;
+				}
+			}
+			else if (expression.hasStartWithClause()) {
+				expression.getStartWithClause().accept(this);
+				if (expression.hasSpaceAfterStartWithClause()) {
+					virtualSpace = true;
+				}
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(OrderSiblingsByClause expression) {
+
+			if (expression.hasOrderByItems()) {
+				expression.getOrderByItems().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(RegexpExpression expression) {
+			queryPosition.setExpression(expression);
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(StartWithClause expression) {
+
+			if (expression.hasConditionalExpression()) {
+				expression.getConditionalExpression().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableExpression expression) {
+			queryPosition.setExpression(expression);
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableVariableDeclaration expression) {
+			queryPosition.setExpression(expression);
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(UnionClause expression) {
+
+			if (expression.hasQuery()) {
+				expression.getQuery().accept(this);
+			}
+			else {
+				queryPosition.setExpression(expression);
+			}
+
+			queryPosition.addPosition(expression, expression.getLength());
+		}
+	}
+
 	protected class FromClauseCollectionHelper extends AbstractContentAssistVisitor.FromClauseCollectionHelper {
 
 		/**
@@ -837,9 +1156,46 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 * {@inheritDoc}
 		 */
 		@Override
+		protected boolean addAppendableToCollection(SelectStatement expression, int position) {
+
+			boolean skip = super.addAppendableToCollection(expression, position);
+
+			if (!skip) {
+
+				if (wordParser.endsWith(position, "CONNECT") ||
+				    wordParser.endsWith(position, "CONNECT B")) {
+
+					proposals.addIdentifier(CONNECT_BY);
+					skip = true;
+				}
+				else if (wordParser.endsWith(position, "START")    ||
+				         wordParser.endsWith(position, "START W")  ||
+				         wordParser.endsWith(position, "START WI") ||
+				         wordParser.endsWith(position, "START WIT")) {
+
+					proposals.addIdentifier(START_WITH);
+					skip = true;
+				}
+			}
+
+			return skip;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		protected void addClauseIdentifierProposals(SelectStatement expression) {
 
 			super.addClauseIdentifierProposals(expression);
+
+			// Hierarchical query clause
+			addIdentifier(START_WITH);
+			addIdentifier(CONNECT_BY);
+			addIdentifier(ORDER_SIBLINGS_BY);
+
+			// AS OF clause
+			addIdentifier(AS_OF);
 
 			if (!expression.hasWhereClause()) {
 				if (!expression.hasGroupByClause()) {
@@ -913,6 +1269,31 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 					addIdentifier(UNION);
 				}
 			}
+		}
+	}
+
+	/**
+	 * This subclass adds support for EclipseLink specific support.
+	 */
+	protected class IncompleteCollectionExpressionVisitor extends AbstractContentAssistVisitor.IncompleteCollectionExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected List<String> compositeIdentifiersAfter(String clause) {
+
+			// Add support for hierarchical query and AS OF clauses
+			if ((clause == FROM) && getEcliseLinkVersion().isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+				List<String> identifiers = super.compositeIdentifiersAfter(clause);
+				identifiers.add(START_WITH);
+				identifiers.add(CONNECT_BY);
+				identifiers.add(ORDER_SIBLINGS_BY);
+				identifiers.add(AS_OF);
+				return identifiers;
+			}
+
+			return super.compositeIdentifiersAfter(clause);
 		}
 	}
 

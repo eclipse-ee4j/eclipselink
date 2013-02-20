@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see LocateExpression
  * @see SubstringExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -72,9 +72,10 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * Creates a new <code>AbstractTripleEncapsulatedExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected AbstractTripleEncapsulatedExpression(AbstractExpression parent) {
-		super(parent);
+	protected AbstractTripleEncapsulatedExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**

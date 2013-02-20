@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -40,9 +40,10 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 * Creates a new <code>EncapsulatedExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected AbstractSingleEncapsulatedExpression(AbstractExpression parent) {
-		super(parent);
+	protected AbstractSingleEncapsulatedExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**

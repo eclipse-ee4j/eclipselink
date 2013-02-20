@@ -64,9 +64,10 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * Creates a new <code>AggregateFunction</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected AggregateFunction(AbstractExpression parent) {
-		super(parent);
+	protected AggregateFunction(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -145,7 +146,9 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void parseEncapsulatedExpression(WordParser wordParser, int whitespaceCount, boolean tolerant) {
+	protected final void parseEncapsulatedExpression(WordParser wordParser,
+	                                                 int whitespaceCount,
+	                                                 boolean tolerant) {
 
 		// Parse 'DISTINCT'
 		if (wordParser.startsWithIdentifier(DISTINCT)) {

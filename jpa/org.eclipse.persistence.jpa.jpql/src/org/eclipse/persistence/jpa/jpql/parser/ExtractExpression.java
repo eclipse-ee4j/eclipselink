@@ -62,7 +62,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 * @param parent The parent of this expression
 	 */
 	public ExtractExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, EXTRACT);
 	}
 
 	/**
@@ -230,14 +230,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 
 		// Parse the value
 		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return EXTRACT;
 	}
 
 	/**

@@ -307,7 +307,7 @@ public final class UpdateClause extends AbstractExpression {
 		hasSpaceAfterRangeVariableDeclaration = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'SET'
-		if (wordParser.startsWithIdentifier(SET)) {
+		if (!tolerant || wordParser.startsWithIdentifier(SET)) {
 			setIdentifier = wordParser.moveForward(SET);
 			hasSpaceAfterSet = wordParser.skipLeadingWhitespace() > 0;
 		}

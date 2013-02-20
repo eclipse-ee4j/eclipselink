@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * A <b>COALESCE</b> expression returns <code>null</code> if all its arguments evaluate to
  * <code>null</code>, and the value of the first non-<code>null</code> argument otherwise.
@@ -24,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div nowrap><b>BNF:</b> <code>coalesce_expression::= COALESCE(scalar_expression {, scalar_expression}+)</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -36,7 +34,7 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 * @param parent The parent of this expression
 	 */
 	public CoalesceExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, COALESCE);
 	}
 
 	/**
@@ -59,13 +57,5 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(CoalesceExpressionBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return COALESCE;
 	}
 }
