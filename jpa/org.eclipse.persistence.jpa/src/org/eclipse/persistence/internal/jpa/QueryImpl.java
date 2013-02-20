@@ -63,6 +63,7 @@ import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DatabaseQuery.ParameterType;
 import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -88,7 +89,6 @@ public class QueryImpl {
     protected String queryName = null;
     protected Map<String, Object> parameterValues = null;
     protected Map<String, Parameter<?>> parameters;
-    protected Map<String, Integer> parameterPositions = null;
     protected int firstResultIndex = UNDEFINED; 
     protected int maxResults = UNDEFINED; 
 
@@ -105,7 +105,6 @@ public class QueryImpl {
      */
     protected QueryImpl(EntityManagerImpl entityManager) {
         this.parameterValues = new HashMap<String, Object>();
-        this.parameterPositions = new HashMap<String, Integer>();
         this.entityManager = entityManager;
         this.isShared = true;
     }
@@ -390,13 +389,18 @@ public class QueryImpl {
                                                               // query
             int count = 0;
             if (query.getArguments() != null && !query.getArguments().isEmpty()) {
+                boolean checkParameterType = query.getArgumentParameterTypes().size() == query.getArguments().size();
                 for (String argName : query.getArguments()) {
-                    Integer position = parameterPositions.get(argName);
                     Parameter<?> param = null;
-                    if (position == null){
-                        param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
-                    } else {
+                    ParameterType type = null;
+                    if (checkParameterType){
+                        type = query.getArgumentParameterTypes().get(count);
+                    }
+                    if (type == ParameterType.POSITIONAL){
+                        Integer position = Integer.parseInt(argName);
                         param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), position);
+                    } else {
+                        param = new ParameterExpressionImpl(null, query.getArgumentTypes().get(count), argName);
                     }
                     this.parameters.put(argName, param);
                     ++count;
@@ -876,7 +880,6 @@ public class QueryImpl {
      */
     protected void setParameterInternal(int position, Object value) {
         setParameterInternal(String.valueOf(position), value, true);
-        this.parameterPositions.put(String.valueOf(position), position);
     }
     
     /**

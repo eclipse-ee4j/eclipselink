@@ -73,7 +73,7 @@ import org.eclipse.persistence.sessions.SessionProfiler;
 public abstract class DatabaseQuery implements Cloneable, Serializable {
     /** INTERNAL: Property used for batch fetching in non object queries. */
     public static final String BATCH_FETCH_PROPERTY = "BATCH_FETCH_PROPERTY";
-    
+
     /**
      * Queries can be given a name and registered with a descriptor to allow
      * common queries to be reused.
@@ -103,6 +103,11 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
     /** Used to build a list of argumentTypes by name pre-initialization */
     protected List<String> argumentTypeNames;
+    
+    /** Used for parameter retreival in JPQL **/
+    public enum ParameterType {POSITIONAL, NAMED};
+
+    protected List<ParameterType> argumentParameterTypes;
 
     /** The descriptor cached on the prepare for object level queries. */
     protected transient ClassDescriptor descriptor;
@@ -404,6 +409,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void addArgument(String argumentName, Class type) {
         addArgument(argumentName, type, false);
     }
+    
+    /**
+     * INTERNAL: Add the argument named argumentName.  This method was added to maintain
+     * information about whether parameters are positional or named for JPQL query introspeciton
+     * API
+     */
+    public void addArgument(String argumentName, Class type, ParameterType parameterType) {
+        addArgument(argumentName, type, parameterType, false);
+    }
 
     /**
      * PUBLIC: Add the argument named argumentName and its class type. This will
@@ -424,6 +438,21 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
+     * INTERNAL: Add the argument named argumentName.  This method was added to maintain
+     * information about whether parameters are positional or named for JPQL query introspeciton
+     * API
+     */
+    public void addArgument(String argumentName, Class type, ParameterType argumentParameterType, boolean nullable) {
+        getArguments().add(argumentName);
+        getArgumentTypes().add(type);
+        getArgumentParameterTypes().add(argumentParameterType);
+        getArgumentTypeNames().add(type.getName());
+        if (nullable) {
+            getNullableArguments().add(new DatabaseField(argumentName));
+        }
+    }
+    
+    /**
      * PUBLIC: Add the argument named argumentName and its class type. This will
      * cause the translation of references of argumentName in the receiver's
      * expression, with the value of the argument as supplied to the query in
@@ -436,7 +465,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         getArgumentTypes().add(Helper.getObjectClass(ConversionManager.loadClass(typeAsString)));
         getArgumentTypeNames().add(typeAsString);
     }
-
+    
     /**
      * INTERNAL: Add an argument to the query, but do not resolve the class yet.
      * This is useful for building a query without putting the domain classes on
@@ -910,6 +939,18 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             this.arguments = new ArrayList<String>();
         }
         return this.arguments;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to calculate parameter types in JPQL
+     * @return
+     */
+    public List<ParameterType> getArgumentParameterTypes(){
+        if (argumentParameterTypes == null){
+            this.argumentParameterTypes = new ArrayList<ParameterType>();
+        }
+        return this.argumentParameterTypes;
     }
 
     /**
