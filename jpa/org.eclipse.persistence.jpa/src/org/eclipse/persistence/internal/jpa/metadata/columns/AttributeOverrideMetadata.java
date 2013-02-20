@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -58,7 +58,7 @@ public class AttributeOverrideMetadata extends OverrideMetadata {
     public AttributeOverrideMetadata(MetadataAnnotation attributeOverride, MetadataAccessor accessor) {
         super(attributeOverride, accessor);
 
-        m_column = new ColumnMetadata((MetadataAnnotation) attributeOverride.getAttribute("column"), accessor);
+        m_column = new ColumnMetadata(attributeOverride.getAttributeAnnotation("column"), accessor);
     }
 
     /**

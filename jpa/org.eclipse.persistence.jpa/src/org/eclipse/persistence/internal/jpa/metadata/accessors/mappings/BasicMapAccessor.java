@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -75,20 +75,20 @@ public class BasicMapAccessor extends BasicCollectionAccessor {
     public BasicMapAccessor(MetadataAnnotation basicMap, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(basicMap, accessibleObject, classAccessor);
         
-        m_keyColumn = new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("keyColumn"), this);
+        m_keyColumn = new ColumnMetadata(basicMap.getAttributeAnnotation("keyColumn"), this);
 
-        MetadataAnnotation keyConvert = (MetadataAnnotation) basicMap.getAttribute("keyConverter");
+        MetadataAnnotation keyConvert = basicMap.getAttributeAnnotation("keyConverter");
         if (keyConvert != null) {
-            m_keyConverter = (String) keyConvert.getAttribute("value");
+            m_keyConverter = keyConvert.getAttributeString("value");
         }
 
-        MetadataAnnotation valueConvert = (MetadataAnnotation) basicMap.getAttribute("valueConverter");
+        MetadataAnnotation valueConvert = basicMap.getAttributeAnnotation("valueConverter");
         if (valueConvert != null) {
-            m_valueConverter = (String)valueConvert.getAttribute("value");
+            m_valueConverter = valueConvert.getAttributeString("value");
         }
         
-        setValueColumn(new ColumnMetadata((MetadataAnnotation) basicMap.getAttribute("valueColumn"), this));
-        setFetch((String) basicMap.getAttribute("fetch"));
+        setValueColumn(new ColumnMetadata(basicMap.getAttributeAnnotation("valueColumn"), this));
+        setFetch(basicMap.getAttributeString("fetch"));
     }
    
     /**

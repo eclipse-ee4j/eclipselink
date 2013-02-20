@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -77,9 +77,9 @@ public class NamedQueryMetadata extends ORMetadata {
     public NamedQueryMetadata(MetadataAnnotation namedQuery, MetadataAccessor accessor) {
         super(namedQuery, accessor);
         
-        m_name = (String) namedQuery.getAttribute("name");
-        m_query = (String) namedQuery.getAttribute("query");
-        m_lockMode = (String) namedQuery.getAttribute("lockMode");
+        m_name = namedQuery.getAttributeString("name");
+        m_query = namedQuery.getAttributeString("query");
+        m_lockMode = namedQuery.getAttributeString("lockMode");
         
         for (Object hint : namedQuery.getAttributeArray("hints")) {
             m_hints.add(new QueryHintMetadata((MetadataAnnotation)hint, accessor));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -65,14 +65,14 @@ public class PLSQLParameterMetadata extends ORMetadata {
     public PLSQLParameterMetadata(MetadataAnnotation storedProcedureParameter, MetadataAccessor accessor) {
         super(storedProcedureParameter, accessor);
         
-        m_direction = (String) storedProcedureParameter.getAttribute("direction");
-        m_name = (String) storedProcedureParameter.getAttribute("name");
-        m_queryParameter = (String) storedProcedureParameter.getAttribute("queryParameter"); 
-        m_databaseType = (String) storedProcedureParameter.getAttribute("databaseType");
-        m_optional = (Boolean) storedProcedureParameter.getAttribute("optional");
-        m_length = (Integer) storedProcedureParameter.getAttribute("length");
-        m_precision = (Integer) storedProcedureParameter.getAttribute("precision");
-        m_scale = (Integer) storedProcedureParameter.getAttribute("scale");
+        m_direction = storedProcedureParameter.getAttributeString("direction");
+        m_name = storedProcedureParameter.getAttributeString("name");
+        m_queryParameter = storedProcedureParameter.getAttributeString("queryParameter"); 
+        m_databaseType = storedProcedureParameter.getAttributeString("databaseType");
+        m_optional = storedProcedureParameter.getAttributeBooleanDefaultFalse("optional");
+        m_length = storedProcedureParameter.getAttributeInteger("length");
+        m_precision = storedProcedureParameter.getAttributeInteger("precision");
+        m_scale = storedProcedureParameter.getAttributeInteger("scale");
     }
     
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -107,7 +107,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Set the fetch type. A basic map may have no annotation (will default).
         if (annotation != null) {
             // Set the fetch type.
-            setFetch((String) annotation.getAttribute("fetch"));
+            setFetch(annotation.getAttributeString("fetch"));
         }
         
         // Set the join fetch if one is present.
@@ -115,7 +115,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // Duplicating the work with RelationshipAccessor
         MetadataAnnotation joinFetch = getAnnotation(JoinFetch.class);
         if (joinFetch != null) {
-            m_joinFetch = (String) joinFetch.getAttribute("value");
+            m_joinFetch = joinFetch.getAttributeString("value");
         }
         
         // Set the batch fetch if one is present.
@@ -124,8 +124,8 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         MetadataAnnotation batchFetch = getAnnotation(BatchFetch.class);
         if (batchFetch != null) {
             // Get attribute string will return the default ""
-            m_batchFetch = (String) batchFetch.getAttributeString("value");
-            m_batchFetchSize = (Integer) batchFetch.getAttribute("size");
+            m_batchFetch = batchFetch.getAttributeString("value");
+            m_batchFetchSize = batchFetch.getAttributeInteger("size");
         }
         
         // Set the cascade on delete if specified.

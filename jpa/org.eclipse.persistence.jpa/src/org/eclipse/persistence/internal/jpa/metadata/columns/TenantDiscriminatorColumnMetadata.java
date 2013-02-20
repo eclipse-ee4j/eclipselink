@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -75,9 +75,9 @@ public class TenantDiscriminatorColumnMetadata extends DiscriminatorColumnMetada
     public TenantDiscriminatorColumnMetadata(MetadataAnnotation tenantDiscriminator, MetadataAccessor accessor) {
         super(tenantDiscriminator, accessor);
         
-        m_table = (String) tenantDiscriminator.getAttribute("table");
-        m_primaryKey = (Boolean) tenantDiscriminator.getAttributeBooleanDefaultFalse("primaryKey");
-        m_contextProperty = (String) tenantDiscriminator.getAttribute("contextProperty");
+        m_table = tenantDiscriminator.getAttributeString("table");
+        m_primaryKey = tenantDiscriminator.getAttributeBooleanDefaultFalse("primaryKey");
+        m_contextProperty = tenantDiscriminator.getAttributeString("contextProperty");
     }
     
     /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -68,8 +68,8 @@ public class DiscriminatorClassMetadata extends ORMetadata {
     public DiscriminatorClassMetadata(MetadataAnnotation discriminatorClass, MetadataAccessor accessor) {
         super(discriminatorClass, accessor);
         
-        setDiscriminator((String) discriminatorClass.getAttribute("discriminator"));
-        setValueClass(getMetadataClass((String) discriminatorClass.getAttribute("value")));
+        setDiscriminator(discriminatorClass.getAttributeString("discriminator"));
+        setValueClass(getMetadataClass(discriminatorClass.getAttributeString("value")));
     }
     
     /**

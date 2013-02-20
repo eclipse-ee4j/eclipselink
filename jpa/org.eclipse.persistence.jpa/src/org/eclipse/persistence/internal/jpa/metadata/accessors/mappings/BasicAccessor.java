@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -141,8 +141,8 @@ public class BasicAccessor extends DirectAccessor {
         // Set the basic metadata if one is present.
         MetadataAnnotation basic = getAnnotation(JPA_BASIC);
         if (basic != null) {
-            setFetch((String) basic.getAttribute("fetch"));
-            setOptional((Boolean) basic.getAttribute("optional"));
+            setFetch(basic.getAttributeString("fetch"));
+            setOptional(basic.getAttributeBooleanDefaultTrue("optional"));
         }
         
         // Set the column metadata if one if present.
@@ -150,7 +150,7 @@ public class BasicAccessor extends DirectAccessor {
         
         // Set the mutable value if one is present.
         if (isAnnotationPresent(Mutable.class)) {
-            m_mutable = (Boolean) getAnnotation(Mutable.class).getAttributeBooleanDefaultTrue("value");
+            m_mutable = getAnnotation(Mutable.class).getAttributeBooleanDefaultTrue("value");
         }
         
         // Set the generated value if one is present.

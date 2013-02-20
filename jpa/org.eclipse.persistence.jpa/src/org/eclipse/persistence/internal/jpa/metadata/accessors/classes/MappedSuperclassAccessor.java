@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -590,7 +590,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         if (m_idClass == null || m_idClass.equals(void.class)) {
             // Check for an IdClass annotation.
             if (isAnnotationPresent(JPA_ID_CLASS)) {
-                m_idClass = getMetadataClass((String) getAnnotation(JPA_ID_CLASS).getAttribute("value"));
+                m_idClass = getMetadataClass(getAnnotation(JPA_ID_CLASS).getAttributeString("value"));
             }
         } else {
             // We have an XML specification. Log a message if an annotation has also been defined.
@@ -1033,7 +1033,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             MetadataAnnotation entityListeners = getAnnotation(JPA_ENTITY_LISTENERS);
             
             if (entityListeners != null) {
-                for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
+                for (Object entityListenerClass : entityListeners.getAttributeArray("value")) {
                     EntityListenerMetadata listener = new EntityListenerMetadata(entityListeners, getMetadataClass((String) entityListenerClass, false), this);
                     listener.process(this, loader, false);
                 }
@@ -1094,7 +1094,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 getLogger().logConfigMessage(MetadataLogger.IGNORE_MAPPED_SUPERCLASS_EXISTENCE_CHECKING, getDescriptor().getJavaClass(), getJavaClass());
             } else {
                 if (m_existenceChecking == null) {
-                    getDescriptor().setExistenceChecking((String) existenceChecking.getAttribute("value"));
+                    getDescriptor().setExistenceChecking(existenceChecking.getAttributeString("value"));
                 } else {
                     if (existenceChecking != null) {
                         getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, existenceChecking, getJavaClassName(), getLocation());
@@ -1247,7 +1247,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedNativeQueries.
         MetadataAnnotation namedNativeQueries = getAnnotation(JPA_NAMED_NATIVE_QUERIES);
         if (namedNativeQueries != null) {
-            for (Object namedNativeQuery : (Object[]) namedNativeQueries.getAttribute("value")) { 
+            for (Object namedNativeQuery : namedNativeQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation) namedNativeQuery, this));
             }
         }
@@ -1274,7 +1274,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedPLSQLStoredFunctionQueries.
         MetadataAnnotation namedPLSQLStoredFunctionQueries = getAnnotation(NamedPLSQLStoredFunctionQueries.class);
         if (namedPLSQLStoredFunctionQueries != null) {
-            for (Object namedPLSQLStoredFunctionQuery : (Object[]) namedPLSQLStoredFunctionQueries.getAttribute("value")) { 
+            for (Object namedPLSQLStoredFunctionQuery : namedPLSQLStoredFunctionQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedPLSQLStoredFunctionQueryMetadata((MetadataAnnotation) namedPLSQLStoredFunctionQuery, this));
             }
         }
@@ -1301,7 +1301,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedPLSQLStoredProcedureQueries.
         MetadataAnnotation namedPLSQLStoredProcedureQueries = getAnnotation(NamedPLSQLStoredProcedureQueries.class);
         if (namedPLSQLStoredProcedureQueries != null) {
-            for (Object namedPLSQLStoredProcedureQuery : (Object[]) namedPLSQLStoredProcedureQueries.getAttribute("value")) { 
+            for (Object namedPLSQLStoredProcedureQuery : namedPLSQLStoredProcedureQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedPLSQLStoredProcedureQueryMetadata((MetadataAnnotation) namedPLSQLStoredProcedureQuery, this));
             }
         }
@@ -1353,7 +1353,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedStoredFunctionQueries.
         MetadataAnnotation namedStoredFunctionQueries = getAnnotation(NamedStoredFunctionQueries.class);
         if (namedStoredFunctionQueries != null) {
-            for (Object namedStoredFunctionQuery : (Object[]) namedStoredFunctionQueries.getAttribute("value")) { 
+            for (Object namedStoredFunctionQuery : namedStoredFunctionQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedStoredFunctionQueryMetadata((MetadataAnnotation) namedStoredFunctionQuery, this));
             }
         }
@@ -1380,7 +1380,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a JPA @NamedStoredProcedureQueries.
         MetadataAnnotation jpaNamedStoredProcedureQueries = getAnnotation(JPA_NAMED_STORED_PROCEDURE_QUERIES);
         if (jpaNamedStoredProcedureQueries != null) {
-            for (Object jpaNamedStoredProcedureQuery : (Object[]) jpaNamedStoredProcedureQueries.getAttribute("value")) { 
+            for (Object jpaNamedStoredProcedureQuery :jpaNamedStoredProcedureQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) jpaNamedStoredProcedureQuery, this));
             }
         }
@@ -1395,7 +1395,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // Look for a @NamedStoredProcedureQueries.
         MetadataAnnotation namedStoredProcedureQueries = getAnnotation(org.eclipse.persistence.annotations.NamedStoredProcedureQueries.class);
         if (namedStoredProcedureQueries != null) {
-            for (Object namedStoredProcedureQuery : (Object[]) namedStoredProcedureQueries.getAttribute("value")) { 
+            for (Object namedStoredProcedureQuery : namedStoredProcedureQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) namedStoredProcedureQuery, this));
             }
         }
@@ -1526,8 +1526,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         MetadataAnnotation sqlResultSetMappings = getAnnotation(JPA_SQL_RESULT_SET_MAPPINGS);
 
         if (sqlResultSetMappings != null) {
-            for (Object sqlResultSetMapping : (Object[]) sqlResultSetMappings.getAttribute("value")) {
-                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata((MetadataAnnotation)sqlResultSetMapping, this));
+            for (Object sqlResultSetMapping : sqlResultSetMappings.getAttributeArray("value")) {
+                getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata((MetadataAnnotation) sqlResultSetMapping, this));
             }
         } else {
             // Look for a @SqlResultSetMapping.

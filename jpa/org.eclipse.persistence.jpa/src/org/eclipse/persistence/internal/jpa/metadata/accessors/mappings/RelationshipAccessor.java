@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -144,8 +144,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     protected RelationshipAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        m_fetch = (annotation == null) ? getDefaultFetchType() : (String) annotation.getAttribute("fetch");
-        m_targetEntity = getMetadataClass((annotation == null) ? "void" : (String) annotation.getAttributeString("targetEntity"));         
+        m_fetch = (annotation == null) ? getDefaultFetchType() : annotation.getAttributeString("fetch");
+        m_targetEntity = getMetadataClass((annotation == null) ? "void" : annotation.getAttributeString("targetEntity"));         
         m_cascade = (annotation == null) ? null : new CascadeMetadata(annotation.getAttributeArray("cascade"), this);
         
         // Set the join fetch if one is present.
@@ -153,7 +153,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(JoinFetch.class)) {
             // Get attribute string will return the default ""
-            m_joinFetch = (String) getAnnotation(JoinFetch.class).getAttributeString("value");
+            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
         }
         
         // Set the batch fetch if one is present. 
@@ -161,8 +161,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         // Duplicating the work with DirectCollectionAccessor
         if (isAnnotationPresent(BatchFetch.class)) {
             // Get attribute string will return the default ""
-            m_batchFetch = (String) getAnnotation(BatchFetch.class).getAttributeString("value");
-            m_batchFetchSize = (Integer) getAnnotation(BatchFetch.class).getAttribute("size");
+            m_batchFetch = getAnnotation(BatchFetch.class).getAttributeString("value");
+            m_batchFetchSize = getAnnotation(BatchFetch.class).getAttributeInteger("size");
         }
         
         // Set the join columns if some are present. 
@@ -174,9 +174,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             }
             
             // Set the foreign key metadata if one is specified.
-            MetadataAnnotation foreignKey = (MetadataAnnotation) joinColumns.getAttribute("foreignKey");
-            if (foreignKey != null) {
-                setForeignKey(new ForeignKeyMetadata(foreignKey, this));
+            if (joinColumns.hasAttribute("foreignKey")) {
+                setForeignKey(new ForeignKeyMetadata(joinColumns.getAttributeAnnotation("foreignKey"), this));
             }
         }
         

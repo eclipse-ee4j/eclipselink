@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,8 +66,8 @@ public class GeneratedValueMetadata extends ORMetadata {
     public GeneratedValueMetadata(MetadataAnnotation generatedValue, MetadataAccessor accessor) {
         super(generatedValue, accessor);
         
-        m_generator = (String) generatedValue.getAttributeString("generator");
-        m_strategy = (String) generatedValue.getAttribute("strategy"); 
+        m_generator = generatedValue.getAttributeString("generator");
+        m_strategy = generatedValue.getAttributeString("strategy"); 
     }
     
     /**

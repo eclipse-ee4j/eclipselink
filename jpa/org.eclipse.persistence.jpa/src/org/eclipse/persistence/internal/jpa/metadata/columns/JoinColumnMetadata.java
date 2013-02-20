@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -71,11 +71,11 @@ public class JoinColumnMetadata extends RelationalColumnMetadata {
         super(joinColumn, accessor);
         
         if (joinColumn != null) {
-            m_table = ((String) joinColumn.getAttribute("table"));
-            m_unique = ((Boolean) joinColumn.getAttribute("unique"));
-            m_nullable = ((Boolean) joinColumn.getAttribute("nullable"));
-            m_updatable = ((Boolean) joinColumn.getAttribute("updatable"));
-            m_insertable = ((Boolean) joinColumn.getAttribute("insertable"));
+            m_table = joinColumn.getAttributeString("table");
+            m_unique = joinColumn.getAttributeBooleanDefaultFalse("unique");
+            m_nullable = joinColumn.getAttributeBooleanDefaultTrue("nullable");
+            m_updatable = joinColumn.getAttributeBooleanDefaultTrue("updatable");
+            m_insertable = joinColumn.getAttributeBooleanDefaultTrue("insertable");
         }
     }
     

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
@@ -47,12 +49,11 @@ public class Athlete {
     @CollectionTable(
         name="JPA21_DDL_RUNNER_ACS",
         joinColumns=@JoinColumn(
-            name="ATHLETE_ID",
-            foreignKey=@ForeignKey(
-                name="Accomplistments_Foreign_Key",
-                foreignKeyDefinition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_DDL_RUNNER (ID)"
-            ) 
-        )
+            name="ATHLETE_ID"),
+        foreignKey=@ForeignKey(
+            name="Accomplistments_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_DDL_RUNNER (ID)"
+        ) 
     )
     // Sub class (Runner) will add convert to both key and value
     protected Map<String, Date> accomplishments;
@@ -62,11 +63,10 @@ public class Athlete {
     @CollectionTable(
         name="JPA21_DDL_ENDORSEMENTS",
         joinColumns=@JoinColumn(
-            name="ATHLETE_ID",
-            foreignKey=@ForeignKey(
-                name="Endorsements_Foreign_Key",
-                foreignKeyDefinition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
-            ) 
+            name="ATHLETE_ID"),
+        foreignKey=@ForeignKey(
+            name="Endorsements_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (ATHLETE_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
         )
     )
     @MapKeyJoinColumn(

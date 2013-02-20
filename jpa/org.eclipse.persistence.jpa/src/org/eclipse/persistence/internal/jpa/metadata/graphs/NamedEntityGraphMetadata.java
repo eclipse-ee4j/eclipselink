@@ -67,8 +67,8 @@ public class NamedEntityGraphMetadata extends ORMetadata {
     public NamedEntityGraphMetadata(MetadataAnnotation namedEntityGraph, EntityAccessor accessor) {
         super(namedEntityGraph, accessor);
         
-        m_name = (String) namedEntityGraph.getAttribute("name");
-        m_includeAllAttributes = (Boolean) namedEntityGraph.getAttributeBooleanDefaultFalse("include-all-attributes");
+        m_name = namedEntityGraph.getAttributeString("name");
+        m_includeAllAttributes = namedEntityGraph.getAttributeBooleanDefaultFalse("include-all-attributes");
 
         for (Object namedAttributeNode : namedEntityGraph.getAttributeArray("attributeNodes")) {
             m_namedAttributeNodes.add(new NamedAttributeNodeMetadata((MetadataAnnotation) namedAttributeNode, accessor));

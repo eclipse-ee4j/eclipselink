@@ -50,7 +50,7 @@ public abstract class OracleComplexTypeMetadata extends ComplexTypeMetadata {
      */
     public OracleComplexTypeMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
         super(record, accessor);
-        this.javaType = (String) record.getAttribute("javaType");
+        this.javaType = record.getAttributeString("javaType");
     }
     
     /**

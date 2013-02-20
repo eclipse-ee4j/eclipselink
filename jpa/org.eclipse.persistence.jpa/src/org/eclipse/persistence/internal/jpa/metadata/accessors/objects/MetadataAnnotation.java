@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,22 +43,36 @@ public class MetadataAnnotation {
     
     /**
      * INTERNAL:
-     * Return the attribute value, or null if not set. Callers to this method
-     * should only use it if the annotation requires the attribute. Otherwise,
-     * you should call one of the more specific getAttribute calls that will
-     * return the annotation default value.
+     * Return the attribute value, or null if not set. This should remain a 
+     * private method and callers should use one of the more specific 
+     * getAttribute calls. (and build one if necessary)
+     * 
+     * @see getAttributeAnnotation
      * @see getAttributeArray
+     * @see getAttributeInteger
      * @see getAttributeString
+     * @see getAttributeBoolean
      * @see getAttributeBooleanDefaultFalse
      * @see getAttributeBooleanDefaultTrue
      */
-    public Object getAttribute(String name) {
+    private Object getAttribute(String name) {
         return m_attributes.get(name);
     }
 
     /**
      * INTERNAL:
-     * Return the attribute value, or an empty array if not set.
+     * Return annotation attribute value. You should call this method only
+     * if you know the object returned will be a MetadataAnnotation.
+     */
+    public MetadataAnnotation getAttributeAnnotation(String name) {
+        Object value = getAttribute(name);
+        return (value == null) ? null : (MetadataAnnotation) value; 
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the attribute value, or an empty array if not set. Callers will
+     * have the cast the type.
      */
     public Object[] getAttributeArray(String name) {
         Object value = getAttribute(name);
@@ -69,16 +83,16 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the boolean attribute value, or the default value if not set.
      */
-    public Object getAttributeBoolean(String name, Boolean defaultValue) {
+    public Boolean getAttributeBoolean(String name, Boolean defaultValue) {
         Object value = getAttribute(name);
-        return (value == null) ? defaultValue : value;
+        return (value == null) ? defaultValue : (Boolean) value;
     }
     
     /**
      * INTERNAL:
      * Return the boolean attribute value, or FALSE if not set.
      */
-    public Object getAttributeBooleanDefaultFalse(String name) {
+    public Boolean getAttributeBooleanDefaultFalse(String name) {
         return getAttributeBoolean(name, Boolean.FALSE);
     }
     
@@ -86,7 +100,7 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the boolean attribute value, or TRUE if not set.
      */
-    public Object getAttributeBooleanDefaultTrue(String name) {
+    public Boolean getAttributeBooleanDefaultTrue(String name) {
         return getAttributeBoolean(name, Boolean.TRUE);
     }
     
@@ -94,9 +108,19 @@ public class MetadataAnnotation {
      * INTERNAL:
      * Return the Class attribute value, or the default provided.
      */
-    public Object getAttributeClass(String name, Class defaultClass) {
+    public String getAttributeClass(String name, Class defaultClass) {
         Object value = getAttribute(name);
-        return (value == null) ? defaultClass.getName() : value;
+        return (value == null) ? defaultClass.getName() : (String) value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return Integer attribute value. You should call this method only
+     * if you know the object returned will be an Integer.
+     */
+    public Integer getAttributeInteger(String name) {
+        Object value = getAttribute(name);
+        return (value == null) ? null : (Integer) value; 
     }
     
     /**
@@ -108,11 +132,19 @@ public class MetadataAnnotation {
     
     /**
      * INTERNAL:
-     * Return the attribute value, or "" if not set.
+     * Return the attribute value, or null if not set.
      */
-    public Object getAttributeString(String name) {
+    public String getAttributeString(String name) {
+        return (String) getAttribute(name);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the attribute value, or defaultValue if not set.
+     */
+    public String getAttributeString(String name, String defaultValue) {
         Object value = getAttribute(name);
-        return (value == null) ? "" : value;
+        return (value == null) ? defaultValue : (String) value;
     }
     
     /**
@@ -122,6 +154,14 @@ public class MetadataAnnotation {
         return m_name;
     }
 
+    /**
+     * INTERNAL:
+     * Return true if the attribute exists.
+     */
+    public boolean hasAttribute(String name) {
+        return getAttribute(name) != null;
+    }
+    
     /**
      * INTERNAL:
      */

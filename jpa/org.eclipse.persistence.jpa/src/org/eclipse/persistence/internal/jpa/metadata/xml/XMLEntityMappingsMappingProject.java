@@ -83,6 +83,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     02/13/2013-2.5 Guy Pelletier 
  *       - 397772: JPA 2.1 Entity Graph Support (XML support)
+ *     02/20/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1860,7 +1862,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Attribute mappings
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getForeignKeyDefinitionAttributeMapping());
-        descriptor.addMapping(getDisableForeignKeyAttributeMapping());
+        descriptor.addMapping(getConstraintModeAttributeMapping());
         
         return descriptor;
     }
@@ -3004,7 +3006,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Attribute mappings
         descriptor.addMapping(getNameAttributeMapping());
         descriptor.addMapping(getForeignKeyDefinitionAttributeMapping());
-        descriptor.addMapping(getDisableForeignKeyAttributeMapping());
+        descriptor.addMapping(getConstraintModeAttributeMapping());
         
         return descriptor;
     }
@@ -4244,6 +4246,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLDirectMapping getConstraintModeAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_constraintMode");
+        mapping.setGetMethodName("getConstraintMode");
+        mapping.setSetMethodName("setConstraintMode");
+        mapping.setXPath("@constraint-mode");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeCollectionMapping getConstructorResultsMapping() {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName("m_constructorResults");
@@ -4264,44 +4278,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         contextPropertyMapping.setSetMethodName("setContextProperty");
         contextPropertyMapping.setXPath("@context-property");
         return contextPropertyMapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeObjectMapping getStructMapping() {
-        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
-        mapping.setAttributeName("m_struct");
-        mapping.setGetMethodName("getStruct");
-        mapping.setSetMethodName("setStruct");
-        mapping.setReferenceClass(StructMetadata.class);
-        mapping.setXPath("orm:struct");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLCompositeCollectionMapping getSubclassSubgraphMapping() {
-        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName("m_subclassSubgraph");
-        mapping.setGetMethodName("getSubclassSubgraphs");
-        mapping.setSetMethodName("setSubclassSubgraphs");
-        mapping.setReferenceClass(NamedSubgraphMetadata.class);
-        mapping.setXPath("orm:subclass-subgraph");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getSubgraphAttributeMapping() {
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("m_subgraph");
-        mapping.setGetMethodName("getSubgraph");
-        mapping.setSetMethodName("setSubgraph");
-        mapping.setXPath("@subgraph");
-        return mapping;
     }
     
     /**
@@ -4464,18 +4440,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setGetMethodName("getDisableConversion");
         mapping.setSetMethodName("setDisableConversion");
         mapping.setXPath("@disable-conversion");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
-    protected XMLDirectMapping getDisableForeignKeyAttributeMapping() {
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("m_disableForeignKey");
-        mapping.setGetMethodName("getDisableForeignKey");
-        mapping.setSetMethodName("setDisableForeignKey");
-        mapping.setXPath("@disable-foreign-key");
         return mapping;
     }
     
@@ -5324,19 +5288,6 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeCollectionMapping getSubgraphMapping() {
-        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName("m_subgraphs");
-        mapping.setGetMethodName("getSubgraphs");
-        mapping.setSetMethodName("setSubgraphs");
-        mapping.setReferenceClass(NamedSubgraphMetadata.class);
-        mapping.setXPath("orm:subgraph");
-        return mapping;
-    }
-    
-    /**
-     * INTERNAL:
-     */
     protected XMLDirectMapping getNestedTypeMapping() {
         XMLDirectMapping nestedTypeMapping = new XMLDirectMapping();
         nestedTypeMapping.setAttributeName("nestedType");
@@ -6089,6 +6040,57 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         structConvertersMapping.setReferenceClass(StructConverterMetadata.class);
         structConvertersMapping.setXPath("orm:struct-converter");
         return structConvertersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getStructMapping() {
+        XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
+        mapping.setAttributeName("m_struct");
+        mapping.setGetMethodName("getStruct");
+        mapping.setSetMethodName("setStruct");
+        mapping.setReferenceClass(StructMetadata.class);
+        mapping.setXPath("orm:struct");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getSubclassSubgraphMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_subclassSubgraph");
+        mapping.setGetMethodName("getSubclassSubgraphs");
+        mapping.setSetMethodName("setSubclassSubgraphs");
+        mapping.setReferenceClass(NamedSubgraphMetadata.class);
+        mapping.setXPath("orm:subclass-subgraph");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getSubgraphAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("m_subgraph");
+        mapping.setGetMethodName("getSubgraph");
+        mapping.setSetMethodName("setSubgraph");
+        mapping.setXPath("@subgraph");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getSubgraphMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_subgraphs");
+        mapping.setGetMethodName("getSubgraphs");
+        mapping.setSetMethodName("setSubgraphs");
+        mapping.setReferenceClass(NamedSubgraphMetadata.class);
+        mapping.setXPath("orm:subgraph");
+        return mapping;
     }
     
     /**

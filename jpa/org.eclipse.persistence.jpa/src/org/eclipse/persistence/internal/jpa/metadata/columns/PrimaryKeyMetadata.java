@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -72,9 +72,9 @@ public class PrimaryKeyMetadata extends ORMetadata {
     public PrimaryKeyMetadata(MetadataAnnotation primaryKey, MetadataAccessor accessor) {
         super(primaryKey, accessor);
         
-        m_validation = (String) primaryKey.getAttribute("validation");
+        m_validation = primaryKey.getAttributeString("validation");
         
-        m_cacheKeyType = (String) primaryKey.getAttribute("cacheKeyType"); 
+        m_cacheKeyType = primaryKey.getAttributeString("cacheKeyType"); 
         
         for (Object selectedColumn : primaryKey.getAttributeArray("columns")) {
             m_columns.add(new ColumnMetadata((MetadataAnnotation)selectedColumn, accessor));

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
@@ -83,14 +85,14 @@ public class JoinTableMetadata extends RelationalTableMetadata {
         super(joinTable, accessor);
         
         if (joinTable != null) {
+            // Add the inverse join columns if specified in the annotation.
             for (Object inverseJoinColumn : joinTable.getAttributeArray("inverseJoinColumns")) {
-                JoinColumnMetadata inverseJoinColumnMetadata = new JoinColumnMetadata((MetadataAnnotation) inverseJoinColumn, accessor);
-                m_inverseJoinColumns.add(inverseJoinColumnMetadata);
-                    
-                // Set the inverse foreign key metadata from the inverse join column if available.
-                if (inverseJoinColumnMetadata.hasForeignKey()) {
-                    setInverseForeignKey(inverseJoinColumnMetadata.getForeignKey());
-                }
+                m_inverseJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation) inverseJoinColumn, accessor));
+            }
+            
+            // Set the inverse foreign key if one is specified in the annotation.
+            if (joinTable.hasAttribute("inverseForeignKey")) {
+                m_inverseForeignKey = new ForeignKeyMetadata(joinTable.getAttributeAnnotation("inverseForeignKey"), accessor);
             }
         }
     }
@@ -176,7 +178,7 @@ public class JoinTableMetadata extends RelationalTableMetadata {
         super.processForeignKey();
         
         if (m_inverseForeignKey != null) {
-            getDatabaseTable().addForeignKeyConstraint(m_inverseForeignKey.process());
+            m_inverseForeignKey.process(getDatabaseTable());
         }
     }
     

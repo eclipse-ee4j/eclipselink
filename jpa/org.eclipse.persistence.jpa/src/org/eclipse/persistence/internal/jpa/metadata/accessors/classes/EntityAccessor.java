@@ -102,7 +102,9 @@
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
  *     02/13/2013-2.5 Guy Pelletier 
- *       - 397772: JPA 2.1 Entity Graph Support (XML support)       
+ *       - 397772: JPA 2.1 Entity Graph Support (XML support)
+ *     02/20/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -903,7 +905,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         MetadataAnnotation classExtractor = getAnnotation(ClassExtractor.class);
 
         if (m_classExtractor == null) {
-            m_classExtractor = getMetadataClass((String) classExtractor.getAttribute("value"));
+            m_classExtractor = getMetadataClass(classExtractor.getAttributeString("value"));
         } else {
             getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, classExtractor, getJavaClassName(), getLocation());
         }
@@ -1030,7 +1032,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     // otherwise the short java class name)
                     return getDescriptor().getAlias();
                 } else {
-                    return (String) discriminatorValue.getAttribute("value"); 
+                    return discriminatorValue.getAttributeString("value"); 
                 }
             } else {
                 return m_discriminatorValue;
@@ -1047,10 +1049,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processEntity() {        
         // Process the entity name (alias) and default if necessary.
         if (m_entityName == null) {
-            m_entityName = (getAnnotation(JPA_ENTITY) == null) ? "" : (String) getAnnotation(JPA_ENTITY).getAttributeString("name");
+            m_entityName = (getAnnotation(JPA_ENTITY) == null) ? "" : getAnnotation(JPA_ENTITY).getAttributeString("name");
         }
             
-        if (m_entityName.equals("")) {
+        if (m_entityName == null || m_entityName.equals("")) {
             m_entityName = Helper.getShortClassName(getJavaClassName());
             getLogger().logConfigMessage(MetadataLogger.ALIAS, getDescriptor(), m_entityName);
         }
@@ -1150,9 +1152,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                 }
                 
                 // Set the primary key foreign key metadata if one is specified.
-                MetadataAnnotation foreignKey = (MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey");
-                if (foreignKey != null) {
-                    setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(foreignKey, this));
+                if (primaryKeyJoinColumns.hasAttribute("foreignKey")) {
+                    setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(primaryKeyJoinColumns.getAttributeAnnotation("foreignKey"), this));
                 }
             }
             
@@ -1173,7 +1174,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         
         // Process the primary key foreign key.
         if (m_primaryKeyForeignKey != null) {
-            getDescriptor().getPrimaryTable().addForeignKeyConstraint(m_primaryKeyForeignKey.process());
+            m_primaryKeyForeignKey.process(getDescriptor().getPrimaryTable());
         }
     }
     

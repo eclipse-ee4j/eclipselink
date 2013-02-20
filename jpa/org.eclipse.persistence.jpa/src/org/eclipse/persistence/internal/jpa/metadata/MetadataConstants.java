@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,6 +14,8 @@
  *       - 267217: Add Named Access Type to EclipseLink-ORM
  *     10/09/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
+ *     02/20/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -59,6 +61,8 @@ public class MetadataConstants {
     public static final String JPA_EMBEDDED = "javax.persistence.Embedded";
     public static final String JPA_EMBEDDED_ID = "javax.persistence.EmbeddedId";
     public static final String JPA_ENTITY = "javax.persistence.Entity";
+    public static final String JPA_ENTITY_GRAPH = "javax.persistence.NamedEntityGraph";
+    public static final String JPA_ENTITY_GRAPHS = "javax.persistence.NamedEntityGraphs";
     public static final String JPA_ENTITY_LISTENERS = "javax.persistence.EntityListeners";
     public static final String JPA_ENTITY_RESULT = "javax.persistence.EntityResult";
     public static final String JPA_ENUMERATED = "javax.persistence.Enumerated";
@@ -117,13 +121,17 @@ public class MetadataConstants {
     public static final String JPA_UNIQUE_CONSTRAINT = "javax.persistence.UniqueConstraint";
     public static final String JPA_VERSION = "javax.persistence.Version";
     public static final String JPA_STATIC_METAMODEL = "javax.persistence.metamodel.StaticMetamodel.class";
-    public static final String JPA_ENTITY_GRAPH = "javax.persistence.NamedEntityGraph";
-    public static final String JPA_ENTITY_GRAPHS = "javax.persistence.NamedEntityGraphs";    
+    
     /** JPA AccessType enum values */
     public static final String JPA_ACCESS_FIELD = "FIELD";
     public static final String JPA_ACCESS_PROPERTY = "PROPERTY";
     public static final String EL_ACCESS_VIRTUAL = "VIRTUAL";
 
+    /** JPA ConstraintMode enum values */
+    public static final String JPA_CONSTRAINT_MODE_CONSTRAINT = "CONSTRAINT";
+    public static final String JPA_CONSTRAINT_MODE_NO_CONSTRAINT = "NO_CONSTRAINT";
+    public static final String JPA_CONSTRAINT_MODE_PROVIDER_DEFAULT = "PROVIDER_DEFAULT";
+    
     /** JPA FetchType enum values */
     public static final String JPA_FETCH_EAGER = "EAGER";
     public static final String JPA_FETCH_LAZY = "LAZY";

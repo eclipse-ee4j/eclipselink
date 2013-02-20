@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/19/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
@@ -68,17 +70,16 @@ public class AssociationOverrideMetadata extends OverrideMetadata {
         
         // Set the join columns.
         for (Object joinColumn : associationOverride.getAttributeArray("joinColumns")) {
-            JoinColumnMetadata joinColumnMetadata = new JoinColumnMetadata((MetadataAnnotation) joinColumn, accessor);
-            m_joinColumns.add(joinColumnMetadata);
-            
-            // Set the foreign key metadata from the join column if available.
-            if (joinColumnMetadata.hasForeignKey()) {
-                setForeignKey(joinColumnMetadata.getForeignKey());
-            }
+            m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, accessor));
+        }
+        
+        // Set the foreign key if one is specified in the annotation.
+        if (associationOverride.hasAttribute("foreignKey")) {
+            m_foreignKey = new ForeignKeyMetadata(associationOverride.getAttributeAnnotation("foreignKey"), accessor);
         }
         
         // Set the join table.
-        m_joinTable = new JoinTableMetadata((MetadataAnnotation) associationOverride.getAttribute("joinTable"), accessor);
+        m_joinTable = new JoinTableMetadata(associationOverride.getAttributeAnnotation("joinTable"), accessor);
     }
     
     /**

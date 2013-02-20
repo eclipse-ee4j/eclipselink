@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -61,13 +61,12 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
     public FieldPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
         
-        MetadataAnnotation column = (MetadataAnnotation) annotation.getAttribute("partitionColumn");
-        if (column != null) {
-            this.partitionColumn = new ColumnMetadata(column, accessor);
+        if (annotation.hasAttribute("partitionColumn")) {
+            this.partitionColumn = new ColumnMetadata(annotation.getAttributeAnnotation("partitionColumn"), accessor);
         }
         
-        this.partitionValueType = getMetadataClass((String) annotation.getAttributeClass("partitionValueType", String.class));
-        this.unionUnpartitionableQueries = (Boolean)annotation.getAttribute("unionUnpartitionableQueries");
+        this.partitionValueType = getMetadataClass(annotation.getAttributeClass("partitionValueType", String.class));
+        this.unionUnpartitionableQueries = annotation.getAttributeBooleanDefaultFalse("unionUnpartitionableQueries");
     }
     
     /**

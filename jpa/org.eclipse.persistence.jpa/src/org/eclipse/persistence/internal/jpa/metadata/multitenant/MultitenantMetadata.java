@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -91,8 +91,8 @@ public class MultitenantMetadata extends ORMetadata {
     public MultitenantMetadata(MetadataAnnotation multitenant, MetadataAccessor accessor) {
         super(multitenant, accessor);
         
-        m_type = (String) multitenant.getAttribute("value");
-        m_includeCriteria = (Boolean) multitenant.getAttributeBooleanDefaultTrue("includeCriteria");
+        m_type = multitenant.getAttributeString("value");
+        m_includeCriteria = multitenant.getAttributeBooleanDefaultTrue("includeCriteria");
 
         // Look for a @TenantDiscriminators
         if (accessor.isAnnotationPresent(TenantDiscriminatorColumns.class)) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -95,13 +95,13 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
             m_resultSetMappings.add((String) resultSetMapping);
         }
         
-        m_procedureName = (String) namedStoredProcedureQuery.getAttribute("procedureName");
+        m_procedureName = namedStoredProcedureQuery.getAttributeString("procedureName");
         
         // Don't default these booleans as we want to know if the user has actually set them.
-        m_returnsResultSet = (Boolean) namedStoredProcedureQuery.getAttribute("returnsResultSet");
-        m_multipleResultSets = (Boolean) namedStoredProcedureQuery.getAttribute("multipleResultSets");
+        m_returnsResultSet = namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("returnsResultSet");
+        m_multipleResultSets = namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("multipleResultSets");
         
-        m_callByIndex = (Boolean) namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("callByIndex");
+        m_callByIndex = namedStoredProcedureQuery.getAttributeBooleanDefaultFalse("callByIndex");
     }
     
     /**

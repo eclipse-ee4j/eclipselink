@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -158,7 +158,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     protected CollectionAccessor(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(annotation, accessibleObject, classAccessor);
         
-        setMappedBy((annotation == null) ? "" : (String) annotation.getAttribute("mappedBy"));
+        setMappedBy((annotation == null) ? "" : annotation.getAttributeString("mappedBy"));
         
         // Set the order if one is present.
         if (isAnnotationPresent(JPA_ORDER_BY)) {
@@ -172,7 +172,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the map key class if one is defined.
         if (isAnnotationPresent(JPA_MAP_KEY_CLASS)) {
-            m_mapKeyClass = getMetadataClass((String)getAnnotation(JPA_MAP_KEY_CLASS).getAttribute("value"));
+            m_mapKeyClass = getMetadataClass(getAnnotation(JPA_MAP_KEY_CLASS).getAttributeString("value"));
         }
         
         // Set the map key column if one is defined.
@@ -190,9 +190,8 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             }
             
             // Set the map key foreign key metadata if one is specified.
-            MetadataAnnotation foreignKey = (MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey");
-            if (foreignKey != null) {
-                setMapKeyForeignKey(new ForeignKeyMetadata(foreignKey, this));
+            if (mapKeyJoinColumns.hasAttribute("foreignKey")) {
+                setMapKeyForeignKey(new ForeignKeyMetadata(mapKeyJoinColumns.getAttributeAnnotation("foreignKey"), this));
             }
         }
         
@@ -248,7 +247,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Set the convert key if one is defined.
         if (isAnnotationPresent(MapKeyConvert.class)) {
-            m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
+            m_mapKeyConvert = getAnnotation(MapKeyConvert.class).getAttributeString("value");
         }
         
         if (isAnnotationPresent(DeleteAll.class)) {

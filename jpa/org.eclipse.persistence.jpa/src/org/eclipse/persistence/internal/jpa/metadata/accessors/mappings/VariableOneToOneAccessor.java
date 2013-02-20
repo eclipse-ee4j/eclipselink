@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -103,10 +103,10 @@ public class VariableOneToOneAccessor extends ObjectAccessor {
         if (variableOneToOne != null) {
             // Parent class looks for 'targetEntity' and not 'targetInterface'
             // Need to set it correctly.
-            setTargetEntity(getMetadataClass((String) variableOneToOne.getAttribute("targetInterface")));
-            setOrphanRemoval((Boolean) variableOneToOne.getAttribute("orphanRemoval"));
+            setTargetEntity(getMetadataClass(variableOneToOne.getAttributeString("targetInterface")));
+            setOrphanRemoval(variableOneToOne.getAttributeBooleanDefaultFalse("orphanRemoval"));
             
-            m_discriminatorColumn = new DiscriminatorColumnMetadata((MetadataAnnotation) variableOneToOne.getAttribute("discriminatorColumn"), this);
+            m_discriminatorColumn = new DiscriminatorColumnMetadata(variableOneToOne.getAttributeAnnotation("discriminatorColumn"), this);
             
             // Set the discriminator classes if specified.
             for (Object discriminatorClass : variableOneToOne.getAttributeArray("discriminatorClasses")) {

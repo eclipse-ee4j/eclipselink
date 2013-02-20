@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -84,6 +84,8 @@
  *     11/28/2012-2.5 Guy Pelletier 
  *       - 374688: JPA 2.1 Converter support
  *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
@@ -1823,7 +1825,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         // the spec case (on the source table) and our extended support when 
         // the fk's are on the target table as well.
         if (foreignKey != null) {
-            foreignKeyTable.addForeignKeyConstraint(foreignKey.process());
+            foreignKey.process(foreignKeyTable);
         }
     }
     
@@ -1842,8 +1844,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // Look for annotations.
             MetadataAnnotation properties = getAnnotation(Properties.class);
             if (properties != null) {
-                for (Object property : (Object[]) properties.getAttribute("value")) {
-                    processProperty(mapping, new PropertyMetadata((MetadataAnnotation)property, this));
+                for (Object property : properties.getAttributeArray("value")) {
+                    processProperty(mapping, new PropertyMetadata((MetadataAnnotation) property, this));
                 }
             }
             

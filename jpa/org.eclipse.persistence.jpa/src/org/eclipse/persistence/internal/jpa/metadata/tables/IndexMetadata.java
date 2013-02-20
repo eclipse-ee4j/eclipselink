@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -69,12 +69,12 @@ public class IndexMetadata extends ORMetadata {
     public IndexMetadata(MetadataAnnotation index, MetadataAccessor accessor) {
         super(index, accessor);
         
-        m_name = (String) index.getAttribute("name"); 
-        m_schema = (String) index.getAttribute("schema"); 
-        m_catalog = (String) index.getAttribute("catalog");
-        m_table = (String) index.getAttribute("table");
-        m_unique = (Boolean) index.getAttribute("unique");
-        m_columnList = (String) index.getAttribute("columnList");
+        m_name = index.getAttributeString("name"); 
+        m_schema = index.getAttributeString("schema"); 
+        m_catalog = index.getAttributeString("catalog");
+        m_table = index.getAttributeString("table");
+        m_unique = index.getAttributeBooleanDefaultFalse("unique");
+        m_columnList = index.getAttributeString("columnList");
             
         for (Object columnName : index.getAttributeArray("columnNames")) {
             m_columnNames.add((String) columnName);
