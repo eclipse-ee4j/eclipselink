@@ -1101,9 +1101,15 @@ public class QueryImpl {
      */
     public Object getParameterValue(int position) {
         String param = String.valueOf(position);
-        if (!this.parameterValues.containsKey(param)) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[] { position }));
+        
+        if (!getInternalParameters().containsKey(param)) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("position_param_not_found", new Object[] { position }));
         }
+        
+        if (!this.parameterValues.containsKey(param)) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("position_bound_param_not_found", new Object[] { position }));
+        }
+        
         return this.parameterValues.get(param);
     }
 

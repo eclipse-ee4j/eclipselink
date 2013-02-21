@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa21.advanced;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Parameter;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureQuery;
 
@@ -67,6 +68,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor"));
         
         // Add the named Annotation query tests.
@@ -221,7 +223,14 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
                 
-                Object results = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).getSingleResult();
+                query.setParameter("new_p_code_v", postalCodeCorrection);
+                query.setParameter("old_p_code_v", postalCodeTypo);
+                
+                // Make these calls to test the getParameter call with a name.
+                Parameter paramNew = query.getParameter("new_p_code_v");
+                Parameter paramOld = query.getParameter("old_p_code_v");
+                
+                Object results = query.getSingleResult();
             } catch (IllegalStateException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
@@ -884,7 +893,39 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         }
     }
     
-
+    /**
+     * Tests a stored procedure parameter API. 
+     */
+    public void testStoredProcedureParameterAPI() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Parameter_Testing");
+                query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter(2, Integer.class, ParameterMode.INOUT);
+                query.registerStoredProcedureParameter(3, Integer.class, ParameterMode.OUT);
+                
+                query.setParameter(1, "1");
+                query.setParameter(2, 2);
+                
+                // Make this call to test the getParameter call with a position.
+                Parameter param1 = query.getParameter(1);
+                Parameter param2 = query.getParameter(2);
+                Parameter param3 = query.getParameter(3);
+                
+            } catch (IllegalArgumentException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                fail("IllegalArgumentException was caught");
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
     /**
      * Tests a StoredProcedureQuery using a system cursor. 
      */
