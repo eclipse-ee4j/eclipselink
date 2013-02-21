@@ -1,0 +1,19 @@
+{"foo":{
+   "Attribute1":[{
+      "id":"1"
+   },
+   {
+      "id":"3"
+   }
+   ],
+   "Attribute2":[{
+      "id":"2"
+   }],
+   "AttributeRefs":{
+      "AttributeRef1":["1"],
+      "AttributeRef2":["2"]
+   },
+    "AttributeImplsWrapper":{
+      "attributeImplRefs":["1","3"]
+   }
+}}

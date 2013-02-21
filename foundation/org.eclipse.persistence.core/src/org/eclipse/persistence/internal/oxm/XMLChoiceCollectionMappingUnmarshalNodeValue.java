@@ -87,7 +87,13 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue impl
             choiceElementMarshalNodeValue = choiceElementNodeValue;
         } else {
             choiceElementNodeValue = new XMLCollectionReferenceMappingNodeValue((CollectionReferenceMapping)xmlMapping, xmlField);
-            choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
+        	 CollectionReferenceMapping refMapping = ((CollectionReferenceMapping)xmlMapping);
+             if(refMapping.usesSingleNode() || refMapping.getFields().size() == 1) {
+            	 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingNodeValue(refMapping, xmlField);
+
+             } else {
+            	 choiceElementMarshalNodeValue = new XMLCollectionReferenceMappingMarshalNodeValue((CollectionReferenceMapping)xmlMapping);
+             }
         }
     }
     

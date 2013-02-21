@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="attributeImpl2">
+      <xsd:sequence/>
+      <xsd:attribute name="id" type="xsd:ID"/>
+   </xsd:complexType>
+   <xsd:complexType name="attributeImpl">
+      <xsd:sequence/>
+      <xsd:attribute name="id" type="xsd:ID"/>
+   </xsd:complexType>
+   <xsd:complexType abstract="true" name="attribute"/>
+   <xsd:complexType name="foo">
+      <xsd:sequence>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element minOccurs="0" name="Attribute1" type="attributeImpl"/>
+            <xsd:element minOccurs="0" name="Attribute2" type="attributeImpl2"/>
+         </xsd:choice>
+         <xsd:element minOccurs="0" name="AttributeRefs">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element minOccurs="0" name="AttributeRef1" type="xsd:IDREF"/>
+                     <xsd:element minOccurs="0" name="AttributeRef2" type="xsd:IDREF"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element minOccurs="0" name="AttributeImplsWrapper">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="attributeImplRefs" nillable="true" type="xsd:IDREF"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="foo" type="foo"/>
+</xsd:schema>
