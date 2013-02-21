@@ -12,7 +12,6 @@
 package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -29,26 +28,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkTemplate;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Parameter;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.PersistenceUnit;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.SessionBeanCall;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import org.eclipse.persistence.jpa.rs.util.list.LinkList;
 
 /**
  * @author gonural
@@ -74,8 +67,14 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
                 links.add(new Link(context, mediaType, baseURI + context + "/metadata"));
             }
         }
+        LinkList linkList = new LinkList();
+        linkList.setList(links);
         String result = null;
-        result = marshallMetadata(links, mediaType);
+        if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+            result = marshallMetadata(linkList.getList(), mediaType);
+        } else {
+            result = marshallMetadata(linkList, mediaType);
+        }
         return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
     }
 
@@ -129,17 +128,6 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         Method method = ans.getClass().getMethod(call.getMethodName(), parameters);
         Object returnValue = method.invoke(ans, args);
         return Response.ok(new StreamingOutputMarshaller(null, returnValue, hh.getAcceptableMediaTypes())).build();
-    }
-
-    protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
-        Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class };
-        JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType);
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(metadata, writer);
-        return writer.toString();
     }
 
     protected SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {
