@@ -1102,8 +1102,7 @@ public class MappingsGenerator {
                 xmlField.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
             if(areEquals(pType, Object.class)) {
-                xmlField.setIsTypedTextField(true);
-                xmlField.setSchemaType(Constants.ANY_TYPE_QNAME);
+            	setTypedTextField(xmlField);
             }
             Mapping nestedMapping;
             AbstractNullPolicy nullPolicy = null;
@@ -1180,6 +1179,15 @@ public class MappingsGenerator {
         return mapping;
     }
 
+    private void setTypedTextField(Field field){
+    	field.setIsTypedTextField(true);
+    	field.setSchemaType(Constants.ANY_TYPE_QNAME);
+     	((XMLField)field).addXMLConversion(Constants.DATE_TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
+    	((XMLField)field).addXMLConversion(Constants.DATE_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
+    	((XMLField)field).addXMLConversion(Constants.TIME_QNAME, CoreClassConstants.XML_GREGORIAN_CALENDAR);
+       	
+    }
+    
     public AnyCollectionMapping generateAnyCollectionMapping(Property property, Descriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
         AnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
@@ -1302,8 +1310,7 @@ public class MappingsGenerator {
         }
 
         if (referenceClassName == null){
-        	((Field)mapping.getField()).setIsTypedTextField(true);
-        	((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
+        	setTypedTextField((Field)mapping.getField());
         	String defaultValue = property.getDefaultValue();
         	if (null != defaultValue) {
         	    mapping.setConverter(new DefaultElementConverter(defaultValue));
@@ -1924,8 +1931,7 @@ public class MappingsGenerator {
             ((CompositeObjectMapping)mapping).setXPath(attributeName);
             if(typeIsObject){
             	((CompositeObjectMapping)mapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-            	((Field)((CompositeObjectMapping)mapping).getField()).setIsTypedTextField(true);
-            	((Field)((CompositeObjectMapping)mapping).getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
+            	setTypedTextField((Field)((CompositeObjectMapping)mapping).getField());
             }else{
             	((CompositeObjectMapping)mapping).setReferenceClassName(theType.getQualifiedName());
             }
@@ -2022,8 +2028,7 @@ public class MappingsGenerator {
         mapping.setXPath(xmlField.getXPath());
 
         if (referenceClassName == null){                   
-        	((Field)mapping.getField()).setIsTypedTextField(true);
-        	((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
+        	setTypedTextField((Field)mapping.getField());
         } else {
         	mapping.setReferenceClassName(referenceClassName);
         }
@@ -2773,6 +2778,7 @@ public class MappingsGenerator {
         if(schemaType !=null && !schemaType.equals (Constants.NORMALIZEDSTRING_QNAME)){
             xmlField.setSchemaType(schemaType);
         }
+        
         return xmlField;
     }
 
@@ -2993,8 +2999,8 @@ public class MappingsGenerator {
 	                  mapping.setGetMethodName("getValue");
 	                  mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
 	                  mapping.setXPath(".");
-	                  ((Field)mapping.getField()).setIsTypedTextField(true);
-	                  ((Field)mapping.getField()).setSchemaType(Constants.ANY_TYPE_QNAME);
+	              	  setTypedTextField((Field)mapping.getField());
+
 	                  desc.addMapping((CoreMapping)mapping);	                 
 	              }else if(isBinaryData(nextElement.getJavaType())){
 	              	  BinaryDataMapping mapping = new XMLBinaryDataMapping();

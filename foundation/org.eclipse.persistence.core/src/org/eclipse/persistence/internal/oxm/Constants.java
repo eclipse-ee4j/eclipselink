@@ -83,6 +83,7 @@ public class Constants {
     public static final String NEGATIVE_INTEGER = "negativeInteger";
     public static final String NON_NEGATIVE_INTEGER = "nonNegativeInteger";
     public static final String NON_POSITIVE_INTEGER = "nonPositiveInteger";
+    public static final String NOTATION = "NOTATION";
     public static final String POSITIVE_INTEGER = "positiveInteger";
     public static final String NORMALIZED_STRING = "normalizedString";
     public static final String QNAME = "QName";
@@ -129,6 +130,7 @@ public class Constants {
     public static final QName NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NEGATIVE_INTEGER);
     public static final QName NON_NEGATIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_NEGATIVE_INTEGER);
     public static final QName NON_POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NON_POSITIVE_INTEGER);
+    public static final QName NOTATION_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NOTATION);    
     public static final QName POSITIVE_INTEGER_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, POSITIVE_INTEGER);
     public static final QName NORMALIZEDSTRING_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, NORMALIZED_STRING);
     public static final QName QNAME_QNAME = new QName(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI, QNAME);
