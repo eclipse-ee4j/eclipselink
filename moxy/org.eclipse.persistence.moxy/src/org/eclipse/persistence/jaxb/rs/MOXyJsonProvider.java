@@ -194,8 +194,8 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
  * </pre>
  * @since 2.4
  */
-@Produces(MediaType.WILDCARD)
-@Consumes(MediaType.WILDCARD)
+@Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
  
     private static final String CHARSET = "charset";
@@ -472,8 +472,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /*
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
-    public final Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
+    public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
         try {
+            if(null == genericType) {
+                genericType = type;
+            }
+
             Class<?> domainClass = getDomainClass(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClass, annotations, mediaType, httpHeaders);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -651,8 +655,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
-    public final void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
+    public void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
         try {
+            if(null == genericType) {
+                genericType = type;
+            }
+
             Class<?> domainClass = getDomainClass(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClass, annotations, mediaType, httpHeaders);
             Marshaller marshaller = jaxbContext.createMarshaller();
