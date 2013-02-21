@@ -1,0 +1,13 @@
+<foo>
+   <Attribute1 id="1"/>
+   <Attribute2 id="2"/>
+   <Attribute1 id="3"/>
+   <AttributeRefs>
+     <AttributeRef1>1</AttributeRef1>
+     <AttributeRef2>2</AttributeRef2>
+   </AttributeRefs>
+   <AttributeImplsWrapper>
+     <attributeImplRefs>1</attributeImplRefs>
+     <attributeImplRefs>3</attributeImplRefs>
+   </AttributeImplsWrapper>
+</foo>
