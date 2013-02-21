@@ -807,11 +807,40 @@ public class ServerCrudTest {
     }
 
     /**
-     * Test get contexts.
-     * @throws URISyntaxException 
+     * Test get contexts xml.
+     *
+     * @throws URISyntaxException the uRI syntax exception
      */
     @Test
-    public void testGetContexts() throws URISyntaxException {
+    public void testGetContextsXML() throws URISyntaxException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(RestUtils.getServerURI());
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK){
+            throw new RestCallFailedException(status);
+        }
+
+        String result = response.getEntity(String.class);
+
+        assertTrue(result != null);
+        
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static-local/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_employee-static/metadata"));
+        assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
+    }
+
+    
+    /**
+     * Test get contexts json.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @Test
+    public void testGetContextsJSON() throws URISyntaxException {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI());
         WebResource webResource = client.resource(uri.toString());
@@ -831,6 +860,70 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
+    
+    /**
+     * Test get types xml.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @Test
+    public void testGetTypesXML() throws URISyntaxException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(RestUtils.getServerURI() + DEFAULT_PU + "/metadata");
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK){
+            throw new RestCallFailedException(status);
+        }
+
+        String result = response.getEntity(String.class);
+
+        assertTrue(result != null);
+        assertTrue(result.contains("<persistenceUnit><persistenceUnitName>jpars_auction-static"));
+        assertTrue(result.contains("<types>"));
+        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticAddress\" method=\"application/xml\" rel=\"StaticAddress\""));
+        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticBid\" method=\"application/xml\" rel=\"StaticBid\""));
+        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticUser\" method=\"application/xml\" rel=\"StaticUser\""));
+        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/Account\" method=\"application/xml\" rel=\"Account\""));
+        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticAuction\" method=\"application/xml\" rel=\"StaticAuction\""));
+    }
+
+    /**
+     * Test get types json.
+     *
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    @Test
+    public void testGetTypesJSON() throws URISyntaxException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(RestUtils.getServerURI() + DEFAULT_PU + "/metadata");
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON_TYPE).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+
+        String result = response.getEntity(String.class);
+        
+        assertTrue(result != null);
+        assertTrue(result.contains("{\"persistenceUnitName\":\"jpars_auction-static\",\"types\":[{\"_link\":{\"href\":\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAddress\",\"method\":\"application/json\",\"rel\":\"StaticAddress\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticBid\",\"method\":\"application/json\",\"rel\":\"StaticBid\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticUser\",\"method\":\"application/json\",\"rel\":\"StaticUser\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/Account\",\"method\":\"application/json\",\"rel\":\"Account\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAuction\",\"method\":\"application/json\",\"rel\":\"StaticAuction\""));
+    }
+
+    
+    /**
+     * Test remove relationship non collection.
+     *
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     * @throws JAXBException the jAXB exception
+     */
     @Test
     public void testRemoveRelationshipNonCollection() throws RestCallFailedException, URISyntaxException, JAXBException {
         StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
@@ -850,6 +943,11 @@ public class ServerCrudTest {
         dbDelete(newUser);
     }
 
+    /**
+     * Test create employee with phone numbers non idempotent.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateEmployeeWithPhoneNumbersNonIdempotent() throws Exception {
         String auction = RestUtils.getJSONMessage("auction-bidsByValueNoId.json");
