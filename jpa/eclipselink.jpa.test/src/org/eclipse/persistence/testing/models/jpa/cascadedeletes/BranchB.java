@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
@@ -24,6 +25,7 @@ public class BranchB implements Serializable, PersistentIdentity{
 
     @PrivateOwned
     @OneToMany(fetch = LAZY, cascade = REMOVE)
+    @OrderBy("id")
     protected List<BranchB> branchBs;
     
     @ManyToMany(fetch = LAZY, cascade = REMOVE)
