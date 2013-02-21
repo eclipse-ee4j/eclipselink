@@ -17,9 +17,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -813,6 +816,11 @@ public class XMLField extends DatabaseField {
         if(leafElementType != null){
             return leafElementType;
         }else if (isTypedTextField) {
+        	if(value !=null && ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(value.getClass())){
+        		return ((XMLGregorianCalendar) value).getXMLSchemaType();
+        	}else if (ClassConstants.DURATION.isAssignableFrom(value.getClass())){
+        		return getXMLType(ClassConstants.DURATION);
+        	}
             return getXMLType(value.getClass());
         } 
         return schemaType;        

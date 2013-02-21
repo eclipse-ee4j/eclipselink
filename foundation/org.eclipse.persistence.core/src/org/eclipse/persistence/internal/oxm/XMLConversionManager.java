@@ -1879,6 +1879,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         HashMap XMLTypes = new HashMap();
 
         //jaxb 1.0 spec pairs
+        XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, ClassConstants.STRING);
         XMLTypes.put(XMLConstants.BASE_64_BINARY_QNAME, ClassConstants.APBYTE);
         XMLTypes.put(XMLConstants.BOOLEAN_QNAME, ClassConstants.PBOOLEAN);
         XMLTypes.put(XMLConstants.BYTE_QNAME, ClassConstants.PBYTE);
@@ -1891,6 +1892,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         XMLTypes.put(XMLConstants.INT_QNAME, ClassConstants.PINT);
         XMLTypes.put(XMLConstants.INTEGER_QNAME, ClassConstants.BIGINTEGER);
         XMLTypes.put(XMLConstants.LONG_QNAME, ClassConstants.PLONG);
+        XMLTypes.put(XMLConstants.NAME_QNAME, ClassConstants.STRING);
+        XMLTypes.put(XMLConstants.NCNAME_QNAME, ClassConstants.STRING);
         XMLTypes.put(XMLConstants.QNAME_QNAME, XMLConstants.QNAME_CLASS);
         XMLTypes.put(XMLConstants.SHORT_QNAME, ClassConstants.PSHORT);
         XMLTypes.put(XMLConstants.STRING_QNAME, ClassConstants.STRING);
@@ -1898,10 +1901,23 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         XMLTypes.put(XMLConstants.UNSIGNED_BYTE_QNAME, ClassConstants.PSHORT);
         XMLTypes.put(XMLConstants.UNSIGNED_INT_QNAME, ClassConstants.PLONG);
         XMLTypes.put(XMLConstants.UNSIGNED_SHORT_QNAME, ClassConstants.PINT);
-        XMLTypes.put(XMLConstants.ANY_SIMPLE_TYPE_QNAME, ClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NAME_QNAME, ClassConstants.STRING);
-        XMLTypes.put(XMLConstants.NCNAME_QNAME, ClassConstants.STRING);
 
+        XMLTypes.put(XMLConstants.DURATION_QNAME,  ClassConstants.DURATION);
+        XMLTypes.put(XMLConstants.G_DAY_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+        XMLTypes.put(XMLConstants.G_MONTH_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+        XMLTypes.put(XMLConstants.G_MONTH_DAY_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+        XMLTypes.put(XMLConstants.G_YEAR_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+        XMLTypes.put(XMLConstants.G_YEAR_MONTH_QNAME, ClassConstants.XML_GREGORIAN_CALENDAR);
+
+        XMLTypes.put(XMLConstants.NEGATIVE_INTEGER_QNAME, ClassConstants.BIGINTEGER);
+        XMLTypes.put(XMLConstants.NOTATION_QNAME, XMLConstants.QNAME_CLASS);
+        XMLTypes.put(XMLConstants.NON_NEGATIVE_INTEGER_QNAME, ClassConstants.BIGINTEGER);
+        XMLTypes.put(XMLConstants.NON_POSITIVE_INTEGER_QNAME,ClassConstants.BIGINTEGER);
+        XMLTypes.put(XMLConstants.NORMALIZEDSTRING_QNAME, ClassConstants.STRING);
+        XMLTypes.put(XMLConstants.POSITIVE_INTEGER_QNAME, ClassConstants.BIGINTEGER);        
+        XMLTypes.put(XMLConstants.UNSIGNED_LONG_QNAME, ClassConstants.BIGINTEGER);
+
+        
         return XMLTypes;
     }
 

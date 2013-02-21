@@ -28,6 +28,8 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
+import org.eclipse.persistence.oxm.XMLField;
+
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
@@ -235,7 +237,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 if(qname.equals(XMLConstants.QNAME_QNAME)) {
                     value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).buildQNameFromString((String)value, unmarshalRecord);
                 } else {
-                    Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
+                	Class theClass = getClassForQName(qname);
                     if (theClass != null) {
                         value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(value, theClass, qname);
                     }
@@ -250,6 +252,13 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }            
             setOrAddAttributeValue(unmarshalRecord, value, xPathFragment, collection);
         }
+    }
+    protected Class getClassForQName(QName qname){
+    	XMLField field = (XMLField)getMapping().getField();
+    	if(field != null){
+    		return field.getJavaClass(qname);
+    	}
+    	return (Class) XMLConversionManager.getDefaultXMLTypes().get(qname);
     }
 
     protected abstract void setOrAddAttributeValue(UnmarshalRecord unmarshalRecord, Object value, XPathFragment xPathFragment, Object collection);
