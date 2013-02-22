@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.tests.jpa21.advanced;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.LockModeType;
 import javax.persistence.Query;
 
 import junit.framework.Test;
@@ -110,7 +111,39 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         for (int i = firstResult.size()-1; i> -1; --i){
             assertEquals("Results do not match", firstResult.get(i).getId(), secondResult.get(i).getId());
         }
-    }
+        
+        query = em.createQuery("Select e from Employee e where e.lastName = :p1 order by e.id");
+        query.setMaxResults(1);
+        query.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        factory.addNamedQuery("Select_Employee_by_first_name", query);
+        closeEntityManager(em);
+        em = (EntityManagerImpl) createEntityManager();
+        
+        namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
+        assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
+        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+        namedQuery.setParameter("p1", names.get(names.size()-1)[0]);
+        beginTransaction(em);
+        assertTrue("MaxResults not applied", namedQuery.getResultList().size() == 1);
+        rollbackTransaction(em);
+
+        query = em.createNativeQuery("SELECT EMP_ID FROM CMP3_EMPLOYEE");
+        query.setMaxResults(1);
+        factory.addNamedQuery("Select_Employee_NATIVE", query);
+        closeEntityManager(em);
+        em = (EntityManagerImpl) createEntityManager();
+        
+        namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
+        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+        query = em.createNativeQuery("SELECT EMP_ID FROM CMP3_EMPLOYEE", Employee.class);
+        query.setMaxResults(1);
+        factory.addNamedQuery("Select_Employee_NATIVE", query);
+        closeEntityManager(em);
+        em = (EntityManagerImpl) createEntityManager();
+        
+        namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
+        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+}
     
     public void testGetPersistenceUnitUtilOnCloseEMF(){
         EntityManagerFactory emf = getEntityManagerFactory();
