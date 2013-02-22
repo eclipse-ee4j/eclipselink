@@ -18,6 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa21.advanced;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceUnitUtil;
 
@@ -46,6 +47,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         suite.setName("EntityGraphTestSuite");
          
         suite.addTest(new EntityGraphTestSuite("testSimpleGraph"));
+        suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroup"));
         
         // Add the equivalent XML tests.
         suite.addTest(XMLEntityGraphTestSuite.suite());
@@ -82,27 +84,29 @@ public class EntityGraphTestSuite extends JUnitTestCase {
             assertFalse("fetchgroup failed to be applied : teamLeader is loaded", util.isLoaded(project, "teamLeader"));
             assertTrue("fetchgroup failed to be applied: properties is not loaded", util.isLoaded(project, "properties"));
             if (project instanceof LargeProject){
-//                assertTrue("Fetch Group was not applied: executive is not loaded", util.isLoaded(project, "executive"));
+                assertTrue("Fetch Group was not applied: executive is not loaded", util.isLoaded(project, "executive"));
             }
         }
         em.close();
-    }
-    
-    public void testInheritanceGraph(){
-        
     }
     
     public void testLoadGraph(){
         
     }
     
-    public void testLoadFetchGraph(){
-    }
-    public void testNestedFetchGroup(){
-        
-    }
     public void testEmbeddedFetchGroup(){
+        EntityManager em = createEntityManager();
+        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
+        Employee result = (Employee) em.createQuery("Select e from Employee e").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        assertFalse("FetchGroup was not applied", util.isLoaded(result, "department"));
+        assertFalse("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "endDate"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "startDate"));
         
+        result.getPeriod().getEndDate();
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "endDate"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result, "firstName"));
     }
     public void testEmbededNestedFetchGroup(){
         

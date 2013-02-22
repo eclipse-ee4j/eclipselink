@@ -100,13 +100,26 @@ public class AttributeGroup implements Serializable, Cloneable {
      */
     protected Map<String, AttributeItem> items;
     
+    /**
+     * Marks this AttributeGroup as having been validated by the builder and does not require further validation
+     * @param name
+     */
+    protected boolean isValidated;
+    
     public AttributeGroup(String name) {
         this.name = name;
     }
 
-    public AttributeGroup(String name, Class type) {
+    /**
+     * INTERNAL:
+     * This constructer is to only be used by EclipseLink internally
+     * @param name
+     * @param type
+     */
+    public AttributeGroup(String name, Class type, boolean isValidated) {
         this(name);
         this.type = type;
+        this.isValidated = isValidated;
         
     }
 
@@ -114,9 +127,10 @@ public class AttributeGroup implements Serializable, Cloneable {
      * INTERNAL:
      * Used to create an attribute with a name of the class type.
      */
-    public AttributeGroup(String name, String type) {
+    public AttributeGroup(String name, String type, boolean isValidated) {
         this(name);
         this.typeName = type;
+        this.isValidated = isValidated;
         
     }
 
@@ -512,6 +526,14 @@ public class AttributeGroup implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
+     * @return the isValidated
+     */
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    /**
      * Convert a provided name or path which could be a single attributeName, a
      * single string with dot separated attribute names, or an array of
      * attribute names defining the path.
@@ -693,6 +715,7 @@ public class AttributeGroup implements Serializable, Cloneable {
         
         clone.type = this.type;
         clone.typeName = this.typeName;
+        clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
         if (this.parentItem != null && parentItem == null){
             parentItem = this.parentItem.toFetchGroup(cloneMap, null);
@@ -758,6 +781,7 @@ public class AttributeGroup implements Serializable, Cloneable {
             
             clone.type = this.type;
             clone.typeName = this.typeName;
+            clone.isValidated = this.isValidated;
             cloneMap.put(this,clone);
             
             if (this.parentItem != null && parentItem == null){
@@ -809,6 +833,7 @@ public class AttributeGroup implements Serializable, Cloneable {
         
         clone.type = this.type;
         clone.typeName = this.typeName;
+        clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
         if (this.parentItem != null && parentItem == null){
             parentItem = this.parentItem.toLoadGroup(cloneMap, null, loadOnly);
@@ -860,6 +885,7 @@ public class AttributeGroup implements Serializable, Cloneable {
         clone.name = this.name;
         clone.type = this.type;
         clone.typeName = this.typeName;
+        clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
         if (this.parentItem != null && parentItem == null){
             parentItem = this.parentItem.clone(cloneMap, null);

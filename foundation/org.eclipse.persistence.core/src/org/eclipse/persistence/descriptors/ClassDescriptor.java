@@ -3802,7 +3802,8 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
         }
         // Set the fetchgroup manager is the class implements the tracking interface.
         if (FetchGroupTracker.class.isAssignableFrom(getJavaClass())) {
-            if (getFetchGroupManager() == null) {
+            if (getFetchGroupManager() == null && !isAggregateDescriptor()) {
+                //aggregate descriptors will set fetchgroupmanager during mapping init.
                 setFetchGroupManager(new FetchGroupManager());
             }
         }

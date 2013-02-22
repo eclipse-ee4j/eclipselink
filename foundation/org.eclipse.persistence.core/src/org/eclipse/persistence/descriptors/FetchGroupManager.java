@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
@@ -255,6 +256,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     protected void prepareAndVerifyInternal(FetchGroup fetchGroup, String attributePrefix) {
         addMinimalFetchGroup(fetchGroup);
         ObjectBuilder builder = this.descriptor.getObjectBuilder(); 
+        if (fetchGroup.isValidated()){
+            return;
+        }
         Iterator<Map.Entry<String, AttributeItem>> it = fetchGroup.getAllItems().entrySet().iterator();
         while(it.hasNext()) {
             Map.Entry<String, AttributeItem> entry = it.next();
@@ -277,6 +281,21 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                            // no reference descriptor found
                            throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
                        }
+                   } else if (mapping.isAggregateObjectMapping()){
+                       ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                       if(referenceDescriptor != null) {
+                           FetchGroupManager nestedFetchGroupManager = referenceDescriptor.getFetchGroupManager();
+                           if(nestedFetchGroupManager != null) {
+                               nestedFetchGroupManager.prepareAndVerifyInternal(nestedFetchGroup, attributePrefix + name + '.');
+                           } else {
+                               // target descriptor does not support fetch groups
+                               throw ValidationException.fetchGroupHasWrongReferenceClass(fetchGroup, name);
+                           }
+                       } else {
+                           // no reference descriptor found
+                           throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
+                       }
+                       
                    } else {
                        // no reference mapping found
                        throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
@@ -489,7 +508,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
 
         // Update fetch group in clone as the union of two,
         // do this first to avoid fetching during method access.
-        EntityFetchGroup union = flatUnionFetchGroups(fetchGroupInObject, fetchGroupInClone);
+        EntityFetchGroup union = flatUnionFetchGroups(fetchGroupInObject, fetchGroupInClone, false);// this method is not called for aggregates
         // Finally, update clone's fetch group reference.
         setObjectFetchGroup(workingClone, union, uow);
         if (workingClone != backupClone) {
@@ -563,6 +582,18 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * INTERNAL:
      * Copy fetch group reference from the source object to the target
      */
+    public void copyAggregateFetchGroupInto(Object source, Object target, Object rootEntity, AbstractSession session) {
+        if (isPartialObject(source)) {
+            FetchGroup newGroup = ((FetchGroupTracker)source)._persistence_getFetchGroup().clone(); // must clone because original is linked to orig root
+            newGroup.setRootEntity((FetchGroupTracker) rootEntity);
+            setObjectFetchGroup(target, newGroup, session);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Copy fetch group reference from the source object to the target
+     */
     public void copyFetchGroupInto(Object source, Object target, AbstractSession session) {
         if (isPartialObject(source)) {
             setObjectFetchGroup(target, ((FetchGroupTracker)source)._persistence_getFetchGroup(), session);
@@ -573,8 +604,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * INTERNAL:
      * Union the fetch group of the domain object with the new fetch group.
      */
-    public void unionEntityFetchGroupIntoObject(Object source, EntityFetchGroup newEntityFetchGroup, AbstractSession session) {
-        setObjectFetchGroup(source, flatUnionFetchGroups(((FetchGroupTracker)source)._persistence_getFetchGroup(), newEntityFetchGroup), session);
+    public void unionEntityFetchGroupIntoObject(Object source, EntityFetchGroup newEntityFetchGroup, AbstractSession session, boolean shouldClone) {
+        //this order is important as we need to be merging into the target fetchgroup
+        setObjectFetchGroup(source, flatUnionFetchGroups(newEntityFetchGroup, ((FetchGroupTracker)source)._persistence_getFetchGroup(), shouldClone), session);
     }
 
     /**
@@ -604,7 +636,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * Union two fetch groups as EntityFetchGroups.
      * Ignores all nested attributes.
      */
-    public EntityFetchGroup flatUnionFetchGroups(FetchGroup first, FetchGroup second) {
+    public EntityFetchGroup flatUnionFetchGroups(FetchGroup first, FetchGroup second, boolean shouldClone) {
         if ((first == null) || (second == null)) {
             return null;
         }
@@ -617,7 +649,12 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
         Set<String> unionAttributeNames = new HashSet();
         unionAttributeNames.addAll(first.getAttributeNames());
         unionAttributeNames.addAll(second.getAttributeNames());
-        return getEntityFetchGroup(unionAttributeNames);
+        EntityFetchGroup newGroup = getEntityFetchGroup(unionAttributeNames);
+        if (shouldClone){
+            newGroup = (EntityFetchGroup) newGroup.clone();
+            newGroup.setRootEntity(second.getRootEntity());
+        }
+        return newGroup;
     }
 
     /**

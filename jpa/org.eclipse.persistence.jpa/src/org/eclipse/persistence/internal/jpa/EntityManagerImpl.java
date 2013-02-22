@@ -2838,7 +2838,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         if (descriptor == null || descriptor.isAggregateDescriptor()){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unknown_bean_class", new Object[]{rootType.getName()}));
         }
-        return new EntityGraphImpl<T>(new AttributeGroup(null, rootType), descriptor);
+        return new EntityGraphImpl<T>(new AttributeGroup(null, rootType, true), descriptor);
     }
 
     public EntityGraph<?> createEntityGraph(String graphName) {

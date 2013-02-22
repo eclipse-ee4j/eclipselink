@@ -475,12 +475,12 @@ public class NestedFetchGroupTests extends BaseFetchGroupTests {
             // applied to the manager of a selected Employee who is not selected as an Employee
             FetchGroup managerFG = new EntityFetchGroup(new String[]{"id", "version", "firstName", "salary", "manager"});
             // applied to the object which is both selected as an Employee and the manager of another selected Employee
-            FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(employeeFG, managerFG); 
+            FetchGroup employeeManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(employeeFG, managerFG, false); 
             
             // used in useCopy case only
             FetchGroup employeeManagerManagerFG = null;
             if(useCopy) {
-                employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup()); 
+                employeeManagerManagerFG = employeeDescriptor.getFetchGroupManager().flatUnionFetchGroups(new EntityFetchGroup("manager"), employeeDescriptor.getFetchGroupManager().getNonReferenceEntityFetchGroup(), false); 
             }
             
             /*

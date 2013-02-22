@@ -172,7 +172,7 @@ public class TransformerFactory {
                     ClassDetails classDetails = createClassDetails(metaClass, weaveValueHoldersForClass, weaveChangeTrackingForClass, weaveFetchGroups, weaveInternal, weaveRest);
                     if (descriptor.isDescriptorTypeAggregate()) {
                         classDetails.setIsEmbedable(true);
-                        classDetails.setShouldWeaveFetchGroups(false);
+//                        classDetails.setShouldWeaveFetchGroups(false);
                     }
                     if (!descriptor.usesPropertyAccessForWeaving()){
                         classDetails.useAttributeAccess();

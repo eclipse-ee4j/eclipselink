@@ -65,6 +65,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
         this.attributeGroup = group;
         this.classType = descriptor.getJavaClass();
         this.isMutable = true;
+        this.descriptor = descriptor;
     }
 
     public EntityGraphImpl(AttributeGroup group) {
@@ -83,7 +84,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public void addAttributeNodes(String... attributeNames) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
         for (String attrName : attributeNames) {
@@ -116,7 +117,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public void addAttributeNodes(Attribute<X, ?>... attribute) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
         for (Attribute<X, ?> attrNode : attribute) {
@@ -143,7 +144,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public <X> Subgraph<X> addSubgraph(String attributeName, Class<X> type) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
         AttributeGroup localGroup = null;
@@ -152,7 +153,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_managed_type_attribute_not_present", new Object[] { this.descriptor.getJavaClassName(), attributeName }));
         }
 
-        localGroup = new AttributeGroup(attributeName, type);
+        localGroup = new AttributeGroup(attributeName, type, true);
 
         ClassDescriptor targetDesc = mapping.getDescriptor();
         if (type != null && targetDesc.hasInheritance()) {
@@ -169,7 +170,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public <T> Subgraph<T> addKeySubgraph(Attribute<X, T> attribute) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
         Class type = attribute.getJavaType();
@@ -188,7 +189,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public <X> Subgraph<X> addKeySubgraph(String attributeName, Class<X> type) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("immutable_entitygraph"));
         }
         AttributeGroup localGroup = null;
@@ -200,7 +201,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("attribute_is_not_map_with_managed_key", new Object[] { attributeName, descriptor.getJavaClassName() }));
         }
 
-        localGroup = new AttributeGroup(attributeName, type);
+        localGroup = new AttributeGroup(attributeName, type, true);
 
         ClassDescriptor targetDesc = ((MappedKeyMapContainerPolicy) mapping.getContainerPolicy()).getDescriptorForMapKey();
         if (type != null && targetDesc.hasInheritance()) {
@@ -217,7 +218,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
     }
 
     public <T> Subgraph<? extends T> addSubclassSubgraph(Class<? extends T> type) {
-        if (this.isMutable) {
+        if (!this.isMutable) {
             throw new IllegalStateException("immutable_entitygraph");
         }
         ClassDescriptor targetDesc = this.descriptor;
@@ -227,7 +228,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("type_unkown_for_this_entity", new Object[] { type.getName(), this.descriptor.getJavaClassName() }));
             }
         }
-        AttributeGroup subGroup = new AttributeGroup(this.attributeGroup.getName(), type);
+        AttributeGroup subGroup = new AttributeGroup(this.attributeGroup.getName(), type, true);
         this.attributeGroup.insertSubClass(subGroup);
         return new EntityGraphImpl(subGroup, targetDesc);
     }

@@ -27,6 +27,7 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.*;
@@ -346,6 +348,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         
         ObjectBuildingQuery nestedQuery = sourceQuery;
+        FetchGroup targetFetchGroup = null;
         if (sourceQuery.isObjectLevelReadQuery()) {
             ObjectLevelReadQuery objectQuery = (ObjectLevelReadQuery)sourceQuery;
             ObjectLevelReadQuery nestedObjectQuery = (ObjectLevelReadQuery)nestedQuery;
@@ -382,16 +385,25 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             }
             FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(descriptor);
             if (sourceFG != null) {
-                // Currently FetchGroups for Aggregates not supported because EntityFetchGroup (kept on the entity) is just a list of attributes.
-                // Therefore clone the query (if not already cloned) and clear the fetch group.
                 if(nestedObjectQuery == objectQuery) {
                     // A nested query must be built to pass to the descriptor that looks like the real query execution would.
                     nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
                 }
-                nestedObjectQuery.setFetchGroup(null);
-                nestedObjectQuery.setFetchGroupName(null);
+                targetFetchGroup = sourceFG.getGroup(getAttributeName());
+                if(targetFetchGroup != null && sourceQuery.getDescriptor().hasFetchGroupManager()) {
+                    //if the parent object has a fetchgroup manager then aggregates can support a fetchgroup manager
+                    ((ObjectLevelReadQuery)nestedObjectQuery).setFetchGroup(targetFetchGroup);
+                }else{
+                    targetFetchGroup = null;
+                    nestedObjectQuery.setFetchGroup(null);
+                    nestedObjectQuery.setFetchGroupName(null);
+                }
                 nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
                 nestedObjectQuery.prepareFetchGroup();
+            }
+            if (descriptor.hasFetchGroupManager()){
+                descriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(aggregate, descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup), executionSession, true);
+                //merge fetchgroup into aggregate fetchgroup that may have been there from previous read.
             }
             nestedQuery = nestedObjectQuery;
         }
@@ -401,6 +413,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             descriptor.getObjectBuilder().buildAttributesIntoWorkingCopyClone(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), nestedQuery, joinManager, databaseRow, (UnitOfWorkImpl)executionSession, refreshing);
         } else {
             descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, sourceQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
+        }
+        if (sourceQuery.shouldMaintainCache() && ! sourceQuery.shouldStoreBypassCache()) {
+            // Set the fetch group to the domain object, after built.
+            if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager()) {
+                EntityFetchGroup entityFetchGroup = (EntityFetchGroup) descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup).clone();
+                if (entityFetchGroup !=null){
+                    entityFetchGroup.setRootEntity((FetchGroupTracker) cacheKey.getObject());
+                    entityFetchGroup.setOnEntity(aggregate, executionSession);
+                }
+            }
         }
         return aggregate;
     }
@@ -634,7 +656,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     @Override
     public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        Object aggregateClone = buildClonePart(original, cacheKey, attributeValue, refreshCascade, cloningSession);
+        Object aggregateClone = buildClonePart(original, clone, cacheKey, attributeValue, refreshCascade, cloningSession);
 
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
             ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
@@ -653,7 +675,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @return
      */
     public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
-        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, refreshCascade, cloningSession, !isExisting);
+        Object aggregateClone = buildClonePart(attributeValue, parent, parentCacheKey, refreshCascade, cloningSession, !isExisting);
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
             ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
@@ -1184,7 +1206,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
         if (mergeManager.getSession().isUnitOfWork()){
             UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
-            Object aggregateObject = buildClonePart(object, null, null, targetSession, uow.isOriginalNewObject(parent));
+            Object aggregateObject = buildClonePart(object, parent, null, null, targetSession, uow.isOriginalNewObject(parent));
             return aggregateObject;
         }
         return object;
@@ -1418,6 +1440,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                         clonedDescriptor.getObjectBuilder().getFieldsMap().put(pkField, pkField);
                     }
                 }
+            }
+        }
+        if (this.getDescriptor().hasFetchGroupManager() && FetchGroupTracker.class.isAssignableFrom(clonedDescriptor.getJavaClass())){
+            if (clonedDescriptor.getFetchGroupManager() == null) {
+                clonedDescriptor.setFetchGroupManager(new FetchGroupManager());
             }
         }
     }

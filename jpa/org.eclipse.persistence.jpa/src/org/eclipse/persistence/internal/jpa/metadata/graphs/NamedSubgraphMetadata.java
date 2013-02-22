@@ -160,7 +160,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
      * Process the named subgraph metadata into a new attribute group.
      */
     public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs) {
-        AttributeGroup attributeGraph = new AttributeGroup(getName(), getTypeClassName());
+        AttributeGroup attributeGraph = new AttributeGroup(getName(), getTypeClassName(), true);
                 
         if (! attributeGraphs.containsKey(getName())) {
             attributeGraphs.put(getName(), new HashMap<String, AttributeGroup>());

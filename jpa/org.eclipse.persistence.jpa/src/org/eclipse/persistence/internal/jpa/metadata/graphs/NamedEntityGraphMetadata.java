@@ -200,7 +200,7 @@ public class NamedEntityGraphMetadata extends ORMetadata {
         if (getProject().hasEntityGraph(entityGraphName)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("named_entity_graph_exists", new Object[]{ entityGraphName, entityAccessor.getJavaClassName()}));
         } else {
-            AttributeGroup entityGraph = new AttributeGroup(entityGraphName, entityAccessor.getJavaClassName());
+            AttributeGroup entityGraph = new AttributeGroup(entityGraphName, entityAccessor.getJavaClassName(), true);
             Map<String, Map<String, AttributeGroup>> attributeGraphs = new HashMap<String, Map<String, AttributeGroup>>();
         
             // Process the subgraph metadata (build attribute graphs for each).

@@ -108,6 +108,12 @@ public class FetchGroup extends AttributeGroup {
      */
     protected EntityFetchGroup entityFetchGroup;
     
+    /**
+     * Stores a reference to the root entity for an Aggregate Object relationship.
+     * This ensures that partially loaded aggregates can be triggered.
+     */
+    protected FetchGroupTracker rootEntity;
+    
     public FetchGroup() {
         super();
     }
@@ -139,6 +145,9 @@ public class FetchGroup extends AttributeGroup {
      * into the entity.
      */
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
+        if (rootEntity != null){
+            return rootEntity._persistence_getFetchGroup().onUnfetchedAttribute(rootEntity, attributeName);
+        }
         ReadObjectQuery query = new ReadObjectQuery(entity);
         query.setShouldUseDefaultFetchGroup(false);
         Session session = entity._persistence_getSession();
@@ -185,6 +194,22 @@ public class FetchGroup extends AttributeGroup {
      */
     public String onUnfetchedAttributeForSet(FetchGroupTracker entity, String attributeName) {
         return onUnfetchedAttribute(entity, attributeName);
+    }
+
+    /**
+     * INTERNAL:
+     * @return the rootEntity
+     */
+    public FetchGroupTracker getRootEntity() {
+        return rootEntity;
+    }
+
+    /**
+     * INTERNAL:
+     * @param rootEntity the rootEntity to set
+     */
+    public void setRootEntity(FetchGroupTracker rootEntity) {
+        this.rootEntity = rootEntity;
     }
 
     /**

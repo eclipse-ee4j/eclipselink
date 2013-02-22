@@ -132,7 +132,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     @Override
     public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        setAttributeValueInObject(clone, buildClonePart(original, cacheKey, attributeValue, refreshCascade, cloningSession));
+        setAttributeValueInObject(clone, buildClonePart(original, clone, cacheKey, attributeValue, refreshCascade, cloningSession));
     }
 
     /**
@@ -162,14 +162,14 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, Integer refreshCascade, AbstractSession cloningSession) {
-        return buildClonePart(attributeValue, cacheKey, refreshCascade, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
+    protected Object buildClonePart(Object original, Object clone, CacheKey cacheKey, Object attributeValue, Integer refreshCascade, AbstractSession cloningSession) {
+        return buildClonePart(attributeValue, clone, cacheKey, refreshCascade, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
     }
     
     /**
      * INTERNAL:     * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object attributeValue, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isNewObject) {
+    protected Object buildClonePart(Object attributeValue, Object clone, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isNewObject) {
         if (attributeValue == null) {
             return null;
         }
@@ -187,6 +187,10 @@ public abstract class AggregateMapping extends DatabaseMapping {
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, cloningSession);
         aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
+        //also clone the fetch group reference if applied
+        if (aggregateObjectBuilder.getDescriptor().hasFetchGroupManager()) {
+            aggregateObjectBuilder.getDescriptor().getFetchGroupManager().copyAggregateFetchGroupInto(attributeValue, clonedAttributeValue, clone, cloningSession);
+        }
 
         return clonedAttributeValue;
     }
@@ -546,7 +550,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
     public void load(final Object object, AttributeItem item, final AbstractSession session) {
         if (item.getGroup() != null) {
             Object value = getAttributeValueFromObject(object);
-            getObjectBuilder(value, session).load(object, item.getGroup(), session);
+            getObjectBuilder(value, session).load(value, item.getGroup(), session);
         }
     }
     
@@ -594,17 +598,20 @@ public abstract class AggregateMapping extends DatabaseMapping {
         ObjectBuilder objectBuilder = getObjectBuilderForClass(aggregateChangeSet.getClassType(mergeManager.getSession()), mergeManager.getSession());
         //Bug#4719341  Always obtain aggregate attribute value from the target object regardless of new or not
         Object targetAggregate = getAttributeValueFromObject(target);
+        boolean wasOriginalNull = false;
         if (targetAggregate == null || targetAggregate == sourceAggregate) {
             targetAggregate = objectBuilder.buildNewInstance();
+            wasOriginalNull = true;
         } else {
         	//bug 205939 - use the type from the changeset to determine if a new aggregate instance
         	//is needed because of a class change.  The old way of using the sourceAggregate will not
         	//work on a remote system after cache sync because the sourceAggregate will not be available
             if (aggregateChangeSet.getClassType(mergeManager.getSession()) != targetAggregate.getClass()) {
                 targetAggregate = objectBuilder.buildNewInstance();
+                wasOriginalNull = true;
             }
         }
-        objectBuilder.mergeChangesIntoObject(targetAggregate, aggregateChangeSet, sourceAggregate, mergeManager, targetSession);
+        objectBuilder.mergeChangesIntoObject(targetAggregate, aggregateChangeSet, sourceAggregate, mergeManager, targetSession,false, wasOriginalNull);
         setAttributeValueInObject(target, targetAggregate);
     }
 
@@ -621,6 +628,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
 
         Object targetAttributeValue = getAttributeValueFromObject(target);
+        boolean originalWasNull = targetAttributeValue == null;
         if (targetAttributeValue == null || targetAttributeValue == sourceAttributeValue || !targetAttributeValue.getClass().equals(sourceAttributeValue.getClass())) {
             // avoid null-pointer/nothing to merge to - create a new instance
             // (a new clone cannot be used as all changes must be merged)
@@ -636,6 +644,17 @@ public abstract class AggregateMapping extends DatabaseMapping {
             
         } else {
             mergeAttributeValue(targetAttributeValue, isTargetUnInitialized, sourceAttributeValue, mergeManager, targetSession);
+        }
+        if(this.descriptor.hasFetchGroupManager()) {
+            FetchGroup sourceFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(source);
+            FetchGroup targetFetchGroup = this.descriptor.getFetchGroupManager().getObjectFetchGroup(target);
+            if(targetFetchGroup != null) {
+                if(!targetFetchGroup.isSupersetOf(sourceFetchGroup)) {
+                    targetFetchGroup.onUnfetchedAttribute((FetchGroupTracker)target, null);
+                }
+            } else if (originalWasNull && sourceFetchGroup != null){
+                    this.descriptor.getFetchGroupManager().setObjectFetchGroup(target, sourceFetchGroup, targetSession);
+            }
         }
 
         // Must re-set variable to allow for set method to re-morph changes.
