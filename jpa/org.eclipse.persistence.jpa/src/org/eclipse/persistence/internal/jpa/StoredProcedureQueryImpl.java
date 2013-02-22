@@ -397,15 +397,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     protected Map<String, Parameter<?>> getInternalParameters() {
         if (parameters == null) {
             parameters = new HashMap<String, Parameter<?>>();
-            
+    
             int index = 0;
-            
+                
             for (Object parameter : getCall().getParameters()) {
                 Integer parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
-                
+                    
                 DatabaseField field;
-                
+                    
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
                 } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
@@ -413,14 +413,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 } else {
                     continue; // not a parameter we care about at this point.
                 }
-                    
+                        
                 // If the argument name is null then it is a positional parameter.
                 if (argumentName == null) {
                     parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), Integer.parseInt(field.getName())));
                 } else {
                     parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), field.getName()));
                 }
-                    
+                        
                 ++index;
             }
         }
@@ -725,6 +725,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         }
         
+        // Force a re-calculate of the parameters.
+        this.parameters = null;
+        
         return this;
     }
 
@@ -761,6 +764,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         }
 
+        // Force a re-calculate of the parameters.
+        this.parameters = null;
+        
         return this;
     }
     

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
@@ -292,6 +293,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 // Build the named stored procedure query, execute and test.
                 StoredProcedureQuery query = em.createStoredProcedureQuery("Result_Set_And_Update_Address", Address.class, Employee.class);
+                
+                assertTrue("Parameter list was not empty.", query.getParameters().size() == 0);
+                
                 query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("employee_count_v", Integer.class, ParameterMode.OUT);
@@ -300,6 +304,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.setParameter("old_p_code_v", postalCodeTypo);
                 
                 boolean result = query.execute();
+                
+                assertTrue("Parameter list was empty, expecting 2.", query.getParameters().size() == 2);
                 
                 Object parameterValue = query.getParameterValue("new_p_code_v");
                 assertTrue("The IN parameter value was not preserved, expected: " + postalCodeCorrection + ", actual: " + parameterValue, parameterValue.equals(postalCodeCorrection));
