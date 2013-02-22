@@ -28,13 +28,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>QL_statement ::= {@link SelectStatement select_statement} |
  *                                                {@link UpdateStatement update_statement} |
- *                                                {@link DeleteStatement delete_statement}</code>
+ *                                                {@link DeleteStatement delete_statement}</code></div>
  * <p>
- * It is possible to parse a portion of a JPQL query. The ID of the JPQLQueryBNF is used to parse
- * that portion and {@link #getQueryStatement()} then returns only the parsed tree representation
+ * It is possible to parse a portion of a JPQL query. The ID of the {@link JPQLQueryBNF} is used to
+ * parse that portion and {@link #getQueryStatement()} then returns only the parsed tree representation
  * of that JPQL fragment.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,6 +45,12 @@ public final class JPQLExpression extends AbstractExpression {
 	 * The JPQL grammar that defines how to parse a JPQL query.
 	 */
 	private JPQLGrammar jpqlGrammar;
+
+	/**
+	 * By default, this is {@link JPQLStatementBNF.ID} but it can be any other unique identifier of
+	 * a {@link JPQLQueryBNF} when a portion of a JPQL query needs to be parsed.
+	 */
+	private String queryBNFId;
 
 	/**
 	 * The tree representation of the query.
@@ -62,12 +68,6 @@ public final class JPQLExpression extends AbstractExpression {
 	 * this will contain it.
 	 */
 	private AbstractExpression unknownEndingStatement;
-
-	/**
-	 * By default, this is {@link JPQLStatementBNF.ID} but it can be any other unique identifier of
-	 * a {@link JPQLQueryBNF} when a portion of a JPQL query needs to be parsed.
-	 */
-	private String queryBNFId;
 
 	/**
 	 * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
@@ -92,20 +92,6 @@ public final class JPQLExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
-	 *
-	 * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
-	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
-	 * to parse invalid or incomplete queries
-	 */
-	private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant) {
-		super(null);
-		this.queryBNFId  = queryBNFId;
-		this.tolerant    = tolerant;
-		this.jpqlGrammar = jpqlGrammar;
-	}
-
-	/**
 	 * Creates a new <code>JPQLExpression</code> that will parse the given fragment of a JPQL query.
 	 * This means {@link #getQueryStatement()} will not return a query statement (select, delete or
 	 * update) but only the parsed tree representation of the fragment if the query BNF can pare it.
@@ -127,6 +113,20 @@ public final class JPQLExpression extends AbstractExpression {
 
 		this(jpqlGrammar, queryBNFId, tolerant);
 		parse(new WordParser(jpqlFragment), tolerant);
+	}
+
+	/**
+	 * Creates a new <code>JPQLExpression</code>, which is the root of the JPQL parsed tree.
+	 *
+	 * @param jpqlGrammar The JPQL grammar that defines how to parse a JPQL query
+	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+	 * to parse invalid or incomplete queries
+	 */
+	private JPQLExpression(JPQLGrammar jpqlGrammar, String queryBNFId, boolean tolerant) {
+		super(null);
+		this.queryBNFId  = queryBNFId;
+		this.tolerant    = tolerant;
+		this.jpqlGrammar = jpqlGrammar;
 	}
 
 	/**
@@ -186,14 +186,6 @@ public final class JPQLExpression extends AbstractExpression {
 		QueryPosition queryPosition = new QueryPosition(position);
 		populatePosition(queryPosition, position);
 		return queryPosition;
-	}
-
-	private AbstractExpression buildQueryStatement(WordParser wordParser) {
-		switch (wordParser.character()) {
-			case 'D': case 'd': return new DeleteStatement(this);
-			case 'U': case 'u': return new UpdateStatement(this);
-			default:            return new SelectStatement(this);
-		}
 	}
 
 	/**
@@ -301,10 +293,10 @@ public final class JPQLExpression extends AbstractExpression {
 		// Make sure to use this statement if it's a JPQL fragment as well
 		if (tolerant || (queryBNFId != JPQLStatementBNF.ID)) {
 
-			// If the query BNF is not the JPQL query BNF, then we need to parse
+			// If the query BNF is not the "root" BNF, then we need to parse
 			// it with a broader check when parsing
 			if (queryBNFId == JPQLStatementBNF.ID) {
-				queryStatement = parseSingleExpression(wordParser, queryBNFId, tolerant);
+				queryStatement = parseUsingExpressionFactory(wordParser, queryBNFId, tolerant);
 			}
 			else {
 				queryStatement = parse(wordParser, queryBNFId, tolerant);
@@ -330,8 +322,19 @@ public final class JPQLExpression extends AbstractExpression {
 		}
 		// Quickly parse the valid query
 		else {
-			queryStatement = buildQueryStatement(wordParser);
-			queryStatement.parse(wordParser, tolerant);
+
+			switch (wordParser.character()) {
+				case 'd': case 'D': queryStatement = new DeleteStatement(this); break;
+				case 'u': case 'U': queryStatement = new UpdateStatement(this); break;
+				case 's': case 'S': queryStatement = new SelectStatement(this); break;
+			}
+
+			if (queryStatement != null) {
+				queryStatement.parse(wordParser, tolerant);
+			}
+			else {
+				queryStatement = parse(wordParser, queryBNFId, tolerant);
+			}
 		}
 	}
 

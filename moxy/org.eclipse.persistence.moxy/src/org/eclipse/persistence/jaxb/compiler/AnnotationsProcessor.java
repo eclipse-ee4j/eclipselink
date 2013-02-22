@@ -845,12 +845,23 @@ public class AnnotationsProcessor {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
             for (Property property : tInfo.getPropertyList()) {
-                // need to check for transient reference class
-                JavaClass typeClass = property.getActualType();
-                TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
-                if (targetInfo != null && targetInfo.isTransient() && property.getXmlElements() == null) {
-                    property.setTransientType(true);
-                }
+            	List<TypeInfo> targetInfos = new ArrayList<TypeInfo>();
+            	JavaClass typeClass = property.getActualType();
+            
+            	if(property.isChoice()){
+            		Collection<Property> choiceProps = property.getChoiceProperties();
+            		Iterator<Property> choicePropsIter = choiceProps.iterator();
+            		while(choicePropsIter.hasNext()){
+            			Property nextChoiceProp = choicePropsIter.next();
+            			JavaClass nextChoicePropTypeClass = nextChoiceProp.getActualType();
+            			TypeInfo targetInfo = typeInfo.get(nextChoicePropTypeClass.getQualifiedName());
+            			finalizeProperty(property, targetInfo, nextChoicePropTypeClass, jClass);
+            		}
+            	}else{            		
+                    TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
+            		finalizeProperty(property, targetInfo, typeClass, jClass);
+            	}           	
+            
                 // only one XmlValue is allowed per class, and if there is one
                 // only XmlAttributes are allowed
                 if (tInfo.isSetXmlValueProperty()) {
@@ -871,19 +882,6 @@ public class AnnotationsProcessor {
                  
                 if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
                     this.hasSwaRef = true;
-                }
-                // validate XmlIDREF
-                if (property.isXmlIdRef()) {
-                    // the target class must have an associated TypeInfo unless
-                    // it is Object
-                    if (targetInfo == null && !typeClass.getQualifiedName().equals(JAVA_LANG_OBJECT)) {
-                        throw JAXBException.invalidIDREFClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
-                    }
-                    // if the property is an XmlIDREF, the target must have an
-                    // XmlID set
-                    if (targetInfo != null && targetInfo.getIDProperty() == null) {
-                        throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
-                    }
                 }
                 // there can only be one XmlID per type info
                 if (property.isXmlId() && tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
@@ -914,6 +912,8 @@ public class AnnotationsProcessor {
                 }
                 // validate XmlJoinNodes
                 if (property.isSetXmlJoinNodes()) {
+                    TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
+
                     // the target class must have an associated TypeInfo
                     if (targetInfo == null) {
                         throw JAXBException.invalidXmlJoinNodeReferencedClass(property.getPropertyName(), typeClass.getQualifiedName());
@@ -928,6 +928,26 @@ public class AnnotationsProcessor {
         }
     }
 
+    private void finalizeProperty(Property property, TypeInfo targetInfo, JavaClass typeClass, JavaClass jClass){
+            if (targetInfo != null && targetInfo.isTransient() && property.getXmlElements() == null) {
+                property.setTransientType(true);
+            }
+            
+            // validate XmlIDREF
+            if (property.isXmlIdRef()) {
+                // the target class must have an associated TypeInfo unless
+                // it is Object
+                if (targetInfo == null && !typeClass.getQualifiedName().equals(JAVA_LANG_OBJECT)) {
+                    throw JAXBException.invalidIDREFClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
+                }
+                // if the property is an XmlIDREF, the target must have an
+                // XmlID set
+                if (targetInfo != null && targetInfo.getIDProperty() == null) {
+                    throw JAXBException.invalidIdRef(property.getPropertyName(), typeClass.getQualifiedName());
+                }
+            }    	
+    }
+    
     /**
      * Process a given TypeInfo instance's properties.
      * 
@@ -2170,7 +2190,16 @@ public class AnnotationsProcessor {
             // if the property has xml-idref, the target type of each
             // xml-element in the list must have an xml-id property
             if (choiceProperty.isXmlIdRef()) {
-                TypeInfo tInfo = typeInfo.get(next.getType());
+            	 TypeInfo tInfo = typeInfo.get(next.getType());
+                 if(tInfo == null){
+                	 JavaClass nextCls =  helper.getJavaClass(next.getType());
+                	 if(shouldGenerateTypeInfo(nextCls)) {
+                		 buildNewTypeInfo(new JavaClass[]{nextCls});
+                         tInfo = typeInfo.get(next.getType());
+                     }                     
+                 }
+            	
+            	
                 if (tInfo == null || !tInfo.isIDSet()) {
                     throw JAXBException.invalidXmlElementInXmlElementsList(propertyName, name);
                 }

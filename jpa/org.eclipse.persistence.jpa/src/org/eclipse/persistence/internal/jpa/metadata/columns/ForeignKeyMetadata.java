@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,9 +12,13 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -36,9 +40,8 @@ import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
  * @since EclipseLink 2.5
  */
 public class ForeignKeyMetadata extends ORMetadata {
-    protected Boolean m_disableForeignKey;
-    
     protected String m_name;
+    protected String m_constraintMode;
     protected String m_foreignKeyDefinition;
     
     /**
@@ -57,8 +60,8 @@ public class ForeignKeyMetadata extends ORMetadata {
         super(foreignKey);
         
         m_name = foreignKey.getName();
+        m_constraintMode = foreignKey.getConstraintMode();
         m_foreignKeyDefinition = foreignKey.getForeignKeyDefinition();
-        m_disableForeignKey = foreignKey.getDisableForeignKey();
     }
     
     /**
@@ -68,11 +71,9 @@ public class ForeignKeyMetadata extends ORMetadata {
     public ForeignKeyMetadata(MetadataAnnotation foreignKey, MetadataAccessor accessor) {
         super(foreignKey, accessor);
         
-        if (foreignKey != null) {
-            m_name = ((String) foreignKey.getAttribute("name"));
-            m_foreignKeyDefinition = ((String) foreignKey.getAttribute("foreignKeyDefinition"));
-            m_disableForeignKey = ((Boolean) foreignKey.getAttributeBooleanDefaultFalse("disableForeignKey"));
-        }
+        m_name = foreignKey.getAttributeString("name");
+        m_constraintMode = foreignKey.getAttributeString("value");
+        m_foreignKeyDefinition = foreignKey.getAttributeString("foreignKeyDefinition");
     }
     
     /**
@@ -99,25 +100,18 @@ public class ForeignKeyMetadata extends ORMetadata {
                 return false;
             }
             
-            return valuesMatch(m_disableForeignKey, foreignKey.getDisableForeignKey());
+            return valuesMatch(m_constraintMode, foreignKey.getConstraintMode());
         }
         
         return false;
     }
     
     /**
-     * INTERNAL
-     */
-    protected boolean disableForeignKey() {
-        return (m_disableForeignKey != null) && m_disableForeignKey.booleanValue();
-    }
-    
-    /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public Boolean getDisableForeignKey() {
-        return m_disableForeignKey;
+    public String getConstraintMode() {
+        return m_constraintMode;
     }
 
     /**
@@ -138,22 +132,45 @@ public class ForeignKeyMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     */
+    protected boolean isConstraintMode() {
+        return m_constraintMode == null || m_constraintMode.equals(MetadataConstants.JPA_CONSTRAINT_MODE_CONSTRAINT);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean isNoConstraintMode() {
+        return m_constraintMode != null && m_constraintMode.equals(MetadataConstants.JPA_CONSTRAINT_MODE_NO_CONSTRAINT);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected boolean isProviderDefaultConstraintMode() {
+        return m_constraintMode != null && m_constraintMode.equals(MetadataConstants.JPA_CONSTRAINT_MODE_NO_CONSTRAINT);
+    }
+    
+    /**
+     * INTERNAL:
      * Process this JPA metadata into an EclipseLink ForeignKeyConstraint.
      */
-    public ForeignKeyConstraint process() {
-        ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint();
-        foreignKeyConstraint.setName(getName());
-        foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
-        foreignKeyConstraint.setDisableForeignKey(disableForeignKey());
-        return foreignKeyConstraint;
+    public void process(DatabaseTable table) {
+        if (! isProviderDefaultConstraintMode()) {
+            ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint();
+            foreignKeyConstraint.setName(getName());
+            foreignKeyConstraint.setForeignKeyDefinition(getForeignKeyDefinition());
+            foreignKeyConstraint.setDisableForeignKey(isNoConstraintMode());
+            table.addForeignKeyConstraint(foreignKeyConstraint);
+        }
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setDisableForeignKey(Boolean disableForeignKey) {
-        m_disableForeignKey = disableForeignKey;
+    public void setConstraintMode(String constraintMode) {
+        m_constraintMode = constraintMode;
     }
 
     /**

@@ -1,0 +1,26 @@
+{"root":{
+   "thing":{
+      "type":"date",
+      "value":"1977-02-13"
+   },
+   "things":[{
+      "type":"date",
+      "value":"1977-02-13"
+     },{
+      "type":"date",
+      "value":"1982-05-30"
+     },{
+      "type":"time",
+      "value":"09:30:05.0"
+     },{
+      "type":"dateTime",
+      "value":"1985-09-23T10:33:05.001"
+     },
+     {
+      "type":"dateTime",
+      "value":"2013-02-20T10:29:58.0"
+     }
+   ],
+   "gregCal":"1985-09-23T10:33:05.001",
+   "gregCalTime":"09:30:05"
+}}

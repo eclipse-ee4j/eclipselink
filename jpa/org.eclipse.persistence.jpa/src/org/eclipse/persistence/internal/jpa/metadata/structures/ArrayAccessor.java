@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -69,8 +69,8 @@ public class ArrayAccessor extends DirectAccessor {
     public ArrayAccessor(MetadataAnnotation array, MetadataAccessibleObject accessibleObject, ClassAccessor classAccessor) {
         super(array, accessibleObject, classAccessor);
         
-        m_targetClass = getMetadataClass((String) array.getAttribute("targetClass"));        
-        m_databaseType = (String) array.getAttribute("databaseType");
+        m_targetClass = getMetadataClass(array.getAttributeString("targetClass"));        
+        m_databaseType = array.getAttributeString("databaseType");
                 
         // Set the column if one if defined.
         if (isAnnotationPresent(JPA_COLUMN)) {
@@ -89,6 +89,7 @@ public class ArrayAccessor extends DirectAccessor {
             if (! valuesMatch(m_column, accessor.getColumn())) {
                 return false;
             }
+            
             if (! valuesMatch(m_databaseType, accessor.getDatabaseType())) {
                 return false;
             }

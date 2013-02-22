@@ -41,9 +41,12 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
  * // Create a map of the positions within the parsed tree
  * {@link org.eclipse.persistence.jpa.jpql.parser.QueryPosition QueryPosition} queryPosition = context.getJPQLExpression().buildPosition(query.getExpression(), position);
  *
+ * // Either a real extension that adds additional support or
+ * ContentAssistExtension extension = {@link ContentAssistExtension#NULL_HELPER ContentAssistExtension.NULL_HELPER};
+ *
  * // Create the visitor and visit the parsed tree
- * ContentAssistVisitor visitor = new ContentAssistVisitor(context);
- * visitor.{@link #prepare(org.eclipse.persistence.jpa.jpql.parser.QueryPosition) prepare(queryPosition)};
+ * DefaultContentAssistVisitor visitor = new DefaultContentAssistVisitor(context);
+ * visitor.{@link #prepare(org.eclipse.persistence.jpa.jpql.parser.QueryPosition, ContentAssistExtension) prepare(queryPosition, extension)};
  * queryPosition.getExpression().accept(visitor);
  *
  * // Retrieve the proposals
@@ -90,9 +93,13 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
+		// Generic JPA does not support identifying a JOIN FETCH with an identification variable
 		return false;
 	}
 
+	/**
+	 * The concrete instance that determines the return type of a function expression.
+	 */
 	protected class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
 
 		/**

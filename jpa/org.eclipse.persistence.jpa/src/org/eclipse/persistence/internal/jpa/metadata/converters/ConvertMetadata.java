@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -73,8 +73,8 @@ public class ConvertMetadata extends ORMetadata {
         super(convert, accessor);
         
         m_converterClass = getMetadataClass((String) convert.getAttributeClass("converter", Void.class));
-        m_attributeName = (String) convert.getAttributeString("attributeName");
-        m_disableConversion = (Boolean) convert.getAttributeBooleanDefaultFalse("disableConversion");  
+        m_attributeName = convert.getAttributeString("attributeName");
+        m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");  
     }
     
     /**

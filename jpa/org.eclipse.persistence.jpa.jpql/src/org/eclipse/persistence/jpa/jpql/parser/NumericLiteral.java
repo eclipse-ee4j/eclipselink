@@ -92,11 +92,14 @@ public final class NumericLiteral extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
+
 		String numeric = getText();
+
 		if (numeric == ExpressionTools.EMPTY_STRING) {
 			numeric = wordParser.numericLiteral();
 			setText(numeric);
 		}
+
 		wordParser.moveForward(numeric);
 	}
 

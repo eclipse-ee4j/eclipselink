@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -79,23 +79,23 @@ public class CacheMetadata extends ORMetadata {
     public CacheMetadata(MetadataAnnotation cache, MetadataAccessor accessor) {
         super(cache, accessor);
         
-        m_alwaysRefresh = (Boolean) cache.getAttribute("alwaysRefresh");
-        m_disableHits = (Boolean) cache.getAttribute("disableHits");
-        m_coordinationType = (String) cache.getAttribute("coordinationType");
-        m_databaseChangeNotificationType = (String) cache.getAttribute("databaseChangeNotificationType");
-        m_expiry = (Integer) cache.getAttribute("expiry");
+        m_alwaysRefresh = cache.getAttributeBooleanDefaultFalse("alwaysRefresh");
+        m_disableHits = cache.getAttributeBooleanDefaultFalse("disableHits");
+        m_coordinationType = cache.getAttributeString("coordinationType");
+        m_databaseChangeNotificationType = cache.getAttributeString("databaseChangeNotificationType");
+        m_expiry = cache.getAttributeInteger("expiry");
 
-        MetadataAnnotation expiryTimeOfDay = (MetadataAnnotation) cache.getAttribute("expiryTimeOfDay");
+        MetadataAnnotation expiryTimeOfDay = cache.getAttributeAnnotation("expiryTimeOfDay");
         
         if (expiryTimeOfDay != null) {
             m_expiryTimeOfDay = new TimeOfDayMetadata(expiryTimeOfDay, accessor);
         }
         
-        m_shared = (Boolean) cache.getAttribute("shared");
-        m_isolation = (String) cache.getAttribute("isolation");
-        m_size = (Integer) cache.getAttribute("size");
-        m_type = (String) cache.getAttribute("type");
-        m_refreshOnlyIfNewer = (Boolean) cache.getAttribute("refreshOnlyIfNewer");
+        m_shared = cache.getAttributeBooleanDefaultTrue("shared");
+        m_isolation = cache.getAttributeString("isolation");
+        m_size = cache.getAttributeInteger("size");
+        m_type = cache.getAttributeString("type");
+        m_refreshOnlyIfNewer = cache.getAttributeBooleanDefaultFalse("refreshOnlyIfNewer");
     }
     
     /**

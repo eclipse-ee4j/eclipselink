@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1383,8 +1383,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Look for an @AttributeOverrides.
         MetadataAnnotation attributeOverrides = getAnnotation(JPA_ATTRIBUTE_OVERRIDES);
         if (attributeOverrides != null) {
-            for (Object attributeOverride : (Object[]) attributeOverrides.getAttribute("value")){ 
-                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, this));
+            for (Object attributeOverride : attributeOverrides.getAttributeArray("value")) { 
+                processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation) attributeOverride, this));
             }
         }
         
@@ -1493,7 +1493,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             } else {
                 if (m_customizerClass == null || m_customizerClass.equals(void.class)) { 
                     // Use the annotation value.
-                    m_customizerClass = getMetadataClass((String)customizer.getAttribute("value"));
+                    m_customizerClass = getMetadataClass(customizer.getAttributeString("value"));
                 } else {
                     // Use the xml value and log a message if necessary.
                     if (customizer != null) {
@@ -1602,8 +1602,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the annotations.
         MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
         if (records != null) {
-            for (Object record : (Object[]) records.getAttribute("value")) { 
-                getProject().addComplexMetadataType(new PLSQLRecordMetadata((MetadataAnnotation)record, this));
+            for (Object record : records.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new PLSQLRecordMetadata((MetadataAnnotation) record, this));
             }
         }
         
@@ -1620,8 +1620,8 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the annotations.
         MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
         if (tables != null) {
-            for (Object table : (Object[]) tables.getAttribute("value")) { 
-                getProject().addComplexMetadataType(new PLSQLTableMetadata((MetadataAnnotation)table, this));
+            for (Object table : tables.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new PLSQLTableMetadata((MetadataAnnotation) table, this));
             }
         }
         
@@ -1639,7 +1639,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the annotations.
         MetadataAnnotation objectTypes = getAnnotation(OracleObjects.class);
         if (objectTypes != null) {
-            for (Object objectType : (Object[]) objectTypes.getAttribute("value")) { 
+            for (Object objectType : objectTypes.getAttributeArray("value")) { 
                 getProject().addComplexMetadataType(new OracleObjectTypeMetadata((MetadataAnnotation) objectType, this));
             }
         }
@@ -1655,7 +1655,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         // Process the annotations.
         MetadataAnnotation arrayTypes = getAnnotation(OracleArrays.class);
         if (arrayTypes != null) {
-            for (Object arrayType : (Object[]) arrayTypes.getAttribute("value")) { 
+            for (Object arrayType : arrayTypes.getAttributeArray("value")) { 
                 getProject().addComplexMetadataType(new OracleArrayTypeMetadata((MetadataAnnotation) arrayType, this));
             }
         }

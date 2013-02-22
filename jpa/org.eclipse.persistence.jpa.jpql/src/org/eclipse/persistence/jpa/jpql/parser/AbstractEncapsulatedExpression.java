@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -53,9 +53,10 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * Creates a new <code>AbstractEncapsulatedExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected AbstractEncapsulatedExpression(AbstractExpression parent) {
-		super(parent);
+	protected AbstractEncapsulatedExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -186,12 +187,10 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void parse(WordParser wordParser, boolean tolerant) {
+	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse the identifier
-		String identifier = parseIdentifier(wordParser);
-		this.identifier = wordParser.moveForward(identifier);
-		setText(identifier);
+		this.identifier = wordParser.moveForward(getText());
 
 		int position = wordParser.position();
 		int count = wordParser.skipLeadingWhitespace();
@@ -254,14 +253,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	protected abstract void parseEncapsulatedExpression(WordParser wordParser,
 	                                                    int whitespaceCount,
 	                                                    boolean tolerant);
-
-	/**
-	 * Parses the identifier of this expression.
-	 *
-	 * @param text The text to parse, which starts with the identifier
-	 * @return The identifier for this expression
-	 */
-	protected abstract String parseIdentifier(WordParser wordParser);
 
 	protected abstract void removeEncapsulatedExpression();
 

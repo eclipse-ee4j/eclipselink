@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>SELECT e FROM Employee e JOIN TREAT(e.projects AS LargeProject) lp WHERE lp.budget = value</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -50,11 +50,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	private AbstractExpression entityType;
 
 	/**
-	 * Determines whether the identifier <b>AS</b> was parsed.
-	 */
-	private boolean hasAs;
-
-	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
 	 */
 	private boolean hasSpaceAfterAs;
@@ -70,7 +65,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public TreatExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, TREAT);
 	}
 
 	/**
@@ -113,7 +108,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		}
 
 		// AS
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 		}
 
@@ -176,7 +171,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -195,7 +190,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 */
 	@Override
 	public boolean hasEncapsulatedExpression() {
-		return hasCollectionValuedPathExpression() || hasAs || hasEntityType();
+		return hasCollectionValuedPathExpression() || hasAs() || hasEntityType();
 	}
 
 	/**
@@ -246,10 +241,8 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 
 		hasSpaceAfterCollectionValuedPathExpression = wordParser.skipLeadingWhitespace() > 0;
 
-		// AS
-		hasAs = wordParser.startsWithIdentifier(AS);
-
-		if (hasAs) {
+		// Parse 'AS'
+		if (wordParser.startsWithIdentifier(AS)) {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -262,14 +255,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 			entityType = new EntityTypeLiteral(this, wordParser.word());
 			entityType.parse(wordParser, tolerant);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return TREAT;
 	}
 
 	/**
@@ -296,7 +281,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		}
 
 		// AS
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 		}
 

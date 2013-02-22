@@ -33,9 +33,10 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	 * Creates a new <code>MapEntryIdentificationVariableExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier that starts this expression
 	 */
-	protected EncapsulatedIdentificationVariableExpression(AbstractExpression parent) {
-		super(parent);
+	protected EncapsulatedIdentificationVariableExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**

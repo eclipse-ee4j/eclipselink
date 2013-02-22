@@ -27,22 +27,12 @@ import java.util.*;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 
 import java.io.*;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
 
 /** <p><b>Purpose</b>: Provides Pervasive SQL DBMS specific behavior.
 * 

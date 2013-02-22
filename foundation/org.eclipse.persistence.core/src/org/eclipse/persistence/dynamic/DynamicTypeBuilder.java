@@ -27,7 +27,6 @@ import org.w3c.dom.Document;
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager;

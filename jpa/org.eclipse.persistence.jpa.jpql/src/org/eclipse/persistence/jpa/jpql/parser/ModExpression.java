@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The modulo operation finds the remainder of division of one number by another.
  * <p>
@@ -27,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= MOD(arithmetic_expression, arithmetic_expression)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -39,7 +37,7 @@ public final class ModExpression extends AbstractDoubleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public ModExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, MOD);
 	}
 
 	/**
@@ -62,13 +60,5 @@ public final class ModExpression extends AbstractDoubleEncapsulatedExpression {
 	@Override
 	public String parameterExpressionBNF(int index) {
 		return InternalModExpressionBNF.ID;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return MOD;
 	}
 }

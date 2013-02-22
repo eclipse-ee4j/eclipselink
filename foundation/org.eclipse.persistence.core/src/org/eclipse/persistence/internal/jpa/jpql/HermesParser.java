@@ -38,6 +38,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DatabaseQuery.ParameterType;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -92,7 +93,8 @@ public final class HermesParser implements JPAQueryBuilder {
 		if (inputParameters != null) {
 
 			for (String inputParameter : inputParameters.keySet()) {
-				databaseQuery.addArgument(inputParameter.substring(1), inputParameters.get(inputParameter));
+			    ParameterType type = inputParameter.startsWith("?")? ParameterType.POSITIONAL: ParameterType.NAMED; 
+				databaseQuery.addArgument(inputParameter.substring(1), inputParameters.get(inputParameter), type);
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -58,6 +58,8 @@
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
@@ -138,7 +140,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         super(annotation, annotatedElement, classAccessor);
         
         if (annotation != null) {
-            m_optional = (Boolean) annotation.getAttribute("optional");
+            m_optional = annotation.getAttributeBooleanDefaultTrue("optional");
         }
         
         // Set the primary key join columns if some are present.
@@ -150,9 +152,8 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
             }
             
             // Set the primary key foreign key metadata if one is specified.
-            MetadataAnnotation foreignKey = (MetadataAnnotation) primaryKeyJoinColumns.getAttribute("foreignKey");
-            if (foreignKey != null) {
-                setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(foreignKey, this));
+            if (primaryKeyJoinColumns.hasAttribute("foreignKey")) {
+                setPrimaryKeyForeignKey(new PrimaryKeyForeignKeyMetadata(primaryKeyJoinColumns.getAttributeAnnotation("foreignKey"), this));
             }
         }
         
@@ -169,10 +170,10 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the mapped by id if one is present.
         if (isAnnotationPresent(JPA_MAPS_ID)) {
-            // Call getAttributeString in this case because we rely on the
-            // mapsId not being null and it's value of "" means we need to
-            // default. getAttribute returns null which kills hasMapsId() logic
-            m_mapsId = (String) getAnnotation(JPA_MAPS_ID).getAttributeString("value");
+            // Call getAttributeString with a default because we rely on the
+            // mapsId not being null and its value of "" which means we need to
+            // default. getAttributeString returns null which kills hasMapsId() logic.
+            m_mapsId = getAnnotation(JPA_MAPS_ID).getAttributeString("value", "");
         }
         
         // Set the derived id if one is specified.
@@ -702,7 +703,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         // Process the primary key foreign key metadata if specified for this
         // accessor.
         if (m_primaryKeyForeignKey != null) {
-            getDescriptor().getPrimaryKeyTable().addForeignKeyConstraint(m_primaryKeyForeignKey.process());
+            m_primaryKeyForeignKey.process(getDescriptor().getPrimaryKeyTable());
         }
     }
     

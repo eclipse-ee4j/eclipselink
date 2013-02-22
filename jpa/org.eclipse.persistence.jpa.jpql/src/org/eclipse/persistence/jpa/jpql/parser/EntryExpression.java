@@ -13,14 +13,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
+ * An identification variable qualified by the <code><b>ENTRY</b></code> operator is a path
+ * expression. The <code><b>ENTRY</b></code> operator may only be applied to identification
+ * variables that correspond to map-valued associations or map-valued element collections.
+ * The type of the path expression is the type computed as the result of the operation; that
+ * is, the abstract schema type of the field that is the value of the <code><b>ENTRY</b></code>
+ * operator (the map entry).
+ * <p>
  * This is part of JPA 2.0.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,7 +37,7 @@ public final class EntryExpression extends EncapsulatedIdentificationVariableExp
 	 * @param parent The parent of this expression
 	 */
 	public EntryExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, ENTRY);
 	}
 
 	/**
@@ -40,13 +45,5 @@ public final class EntryExpression extends EncapsulatedIdentificationVariableExp
 	 */
 	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return ENTRY;
 	}
 }

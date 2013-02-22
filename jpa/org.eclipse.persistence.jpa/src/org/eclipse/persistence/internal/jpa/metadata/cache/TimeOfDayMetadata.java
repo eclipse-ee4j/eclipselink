@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -57,10 +57,10 @@ public class TimeOfDayMetadata extends ORMetadata {
     public TimeOfDayMetadata(MetadataAnnotation timeOfDay, MetadataAccessor accessor) {
         super(timeOfDay, accessor);
         
-        m_hour = (Integer) timeOfDay.getAttribute("hour");
-        m_millisecond = (Integer) timeOfDay.getAttribute("millisecond");
-        m_minute = (Integer) timeOfDay.getAttribute("minute");
-        m_second = (Integer) timeOfDay.getAttribute("second");
+        m_hour = timeOfDay.getAttributeInteger("hour");
+        m_millisecond = timeOfDay.getAttributeInteger("millisecond");
+        m_minute = timeOfDay.getAttributeInteger("minute");
+        m_second = timeOfDay.getAttributeInteger("second");
     }
     
     /**

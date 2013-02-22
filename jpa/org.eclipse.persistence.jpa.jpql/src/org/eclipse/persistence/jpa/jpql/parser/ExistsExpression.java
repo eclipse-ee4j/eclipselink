@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>exists_expression ::= [NOT] EXISTS(subquery)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -39,7 +39,7 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	 * @param parent The parent of this expression
 	 */
 	public ExistsExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, EXISTS);
 	}
 
 	/**
@@ -88,6 +88,22 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void parse(WordParser wordParser, boolean tolerant) {
+
+		// Parse 'NOT'
+		if (wordParser.startsWithIgnoreCase('N')) {
+			int position = wordParser.position();
+			notIdentifier = wordParser.substring(position, position + 3);
+			setText(NOT_EXISTS);
+		}
+
+		super.parse(wordParser, tolerant);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
 		if (tolerant) {
@@ -97,18 +113,5 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 		SimpleSelectStatement expression = new SimpleSelectStatement(this);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		if (wordParser.startsWithIgnoreCase('N')) {
-			int position = wordParser.position();
-			notIdentifier = wordParser.substring(position, position + 3);
-			return NOT_EXISTS;
-		}
-		return EXISTS;
 	}
 }

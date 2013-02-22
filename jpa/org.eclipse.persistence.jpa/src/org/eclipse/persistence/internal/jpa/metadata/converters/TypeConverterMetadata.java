@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -73,8 +73,8 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
     public TypeConverterMetadata(MetadataAnnotation typeConverter, MetadataAccessor accessor) {
         super(typeConverter, accessor);
         
-        m_dataType = getMetadataClass((String)typeConverter.getAttributeString("dataType")); 
-        m_objectType = getMetadataClass((String)typeConverter.getAttributeString("objectType")); 
+        m_dataType = getMetadataClass(typeConverter.getAttributeString("dataType")); 
+        m_objectType = getMetadataClass(typeConverter.getAttributeString("objectType")); 
     }
     
     /**

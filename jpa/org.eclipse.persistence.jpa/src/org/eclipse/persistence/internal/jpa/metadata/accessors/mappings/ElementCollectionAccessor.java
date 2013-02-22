@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -174,7 +174,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         super(elementCollection, accessibleObject, classAccessor);
         
         // Set the target class.
-        m_targetClass = getMetadataClass((String) elementCollection.getAttribute("targetClass"));
+        m_targetClass = getMetadataClass(elementCollection.getAttributeString("targetClass"));
         
         // Set the attribute overrides if some are present.
         // Set the attribute overrides first if defined.
@@ -192,8 +192,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Set the association overrides if some are present.
         // Set the association overrides first if defined.
         if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDES)) {
-            for (MetadataAnnotation associationOverride : (MetadataAnnotation[]) getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttribute("value")) {
-                addAssociationOverride(new AssociationOverrideMetadata(associationOverride, this));
+            for (Object associationOverride : getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
+                addAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
         
@@ -214,7 +214,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the composite member if one is defined.
         if (isAnnotationPresent(CompositeMember.class)) {
-            m_compositeMember = (String) getAnnotation(CompositeMember.class).getAttributeString("value");
+            m_compositeMember = getAnnotation(CompositeMember.class).getAttributeString("value");
         }
         
         // Set the order by if one is present.
@@ -229,7 +229,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the map key class if one is defined.
         if (isAnnotationPresent(JPA_MAP_KEY_CLASS)) {
-            m_mapKeyClass = getMetadataClass((String) getAnnotation(JPA_MAP_KEY_CLASS).getAttribute("value"));
+            m_mapKeyClass = getMetadataClass(getAnnotation(JPA_MAP_KEY_CLASS).getAttributeString("value"));
         }
         
         // Set the map key enumerated if one is defined.
@@ -252,9 +252,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             }
             
             // Set the map key foreign key metadata if one is specified.
-            MetadataAnnotation foreignKey = (MetadataAnnotation) mapKeyJoinColumns.getAttribute("foreignKey");
-            if (foreignKey != null) {
-                setMapKeyForeignKey(new ForeignKeyMetadata(foreignKey, this));
+            if (mapKeyJoinColumns.hasAttribute("foreignKey")) {
+                setMapKeyForeignKey(new ForeignKeyMetadata(mapKeyJoinColumns.getAttributeAnnotation("foreignKey"), this));
             }
         }
         
@@ -274,7 +273,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         
         // Set the convert key if one is defined.
         if (isAnnotationPresent(MapKeyConvert.class)) {
-            m_mapKeyConvert = (String) getAnnotation(MapKeyConvert.class).getAttribute("value");
+            m_mapKeyConvert = getAnnotation(MapKeyConvert.class).getAttributeString("value");
         }
         
         // Set the order column if one is defined.

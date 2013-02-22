@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,14 +66,14 @@ public class TableGeneratorMetadata extends TableMetadata {
         
         // Table will process 'name', but 'name' here is the generator name and 
         // the table name is 'table'. Set it correctly.
-        m_allocationSize = (Integer) tableGenerator.getAttribute("allocationSize");
-        m_initialValue = (Integer) tableGenerator.getAttribute("initialValue");
-        m_generatorName = (String) tableGenerator.getAttributeString("name"); 
-        m_pkColumnName = (String) tableGenerator.getAttributeString("pkColumnName"); 
-        m_pkColumnValue = (String) tableGenerator.getAttributeString("pkColumnValue");
-        m_valueColumnName = (String) tableGenerator.getAttributeString("valueColumnName");
+        m_allocationSize = tableGenerator.getAttributeInteger("allocationSize");
+        m_initialValue = tableGenerator.getAttributeInteger("initialValue");
+        m_generatorName = tableGenerator.getAttributeString("name"); 
+        m_pkColumnName = tableGenerator.getAttributeString("pkColumnName"); 
+        m_pkColumnValue = tableGenerator.getAttributeString("pkColumnValue");
+        m_valueColumnName = tableGenerator.getAttributeString("valueColumnName");
         
-        setName((String) tableGenerator.getAttribute("table"));
+        setName(tableGenerator.getAttributeString("table"));
     }
     
     /**

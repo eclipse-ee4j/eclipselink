@@ -22,7 +22,6 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractOrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractRangeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
@@ -1015,61 +1014,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	public static abstract class AbstractRangeExpressionTester extends AbstractExpressionTester {
-
-		public boolean hasAnd;
-		public boolean hasBetween;
-		public boolean hasSpaceAfterAnd;
-		public boolean hasSpaceAfterBetween;
-		public boolean hasSpaceAfterLowerBound;
-		private ExpressionTester lowerBoundExpression;
-		private ExpressionTester upperBoundExpression;
-
-		protected AbstractRangeExpressionTester(ExpressionTester lowerBoundExpression,
-		                                        ExpressionTester upperBoundExpression) {
-
-			super();
-			this.hasAnd                  = true;
-			this.hasSpaceAfterAnd        = true;
-			this.hasSpaceAfterLowerBound = true;
-			this.hasSpaceAfterBetween    = true;
-			this.lowerBoundExpression    = lowerBoundExpression;
-			this.upperBoundExpression    = upperBoundExpression;
-		}
-
-		protected abstract Class<? extends AbstractRangeExpression> expressionType();
-
-		public void test(Expression expression) {
-			assertInstance(expression, expressionType());
-
-			AbstractRangeExpression rangeExpression = (AbstractRangeExpression) expression;
-			assertEquals(toString(),                     rangeExpression.toParsedText());
-			assertEquals(hasAnd,                         rangeExpression.hasAnd());
-			assertEquals(!lowerBoundExpression.isNull(), rangeExpression.hasLowerBoundExpression());
-			assertEquals(hasSpaceAfterAnd,               rangeExpression.hasSpaceAfterAnd());
-			assertEquals(hasSpaceAfterBetween,           rangeExpression.hasSpaceAfterBetween());
-			assertEquals(hasSpaceAfterLowerBound,        rangeExpression.hasSpaceAfterLowerBound());
-			assertEquals(!upperBoundExpression.isNull(), rangeExpression.hasUpperBoundExpression());
-
-			lowerBoundExpression.test(rangeExpression.getLowerBoundExpression());
-			upperBoundExpression.test(rangeExpression.getUpperBoundExpression());
-		}
-
-		protected void toStringRange(StringBuilder sb) {
-			sb.append(lowerBoundExpression);
-			if (hasSpaceAfterLowerBound) {
-				sb.append(SPACE);
-			}
-			if (hasAnd) {
-				sb.append(AND);
-			}
-			if (hasSpaceAfterAnd) {
-				sb.append(SPACE);
-			}
-			sb.append(upperBoundExpression);
-		}
-	}
-
 	public static final class AbstractSchemaNameTester extends AbstractExpressionTester {
 
 		private String abstractSchemaName;
@@ -1541,36 +1485,51 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	public static final class BetweenExpressionTester extends AbstractRangeExpressionTester {
+	public static final class BetweenExpressionTester extends AbstractExpressionTester {
 
 		private ExpressionTester expression;
+		public boolean hasAnd;
+		public boolean hasBetween;
 		private boolean hasNot;
+		public boolean hasSpaceAfterAnd;
+		public boolean hasSpaceAfterBetween;
+		public boolean hasSpaceAfterLowerBound;
+		private ExpressionTester lowerBoundExpression;
+		private ExpressionTester upperBoundExpression;
 
 		protected BetweenExpressionTester(ExpressionTester expression,
 		                                  boolean hasNot,
 		                                  ExpressionTester lowerBoundExpression,
 		                                  ExpressionTester upperBoundExpression) {
 
-			super(lowerBoundExpression, upperBoundExpression);
-			this.hasNot     = hasNot;
-			this.expression = expression;
+			super();
+			this.hasNot                  = hasNot;
+			this.hasAnd                  = true;
+			this.expression              = expression;
+			this.hasSpaceAfterAnd        = true;
+			this.hasSpaceAfterLowerBound = true;
+			this.hasSpaceAfterBetween    = true;
+			this.lowerBoundExpression    = lowerBoundExpression;
+			this.upperBoundExpression    = upperBoundExpression;
 		}
 
-		@Override
-		protected Class<BetweenExpression> expressionType() {
-			return BetweenExpression.class;
-		}
-
-		@Override
 		public void test(Expression expression) {
-			super.test(expression);
 			assertInstance(expression, BetweenExpression.class);
 
 			BetweenExpression betweenExpression = (BetweenExpression) expression;
-			assertEquals(!this.expression.isNull(), betweenExpression.hasExpression());
-			assertEquals(hasNot,                    betweenExpression.hasNot());
+			assertEquals(toString(),                     betweenExpression.toParsedText());
+			assertEquals(!this.expression.isNull(),      betweenExpression.hasExpression());
+			assertEquals(hasNot,                         betweenExpression.hasNot());
+			assertEquals(hasAnd,                         betweenExpression.hasAnd());
+			assertEquals(!lowerBoundExpression.isNull(), betweenExpression.hasLowerBoundExpression());
+			assertEquals(hasSpaceAfterAnd,               betweenExpression.hasSpaceAfterAnd());
+			assertEquals(hasSpaceAfterBetween,           betweenExpression.hasSpaceAfterBetween());
+			assertEquals(hasSpaceAfterLowerBound,        betweenExpression.hasSpaceAfterLowerBound());
+			assertEquals(!upperBoundExpression.isNull(), betweenExpression.hasUpperBoundExpression());
 
 			this.expression.test(betweenExpression.getExpression());
+			lowerBoundExpression.test(betweenExpression.getLowerBoundExpression());
+			upperBoundExpression.test(betweenExpression.getUpperBoundExpression());
 		}
 
 		@Override
@@ -1588,7 +1547,17 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			if (hasSpaceAfterBetween) {
 				sb.append(SPACE);
 			}
-			toStringRange(sb);
+			sb.append(lowerBoundExpression);
+			if (hasSpaceAfterLowerBound) {
+				sb.append(SPACE);
+			}
+			if (hasAnd) {
+				sb.append(AND);
+			}
+			if (hasSpaceAfterAnd) {
+				sb.append(SPACE);
+			}
+			sb.append(upperBoundExpression);
 			return sb.toString();
 		}
 	}

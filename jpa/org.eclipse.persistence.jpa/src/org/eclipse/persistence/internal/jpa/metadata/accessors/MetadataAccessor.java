@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -607,7 +607,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         if (m_access == null) {
             MetadataAnnotation access = getAnnotation(JPA_ACCESS);
             if (access != null) {
-                setAccess((String) access.getAttribute("value"));
+                setAccess(access.getAttributeString("value"));
             }
         }
     }
@@ -889,7 +889,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         annotation = getAnnotation(Partitioned.class);
         if (!processed && annotation != null) {
             processed = true;
-            processPartitioned((String)annotation.getAttribute("value"));
+            processPartitioned(annotation.getAttributeString("value"));
         }
         if (found && !processed) {
             getLogger().logWarningMessage(MetadataLogger.WARNING_PARTIONED_NOT_SET, getJavaClass(), getAccessibleObject());

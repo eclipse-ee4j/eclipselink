@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -60,17 +60,16 @@ public abstract class RelationalColumnMetadata extends MetadataColumn {
         super(relationalColumn, accessor);
         
         if (relationalColumn != null) {
-            m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedColumnName"));
+            m_referencedColumnName = (relationalColumn.getAttributeString("referencedColumnName"));
             
             // Also allow EIS/NoSQL synonym referencedFieldName
             if (m_referencedColumnName == null) {
-                m_referencedColumnName = ((String) relationalColumn.getAttribute("referencedFieldName"));                
+                m_referencedColumnName = (relationalColumn.getAttributeString("referencedFieldName"));                
             }
             
             // Set a foreign key if one if specified in the annotation.
-            MetadataAnnotation foreignKey = (MetadataAnnotation) relationalColumn.getAttribute("foreignKey");
-            if (foreignKey != null) {
-                m_foreignKey = new ForeignKeyMetadata(foreignKey, accessor);
+            if (relationalColumn.hasAttribute("foreignKey")) {
+                m_foreignKey = new ForeignKeyMetadata(relationalColumn.getAttributeAnnotation("foreignKey"), accessor);
             }
         }
     }

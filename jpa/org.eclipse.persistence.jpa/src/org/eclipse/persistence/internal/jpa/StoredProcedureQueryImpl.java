@@ -38,6 +38,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -56,7 +57,8 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.localization.EclipseLinkLocalization;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
@@ -383,6 +385,42 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     protected StoredProcedureCall getCall() {
         return (StoredProcedureCall) getDatabaseQueryInternal().getCall();
+    }
+    
+    /**
+     * Return the internal map of parameters.
+     */
+    @Override
+    protected Map<String, Parameter<?>> getInternalParameters() {
+        if (parameters == null) {
+            parameters = new HashMap<String, Parameter<?>>();
+            
+            int index = 0;
+            
+            for (Object parameter : getCall().getParameters()) {
+                Integer parameterType = getCall().getParameterTypes().get(index);
+                String argumentName = getCall().getProcedureArgumentNames().get(index);
+                
+                DatabaseField field;
+                
+                if (parameterType == getCall().INOUT) {
+                    field = (DatabaseField) ((Object[]) parameter)[0];
+                } else {
+                    field = (DatabaseField) parameter;
+                }
+                    
+                // If the argument name is null then it is a positional parameter.
+                if (argumentName == null) {
+                    parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), Integer.parseInt(field.getName())));
+                } else {
+                    parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), field.getName()));
+                }
+                    
+                ++index;
+            }
+        }
+
+        return parameters;
     }
     
     /**

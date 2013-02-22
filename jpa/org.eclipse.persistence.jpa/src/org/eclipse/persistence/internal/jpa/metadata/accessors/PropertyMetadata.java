@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -66,8 +66,8 @@ public class PropertyMetadata extends ORMetadata {
     public PropertyMetadata(MetadataAnnotation property, MetadataAccessor accessor) {
         super(property, accessor);
         
-        m_name = (String) property.getAttributeString("name");
-        m_value = (String) property.getAttributeString("value");
+        m_name = property.getAttributeString("name");
+        m_value = property.getAttributeString("value");
         m_valueType = getMetadataClass((String) property.getAttributeClass("valueType", String.class));
     }
     

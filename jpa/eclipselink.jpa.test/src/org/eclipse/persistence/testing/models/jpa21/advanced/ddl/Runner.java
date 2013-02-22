@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -10,6 +10,8 @@
  * Contributors:
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support))
+ *     02/20/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
@@ -89,19 +91,19 @@ public class Runner extends Athlete {
         name="JPA21_DDL_RUNNERS_RACES",
         joinColumns=@JoinColumn(
             name="RUNNER_ID",
-            referencedColumnName="ID",
-            foreignKey=@ForeignKey(
-                name="Runners_Races_Foreign_Key",
-                foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
-            )    
+            referencedColumnName="ID"
+        ),
+        foreignKey=@ForeignKey(
+            name="Runners_Races_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"      
         ),
         inverseJoinColumns=@JoinColumn(
             name="RACE_ID",
-            referencedColumnName="ID",
-            foreignKey=@ForeignKey(
-                name="Runners_Races_Inverse_Foreign_Key",
-                foreignKeyDefinition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_DDL_RACE (ID)"      
-            )
+            referencedColumnName="ID"
+        ),
+        inverseForeignKey=@ForeignKey(
+            name="Runners_Races_Inverse_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (RACE_ID) REFERENCES JPA21_DDL_RACE (ID)"      
         )
     )
     protected List<Race> races;
@@ -111,12 +113,11 @@ public class Runner extends Athlete {
     @MapKeyColumn(name="DISTANCE")
     @CollectionTable(
         name="JPA21_DDL_RUNNER_PBS",
-        joinColumns=@JoinColumn(
-                name="RUNNER_ID",
-                foreignKey=@ForeignKey(
-                  name="Runner_PBS_Foreign_Key",
-                  foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"
-                ))
+        joinColumns=@JoinColumn(name="RUNNER_ID"),
+        foreignKey=@ForeignKey(
+            name="Runner_PBS_Foreign_Key",
+            foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_DDL_RUNNER (ID)"
+        )
     )
     @Converts({
         @Convert(attributeName="key", converter = DistanceConverter.class),

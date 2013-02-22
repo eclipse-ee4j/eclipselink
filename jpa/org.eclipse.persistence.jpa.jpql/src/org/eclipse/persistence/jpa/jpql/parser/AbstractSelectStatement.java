@@ -385,16 +385,16 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		if (!wordParser.isTail() && !shouldManageSpaceAfterClause()) {
 
-			if (hasSpaceAfterFrom               &&
-			    whereClause == null             &&
-			    groupByClause == null           &&
+			if (hasSpaceAfterFrom     &&
+			    whereClause == null   &&
+			    groupByClause == null &&
 			    havingClause == null) {
 
 				hasSpaceAfterFrom = false;
 				wordParser.moveBackward(1);
 			}
-			else if (hasSpaceAfterWhere              &&
-			         groupByClause == null           &&
+			else if (hasSpaceAfterWhere    &&
+			         groupByClause == null &&
 			         havingClause  == null) {
 
 				hasSpaceAfterWhere = false;

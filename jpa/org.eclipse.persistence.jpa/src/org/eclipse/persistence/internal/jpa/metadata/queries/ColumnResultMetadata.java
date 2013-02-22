@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -61,8 +61,8 @@ public class ColumnResultMetadata extends ORMetadata {
     public ColumnResultMetadata(MetadataAnnotation columnResult, MetadataAccessor accessor) {
         super(columnResult, accessor);
         
-        name = (String) columnResult.getAttribute("name");
-        type = getMetadataClass((String) columnResult.getAttribute("type")); 
+        name = columnResult.getAttributeString("name");
+        type = getMetadataClass(columnResult.getAttributeString("type")); 
     }
     
     /**

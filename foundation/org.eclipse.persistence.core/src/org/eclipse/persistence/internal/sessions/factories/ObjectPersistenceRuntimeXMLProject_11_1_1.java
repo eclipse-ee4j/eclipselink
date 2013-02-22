@@ -119,10 +119,10 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
     public static DatabaseTypeWrapper wrapType(DatabaseType databaseType) {
         if (databaseType.isComplexDatabaseType()) {
             ComplexDatabaseType complexType = (ComplexDatabaseType)databaseType;
-            if (complexType.isJDBCType()) {
-            	if (complexType.isCollection()) {
-            		return new OracleArrayTypeWrapper(databaseType);
-            	}
+            if (complexType.isArray()) {
+                return  new OracleArrayTypeWrapper(databaseType);
+            }
+            if (complexType.isStruct()) {
             	return new OracleObjectTypeWrapper(databaseType);
             } 
             if (complexType.isRecord()) {
@@ -1870,6 +1870,12 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         databaseTypeMapping.setXPath("nested-type");
         descriptor.addMapping(databaseTypeMapping);
 
+        XMLDirectMapping isNestedTableMapping = new XMLDirectMapping();
+        isNestedTableMapping.setAttributeName("isNestedTable");
+        isNestedTableMapping.setXPath("@is-nested-table");
+        isNestedTableMapping.setNullValue(Boolean.FALSE);
+        descriptor.addMapping(isNestedTableMapping);
+
         return descriptor;
     }
 
@@ -1965,12 +1971,6 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          databaseTypeMapping.setReferenceClass(DatabaseTypeWrapper.class);
          databaseTypeMapping.setXPath(".");
          descriptor.addMapping(databaseTypeMapping);
-
-         XMLDirectMapping nonAssociativeMapping = new XMLDirectMapping();
-         nonAssociativeMapping.setAttributeName("isNonAssociative");
-         nonAssociativeMapping.setXPath("@non-associative");
-         nonAssociativeMapping.setNullValue(false);
-         descriptor.addMapping(nonAssociativeMapping);
          
          return descriptor;
      }

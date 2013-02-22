@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * The <b>ABS</b> function removes the minus sign from a specified argument and returns the absolute
@@ -30,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>SELECT DISTINCT o FROM Order o WHERE o.totalPrice > ABS(:dbl)</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,7 +41,7 @@ public final class AbsExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public AbsExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, ABS);
 	}
 
 	/**
@@ -65,13 +64,5 @@ public final class AbsExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return ABS;
 	}
 }

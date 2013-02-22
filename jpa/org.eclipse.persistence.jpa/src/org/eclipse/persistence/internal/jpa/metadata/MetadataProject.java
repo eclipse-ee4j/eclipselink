@@ -794,7 +794,7 @@ public class MetadataProject {
      * Add a discovered metamodel class to the session.
      */
     public void addStaticMetamodelClass(MetadataAnnotation annotation, MetadataClass metamodelClass) {
-        MetadataClass modelClass = metamodelClass.getMetadataClass((String) annotation.getAttributeString("value"));
+        MetadataClass modelClass = metamodelClass.getMetadataClass(annotation.getAttributeString("value"));
         
         m_session.addStaticMetamodelClass(modelClass.getName(), metamodelClass.getName());
     }

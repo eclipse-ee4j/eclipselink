@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The <b>SQRT</b> function takes a numeric argument and returns a double.
  * <p>
@@ -25,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= SQRT(arithmetic_expression)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -37,7 +35,7 @@ public final class SqrtExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public SqrtExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, SQRT);
 	}
 
 	/**
@@ -60,13 +58,5 @@ public final class SqrtExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return SQRT;
 	}
 }

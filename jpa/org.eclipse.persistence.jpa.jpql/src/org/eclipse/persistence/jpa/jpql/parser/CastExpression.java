@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>CAST</b> function cast value to a different type. The database type is the 2nd parameter,
+ * The <b>CAST</b> function cast value to a different type. The database type is the second parameter,
  * and can be any valid database type including size and scale.
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= CAST(scalar_expression [AS] database_type)</code>
@@ -69,7 +69,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public CastExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, CAST);
 		shouldParseWithFactoryFirst = true;
 	}
 
@@ -159,6 +159,17 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	}
 
 	/**
+	 * Determines whether something was parsed after the left parenthesis and before the
+	 * <code><b>AS</b></code> identifier.
+	 *
+	 * @return <code>true</code> the expression to be cast was parsed; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public boolean hasScalarExpression() {
+		return super.hasEncapsulatedExpression();
+	}
+
+	/**
 	 * Determines whether a whitespace parsed after <b>AS</b>.
 	 *
 	 * @return <code>true</code> if there was a whitespace parsed after <b>AS</b>;
@@ -230,14 +241,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 				databaseType.parse(wordParser, tolerant);
 			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return CAST;
 	}
 
 	/**

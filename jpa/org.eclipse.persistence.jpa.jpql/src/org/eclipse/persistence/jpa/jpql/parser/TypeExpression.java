@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                           single_valued_object_path_expression |
  *                                                           input_parameter)</code></pre><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -37,7 +37,7 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public TypeExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, TYPE);
 	}
 
 	/**
@@ -79,13 +79,5 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 			null,
 			tolerant
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return TYPE;
 	}
 }

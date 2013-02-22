@@ -11,6 +11,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
+import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,16 +23,29 @@ import java.util.ServiceLoader;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Attribute;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Descriptor;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkTemplate;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.PersistenceUnit;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.list.LinkList;
+import org.eclipse.persistence.jpa.rs.util.list.QueryList;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -208,4 +222,18 @@ public abstract class AbstractResource {
         }
         return partner;
     }
+    
+    protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
+        Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class, LinkList.class, QueryList.class };
+        JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType);
+        marshaller.setProperty(MarshallerProperties.JSON_REDUCE_ANY_ARRAYS, true);
+
+        StringWriter writer = new StringWriter();
+        marshaller.marshal(metadata, writer);
+        return writer.toString();
+    }
+
 }

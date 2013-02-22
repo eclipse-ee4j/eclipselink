@@ -36,7 +36,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div norwrap>Example: <code><b>UPDATE</b> Student st <b>SET</b> st.sname=TRIM(st.sname)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -88,7 +88,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * @param parent The parent of this expression
 	 */
 	public TrimExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, TRIM);
 	}
 
 	/**
@@ -321,14 +321,6 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 				wordParser.moveBackward(1);
 			}
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return TRIM;
 	}
 
 	private Specification parseTrimSpecification(WordParser wordParser) {

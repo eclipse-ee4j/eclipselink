@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -65,8 +65,8 @@ public class FetchGroupMetadata extends ORMetadata {
     public FetchGroupMetadata(MetadataAnnotation fetchGroup, MetadataAccessor accessor) {
         super(fetchGroup, accessor);
         
-        m_name = (String) fetchGroup.getAttribute("name");
-        m_load = (Boolean) fetchGroup.getAttributeBooleanDefaultFalse("load");
+        m_name = fetchGroup.getAttributeString("name");
+        m_load = fetchGroup.getAttributeBooleanDefaultFalse("load");
          
         for (Object fetchAttribute : fetchGroup.getAttributeArray("attributes")) { 
             m_fetchAttributes.add(new FetchAttributeMetadata((MetadataAnnotation) fetchAttribute, accessor));

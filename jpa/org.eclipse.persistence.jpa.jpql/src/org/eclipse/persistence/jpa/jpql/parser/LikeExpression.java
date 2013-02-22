@@ -414,7 +414,7 @@ public final class LikeExpression extends AbstractExpression {
 			count = 0;
 		}
 		// Parse input parameter
-		else if (character == ':' || character == '?') {
+		else if (ExpressionTools.isParameter(character)) {
 			escapeCharacter = new InputParameter(this, wordParser.word());
 			escapeCharacter.parse(wordParser, tolerant);
 			count = 0;

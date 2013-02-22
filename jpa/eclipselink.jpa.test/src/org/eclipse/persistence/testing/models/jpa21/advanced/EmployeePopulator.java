@@ -839,6 +839,27 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureParameterTest(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Parameter_Testing");
+        
+        proc.addArgument("redundant_v", String.class);
+        proc.addInOutputArgument("address_id_v", Integer.class);
+        proc.addOutputArgument("employee_count_v", Integer.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            proc.addStatement("SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID");
+            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        } else {
+            proc.addStatement("SELECT ADDRESS_ID AS '1', STREET AS '2', CITY AS '3', COUNTRY AS '4', PROVINCE AS '5', P_CODE AS '6' FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)");
+            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        }
+        
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_Named_Cursor");
@@ -1405,9 +1426,10 @@ public class EmployeePopulator {
           
             try {
                 SchemaManager schema = new SchemaManager((DatabaseSession) session);
+                schema.replaceObject(buildStoredProcedureParameterTest(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadFromAddressMappedNamed(platform));
-                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNumbered(platform));
+                schema.replaceObject(buildStoredProcedureReadFromAddressMappedNumbered(platform));                
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadAllAddresses());

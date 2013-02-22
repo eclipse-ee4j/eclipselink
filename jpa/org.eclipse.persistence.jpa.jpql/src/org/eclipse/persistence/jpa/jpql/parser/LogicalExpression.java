@@ -57,7 +57,7 @@ public abstract class LogicalExpression extends CompoundExpression {
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 		return wordParser.character() == RIGHT_PARENTHESIS ||
-		       word.equalsIgnoreCase(OR)  ||
+		       word.equalsIgnoreCase(OR)                   ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 

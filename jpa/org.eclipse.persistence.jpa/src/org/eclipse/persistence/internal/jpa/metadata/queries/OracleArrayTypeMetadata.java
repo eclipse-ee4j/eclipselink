@@ -50,7 +50,7 @@ public class OracleArrayTypeMetadata extends OracleComplexTypeMetadata {
      */
     public OracleArrayTypeMetadata(MetadataAnnotation record, MetadataAccessor accessor) {
         super(record, accessor);
-        this.nestedType = (String) record.getAttribute("nestedType");
+        this.nestedType = record.getAttributeString("nestedType");
     }
     
     /**

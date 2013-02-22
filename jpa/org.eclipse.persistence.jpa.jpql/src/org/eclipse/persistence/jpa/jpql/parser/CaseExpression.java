@@ -405,7 +405,7 @@ public final class CaseExpression extends AbstractExpression {
 		hasSpaceAfterWhenClauses = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'ELSE'
-		if (wordParser.startsWithIdentifier(ELSE)) {
+		if (!tolerant || wordParser.startsWithIdentifier(ELSE)) {
 			elseIdentifier = wordParser.moveForward(ELSE);
 			hasSpaceAfterElse = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -416,7 +416,7 @@ public final class CaseExpression extends AbstractExpression {
 		hasSpaceAfterElseExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'END'
-		if (wordParser.startsWithIdentifier(END)) {
+		if (!tolerant || wordParser.startsWithIdentifier(END)) {
 			endIdentifier = wordParser.moveForward(END);
 		}
 	}

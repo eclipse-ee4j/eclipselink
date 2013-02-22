@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
-import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryFormatterTestHelper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -31,6 +29,8 @@ import org.eclipse.persistence.jpa.jpql.tools.model.AbstractActualJPQLQueryForma
 import org.eclipse.persistence.jpa.jpql.tools.model.BaseJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.tools.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.tools.model.IJPQLQueryFormatterTestHelper;
 import org.junit.internal.builders.AllDefaultPossibilitiesBuilder;
 import org.junit.internal.runners.ErrorReportingRunner;
 import org.junit.runner.Description;
@@ -189,8 +189,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 	private List<Runner> buildChildren() {
 
-		Class<?> testClass = getTestClass().getJavaClass();
-		SuiteClasses suiteClasses = testClass.getAnnotation(SuiteClasses.class);
+		SuiteClasses suiteClasses = findSuiteClasses(getTestClass().getJavaClass());
 
 		if (suiteClasses == null) {
 			return Collections.emptyList();
@@ -234,7 +233,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		try {
 
 			// Create a runner for multiple unit-tests
-			if (testClass.isAnnotationPresent(SuiteClasses.class)) {
+			SuiteClasses suiteClasses = findSuiteClasses(testClass);
+
+			if (suiteClasses != null) {
 				return new JPQLTestRunner(testClass, suiteHelper);
 			}
 
@@ -331,6 +332,21 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	@Override
 	protected Description describeChild(Runner child) {
 		return child.getDescription();
+	}
+
+	private SuiteClasses findSuiteClasses(Class<?> testClass) {
+
+		if (testClass == Object.class) {
+			return null;
+		}
+
+		SuiteClasses suiteClasses = testClass.getAnnotation(SuiteClasses.class);
+
+		if (suiteClasses != null) {
+			return suiteClasses;
+		}
+
+		return findSuiteClasses(testClass.getSuperclass());
 	}
 
 	/**

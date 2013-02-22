@@ -1,0 +1,221 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     pfilion - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - build (default) : compiles Hermes tests, packages test jars
+        - compile : compiles Hermes tests
+        - package : jars Hermes test jars
+        - test : runs AllHermesTests
+
+        It requires some configuration of the build.properties and test.properties to run.
+-->
+<project name="eclipselink.hermes.test" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="hermes.test.is.local"/>
+
+    <dirname  property="hermes.test.build.location_temp" file="${ant.file.eclipselink.hermes.test}"/>
+    <pathconvert targetos="unix" property="hermes.test.build.location">
+        <path>
+            <pathelement location="${hermes.test.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <property name="env" environment="env" value="env"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <!-- local property overrides -->
+    <condition property="custom.bld.properties.message" value="Loading user-defined overrides from '${user.home}/build.properties'..."
+                                                     else="No user-defined overrides found to load ('${user.home}/build.properties' non-existant).">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.bld.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <condition property="custom.tst.properties.message" value="Loading user-defined test overrides from '${user.home}/test.properties'..."
+                                                     else="No user-defined test overrides found to load ('${user.home}/test.properties' non-existant).">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <echo message="${custom.tst.properties.message}"/>
+    <property file="${user.home}/test.properties"/>
+    <!-- Allows overriding defaults where access to user.home isn't allowed -->
+    <condition property="custom.local.properties.message" value="Loading local overrides from '${basedir}/local.build.properties'..."
+                                                     else="No Local overrides found to load. ('${basedir}/local.build.properties' non-existant).">
+        <available file="${basedir}/local.build.properties"/>
+    </condition>
+    <echo message="${custom.local.properties.message}"/>
+    <property file="${basedir}/local.build.properties"/>
+
+    <!-- property name="hermes.test.basedir" value="."/ -->
+
+    <!-- Allows override of the build location or "basedir" for specific configurations (can specifically define hermes.test.basedir) -->
+    <property name="hermes.test.basedir" value="${hermes.test.build.location}"/>
+    <property file="${hermes.test.basedir}/antbuild.properties"/>
+    <!-- Allows specific suites/configurations to override defaults and add custom test (runtime) properties -->
+    <property file="${hermes.test.basedir}/${test.properties}"/>
+    <property file="${hermes.test.basedir}/test.properties"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <!-- To run from another location be sure to override hermes.test.basedir appropriately -->
+    <condition property="hermes.test.2.base.dir" value="${hermes.test.basedir}/../.." else="${hermes.test.basedir}/../..">
+        <contains string="${hermes.test.build.location}" substring="jpa/${ant.project.name}"/>
+    </condition>
+    <property name="hermes.test.2.common.plugins.dir" value="${hermes.test.2.base.dir}/plugins"/>
+    <property name="hermes.test.2.jpa.plugins.dir"    value="${hermes.test.2.base.dir}/jpa/plugins"/>
+
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+
+    <echo message="ant.project.name                 = '${ant.project.name}'"/>
+    <echo message="hermes.test.build.location       = '${hermes.test.build.location}'"/>
+    <echo message="hermes.test.2.base.dir           = '${hermes.test.2.base.dir}'"/>
+    <echo message="hermes.test.2.common.plugins.dir = '${hermes.test.2.common.plugins.dir}'"/>
+    <echo message="hermes.test.2.jpa.plugins.dir    = '${hermes.test.2.jpa.plugins.dir}'"/>
+
+    <target name="config-classpath">
+        <config-compile-path/>
+        <config-run-path/>
+    </target>
+
+    <macrodef name="config-compile-path">
+        <sequential>
+        <echo message="Configuring compile.path to:"/>
+        <echo message="   '${hermes.test.2.jpa.plugins.dir}/${persistence20.jar}'"/>
+        <echo message="   '${hermes.test.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql_*.jar'"/>
+        <echo message="   "/>
+        <path id="compile.path">
+            <pathelement path="${hermes.test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <fileset dir="${hermes.test.2.common.plugins.dir}" includes="org.eclipse.persistence.jpa.jpql_*.jar"/>
+        </path>
+        </sequential>
+    </macrodef>
+
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="build" depends="clean, init, compile, package" description="build EclipseLink Hermes testing jars"/>
+
+    <target name="clean" description="Clean the build" depends="">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${hermes.test.basedir}/${classes.dir}"/>
+        </delete>
+    </target>
+
+    <!-- Creates required directories for building. -->
+    <target name="init">
+        <mkdir dir="${hermes.test.basedir}/${classes.dir}"/>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" description="compile Hermes testing" depends="init, config-classpath, compile-test"/>
+
+    <target name="compile-test">
+        <javac srcdir="${hermes.test.basedir}/${src.dir}:${hermes.test.basedir}/${resource.source.dir}"
+               destdir="${hermes.test.basedir}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Packages Hermes unit test jars. -->
+    <target name="package" depends="config-classpath" description="build Hermes jar">
+        <jar jarfile="${hermes.test.basedir}/${hermes.test.jar}">
+           <fileset dir="${hermes.test.basedir}/${classes.dir}" includes="**/*.class"/>
+           <fileset dir="${hermes.test.basedir}/${resource.dir}" includes="resource/**/*"/>
+        </jar>
+    </target>
+
+
+    <!-- Testing -->
+
+    <!-- Classpath used for running tests. -->
+    <macrodef name="config-run-path">
+        <sequential>
+            <path id="run.classpath">
+                <pathelement path="${hermes.test.basedir}/${classes.dir}"/>
+                <path refid="compile.path"/>
+                <pathelement path="${hermes.test.basedir}/${hermes.test.jar}"/>
+            </path>
+        </sequential>
+    </macrodef>
+
+    <!-- Clean all build generated content. -->
+    <target name="clean-test" description="Clean the test">
+        <delete dir="${hermes.test.basedir}/${report.dir}"/>
+        <delete dir="${hermes.test.basedir}/${run.dir}"/>
+        <mkdir dir="${hermes.test.basedir}/${report.dir}"/>
+        <mkdir dir="${hermes.test.basedir}/${run.dir}"/>
+    </target>
+
+    <!-- Default test target, run the AllHermesTests -->
+    <target name="test" depends="clean-test, config-classpath">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Generic target for running tests -->
+    <target name="run-test" depends="config-classpath">
+
+        <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg line="${additional.jvmargs}"/>
+            <classpath>
+                <path refid="${RUN_PATH}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
+            </test>
+        </junit>
+    </target>
+
+    <!-- Generate the Hermes tests report -->
+    <target name="generate-report">
+        <junitreport todir="${hermes.test.basedir}/${report.dir}">
+            <fileset dir="${hermes.test.basedir}/${report.dir}">
+                <include name="*test-results.xml"/>
+            </fileset>
+            <report format="noframes" todir="${hermes.test.basedir}/${report.dir}"/>
+        </junitreport>
+    </target>
+
+</project>

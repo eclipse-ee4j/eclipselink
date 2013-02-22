@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * One of the aggregate functions. The arguments must be numeric.
  * <p>
@@ -30,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= SUM([DISTINCT] state_field_path_expression)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,7 +40,7 @@ public final class SumFunction extends AggregateFunction {
 	 * @param parent The parent of this expression
 	 */
 	public SumFunction(AbstractExpression parent) {
-		super(parent);
+		super(parent, SUM);
 	}
 
 	/**
@@ -50,13 +48,5 @@ public final class SumFunction extends AggregateFunction {
 	 */
 	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return SUM;
 	}
 }

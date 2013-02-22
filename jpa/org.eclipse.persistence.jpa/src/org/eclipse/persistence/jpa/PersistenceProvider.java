@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 import javax.persistence.spi.*;

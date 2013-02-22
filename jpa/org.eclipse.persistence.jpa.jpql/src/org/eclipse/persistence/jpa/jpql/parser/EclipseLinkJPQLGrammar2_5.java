@@ -45,7 +45,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * order_siblings_by_clause ::= ORDER SIBLINGS BY orderby_item {, orderby_item}*
  *
- * asof_clause ::= AS OF { SCN | TIMESTAMP } expression</code></pre>
+ * asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></pre>
  *
  * <p>Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -55,8 +55,8 @@ public class NoSqlMetadata extends ORMetadata {
     public NoSqlMetadata(MetadataAnnotation struct, MetadataAccessor accessor) {
         super(struct, accessor);
 
-        this.dataType = (String)struct.getAttribute("dataType");
-        this.dataFormat = (String)struct.getAttribute("dataFormat");
+        this.dataType = struct.getAttributeString("dataType");
+        this.dataFormat = struct.getAttributeString("dataFormat");
     }
 
     /**

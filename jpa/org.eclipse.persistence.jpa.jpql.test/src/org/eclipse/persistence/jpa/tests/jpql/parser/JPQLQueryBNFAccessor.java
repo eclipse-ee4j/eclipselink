@@ -78,6 +78,14 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
 	}
 
+	public Iterable<String> collectionValuedPathExpressionFunctions() {
+		return functions(collectionValuedPathExpressionIdentifiers());
+	}
+
+	public Iterable<String> collectionValuedPathExpressionIdentifiers() {
+		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
+	}
+
 	public Iterable<String> comparators() {
 		ExpressionFactory factory = getExpressionFactory(ComparisonExpressionFactory.ID);
 		return new ArrayIterable<String>(factory.identifiers());
@@ -114,6 +122,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> conditionalExpressionsCompoundFunctions() {
 		return conditionalExpressions(IdentifierRole.COMPOUND_FUNCTION);
+	}
+
+	public Iterable<String> conditionalExpressionsFunctions() {
+		return functions(conditionalExpressionsIdentifiers());
+	}
+
+	public Iterable<String> conditionalExpressionsIdentifiers() {
+		return getIdentifiers(ConditionalExpressionBNF.ID);
 	}
 
 	public Iterable<String> constructorItemFunctions() {

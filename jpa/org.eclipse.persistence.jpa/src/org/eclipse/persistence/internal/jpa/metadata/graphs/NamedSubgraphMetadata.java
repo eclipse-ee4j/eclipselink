@@ -66,8 +66,8 @@ public class NamedSubgraphMetadata extends ORMetadata {
     public NamedSubgraphMetadata(MetadataAnnotation namedSubgraph, ClassAccessor accessor) {
         super(namedSubgraph, accessor);
         
-        m_name = (String) namedSubgraph.getAttribute("name");
-        m_type = getMetadataClass((String) namedSubgraph.getAttributeClass("type", ClassConstants.Object_Class));
+        m_name = namedSubgraph.getAttributeString("name");
+        m_type = getMetadataClass(namedSubgraph.getAttributeClass("type", ClassConstants.Object_Class));
         
         for (Object attributeNode : namedSubgraph.getAttributeArray("attributeNodes")) {
             m_namedAttributeNodes.add(new NamedAttributeNodeMetadata((MetadataAnnotation) attributeNode, accessor));

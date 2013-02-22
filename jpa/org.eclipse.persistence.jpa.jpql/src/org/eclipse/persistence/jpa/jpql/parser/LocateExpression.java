@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The <b>LOCATE</b> function returns the position of a given string within a string, starting the
  * search at a specified position. It returns the first position at which the string was found as an
@@ -31,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_expression, string_expression [, arithmetic_expression])</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,7 +41,7 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
 	 * @param parent The parent of this expression
 	 */
 	public LocateExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, LOCATE);
 	}
 
 	/**
@@ -77,13 +75,5 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
 			case 2:  return InternalLocateThirdExpressionBNF.ID;
 			default: return InternalLocateStringExpressionBNF.ID;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return LOCATE;
 	}
 }

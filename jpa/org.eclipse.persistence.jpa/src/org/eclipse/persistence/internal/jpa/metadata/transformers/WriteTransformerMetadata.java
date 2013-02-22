@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -61,13 +61,12 @@ public class WriteTransformerMetadata extends ReadTransformerMetadata {
      */
     public WriteTransformerMetadata(MetadataAnnotation writeTransformer, MetadataAccessor accessor) {
         super(writeTransformer, accessor);
-        Object column = writeTransformer.getAttribute("column");
+        
         //Bug#391251 : If column annotation is provided, use that
-        if (column != null) {
-            m_column = new ColumnMetadata((MetadataAnnotation) column, accessor);
+        if (writeTransformer.hasAttribute("column")) {
+            m_column = new ColumnMetadata(writeTransformer.getAttributeAnnotation("column"), accessor);
         } else {
-            m_column = new 
-            ColumnMetadata(accessor.getAccessibleObject().getAnnotation(MetadataConstants.JPA_COLUMN), accessor);
+            m_column = new ColumnMetadata(accessor.getAccessibleObject().getAnnotation(MetadataConstants.JPA_COLUMN), accessor);
         }
     }
     

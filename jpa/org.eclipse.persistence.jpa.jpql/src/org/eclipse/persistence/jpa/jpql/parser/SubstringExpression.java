@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The second and third arguments of the <b>SUBSTRING</b> function denote the starting position and
  * length of the substring to be returned. These arguments are integers. The first position of a
@@ -31,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,7 +41,7 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	 * @param parent The parent of this expression
 	 */
 	public SubstringExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, SUBSTRING);
 	}
 
 	/**
@@ -77,13 +75,5 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 			case 0:  return InternalSubstringStringExpressionBNF.ID;
 			default: return InternalSubstringPositionExpressionBNF.ID;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return SUBSTRING;
 	}
 }

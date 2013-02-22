@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -76,18 +76,13 @@ public class ColumnMetadata extends DirectColumnMetadata {
 
         if (column != null) {
             // Apply the values from the column annotation.
-            setUnique((Boolean) column.getAttribute("unique"));
-            setNullable((Boolean) column.getAttribute("nullable"));
-            setUpdatable((Boolean) column.getAttribute("updatable"));
-            setInsertable((Boolean) column.getAttribute("insertable"));
+            setUnique(column.getAttributeBooleanDefaultFalse("unique"));
 
-            setScale((Integer) column.getAttribute("scale"));
-            setLength((Integer) column.getAttribute("length"));
-            setPrecision((Integer) column.getAttribute("precision"));
+            setScale(column.getAttributeInteger("scale"));
+            setLength(column.getAttributeInteger("length"));
+            setPrecision(column.getAttributeInteger("precision"));
 
-            setName((String) column.getAttributeString("name"));
-            setTable((String) column.getAttributeString("table"));
-            setColumnDefinition((String) column.getAttributeString("columnDefinition"));
+            setTable(column.getAttributeString("table"));
         }
     }
 

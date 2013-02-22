@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The <b>UPPER</b> function converts a string to upper case and it returns a string.
  * <p>
@@ -25,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= UPPER(string_expression)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -37,7 +35,7 @@ public final class UpperExpression extends AbstractSingleEncapsulatedExpression 
 	 * @param parent The parent of this expression
 	 */
 	public UpperExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, UPPER);
 	}
 
 	/**
@@ -60,13 +58,5 @@ public final class UpperExpression extends AbstractSingleEncapsulatedExpression 
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return UPPER;
 	}
 }

@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                                state_field_path_expression |
  *                                                                single_valued_object_path_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,7 +34,7 @@ public final class CountFunction extends AggregateFunction {
 	 * @param parent The parent of this expression
 	 */
 	public CountFunction(AbstractExpression parent) {
-		super(parent);
+		super(parent, COUNT);
 	}
 
 	/**
@@ -73,13 +73,5 @@ public final class CountFunction extends AggregateFunction {
 	@Override
 	public String encapsulatedExpressionBNF() {
 		return InternalCountBNF.ID;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return COUNT;
 	}
 }

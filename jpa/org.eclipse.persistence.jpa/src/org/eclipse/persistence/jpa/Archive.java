@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
-
 /**
  * Provides an abstraction to deal with various kinds of URLs that can
  * be returned by

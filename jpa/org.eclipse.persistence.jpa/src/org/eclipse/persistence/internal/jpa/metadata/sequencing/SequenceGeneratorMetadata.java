@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -22,9 +22,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.sequencing.NativeSequence;
 
 /**
@@ -68,12 +66,12 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     public SequenceGeneratorMetadata(MetadataAnnotation sequenceGenerator, MetadataAccessor accessor) {
         super(sequenceGenerator, accessor);
         
-        m_allocationSize = (Integer) sequenceGenerator.getAttribute("allocationSize");
-        m_initialValue = (Integer) sequenceGenerator.getAttribute("initialValue"); 
-        m_name = (String) sequenceGenerator.getAttributeString("name"); 
-        m_schema = (String) sequenceGenerator.getAttributeString("schema"); 
-        m_catalog = (String) sequenceGenerator.getAttributeString("catalog");
-        m_sequenceName = (String) sequenceGenerator.getAttributeString("sequenceName"); 
+        m_allocationSize = sequenceGenerator.getAttributeInteger("allocationSize");
+        m_initialValue = sequenceGenerator.getAttributeInteger("initialValue"); 
+        m_name = sequenceGenerator.getAttributeString("name"); 
+        m_schema = sequenceGenerator.getAttributeString("schema"); 
+        m_catalog = sequenceGenerator.getAttributeString("catalog");
+        m_sequenceName = sequenceGenerator.getAttributeString("sequenceName"); 
     }
     
     /**
@@ -208,27 +206,13 @@ public class SequenceGeneratorMetadata extends ORMetadata {
     }  
     
     /**
-     * INTERNAL: 
-     */
-    @Override
-    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
-        super.initXMLObject(accessibleObject, entityMappings);
-        
-        // We must set our sequence name now since we have dependencies on it
-        // before process.
-        if (m_sequenceName == null) {
-            m_sequenceName = "";
-        }
-    }
-    
-    /**
      * INTERNAL:
      */
     public NativeSequence process(MetadataLogger logger) {
         NativeSequence sequence = new NativeSequence();
         
         // Process the sequence name.
-        if (m_sequenceName.equals("")) {
+        if (m_sequenceName == null || m_sequenceName.equals("")) {
             logger.logConfigMessage(logger.SEQUENCE_GENERATOR_SEQUENCE_NAME, m_name, getAccessibleObject(), getLocation());
             sequence.setName(m_name);
         } else {

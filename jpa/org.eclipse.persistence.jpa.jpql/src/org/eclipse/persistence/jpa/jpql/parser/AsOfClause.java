@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * evaluate to a timestamp value. Oracle Database returns rows as they existed at the specified
  * system change number or time.
  *
- * <div nowrap><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } expression</code></div><p>
+ * <div nowrap><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></div><p>
  *
  * @version 2.5
  * @since 2.5
@@ -253,7 +253,6 @@ public final class AsOfClause extends AbstractExpression {
 		}
 
 		// Expression
-		                               // TODO
 		expression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
 	}
 

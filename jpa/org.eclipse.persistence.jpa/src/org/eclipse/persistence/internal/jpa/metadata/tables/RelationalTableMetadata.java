@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     11/19/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     12/07/2012-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.tables;
@@ -62,14 +64,14 @@ public class RelationalTableMetadata extends TableMetadata {
         super(relationalTable, accessor);
         
         if (relationalTable != null) {
+            // Add the join columns if specified in the annotation.
             for (Object joinColumn : relationalTable.getAttributeArray("joinColumns")) {
-                JoinColumnMetadata joinColumnMetadata = new JoinColumnMetadata((MetadataAnnotation) joinColumn, accessor);
-                m_joinColumns.add(joinColumnMetadata);
-                
-                // Set the foreign key metadata from the join column if available.
-                if (joinColumnMetadata.hasForeignKey()) {
-                    setForeignKey(joinColumnMetadata.getForeignKey());
-                }
+                m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation) joinColumn, accessor));
+            }
+            
+            // Set the foreign key if one is specified in the annotation.
+            if (relationalTable.hasAttribute("foreignKey")) {
+                m_foreignKey = new ForeignKeyMetadata(relationalTable.getAttributeAnnotation("foreignKey"), accessor);
             }
         }
     }
@@ -137,7 +139,7 @@ public class RelationalTableMetadata extends TableMetadata {
     @Override
     public void processForeignKey() {
         if (m_foreignKey != null) {
-            getDatabaseTable().addForeignKeyConstraint(m_foreignKey.process());
+            m_foreignKey.process(getDatabaseTable());
         }
     }
     

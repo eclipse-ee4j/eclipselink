@@ -22,9 +22,9 @@ public final class SubExpressionTest extends JPQLParserTest {
 	@Test
 	public void test_JPQLQuery_01() {
 
-		String query = "SELECT e " +
-		               "FROM Employee e " +
-		               "WHERE (x > 2) AND (AVG (e.name) <> TRIM (e.name))";
+		String jpqlQuery = "SELECT e " +
+		                   "FROM Employee e " +
+		                   "WHERE (x > 2) AND (AVG (e.name) <> TRIM (e.name))";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -37,15 +37,15 @@ public final class SubExpressionTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void test_JPQLQuery_02() {
 
-		String query = "SELECT e " +
-		               "FROM Employee e " +
-		               "WHERE (x > 2) AND ((AVG (e.name) <> TRIM (e.name)))";
+		String jpqlQuery = "SELECT e " +
+		                   "FROM Employee e " +
+		                   "WHERE (x > 2) AND ((AVG (e.name) <> TRIM (e.name)))";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -60,15 +60,15 @@ public final class SubExpressionTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void test_JPQLQuery_03() {
 
-		String query = "SELECT e " +
-		               "FROM Employee e " +
-		               "WHERE (((e.name LIKE 'Pascal')) AND ((CURRENT_DATE) > 2))";
+		String jpqlQuery = "SELECT e " +
+		                   "FROM Employee e " +
+		                   "WHERE (((e.name LIKE 'Pascal')) AND ((CURRENT_DATE) > 2))";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -83,6 +83,36 @@ public final class SubExpressionTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_JPQLQuery_04() {
+
+		String jpqlQuery = "select (), ((), ()), (,), from Employee e";
+
+		CollectionExpressionTester collection = collection(
+			nullExpression(),
+			nullExpression()
+		);
+		collection.spaces[0] = false;
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(
+				collection(
+					sub(nullExpression()),
+					sub(collection(
+						sub(nullExpression()),
+						sub(nullExpression())
+					)),
+					sub(collection),
+					nullExpression()
+				)
+			),
+			from("Employee", "e")
+		);
+
+		selectStatement.hasSpaceAfterSelect = false;
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -76,13 +76,13 @@ public class QueryRedirectorsMetadata extends ORMetadata {
     public QueryRedirectorsMetadata(MetadataAnnotation redirectors, MetadataAccessor accessor) {
         super(redirectors, accessor);
         
-        defaultQueryRedirector = getMetadataClass((String) redirectors.getAttribute("allQueries"));
-        defaultReadAllQueryRedirector = getMetadataClass((String) redirectors.getAttribute("readAll"));
-        defaultReadObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("readObject"));
-        defaultInsertObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("insert"));
-        defaultDeleteObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("delete"));
-        defaultUpdateObjectQueryRedirector = getMetadataClass((String) redirectors.getAttribute("update"));
-        defaultReportQueryRedirector = getMetadataClass((String) redirectors.getAttribute("report"));
+        defaultQueryRedirector = getMetadataClass(redirectors.getAttributeString("allQueries"));
+        defaultReadAllQueryRedirector = getMetadataClass(redirectors.getAttributeString("readAll"));
+        defaultReadObjectQueryRedirector = getMetadataClass(redirectors.getAttributeString("readObject"));
+        defaultInsertObjectQueryRedirector = getMetadataClass(redirectors.getAttributeString("insert"));
+        defaultDeleteObjectQueryRedirector = getMetadataClass(redirectors.getAttributeString("delete"));
+        defaultUpdateObjectQueryRedirector = getMetadataClass(redirectors.getAttributeString("update"));
+        defaultReportQueryRedirector = getMetadataClass(redirectors.getAttributeString("report"));
     }
 
     /**

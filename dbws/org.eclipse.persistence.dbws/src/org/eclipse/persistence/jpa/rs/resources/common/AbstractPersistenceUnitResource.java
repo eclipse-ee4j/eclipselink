@@ -11,7 +11,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.resources.common;
 
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +23,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
@@ -39,12 +37,10 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Query;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import org.eclipse.persistence.jpa.rs.util.list.QueryList;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -91,9 +87,15 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             List<Query> queries = new ArrayList<Query>();
             addQueries(queries, app, null);
             String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
+            QueryList queryList = new QueryList();
+            queryList.setList(queries);
             String result = null;
             try {
-                result = marshallMetadata(queries, mediaType);
+                if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+                    result = marshallMetadata(queryList.getList(), mediaType);
+                } else {
+                    result = marshallMetadata(queryList, mediaType);
+                }
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_query_metadata", new Object[] { persistenceUnit, e.toString() });
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -116,9 +118,15 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 }
             }
             String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
+            QueryList queryList = new QueryList();
+            queryList.setList(returnQueries);
             String result = null;
             try {
-                result = marshallMetadata(returnQueries, mediaType);
+                if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+                    result = marshallMetadata(queryList.getList(), mediaType);
+                } else {
+                    result = marshallMetadata(queryList, mediaType);
+                }
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_individual_query_metadata", new Object[] { queryName, persistenceUnit, e.toString() });
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
@@ -258,16 +266,4 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
         return returnQuery;
     }
-
-    protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
-        Class<?>[] jaxbClasses = new Class[] { Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class };
-        JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(jaxbClasses, null);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType);
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(metadata, writer);
-        return writer.toString();
-    }
-
 }

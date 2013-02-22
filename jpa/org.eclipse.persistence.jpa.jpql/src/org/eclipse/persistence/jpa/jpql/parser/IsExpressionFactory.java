@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This {@link IsExpressionFactory} creates a new expression when the portion of the query to parse
@@ -22,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see EmptyCollectionComparisonExpression
  * @see NullComparisonExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -31,13 +32,13 @@ public final class IsExpressionFactory extends ExpressionFactory {
 	/**
 	 * The unique identifier of this {@link IsExpressionFactory}.
 	 */
-	public static final String ID = Expression.IS;
+	public static final String ID = IS;
 
 	/**
 	 * Creates a new <code>IsExpressionFactory</code>.
 	 */
 	public IsExpressionFactory() {
-		super(ID, Expression.IS);
+		super(ID, IS);
 	}
 
 	/**
@@ -56,33 +57,35 @@ public final class IsExpressionFactory extends ExpressionFactory {
 		int count = wordParser.whitespaceCount(index);
 		index += count;
 
-		// IS NOT EMPTY or IS NO NULL
-		if (wordParser.startsWithIdentifier(Expression.NOT, index)) {
+		// IS NOT EMPTY or IS NOT NULL
+		if (wordParser.startsWithIdentifier(NOT, index)) {
 			index += 3;
 			count = wordParser.whitespaceCount(index);
 			index += count;
 
 			// IS NOT EMPTY
-			if (wordParser.startsWithIdentifier(Expression.EMPTY, index)) {
-				expression = new EmptyCollectionComparisonExpression(parent, Expression.IS_NOT_EMPTY, expression);
+			if (wordParser.startsWithIdentifier(EMPTY, index)) {
+				expression = new EmptyCollectionComparisonExpression(parent, IS_NOT_EMPTY, expression);
 			}
 			// IS NOT NULL
-			else if (wordParser.startsWithIdentifier(Expression.NULL, index)) {
-				expression = new NullComparisonExpression(parent, Expression.IS_NOT_NULL, expression);
+			else if (wordParser.startsWithIdentifier(NULL, index)) {
+				expression = new NullComparisonExpression(parent, IS_NOT_NULL, expression);
 			}
+			// IS NOT
 			else {
 				word = wordParser.substring(position, index - count);
 				expression = new UnknownExpression(parent, word);
 			}
 		}
 		// IS EMPTY
-		else if (wordParser.startsWithIdentifier(Expression.EMPTY, index)) {
-			expression = new EmptyCollectionComparisonExpression(parent, Expression.IS_EMPTY, expression);
+		else if (wordParser.startsWithIdentifier(EMPTY, index)) {
+			expression = new EmptyCollectionComparisonExpression(parent, IS_EMPTY, expression);
 		}
 		// IS NULL
-		else if (wordParser.startsWithIdentifier(Expression.NULL, index)) {
-			expression = new NullComparisonExpression(parent, Expression.IS_NULL, expression);
+		else if (wordParser.startsWithIdentifier(NULL, index)) {
+			expression = new NullComparisonExpression(parent, IS_NULL, expression);
 		}
+		// IS
 		else {
 			word = wordParser.substring(position, index - count);
 			expression = new UnknownExpression(parent, word);

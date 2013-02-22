@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -79,9 +79,9 @@ public class TableMetadata extends ORMetadata {
         super(table, accessor);
         
         if (table != null) {
-            m_name = (String) table.getAttribute("name"); 
-            m_schema = (String) table.getAttribute("schema"); 
-            m_catalog = (String) table.getAttribute("catalog");
+            m_name = table.getAttributeString("name"); 
+            m_schema = table.getAttributeString("schema"); 
+            m_catalog = table.getAttributeString("catalog");
 
             for (Object uniqueConstraint : table.getAttributeArray("uniqueConstraints")) {
                 m_uniqueConstraints.add(new UniqueConstraintMetadata((MetadataAnnotation) uniqueConstraint, accessor));

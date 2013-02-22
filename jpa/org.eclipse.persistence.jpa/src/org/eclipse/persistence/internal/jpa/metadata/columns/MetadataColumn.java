@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -58,8 +58,8 @@ public abstract class MetadataColumn extends ORMetadata {
         super(column, accessor);
         
         if (column != null) {
-            m_name = (String) column.getAttribute("name");
-            m_columnDefinition =  (String) column.getAttribute("columnDefinition");
+            m_name = column.getAttributeString("name");
+            m_columnDefinition =  column.getAttributeString("columnDefinition");
         }
     }
     

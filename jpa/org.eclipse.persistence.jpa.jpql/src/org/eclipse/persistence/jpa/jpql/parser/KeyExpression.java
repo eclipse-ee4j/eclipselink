@@ -13,9 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
+ * An identification variable qualified by the <code><b>KEY</b></code> operator is a path
+ * expression. The <code><b>KEY</b></code> operator may only be applied to identification
+ * variables that correspond to map-valued associations or map-valued element collections.
+ * The type of the path expression is the type computed as the result of the operation; that
+ * is, the abstract schema type of the field that is the value of the <code><b>KEY</b></code>
+ * operator (the map key).
+ * <p>
  * This is part of JPA 2.0.
  * <p>
  * <div nowrap><b>BNF:</b> <code>KEY(identification_variable)</code><p>
@@ -32,7 +37,7 @@ public final class KeyExpression extends EncapsulatedIdentificationVariableExpre
 	 * @param parent The parent of this expression
 	 */
 	public KeyExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, KEY);
 	}
 
 	/**
@@ -40,13 +45,5 @@ public final class KeyExpression extends EncapsulatedIdentificationVariableExpre
 	 */
 	public void accept(ExpressionVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return KEY;
 	}
 }

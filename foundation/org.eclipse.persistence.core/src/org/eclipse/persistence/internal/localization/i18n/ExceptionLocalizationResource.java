@@ -23,6 +23,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     09 Jan 2013-2.5 Gordon Yorke
  *       - 397772: JPA 2.1 Entity Graph Support
+ *     02/19/2013-2.5 Guy Pelletier 
+ *       - 389090: JPA 2.1 DDL Generation Support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -193,7 +195,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "PARAMETER_NILL_NOT_FOUND", "Null parameter passed to getParameterValue()"},
                                            { "NO_VALUE_BOUND", "No value was bound to parameter named: {0}"},
                                            { "NULL_PARAMETER_PASSED_TO_SET_PARAMETER", "Null parameter was passed to 'setParameter'.  Can not index parameters by 'Null'."},
-                                           { "position_param_not_found", "There was not parameter bound at position: {0}."},
+                                           { "position_bound_param_not_found", "There was no bound parameter at position: {0}."},
+                                           { "position_param_not_found", "There was no parameter at position: {0}."},
                                            { "pathnode_is_primitive_node", "Criteria expression is of primitive type and can not be further navigated."},
                                            { "pathnode_type_does_not_apply_to_primitive_node", "Criteria expression is of primitive type and can not be further navigated.  Primitive Expressions do not allow 'type'."},
                                            { "cache_impl_class_has_no_descriptor_is_not_a_persistent_type", "The class [{0}] is not a persistent type - it has no associated descriptor."},                                           
@@ -210,6 +213,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21-ddl-source-script-not-found", "The source script: {0} for the generateSchema call was not found."},
                                            { "jpa21-ddl-source-script-sql-exception", "An error occured executing {0} from the source ddl generation script: {1}."},
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occured with the source ddl generation script: {0}."},
+                                           { "jpa21-ddl-invalid-source-script-type", "The source script provided {0} is of an invalid type {0}. Valid source script types are: java.io.Reader or a string designating a file URL."},
+                                           { "jpa21-ddl-invalid-target-script-type", "The target script provided {0} is of an invalid type {0}. Valid target script types are: java.io.Writer or a string designating a file URL."},
                                            { "jpa21-ddl-drop-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-drop-script-target] property."},
                                            { "jpa21-ddl-create-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-create-script-target] property."},
                                            //criteria API IllegalArgumentExceptions

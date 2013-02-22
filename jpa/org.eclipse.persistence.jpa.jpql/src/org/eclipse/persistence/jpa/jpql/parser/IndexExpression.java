@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.WordParser;
-
 /**
  * The <b>INDEX</b> function returns an integer value corresponding to the position of its argument
  * in an ordered list. The <b>INDEX</b> function can only be applied to identification variables
@@ -22,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= INDEX(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,7 +32,7 @@ public final class IndexExpression extends EncapsulatedIdentificationVariableExp
 	 * @param parent The parent of this expression
 	 */
 	public IndexExpression(AbstractExpression parent) {
-		super(parent);
+		super(parent, INDEX);
 	}
 
 	/**
@@ -50,13 +48,5 @@ public final class IndexExpression extends EncapsulatedIdentificationVariableExp
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String parseIdentifier(WordParser wordParser) {
-		return INDEX;
 	}
 }

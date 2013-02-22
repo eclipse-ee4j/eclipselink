@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This {@link AllOrAnyExpressionFactory} creates a new {@link AllOrAnyExpression} when the portion
@@ -21,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see AllOrAnyExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -53,7 +54,17 @@ public final class AllOrAnyExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new AllOrAnyExpression(parent);
+		switch (word.charAt(0)) {
+			case 's': case 'S': word = SOME; break;
+			default: {
+				switch (word.charAt(1)) {
+					case 'l': case 'L': word = ALL; break;
+					default:            word = ANY; break;
+				}
+			}
+		}
+
+		expression = new AllOrAnyExpression(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}
