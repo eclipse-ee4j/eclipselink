@@ -512,6 +512,7 @@ public class PropertiesHandler {
                 {TargetDatabase.DB2, pcg + "DB2Platform"},
                 {TargetDatabase.DBase, pcg + "DBasePlatform"},
                 {TargetDatabase.Derby, pcg + "DerbyPlatform"},
+                {TargetDatabase.HANA,  pcg + "HANAPlatform"},
                 {TargetDatabase.HSQL, pcg + "HSQLPlatform"},
                 {TargetDatabase.Informix, pcg + "InformixPlatform"},
                 {TargetDatabase.JavaDB, pcg + "JavaDBPlatform"},

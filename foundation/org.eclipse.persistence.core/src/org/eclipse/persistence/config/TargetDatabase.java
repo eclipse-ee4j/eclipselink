@@ -35,6 +35,7 @@ public class TargetDatabase {
     public static final String  DB2Mainframe = "DB2Mainframe";
     public static final String  DBase = "DBase";
     public static final String  Derby = "Derby";
+    public static final String  HANA = "HANA";
     public static final String  HSQL = "HSQL";
     public static final String  Informix = "Informix";
     public static final String  JavaDB = "JavaDB";
