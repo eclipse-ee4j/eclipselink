@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureQuery;
+import javax.persistence.TransactionRequiredException;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
@@ -295,7 +296,14 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("employee_count_v", Integer.class, ParameterMode.OUT);
                 
-                boolean result = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).execute();
+                query.setParameter("new_p_code_v", postalCodeCorrection);
+                query.setParameter("old_p_code_v", postalCodeTypo);
+                
+                boolean result = query.execute();
+                
+                Object parameterValue = query.getParameterValue("new_p_code_v");
+                assertTrue("The IN parameter value was not preserved, expected: " + postalCodeCorrection + ", actual: " + parameterValue, parameterValue.equals(postalCodeCorrection));
+                
                 assertTrue("Result did not return true for a result set.", result);
                 
                 List<Address> addressResults = query.getResultList();
@@ -591,6 +599,13 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 StoredProcedureQuery query = em.createStoredProcedureQuery("Update_Address_Postal_Code");
                 query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
+                
+                try {
+                    query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).executeUpdate();
+                    fail("TransactionRequiredException not caught");
+                } catch (TransactionRequiredException e) {
+                   // ignore since expected exception.
+                }
                 
                 beginTransaction(em);
                 int results = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).executeUpdate();
@@ -894,7 +909,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     }
     
     /**
-     * Tests a stored procedure parameter API. 
+     * Test stored procedure parameter API. 
      */
     public void testStoredProcedureParameterAPI() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {

@@ -762,7 +762,6 @@ public class DatabasePlatform extends DatasourcePlatform {
                 }
             }
         }
-        call.setProcedureArgumentNames(null);
 
         if (requiresProcedureCallBrackets()) {
             writer.write(")");

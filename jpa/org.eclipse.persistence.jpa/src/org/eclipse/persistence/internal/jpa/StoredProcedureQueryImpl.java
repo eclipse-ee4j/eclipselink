@@ -345,6 +345,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public int executeUpdate() {
         try {
+            // Need to throw TransactionRequiredException if there is no active transaction
+            entityManager.checkForTransaction(true);
+            
             // Legacy: we could have a data read query or a read all query, so 
             // clearly we shouldn't be executing an update on it. As of JPA 2.1 
             // API we always create a result set mapping query to interact with 
@@ -355,7 +358,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             if (! getDatabaseQueryInternal().isResultSetMappingQuery() || getResultSetMappingQuery().hasResultSetMappings()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
             }
-                
+            
             // If the return value is true indicating a result set then throw an exception.
             if (execute()) {
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
@@ -405,8 +408,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else {
+                } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
                     field = (DatabaseField) parameter;
+                } else {
+                    continue; // not a parameter we care about at this point.
                 }
                     
                 // If the argument name is null then it is a positional parameter.
@@ -419,7 +424,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 ++index;
             }
         }
-
+        
         return parameters;
     }
     
