@@ -43,6 +43,7 @@ public class TestServiceNonRelational {
     PersistenceContext context = null;
     private static final String PLACE_PU = "jpars_place";
     private static final String ZIPS_PU = "jpars_zip";
+    private static final String PERSON_PU = "jpars_person";
 
     @After
     public void resetContext() {
@@ -100,6 +101,50 @@ public class TestServiceNonRelational {
         assertNotNull("id is null.", id);
         assertTrue("1234".equals(id));
         assertTrue("Unexpected number of objects in loc", (((Collection) zips.get("loc")).size() == 2));
+    }
+
+    @Test
+    public void testMarshallPerson() throws Exception {
+        setContext(PERSON_PU);
+        PersistenceResource resource = new PersistenceResource();
+        resource.setPersistenceFactory(factory);
+        DynamicEntity person = (DynamicEntity) context.newEntity("Person");
+        person.set("firstName", "Jim");
+        person.set("lastName", "Smith");
+        person.set("age", new Integer(48));
+        person.set("occupation", "Engineer");
+        person.set("currentEmployer", "Oracle");
+        
+        List<String> pastEmployers = new ArrayList<String>();
+        pastEmployers.add("BEA");
+        pastEmployers.add("IBM");
+        pastEmployers.add("Sun");
+        person.set("pastEmployers", pastEmployers);
+        
+        DynamicEntity address1 = (DynamicEntity) context.newEntity("Addresses");
+        address1.set("street1", "123 Sandy Lane");
+        address1.set("city", "San Jose");
+        address1.set("state", "CA");
+        address1.set("zip", new Integer(94143));
+
+        DynamicEntity address2 = (DynamicEntity) context.newEntity("Addresses");
+        address2.set("street1", "334 California Street");
+        address2.set("city", "San Francisco");
+        address2.set("state", "CA");
+        address2.set("zip", new Integer(94110));
+        
+        List<Object> addresses = new ArrayList<Object>();
+        addresses.add(address1);
+        addresses.add(address2);
+        person.set("addresses", addresses);
+
+        context.create(null, person);
+        InputStream stream = serializeToStream(person, context, MediaType.APPLICATION_XML_TYPE);
+        person = (DynamicEntity) context.unmarshalEntity("Person", MediaType.APPLICATION_XML_TYPE, stream);
+        (new FetchGroupManager()).setObjectFetchGroup(person, null, null);
+        String firstName = person.get("firstName");
+        assertNotNull("firstName is null.", firstName);
+        assertTrue("Jim".equals(firstName));
     }
 
     private static InputStream serializeToStream(Object object, PersistenceContext context, MediaType mediaType) throws Exception {
