@@ -36,8 +36,8 @@ public class DescriptorNotFoundContentHandler extends DeferredContentHandler {
     }
 
     @Override
-    protected void processEmptyElement() throws SAXException {      
-        throw XMLMarshalException.noDescriptorFound(mapping);
+    protected void processEmptyElement() throws SAXException {
+        processSimpleElement();
     }
 
     @Override

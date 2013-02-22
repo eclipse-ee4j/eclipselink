@@ -42,6 +42,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(ElementOrderingTestCases.class);
         suite.addTestSuite(XmlElementConstantsTestCases.class);
         suite.addTestSuite(XmlElementDefaultValueTestCases.class);
+        suite.addTestSuite(EmpytElementObjectTestCases.class);
         return suite;
     }
 
