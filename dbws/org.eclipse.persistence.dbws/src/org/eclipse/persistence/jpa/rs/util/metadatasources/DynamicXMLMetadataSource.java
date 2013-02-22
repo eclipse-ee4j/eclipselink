@@ -19,6 +19,8 @@ import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
+import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -35,7 +37,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
 
 
 /**
@@ -120,14 +121,18 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         xmlElement.setJavaAttribute(mapping.getAttributeName());
         if (mapping.isObjectReferenceMapping()){
             xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
-        } else if (mapping.isCollectionMapping()){
+        } else if (mapping.isCollectionMapping()) {
             if (mapping.isEISMapping()) {
                 // No way to find out the type of the collection from EIS mappings, currently, so just set the container policy here...
                 // It will be fine for simple collections
-                xmlElement.setContainerType(((AbstractCompositeDirectCollectionMapping)mapping).getContainerPolicy().getContainerClassName());
-            } else{
-                xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
-                xmlElement.setContainerType(((CollectionMapping)mapping).getContainerPolicy().getContainerClassName());
+                if (mapping instanceof EISCompositeDirectCollectionMapping) {
+                    xmlElement.setContainerType(((EISCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                } else if (mapping instanceof EISCompositeCollectionMapping) {
+                    xmlElement.setContainerType(((EISCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                }
+            } else {
+                xmlElement.setType(((CollectionMapping) mapping).getReferenceClassName());
+                xmlElement.setContainerType(((CollectionMapping) mapping).getContainerPolicy().getContainerClassName());
             }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
