@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class InlineBinaryBuilderTestSuite extends DBWSTestSuite {
 	static final String PROJECT_NAME = "inlinebinary"; 
 	static final String BUILDER_FILE = stageDir + "/dbws-builder-inlinebinary.xml";
-	static final String WSDL_LOC = "http://localhost:7001/inlinebinary/inlinebinary?wsdl"; 
+	static final String WSDL_LOC = "http://" + host + ":" + port + "/inlinebinary/inlinebinary?wsdl"; 
 	
     public static final String CREATE_TABLE =
         "CREATE TABLE INLINEBINARY (" +

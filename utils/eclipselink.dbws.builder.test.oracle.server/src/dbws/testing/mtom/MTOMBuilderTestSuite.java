@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class MTOMBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "mtom";
     static final String BUILDER_FILE = stageDir + "/dbws-builder-mtom.xml";
-    static final String WSDL_LOC = "http://localhost:7001/mtom/mtom?wsdl";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/mtom/mtom?wsdl";
 	
     public static final String CREATE_TABLE =
         "CREATE TABLE MTOM (" +

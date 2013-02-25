@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class SimplePLSQLBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "simpleplsql";
     static final String BUILDER_FILE = stageDir + "/dbws-builder-simpleplsql.xml";
-    static final String WSDL_LOC = "http://localhost:7001/simpleplsql/simpleplsql?wsdl";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/simpleplsql/simpleplsql?wsdl";
 
     public static final String CREATE_PACKAGE =
         "CREATE OR REPLACE PACKAGE SOMEPACKAGE AS \n" +

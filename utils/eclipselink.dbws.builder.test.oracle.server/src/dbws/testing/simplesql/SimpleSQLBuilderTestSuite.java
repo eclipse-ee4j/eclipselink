@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleSQLBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "simplesql"; 
     static final String BUILDER_FILE = stageDir + "/dbws-builder-simplesql.xml";
-    static final String WSDL_LOC = "http://localhost:7001/simplesql/simplesql?wsdl"; 
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/simplesql/simplesql?wsdl"; 
 	
     public static final String CREATE_TABLE =
         "CREATE TABLE SIMPLESQL (" +
