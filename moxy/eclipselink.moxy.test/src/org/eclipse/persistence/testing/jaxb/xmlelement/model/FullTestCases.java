@@ -44,6 +44,7 @@ public class FullTestCases extends JAXBWithJSONTestCases{
         address.setId("1");
         address.setStreet("Main Street");
         address.setCity("Ottawa");
+        address.setCoords(new double[] { 1.111, 2.222 });
         customer.setAddress(address);
         
         ArrayList<Integer> orderNums = new ArrayList<Integer>();

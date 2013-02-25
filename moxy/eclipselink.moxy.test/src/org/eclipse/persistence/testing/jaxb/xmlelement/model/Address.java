@@ -12,16 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"street", "city","id"})
+@XmlType(propOrder={"street", "city", "id", "coords"})
 public class Address {
 	@XmlSchemaType(name="integer")
     private String id;
     private String street;
     private String city;
+    private double[] coords = new double[2];
 
     @XmlTransient
     public String getId() {
@@ -48,8 +51,16 @@ public class Address {
         this.city = city;
     }
 
+    public double[] getCoords() {
+        return coords;
+    }
+
+    public void setCoords(double[] coords) {
+        this.coords = coords;
+    }
+
     public String toString(){
-        String s = "Address:" +  getStreet() +" " + getCity();
+        String s = "Address:" +  getStreet() +" " + getCity() + " " + Arrays.toString(coords);
         return s;
     }
 
@@ -60,7 +71,7 @@ public class Address {
         } catch (ClassCastException cce) {
             return false;
         }
-        return city.equals(add.city) && street.equals(add.street);
+        return city.equals(add.city) && street.equals(add.street) && Arrays.equals(coords, add.coords);
     }
 
 }

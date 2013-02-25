@@ -7,6 +7,8 @@
       <address>
           <street>Main Street</street>
           <city>Ottawa</city>
+          <coords>0.0</coords>
+          <coords>0.0</coords>
       </address>
 	   </contact>
       <firstTimeCustomer>false</firstTimeCustomer>

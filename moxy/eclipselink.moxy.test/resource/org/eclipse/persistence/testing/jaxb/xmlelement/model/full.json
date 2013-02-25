@@ -37,7 +37,8 @@
          { 
          "street" : "Main Street", 
          "city" : "Ottawa",
-         "id" : 1
+         "id" : 1,
+         "coords" : [ 1.111, 2.222 ]                  
          } 
         }
 	 , 
