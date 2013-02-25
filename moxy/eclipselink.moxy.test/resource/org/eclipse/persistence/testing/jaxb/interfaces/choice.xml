@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:ListmyObject xmlns:ns0="someNamespace">
+   <myObject>
+      <test>1</test>
+      <test2>1</test2>
+      <properties>
+         <entry>
+            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">formatted</key>
+            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:boolean">true</value>
+         </entry>
+      </properties>
+   </myObject>
+   <otherObject>
+      <properties>
+         <entry>
+            <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">formatted</key>
+            <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:boolean">false</value>
+         </entry>
+      </properties>
+      <test>3</test>
+      <test2>3</test2>
+   </otherObject>
+</ns0:ListmyObject>
