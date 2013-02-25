@@ -1010,20 +1010,6 @@ public class AnnotationsProcessor {
                     processReferencePropertyTypes(property, info, next);
                 }
                 
-                if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
-                	PackageInfo pInfo = getPackageInfoForPackage(next);                	
-                	JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(type);
-                	
-                	if(adapterClass != null){
-                		continue;
-                	}
-                	
-                    CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
-                    JavaClass[] jClassArray = new JavaClass[] { type };
-                    
-                    buildNewTypeInfo(jClassArray);
-                    
-                }               
             	
                 if (property.isChoice()) {
                 	
@@ -1036,7 +1022,20 @@ public class AnnotationsProcessor {
                             buildNewTypeInfo(jClassArray);
                         }
                     }
-                }
+                } else if (!(this.typeInfo.containsKey(type.getQualifiedName())) && shouldGenerateTypeInfo(type)) {
+                	PackageInfo pInfo = getPackageInfoForPackage(next);                	
+                	JavaClass adapterClass = pInfo.getPackageLevelAdaptersByClass().get(type);
+                	
+                	if(adapterClass != null){
+                		continue;
+                	}
+                	
+                    CompilerHelper.addClassToClassLoader(type, helper.getClassLoader());
+                    JavaClass[] jClassArray = new JavaClass[] { type };
+                    
+                    buildNewTypeInfo(jClassArray);
+                    
+                }   
                 
             }
         }

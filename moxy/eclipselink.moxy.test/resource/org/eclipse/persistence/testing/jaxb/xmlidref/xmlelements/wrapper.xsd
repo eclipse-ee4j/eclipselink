@@ -8,7 +8,6 @@
       <xsd:sequence/>
       <xsd:attribute name="id" type="xsd:ID"/>
    </xsd:complexType>
-   <xsd:complexType abstract="true" name="attribute"/>
    <xsd:complexType name="foo">
       <xsd:sequence>
          <xsd:choice maxOccurs="unbounded">

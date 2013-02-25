@@ -63,6 +63,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.any.AnyWithJAXBElementTestCases.class);
         
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.InterfaceTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.interfaces.choice.InterfaceChoiceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.inheritance.interfaces.InterfacesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.MarshalSchemaValidationTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);
