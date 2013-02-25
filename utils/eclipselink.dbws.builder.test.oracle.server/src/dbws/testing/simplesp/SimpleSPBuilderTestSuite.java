@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleSPBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "simplesp";
     static final String BUILDER_FILE = stageDir + "/dbws-builder-simplesp.xml";
-    static final String WSDL_LOC = "http://localhost:7001/simplesp/simplesp?wsdl";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/simplesp/simplesp?wsdl";
 
     public static final String CREATE_PROCEDURE =
         "CREATE OR REPLACE PROCEDURE TESTECHO(T IN VARCHAR2, U OUT VARCHAR2) AS \n" +

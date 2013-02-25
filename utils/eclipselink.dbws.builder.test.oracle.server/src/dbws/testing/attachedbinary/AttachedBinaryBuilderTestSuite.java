@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class AttachedBinaryBuilderTestSuite extends DBWSTestSuite {
 	static final String PROJECT_NAME = "attachedbinary"; 
 	static final String BUILDER_FILE = stageDir + "/dbws-builder-attachedbinary.xml";
-	static final String WSDL_LOC = "http://localhost:7001/attachedbinary/attachedbinary?wsdl"; 
+	static final String WSDL_LOC = "http://" + host + ":" + port + "/attachedbinary/attachedbinary?wsdl"; 
 	
     public static final String CREATE_TABLE =
         "CREATE TABLE ATTACHEDBINARY (" +

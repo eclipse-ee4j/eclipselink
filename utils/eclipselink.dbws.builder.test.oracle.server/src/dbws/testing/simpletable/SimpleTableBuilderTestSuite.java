@@ -26,7 +26,7 @@ import dbws.testing.DBWSTestSuite;
 public class SimpleTableBuilderTestSuite extends DBWSTestSuite {
     static final String PROJECT_NAME = "simpletable";
     static final String BUILDER_FILE = stageDir + "/dbws-builder-simpletable.xml";
-    static final String WSDL_LOC = "http://localhost:7001/simpletable/simpletable?wsdl";
+    static final String WSDL_LOC = "http://" + host + ":" + port + "/simpletable/simpletable?wsdl";
 
     public static final String CREATE_TABLE =
         "CREATE TABLE SIMPLETABLE (" +
