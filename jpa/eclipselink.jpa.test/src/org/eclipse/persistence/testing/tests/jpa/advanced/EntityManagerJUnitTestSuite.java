@@ -4304,8 +4304,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testReadOnlyTransactionalData(){
-        if (isOnServer() || getPlatform().isH2() || getPlatform().isDerby()) {
-            //Both H2 and Derby will get lock timeouts because the transaction is holding a lock on the table for a change.  Test can not be run against these databases.
+        if (isOnServer() || getPlatform().isH2() || getPlatform().isDerby() || getPlatform().isSymfoware()) {
+            //Both H2, Derby and Symfoware will get lock timeouts because the transaction is holding a lock on the table for a change.  Test can not be run against these databases.
             return;
         }
         EntityManager em = createEntityManager();

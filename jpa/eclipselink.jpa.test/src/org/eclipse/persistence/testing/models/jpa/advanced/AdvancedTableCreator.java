@@ -986,7 +986,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         FieldDefinition sponsorValueField = new FieldDefinition();
         sponsorValueField.setName("SPONSOR_VALUE");
         sponsorValueField.setTypeName("NUMERIC");
-        sponsorValueField.setSize(32);
+        sponsorValueField.setSize(18);
         sponsorValueField.setShouldAllowNull(true);
         sponsorValueField.setIsPrimaryKey(false);
         sponsorValueField.setUnique(false);

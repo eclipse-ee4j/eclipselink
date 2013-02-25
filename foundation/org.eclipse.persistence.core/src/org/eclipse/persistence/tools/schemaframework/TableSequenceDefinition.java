@@ -220,6 +220,10 @@ public class TableSequenceDefinition extends SequenceDefinition {
      * @param dropSchemaWriter
      */
     public void preDropObject(AbstractSession session, Writer dropSchemaWriter, boolean createSQLFiles) {
+        if ((session.getPlatform().shouldCreateIndicesForPrimaryKeys()) || (session.getPlatform().shouldCreateIndicesOnUniqueKeys())) {
+            // Do not drop index when database is Symfoware. Index is required for primary keys or unique keys.  
+            return;
+        }
         buildTableDefinition().preDropObject(session, dropSchemaWriter, createSQLFiles);
     }
     
