@@ -3967,7 +3967,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //if the object is already registered in uow, but it's partially fetched (fetch group case)	
                 if (descriptor.getFetchGroupManager().shouldWriteInto(objectToRegister, registeredObject)) {
                     //there might be cases when reverting/refreshing clone is needed.
-                    descriptor.getFetchGroupManager().writePartialIntoClones(objectToRegister, registeredObject, this);
+                    descriptor.getFetchGroupManager().writePartialIntoClones(objectToRegister, registeredObject, this.getBackupClone(registeredObject, descriptor), this);
                 }
             }
         } finally {

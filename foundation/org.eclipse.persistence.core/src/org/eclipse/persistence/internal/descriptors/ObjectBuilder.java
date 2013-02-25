@@ -797,7 +797,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         //if the object is already registered in uow, but it's partially fetched (fetch group case)     
                         if (concreteDescriptor.getFetchGroupManager().shouldWriteInto(original, clone)) {
                             //there might be cases when reverting/refreshing clone is needed.
-                            concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork);
+                            concreteDescriptor.getFetchGroupManager().writePartialIntoClones(original, clone, unitOfWork.getBackupClone(clone, concreteDescriptor), unitOfWork);
                         }
                     }
                 }

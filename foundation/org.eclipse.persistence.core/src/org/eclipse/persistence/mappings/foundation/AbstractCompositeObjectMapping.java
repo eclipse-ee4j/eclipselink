@@ -225,7 +225,8 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                     if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
                         refreshCascade = sourceQuery.getCascadePolicy();
                     }
-                    return buildClonePart(cached, null, cacheKey, attributeValue, refreshCascade, executionSession);
+                    //get the clone root.
+                    return buildClonePart(cached, executionSession.getIdentityMapAccessor().getFromIdentityMap(cacheKey.getKey(), referenceClass), cacheKey, attributeValue, refreshCascade, executionSession);
                 }
                 return result;
                 

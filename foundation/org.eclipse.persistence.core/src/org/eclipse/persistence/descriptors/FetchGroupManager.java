@@ -501,10 +501,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * INTERNAL:
      * Write data of the partially fetched object into the working and backup clones
      */
-    public void writePartialIntoClones(Object partialObject, Object workingClone, UnitOfWorkImpl uow) {
+    public void writePartialIntoClones(Object partialObject, Object workingClone, Object backupClone, UnitOfWorkImpl uow) {
         FetchGroup fetchGroupInClone = ((FetchGroupTracker)workingClone)._persistence_getFetchGroup();
         FetchGroup fetchGroupInObject = ((FetchGroupTracker)partialObject)._persistence_getFetchGroup();
-        Object backupClone = uow.getBackupClone(workingClone, descriptor);
 
         // Update fetch group in clone as the union of two,
         // do this first to avoid fetching during method access.
@@ -550,7 +549,17 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                 if (workingClone != backupClone) {
                     mapping.buildClone(workingClone, null, backupClone, null, uow);
                 }
-            }
+            } else if (mapping.isAggregateObjectMapping()){
+                Object attributeValue = mapping.getAttributeValueFromObject(cachedObject);
+                Object cloneAttrbute = mapping.getAttributeValueFromObject(workingClone);
+                Object backupAttribute = mapping.getAttributeValueFromObject(backupClone);
+                if ((cloneAttrbute == null && attributeValue != null) || (cloneAttrbute != null && attributeValue == null)){
+                    mapping.buildClone(cachedObject, null, workingClone, null, uow);
+                }else if (attributeValue != null && mapping.getReferenceDescriptor().getFetchGroupManager().shouldWriteInto(attributeValue, cloneAttrbute)) {
+                    //there might be cases when reverting/refreshing clone is needed.
+                    mapping.getReferenceDescriptor().getFetchGroupManager().writePartialIntoClones(attributeValue, cloneAttrbute, backupAttribute, uow);
+                }
+            } 
         }
     }
 
@@ -568,13 +577,25 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
 
         for (DatabaseMapping mapping : descriptor.getMappings()) {
             String attributeName = mapping.getAttributeName();
-            // Only revert the attribute which is fetched by the cached object, but not fetched by the clone.
             if ((fetchedAttributesCached == null || fetchedAttributesCached.contains(attributeName)) && !fetchedAttributesClone.contains(attributeName)) {
                 mapping.buildClone(cachedObject, null, workingClone, null, uow);
                 if (workingClone != backupClone) {
                     mapping.buildClone(workingClone, null, backupClone, null, uow);
                 }
+            }else if (mapping.isAggregateObjectMapping()){
+                if (mapping.getReferenceDescriptor().hasFetchGroupManager()){
+                    Object attributeValue = mapping.getAttributeValueFromObject(cachedObject);
+                    Object cloneAttrbute = mapping.getAttributeValueFromObject(workingClone);
+                    Object backupAttribute = mapping.getAttributeValueFromObject(backupClone);
+                    if ((cloneAttrbute == null && attributeValue != null) || (cloneAttrbute != null && attributeValue == null)){
+                        mapping.buildClone(cachedObject, null, workingClone, null, uow);
+                    }else if (attributeValue != null && mapping.getReferenceDescriptor().getFetchGroupManager().shouldWriteInto(attributeValue, cloneAttrbute)) {
+                        //there might be cases when reverting/refreshing clone is needed.
+                        mapping.getReferenceDescriptor().getFetchGroupManager().writePartialIntoClones(attributeValue, cloneAttrbute, backupAttribute, uow);
+                    }
+                }
             }
+            // Only revert the attribute which is fetched by the cached object, but not fetched by the clone.
         }
     }
 

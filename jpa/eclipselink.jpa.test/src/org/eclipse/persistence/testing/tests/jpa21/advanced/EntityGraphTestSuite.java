@@ -48,6 +48,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
          
         suite.addTest(new EntityGraphTestSuite("testSimpleGraph"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroup"));
+        suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroupRefresh"));
         
         // Add the equivalent XML tests.
         suite.addTest(XMLEntityGraphTestSuite.suite());
@@ -108,7 +109,24 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         assertTrue("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "endDate"));
         assertTrue("FetchGroup was not applied", util.isLoaded(result, "firstName"));
     }
+
+    public void testEmbeddedFetchGroupRefresh(){
+        EntityManager em = createEntityManager();
+        EntityGraph employeeGraph = em.createEntityGraph(Employee.class);
+        employeeGraph.addSubgraph("period").addAttributeNodes("startDate");
+        Employee result = (Employee) em.createQuery("Select e from Employee e order by e.salary desc").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList().get(0);
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        assertFalse("FetchGroup was not applied", util.isLoaded(result, "department"));
+        assertFalse("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "endDate"));
+        assertTrue("FetchGroup was not applied", util.isLoaded(result.getPeriod(), "startDate"));
+        result = (Employee) em.createQuery("Select e from Employee e order by e.salary desc").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).setHint(QueryHints.REFRESH, true).getResultList().get(0);        
+    }
+
     public void testEmbededNestedFetchGroup(){
+        
+    }
+    
+    public void testMapKeyGroup(){
         
     }
 }
