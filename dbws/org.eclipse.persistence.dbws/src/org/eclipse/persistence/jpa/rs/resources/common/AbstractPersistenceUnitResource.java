@@ -150,14 +150,9 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             while (contextIterator.hasNext()) {
                 ClassDescriptor descriptor = descriptors.get(contextIterator.next());
                 String alias = descriptor.getAlias();
-                if ((alias == null) || (alias.isEmpty())) {
-                    Class clazz = descriptor.getJavaClass();
-                    if (clazz != null) {
-                        alias = clazz.getSimpleName();
-                    }
-                    if ((alias == null) || (alias.isEmpty())) {
-                        continue;
-                    }
+                if (descriptor.isAggregateDescriptor()) {
+                    // skip embeddables
+                    continue;
                 }
                 if (version != null) {
                     pu.getTypes().add(new Link(alias, mediaType, baseURI + version + "/" + persistenceUnit + "/metadata/entity/" + alias));
