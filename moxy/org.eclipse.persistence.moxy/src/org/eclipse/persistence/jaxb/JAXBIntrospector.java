@@ -58,7 +58,7 @@ public class JAXBIntrospector extends javax.xml.bind.JAXBIntrospector {
             if(descriptor == null) {
                 return false;
             }
-            return descriptor.getDefaultRootElement().length() != 0;
+            return descriptor.getDefaultRootElementField() != null;
         } catch(XMLMarshalException e) {
             return false;
         }
