@@ -13,7 +13,8 @@
       "address" : 
          { 
          "street" : "Main\"Street", 
-         "city" : "Ottawa"
+         "city" : "Ottawa",
+         "coords" : [ 0.0, 0.0 ] 
          } 
 	 }
 	 , 

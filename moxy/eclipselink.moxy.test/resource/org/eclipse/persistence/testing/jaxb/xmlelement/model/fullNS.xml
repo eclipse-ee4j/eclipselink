@@ -35,6 +35,8 @@
           <street>Main Street</street>
           <city>Ottawa</city>
           <id>1</id>
+          <coords>1.111</coords>
+          <coords>2.222</coords>
       </address>
       </contact>
       <firstTimeCustomer>false</firstTimeCustomer>

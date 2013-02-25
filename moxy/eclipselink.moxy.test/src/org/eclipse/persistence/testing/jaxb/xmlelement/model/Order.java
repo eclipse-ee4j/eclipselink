@@ -97,4 +97,9 @@ public class Order {
             return id == o.id && Arrays.equals(comments, o.comments);
      }
 
+    @Override
+    public String toString() {
+        return "Order [id=" + id + ", customer=" + customer + ", comments=" + Arrays.toString(comments) + "]";
+    }
+
 }

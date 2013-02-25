@@ -842,7 +842,7 @@ public class MappingsGenerator {
 
     public XMLChoiceCollectionMapping generateChoiceCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespace) {
         XMLChoiceCollectionMapping mapping = new XMLChoiceCollectionMapping();
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         mapping.setAttributeName(property.getPropertyName());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
@@ -979,7 +979,7 @@ public class MappingsGenerator {
         DatabaseMapping mapping;
         if (isCollection) {
             mapping = new XMLChoiceCollectionMapping();
-            initializeXMLContainerMapping((XMLChoiceCollectionMapping) mapping);
+            initializeXMLContainerMapping((XMLChoiceCollectionMapping) mapping, property.getType().isArray());
             JavaClass collectionType = property.getType();
             collectionType = containerClassImpl(collectionType);
             ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(collectionType.getRawName());
@@ -1166,7 +1166,7 @@ public class MappingsGenerator {
     public XMLAnyCollectionMapping generateAnyCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, boolean isMixed) {
         XMLAnyCollectionMapping  mapping = new XMLAnyCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -1489,7 +1489,7 @@ public class MappingsGenerator {
     public XMLBinaryDataCollectionMapping generateBinaryDataCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLBinaryDataCollectionMapping mapping = new XMLBinaryDataCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -1634,7 +1634,7 @@ public class MappingsGenerator {
     public XMLAnyAttributeMapping generateAnyAttributeMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLAnyAttributeMapping mapping = new XMLAnyAttributeMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -1752,7 +1752,7 @@ public class MappingsGenerator {
     public XMLCompositeCollectionMapping generateMapMapping(Property property, XMLDescriptor descriptor, JavaClass descriptorClass, NamespaceInfo namespaceInfo) {
     	XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         XMLField field = getXPathForField(property, namespaceInfo, false, false);
 
         JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
@@ -1931,7 +1931,7 @@ public class MappingsGenerator {
     public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         
         JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);        
         if (manyValueJavaClass.isAssignableFrom(javaClass)){
@@ -2041,7 +2041,7 @@ public class MappingsGenerator {
     public XMLCompositeDirectCollectionMapping generateDirectCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLCompositeDirectCollectionMapping mapping = new XMLCompositeDirectCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -2432,7 +2432,7 @@ public class MappingsGenerator {
     public XMLCollectionReferenceMapping generateXMLCollectionReferenceMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, JavaClass referenceClass) {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping);
+        initializeXMLContainerMapping(mapping, property.getType().isArray());
         mapping.setUsesSingleNode(property.isXmlList() || (property.isAttribute() && (property.getXmlPath() == null || !property.getXmlPath().contains("/"))));
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
@@ -3312,8 +3312,8 @@ public class MappingsGenerator {
 
     }
 
-    private void initializeXMLContainerMapping(XMLContainerMapping xmlContainerMapping) {
-        xmlContainerMapping.setReuseContainer(true);
+    private void initializeXMLContainerMapping(XMLContainerMapping xmlContainerMapping, boolean isArray) {
+        xmlContainerMapping.setReuseContainer(!isArray);
         xmlContainerMapping.setDefaultEmptyContainer(false);
     }
 
