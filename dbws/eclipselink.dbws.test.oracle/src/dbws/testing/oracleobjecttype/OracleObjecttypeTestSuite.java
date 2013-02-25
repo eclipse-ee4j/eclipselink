@@ -325,6 +325,12 @@ public class OracleObjecttypeTestSuite {
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>address</default-root-element>" +
@@ -380,6 +386,12 @@ public class OracleObjecttypeTestSuite {
                     "</attribute-mapping>" +
                  "</attribute-mappings>" +
                  "<descriptor-type>aggregate</descriptor-type>" +
+                 "<caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</caching>" +
+                 "<remote-caching>" +
+                    "<cache-size>-1</cache-size>" +
+                 "</remote-caching>" +
                  "<instantiation/>" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>" +
                  "<default-root-element>employee</default-root-element>" +
