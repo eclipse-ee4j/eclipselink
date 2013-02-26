@@ -2,7 +2,7 @@
    "myObject":[{
        "test":1,
        "test2":1,
-        "properties":{
+        "props":{
 	   "entry":[
 	       {"key":{"type":"string","value":"formatted"},
 	        "value":{"type":"boolean","value":true}}

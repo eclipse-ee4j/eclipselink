@@ -23,15 +23,15 @@ public class MyOtherObject implements MyInterface {
     private byte test = 0x03;
     private Byte test2 = 0x03;
   
-    private Properties properties = new Properties();
+    private Properties props = new Properties();
     private Properties anothernameproperties = new Properties();
 
     public Properties getProperties() {
-        return properties;
+        return props;
     }
 
     public void setProperties(Properties properties) {
-        this.properties = properties;
+        this.props = properties;
     }
   
     @Override
@@ -66,7 +66,7 @@ public class MyOtherObject implements MyInterface {
 			if(test != compare.test || !test2.equals(compare.test2)){
 				return false;
 			}
-			return this.properties.equals(compare.properties) && anothernameproperties.equals(compare.anothernameproperties);
+			return this.props.equals(compare.props) && anothernameproperties.equals(compare.anothernameproperties);
 		}
 	    return false;
 	}

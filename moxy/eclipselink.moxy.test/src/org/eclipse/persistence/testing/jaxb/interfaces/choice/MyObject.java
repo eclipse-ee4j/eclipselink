@@ -14,11 +14,10 @@ package org.eclipse.persistence.testing.jaxb.interfaces.choice;
 
 import java.util.Properties;
 
-import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlAccessType;
 
-@XmlType(name = "myObject", namespace = "urn:tcleyman.myobject.1.0")
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MyObject implements MyInterface{
 	
@@ -29,15 +28,15 @@ public class MyObject implements MyInterface{
 	private byte test = 0x01;
 	private Byte test2 = 0x01;
     
-	private Properties properties = new Properties();
+	private Properties props = new Properties();
 	private Properties anothernameproperties = new Properties();
 	  
 	public Properties getProperties() {
-		return properties;
+		return props;
 	}
 
  	public void setProperties(Properties properties) {
- 		this.properties = properties;
+ 		this.props = properties;
 	}
 	
 	@Override
@@ -72,7 +71,7 @@ public class MyObject implements MyInterface{
 			if(test != compare.test || !test2.equals(compare.test2)){
 				return false;
 			}
-			return this.properties.equals(compare.properties) && anothernameproperties.equals(compare.anothernameproperties);
+			return this.props.equals(compare.props) && anothernameproperties.equals(compare.anothernameproperties);
 		}
 	    return false;
 	}
