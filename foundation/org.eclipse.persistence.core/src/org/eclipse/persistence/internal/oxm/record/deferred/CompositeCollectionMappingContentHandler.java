@@ -46,10 +46,6 @@ public class CompositeCollectionMappingContentHandler extends CompositeMappingCo
     protected void processEmptyElement() throws SAXException {
         // Remove original startElement event as it has been precluded by the nodeValue call below
         getEvents().remove(0);
-        // Prerequisite: We know that (nullPolicy.isNullRepresentedByEmptyNode() || nullPolicy.isNullRepresentedByXsiNil()) is true
-        // Null: Set the object to null on the node value if we are empty with inrben=true
-        // nodeValue.setNullValue(getParent().getCurrentObject(), getParent().getSession());
-        nodeValue.getContainerPolicy().addInto(null, getParent().getContainerInstance(nodeValue), getParent().getSession());
         executeEvents(getParent());
     }
 
