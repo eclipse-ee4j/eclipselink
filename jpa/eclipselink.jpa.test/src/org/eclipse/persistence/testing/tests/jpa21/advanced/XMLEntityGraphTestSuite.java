@@ -34,6 +34,7 @@ public class XMLEntityGraphTestSuite extends JUnitTestCase {
     
     public XMLEntityGraphTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-4");
     }
     
     /**
@@ -41,7 +42,7 @@ public class XMLEntityGraphTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "xml-default";
+        return "MulitPU-4";
     }
     
     public static Test suite() {
@@ -71,7 +72,7 @@ public class XMLEntityGraphTestSuite extends JUnitTestCase {
                 //assertTrue("Fetch Group was not applied: executive is not loaded", util.isLoaded(project, "executive"));
             }
         }
-        em.close();
+        closeEntityManager(em);
     }
 }
 

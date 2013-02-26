@@ -35,6 +35,7 @@ public class EntityManagerTestSuite extends JUnitTestCase {
     
     public EntityManagerTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -52,10 +53,10 @@ public class EntityManagerTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
-        employeePopulator.persistExample(getServerSession());
+        employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();
     }
     
@@ -134,5 +135,10 @@ public class EntityManagerTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

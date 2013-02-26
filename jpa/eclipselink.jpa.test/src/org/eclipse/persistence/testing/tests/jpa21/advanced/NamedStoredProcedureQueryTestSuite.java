@@ -49,6 +49,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     
     public NamedStoredProcedureQueryTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -432,5 +433,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
             }
         }
+    }
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

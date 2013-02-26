@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
@@ -35,6 +36,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
     
     public EntityManagerFactoryTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public void setUp () {
@@ -68,15 +70,15 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
-        employeePopulator.persistExample(getServerSession());
+        employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();
     }
     
     public void testAddNamedQuery(){
-        EntityManagerImpl em = (EntityManagerImpl)createEntityManager();
+        EntityManager em = createEntityManager();
         EntityManagerFactory factory = em.getEntityManagerFactory();
         List<Object[]> names = em.createQuery("Select e.firstName, count(e.firstName) as c from Employee e group by e.firstName order by c").getResultList();
         String name = (String) names.get(names.size()-1)[0];
@@ -86,7 +88,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         List<Employee> firstResult = query.getResultList();
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
-        em = (EntityManagerImpl) createEntityManager();
+        em = createEntityManager();
         
         Query namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertFalse("Named query retains parameter values from original query", namedQuery.isBound(namedQuery.getParameter("p1")));
@@ -102,7 +104,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         firstResult = query.getResultList();
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
-        em = (EntityManagerImpl) createEntityManager();
+        em = createEntityManager();
         
         namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertFalse("Named query retains parameter values from original query", namedQuery.isBound(namedQuery.getParameter("p1")));
@@ -111,13 +113,12 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         for (int i = firstResult.size()-1; i> -1; --i){
             assertEquals("Results do not match", firstResult.get(i).getId(), secondResult.get(i).getId());
         }
-        
         query = em.createQuery("Select e from Employee e where e.lastName = :p1 order by e.id");
         query.setMaxResults(1);
         query.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
-        em = (EntityManagerImpl) createEntityManager();
+        em = createEntityManager();
         
         namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
         assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
@@ -131,7 +132,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         query.setMaxResults(1);
         factory.addNamedQuery("Select_Employee_NATIVE", query);
         closeEntityManager(em);
-        em = (EntityManagerImpl) createEntityManager();
+        em = createEntityManager();
         
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
@@ -139,11 +140,11 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         query.setMaxResults(1);
         factory.addNamedQuery("Select_Employee_NATIVE", query);
         closeEntityManager(em);
-        em = (EntityManagerImpl) createEntityManager();
+        em = createEntityManager();
         
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
         assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
-}
+    }
     
     public void testGetPersistenceUnitUtilOnCloseEMF(){
         EntityManagerFactory emf = getEntityManagerFactory();
@@ -152,6 +153,11 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
             emf.getPersistenceUnitUtil();
             fail("IllegalStateException not thrown when calling getPersistenceUnitUtil on a closed EMF.");
         } catch (IllegalStateException e){}
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
     
 }

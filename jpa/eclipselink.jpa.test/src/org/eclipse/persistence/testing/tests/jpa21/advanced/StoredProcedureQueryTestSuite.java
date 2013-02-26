@@ -53,6 +53,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     
     public StoredProcedureQueryTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -72,12 +73,6 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor"));
-        
-        // Add the named Annotation query tests.
-        suite.addTest(NamedStoredProcedureQueryTestSuite.suite());
-        
-        // Add the named XML query tests.
-        suite.addTest(XMLNamedStoredProcedureQueryTestSuite.suite());
         
         // These are EM API validation tests. These tests delete and update so 
         // be careful where you introduce new tests.
@@ -974,5 +969,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 closeEntityManager(em);
             }
         }
+    }
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

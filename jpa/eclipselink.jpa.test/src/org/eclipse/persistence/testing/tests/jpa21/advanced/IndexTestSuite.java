@@ -29,6 +29,7 @@ public class IndexTestSuite extends JUnitTestCase {
     
     public IndexTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-2");
     }
     
     /**
@@ -36,7 +37,7 @@ public class IndexTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "ddl";
+        return "MulitPU-2";
     }
     
     public static Test suite() {
@@ -44,8 +45,6 @@ public class IndexTestSuite extends JUnitTestCase {
         suite.setName("IndexTestSuite");
         
         suite.addTest(new IndexTestSuite("testDDLPersistenceUnit"));
-        
-        suite.addTest(XMLIndexTestSuite.suite());
         
         return suite;
     }

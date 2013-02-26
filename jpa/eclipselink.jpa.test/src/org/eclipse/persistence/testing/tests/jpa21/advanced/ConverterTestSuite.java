@@ -57,6 +57,7 @@ public class ConverterTestSuite extends JUnitTestCase {
     
     public ConverterTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -66,7 +67,6 @@ public class ConverterTestSuite extends JUnitTestCase {
         suite.addTest(new ConverterTestSuite("testAutoApplyConverter"));
         suite.addTest(new ConverterTestSuite("testAnnotationConverters"));
         
-        suite.addTest(XMLConverterTestSuite.suite());
         
         return suite;
     }
@@ -166,5 +166,9 @@ public class ConverterTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

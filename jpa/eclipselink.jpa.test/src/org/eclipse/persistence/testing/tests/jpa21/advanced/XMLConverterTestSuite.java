@@ -44,6 +44,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
     
     public XMLConverterTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-4");
     }
     
     /**
@@ -51,7 +52,7 @@ public class XMLConverterTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "xml-default";
+        return "MulitPU-4";
     }
     
     public static Test suite() {

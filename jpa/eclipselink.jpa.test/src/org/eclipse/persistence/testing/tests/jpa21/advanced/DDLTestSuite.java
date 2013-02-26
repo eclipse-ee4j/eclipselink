@@ -68,6 +68,7 @@ public class DDLTestSuite extends JUnitTestCase {
     
     public DDLTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-5");
     }
     
     /**
@@ -75,15 +76,12 @@ public class DDLTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "ddl-template";
+        return "MulitPU-5";
     }
     
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("DDLTestSuite");
-
-        suite.addTest(ForeignKeyTestSuite.suite());
-        suite.addTest(IndexTestSuite.suite());
         
         suite.addTest(new DDLTestSuite("testPersistenceGenerateSchemaUseConnection"));
         suite.addTest(new DDLTestSuite("testPersistenceGenerateSchemaNoConnection"));

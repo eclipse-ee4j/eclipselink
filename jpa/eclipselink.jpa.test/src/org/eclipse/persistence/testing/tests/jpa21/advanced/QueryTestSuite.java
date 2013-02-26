@@ -47,6 +47,7 @@ public class QueryTestSuite extends JUnitTestCase {
     
     public QueryTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -73,7 +74,7 @@ public class QueryTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
         clearCache();
     }
     
@@ -251,4 +252,8 @@ public class QueryTestSuite extends JUnitTestCase {
         } catch (IllegalStateException e){}
     }
     
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
+    }
 }

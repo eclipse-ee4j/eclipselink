@@ -34,15 +34,22 @@ public class JPA21TestSuite extends TestSuite {
         fullSuite.setName("JPA_2.1_TestSuite");
         
         fullSuite.addTest(StoredProcedureQueryTestSuite.suite());
+        fullSuite.addTest(NamedStoredProcedureQueryTestSuite.suite());
         fullSuite.addTest(ConverterTestSuite.suite());
         fullSuite.addTest(CriteriaQueryTestSuite.suite());
         fullSuite.addTest(CriteriaQueryMetamodelTestSuite.suite());
         fullSuite.addTest(DDLTestSuite.suite());
+        fullSuite.addTest(ForeignKeyTestSuite.suite());
+        fullSuite.addTest(IndexTestSuite.suite());
         fullSuite.addTest(EntityManagerFactoryTestSuite.suite());
         fullSuite.addTest(EntityGraphTestSuite.suite());
         fullSuite.addTest(QueryTestSuite.suite());
         fullSuite.addTest(EntityManagerTestSuite.suite());
-        
+        fullSuite.addTest(XMLNamedStoredProcedureQueryTestSuite.suite());
+        fullSuite.addTest(XMLConverterTestSuite.suite());
+        fullSuite.addTest(XMLForeignKeyTestSuite.suite());
+        fullSuite.addTest(XMLIndexTestSuite.suite());
+        fullSuite.addTest(XMLEntityGraphTestSuite.suite());
         return fullSuite;
     }
 }

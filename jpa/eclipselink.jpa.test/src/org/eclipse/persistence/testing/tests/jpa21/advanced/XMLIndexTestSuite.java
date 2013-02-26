@@ -29,6 +29,7 @@ public class XMLIndexTestSuite extends JUnitTestCase {
     
     public XMLIndexTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-3");
     }
     
     /**
@@ -36,7 +37,7 @@ public class XMLIndexTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "xml-ddl";
+        return "MulitPU-3";
     }
     
     public static Test suite() {

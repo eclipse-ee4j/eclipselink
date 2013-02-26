@@ -40,6 +40,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
     
     public EntityGraphTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -49,9 +50,6 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         suite.addTest(new EntityGraphTestSuite("testSimpleGraph"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroup"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroupRefresh"));
-        
-        // Add the equivalent XML tests.
-        suite.addTest(XMLEntityGraphTestSuite.suite());
         
         return suite;
     }
@@ -88,7 +86,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
                 assertTrue("Fetch Group was not applied: executive is not loaded", util.isLoaded(project, "executive"));
             }
         }
-        em.close();
+        closeEntityManager(em);
     }
     
     public void testLoadGraph(){
@@ -128,5 +126,10 @@ public class EntityGraphTestSuite extends JUnitTestCase {
     
     public void testMapKeyGroup(){
         
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

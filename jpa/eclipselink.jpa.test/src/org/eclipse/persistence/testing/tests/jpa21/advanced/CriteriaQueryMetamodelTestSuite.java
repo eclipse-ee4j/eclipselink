@@ -53,6 +53,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
     public CriteriaQueryMetamodelTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
 
     public void setUp () {
@@ -91,10 +92,10 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
-        employeePopulator.persistExample(getServerSession());
+        employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();
     }
 
@@ -181,8 +182,8 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
     /////UPDATE Criteria tests:
     public void simpleMetamodelCriteriaUpdateTest()
     {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -213,12 +214,12 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     public void testMetamodelCriteriaUpdate() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -250,14 +251,14 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         } 
     }
 
     //test ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
     public void testMetamodelComplexConditionCaseInCriteriaUpdate(){
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -288,7 +289,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         } 
         assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
         for (Employee e : results) {
@@ -298,8 +299,8 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
     }
     
     public void testMetamodelCriteriaUpdateEmbeddedField() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -340,14 +341,14 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     
     /////DELETE Criteria tests:
     public void simpleMetamodelCriteriaDeleteTest() {          
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleDelete skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -376,34 +377,34 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
     public void testMetamodelCriteriaDelete() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleDelete skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
         EntityManager em = createEntityManager();
-        int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
-                .getSingleResult()).intValue();
-        
-        Metamodel metamodel = em.getMetamodel();
-        EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
-        EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
-
-        // test query "Delete Employee e where e.firstName is not null";
-        CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
-        Root<PhoneNumber> root = cq.from(entityPhone_);
-        cq.where(qb.isNotNull(root.get(entityPhone_.getSingularAttribute("owner", Employee.class))
-                .get(entityEmp_.getSingularAttribute("firstName"))));
-        Query testQuery = em.createQuery(cq);
-
-        beginTransaction(em);
         try {
+            beginTransaction(em);
+            int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
+                    .getSingleResult()).intValue();
+            
+            Metamodel metamodel = em.getMetamodel();
+            EntityType<PhoneNumber> entityPhone_ = metamodel.entity(PhoneNumber.class);
+            EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
+
+            // test query "Delete Employee e where e.firstName is not null";
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
+            Root<PhoneNumber> root = cq.from(entityPhone_);
+            cq.where(qb.isNotNull(root.get(entityPhone_.getSingularAttribute("owner", Employee.class))
+                    .get(entityEmp_.getSingularAttribute("firstName"))));
+            Query testQuery = em.createQuery(cq);
+
             int updated = testQuery.executeUpdate();
             assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated, 
                     nrOfEmps, updated);
@@ -416,7 +417,12 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

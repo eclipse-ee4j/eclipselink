@@ -49,6 +49,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     public CriteriaQueryTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
 
     public void setUp () {
@@ -92,10 +93,10 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
         EmployeePopulator employeePopulator = new EmployeePopulator();
         employeePopulator.buildExamples();
-        employeePopulator.persistExample(getServerSession());
+        employeePopulator.persistExample(getPersistenceUnitServerSession());
         clearCache();
     }
 
@@ -201,8 +202,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
     /////UPDATE Criteria tests:
     public void simpleCriteriaUpdateTest()
     {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -231,12 +232,12 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
     public void testCriteriaUpdate() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -265,14 +266,14 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
     //test ejbqlString = "Update Employee e set e.lastName = case when e.firstName = 'Bob' then 'Jones' when e.firstName = 'Jill' then 'Jones' else '' end";
     public void testComplexConditionCaseInCriteriaUpdate(){
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test complexConditionCaseInUpdateTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -300,7 +301,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
         assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
         for (Employee e : results) {
@@ -310,8 +311,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
     }
 
     public void testCriteriaUpdateEmbeddedField() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test updateEmbeddedFieldTest skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -346,13 +347,13 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
     public void testCriteriaUpdateCompareSQL() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -387,8 +388,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
     /////DELETE Criteria tests:
     public void simpleCriteriaDeleteTest() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleDelete skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
@@ -414,29 +415,29 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
     public void testCriteriaDelete() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test simpleDelete skipped for this platform, "
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleDelete skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
         EntityManager em = createEntityManager();
-        int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
-                .getSingleResult()).intValue();
-
-        // test query "Delete Employee e where e.firstName is not null";
-        CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
-        Root<PhoneNumber> root = cq.from(PhoneNumber.class);
-        cq.where(qb.isNotNull(root.get("owner").get("firstName")));
-        Query testQuery = em.createQuery(cq);
-
-        beginTransaction(em);
         try {
+            beginTransaction(em);
+            int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(phone) FROM PhoneNumber phone where phone.owner.firstName is not null")
+                    .getSingleResult()).intValue();
+
+            // test query "Delete Employee e where e.firstName is not null";
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaDelete<PhoneNumber> cq = qb.createCriteriaDelete(PhoneNumber.class);
+            Root<PhoneNumber> root = cq.from(PhoneNumber.class);
+            cq.where(qb.isNotNull(root.get("owner").get("firstName")));
+            Query testQuery = em.createQuery(cq);
+
             int updated = testQuery.executeUpdate();
             assertEquals("testCriteriaDelete: wrong number of deleted instances"+updated,
                     nrOfEmps, updated);
@@ -449,7 +450,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
             }
-            em.close();
+            closeEntityManager(em);
         }
     }
 
@@ -477,5 +478,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             fail("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                     +testSQL + "\"  but we expected: \""+baseSQL+"\"");
         }
+    }
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }

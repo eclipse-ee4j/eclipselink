@@ -61,6 +61,7 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
     
     public ForeignKeyTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-2");
     }
     
     protected void assertForeignKeyConstraint(String name, String definition, DatabaseTable table) {
@@ -76,7 +77,7 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
      */
     @Override
     public String getPersistenceUnitName() {
-        return "ddl";
+        return "MulitPU-2";
     }
     
     public static Test suite() {
@@ -92,7 +93,6 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
         
         suite.addTest(new ForeignKeyTestSuite("testReadAndWriteDDLObjects"));
         
-        suite.addTest(XMLForeignKeyTestSuite.suite());
         
         return suite;
     }

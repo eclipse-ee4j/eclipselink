@@ -73,6 +73,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     public CriteriaQueryCastTestSuite(String name) {
         super(name);
+        setPuName("MulitPU-1");
     }
     
     public static Test suite() {
@@ -112,19 +113,19 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        new InheritanceTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        new InheritedTableManager().replaceTables(JUnitTestCase.getServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
+        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
+        new InheritedTableManager().replaceTables(getPersistenceUnitServerSession());
         // Force uppercase for Postgres.
-        if (getServerSession().getPlatform().isPostgreSQL()) {
-            getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+        if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
+            getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
-        getServerSession().setLogLevel(0);
+        getPersistenceUnitServerSession().setLogLevel(0);
     }
 
     public void testDowncastOneToManyLeafQueryKey(){
         EntityManager em = createEntityManager();
-        getServerSession().setLogLevel(0);
+        getPersistenceUnitServerSession().setLogLevel(0);
         beginTransaction(em);
         try {
 
@@ -1268,7 +1269,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatUsingAndOrSTI(){
         System.out.println("Begin test testTreatUsingAndOrSTI");
-        getServerSession().setLogLevel(0);
+        getPersistenceUnitServerSession().setLogLevel(0);
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1372,6 +1373,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
+    }
+
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
     }
 }
 

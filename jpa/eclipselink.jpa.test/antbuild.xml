@@ -2625,6 +2625,12 @@
         </copy>
 
         <copy todir="${jpatest.basedir}/stage/META-INF" overwrite="true" failonerror="false">
+            <fileset dir="${jpatest.basedir}/resource/${MODEL_NAME}/server/">
+                <include name="*.jdbc"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${jpatest.basedir}/stage/META-INF" overwrite="true" failonerror="false">
             <fileset dir="${jpatest.basedir}/resource/${MODEL_NAME2}/server/">
                 <include name="*.xml"/>
             </fileset>
@@ -3334,6 +3340,29 @@
         </antcall>
     </target>
 
+    <target name="server-test-jpa21-advanced">
+        <copy todir="${jpatest.basedir}/resource/eclipselink-jpa21-model/server" overwrite="true" filtering="true">
+            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/" 
+                     includes="*orm.xml
+                               *.jdbc"/>
+        </copy>
+        <antcall target="server-run-all-jpa21" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa21/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-jpa21-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa21/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-jpa21-model"/>
+            <param name="EAR_NAME" value="eclipselink-jpa21-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+        <delete>
+            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/server" 
+                     includes="*orm.xml
+                              *.jdbc"/>
+        </delete>
+    </target>
     <target name="server-test-beanvalidation">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="beanvalidation"/>

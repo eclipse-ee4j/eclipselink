@@ -2,11 +2,16 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
     http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
-  version="2.1"> 
-    <!-- This is for default persistence unit -->
-    <persistence-unit name="MulitPU-1" transaction-type="RESOURCE_LOCAL">
+  version="2.1">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    <!-- This is for default persistence unit -->
+    <persistence-unit name="MulitPU-1" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Address</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Department</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.Employee</class>
@@ -40,10 +45,13 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-        
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
         <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.session-name" value="default-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
@@ -53,9 +61,9 @@
         </properties>
     </persistence-unit>
     <!-- This is for ddl persistence unit -->
-    <persistence-unit name="MulitPU-2" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Fork</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.ForkUser</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Utensil</class>
@@ -81,10 +89,13 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-        
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
         <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.session-name" value="default-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
@@ -97,12 +108,17 @@
         </properties>
     </persistence-unit>
     <!-- This is xml-ddl persistence unit -->
-    <persistence-unit name="MulitPU-3" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
         <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.session-name" value="default-xml-ddl-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
@@ -114,12 +130,17 @@
         </properties>
     </persistence-unit>
     <!-- This is xml-default persistence unit -->
-    <persistence-unit name="MulitPU-4" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <mapping-file>META-INF/advanced-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
-        
         <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.session-name" value="default-xml-session"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
             <property name="eclipselink.jdbc.uppercase-columns" value="true"/>
@@ -128,41 +149,19 @@
         </properties>
     </persistence-unit>
     <!-- This is ddl-template persistence unit -->
-    <persistence-unit name="MulitPU-5" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="MulitPU-5" transaction-type="%%transaction-type%%">
         <!-- Users of this PU are expected to provide any relevant properties -->
         <!-- through code, e.g. eclipselink.session-name                      -->
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <mapping-file>META-INF/advanced-ddl-orm.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="%%database-platform%%"/>
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+        </properties>
     </persistence-unit>
-
-    <persistence-unit name="ddl-schema-template" transaction-type="RESOURCE_LOCAL">
-        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <!-- Users of this PU are expected to provide any relevant properties -->
-        <!-- through code, e.g. eclipselink.session-name                      -->
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Runner</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.RunnerInfo</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.RunnerStatus</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Shoe</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.ShoeTag</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Sprinter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Responsibility</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Organizer</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Endorser</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Athlete</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.schema.Race</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.LongToStringConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.RunningStatusConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
-        <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
-    </persistence-unit>
-    
 </persistence>
