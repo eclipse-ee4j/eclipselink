@@ -34,9 +34,9 @@ public interface MyInterface {
 	 */
 	
 	
-	/*Properties getProperties();
+	Properties getProperties();
 	void setProperties(Properties props);
-	*/
+	
 	
 	Properties getAnothernameproperties();
 	void setAnothernameproperties(Properties anothernameproperties);

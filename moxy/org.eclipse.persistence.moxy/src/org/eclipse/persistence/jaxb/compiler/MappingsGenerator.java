@@ -599,7 +599,7 @@ public class MappingsGenerator {
         	if (property.isAnyAttribute()) {
         		return generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         	}
-        	return generateMapMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
+        	return generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, null);
         }
         if (helper.isCollectionType(property.getType())) {
             return generateCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
@@ -1606,7 +1606,7 @@ public class MappingsGenerator {
         if (property.isXmlIdRef() || property.isSetXmlJoinNodes()) {
             return generateXMLCollectionReferenceMapping(property, descriptor, namespaceInfo, javaClass);
         }
-        
+                
         if (javaClass != null && typeInfo.get(javaClass.getQualifiedName()) != null) {
             TypeInfo referenceInfo = typeInfo.get(javaClass.getQualifiedName());
             if (referenceInfo.isEnumerationType()) {
@@ -1749,27 +1749,6 @@ public class MappingsGenerator {
         return src.getRawName().equals(tgtCanonicalName);
     }
 
-    public XMLCompositeCollectionMapping generateMapMapping(Property property, XMLDescriptor descriptor, JavaClass descriptorClass, NamespaceInfo namespaceInfo) {
-    	XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
-        mapping.setAttributeName(property.getPropertyName());
-        initializeXMLContainerMapping(mapping, property.getType().isArray());
-        XMLField field = getXPathForField(property, namespaceInfo, false, false);
-
-        JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
-        if(mapValueClass.isAssignableFrom(descriptorClass)){
-        	mapping.setXPath("entry");
-        }else{
-        	mapping.setXPath(field.getXPath() + "/entry");
-        }
-
-        Class generatedClass = generateMapEntryClassAndDescriptor(property, descriptor.getNonNullNamespaceResolver());
-        mapping.setReferenceClass(generatedClass);
-        String mapClassName = property.getType().getRawName();
-        mapping.useCollectionClass(ArrayList.class);
-
-        mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
-        return mapping;
-    }
 
     private Class generateMapEntryClassAndDescriptor(Property property, NamespaceResolver nr){
     	JavaClass keyType = property.getKeyType();
@@ -1974,7 +1953,6 @@ public class MappingsGenerator {
         }
 
         JavaClass collectionType = property.getType();
-
         if (collectionType.isArray()){
             JAXBArrayAttributeAccessor accessor = new JAXBArrayAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), helper.getClassLoader());
             JavaClass componentType = collectionType.getComponentType();
@@ -1993,13 +1971,30 @@ public class MappingsGenerator {
                 accessor.setComponentClassName(componentType.getQualifiedName());
             }
             mapping.setAttributeAccessor(accessor);
+        }else if (helper.isMapType(property.getType())){
+            Class generatedClass = generateMapEntryClassAndDescriptor(property, descriptor.getNonNullNamespaceResolver());
+            referenceClassName = generatedClass.getName();
+            String mapClassName = property.getType().getRawName();
+            mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
         }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
         XMLField xmlField = getXPathForField(property, namespaceInfo, false, false);
-        mapping.setXPath(xmlField.getXPath());
+        
+        
+        if(helper.isMapType(property.getType())){
+    	    JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
+	        if(mapValueClass.isAssignableFrom(javaClass)){
+	        	mapping.setXPath("entry");
+	        }else{
+	        	mapping.setXPath(xmlField.getXPath() + "/entry");
+	        }
+        }else{
+        	mapping.setXPath(xmlField.getXPath());
+        }
+
 
         if (referenceClassName == null){
         	setTypedTextField((XMLField)mapping.getField());
@@ -3318,7 +3313,7 @@ public class MappingsGenerator {
     }
 
     private JavaClass containerClassImpl(JavaClass collectionType) {
-        if (areEquals(collectionType, List.class) || areEquals(collectionType, Collection.class) || collectionType.isArray()) {
+        if (areEquals(collectionType, List.class) || areEquals(collectionType, Collection.class) || collectionType.isArray() || helper.isMapType(collectionType) ) {
             return jotArrayList;
         } else if (areEquals(collectionType, Set.class)) {
             return jotHashSet;
