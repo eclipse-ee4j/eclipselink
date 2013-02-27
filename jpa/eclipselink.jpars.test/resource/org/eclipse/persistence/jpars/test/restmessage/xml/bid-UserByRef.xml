@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<staticBid xmlns:atom="http://www.w3.org/2005/Atom">
+<staticBid>
    <amount>110.0</amount>
    <id>1001</id>
    <_relationships href="http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/1001/auction" rel="auction"/>

@@ -1,0 +1,8 @@
+{
+   "firstName":"Hillary",
+   "lastName":"Smith",
+   "reservation": {
+       "city": "Ottawa",
+       "country": "Canada"
+    }
+}
