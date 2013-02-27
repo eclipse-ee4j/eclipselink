@@ -59,6 +59,15 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     }
 
     @Override
+    /**
+     * Return the top-level conjuncts or disjuncts of the predicate.
+     * 
+     * @return list boolean expressions forming the predicate
+     */
+    public List<Expression<Boolean>> getExpressions(){
+        return expressions;
+    }
+
     public boolean isCompoundExpression(){
         return true;
     }
@@ -67,16 +76,6 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
     public boolean isExpression(){
         return false;
     }
-
-    /**
-     * Return the top-level conjuncts or disjuncts of the predicate.
-     * 
-     * @return list boolean expressions forming the predicate
-     */
-    public List<Expression<Boolean>> getExpressions(){
-        return new ArrayList();
-    }
-
     
     /**
      * Has negation been applied to the predicate.
