@@ -260,8 +260,10 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                     xmlChoiceMapping.setAttributeName(attributeName);
                     copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                     xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
-                    xmlChoiceMapping.addChoiceElement(attributeName, jpaMapping.getReferenceDescriptor().getJavaClass());
+
                     xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
+                    xmlChoiceMapping.addChoiceElement(attributeName, jpaMapping.getReferenceDescriptor().getJavaClass());
+
                     xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
                     jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                     jaxbDescriptor.addMapping(xmlChoiceMapping);
@@ -270,8 +272,10 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                     xmlChoiceMapping.setAttributeName(attributeName);
                     copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                     xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
+                    
                     xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
                     xmlChoiceMapping.addChoiceElement(attributeName, jpaMapping.getReferenceDescriptor().getJavaClass());
+                    
                     xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
                     jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                     jaxbDescriptor.addMapping(xmlChoiceMapping);

@@ -86,6 +86,19 @@
         </properties>
     </persistence-unit>
 
+    <persistence-unit name="jpars_traveler-static" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.traveler.Traveler</class>
+        <class>org.eclipse.persistence.jpars.test.model.traveler.Reservation</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.target-server" value="Glassfish"/>
+        </properties>
+    </persistence-unit>
+
     <!-- persistence-unit name="jpars_place" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.place.Place</class>

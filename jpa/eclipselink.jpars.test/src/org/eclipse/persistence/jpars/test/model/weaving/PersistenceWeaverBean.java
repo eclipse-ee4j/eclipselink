@@ -33,4 +33,8 @@ public class PersistenceWeaverBean {
     @SuppressWarnings("unused")
     @PersistenceUnit(unitName = "jpars_employee-static")
     private EntityManagerFactory emf2;
+
+    @SuppressWarnings("unused")
+    @PersistenceUnit(unitName = "jpars_traveler-static")
+    private EntityManagerFactory emf3;
 }

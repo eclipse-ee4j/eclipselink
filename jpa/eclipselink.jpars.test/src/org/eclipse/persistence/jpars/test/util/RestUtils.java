@@ -233,6 +233,38 @@ public class RestUtils {
         return resultObject;
     }
 
+    
+    /**
+     * Rest update.
+     *
+     * @param object the object
+     * @param type the type
+     * @param persistenceUnit the persistence unit
+     * @param tenantId the tenant id
+     * @param mediaType the media type
+     * @return the string
+     * @throws RestCallFailedException the rest call failed exception
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public static String restUpdate(Object object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+        StringBuilder uri = new StringBuilder();
+        uri.append(RestUtils.getServerURI() + persistenceUnit);
+        if (tenantId != null) {
+            for (String key : tenantId.keySet()) {
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, object.toString());
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        } 
+        return response.getEntity(String.class);
+    }
+
+    
     /**
      * Rest create.
      *
@@ -310,7 +342,7 @@ public class RestUtils {
             throw new IllegalArgumentException();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T  restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
         StringBuilder uri = new StringBuilder();
