@@ -73,6 +73,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor"));
+
+        // Add the named Annotation query tests.
+        suite.addTest(NamedStoredProcedureQueryTestSuite.suite());
         
         // These are EM API validation tests. These tests delete and update so 
         // be careful where you introduce new tests.

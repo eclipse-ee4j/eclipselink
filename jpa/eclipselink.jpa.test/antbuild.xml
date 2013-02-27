@@ -3291,6 +3291,12 @@
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
+    <!-- Run all the JPA21 tests in the server -->
+    <target name="server-test-jpa21-lrg" depends="clean-test">
+        <antcall target="server-test-jpa21-advanced" inheritRefs="true"/>
+        <antcall target="server-test-jpa21-sessionbean" inheritRefs="true"/>
+    </target>
+
     <!-- Testing Metadata Cache by running JPA tests in the server -->
     <target name="server-test-project-cache" depends="clean-test">
         <antcall target="server-test-advanced" inheritRefs="true"/>
