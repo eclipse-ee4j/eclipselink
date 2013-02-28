@@ -19,9 +19,9 @@
 *       and are used in test results parsing
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatinated
+*   - multi-word macro attributes are concatenated
 *     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatinated
+*   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
@@ -637,7 +637,7 @@
 
     <target name="regen-nosql-archive">
         <echo message="Creating signed versions of NoSQL archive..."/>
-        <!-- unzip original PluginInstaller to working dir -->
+        <!-- unzip original NoSQL PluginInstaller to working dir -->
         <unzip dest="${temp.rebuild.dir}/nosqlzip" src="${promote.source.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}">
             <patternset>
                 <include name="**/*"/>
@@ -649,7 +649,7 @@
                 <include name="*nosql*.jar"/>
             </fileset>
         </copy>
-        <!-- Rezip EclipseLink Plugins Zip -->
+        <!-- Rezip EclipseLink NoSQL Plugins Zip -->
         <zip destfile="${temp.rebuild.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.dir}/nosqlzip" includes="**/*" />
         </zip>
@@ -734,14 +734,13 @@
             </fileset>
         </copy>
         <!-- Copy for maven to run -->
-        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"        failonerror="false"/>
-        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml"       failonerror="false"/>
-        <!-- copy todir="${tmp.maven.dir}" file="${basedir}/uploadToSonatypeOSS.xml" failonerror="false"/ -->
+        <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
+        <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToNexus.xml" failonerror="false"/>
     </target>
 
     <target name="publish-milestone-maven">
         <echo message="Publish-milestone-maven: "/>
-        <!-- echo message="    using: ${releng.repo.dir}/upload${branch}ToMaven.xml"/ -->
         <echo message="    using: ${basedir}/uploadToMaven.xml"/>
         <echo message="    from dir '${tmp.maven.dir}'"/>
         <echo message="    target: 'upload-maven-all'"/>
@@ -755,7 +754,6 @@
         <echo message="        build.date      ='${build.date}'"/>
         <echo message="        build.type      ='${build.type}'"/>
         <echo message="        bundle.dir      ='${tmp.maven.dir}'"/>
-        <!-- ant antfile="${releng.repo.dir}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all" -->
         <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
             <property name="build.deps.dir"   value="${build.deps.dir}"/>
             <property name="custom.tasks.lib" value="${releng.repo.dir}/ant_customizations.jar"/>

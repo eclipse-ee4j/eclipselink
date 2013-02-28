@@ -20,9 +20,9 @@
 *       and are used in test results parsing
 *     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
 *   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatinated
+*   - multi-word macro attributes are concatenated
 *     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatinated
+*   - multi-word tasks (taskdef) names are concatenated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
