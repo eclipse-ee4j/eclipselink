@@ -1336,11 +1336,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
         Class fieldType = field.type;
-        if ((type == Types.VARCHAR) || (type == Types.CHAR)) {
+        if ((type == Types.VARCHAR) || (type == Types.CHAR) || type == Types.NVARCHAR || type == Types.NCHAR) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
-            if ((type == Types.CHAR) && (value != null) && platform.shouldTrimStrings()) {
+            if ((type == Types.CHAR || type == Types.NCHAR) && (value != null) && platform.shouldTrimStrings()) {
                 value = Helper.rightTrimString((String)value);
             }
             return value;
@@ -1811,7 +1811,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Return if the JDBC type is a large character type such as clob.
      */
     private boolean isClob(int type) {
-        return (type == Types.CLOB) || (type == Types.LONGVARCHAR) || (type == DatabasePlatform.Types_NCLOB);
+        return (type == Types.CLOB) || (type == Types.LONGVARCHAR) || (type == DatabasePlatform.Types_NCLOB) || (type == Types.LONGNVARCHAR);
     }
 
     /**
