@@ -88,11 +88,12 @@ public class AttributeGroup implements Serializable, Cloneable {
      */
     protected transient Set<AttributeGroup> subClasses;
     
-    /**
-     * This attribute references the parent item for this subgroup.  This is used when resolving polymorphic attribute groups
+    /** 
+     * This attribute is used to store all of the classes in this hierarchy keyed by type.  It is used to find the correct graph
+     * for polymorphic groups.
      */
-    protected AttributeItem parentItem;
-
+    protected Map<Object, AttributeGroup> allsubclasses;
+    
     /**
      * Specified attributes in the group mapped to their AttributeItems
      */
@@ -163,10 +164,10 @@ public class AttributeGroup implements Serializable, Cloneable {
             return this;
         }
         if (this.hasInheritance()){
-            AttributeGroup result = this.parentItem.getGroup(type.getJavaClass());
+            AttributeGroup result = getSubClassGroups().get(type.getJavaClass());
             while (result == null && type.getInheritancePolicy().getParentDescriptor() != null){
                 type = type.getInheritancePolicy().getParentDescriptor();
-                result = this.parentItem.getGroup(type.getJavaClass());
+                result = getSubClassGroups().get(type.getJavaClass());
             }
             if (result != null){
                 return result;
@@ -204,6 +205,14 @@ public class AttributeGroup implements Serializable, Cloneable {
             this.addAttribute((String) it.next());
         }
     }
+    
+    /**
+     * INTERNAL:
+     * 
+     */
+    public void setAllSubclasses(Map<Object, AttributeGroup> subclasses){
+        this.allsubclasses = subclasses;
+    }
 
     /**
      * Indicates whether the group has at least one attribute.
@@ -217,6 +226,17 @@ public class AttributeGroup implements Serializable, Cloneable {
      */
     public boolean hasInheritance(){
         return (this.subClasses != null && !this.subClasses.isEmpty()) || (this.superClassGroup != null);
+    }
+
+
+    /**
+     * INTERNAL:
+     */
+    public Map<Object, AttributeGroup> getSubClassGroups(){
+        if (this.allsubclasses == null){
+            this.allsubclasses = new HashMap<Object, AttributeGroup>();
+        }
+        return this.allsubclasses;
     }
 
     /**
@@ -593,6 +613,20 @@ public class AttributeGroup implements Serializable, Cloneable {
                     item.convertClassNamesToClasses(classLoader);
                 }
             }
+            if (this.allsubclasses != null){
+                Map<Object, AttributeGroup> allGroups = new HashMap<Object, AttributeGroup>();
+                this.subClasses = new HashSet<AttributeGroup>();
+                for (AttributeGroup subClass : allsubclasses.values()){
+                    subClass.convertClassNamesToClasses(classLoader);
+                    allGroups.put(subClass.getType(), subClass);
+                }
+                this.allsubclasses = allGroups;
+                for (AttributeGroup subClass : subClasses){
+                    if (AttributeItem.orderInheritance(subClass, allGroups)){
+                        subClass.insertSubClass(this);
+                    }
+                }
+            }
         }
     }
 
@@ -694,7 +728,7 @@ public class AttributeGroup implements Serializable, Cloneable {
         if (isFetchGroup()) {
             return (FetchGroup) this;
         }
-        return toFetchGroup(new HashMap<AttributeGroup, FetchGroup>(), null);
+        return toFetchGroup(new HashMap<AttributeGroup, FetchGroup>());
     }
 
     /**
@@ -704,7 +738,7 @@ public class AttributeGroup implements Serializable, Cloneable {
      * @return
      */
     
-    public FetchGroup toFetchGroup(Map<AttributeGroup, FetchGroup> cloneMap, AttributeItem parentItem){
+    public FetchGroup toFetchGroup(Map<AttributeGroup, FetchGroup> cloneMap){
         FetchGroup clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
@@ -715,17 +749,18 @@ public class AttributeGroup implements Serializable, Cloneable {
         clone.typeName = this.typeName;
         clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
-        if (this.parentItem != null && parentItem == null){
-            parentItem = this.parentItem.toFetchGroup(cloneMap, null);
-        }
         if (this.superClassGroup != null){
-            clone.superClassGroup = this.superClassGroup.toFetchGroup(cloneMap, parentItem);
+            clone.superClassGroup = this.superClassGroup.toFetchGroup(cloneMap);
         }
-        clone.parentItem = parentItem;
+        if (this.allsubclasses != null){
+            for (AttributeGroup group : this.allsubclasses.values()){
+                clone.getSubClassGroups().put(group.getType(), group.toFetchGroup(cloneMap));
+            }
+        }
         if (this.subClasses != null){
             clone.subClasses = new HashSet<AttributeGroup>();
             for (AttributeGroup group : this.subClasses){
-                clone.subClasses.add(group.toFetchGroup(cloneMap, parentItem));
+                clone.subClasses.add(group.toFetchGroup(cloneMap));
             }
         }
         // all attributes and nested groups should be cloned, too
@@ -758,7 +793,7 @@ public class AttributeGroup implements Serializable, Cloneable {
             return (CopyGroup) this;
         }
         Map<AttributeGroup, CopyGroup> cloneMap = new IdentityHashMap<AttributeGroup, CopyGroup>();
-        return toCopyGroup(cloneMap, null, new HashMap<Object, Object>());
+        return toCopyGroup(cloneMap, new HashMap<Object, Object>());
     }
 
         /**
@@ -768,7 +803,7 @@ public class AttributeGroup implements Serializable, Cloneable {
          * @return
          */
         
-        public CopyGroup toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, AttributeItem parentItem, Map copies){
+        public CopyGroup toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, Map copies){
             CopyGroup clone = cloneMap.get(this);
             if (clone != null) {
                 return clone;
@@ -782,18 +817,18 @@ public class AttributeGroup implements Serializable, Cloneable {
             clone.isValidated = this.isValidated;
             cloneMap.put(this,clone);
             
-            if (this.parentItem != null && parentItem == null){
-                parentItem = this.parentItem.toCopyGroup(cloneMap, null, copies);
+            if (this.allsubclasses != null){
+                for (AttributeGroup group : this.allsubclasses.values()){
+                    clone.getSubClassGroups().put(group.getType(), group.toCopyGroup(cloneMap, copies));
+                }
             }
-            clone.parentItem = parentItem;
             if (this.superClassGroup != null){
-                clone.superClassGroup = this.superClassGroup.toCopyGroup(cloneMap, parentItem, copies);
+                clone.superClassGroup = this.superClassGroup.toCopyGroup(cloneMap, copies);
             }
-            clone.parentItem = parentItem;
             if (this.subClasses != null){
                 clone.subClasses = new HashSet<AttributeGroup>();
                 for (AttributeGroup group : this.subClasses){
-                    clone.subClasses.add(group.toCopyGroup(cloneMap, parentItem, copies));
+                    clone.subClasses.add(group.toCopyGroup(cloneMap, copies));
                 }
             }
             // all attributes and nested groups should be cloned, too
@@ -819,10 +854,10 @@ public class AttributeGroup implements Serializable, Cloneable {
         if (this.isLoadGroup()) {
             return (LoadGroup) this;
         }
-        return toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), null, false);
+        return toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), false);
     }
 
-    public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, AttributeItem parentItem, boolean loadOnly){
+    public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){
         LoadGroup clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
@@ -833,17 +868,18 @@ public class AttributeGroup implements Serializable, Cloneable {
         clone.typeName = this.typeName;
         clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
-        if (this.parentItem != null && parentItem == null){
-            parentItem = this.parentItem.toLoadGroup(cloneMap, null, loadOnly);
+        if (this.allsubclasses != null){
+            for (AttributeGroup group : this.allsubclasses.values()){
+                clone.getSubClassGroups().put(group.getType(), group.toLoadGroup(cloneMap, loadOnly));
+            }
         }
-        clone.parentItem = parentItem;
         if (this.superClassGroup != null){
-            clone.superClassGroup = this.superClassGroup.toLoadGroup(cloneMap, parentItem, loadOnly);
+            clone.superClassGroup = this.superClassGroup.toLoadGroup(cloneMap, loadOnly);
         }
         if (this.subClasses != null){
             clone.subClasses = new HashSet<AttributeGroup>();
             for (AttributeGroup group : this.subClasses){
-                clone.subClasses.add(group.toLoadGroup(cloneMap, parentItem, loadOnly));
+                clone.subClasses.add(group.toLoadGroup(cloneMap, loadOnly));
             }
         }
         // all attributes and nested groups should be cloned, too
@@ -859,7 +895,7 @@ public class AttributeGroup implements Serializable, Cloneable {
 
     public AttributeGroup clone() {
         Map<AttributeGroup, AttributeGroup> cloneMap = new IdentityHashMap<AttributeGroup, AttributeGroup>();
-        return clone(cloneMap, null);
+        return clone(cloneMap);
     }
     
     /**
@@ -869,7 +905,7 @@ public class AttributeGroup implements Serializable, Cloneable {
      * @return
      */
     
-    public AttributeGroup clone(Map<AttributeGroup, AttributeGroup> cloneMap, AttributeItem parentItem){
+    public AttributeGroup clone(Map<AttributeGroup, AttributeGroup> cloneMap){
         AttributeGroup clone = cloneMap.get(this);
         if (clone != null) {
             return clone;
@@ -885,18 +921,18 @@ public class AttributeGroup implements Serializable, Cloneable {
         clone.typeName = this.typeName;
         clone.isValidated = this.isValidated;
         cloneMap.put(this,clone);
-        if (this.parentItem != null && parentItem == null){
-            parentItem = this.parentItem.clone(cloneMap, null);
+        if (this.allsubclasses != null){
+            for (AttributeGroup group : this.allsubclasses.values()){
+                clone.getSubClassGroups().put(group.getType(), group.clone(cloneMap));
+            }
         }
-        clone.parentItem = parentItem;
         if (this.superClassGroup != null){
-            clone.superClassGroup = this.superClassGroup.clone(cloneMap, parentItem);
+            clone.superClassGroup = this.superClassGroup.clone(cloneMap);
         }
-        clone.parentItem = parentItem;
         if (this.subClasses != null){
             clone.subClasses = new HashSet<AttributeGroup>();
             for (AttributeGroup group : this.subClasses){
-                clone.subClasses.add(group.clone(cloneMap, parentItem));
+                clone.subClasses.add(group.clone(cloneMap));
             }
         }
         // all attributes and nested groups should be cloned, too
@@ -942,11 +978,4 @@ public class AttributeGroup implements Serializable, Cloneable {
         this.subClasses.add(group);
     }
 
-    /**
-     * INTERNAL:
-     * Method is used during tree creation
-     */
-    public void setParentItem(AttributeItem attributeItem) {
-        this.parentItem = attributeItem;
-    }
 }

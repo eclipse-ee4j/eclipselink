@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Subgraph;
+
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
@@ -222,7 +224,13 @@ public class NamedEntityGraphMetadata extends ORMetadata {
 
             // Process the subgraphs attribute nodes (into the groups built previously).
             for (NamedSubgraphMetadata subgraph : getSubgraphs()) {
-                subgraph.processAttributeNodes(attributeGraphs, entityGraph);
+                subgraph.processAttributeNodes(attributeGraphs, attributeGraphs.get(subgraph.getName()).get(subgraph.getTypeClassName()), entityGraph);
+            }
+            
+            for (NamedSubgraphMetadata subclassSubgraph : getSubclassSubgraphs()){
+                AttributeGroup group = new AttributeGroup(subclassSubgraph.getName(), subclassSubgraph.getTypeClassName(), true);
+                subclassSubgraph.processAttributeNodes(attributeGraphs, group, entityGraph);
+                entityGraph.getSubClassGroups().put(group.getTypeName(), group);
             }
     
             // Finally, add the entity graph to the project.

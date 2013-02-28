@@ -298,7 +298,7 @@ public class FetchGroup extends AttributeGroup {
      * LoadGroup created with all member groups with shouldLoad set to false dropped.
      */
     public LoadGroup toLoadGroupLoadOnly() {
-        return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), null, true);
+        return this.toLoadGroup(new HashMap<AttributeGroup, LoadGroup>(), true);
     }
     
     @Override
@@ -306,11 +306,11 @@ public class FetchGroup extends AttributeGroup {
         return (FetchGroup)super.clone();
     }    
 
-    public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, AttributeItem parentItem, boolean loadOnly){
+    public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){
         if (loadOnly && !this.shouldLoad){
             return null;
         }
-        return super.toLoadGroup(cloneMap, parentItem, loadOnly);
+        return super.toLoadGroup(cloneMap, loadOnly);
     }
     /**
      * INTERNAL:

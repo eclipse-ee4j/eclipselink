@@ -173,8 +173,7 @@ public class NamedSubgraphMetadata extends ORMetadata {
      * INTERNAL:
      * Process the named subgraph metadata attribute nodes.
      */
-    public void processAttributeNodes(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup entityGraph) {
-        AttributeGroup subgraph = attributeGraphs.get(getName()).get(getTypeClassName());
+    public void processAttributeNodes(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup subgraph, AttributeGroup entityGraph) {
        
         for (NamedAttributeNodeMetadata attributeNode : getNamedAttributeNodes()) {
             attributeNode.process(attributeGraphs, subgraph, entityGraph);

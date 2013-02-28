@@ -116,11 +116,9 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         }
         
         clearCache("fieldaccess");
-        QuerySQLTracker.install(session);
         sessionLogLevelOriginal = session.getLogLevel();
-        if(sessionLogLevelOriginal > SessionLog.FINE) {
-            session.setLogLevel(SessionLog.FINE);
-        }
+        QuerySQLTracker.install(session);
+        session.setLogLevel(SessionLog.FINE);
     }
     
     /**

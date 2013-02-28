@@ -88,6 +88,9 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             throw new IllegalStateException("immutable_entitygraph");
         }
         for (String attrName : attributeNames) {
+            if (this.descriptor.getMappingForAttributeName(attrName) == null){
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("metamodel_managed_type_attribute_not_present", new Object[]{attrName, this.getClassType()}));
+            }
             this.addAttributeNodeImpl(new AttributeNodeImpl<X>(attrName));
             //order is important here, must add attribute node to node list before adding to group or it will appear in node list twice.
             this.attributeGroup.addAttribute(attrName, (AttributeGroup) null);
@@ -155,7 +158,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
 
         localGroup = new AttributeGroup(attributeName, type, true);
 
-        ClassDescriptor targetDesc = mapping.getDescriptor();
+        ClassDescriptor targetDesc = mapping.getReferenceDescriptor();
         if (type != null && targetDesc.hasInheritance()) {
             targetDesc = targetDesc.getInheritancePolicy().getDescriptor(type);
             if (targetDesc == null) {
@@ -229,6 +232,8 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             }
         }
         AttributeGroup subGroup = new AttributeGroup(this.attributeGroup.getName(), type, true);
+        this.attributeGroup.getSubClassGroups().put(type, subGroup);
+        subGroup.setAllSubclasses(this.attributeGroup.getSubClassGroups());
         this.attributeGroup.insertSubClass(subGroup);
         return new EntityGraphImpl(subGroup, targetDesc);
     }

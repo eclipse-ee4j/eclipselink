@@ -110,7 +110,6 @@ public class AttributeItem implements Serializable {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("only_one_root_subgraph"));
                 }
             }
-            group.setParentItem(this);
             this.subGroups.put(type, group);
             if (orderInheritance(group, this.subGroups)){
                 group.insertSubClass(this.group);
@@ -125,7 +124,7 @@ public class AttributeItem implements Serializable {
      * @param subGroups
      * @return true if the group is the new root.
      */
-    protected boolean orderInheritance(AttributeGroup group, Map<Object, AttributeGroup> subGroups) {
+    public static boolean orderInheritance(AttributeGroup group, Map<Object, AttributeGroup> subGroups) {
         Class type = group.getType();
         if (type != null){
             AttributeGroup superClass = null;
@@ -204,22 +203,22 @@ public class AttributeItem implements Serializable {
         AttributeItem clone = new AttributeItem();
         clone.attributeName = this.attributeName;
         if (this.group != null){
-            clone.group = this.group.clone(cloneMap, clone);
+            clone.group = this.group.clone(cloneMap);
         }
         if (clone.keyGroup != null){
-            clone.keyGroup = this.keyGroup.clone(cloneMap, clone);
+            clone.keyGroup = this.keyGroup.clone(cloneMap);
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
             clone.subGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
-                clone.subGroups.put(group.getKey(), group.getValue().clone(cloneMap, clone));
+                clone.subGroups.put(group.getKey(), group.getValue().clone(cloneMap));
             }
         }
         if (this.keyGroups != null){
             clone.keyGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
-                clone.keyGroups.put(group.getKey(), group.getValue().clone(cloneMap, clone));
+                clone.keyGroups.put(group.getKey(), group.getValue().clone(cloneMap));
             }
         }
         return clone;
@@ -230,22 +229,22 @@ public class AttributeItem implements Serializable {
         AttributeItem clone = new AttributeItem();
         clone.attributeName = this.attributeName;
         if (this.group != null){
-            clone.group = this.group.toCopyGroup(cloneMap, clone, copies);
+            clone.group = this.group.toCopyGroup(cloneMap, copies);
         }
         if (clone.keyGroup != null){
-            clone.keyGroup = this.keyGroup.toCopyGroup(cloneMap, clone, copies);
+            clone.keyGroup = this.keyGroup.toCopyGroup(cloneMap, copies);
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
             clone.subGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
-                clone.subGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, clone, copies));
+                clone.subGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, copies));
             }
         }
         if (this.keyGroups != null){
             clone.keyGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
-                clone.keyGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, clone, copies));
+                clone.keyGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, copies));
             }
         }
         return clone;
@@ -256,22 +255,22 @@ public class AttributeItem implements Serializable {
         AttributeItem clone = new AttributeItem();
         clone.attributeName = this.attributeName;
         if (this.group != null){
-            clone.group = this.group.toFetchGroup(cloneMap, clone);
+            clone.group = this.group.toFetchGroup(cloneMap);
         }
         if (clone.keyGroup != null){
-            clone.keyGroup = this.keyGroup.toFetchGroup(cloneMap, clone);
+            clone.keyGroup = this.keyGroup.toFetchGroup(cloneMap);
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
             clone.subGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
-                clone.subGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap, clone));
+                clone.subGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap));
             }
         }
         if (this.keyGroups != null){
             clone.keyGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
-                clone.keyGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap, clone));
+                clone.keyGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap));
             }
         }
         return clone;
@@ -282,22 +281,22 @@ public class AttributeItem implements Serializable {
         AttributeItem clone = new AttributeItem();
         clone.attributeName = this.attributeName;
         if (this.group != null){
-            clone.group = this.group.toLoadGroup(cloneMap, clone, loadOnly);
+            clone.group = this.group.toLoadGroup(cloneMap, loadOnly);
         }
         if (clone.keyGroup != null){
-            clone.keyGroup = this.keyGroup.toLoadGroup(cloneMap, clone, loadOnly);
+            clone.keyGroup = this.keyGroup.toLoadGroup(cloneMap, loadOnly);
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
             clone.subGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
-                clone.subGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, clone, loadOnly));
+                clone.subGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, loadOnly));
             }
         }
         if (this.keyGroups != null){
             clone.keyGroups = new HashMap<Object, AttributeGroup>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
-                clone.keyGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, clone, loadOnly));
+                clone.keyGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, loadOnly));
             }
         }
         return clone;
@@ -316,6 +315,7 @@ public class AttributeItem implements Serializable {
             for (AttributeGroup entry : this.subGroups.values()){
                 entry.convertClassNamesToClasses(classLoader);
                 newMap.put(entry.getType(), entry);
+                entry.setAllSubclasses(newMap);
             }
         }
         this.subGroups = newMap;
@@ -325,6 +325,7 @@ public class AttributeItem implements Serializable {
             for (AttributeGroup entry : this.keyGroups.values()){
                 entry.convertClassNamesToClasses(classLoader);
                 newMap.put(entry.getType(), entry);
+                entry.setAllSubclasses(newMap);
             }
         }
         this.keyGroups = newMap;

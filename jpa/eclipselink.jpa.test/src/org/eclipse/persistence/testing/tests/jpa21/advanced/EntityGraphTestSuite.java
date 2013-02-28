@@ -16,6 +16,7 @@
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityGraph;
@@ -28,6 +29,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
+import org.eclipse.persistence.testing.models.aggregate.Project_case2;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
@@ -50,6 +52,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         suite.addTest(new EntityGraphTestSuite("testSimpleGraph"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroup"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroupRefresh"));
+        suite.addTest(new EntityGraphTestSuite("testsubclassSubgraphs"));
         
         return suite;
     }
@@ -89,8 +92,18 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         closeEntityManager(em);
     }
     
-    public void testLoadGraph(){
-        
+    public void testsubclassSubgraphs(){
+        EntityManager em = createEntityManager();
+        EntityGraph employeeGraph = em.createEntityGraph(Project.class);
+        employeeGraph.addSubclassSubgraph(LargeProject.class).addAttributeNodes("budget");
+        employeeGraph.addAttributeNodes("description");
+        List<Project> result = em.createQuery("Select p from Project p where type(p) = LargeProject").setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).getResultList();
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        for (Project project : result){
+            assertFalse("Fetch Group was not applied", util.isLoaded(project, "name"));
+            assertTrue("Fetch Group was not applied", util.isLoaded(project, "description"));
+            assertTrue("Fetch Group was not applied", util.isLoaded(project, "budget"));
+        }
     }
     
     public void testEmbeddedFetchGroup(){

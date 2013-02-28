@@ -2844,7 +2844,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public EntityGraph<?> createEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
+            return null;
         }
         ClassDescriptor descriptor = this.getAbstractSession().getDescriptor(group.getType());
         return new EntityGraphImpl(group.clone(), descriptor);
