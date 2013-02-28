@@ -735,11 +735,12 @@
         <!-- Copy for maven to run -->
         <copy todir="${tmp.maven.dir}" file="${basedir}/pom.xml.template"  failonerror="false"/>
         <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
+        <!-- copy todir="${tmp.maven.dir}" file="${basedir}/uploadToNexus.xml" failonerror="false"/ -->
     </target>
 
     <target name="publish-milestone-maven">
         <echo message="Publish-milestone-maven: "/>
-        <echo message="    using: ${releng.repo.dir}/upload${branch}ToMaven.xml"/>
+        <echo message="    using: ${basedir}/uploadToMaven.xml"/>
         <echo message="    from dir '${tmp.maven.dir}'"/>
         <echo message="    target: 'upload-maven-all'"/>
         <echo message="    properties: "/>
@@ -752,7 +753,7 @@
         <echo message="        build.date      ='${build.date}'"/>
         <echo message="        build.type      ='${build.type}'"/>
         <echo message="        bundle.dir      ='${tmp.maven.dir}'"/>
-        <ant antfile="${releng.repo.dir}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+        <ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
             <property name="build.deps.dir"   value="${build.deps.dir}"/>
             <property name="custom.tasks.lib" value="${releng.repo.dir}/ant_customizations.jar"/>
             <property name="release.version"  value="${release.version}"/>
