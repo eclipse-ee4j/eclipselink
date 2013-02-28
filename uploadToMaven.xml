@@ -194,8 +194,7 @@
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
         <!-- the discovered "(bundle).version" (after release) -->
-   <!-- Temporarily disable until I can fix StripQualifier not to overwrtie previously set properties -->
-        <!-- stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/ -->
+        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
         <!-- a rebuild (convienient for publishing OSGi-ified jars but against OSGi spec) then  -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
@@ -216,10 +215,10 @@
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
         <!--   and won't be available separately anyway.                                       -->
 
-        <say  message="jpaapi.mvn.version     = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
-        <say  message="sdoapi.mvn.version     = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
-        <say  message="jpaapi.mvn.version     : Property not set!"      unless="jpaapi.mvn.version"/>
-        <say  message="sdoapi.mvn.version     : Property not set!"      unless="sdoapi.mvn.version"/>
+        <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
+        <say  message="jpaapi.mvn.version:  Property not set!"      unless="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version:  Property not set!"      unless="sdoapi.mvn.version"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -341,12 +340,13 @@
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall -->
-        <antcall target="upload-release-artifact-no-src">
+        <antcall target="upload-release-artifact">
             <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${sdoapi.prefix}/${sdoapi.mvn.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
             <param name="artifact"        value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}.source_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -537,19 +537,6 @@
         <delete file="pom.xml"/>
     </target>
 
-    <!-- Uploads a single artifact without src to maven repository only if one doesn't already exist -->
-    <target name="upload-release-artifact-no-src" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
-        <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
-        <!-- Delploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
-        <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
-          <pom refid="maven.project"/>
-        </artifact:deploy>
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
-    </target>
-
     <!-- Uploads a single artifact & source to maven repository -->
     <target name="upload-artifact" depends="prepare-pom">
         <!-- Delploy the jar to maven repository along with sources -->
@@ -564,7 +551,7 @@
     </target>
 
     <!-- Uploads a single artifact, source & javadoc to maven repository -->
-    <target name="upload-artifact-new" depends="prepare-pom">
+    <target name="upload-artifact-with-javadoc" depends="prepare-pom">
         <!-- Delploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
