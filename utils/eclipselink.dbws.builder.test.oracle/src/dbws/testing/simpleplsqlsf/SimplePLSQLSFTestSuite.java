@@ -320,7 +320,7 @@ public class SimplePLSQLSFTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
           "<simple-xml>" +
-            "<result>&lt;some>This is some xml&lt;/some></result>" +
+            "<RESULT>&lt;some>This is some xml&lt;/some></RESULT>" +
           "</simple-xml>" +
         "</simple-xml-format>";
 }

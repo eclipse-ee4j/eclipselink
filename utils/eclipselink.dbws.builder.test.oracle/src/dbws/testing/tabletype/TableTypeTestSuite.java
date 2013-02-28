@@ -766,6 +766,83 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</wsdl:definitions>\n";
 
     protected static final String OR_PROJECT =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+        "\n<orm:entity-mappings xmlns:orm=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.eclipse.org/eclipselink/xsds/persistence/orm org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd\">" +
+        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype\" name=\"tabletype\">" +
+        "\n    <orm:table name=\"TABLETYPE\"/>" +
+        "\n    <orm:named-native-query name=\"findByPrimaryKey_tabletypeType\" result-class=\"tabletype.Tabletype\">" +
+        "\n      <orm:query>SELECT * FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"findAll_tabletypeType\" result-class=\"tabletype.Tabletype\">" +
+        "\n      <orm:query>SELECT * FROM TABLETYPE</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:attributes>" +
+        "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
+        "\n        <orm:column name=\"ID\"/>" +
+        "\n      </orm:id>" +
+        "\n      <orm:basic attribute-type=\"java.lang.String\" name=\"name\">" +
+        "\n        <orm:column name=\"NAME\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"java.math.BigInteger\" name=\"deptno\">" +
+        "\n        <orm:column name=\"DEPTNO\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"java.lang.String\" name=\"deptname\">" +
+        "\n        <orm:column name=\"DEPTNAME\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"java.lang.Character\" name=\"section\">" +
+        "\n        <orm:column name=\"SECTION\"/>" +
+        "\n      </orm:basic>" +
+        "\n        <orm:basic attribute-type=\"java.lang.Float\" name=\"sal\">" +
+        "\n        <orm:column name=\"SAL\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"java.lang.Float\" name=\"commission\">" +
+        "\n        <orm:column name=\"COMMISSION\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"java.lang.Float\" name=\"sales\">" +
+        "\n        <orm:column name=\"SALES\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"[B\" name=\"binid\">" +
+        "\n        <orm:column name=\"BINID\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"[B\" name=\"b\">" +
+        "\n        <orm:column name=\"B\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"[Ljava.lang.Character;\" name=\"c\">" +
+        "\n        <orm:column name=\"C\"/>" +
+        "\n      </orm:basic>" +
+        "\n      <orm:basic attribute-type=\"[B\" name=\"r\">" +
+        "\n        <orm:column name=\"R\"/>" +
+        "\n      </orm:basic>" +
+        "\n    </orm:attributes>" +
+        "\n  </orm:entity>" +
+        "\n  <orm:entity access=\"VIRTUAL\" class=\"tabletype.Tabletype2\" name=\"tabletype2\">" +
+        "\n    <orm:table name=\"TABLETYPE2\"/>" +
+        "\n    <orm:named-native-query name=\"findByPrimaryKey_tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
+        "\n      <orm:query>SELECT * FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"findAll_tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
+        "\n      <orm:query>SELECT * FROM TABLETYPE2</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:attributes>" +
+        "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
+        "\n        <orm:column name=\"ID\"/>" +
+        "\n      </orm:id>" +
+        "\n      <orm:basic attribute-type=\"[B\" name=\"lr\">" +
+        "\n        <orm:column name=\"LR\"/>" +
+        "\n      </orm:basic>" +
+        "\n    </orm:attributes>" +
+        "\n  </orm:entity>" +
+        "\n  <orm:entity access=\"VIRTUAL\" class=\"dbws.force.embeddable.processing.Entity\">" +
+        "\n    <orm:attributes>" +
+        "\n      <orm:id attribute-type=\"java.lang.String\" name=\"fakePk\">" +
+        "\n        <orm:column name=\"FAKE_PK\"/>" +
+        "\n      </orm:id>" +
+        "\n    </orm:attributes>" +
+        "\n  </orm:entity>" +
+        "\n</orm:entity-mappings>";
+    
+    /*
+    protected static final String OR_PROJECT =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
            "<name>tabletype-dbws-or</name>\n" +
@@ -948,7 +1025,8 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "<connection-url></connection-url>\n" +
            "</login>\n" +
         "</object-persistence>";
-
+    */
+            
     protected static final String OX_PROJECT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<xml-bindings-list xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\">" +

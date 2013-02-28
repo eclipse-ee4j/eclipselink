@@ -226,7 +226,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>-1, 2</result>" +
+		    "<Q>-1, 2</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -252,7 +252,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>2, -1</result>" +
+		    "<Q>2, -1</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -277,7 +277,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>-1, -1</result>" +
+		    "<Q>-1, -1</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -300,7 +300,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>66, 99</result>" +
+		    "<Q>66, 99</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -324,7 +324,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>null</result>" +
+		    "<Q>null</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
     
@@ -357,7 +357,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>not null</result>" +
+		    "<Q>not null</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -407,7 +407,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>(613)123-1234, (902)678-6789</result>" +
+		    "<Q>(613)123-1234, (902)678-6789</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 
@@ -464,7 +464,7 @@ public class OptionalArgumentTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
 		  "<simple-xml>" +
-		    "<result>(613)123-1234, (902)678-6789 - (613)234-4567, (902)987-9876</result>" +
+		    "<Q>(613)123-1234, (902)678-6789 - (613)234-4567, (902)987-9876</Q>" +
 		  "</simple-xml>" +
 	    "</simple-xml-format>";
 }

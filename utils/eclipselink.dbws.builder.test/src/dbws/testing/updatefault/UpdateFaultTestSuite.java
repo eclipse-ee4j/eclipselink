@@ -67,11 +67,15 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
 import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -84,7 +88,6 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.OperationModel;
 import org.eclipse.persistence.tools.dbws.TableOperationModel;
@@ -93,6 +96,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSBuilder.NO_SESSIONS_FILENAM
 import static org.eclipse.persistence.tools.dbws.DBWSBuilder.SESSIONS_FILENAME_KEY;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.DOM_PLATFORM_CLASSNAME;
+import static org.eclipse.persistence.tools.dbws.Util.OR_PRJ_SUFFIX;
 import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
 import static org.eclipse.persistence.tools.dbws.XRPackager.__nullStream;
 
@@ -127,6 +131,10 @@ import static dbws.testing.DBWSTestSuite.runDdl;
 )
 @ServiceMode(MESSAGE)
 public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOAPMessage> {
+
+    static final String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+    static final String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+    static final String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
 
     static final String CREATE_SFAULT_TABLE =
         "CREATE TABLE IF NOT EXISTS sfault_table (" +
@@ -210,9 +218,6 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
                 }
             }
         }
-        String username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
-        String password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
-        String url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         builder.setProjectName(SFAULT_TEST);
         builder.setTargetNamespace(SFAULT_NAMESPACE);
         TableOperationModel sFaultOp = new TableOperationModel();
@@ -221,7 +226,8 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         sFaultOp.setTablePattern(SFAULT);
         builder.getOperations().add(sFaultOp);
         builder.quiet = true;
-        builder.setLogLevel(SessionLog.FINE_LABEL);
+        //builder.setLogLevel(SessionLog.FINE_LABEL);
+        builder.setLogLevel(SessionLog.OFF_LABEL);
         builder.setDriver(DATABASE_DRIVER);
         builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
@@ -292,8 +298,45 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
 
     @Override
     public void buildSessions() {
+        XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(parentClassLoader);
+        DatasourceLogin login = new DatabaseLogin();
+        login.setUserName(username);
+        login.setPassword(password);
+        ((DatabaseLogin) login).setConnectionString(url);
+        ((DatabaseLogin) login).setDriverClassName(DATABASE_PLATFORM);
+        Platform platform = builder.getDatabasePlatform();
+        ConversionManager conversionManager = platform.getConversionManager();
+        if (conversionManager != null) {
+            conversionManager.setLoader(xrdecl);
+        }
+        login.setDatasourcePlatform(platform);
+        ((DatabaseLogin)login).bindAllParameters();
+        ((DatabaseLogin)login).setUsesStreamsForBinding(true);
+        
+        Project orProject = null;
+        if (DBWS_OR_STREAM.size() != 0) {
+            MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+                    new DatabaseSessionImpl(login), xrdecl, false, true, false, false, false, null, null);
+            processor.setMetadataSource(new JPAMetadataSource(xrdecl, new StringReader(DBWS_OR_STREAM.toString())));
+            PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
+            processor.addNamedQueries();
+            orProject = processor.getProject().getProject();
+        } else {
+            orProject = new Project();
+        }
+        orProject.setName(builder.getProjectName().concat(OR_PRJ_SUFFIX));
+        orProject.setDatasourceLogin(login);
+        DatabaseSession databaseSession = orProject.createDatabaseSession();
+        if ("off".equalsIgnoreCase(builder.getLogLevel())) {
+            databaseSession.dontLogMessages();
+        } else {
+            databaseSession.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(builder.getLogLevel()));
+        }
+        xrService.setORSession(databaseSession);
+        orProject.convertClassNamesToClasses(xrdecl);
+
         Project oxProject = null;
-        Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+        Map<String, OXMMetadataSource> metadataMap = new HashMap<String, OXMMetadataSource>();
         StreamSource xml = new StreamSource(new StringReader(DBWS_OX_STREAM.toString()));
         try {
             JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
@@ -302,59 +345,26 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
             JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
             XmlBindingsModel model = jaxbElt.getValue();
             for (XmlBindings xmlBindings : model.getBindingsList()) {
-                metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                metadataMap.put(xmlBindings.getPackageName(), new OXMMetadataSource(xmlBindings));
             }
         } catch (JAXBException jaxbex) {
             jaxbex.printStackTrace();
         }
         
-        Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+        Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
         try {
             org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
                     org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory.createContextFromOXM(parentClassLoader, properties);
             oxProject = jCtx.getXMLContext().getSession(0).getProject();
-
-            // may need to alter descriptor alias
-            if (oxProject.getAliasDescriptors() != null) {
-                Map<String, ClassDescriptor> aliasDescriptors = new HashMap<String, ClassDescriptor>();
-                for (Object key : oxProject.getAliasDescriptors().keySet()) {
-                    String alias = key.toString();
-                    XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
-                    
-                    String defaultRootElement = xdesc.getDefaultRootElement();
-                    String proposedAlias = defaultRootElement;
-                    if (defaultRootElement.endsWith(TYPE_STR)) {
-                        proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
-                    }
-                    proposedAlias = proposedAlias.toLowerCase();
-                    xdesc.setAlias(proposedAlias);
-                    aliasDescriptors.put(proposedAlias, xdesc);
-                }
-                oxProject.setAliasDescriptors(aliasDescriptors);
-            }
         } catch (JAXBException e) {
             e.printStackTrace();
         }
         ((XMLLogin)oxProject.getDatasourceLogin()).setPlatformClassName(DOM_PLATFORM_CLASSNAME);
         ((XMLLogin)oxProject.getDatasourceLogin()).setEqualNamespaceResolvers(false);
 
-        Project orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-            parentClassLoader);
-        DatasourceLogin login = orProject.getLogin();
-        login.setUserName(builder.getUsername());
-        login.setPassword(builder.getPassword());
-        ((DatabaseLogin)login).setConnectionString(builder.getUrl());
-        ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
-        Platform platform = builder.getDatabasePlatform();
-        ConversionManager cm = platform.getConversionManager();
-        cm.setLoader(parentClassLoader);
-        login.setDatasourcePlatform(platform);
-        ((DatabaseLogin)login).bindAllParameters();
-        orProject.setDatasourceLogin(login);
+        alignDescriptorAliases(oxProject, orProject, xrdecl);                
         ProjectHelper.fixOROXAccessors(orProject, oxProject);
-        DatabaseSession databaseSession = orProject.createDatabaseSession();
-        databaseSession.dontLogMessages();
         xrService.setORSession(databaseSession);
         xrService.setXMLContext(new XMLContext(oxProject));
         xrService.setOXSession(xrService.getXMLContext().getSession(0));
@@ -382,6 +392,44 @@ public class UpdateFaultTestSuite extends ProviderHelper implements Provider<SOA
         // just for debugging, keep 'response' variable alive after try-catch
         if (response != null) {
             response.hashCode();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected static void alignDescriptorAliases(Project oxProject, Project orProject, XRDynamicClassLoader xrdcl) {
+        // may need to alter descriptor alias
+        if (oxProject.getAliasDescriptors() != null) {
+            Map<String, XMLDescriptor> oxAliases = new HashMap<String, XMLDescriptor>();
+            for (Object key : oxProject.getAliasDescriptors().keySet()) {
+                String alias = key.toString();
+
+                XMLDescriptor xdesc = (XMLDescriptor) oxProject.getAliasDescriptors().get(alias);
+                ClassDescriptor odesc = null;
+
+                if ((odesc = (ClassDescriptor) orProject.getAliasDescriptors().get(alias)) == null) {
+                    // for some reason we occasionally see an upper case first char in the OX alias
+                    alias = Character.toLowerCase(alias.charAt(0)) + (alias.length() > 1 ? alias.substring(1) : "");
+                }
+
+                String defaultRootElement = xdesc.getDefaultRootElement();
+                String proposedAlias = defaultRootElement;
+                if (defaultRootElement.endsWith(TYPE_STR)) {
+                    proposedAlias = defaultRootElement.substring(0, defaultRootElement.lastIndexOf(TYPE_STR));
+                }
+                proposedAlias = proposedAlias.toLowerCase();
+                xdesc.setAlias(proposedAlias);
+
+                oxAliases.put(proposedAlias, xdesc);
+
+                if (odesc != null) {
+                    orProject.getAliasDescriptors().remove(alias);
+                    odesc.setAlias(proposedAlias);
+                    odesc.convertClassNamesToClasses(xrdcl);
+                    orProject.getAliasDescriptors().put(proposedAlias, odesc);
+                    // what about updating ordered descriptors here...
+                }
+            }
+            oxProject.setAliasDescriptors(oxAliases);
         }
     }
 }

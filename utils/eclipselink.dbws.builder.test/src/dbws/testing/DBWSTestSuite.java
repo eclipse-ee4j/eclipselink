@@ -51,6 +51,9 @@ import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.xr.ProjectHelper;
 import org.eclipse.persistence.internal.xr.XRDynamicClassLoader;
 import org.eclipse.persistence.internal.xr.XRServiceAdapter;
@@ -59,6 +62,7 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
 import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -69,9 +73,9 @@ import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModel;
 import org.eclipse.persistence.tools.dbws.DBWSBuilderModelProject;
@@ -271,18 +275,44 @@ public class DBWSTestSuite {
             @Override
             public void buildSessions() {
                 XRDynamicClassLoader xrdecl = new XRDynamicClassLoader(parentClassLoader);
+                DatasourceLogin login = new DatabaseLogin();
+                login.setUserName(username);
+                login.setPassword(password);
+                ((DatabaseLogin) login).setConnectionString(url);
+                ((DatabaseLogin) login).setDriverClassName(DATABASE_PLATFORM);
+                Platform platform = builder.getDatabasePlatform();
+                ConversionManager conversionManager = platform.getConversionManager();
+                if (conversionManager != null) {
+                    conversionManager.setLoader(xrdecl);
+                }
+                login.setDatasourcePlatform(platform);
+                ((DatabaseLogin) login).bindAllParameters();
+                
                 Project orProject = null;
                 if (DBWS_OR_STREAM.size() != 0) {
-                    orProject = XMLProjectReader.read(new StringReader(DBWS_OR_STREAM.toString()),
-                        xrdecl);
+                    MetadataProcessor processor = new MetadataProcessor(new XRPersistenceUnitInfo(xrdecl), 
+                            new DatabaseSessionImpl(login), xrdecl, false, true, false, false, false, null, null);
+                    processor.setMetadataSource(new JPAMetadataSource(xrdecl, new StringReader(DBWS_OR_STREAM.toString())));
+                    PersistenceUnitProcessor.processORMetadata(processor, true, PersistenceUnitProcessor.Mode.ALL);
+                    processor.addNamedQueries();
+                    orProject = processor.getProject().getProject();
                 } else {
                     orProject = new Project();
-                    orProject.setName(builder.getProjectName().concat(OR_PRJ_SUFFIX));
                 }
+                orProject.setName(builder.getProjectName().concat(OR_PRJ_SUFFIX));
+                orProject.setDatasourceLogin(login);
+                DatabaseSession databaseSession = orProject.createDatabaseSession();
+                if ("off".equalsIgnoreCase(builder.getLogLevel())) {
+                    databaseSession.dontLogMessages();
+                } else {
+                    databaseSession.setLogLevel(AbstractSessionLog.translateStringToLoggingLevel(builder.getLogLevel()));
+                }
+                xrService.setORSession(databaseSession);
+                orProject.convertClassNamesToClasses(xrdecl);
                 
                 Project oxProject = null;
                 if (DBWS_OX_STREAM.size() != 0) {
-                    Map<String, DBWSMetadataSource> metadataMap = new HashMap<String, DBWSMetadataSource>();
+                    Map<String, OXMMetadataSource> metadataMap = new HashMap<String, OXMMetadataSource>();
                     StreamSource xml = new StreamSource(new StringReader(DBWS_OX_STREAM.toString()));
                     try {
                         JAXBContext jc = JAXBContext.newInstance(XmlBindingsModel.class);
@@ -291,13 +321,13 @@ public class DBWSTestSuite {
                         JAXBElement<XmlBindingsModel> jaxbElt = unmarshaller.unmarshal(xml, XmlBindingsModel.class);
                         XmlBindingsModel model = jaxbElt.getValue();
                         for (XmlBindings xmlBindings : model.getBindingsList()) {
-                            metadataMap.put(xmlBindings.getPackageName(), new DBWSMetadataSource(xmlBindings));
+                            metadataMap.put(xmlBindings.getPackageName(), new OXMMetadataSource(xmlBindings));
                         }
                     } catch (JAXBException jaxbex) {
                         jaxbex.printStackTrace();
                     }
                     
-                    Map<String, Map<String, DBWSMetadataSource>> properties = new HashMap<String, Map<String, DBWSMetadataSource>>();
+                    Map<String, Map<String, OXMMetadataSource>> properties = new HashMap<String, Map<String, OXMMetadataSource>>();
                     properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataMap);
                     try {
                         org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext jCtx = 
@@ -338,20 +368,7 @@ public class DBWSTestSuite {
                     oxProject = new Project();
                 }
                 oxProject.setName(builder.getProjectName().concat(OX_PRJ_SUFFIX));
-                
-                DatasourceLogin login = new DatabaseLogin();
-                login.setUserName(username);
-                login.setPassword(password);
-                ((DatabaseLogin)login).setConnectionString(url);
-                ((DatabaseLogin)login).setDriverClassName(DATABASE_DRIVER);
-                Platform platform = builder.getDatabasePlatform();;
-                ConversionManager conversionManager = platform.getConversionManager();
-                if (conversionManager != null) {
-                    conversionManager.setLoader(xrdecl);
-                }
-                login.setDatasourcePlatform(platform);
-                ((DatabaseLogin)login).bindAllParameters();
-                orProject.setDatasourceLogin(login);
+
                 login = (DatasourceLogin)oxProject.getDatasourceLogin();
                 if (login != null) {
                     platform = login.getDatasourcePlatform();

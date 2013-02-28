@@ -178,7 +178,6 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     		"<session xsi:type=\"database-session\">" +
     			"<name>logLevelValidation-dbws-or-session</name>" +
     			"<logging xsi:type=\"eclipselink-log\" />" +
-    			"<primary-project xsi:type=\"xml\">eclipselink-dbws-or.xml</primary-project>" +
     			"<login xsi:type=\"database-login\">" +
     				"<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
     				"<user-name>"+username+"</user-name>" +
@@ -191,6 +190,12 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     				"<trim-strings>false</trim-strings>" +
     			"</login>" +
     		"</session>" +
+            "<session xsi:type=\"database-session\">" +
+                "<name>logLevelValidation-dbws-ox-session</name>" +
+                "<logging xsi:type=\"eclipselink-log\">" +
+                    "<log-level>off</log-level>" +
+                 "</logging>" +
+             "</session>" +
     	"</sessions>";
 
     @Test

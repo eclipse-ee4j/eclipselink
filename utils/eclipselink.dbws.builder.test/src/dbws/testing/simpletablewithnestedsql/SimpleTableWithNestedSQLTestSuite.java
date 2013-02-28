@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Element;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
@@ -169,6 +170,8 @@ public class SimpleTableWithNestedSQLTestSuite extends DBWSTestSuite  {
             (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
         DBWSBuilder builder = new DBWSBuilder();
         builder.quiet = true;
+        //builder.setLogLevel(SessionLog.FINE_LABEL);
+        builder.setLogLevel(SessionLog.OFF_LABEL);
         builder.setPlatformClassname(DATABASE_PLATFORM);
         builder.properties = builderModel.properties;
         builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);

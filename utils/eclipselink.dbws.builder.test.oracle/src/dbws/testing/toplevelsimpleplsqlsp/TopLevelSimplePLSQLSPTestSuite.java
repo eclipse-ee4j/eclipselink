@@ -246,7 +246,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
             "<simple-xml>" +
-                "<result>false</result>" +
+                "<Y>false</Y>" +
             "</simple-xml>" +
         "</simple-xml-format>";
 
@@ -301,7 +301,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
             "<simple-xml>" +
-                "<result>-1234567890</result>" +
+                "<Y>-1234567890</Y>" +
             "</simple-xml>" +
         "</simple-xml-format>";
 
@@ -336,7 +336,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
             "<simple-xml>" +
-                "<result>66</result>" +
+                "<Y>66</Y>" +
             "</simple-xml>" +
         "</simple-xml-format>";
 
@@ -357,7 +357,7 @@ public class TopLevelSimplePLSQLSPTestSuite extends DBWSTestSuite {
         REGULAR_XML_HEADER +
         "<simple-xml-format>" +
             "<simple-xml>" +
-                "<result>negative</result>" +
+                "<Y>negative</Y>" +
             "</simple-xml>" +
         "</simple-xml-format>";
 
