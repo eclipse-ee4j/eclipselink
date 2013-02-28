@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="ORACLE_JDBC_LIB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.wsdl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.antlr"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
@@ -13,5 +12,6 @@
 	<classpathentry excluding="**/.svn/**" kind="src" path="src"/>
 	<classpathentry kind="var" path="ORACLE_XDB_LIB"/>
 	<classpathentry kind="var" path="ORACLE_XMLPARSER_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.wsdl 1.6.2"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

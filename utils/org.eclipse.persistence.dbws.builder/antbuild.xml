@@ -129,6 +129,7 @@
         <property name="core.lib"         value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <property name="dbws.lib"         value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
         <property name="moxy.lib"         value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
+        <property name="jpa.lib"          value="${dbwsbldr.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
         <property name="servlet.lib"      value="${dbwsbldr.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="asm.lib"          value="${dbwsbldr.2.common.plugins.dir}/${asm.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldr.2.plugins.dir}/${wsdl.jar}"/>
@@ -143,6 +144,7 @@
         <available file="${core.lib}"               property="core.bundle.exist"/>
         <available file="${dbws.lib}"               property="dbws.bundle.exist"/>
         <available file="${moxy.lib}"               property="moxy.bundle.exist"/>
+        <available file="${jpa.lib}"                property="jpa.bundle.exist"/>
         <available file="${servlet.lib}"            property="servlet.lib.exist"/>
         <available file="${wsdl.lib}"               property="wsdl.lib.exist"/>
         <available file="${ddlparser.lib}"          property="ddlparser.lib.exist"/>
@@ -161,6 +163,7 @@
             <pathelement path="${core.lib}"/>
             <pathelement path="${dbws.lib}"/>
             <pathelement path="${moxy.lib}"/>
+            <pathelement path="${jpa.lib}"/>
             <pathelement path="${wsdl.lib}"/>
             <pathelement path="${ddlparser.lib}"/>
         </path>

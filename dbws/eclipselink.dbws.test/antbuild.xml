@@ -92,6 +92,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="../../${eclipselink.jar}"/>
         <pathelement path="${dbws_test.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${dbws_test.2.common.plugins.dir}/${persistence.jar}"/>
         <fileset
             dir="${dbws_test.2.common.plugins.dir}"
             includes="${eclipselink.dbws.depend}"
@@ -106,6 +107,7 @@
     <!-- Test dependencies -->
     <available file="../../${eclipselink.jar}" property="eclipselink.jar.exist"/>
     <available file="${dbws_test.2.common.plugins.dir}/${asm}" type="dir" property="asm.exist"/>
+    <available file="${dbws_test.2.common.plugins.dir}/${persistence.jar}" property="persistence.jar.exist"/>
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
     <available file="./${eclipselink.dbws.test.common.jar}" property="dbws_test.common.jar.exist"/>
     <condition property="support.test">
@@ -339,6 +341,7 @@
     <target name="compile" description="Compile DBWS Util test Common classes">
         <fail unless="eclipselink.jar.exist" message="EclipseLink cannot be found. Exiting..."/>
         <fail unless="asm.exist"             message="ASM Bundle cannot be found. Exiting..."/>
+        <fail unless="persistence.jar.exist" message="Persistence JAR cannot be found. Exiting..."/>
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${classes.dir}"

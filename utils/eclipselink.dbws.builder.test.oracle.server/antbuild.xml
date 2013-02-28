@@ -356,8 +356,8 @@
           <test name="dbws.testing.mtom.MTOMBuilderTestSuite" />
           <test name="dbws.testing.simpleplsql.SimplePLSQLBuilderTestSuite" />
           <test name="dbws.testing.simplesp.SimpleSPBuilderTestSuite" />
-		  <test name="dbws.testing.simplesql.SimpleSQLBuilderTestSuite" />
-		  <test name="dbws.testing.simpletable.SimpleTableBuilderTestSuite" />
+          <test name="dbws.testing.simplesql.SimpleSQLBuilderTestSuite" />
+          <test name="dbws.testing.simpletable.SimpleTableBuilderTestSuite" />
         </junit>
         <junitreport todir="./${report.dir}" >
           <fileset dir="." >
@@ -449,12 +449,12 @@
           />
           <test name="dbws.testing.attachedbinary.AttachedBinaryServiceTestSuite" />
           <test name="dbws.testing.inlinebinary.InlineBinaryServiceTestSuite" />
-		  <test name="dbws.testing.legacysimpletable.LegacySimpleTableServiceTestSuite" />
+          <test name="dbws.testing.legacysimpletable.LegacySimpleTableServiceTestSuite" />
           <test name="dbws.testing.mtom.MTOMServiceTestSuite" />
           <test name="dbws.testing.simpleplsql.SimplePLSQLServiceTestSuite" />
           <test name="dbws.testing.simplesp.SimpleSPServiceTestSuite" />
-		  <test name="dbws.testing.simplesql.SimpleSQLServiceTestSuite" />
-		  <test name="dbws.testing.simpletable.SimpleTableServiceTestSuite" />
+          <test name="dbws.testing.simplesql.SimpleSQLServiceTestSuite" />
+          <test name="dbws.testing.simpletable.SimpleTableServiceTestSuite" />
         </junit>
         <junitreport todir="./${report.dir}" >
           <fileset dir="." >

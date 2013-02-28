@@ -145,16 +145,19 @@
         <echo message="servlet.jar  ='${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}'"/>
         <echo message="ddlparser.jar='${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}'"/>
+        <echo message="persistence.jar ='${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrorcltst.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrorcltst.2.common.plugins.dir}/${asm.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="dbwsbldr.lib"     value="${dbwsbldrorcltst.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}"/>
+        <property name="persistence.lib"  value="${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}"/>
 
         <!-- dependency tests -->
         <available file="${junit.lib}"            property="junit.lib.exist"/>
         <available file="${eclipselink.lib}"      property="eclipselink.exist"/>
+        <available file="${persistence.lib}"      property="persistence.exist"/>
         <available file="${asm.lib}"              property="asm.bundle.exist"/>
         <available file="${servlet.lib}"          property="servlet.lib.exist"/>
         <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
@@ -162,6 +165,7 @@
         <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
         <fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/>
         <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.exist"/>
         <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
         <fail message="Cannot find: '${servlet.lib}'"     unless="servlet.lib.exist"/>
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
@@ -172,6 +176,7 @@
         <path id="dbwsbldrorcltst.compile.path">
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.lib}"/>
+            <pathelement path="${persistence.lib}"/>
             <pathelement path="${asm.lib}"/>
             <pathelement path="${servlet.lib}"/>
             <pathelement path="${dbwsbldr.lib}"/>
@@ -203,7 +208,7 @@
         <available file="${mail.lib}"                 property="mail.lib.exist"/>
         <!-- oracle extension dir test -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
-		<available file="${oracle.extensions.depend.dir}/${xdb.jar}"        property="xdb.jar.exist"/>
+        <available file="${oracle.extensions.depend.dir}/${xdb.jar}"        property="xdb.jar.exist"/>
         <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"  property="xmlparser.jar.exist"/>
 
         <!-- Set Run Path-->
