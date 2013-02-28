@@ -30,6 +30,8 @@
 *     mmeswani - initial API and implementation (checked in by tware)
 *     egwin    - updated variables as they have changed in the rest of the system
 *                updated svnversion to not break build, and default if exec fails
+*     egwin    - updated for publishing to Maven Central, add ability to override
+*                destination URL (to pub elsewhere override ${maven.repo.url})
 #******************************************************************************/-->
 <!-- Variables Needed:
 *         release.version - need three tokens: Major.Minor.Service
@@ -139,10 +141,10 @@
         <!--       not revved in several years and so is unlikely to do so in future (BD,DT,EG) -->
         <stripQualifier input="${sdoapi.version}"      property="sdoapi.mvn.version"/>
 
-        <say  message="jpaapi.mvn.version     = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
-        <say  message="sdoapi.mvn.version     = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
-        <say  message="jpaapi.mvn.version     : Property not set!"      unless="jpaapi.mvn.version"/>
-        <say  message="sdoapi.mvn.version     : Property not set!"      unless="sdoapi.mvn.version"/>
+        <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
+        <say  message="jpaapi.mvn.version:  Property not set!"      unless="jpaapi.mvn.version"/>
+        <say  message="sdoapi.mvn.version:  Property not set!"      unless="sdoapi.mvn.version"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -192,7 +194,7 @@
 
         <!-- Setup static dependency definitions -->
         <!--  Would be nice to setup in the beginning, but the library definitions need version.string defined -->
-
+        <!-- Also semi-static OSGi libraries need to use a stripped down 3-part version, rather than the 4-part OSGi version -->
         <!-- These need to be used in order -->
         <property name="deps.head" value="&lt;dependencies&gt;"/>
         <property name="dep.grp"   value="&lt;dependency&gt;&lt;groupId&gt;"/>
@@ -257,12 +259,13 @@
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
-        <antcall target="upload-release-artifact-no-src">
+        <antcall target="upload-release-artifact">
             <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${sdoapi.prefix}/${sdoapi.mvn.version}"/>
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
             <param name="artifact"        value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}_${sdoapi.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}.source_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -432,19 +435,6 @@
         <delete file="pom.xml"/>
     </target>
 
-    <!-- Uploads a single artifact without src to maven repository only if one doesn't already exist -->
-    <target name="upload-release-artifact-no-src" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
-        <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
-        <!-- Delploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
-        <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
-          <pom refid="maven.project"/>
-        </artifact:deploy>
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
-    </target>
-
     <!-- Uploads a single artifact & source to maven repository -->
     <target name="upload-artifact" depends="prepare-pom">
         <!-- Delploy the jar to maven repository along with sources -->
@@ -459,7 +449,7 @@
     </target>
 
     <!-- Uploads a single artifact, source & javadoc to maven repository -->
-    <target name="upload-artifact-new" depends="prepare-pom">
+    <target name="upload-artifact-with-javadoc" depends="prepare-pom">
         <!-- Delploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
