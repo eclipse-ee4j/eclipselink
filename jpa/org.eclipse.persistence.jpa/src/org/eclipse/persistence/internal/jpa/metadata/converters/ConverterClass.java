@@ -24,6 +24,7 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -35,6 +36,7 @@ import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.sessions.Session;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.PersistenceException;
 
 /**
  * A JPA attribute converter class wrapped with an EclipseLink converter. This
@@ -69,7 +71,12 @@ public class ConverterClass implements Converter {
      */
     @Override
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
-        return attributeConverter.convertToEntityAttribute(dataValue);
+        try {
+            return attributeConverter.convertToEntityAttribute(dataValue);
+        } catch (RuntimeException re) {
+            throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception", 
+                    new Object[]{"convertToEntityAttribute", attributeConverterClassName, dataValue}), re);
+        }
     }
     
     /**
@@ -77,7 +84,12 @@ public class ConverterClass implements Converter {
      */
     @Override
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
-        return attributeConverter.convertToDatabaseColumn(objectValue);
+        try {
+            return attributeConverter.convertToDatabaseColumn(objectValue);
+        } catch (RuntimeException re) {
+            throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception", 
+                    new Object[]{"convertToDatabaseColumn", attributeConverterClassName, objectValue}), re);
+        }
     }
     
     /**

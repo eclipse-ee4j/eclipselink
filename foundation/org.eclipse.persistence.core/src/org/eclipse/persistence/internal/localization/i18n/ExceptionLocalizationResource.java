@@ -239,7 +239,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "pu_configured_for_resource_local", "Unable to create EntityManager with SynchronizationType because PersistenceUnit is configured with resource-local transactions."},
                                            { "getpersistenceunitutil_called_on_closed_emf", "getPersistenceUnitUtil() was called on a closed EntityManagerFactory."},
                                            { "named_entity_graph_exists", "NamedEntityGraph with name {0} found on {1} already exists in this persistence unit."},
-                                           { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." }
+                                           { "cannot_get_from_non_correlated_query", "getCorrelationParent() called on a from-clause that was not obtained through correlation." },
+                                           { "wrap_convert_exception", "An exception occurred while calling {0} on converter class {1} with value {2}"}
                                            
 										};
     /**
