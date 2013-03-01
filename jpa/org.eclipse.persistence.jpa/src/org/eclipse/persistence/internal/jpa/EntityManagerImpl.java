@@ -1003,7 +1003,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
         try {
             verifyOpen();
-            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(false));
+            boolean validateExistence =  (lockMode != null && !lockMode.equals(LockModeType.NONE));
+            UnitOfWorkImpl uow = getActivePersistenceContext(checkForTransaction(validateExistence));
             if (!contains(entity, uow)) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cant_refresh_not_managed_object", new Object[] { entity }));
             }
