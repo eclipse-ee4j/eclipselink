@@ -1889,6 +1889,16 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
         }
     }
+    
+    /**
+     * used to save having to constantly use a try/catch to call setRollbackOnly 
+     */
+    public void verifyOpenWithSetRollbackOnly() {
+        if (!this.isOpen || !this.factory.isOpen()) {
+            setRollbackOnly();
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
+        }
+    }
 
     public RepeatableWriteUnitOfWork getActivePersistenceContext(Object txn) {
         // use local uow as it will be local to this EM and not on the txn

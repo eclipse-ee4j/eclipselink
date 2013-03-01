@@ -298,7 +298,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * timeout value set and only the statement is rolled back
      * @throws PersistenceException if the query execution exceeds the query 
      * timeout value set and the transaction is rolled back
-     * is rolled back
      */
     public boolean execute() {
         try {
@@ -704,6 +703,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
         
         if (mode.equals(ParameterMode.IN)) {
@@ -743,6 +743,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @return the same query instance
      */
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
 
         if (mode.equals(ParameterMode.IN)) {
@@ -850,7 +851,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * incorrect type
      */
     public StoredProcedureQuery setParameter(int position, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -866,7 +866,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * incorrect type
      */
     public StoredProcedureQuery setParameter(int position, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -955,7 +954,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * incorrect type
      */
     public StoredProcedureQuery setParameter(String name, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
 
@@ -971,7 +969,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * incorrect type
      */
     public StoredProcedureQuery setParameter(String name, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     

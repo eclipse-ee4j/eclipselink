@@ -427,7 +427,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -440,7 +439,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -473,6 +471,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if position does not correspond to a parameter of the query
      */
     public TypedQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         return this.setParameter(getParameterId(param), value, temporalType);
@@ -507,8 +506,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      *             if parameter does not correspond to a parameter of the query
      */
     public <T> TypedQuery setParameter(Parameter<T> param, T value) {
-        if (param == null)
+        if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
+        }
         return this.setParameter(getParameterId(param), value);
     }
     
@@ -521,7 +521,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     
@@ -534,7 +533,6 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
-        entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     
