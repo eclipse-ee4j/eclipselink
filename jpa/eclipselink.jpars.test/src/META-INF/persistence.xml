@@ -7,7 +7,7 @@
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
@@ -23,7 +23,7 @@
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes/>
         <properties>
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -39,7 +39,7 @@
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.User</class>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Auction</class>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Bid</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes/>
         <properties>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
@@ -54,7 +54,7 @@
     <persistence-unit name="jpars_phonebook" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <exclude-unlisted-classes/>
         <properties>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
@@ -77,7 +77,9 @@
         <class>org.eclipse.persistence.jpars.test.model.employee.SmallProject</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Expertise</class>
         <class>org.eclipse.persistence.jpars.test.model.employee.Office</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Reservation</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Traveler</class>
+        <exclude-unlisted-classes/>
         <properties>
             <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="FINEST"/>
@@ -98,6 +100,7 @@
             <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
     </persistence-unit>
+
 
     <!-- persistence-unit name="jpars_place" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
@@ -136,7 +139,7 @@
             <property name="javax.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit>
-
+    
     <persistence-unit name="jpars_person" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.eclipse.persistence.jpars.test.model.dynamic.Person</class>
@@ -155,5 +158,4 @@
             <property name="javax.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit-->
-
 </persistence>
