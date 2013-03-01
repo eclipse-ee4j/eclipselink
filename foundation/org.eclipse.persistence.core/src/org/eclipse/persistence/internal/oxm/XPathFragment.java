@@ -326,6 +326,9 @@ public class XPathFragment {
         }
         try {
             XPathFragment xPathFragment = (XPathFragment) object;
+            if (hasAttribute && !xPathFragment.hasAttribute) {
+                return false;
+            }
             if (nameIsText && xPathFragment.nameIsText) {
                 return true;
             }
