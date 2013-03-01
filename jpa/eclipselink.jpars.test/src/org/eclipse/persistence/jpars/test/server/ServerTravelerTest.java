@@ -84,6 +84,10 @@ public class ServerTravelerTest {
         }
         String response = RestUtils.restUpdate(traveler, Traveler.class.getSimpleName(), DEFAULT_PU, null, mediaType);
         assertNotNull(response);
-        assertTrue(response.contains("reservation"));
+        if (mediaType == MediaType.APPLICATION_XML_TYPE) {
+            assertTrue(response.contains("<reservation>"));
+        } else {
+            assertTrue(response.contains("\"reservation\":"));
+        }
     }
 }
