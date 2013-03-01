@@ -2294,6 +2294,15 @@ public class AnnotationsProcessor {
             eltRef.setName(nextRef.name());
             eltRef.setNamespace(nextRef.namespace());
             eltRef.setType(nextRef.type().getName());
+            property.setIsRequired(true); 
+            try{
+	            Method requireMethod = PrivilegedAccessHelper.getMethod(XmlElementRef.class, "required", new Class[0], true);
+	            if(requireMethod != null){
+	            	Boolean val = (Boolean)PrivilegedAccessHelper.invokeMethod(requireMethod, nextRef);
+	            	property.setIsRequired(val); 
+	            }
+            } catch (Exception exception){
+            }
             eltRefs.add(eltRef);
         }
 

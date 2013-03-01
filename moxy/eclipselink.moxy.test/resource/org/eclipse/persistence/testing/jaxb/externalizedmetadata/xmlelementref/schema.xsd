@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="foo">
       <xsd:sequence>
-         <xsd:element ref="foobar" />
+         <xsd:element minOccurs="0" ref="foobar"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:complexType name="bar">

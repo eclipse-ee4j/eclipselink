@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="xml-mixed" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="read-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *       &lt;attribute name="write-only" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -81,6 +82,8 @@ public class XmlElementRef
     protected Boolean readOnly;
     @XmlAttribute(name = "write-only")
     protected Boolean writeOnly;
+    @XmlAttribute(name = "required")
+    protected Boolean required;
 
     /**
      * Gets the value of the xmlAccessMethods property.
@@ -399,4 +402,32 @@ public class XmlElementRef
     public boolean isSetWriteOnly() {
         return writeOnly != null;
     }
+    /**
+     * Gets the value of the required property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isRequired() {
+        if (required == null) {
+            return true;
+        } else {
+            return required;
+        }
+    }
+
+    /**
+     * Sets the value of the required property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setRequired(Boolean value) {
+        this.required = value;
+    }
+
 }

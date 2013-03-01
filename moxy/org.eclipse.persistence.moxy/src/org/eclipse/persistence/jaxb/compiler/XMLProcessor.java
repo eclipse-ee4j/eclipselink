@@ -851,6 +851,12 @@ public class XMLProcessor {
         if (xmlAnyElement.getXmlElementRefs() != null) {
             oldProperty.setXmlElementRefs(xmlAnyElement.getXmlElementRefs().getXmlElementRef());
             oldProperty.setIsReference(true);
+            
+            boolean required = true;
+            for (XmlElementRef eltRef : xmlAnyElement.getXmlElementRefs().getXmlElementRef()) {
+                required = required && eltRef.isRequired();
+            }
+            oldProperty.setIsRequired(required);
             if (xmlAnyElement.getXmlElementRefs().isSetXmlMixed()) {
                 oldProperty.setMixedContent(xmlAnyElement.getXmlElementRefs().isXmlMixed());
             }
@@ -1315,6 +1321,7 @@ public class XMLProcessor {
         eltRefs.add(xmlElementRef);
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        oldProperty.setIsRequired(xmlElementRef.isRequired());
         
         // handle XmlAdapter
         if (xmlElementRef.getXmlJavaTypeAdapter() != null) {
@@ -1366,12 +1373,15 @@ public class XMLProcessor {
         resetProperty(oldProperty, info);
 
         List<XmlElementRef> eltRefs = new ArrayList<XmlElementRef>();
+        boolean required = true;
         for (XmlElementRef eltRef : xmlElementRefs.getXmlElementRef()) {
             eltRefs.add(eltRef);
+            required = required && eltRef.isRequired();
         }
 
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        oldProperty.setIsRequired(required);
         
         // handle XmlAdapter
         if (xmlElementRefs.getXmlJavaTypeAdapter() != null) {

@@ -6,7 +6,7 @@
          <xsd:element name="items" minOccurs="0">
             <xsd:complexType mixed="true">
                <xsd:sequence>
-                  <xsd:choice maxOccurs="unbounded">
+                  <xsd:choice minOccurs="0" maxOccurs="unbounded">
                      <xsd:element ref="ns0:integer-root"/>
                      <xsd:element ref="root"/>
                   </xsd:choice>

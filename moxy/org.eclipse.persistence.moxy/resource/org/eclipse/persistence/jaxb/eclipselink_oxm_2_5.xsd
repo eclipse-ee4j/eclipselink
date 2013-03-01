@@ -443,6 +443,7 @@
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
+                    <xs:attribute name="required" type="xs:boolean" default="true" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
