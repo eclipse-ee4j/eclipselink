@@ -25,6 +25,7 @@ import org.eclipse.persistence.testing.jaxb.map.MapNamespaceFooTestCases;
 import org.eclipse.persistence.testing.jaxb.map.MapTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar.XMLGregorianCalendarObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlinverseref.XmlInverseRefBidirectionalTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlschematype.XSDSchemaTypesTestCases;
 
 import junit.framework.Test;
@@ -53,6 +54,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(MapNamespaceFooTestCases.class);      
         suite.addTestSuite(XMLGregorianCalendarObjectTestCases.class);
         suite.addTestSuite(XSDSchemaTypesTestCases.class);
+        suite.addTest(XmlInverseRefBidirectionalTestSuite.suite());
 	    
 	    return suite;
 	}

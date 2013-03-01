@@ -712,6 +712,16 @@ public class MappingsGenerator {
             collectionType = containerClassImpl(collectionType);
             invMapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
         }
+        
+        if(property.isWriteableInverseReference()){
+   	        if(isCollection){           	
+   	            JavaClass descriptorClass = helper.getJavaClass(descriptor.getJavaClassName());
+   	        	invMapping.setInlineMapping((XMLCompositeCollectionMapping)generateCompositeCollectionMapping(property, descriptor, descriptorClass, namespace, invMapping.getReferenceClassName()));
+   	        }else{
+   	        	invMapping.setInlineMapping((XMLCompositeObjectMapping)generateCompositeObjectMapping(property, descriptor, namespace, invMapping.getReferenceClassName()));   	        	
+   	        }
+        }                  
+
         return invMapping;
     }
 
@@ -1321,29 +1331,7 @@ public class MappingsGenerator {
             if(property.isTransientType()){
                 mapping.setReferenceClassName(Constants.UNKNOWN_OR_TRANSIENT_CLASS);
             }
-
-        if (property.getInverseReferencePropertyName() != null) {
-            mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
-            JavaClass backPointerPropertyType = null;
-            JavaClass referenceClass = property.getActualType();
-            if (property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
-                mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
-                mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
-                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
-                if (getMethod != null) {
-                    backPointerPropertyType = getMethod.getReturnType();
-                }
-            } else {
-                JavaField backpointerField = referenceClass.getDeclaredField(property.getInverseReferencePropertyName());
-                if(backpointerField != null) {
-                    backPointerPropertyType = backpointerField.getResolvedType();
-                }
-            }
-            if (helper.isCollectionType(backPointerPropertyType)) {
-                mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
-            }
-        }
-
+        
         if (property.isRequired()) {
             ((Field) mapping.getField()).setRequired(true);
         }
@@ -2032,28 +2020,7 @@ public class MappingsGenerator {
         if (property.isRequired()) {
             ((Field) mapping.getField()).setRequired(true);
         }
-
-        if (property.getInverseReferencePropertyName() != null) {
-            mapping.getInverseReferenceMapping().setAttributeName(property.getInverseReferencePropertyName());
-            JavaClass backPointerPropertyType = null;
-            JavaClass referenceClass = property.getActualType();
-            if(property.getInverseReferencePropertyGetMethodName() != null && property.getInverseReferencePropertySetMethodName() != null && !property.getInverseReferencePropertyGetMethodName().equals("") && !property.getInverseReferencePropertySetMethodName().equals("")) {
-                mapping.getInverseReferenceMapping().setGetMethodName(property.getInverseReferencePropertySetMethodName());
-                mapping.getInverseReferenceMapping().setSetMethodName(property.getInverseReferencePropertySetMethodName());
-                JavaMethod getMethod = referenceClass.getDeclaredMethod(mapping.getInverseReferenceMapping().getGetMethodName(), new JavaClass[]{});
-                if(getMethod != null) {
-                    backPointerPropertyType = getMethod.getReturnType();
-                }
-            } else {
-                JavaField backpointerField = referenceClass.getDeclaredField(property.getInverseReferencePropertyName());
-                if (backpointerField != null) {
-                    backPointerPropertyType = backpointerField.getResolvedType();
-                }
-            }
-            if (helper.isCollectionType(backPointerPropertyType)) {
-                mapping.getInverseReferenceMapping().setContainerPolicy(ContainerPolicy.buildDefaultPolicy());
-            }
-        }
+           
         return mapping;
     }
 

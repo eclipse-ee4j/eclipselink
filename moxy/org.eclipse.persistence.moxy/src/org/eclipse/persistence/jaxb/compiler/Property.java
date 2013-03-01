@@ -113,6 +113,7 @@ public class Property implements Cloneable {
     private String inverseReferencePropertySetMethodName;
     private JavaClass inverseReferencePropertyContainerClass;
     private boolean isInverseReference;
+    private boolean isWriteableInverseReference;
     
     // XmlAnyElement specific attributes
     private boolean lax;
@@ -864,8 +865,13 @@ public class Property implements Cloneable {
         return isInverseReference;
     }
 
-    public void setInverseReference(boolean isInverseReference) {
+    public void setInverseReference(boolean isInverseReference, boolean isWriteable) {
         this.isInverseReference = isInverseReference;
+        this.isWriteableInverseReference = isWriteable;
+    }
+    
+    public boolean isWriteableInverseReference(){
+    	return isWriteableInverseReference;
     }
     
     /**
@@ -1248,8 +1254,8 @@ public class Property implements Cloneable {
     public boolean isSetXmlJoinNodes() {
         return this.xmlJoinNodes != null;
     }
-    
-    /**
+
+	/**
      * Return a shallow copy of this Property.  
      * Simply calls super.clone(). 
      */

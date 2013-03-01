@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<employee>
+   <empId>theId</empId>
+   <addr>
+      <street>theStreet</street>
+      <owner>
+         <name>theName</name>
+      </owner>
+   </addr>
+</employee>

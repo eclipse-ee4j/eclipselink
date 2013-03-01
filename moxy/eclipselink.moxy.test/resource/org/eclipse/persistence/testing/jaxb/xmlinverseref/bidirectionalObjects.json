@@ -1,0 +1,9 @@
+{"person":{
+   "name":"theName",
+   "addr":{
+      "street":"theStreet",
+      "owner":{
+         "name":"differentPerson"
+      }
+   }
+}}

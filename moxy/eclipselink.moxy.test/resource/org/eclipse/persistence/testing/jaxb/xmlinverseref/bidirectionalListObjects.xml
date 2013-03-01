@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<person>
+   <name>theName</name>
+   <addrs>
+      <street>theStreet</street>
+	  <owner>
+	        <name>differentPerson</name>
+	  </owner>
+   </addrs>
+   <addrs>
+      <street>theStreet2</street>
+	  <owner>
+	        <name>anotherPerson</name>
+	  </owner>
+   </addrs>
+</person>

@@ -457,8 +457,8 @@ public class SchemaGenerator {
             TypeDefParticle parentCompositor = compositor;
             boolean isChoice = (parentCompositor instanceof Choice);
             ComplexType parentType = type;
-            // ignore transient and inverse reference properties
-            if (!next.isTransient() && !next.isInverseReference()) {
+            // ignore transient and inverse reference/non-writeable properties          
+            if(!next.isTransient() && !(next.isInverseReference() && !next.isWriteableInverseReference())){          
                 // handle xml extensions
                 if (next.isVirtual()) {
                     boolean extSchemaAny = false;

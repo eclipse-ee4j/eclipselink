@@ -1,0 +1,10 @@
+{"person":{
+   "name":"theName",
+   "addrs":[{
+      "street":"theStreet"
+   },
+   {
+      "street":"theStreet2"
+   }
+   ]
+}}

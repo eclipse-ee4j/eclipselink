@@ -1,0 +1,9 @@
+{"employee":{
+   "empId":"theId",
+   "addr":{
+      "street":"theStreet",
+      "owner":{   
+         "name":"theName"
+      }
+   }
+}}

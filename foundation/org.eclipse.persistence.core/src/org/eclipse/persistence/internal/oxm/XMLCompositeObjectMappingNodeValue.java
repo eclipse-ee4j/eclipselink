@@ -52,9 +52,15 @@ import org.xml.sax.SAXException;
  */
 public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNodeValue implements NullCapableValue {
     private CompositeObjectMapping xmlCompositeObjectMapping;
+    private boolean isInverseReference;  
 
     public XMLCompositeObjectMappingNodeValue(CompositeObjectMapping xmlCompositeObjectMapping) {
         this.xmlCompositeObjectMapping = xmlCompositeObjectMapping;
+    }
+
+    public XMLCompositeObjectMappingNodeValue(CompositeObjectMapping xmlCompositeObjectMapping, boolean isInverse) {
+        this(xmlCompositeObjectMapping);
+        isInverseReference = isInverse;
     }
 
     @Override
@@ -127,7 +133,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         if (xmlCompositeObjectMapping.isReadOnly()) {
             return false;
         }
+    	int size =marshalRecord.getCycleDetectionStack().size(); 
         Object objectValue = marshalContext.getAttributeValue(object, xmlCompositeObjectMapping);
+        
+        if((isInverseReference || xmlCompositeObjectMapping.getInverseReferenceMapping() !=null)&& objectValue !=null && size >= 2){        	
+    	    Object owner = marshalRecord.getCycleDetectionStack().get(size - 2);
+    	    if(owner.equals(objectValue)){
+    	    	return false;
+    	    }        	    	
+        }
+
         return this.marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, marshalContext);
     }
 
@@ -364,11 +379,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     private void setAttributeValue(Object object, UnmarshalRecord unmarshalRecord) {
         object = xmlCompositeObjectMapping.convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
         // Set the child object on the parent
-        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
+        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);        
         InverseReferenceMapping inverseReferenceMapping = xmlCompositeObjectMapping.getInverseReferenceMapping();
-        if(null != inverseReferenceMapping) {
+        
+        //If isInverseReference then this mapping is an inlineMapping of an InverseReference
+        if(null != inverseReferenceMapping){
             if(inverseReferenceMapping.getContainerPolicy() == null) {
-                inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+            	Object currentValue = inverseReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(object);
+                if( !isInverseReference || (currentValue == null && isInverseReference)) {
+                    inverseReferenceMapping.getAttributeAccessor().setAttributeValueInObject(object, unmarshalRecord.getCurrentObject());
+                }
             } else {
                 Object backpointerContainer = inverseReferenceMapping.getAttributeAccessor().getAttributeValueFromObject(object);
                 if(backpointerContainer == null) {

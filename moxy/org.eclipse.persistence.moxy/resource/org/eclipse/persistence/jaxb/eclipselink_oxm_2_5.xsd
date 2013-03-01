@@ -372,6 +372,11 @@
                         <xs:element ref="xml-abstract-null-policy" minOccurs="0" />                        
                         <xs:element ref="xml-access-methods" minOccurs="0" />
                         <xs:element ref="xml-element-wrapper" minOccurs="0"/>
+                        <xs:element name="xml-inverse-reference" minOccurs="0">
+                            <xs:complexType>
+                                <xs:attribute name="mapped-by" type="xs:string"/>
+                            </xs:complexType>
+                        </xs:element>
                         <xs:element ref="xml-java-type-adapter" minOccurs="0"/>
                         <xs:element ref="xml-map" minOccurs="0"/>
                         <xs:element ref="xml-properties" minOccurs="0" />

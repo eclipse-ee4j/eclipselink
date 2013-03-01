@@ -809,7 +809,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
         @Override
         public int size() {
-            return data.length;
+        	return currentIndex;
         }
 
     }

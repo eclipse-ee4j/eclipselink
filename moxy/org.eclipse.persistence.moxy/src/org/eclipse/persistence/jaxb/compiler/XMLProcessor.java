@@ -701,7 +701,7 @@ public class XMLProcessor {
      */
     private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty, TypeInfo info) {
         resetProperty(oldProperty, info);
-        oldProperty.setInverseReference(true);
+        oldProperty.setInverseReference(true, false);
         oldProperty.setInverseReferencePropertyName(xmlInverseReference.getMappedBy());
         if (xmlInverseReference.getXmlAccessMethods() != null) {
             oldProperty.setInverseReferencePropertyGetMethodName(xmlInverseReference.getXmlAccessMethods().getGetMethod());
@@ -1043,6 +1043,12 @@ public class XMLProcessor {
             if (typeInfo.getIDProperty() != null && typeInfo.getIDProperty().getPropertyName().equals(oldProperty.getPropertyName())) {
                 typeInfo.setIDProperty(null);
             }
+        }
+        
+        if(xmlElement.getXmlInverseReference() != null){
+        	String mappedBy = xmlElement.getXmlInverseReference().getMappedBy();
+        	oldProperty.setInverseReference(true, true);
+        	oldProperty.setInverseReferencePropertyName(mappedBy);
         }
 
         // handle xml-idref

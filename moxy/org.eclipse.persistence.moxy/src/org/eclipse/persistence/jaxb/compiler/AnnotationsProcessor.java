@@ -845,7 +845,6 @@ public class AnnotationsProcessor {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
             for (Property property : tInfo.getPropertyList()) {
-            	List<TypeInfo> targetInfos = new ArrayList<TypeInfo>();
             	JavaClass typeClass = property.getActualType();
             
             	if(property.isChoice()){
@@ -2430,7 +2429,7 @@ public class AnnotationsProcessor {
                 property.setInverseReferencePropertySetMethodName(SET_STR + propName);
             }
 
-            property.setInverseReference(true);
+            property.setInverseReference(true, helper.isAnnotationPresent(javaHasAnnotations, XmlElement.class));
         }
 
         processXmlJavaTypeAdapter(property, info, cls);

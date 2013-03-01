@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.oxm.mappings;
 
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.mappings.CoreAttributeAccessor;
+import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -26,6 +27,7 @@ public interface InverseReferenceMapping<
     CONTAINER_POLICY extends CoreContainerPolicy,
     DESCRIPTOR extends CoreDescriptor,
     FIELD extends CoreField,
+    MAPPING extends CoreMapping,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
 	/**
      * This method is invoked reflectively on the reference object to return the value of the
@@ -33,8 +35,14 @@ public interface InverseReferenceMapping<
      */
     public String getGetMethodName();
 	
+    public MAPPING getInlineMapping();
+    
+    public String getReferenceClassName();
+    
     public void setContainerPolicy(ContainerPolicy containerPolicy);
-	
+
+    public void setInlineMapping(MAPPING inlineMapping);
+    
     public void setMappedBy(String mappedBy);
 
     public void setReferenceClassName(String aClassName);

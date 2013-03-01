@@ -335,9 +335,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
             while (mappingIterator.hasNext()) {
                 xmlMapping = (Mapping)mappingIterator.next();
                 
-                if (xmlMapping instanceof InverseReferenceMapping) {
-                    continue;
-                }
                 
                 xmlField = (Field)xmlMapping.getField();
                 if (xmlMapping.isTransformationMapping()) {
@@ -353,7 +350,22 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         addChild(xmlField.getXPathFragment(), fieldTransformerNodeValue, xmlDescriptor.getNamespaceResolver());
                     }
                 } else {
-                    if (xmlMapping.isAbstractDirectMapping()) {
+                    if (xmlMapping instanceof InverseReferenceMapping) {                    	
+                    	xmlMapping = (Mapping)((InverseReferenceMapping)xmlMapping).getInlineMapping();
+                    	if(xmlMapping == null){
+                    		continue;
+                    	}
+                    	xmlField = (Field)xmlMapping.getField();
+                    	if(xmlMapping.isAbstractCompositeCollectionMapping()){
+                    	    mappingNodeValue=new XMLCompositeCollectionMappingNodeValue((CompositeCollectionMapping)xmlMapping, true);
+                    	}
+                    	if(xmlMapping.isAbstractCompositeObjectMapping()){
+                    	    mappingNodeValue=new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping, true);
+                    	}                      
+                    }
+
+                	
+                    else if (xmlMapping.isAbstractDirectMapping()) {
                         mappingNodeValue = new XMLDirectMappingNodeValue((DirectMapping)xmlMapping);
                     } else if (xmlMapping.isAbstractCompositeObjectMapping()) {
                         mappingNodeValue = new XMLCompositeObjectMappingNodeValue((CompositeObjectMapping)xmlMapping);

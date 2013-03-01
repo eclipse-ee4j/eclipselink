@@ -33,6 +33,15 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-abstract-null-policy" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
+ *         &lt;element name="xml-inverse-reference" minOccurs="0">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;attribute name="mapped-by" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-map" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
@@ -69,6 +78,7 @@ import javax.xml.bind.annotation.XmlType;
     "xmlAbstractNullPolicy",
     "xmlAccessMethods",
     "xmlElementWrapper",
+    "xmlInverseReference",
     "xmlJavaTypeAdapter",
     "xmlMap",
     "xmlProperties",
@@ -84,6 +94,8 @@ public class XmlElement
     protected XmlAccessMethods xmlAccessMethods;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-inverse-reference")
+    protected XmlElement.XmlInverseReference xmlInverseReference;
     @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @javax.xml.bind.annotation.XmlElement(name = "xml-map")
@@ -205,6 +217,30 @@ public class XmlElement
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
+    }
+
+    /**
+     * Gets the value of the xmlInverseReference property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlElement.XmlInverseReference }
+     *     
+     */
+    public XmlElement.XmlInverseReference getXmlInverseReference() {
+        return xmlInverseReference;
+    }
+
+    /**
+     * Sets the value of the xmlInverseReference property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlElement.XmlInverseReference }
+     *     
+     */
+    public void setXmlInverseReference(XmlElement.XmlInverseReference value) {
+        this.xmlInverseReference = value;
     }
 
     /**
@@ -861,5 +897,56 @@ public class XmlElement
     public void setXmlLocation(Boolean value) {
         this.xmlLocation = value;
     }
-    
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="mapped-by" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class XmlInverseReference {
+
+        @XmlAttribute(name = "mapped-by")
+        protected String mappedBy;
+
+        /**
+         * Gets the value of the mappedBy property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getMappedBy() {
+            return mappedBy;
+        }
+
+        /**
+         * Sets the value of the mappedBy property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setMappedBy(String value) {
+            this.mappedBy = value;
+        }
+
+    }
+
 }
