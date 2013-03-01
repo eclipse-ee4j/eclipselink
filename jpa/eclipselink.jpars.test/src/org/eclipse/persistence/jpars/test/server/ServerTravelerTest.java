@@ -33,7 +33,6 @@ import org.junit.Test;
 
 public class ServerTravelerTest {
     private static final String DEFAULT_PU = "jpars_traveler-static";
-    @SuppressWarnings("unused")
     private static PersistenceContext context = null;
     private static PersistenceFactoryBase factory = null;
 
@@ -51,6 +50,9 @@ public class ServerTravelerTest {
         properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = new PersistenceFactoryBase();
         context = factory.bootstrapPersistenceContext(DEFAULT_PU, Persistence.createEntityManagerFactory(DEFAULT_PU, properties), RestUtils.getServerURI(), null, true);
+        if (context == null) {
+            throw new Exception("Persistence context could not be created.");
+        }
     }
 
     /**
