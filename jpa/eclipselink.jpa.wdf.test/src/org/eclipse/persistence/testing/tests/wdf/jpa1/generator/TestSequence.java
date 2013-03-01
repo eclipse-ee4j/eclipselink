@@ -15,18 +15,16 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.generator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
 import junit.framework.Assert;
 
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.eclipse.persistence.platform.database.MySQLPlatform;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
+import org.eclipse.persistence.testing.framework.wdf.ServerInfoHolder;
 import org.eclipse.persistence.testing.framework.wdf.Skip;
-import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;
 import org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Animal;
 import org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Element;
 import org.eclipse.persistence.testing.models.wdf.jpa1.fancy.Plant;
@@ -79,8 +77,13 @@ public class TestSequence extends JPA1Base {
     }
 
     @Test
-    @Skip(server=true, databases = {MySQLPlatform.class, SQLServerPlatform.class, DerbyPlatform.class})
+    @Skip(databases = {MySQLPlatform.class, SQLServerPlatform.class, DerbyPlatform.class})
     public void testAllocSize() {
+        if (ServerInfoHolder.isOnServer()) {
+            // skip the test
+            return;
+        }
+        
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         
