@@ -992,5 +992,31 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
+
+    /**
+     * Bind an argument to a named or indexed parameter.
+     * 
+     * @param name
+     *            the parameter name
+     * @param value
+     *            to bind
+     * @param isIndex
+     *            defines if index or named
+     */
+    protected void setParameterInternal(String name, Object value, boolean isIndex) {
+        Parameter parameter = this.getInternalParameters().get(name);
+        StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
+        if (parameter == null) {
+            if (isIndex) {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-index", new Object[] { name, call.getProcedureName() }));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-argument-name", new Object[] { name, call.getProcedureName() }));
+            }
+        }
+        if (!isValidActualParameter(value, parameter.getParameterType())) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-incorrect-parameter-type", new Object[] { name, value.getClass(), parameter.getParameterType(), call.getProcedureName() }));
+        }
+        this.parameterValues.put(name, value);
+    }
 }
 
