@@ -188,5 +188,14 @@ public class JaxbContextCreationTests extends junit.framework.TestCase {
         assertFalse(hasArgs);
         assertTrue(getArgs.size()== 0);
     }
+    
+    /**
+     * Test creating a context with classes generated from the GML/XLink schemas.  Tests
+     * that a class with both ns0:title and @ns0:title mappings is interpreted properly.
+     */
+    public void testCreateContextXLink() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName() + ".xlink");
+        assertNotNull(context);
+    }
 
 }
