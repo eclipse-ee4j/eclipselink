@@ -39,7 +39,7 @@ public class XmlInverseRefBidirectionalTestSuite {
 	        //need external meta data test case
 	        //need true on one side false on the other side test
 	        suite.addTestSuite(InverseBindingsTestCases.class);
-	        //suite.addTestSuite(InverseWriteableBindingsTestCases.class);
+	        suite.addTestSuite(InverseWriteableBindingsTestCases.class);
 	        return suite;
 	  }
 }

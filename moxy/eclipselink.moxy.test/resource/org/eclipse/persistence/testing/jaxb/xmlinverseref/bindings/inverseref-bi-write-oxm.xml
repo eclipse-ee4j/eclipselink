@@ -4,14 +4,14 @@
 		<java-type name="org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.Address">
             <java-attributes>
                 <xml-element java-attribute="owner">
-                   <xml-inverse-reference mappedBy="addr"/>
+                   <xml-inverse-reference mapped-by="addr"/>
                 </xml-element>
             </java-attributes>
 		</java-type>
 	  <java-type name="org.eclipse.persistence.testing.jaxb.xmlinverseref.bindings.Person">
             <java-attributes>
                 <xml-element java-attribute="addr">
-                   <xml-inverse-reference mappedBy="owner"/>
+                   <xml-inverse-reference mapped-by="owner"/>
                 </xml-element>
             </java-attributes>
 		</java-type>
