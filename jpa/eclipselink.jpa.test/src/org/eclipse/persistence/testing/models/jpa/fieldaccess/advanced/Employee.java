@@ -119,7 +119,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @Cache(
     type=FULL,
     shared=true,
-//    expiry=100000,
+    expiry=100000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.
     coordinationType=SEND_NEW_OBJECTS_WITH_CHANGES

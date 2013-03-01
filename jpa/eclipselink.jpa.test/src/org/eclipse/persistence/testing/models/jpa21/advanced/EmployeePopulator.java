@@ -744,6 +744,7 @@ public class EmployeePopulator {
         smallProjectExample8();
         smallProjectExample9();
         smallProjectExample10();
+        runnerExample1();
     }
 
     public StoredProcedureDefinition buildMySQLResultSetProcedure() {
@@ -1411,6 +1412,7 @@ public class EmployeePopulator {
         PopulationManager.getDefaultManager().addAllObjectsForClass(Employee.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(SmallProject.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(LargeProject.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(Runner.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         
@@ -1491,6 +1493,22 @@ public class EmployeePopulator {
 
     protected void registerObject(Object domainObject, String identifier) {
         populationManager.registerObject(domainObject, identifier);
+    }
+    
+    public Runner runnerExample1(){
+        if (containsObject(Runner.class, "0001")){
+            return (Runner)getObject(Runner.class, "0001");
+        }
+        
+        Runner runner = new Runner();
+        runner.setAge(35);
+        runner.setFirstName("John");
+        runner.setLastName("Smith");
+        Shoe shoe = new Shoe("One", "Star");
+        shoe.setRunner(runner);
+        runner.getShoes().put(new ShoeTag("ONESTAR"), shoe);
+        registerObject(runner, "0001");
+        return runner;
     }
 
     public SmallProject smallProjectExample1() {

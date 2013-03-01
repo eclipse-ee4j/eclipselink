@@ -33,6 +33,7 @@ import org.eclipse.persistence.testing.models.aggregate.Project_case2;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Runner;
 
 public class EntityGraphTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;
@@ -53,6 +54,7 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroup"));
         suite.addTest(new EntityGraphTestSuite("testEmbeddedFetchGroupRefresh"));
         suite.addTest(new EntityGraphTestSuite("testsubclassSubgraphs"));
+        suite.addTest(new EntityGraphTestSuite("testMapKeyFetchGroupRefresh"));
         
         return suite;
     }
@@ -133,13 +135,15 @@ public class EntityGraphTestSuite extends JUnitTestCase {
         result = (Employee) em.createQuery("Select e from Employee e order by e.salary desc").setMaxResults(1).setHint(QueryHints.JPA_FETCH_GRAPH, employeeGraph).setHint(QueryHints.REFRESH, true).getResultList().get(0);        
     }
 
-    public void testEmbededNestedFetchGroup(){
-        
+    public void testMapKeyFetchGroupRefresh(){
+        EntityManager em = createEntityManager();
+        EntityGraph runnerGraph = em.createEntityGraph(Runner.class);
+        runnerGraph.addKeySubgraph("shoes");
+        Runner result = (Runner) em.createQuery("Select r from Runner r join r.shoes s").setHint(QueryHints.JPA_FETCH_GRAPH, runnerGraph).getResultList().get(0);
+        PersistenceUnitUtil util = em.getEntityManagerFactory().getPersistenceUnitUtil();
+        assertTrue("FetchGroup was not applied", util.isLoaded(result, "shoes"));
     }
     
-    public void testMapKeyGroup(){
-        
-    }
 
     @Override
     public String getPersistenceUnitName() {

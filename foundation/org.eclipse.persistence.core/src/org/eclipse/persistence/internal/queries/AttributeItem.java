@@ -173,7 +173,7 @@ public class AttributeItem implements Serializable {
                 this.keyGroups = new HashMap<Object, AttributeGroup>();
             }
             if (this.keyGroup == null){
-                this.keyGroup = group;
+                this.keyGroup = keyGroup;
             }
             Object type = keyGroup.getType();
             if (type == null){

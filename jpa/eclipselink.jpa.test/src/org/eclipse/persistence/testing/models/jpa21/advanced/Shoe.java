@@ -42,6 +42,11 @@ public class Shoe {
     
     public Shoe() {}
 
+    public Shoe(String brand, String model) {
+        this.brand = brand;
+        this.model = model;
+    }
+
     public String getBrand() {
         return brand;
     }

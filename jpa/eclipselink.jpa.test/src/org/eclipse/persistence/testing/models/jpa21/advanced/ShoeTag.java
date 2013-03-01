@@ -28,6 +28,10 @@ public class ShoeTag {
     
     public ShoeTag() {}
 
+    public ShoeTag(String tag) {
+        this.tag = tag;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -113,6 +113,7 @@ public class Runner extends Athlete {
     public Runner() {
         races = new ArrayList<Race>();
         personalBests = new HashMap<String, String>();
+        shoes = new HashMap<ShoeTag, Shoe>();
     }
     
     public void addPersonalBest(String distance, String time) {
