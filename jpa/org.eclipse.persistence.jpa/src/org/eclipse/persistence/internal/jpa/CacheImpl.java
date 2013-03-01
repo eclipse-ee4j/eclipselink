@@ -23,6 +23,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import javax.persistence.Cache;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceException;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -468,7 +472,12 @@ public class CacheImpl implements JpaCache {
     }
     
     public <T> T unwrap(Class<T> cls) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        if (cls.equals(JpaCache.class)){
+            return (T) this;
+        }
+        if (cls.equals(IdentityMapAccessor.class)){
+            return (T) getAccessor();
+        }
+        throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{Cache.class.getName(),cls.getName()}));
     }
 }

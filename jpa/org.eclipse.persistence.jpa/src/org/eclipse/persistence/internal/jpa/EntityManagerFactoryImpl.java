@@ -652,8 +652,8 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
 
     // TODO: JPA 2.1 API
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        // TODO: JPA 2.1 functionality
-        throw new RuntimeException("Not implemented ... WIP ...");
+        this.getServerSession().getAttributeGroups().put(graphName, ((EntityGraphImpl)entityGraph).getAttributeGroup());
+        this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(((EntityGraphImpl)entityGraph).getAttributeGroup());
     }
 
 }
