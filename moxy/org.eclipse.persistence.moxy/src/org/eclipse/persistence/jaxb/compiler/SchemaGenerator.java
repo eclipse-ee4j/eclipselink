@@ -1892,6 +1892,8 @@ public class SchemaGenerator {
             if (property.getGenericType() != null) {
                 element.setMinOccurs(Occurs.ZERO);
                 element.setMaxOccurs(Occurs.UNBOUNDED);
+            }else if(!property.isRequired()){
+            	element.setMinOccurs(Occurs.ZERO);
             }
             compositor.addElement(element);
         } else {
@@ -1899,6 +1901,9 @@ public class SchemaGenerator {
             Choice choice = new Choice();
             if (property.getGenericType() != null) {
                 choice.setMaxOccurs(Occurs.UNBOUNDED);
+            }
+            if (!property.isRequired()){
+            	choice.setMinOccurs(Occurs.ZERO);
             }
             for (ElementDeclaration elementDecl : referencedElements) {
                 Element element = new Element();

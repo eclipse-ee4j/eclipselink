@@ -851,6 +851,7 @@ public class XMLProcessor {
         if (xmlAnyElement.getXmlElementRefs() != null) {
             oldProperty.setXmlElementRefs(xmlAnyElement.getXmlElementRefs().getXmlElementRef());
             oldProperty.setIsReference(true);
+            oldProperty.setIsRequired(true);
             if (xmlAnyElement.getXmlElementRefs().isSetXmlMixed()) {
                 oldProperty.setMixedContent(xmlAnyElement.getXmlElementRefs().isXmlMixed());
             }
@@ -1309,6 +1310,7 @@ public class XMLProcessor {
         eltRefs.add(xmlElementRef);
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        oldProperty.setIsRequired(true);
         
         // handle XmlAdapter
         if (xmlElementRef.getXmlJavaTypeAdapter() != null) {
@@ -1366,6 +1368,7 @@ public class XMLProcessor {
 
         oldProperty.setXmlElementRefs(eltRefs);
         oldProperty.setIsReference(true);
+        oldProperty.setIsRequired(true);
         
         // handle XmlAdapter
         if (xmlElementRefs.getXmlJavaTypeAdapter() != null) {
