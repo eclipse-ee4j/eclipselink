@@ -246,7 +246,7 @@ public class RestUtils {
      * @throws RestCallFailedException the rest call failed exception
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restUpdate(Object object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    public static String restUpdate(String message, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
         if (tenantId != null) {
@@ -256,7 +256,7 @@ public class RestUtils {
         }
         uri.append("/entity/" + type);
         WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, object.toString());
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, message);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
