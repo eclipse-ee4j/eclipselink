@@ -233,7 +233,7 @@ public class RestUtils {
         return resultObject;
     }
 
-
+    
     /**
      * Rest update.
      *
@@ -246,7 +246,7 @@ public class RestUtils {
      * @throws RestCallFailedException the rest call failed exception
      * @throws URISyntaxException the uRI syntax exception
      */
-    public static String restUpdate(Object object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
+    public static String restUpdate(String message, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws RestCallFailedException, URISyntaxException {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
         if (tenantId != null) {
@@ -256,15 +256,15 @@ public class RestUtils {
         }
         uri.append("/entity/" + type);
         WebResource webResource = client.resource(uri.toString());
-        ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, object.toString());
+        ClientResponse response = webResource.type(mediaType).accept(mediaType).post(ClientResponse.class, message);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK) {
             throw new RestCallFailedException(status);
-        }
+        } 
         return response.getEntity(String.class);
     }
 
-
+    
     /**
      * Rest create.
      *
@@ -323,7 +323,7 @@ public class RestUtils {
         return resultObject;
     }
 
-
+    
     public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
@@ -368,7 +368,7 @@ public class RestUtils {
         }
         return resultObject;
     }
-
+    
     /**
      * Rest delete.
      *
@@ -453,7 +453,7 @@ public class RestUtils {
         } else {
             resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
         }
-
+        
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
@@ -496,7 +496,7 @@ public class RestUtils {
         return response.getEntity(String.class);
     }
 
-
+    
     /**
      * Rest named single result query in byte array.
      *
@@ -542,8 +542,8 @@ public class RestUtils {
             }
         }
         return null;
-    }
-
+    }    
+    
     /**
      * Rest update query.
      *
@@ -769,7 +769,7 @@ public class RestUtils {
         return result;
     }
 
-
+    
     /**
      * Test get contexts.
      *
@@ -793,7 +793,7 @@ public class RestUtils {
         String result = response.getEntity(String.class);
         return result;
     }
-
+    
     public static String restGetTypes(String persistenceUnit, MediaType mediaType, String version) throws Exception {
         StringBuffer uri = new StringBuffer();
         if (version != null) {
@@ -812,7 +812,7 @@ public class RestUtils {
         return result;
     }
 
-
+    
     private static String getExtension(File f) {
         String ext = null;
         String s = f.getName();
