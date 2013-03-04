@@ -1042,6 +1042,11 @@ public class QueryImpl {
     public <T> T getParameterValue(Parameter<T> param) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("PARAMETER_NILL_NOT_FOUND"));
+        
+        ParameterExpressionImpl<T> parameter = (ParameterExpressionImpl<T>) this.getInternalParameters().get(getParameterId(param));
+        if (!parameter.getParameterType().equals(param.getParameterType())) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
 
         return (T) this.getParameterValue(getParameterId(param));
     }

@@ -126,4 +126,17 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        if (position == null){
+            return "Parameter[name=" + name + "]";
+        }else{
+            return "Parameter[position=" + position + "]";
+        }
+    }
+
+    
 }
