@@ -427,6 +427,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -439,6 +440,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(int position, Date value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
     
@@ -521,6 +523,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Calendar value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     
@@ -533,6 +536,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * @return the same query instance
      */
     public TypedQuery setParameter(String name, Date value, TemporalType temporalType) {
+        entityManager.verifyOpenWithSetRollbackOnly();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
     

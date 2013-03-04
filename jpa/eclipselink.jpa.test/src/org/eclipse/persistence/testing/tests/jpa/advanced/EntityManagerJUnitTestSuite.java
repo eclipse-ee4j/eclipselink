@@ -3118,21 +3118,16 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
           beginTransaction(em);
           em.persist(employee);
-          commitTransaction(em);
-          beginTransaction(em);
+          em.flush();
           int empId=employee.getId();
           Employee e1=em.find(Employee.class,empId);
           e1.setFirstName("testfind");
           queryhints.put(QueryHints.REFRESH, "TRUE");
-          Employee e2= (Employee)em.find(Employee.class,empId ,queryhints);
+          Employee e2= (Employee)em.find(Employee.class, empId, queryhints);
           assertFalse(e2.getFirstName().equals("testfind"));
-          commitTransaction(em);
-        } catch (IllegalArgumentException iae) {
-            return;
-        } catch (Exception e) {
-            fail("Wrong exception type thrown: " + e.getClass());
-        }finally{
-            closeEntityManager(em);
+          em.flush();
+        } finally{
+            closeEntityManagerAndTransaction(em);
         }
       }
 
@@ -10308,21 +10303,21 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } catch (Exception e){
             caughtException = e;
         }
-        assertTrue("Wrong Exception was caught when setting a numeric temporal Date parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
+        assertTrue("Wrong Exception was caught when setting a numeric temporal Date parameter on a query with a closed em. Caught "+caughtException, caughtException instanceof IllegalStateException);
 
         try{
             numericParameterQuery.setParameter(1, Calendar.getInstance(), TemporalType.DATE);
         } catch (Exception e){
             caughtException = e;
         }
-        assertTrue("Wrong Exception was caught when setting a numeric temporal Calendar parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
+        assertTrue("Wrong Exception was caught when setting a numeric temporal Calendar parameter on a query with a closed em. Caught "+caughtException, caughtException instanceof IllegalStateException);
 
         try{
         	namedParameterQuery.setParameter("date", new Date(System.currentTimeMillis()), TemporalType.DATE);
         } catch (Exception e){
             caughtException = e;
         }
-        assertTrue("Wrong Exception was caught when setting a named temporal Date parameter on a query with a closed em.", caughtException instanceof IllegalStateException);
+        assertTrue("Wrong Exception was caught when setting a named temporal Date parameter on a query with a closed em.  Caught "+caughtException, caughtException instanceof IllegalStateException);
 
         try{
         	namedParameterQuery.setParameter("date", Calendar.getInstance(), TemporalType.DATE);
