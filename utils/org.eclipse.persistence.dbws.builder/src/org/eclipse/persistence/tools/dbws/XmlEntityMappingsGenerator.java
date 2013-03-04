@@ -132,10 +132,10 @@ public class XmlEntityMappingsGenerator {
         xmlEntityMappings.setOracleArrayTypes(new ArrayList<OracleArrayTypeMetadata>());
 
         // process PL/SQL records and collections, and Oracle advanced JDBC types
-        List<PLSQLRecordMetadata> plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
-        List<PLSQLTableMetadata>  plsqlTables  = new ArrayList<PLSQLTableMetadata>();
-        List<OracleObjectTypeMetadata> objectTypes = new ArrayList<OracleObjectTypeMetadata>();
-        List<OracleArrayTypeMetadata> arrayTypes = new ArrayList<OracleArrayTypeMetadata>();
+        List<PLSQLRecordMetadata> plsqlRecords = null;
+        List<PLSQLTableMetadata>  plsqlTables  = null;
+        List<OracleObjectTypeMetadata> objectTypes = null;
+        List<OracleArrayTypeMetadata> arrayTypes = null;
         
         // generate metadata for each of the composite types
         List<ComplexTypeMetadata> complexTypeMetadata = processCompositeTypes(complexTypes, orProject);
@@ -143,35 +143,39 @@ public class XmlEntityMappingsGenerator {
             if (cTypeMetadata.isOracleComplexTypeMetadata()) {
                 OracleComplexTypeMetadata octMetadata = (OracleComplexTypeMetadata) cTypeMetadata;
                 if (octMetadata.isOracleArrayTypeMetadata()) {
+                    if (arrayTypes == null) {
+                        arrayTypes = new ArrayList<OracleArrayTypeMetadata>();
+                    }
                     arrayTypes.add((OracleArrayTypeMetadata) octMetadata);
                 } else {
                     // assumes OracleObjectTypeMetadata
+                    if (objectTypes == null) {
+                        objectTypes = new ArrayList<OracleObjectTypeMetadata>();
+                    }
                     objectTypes.add((OracleObjectTypeMetadata) octMetadata);
                 }                
             } else {
                 // assumes PL/SQL complex type metadata
                 PLSQLComplexTypeMetadata plsqlctMetadata = (PLSQLComplexTypeMetadata) cTypeMetadata;
                 if (plsqlctMetadata.isPLSQLRecordMetadata()) {
+                    if (plsqlRecords == null) {
+                        plsqlRecords = new ArrayList<PLSQLRecordMetadata>();
+                    }
                     plsqlRecords.add((PLSQLRecordMetadata) plsqlctMetadata);
                 } else {
                     // assumes PLSQLTableMetadata
+                    if (plsqlTables == null) {
+                        plsqlTables  = new ArrayList<PLSQLTableMetadata>();
+                    }
                     plsqlTables.add((PLSQLTableMetadata) plsqlctMetadata);
                 }
             }
         }
         // add generated metadata
-        if (plsqlRecords.size() > 0) {
-            xmlEntityMappings.setPLSQLRecords(plsqlRecords);
-        }
-        if (plsqlTables.size() > 0) {
-            xmlEntityMappings.setPLSQLTables(plsqlTables);
-        }
-        if (objectTypes != null) {
-            xmlEntityMappings.setOracleObjectTypes(objectTypes);
-        }
-        if (arrayTypes != null) {
-            xmlEntityMappings.setOracleArrayTypes(arrayTypes);
-        }
+        xmlEntityMappings.setPLSQLRecords(plsqlRecords);
+        xmlEntityMappings.setPLSQLTables(plsqlTables);
+        xmlEntityMappings.setOracleObjectTypes(objectTypes);
+        xmlEntityMappings.setOracleArrayTypes(arrayTypes);
         
         // process stored procedures/functions
         List<NamedPLSQLStoredProcedureQueryMetadata> plsqlStoredProcs = null;
@@ -180,10 +184,7 @@ public class XmlEntityMappingsGenerator {
         List<NamedStoredFunctionQueryMetadata> storedFuncs = null;
         List<NamedNativeQueryMetadata> namedNativeQueries = null;
         
-        DatabaseQuery query;
-        for (Iterator<DatabaseQuery> queryIt = queries.iterator(); queryIt.hasNext();) {
-            query = queryIt.next();
-            
+        for (DatabaseQuery query : queries) {
             if (query.getCall().isStoredFunctionCall()) {
                 if (query.getCall() instanceof PLSQLStoredFunctionCall) {
                     PLSQLStoredFunctionCall call = (PLSQLStoredFunctionCall)query.getCall();
@@ -444,8 +445,7 @@ public class XmlEntityMappingsGenerator {
             
             MappingAccessor mapAccessor;
             // generate a MappingAccessor for each mapping 
-            for (Iterator<DatabaseMapping> mapIt = cdesc.getMappings().iterator(); mapIt.hasNext();) {
-                DatabaseMapping dbMapping = mapIt.next();
+            for (DatabaseMapping dbMapping : cdesc.getMappings()) {
                 mapAccessor = generateMappingAccessor(dbMapping, embeddables);
                 if (mapAccessor == null) { 
                     continue; 

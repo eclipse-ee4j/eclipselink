@@ -577,6 +577,9 @@ public class XRServiceFactory  {
     
     /**
      * <p>INTERNAL:
+     * 
+     * Make sure OX  and OR descriptor aliases match - this is necessary as at runtime we
+     * typically lookup an OX descriptor, then access the related OR descriptor by alias.
      *
      */
     @SuppressWarnings("unchecked")

@@ -507,7 +507,7 @@ public class QueryOperation extends Operation {
         xmlRoot.setLocalName(tempSimpleXMLFormatTag);
         String tempXMLTag = DEFAULT_SIMPLE_XML_TAG;
         String xmlTag = simpleXMLFormat.getXMLTag();
-        if (xmlTag != null && !ITEMS_STR.equals(xmlTag)) {
+        if (xmlTag != null && !EMPTY_STR.equals(xmlTag)) {
             tempXMLTag = xmlTag;
         }
         Vector<DatabaseRecord> records = null;
