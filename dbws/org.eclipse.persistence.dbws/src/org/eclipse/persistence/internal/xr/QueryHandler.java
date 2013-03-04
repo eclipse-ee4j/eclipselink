@@ -93,10 +93,8 @@ public abstract class QueryHandler {
             else {
                 if (queryOperation.isSimpleXMLFormat() ||
                     (xrService.descriptorsByQName.containsKey(type) &&
-                     xrService.getORSession().getClassDescriptorForAlias(
-                      xrService.descriptorsByQName.get(type).getAlias()).isAggregateDescriptor() &&
-                     !xrService.getORSession().getClassDescriptorForAlias(
-                      xrService.descriptorsByQName.get(type).getAlias()).isObjectRelationalDataTypeDescriptor()
+                     xrService.getORSession().getClassDescriptorForAlias(xrService.descriptorsByQName.get(type).getAlias()).isAggregateDescriptor() &&
+                     !xrService.getORSession().getClassDescriptorForAlias(xrService.descriptorsByQName.get(type).getAlias()).isObjectRelationalDataTypeDescriptor()
                     )) {
                     // data-read query
                     databaseQueryToInitialize = new DataReadQuery();

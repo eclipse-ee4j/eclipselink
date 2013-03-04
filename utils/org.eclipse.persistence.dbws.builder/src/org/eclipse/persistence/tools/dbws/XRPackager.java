@@ -26,15 +26,16 @@ import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.log.DefaultSessionLogConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
-import org.eclipse.persistence.internal.sessions.factories.model.project.ProjectConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
 
+import static org.eclipse.persistence.internal.xr.Util.DASH_STR;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_SESSION_NAME_SUFFIX;
-import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_SESSION_NAME_SUFFIX;
+import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SERVICE_XML;
+import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
 import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 import static org.eclipse.persistence.tools.dbws.Util.SWAREF_FILENAME;
 
@@ -94,9 +95,10 @@ public class XRPackager implements DBWSPackager {
     protected static String FINER = "finer";
     protected static String FINEST = "finest";
     protected static String ALL = "all";
+    protected static String XR_STR = "xr";
     
     public XRPackager() {
-        this(null,"xr",noArchive);
+        this(null, XR_STR, noArchive);
     }
     protected XRPackager(Archiver archiver, String packagerLabel, ArchiveUse useJavaArchive) {
         this.archiver = archiver;
@@ -227,11 +229,9 @@ public class XRPackager implements DBWSPackager {
         ts.setVersion(Version.getVersion());
         DatabaseSessionConfig orSessionConfig = new DatabaseSessionConfig();
         String projectName = builder.getProjectName();
-        orSessionConfig.setName(projectName + "-" + DBWS_OR_SESSION_NAME_SUFFIX);
-        ProjectConfig orProjectConfig = builder.buildORProjectConfig();
-        orSessionConfig.setPrimaryProject(orProjectConfig);
+        orSessionConfig.setName(projectName + DASH_STR + DBWS_OR_SESSION_NAME_SUFFIX);
         String orSessionCustomizerClassName = builder.getOrSessionCustomizerClassName();
-        if (orSessionCustomizerClassName != null && !"".equals(orSessionCustomizerClassName)) {
+        if (orSessionCustomizerClassName != null && !EMPTY_STR.equals(orSessionCustomizerClassName)) {
             orSessionConfig.setSessionCustomizerClass(orSessionCustomizerClassName);
         }
         DatabaseLoginConfig dlc = new DatabaseLoginConfig();
@@ -255,6 +255,17 @@ public class XRPackager implements DBWSPackager {
         orSessionConfig.setLogConfig(orLogConfig);
         ts.addSessionConfig(orSessionConfig);
 
+        DatabaseSessionConfig oxSessionConfig = new DatabaseSessionConfig();
+        oxSessionConfig.setName(projectName + DASH_STR + DBWS_OX_SESSION_NAME_SUFFIX);
+        DefaultSessionLogConfig oxLogConfig = new DefaultSessionLogConfig();
+        oxLogConfig.setLogLevel(OFF);
+        oxSessionConfig.setLogConfig(oxLogConfig);
+        String oxSessionCustomizerClassName = builder.getOxSessionCustomizerClassName();
+        if (oxSessionCustomizerClassName != null && !EMPTY_STR.equals(oxSessionCustomizerClassName)) {
+            oxSessionConfig.setSessionCustomizerClass(oxSessionCustomizerClassName);
+        }
+        ts.addSessionConfig(oxSessionConfig);
+        
         return ts;
     }
 
@@ -276,9 +287,7 @@ public class XRPackager implements DBWSPackager {
         if (archiver == null) {
             return null;
         }
-        else {
-            return archiver.getOrProjectPathPrefix();
-        }
+        return archiver.getOrProjectPathPrefix();
     }
     public void closeOrStream(OutputStream orStream) {
         closeStream(orStream);
@@ -291,9 +300,7 @@ public class XRPackager implements DBWSPackager {
         if (archiver == null) {
             return null;
         }
-        else {
-            return archiver.getOxProjectPathPrefix();
-        }
+        return archiver.getOxProjectPathPrefix();
     }
     public void closeOxStream(OutputStream oxStream) {
         closeStream(oxStream);
@@ -306,9 +313,7 @@ public class XRPackager implements DBWSPackager {
         if (archiver == null) {
             return null;
         }
-        else {
-            return archiver.getWSDLPathPrefix();
-        }
+        return archiver.getWSDLPathPrefix();
     }
     public void closeWSDLStream(OutputStream wsdlStream) {
         closeStream(wsdlStream);
@@ -318,9 +323,7 @@ public class XRPackager implements DBWSPackager {
         if (!hasAttachments) {
             return __nullStream;
         }
-        else {
-            return new FileOutputStream(new File(stageDir, SWAREF_FILENAME));
-        }
+        return new FileOutputStream(new File(stageDir, SWAREF_FILENAME));
     }
     public void closeSWARefStream(OutputStream swarefStream) {
         closeStream(swarefStream);

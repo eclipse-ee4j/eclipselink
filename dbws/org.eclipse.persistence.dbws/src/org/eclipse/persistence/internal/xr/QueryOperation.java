@@ -24,6 +24,7 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Vector;
 import java.util.List;
@@ -32,9 +33,6 @@ import org.w3c.dom.Element;
 // Java extension imports
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -44,14 +42,13 @@ import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
-import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -69,7 +66,9 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
@@ -77,12 +76,16 @@ import static org.eclipse.persistence.internal.xr.Util.DEFAULT_ATTACHMENT_MIMETY
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_TAG;
 import static org.eclipse.persistence.internal.xr.Util.sqlToXmlName;
+import static org.eclipse.persistence.internal.xr.Util.EMPTY_STR;
+import static org.eclipse.persistence.internal.xr.Util.SLASH_CHAR;
 import static org.eclipse.persistence.internal.xr.Util.TEMP_DOC;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_TIME_QNAME;
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_INSTANCE_URL;
+import static org.eclipse.persistence.oxm.XMLConstants.SCHEMA_URL;
 import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
+import static org.eclipse.persistence.oxm.XMLConstants.XMLNS_URL;
 
 /**
  * <p><b>INTERNAL:</b>An XR QueryOperation is an executable representation of a <tt>SELECT</tt>
@@ -93,11 +96,25 @@ import static org.eclipse.persistence.oxm.XMLConstants.TIME_QNAME;
  */
 @SuppressWarnings({"serial", "unchecked"/*, "rawtypes"*/})
 public class QueryOperation extends Operation {
-    protected static final String RESULT_STR = "result";
     public static final String ORACLESQLXML_STR = "oracle.jdbc.driver.OracleSQLXML";
     public static final String ORACLEOPAQUE_STR = "oracle.sql.OPAQUE";
+    protected static final String RESULT_STR = "result";
     protected static final String XMLTYPEFACTORY_STR = "org.eclipse.persistence.internal.platform.database.oracle.xdb.XMLTypeFactoryImpl";
     protected static final String GETSTRING_METHOD = "getString";
+    protected static final String ATTACHMENT_STR = "/attachment";
+    protected static final String CURSOR_OF_STR = "cursor of ";
+    protected static final String DATAHANDLER_STR = "DataHandler";
+    protected static final String RESULTS_STR = "results";
+    protected static final String VALUEOBJECT_STR = "ValueObject";
+    protected static final String VALUE_STR = "value";
+    protected static final String SIMPLEXML_FORMAT_STR = "/simple-xml-format";    
+    protected static final String SIMPLEXML_STR = "simpleXML";
+    protected static final String DATABASEQUERY_STR = "databasequery";
+    protected static final String ITEMS_STR = "ITEMS";
+    protected static final String XSD_STR = "xmlns:xsd";
+    protected static final String XSI_STR = "xmlns:xsi";
+    protected static final String XSITYPE_STR = "xsi:type";
+    protected static final String BASE64_BINARY_STR = "xsd:base64Binary";
     
     protected Result result;
     protected QueryHandler queryHandler;
@@ -158,9 +175,9 @@ public class QueryOperation extends Operation {
         super.validate(xrService);
         QName resultType = result == null ? null : result.getType();
         if (resultType != null) {
-            if (!resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+            if (!resultType.getNamespaceURI().equals(SCHEMA_URL)) {
                 boolean sxf = resultType.getLocalPart().equals(DEFAULT_SIMPLE_XML_FORMAT_TAG) ||
-                    resultType.getLocalPart().equals("cursor of " + DEFAULT_SIMPLE_XML_FORMAT_TAG);
+                    resultType.getLocalPart().equals(CURSOR_OF_STR + DEFAULT_SIMPLE_XML_FORMAT_TAG);
                 // check descriptor for Schema's high-level element type 'resultType'
                 if (!sxf && !xrService.descriptorsByQName.containsKey(resultType)) {
                         throw DBWSException.resultHasNoMapping(resultType.toString(), name);
@@ -224,22 +241,23 @@ public class QueryOperation extends Operation {
                     (XMLDescriptor)oxSession.getProject().getClassDescriptor(DataHandler.class);
                 if (descriptor == null) {
                     descriptor = new XMLDescriptor();
-                    descriptor.setAlias("DataHandler");
+                    descriptor.setAlias(DATAHANDLER_STR);
                     descriptor.setJavaClass(DataHandler.class);
                     descriptor.setInstantiationPolicy(
                         this.new DataHandlerInstantiationPolicy(attachment.getMimeType()));
                     XMLBinaryDataMapping mapping = new XMLBinaryDataMapping();
-                    mapping.setAttributeName("results");
+                    mapping.setAttributeName(RESULTS_STR);
                     mapping.setAttributeAccessor(new AttributeAccessor() {
                         @Override
                         public Object getAttributeValueFromObject(Object object)
                             throws DescriptorException {
                             Object result = null;
+                            InputStream is = null;
                             DataHandler dataHandler = (DataHandler)object;
                             try {
                                 result = dataHandler.getContent();
                                 if (result instanceof InputStream) {
-                                    InputStream is = (InputStream)result;
+                                    is = (InputStream)result;
                                     byte[] buf = new byte[2048];
                                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                     int bytesRead = is.read(buf);
@@ -249,20 +267,23 @@ public class QueryOperation extends Operation {
                                     }
                                     result = baos.toByteArray();
                                 }
-                            }
-                            catch (IOException e) {
-                                // e.printStackTrace(); ignore
+                            } catch (IOException e) {
+                                // ignore
+                            } finally {
+                                try {
+                                    is.close();
+                                } catch (IOException e) {
+                                }
                             }
                             return result;
                         }
                         @Override
                         public void setAttributeValueInObject(Object object, Object value)
                             throws DescriptorException {
-                            // TODO - figure out if inbound-path needs to be handled
                         }
                     });
-                    mapping.setXPath(DEFAULT_SIMPLE_XML_FORMAT_TAG + "/" +
-                        DEFAULT_SIMPLE_XML_TAG + "/attachment");
+                    mapping.setXPath(DEFAULT_SIMPLE_XML_FORMAT_TAG + SLASH_CHAR +
+                        DEFAULT_SIMPLE_XML_TAG + ATTACHMENT_STR);
                     mapping.setSwaRef(true);
                     mapping.setShouldInlineBinaryData(false);
                     mapping.setMimeType(attachment.getMimeType());
@@ -284,11 +305,11 @@ public class QueryOperation extends Operation {
             ValueObject.class);
         if (descriptor == null) {
             descriptor = new XMLDescriptor();
-            descriptor.setAlias("ValueObject");
+            descriptor.setAlias(VALUEOBJECT_STR);
             descriptor.setJavaClass(ValueObject.class);
             XMLDirectMapping mapping = new XMLDirectMapping();
-            mapping.setAttributeName("value");
-            mapping.setXPath("value");
+            mapping.setAttributeName(VALUE_STR);
+            mapping.setXPath(VALUE_STR);
             descriptor.addMapping(mapping);
             NamespaceResolver nr = new NamespaceResolver();
             descriptor.setNamespaceResolver(nr);
@@ -310,13 +331,13 @@ public class QueryOperation extends Operation {
                 simpleXMLFormatDescriptor.setAlias(DEFAULT_SIMPLE_XML_FORMAT_TAG);
                 simpleXMLFormatDescriptor.setDefaultRootElement(DEFAULT_SIMPLE_XML_FORMAT_TAG);
                 XMLFragmentCollectionMapping xmlTag = new XMLFragmentCollectionMapping();
-                xmlTag.setAttributeName("simpleXML");
+                xmlTag.setAttributeName(SIMPLEXML_STR);
                 xmlTag.setXPath(DEFAULT_SIMPLE_XML_TAG);
                 simpleXMLFormatDescriptor.addMapping(xmlTag);
                 NamespaceResolver nr = new NamespaceResolver();
                 simpleXMLFormatDescriptor.setNamespaceResolver(nr);
-                XMLSchemaURLReference schemaReference = new XMLSchemaURLReference("");
-                schemaReference.setSchemaContext("/simple-xml-format");
+                XMLSchemaURLReference schemaReference = new XMLSchemaURLReference(EMPTY_STR);
+                schemaReference.setSchemaContext(SIMPLEXML_FORMAT_STR);
                 schemaReference.setType(XMLSchemaReference.COMPLEX_TYPE);
                 simpleXMLFormatDescriptor.setSchemaReference(schemaReference);
                 oxSession.getProject().addDescriptor(simpleXMLFormatDescriptor);
@@ -337,27 +358,62 @@ public class QueryOperation extends Operation {
      *
      * @see  {@link Operation}
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Object invoke(XRServiceAdapter xrService, Invocation invocation) {
-
         DatabaseQuery query = queryHandler.getDatabaseQuery();
-        List queryArguments = query.getArguments();
-        int queryArgumentsSize = queryArguments.size();
-        Vector executeArguments = new NonSynchronizedVector();
-        for (int i = 0; i < queryArgumentsSize; i++) {
-            String argName = (String)queryArguments.get(i);
-            executeArguments.add(invocation.getParameter(argName));
+        
+        if (query.getProperty(DATABASEQUERY_STR) != null) {
+            query = (DatabaseQuery) query.getProperty(DATABASEQUERY_STR);
         }
-        Object value = xrService.getORSession().getActiveSession().executeQuery(query, executeArguments);
+        // a named query created via ORM metadata processing needs initialization
+        if (query instanceof JPAQuery) {
+            query = ((JPAQuery) query).processSQLQuery(xrService.getORSession().getActiveSession());
+        }
+
+        // a named query created via ORM metadata processing does not have
+        // parameters set, however, the operation should
+        if (query.getArguments().size() == 0) {
+            int idx = 0;
+            for (Parameter param : getParameters()) {
+                // for custom SQL query (as configured via ORM metadata
+                // processing) we add args by position
+                query.addArgument(Integer.toString(++idx), Util.SCHEMA_2_CLASS.get(param.getType()));
+                query.addArgumentValue(invocation.getParameter(param.getName()));
+            }
+        } else {
+            List<Object> argVals = new ArrayList<Object>();
+            // need to set argument values
+            for (Parameter param : getParameters()) {
+                argVals.add(invocation.getParameter(param.getName()));
+            }
+            query.setArgumentValues(argVals);
+        }
+        // for SimpleXML + DataReadQuery we need to set MAP result type
+        if (isSimpleXMLFormat() && query.isDataReadQuery()) {
+            ((DataReadQuery) query).setResultType(DataReadQuery.MAP);
+        }
+        
+        // now execute the query
+        Object value = xrService.getORSession().getActiveSession().executeQuery(query);
+
         if (value != null) {
+            // handle SimpleXML
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
             } else {
+                if (!isCollection() && value instanceof Vector) {
+                    // JPAQuery will return a single result in a Vector
+                    if (((Vector) value).isEmpty()) {
+                        return null;
+                    }
+                    value = ((Vector) value).firstElement();
+                }            
+                
                 QName resultType = getResultType();
                 if (resultType != null) {
                     // handle binary content
-                    if (isAttachment() ||
-                        (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
+                    if (isAttachment() || (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
                         String mimeType = DEFAULT_ATTACHMENT_MIMETYPE;
                         if (isAttachment() && result.getAttachment().getMimeType() != null) {
                             mimeType = result.getAttachment().getMimeType();
@@ -370,7 +426,7 @@ public class QueryOperation extends Operation {
                         }
                         return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
                     }
-                    if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+                    if (resultType.getNamespaceURI().equals(SCHEMA_URL)) {
                         // handle primitive types
                         ValueObject vo = new ValueObject();
                         vo.value = value;
@@ -380,26 +436,48 @@ public class QueryOperation extends Operation {
                         if (xrService.descriptorsByQName.containsKey(resultType)) {
                             XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
                             ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(xdesc.getAlias());
-                            if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor()) {
+                            if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor() && !desc.isRelationalDescriptor()) {
                                 if (isCollection()) {
-                                    XRDynamicEntity_CollectionWrapper xrCollWrapper =
-                                            new XRDynamicEntity_CollectionWrapper();
+                                    XRDynamicEntity_CollectionWrapper xrCollWrapper = new XRDynamicEntity_CollectionWrapper();
                                     Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
                                     for (int i = 0, len = results.size(); i < len; i++) {
                                         Object o = desc.getObjectBuilder().buildNewInstance();
-                                        populateTargetObjectFromRecord(desc.getMappings(),
-                                                results.get(i), o, (AbstractSession)xrService.getORSession());
+                                        populateTargetObjectFromRecord(desc.getMappings(), results.get(i), o, (AbstractSession)xrService.getORSession());
                                         xrCollWrapper.add(o);
                                     }
                                     targetObject = xrCollWrapper;
                                 } else {
                                     targetObject = desc.getObjectBuilder().buildNewInstance();
-                                    populateTargetObjectFromRecord(desc.getMappings(),
-                                            (AbstractRecord)((Vector)value).get(0), targetObject,
-                                            (AbstractSession)xrService.getORSession());
+                                    populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) value, targetObject, (AbstractSession)xrService.getORSession());
                                 }
+                            } else if (isCollection() && value instanceof Vector) {
+                                // could be a collection of populated objects, in which case we just return it
+                                if (((Vector) value).size() > 0 && !(((Vector) value).get(0) instanceof AbstractRecord)) {
+                                    return value;
+                                }
+                                XRDynamicEntity_CollectionWrapper xrCollWrapper = new XRDynamicEntity_CollectionWrapper();
+                                Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
+                                for (int i = 0, len = results.size(); i < len; i++) {
+                                    Object o = desc.getObjectBuilder().buildNewInstance();
+                                    populateTargetObjectFromRecord(desc.getMappings(), results.get(i), o, (AbstractSession)xrService.getORSession());
+                                    xrCollWrapper.add(o);
+                                }
+                                targetObject = xrCollWrapper;                                
+                            } else if (value instanceof AbstractRecord) {
+                                targetObject = desc.getObjectBuilder().buildNewInstance();
+                                populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) value, targetObject, (AbstractSession)xrService.getORSession());
                             }
                         }
+                        if (value instanceof ArrayList) {
+                            XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
+                            ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(xdesc.getAlias());
+                            targetObject = desc.getObjectBuilder().buildNewInstance();
+                            Object[] objs = new Object[1];
+                            objs[0] = ((ArrayList)value).get(0);
+                            DatabaseRecord dr = new DatabaseRecord();
+                            dr.add(new DatabaseField(ITEMS_STR), objs);
+                            populateTargetObjectFromRecord(desc.getMappings(), (AbstractRecord) dr, targetObject, (AbstractSession)xrService.getORSession());
+                        }                        
                         value = targetObject;
                     }
                 }
@@ -410,30 +488,40 @@ public class QueryOperation extends Operation {
 
     protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
         AbstractRecord record, Object targetObject, AbstractSession session) {
+        ReadObjectQuery roq = new ReadObjectQuery();
+        roq.setSession(session);
         for (DatabaseMapping dm : mappings) {
-            dm.readFromRowIntoObject(record, null, targetObject, null, null, session, true);
+            dm.readFromRowIntoObject(record, null, targetObject, null, roq, session, true);
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
         XMLRoot xmlRoot = new XMLRoot();
         SimpleXMLFormat simpleXMLFormat = result.getSimpleXMLFormat();
         String tempSimpleXMLFormatTag = SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
         String simpleXMLFormatTag = simpleXMLFormat.getSimpleXMLFormatTag();
-        if (simpleXMLFormatTag != null && !"".equals(simpleXMLFormatTag)) {
+        if (simpleXMLFormatTag != null && !EMPTY_STR.equals(simpleXMLFormatTag)) {
             tempSimpleXMLFormatTag = simpleXMLFormatTag;
         }
         xmlRoot.setLocalName(tempSimpleXMLFormatTag);
         String tempXMLTag = DEFAULT_SIMPLE_XML_TAG;
         String xmlTag = simpleXMLFormat.getXMLTag();
-        if (xmlTag != null && !"".equals(xmlTag)) {
+        if (xmlTag != null && !ITEMS_STR.equals(xmlTag)) {
             tempXMLTag = xmlTag;
         }
         Vector<DatabaseRecord> records = null;
         if (value instanceof Vector) {
-            records = (Vector<DatabaseRecord>)value;
-        }
-        else {
+            Class vectorContent = ((Vector)value).firstElement().getClass();
+            if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
+                records = (Vector<DatabaseRecord>)value;
+            } else {
+                records = new Vector<DatabaseRecord>();
+                DatabaseRecord dr = new DatabaseRecord();
+                dr.add(new DatabaseField(RESULT_STR), ((Vector)value).firstElement());
+                records.add(dr);
+            }
+        } else {
             records = new Vector<DatabaseRecord>();
             DatabaseRecord dr = new DatabaseRecord();
             dr.add(new DatabaseField(RESULT_STR), value);
@@ -506,24 +594,20 @@ public class QueryOperation extends Operation {
                             // if the required resources are not available there's nothing we can do...
                         }
                     }
-                    String elementName = sqlToXmlName(field.getName());
-                    if (elementName.equals(EMPTY_STRING)) {
+                    String elementName;
+                    if (field.getName() == null || (elementName = sqlToXmlName(field.getName())).equals(EMPTY_STR)) {
                         // return arg from stored function has no name
-                        elementName = RESULT_STR;
+                       elementName = RESULT_STR;
                     }
                     Element columnElement = TEMP_DOC.createElement(elementName);
                     rowElement.appendChild(columnElement);
                     String fieldValueString = fieldValue.toString();
                     // handle binary content - attachments dealt with in invoke() above
                     if (result.getType().equals(BASE_64_BINARY_QNAME)) {
-                        fieldValueString = Helper.buildHexStringFromBytes(
-                            Base64.base64Encode((byte[])fieldValue));
-                        columnElement.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI,
-                            "xmlns:xsd", W3C_XML_SCHEMA_NS_URI);
-                        columnElement.setAttributeNS(XMLNS_ATTRIBUTE_NS_URI,
-                            "xmlns:xsi", W3C_XML_SCHEMA_INSTANCE_NS_URI);
-                        columnElement.setAttributeNS(W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                            "xsi:type", "xsd:base64Binary");
+                        fieldValueString = Helper.buildHexStringFromBytes(Base64.base64Encode((byte[])fieldValue));
+                        columnElement.setAttributeNS(XMLNS_URL, XSD_STR, SCHEMA_URL);
+                        columnElement.setAttributeNS(XMLNS_URL, XSI_STR, SCHEMA_INSTANCE_URL);
+                        columnElement.setAttributeNS(SCHEMA_INSTANCE_URL, XSITYPE_STR, BASE64_BINARY_STR);
                     }
                     columnElement.appendChild(TEMP_DOC.createTextNode(fieldValueString));
                 }

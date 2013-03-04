@@ -16,6 +16,7 @@ package org.eclipse.persistence.platform.database.oracle.plsql;
 // javase imports
 import static java.lang.Integer.MIN_VALUE;
 
+import org.eclipse.persistence.internal.helper.ComplexDatabaseType;
 // EclipseLink imports
 import org.eclipse.persistence.internal.helper.DatabaseType;
 import static org.eclipse.persistence.internal.databaseaccess.DatasourceCall.IN;
@@ -80,6 +81,29 @@ public class PLSQLargument implements Cloneable {
 
     public void useNamedCursorOutputAsResultSet() {
         cursorOutput = true;
+    }
+
+    /**
+     * Sets flag on this argument's database type indicating that it represents a
+     * non-associative collection, i.e. Nested Table (as opposed to a Varray).
+     * 
+     * The value should be false (default) for associative/indexed collections 
+     * (Varrays), and true for non-associative collections (Nested Tables).
+     * 
+     * It is assumed that the database type has been determined to be a PLSQLCollection
+     * prior to calling this method - if this argument's database type is not a 
+     * PLSQLCollection, no operation is performed.
+     * 
+     * The preferred method of flagging a PLSQCollection as a Nested Table is to use the
+     * setIsNestedTable(boolean) method directly on PLSQLCollection.
+     * 
+     * @param isNonAsscociative true indicates this argument's database type represents a Nested Table
+     * @see org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection
+     */
+    public void setIsNonAssociativeCollection(boolean isNonAsscociative) {
+        if (databaseType != null && databaseType.isComplexDatabaseType() && ((ComplexDatabaseType) databaseType).isCollection()) {
+            ((PLSQLCollection) databaseType).setIsNestedTable(isNonAsscociative);
+        }
     }
 
     @Override

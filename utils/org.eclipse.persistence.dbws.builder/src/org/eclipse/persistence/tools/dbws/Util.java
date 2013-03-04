@@ -47,6 +47,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.schema.model.Any;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
@@ -58,7 +59,9 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
+
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
+import static org.eclipse.persistence.internal.xr.Util.OPAQUE;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 import static org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat.DEFAULT_SIMPLE_XML_FORMAT_TAG;
 import static org.eclipse.persistence.oxm.XMLConstants.BASE_64_BINARY_QNAME;
@@ -131,6 +134,7 @@ public class Util {
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
 
+    public static final String AT_SIGN = "@";
     public static final String COMMA = ",";
     public static final String SEMICOLON = ";";
     public static final String SINGLE_SPACE = " ";
@@ -146,6 +150,11 @@ public class Util {
     public static final String CLOSE_PAREN = "}";
     public static final String SLASH = "/";
     public static final String DOT = ".";
+    public static final String OPEN_BRACKET = "(";
+    public static final String CLOSE_BRACKET = ")";
+    public static final String OPEN_SQUARE_BRACKET = "[";
+    public static final String CLOSE_SQUARE_BRACKET = "]";
+    public static final String SLASH_TEXT = "/text()";
 
     public static final String ARRAY_STR = "ARRAY";
     public static final String BIGINT_STR = "BIGINT";
@@ -182,6 +191,21 @@ public class Util {
     public static final String VARBINARY_STR = "VARBINARY";
     public static final String VARCHAR_STR = "VARCHAR";
     public static final String VARCHAR2_STR = "VARCHAR2";
+    public static final String BINARY_INTEGER_STR = "BINARY_INTEGER";
+    public static final String PLS_INTEGER_STR = "PLS_INTEGER";
+    public static final String NATURAL_STR = "NATURAL";
+    public static final String POSITIVE_STR = "POSITIVE";
+    public static final String SIGNTYPE_STR = "SIGNTYPE";
+    public static final String BINARY_INTEGER_TYPE_STR = "BinaryInteger";
+    public static final String PLS_BOOLEAN_TYPE_STR = "PLSQLBoolean";
+    public static final String PLS_INTEGER_TYPE_STR = "PLSQLInteger";
+    public static final String NATURAL_TYPE_STR = "Natural";
+    public static final String POSITIVE_TYPE_STR = "Positive";
+    public static final String SIGNTYPE_TYPE_STR = "SignType";
+    
+    public static final String SYS_XMLTYPE_STR = "SYS.XMLTYPE";
+    public static final String XMLTYPE_STR = "XMLTYPE";
+    public static final String _TYPE_STR = "_TYPE";
 
     /**
      * Return the JDBC type (as int) for a given type name.
@@ -269,8 +293,8 @@ public class Util {
         }
         else if (typeName.equals(ROWID_STR)) {
             jdbcType = Types.ROWID;
-        } else if (typeName.equalsIgnoreCase("XMLTYPE") ||
-                  (typeName.equalsIgnoreCase("SYS.XMLTYPE"))) {
+        } else if (typeName.equalsIgnoreCase(XMLTYPE_STR) ||
+                  (typeName.equalsIgnoreCase(SYS_XMLTYPE_STR))) {
             jdbcType = Types.VARCHAR;
         }
         else if (typeName.equals(BOOLEAN_STR)  ||
@@ -354,6 +378,16 @@ public class Util {
             case Types.ROWID:
                 typeName = ROWID_STR;
                 break;
+        }
+        return typeName;
+    }
+
+    /**
+     * Return the JDBC enum name for a given JDBC type name.
+     */
+    public static String getJDBCEnumNameFromTypeName(String typeName) {
+        if (getJDBCTypeFromTypeName(typeName) != Types.OTHER) {
+            typeName += _TYPE_STR;
         }
         return typeName;
     }
@@ -463,6 +497,81 @@ public class Util {
         return qName;
     }
 
+    /**
+     * Returns the class name associated with a given JDBC/SQL type code.
+     * 
+     */
+    public static String getClassNameForType(int jdbcType) {
+        String typeName = ClassConstants.STRING.getName();
+        switch (jdbcType) {
+            case Types.NUMERIC:
+                typeName = ClassConstants.NUMBER.getName();
+                break;
+            case Types.DECIMAL:
+                typeName = ClassConstants.BIGDECIMAL.getName();
+                break;
+            case Types.CHAR:
+                typeName = ClassConstants.CHAR.getName();
+                break;
+            case Types.FLOAT:
+                typeName = ClassConstants.FLOAT.getName();
+                break;
+            case Types.DOUBLE:
+            case Types.REAL:
+                typeName = ClassConstants.DOUBLE.getName();
+                break;
+            case Types.BINARY:
+            case Types.VARBINARY:
+            case Types.LONGVARBINARY:
+                typeName = ClassConstants.ABYTE.getName();
+                break;
+            case Types.BLOB:
+                typeName = ClassConstants.BLOB.getName();
+                break;
+            case Types.CLOB:
+                typeName = ClassConstants.CLOB.getName();
+                break;
+            case Types.NCLOB:
+                typeName = "java.sql.NClob";
+                break;
+            case Types.DATE:
+                typeName = ClassConstants.SQLDATE.getName();
+                break;
+            case Types.TIME:
+                typeName = ClassConstants.TIME.getName();
+                break;
+            case Types.TIMESTAMP:
+                typeName = ClassConstants.TIMESTAMP.getName();
+                break;
+            case Types.BIGINT:
+                typeName = ClassConstants.BIGINTEGER.getName();
+                break;
+            case Types.ARRAY:
+                typeName = "java.sql.Array";
+                break;
+            case Types.STRUCT:
+                typeName = "java.sql.Struct";
+                break;
+            case Types.ROWID:
+                typeName = "java.sql.RowId";
+                break;
+            case OPAQUE:
+                typeName = "oracle.sql.OPAQUE";
+                break;
+            default:
+                //case Types.VARCHAR:
+                //    typeName = VARCHAR_STR;
+                //    break;
+                //case Types.NVARCHAR:
+                //    typeName = NVARCHAR_STR;
+                //    break;
+                //case Types.NCHAR:
+                //    typeName = NCHAR_STR;
+                //    break;
+        }
+        return typeName;
+    }
+    
     /*
       <?xml version="1.0" encoding="UTF-8"?>
       <xsd:schema
@@ -686,6 +795,38 @@ public class Util {
             || argType == ScalarDatabaseTypeEnum.SIGN_TYPE;
     }
 
+    /**
+     * Indicates if a given argument type name is considered a PL/SQL scalar
+     * argument, i.e. is one of BOOLEAN, BINARY_INTEGER, PLS_INTEGER, etc.
+     */
+    public static boolean isArgPLSQLScalar(String argTypeName) {
+        return argTypeName.equals("BOOLEAN")
+            || argTypeName.equals("PLS_INTEGER")
+            || argTypeName.equals("BINARY_INTEGER")
+            || argTypeName.equals("NATURAL")
+            || argTypeName.equals("POSITIVE")
+            || argTypeName.equals("SIGNTYPE");
+    }
+
+    /**
+     * Return the Oracle PL/SQL name for a given PL/SQL scalar type.
+     */
+    public static String getOraclePLSQLTypeForName(String typeName) {
+        if (typeName.equals(BINARY_INTEGER_STR)) 
+            return BINARY_INTEGER_TYPE_STR;
+        if (typeName.equals(BOOLEAN_STR))
+            return PLS_BOOLEAN_TYPE_STR;
+        if (typeName.equals(PLS_INTEGER_STR))
+            return PLS_INTEGER_TYPE_STR;
+        if (typeName.equals(NATURAL_STR))
+            return NATURAL_TYPE_STR;
+        if (typeName.equals(POSITIVE_STR))
+            return POSITIVE_TYPE_STR;
+        if (typeName.equals(SIGNTYPE_STR))
+            return SIGNTYPE_TYPE_STR;
+        return null;
+    }
+     
     /**
      * Indicates if a given ProcedureType contains one or more arguments that
      * are considered 'complex', i.e. PLSQLRecordType, PLSQLCollectionType,

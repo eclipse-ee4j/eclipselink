@@ -56,18 +56,35 @@ public class NamedQueryHandler extends QueryHandler {
     @Override
     public void validate(XRServiceAdapter xrService, QueryOperation queryOperation) {
         if (descriptor != null) {
-            if (!xrService.getORSession().getProject().getAliasDescriptors().
-                containsKey(descriptor)) {
-                throw DBWSException.couldNotLocateDescriptorForOperation(descriptor,getName());
+            if (!xrService.getORSession().getProject().getAliasDescriptors().containsKey(descriptor)) {
+                throw DBWSException.couldNotLocateDescriptorForOperation(descriptor, getName());
             }
-            ClassDescriptor cd = xrService.getORSession().getProject().
-                getDescriptorForAlias(descriptor);
+            ClassDescriptor cd = xrService.getORSession().getProject().getDescriptorForAlias(descriptor);
             if (cd.getQueryManager().getQuery(name) == null) {
-                throw DBWSException.couldNotLocateQueryForDescriptor(name, descriptor);
+                boolean foundQuery = false;
+                
+                for (DatabaseQuery q : xrService.getORSession().getProject().getJPAQueries()) {
+                    if (q.getName().equals(name)) {
+                        foundQuery = true;
+                        cd.getQueryManager().addQuery(name, q);
+                        break;
+                    }
+                }
+                if (!foundQuery) {
+                    throw DBWSException.couldNotLocateQueryForDescriptor(name, descriptor);
+                }
             }
-        }
-        else if (xrService.getORSession().getQuery(name) == null) {
-            throw DBWSException.couldNotLocateQueryForSession(name,xrService.getORSession().getName());
+        } else if (xrService.getORSession().getQuery(name) == null) {
+            boolean foundQuery = false;
+            for (DatabaseQuery q : xrService.getORSession().getJPAQueries()) {
+                if (q.getName().equals(name)) {
+                    foundQuery = true;
+                    break;
+                }
+            }
+            if (!foundQuery) {
+                throw DBWSException.couldNotLocateQueryForSession(name,xrService.getORSession().getName());
+            }
         }
     }
 
@@ -77,13 +94,19 @@ public class NamedQueryHandler extends QueryHandler {
     @Override
     public void initialize(XRServiceAdapter xrService, QueryOperation queryOperation) {
         if (descriptor != null) {
-            ClassDescriptor cd = xrService.getORSession().getProject().
-                getDescriptorForAlias(descriptor);
+            ClassDescriptor cd = xrService.getORSession().getProject().getDescriptorForAlias(descriptor);
             databaseQuery = cd.getQueryManager().getQuery(name);
-        }
-        else {
+        } else {
             databaseQuery = xrService.getORSession().getQuery(name);
+            if (databaseQuery == null) {
+                // must be a JPAQuery
+                for (DatabaseQuery q : xrService.getORSession().getJPAQueries()) {
+                    if (q.getName().equals(name)) {
+                        databaseQuery = q;
+                        break;
+                    }
+                }
+            }
         }
     }
-
 }
