@@ -384,16 +384,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     private void setAttributeValue(Object object, UnmarshalRecord unmarshalRecord) {
-        if (xmlCompositeObjectMapping.getConverter() != null) {
-            Converter converter = xmlCompositeObjectMapping.getConverter();
-            if (converter instanceof XMLConverter) {
-                object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            } else {
-                object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
-            }
-        }
-        // Set the child object on the parent
-        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
         XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeObjectMapping.getInverseReferenceMapping();
         if(null != inverseReferenceMapping) {
             if(inverseReferenceMapping.getContainerPolicy() == null) {
@@ -407,6 +397,16 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
+        if (xmlCompositeObjectMapping.getConverter() != null) {
+            Converter converter = xmlCompositeObjectMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                object = ((XMLConverter)converter).convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            } else {
+                object = converter.convertDataValueToObjectValue(object, unmarshalRecord.getSession());
+            }
+        }
+        // Set the child object on the parent
+        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);
     }
 
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {

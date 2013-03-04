@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAcce
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdEventHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseRefChoiceAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseReferenceAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseReferenceWithRefTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestSuite;
@@ -100,6 +101,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(CustomerTestCases.class);
         suite.addTestSuite(InverseReferenceWithRefTestCases.class);
         suite.addTestSuite(InverseReferenceAdapterTestCases.class);
+        suite.addTestSuite(InverseRefChoiceAdapterTestCases.class);
 
         return suite;
     }

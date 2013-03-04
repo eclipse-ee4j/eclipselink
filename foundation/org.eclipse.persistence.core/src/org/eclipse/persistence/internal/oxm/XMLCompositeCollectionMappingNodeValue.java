@@ -216,18 +216,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
                return;
         }
-        // convert the value - if necessary
-        Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
-        if (xmlCompositeCollectionMapping.hasConverter()) {
-            Converter converter = xmlCompositeCollectionMapping.getConverter();
-            if (converter instanceof XMLConverter) {
-                objectValue = ((XMLConverter)converter).convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-            } else {
-                objectValue = converter.convertObjectValueToDataValue(objectValue, unmarshalRecord.getSession());
-            }
-        }
-        unmarshalRecord.addAttributeValue(this, objectValue, collection);
 
+        Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
         XMLInverseReferenceMapping inverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();
         if(null != inverseReferenceMapping) {
             if(inverseReferenceMapping.getContainerPolicy() == null) {
@@ -241,6 +231,16 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
+        // convert the value - if necessary
+        if (xmlCompositeCollectionMapping.hasConverter()) {
+            Converter converter = xmlCompositeCollectionMapping.getConverter();
+            if (converter instanceof XMLConverter) {
+                objectValue = ((XMLConverter)converter).convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+            } else {
+                objectValue = converter.convertObjectValueToDataValue(objectValue, unmarshalRecord.getSession());
+            }
+        }
+        unmarshalRecord.addAttributeValue(this, objectValue, collection);
         unmarshalRecord.setChildRecord(null);
 
     }
