@@ -155,6 +155,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPING;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPINGS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATOR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TRANSIENT;
 
 /**
  * INTERNAL:
@@ -1175,14 +1176,14 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (getDescriptor().usesDefaultPropertyAccess()) {
                 for (MetadataMethod method : m_idClass.getMethods().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (method.isValidPersistenceMethod(false, this)) {
+                    if (!method.isAnnotationPresent(JPA_TRANSIENT) && method.isValidPersistenceMethod(false, this)) {
                         getDescriptor().addPKClassId(method.getAttributeName(), getBoxedType(method.getType()));
                     }
                 }
             } else {
                 for (MetadataField field : m_idClass.getFields().values()) {
                     // The is valid check will throw an exception if needed.
-                    if (field.isValidPersistenceField(false, this)) {
+                    if (!field.isAnnotationPresent(JPA_TRANSIENT) && field.isValidPersistenceField(false, this)) {
                         getDescriptor().addPKClassId(field.getName(), getBoxedType(field.getType()));
                     }
                 }
