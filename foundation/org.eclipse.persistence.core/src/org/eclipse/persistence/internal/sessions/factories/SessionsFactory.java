@@ -783,7 +783,7 @@ public class SessionsFactory {
      */
     protected void processSessionConfig(SessionConfig sessionConfig, AbstractSession session) {
         // Name
-        session.setName(sessionConfig.getName());
+        session.setName(sessionConfig.getName().trim());
         
         // Session Event Manager
         processSessionEventManagerConfig(sessionConfig.getSessionEventManagerConfig(), session);
