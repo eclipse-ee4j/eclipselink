@@ -377,9 +377,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     private void setAttributeValue(Object object, UnmarshalRecord unmarshalRecord) {
-        object = xmlCompositeObjectMapping.convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-        // Set the child object on the parent
-        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping);        
         InverseReferenceMapping inverseReferenceMapping = xmlCompositeObjectMapping.getInverseReferenceMapping();
         
         //If isInverseReference then this mapping is an inlineMapping of an InverseReference
@@ -398,6 +395,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
+
+        object = xmlCompositeObjectMapping.convertDataValueToObjectValue(object, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+        // Set the child object on the parent
+        unmarshalRecord.setAttributeValue(object, xmlCompositeObjectMapping); 
+        
     }
 
     public void endSelfNodeValue(UnmarshalRecord unmarshalRecord, UnmarshalRecord selfRecord, Attributes attributes) {

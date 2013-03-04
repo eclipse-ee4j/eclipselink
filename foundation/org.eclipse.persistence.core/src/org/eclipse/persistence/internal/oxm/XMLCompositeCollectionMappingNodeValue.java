@@ -226,10 +226,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
 
                return;
         }
-        // convert the value - if necessary
         Object objectValue = unmarshalRecord.getChildRecord().getCurrentObject();
-        objectValue = xmlCompositeCollectionMapping.convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
-        unmarshalRecord.addAttributeValue(this, objectValue, collection);
 
         InverseReferenceMapping inverseReferenceMapping = xmlCompositeCollectionMapping.getInverseReferenceMapping();
         if(null != inverseReferenceMapping) {
@@ -247,6 +244,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 inverseReferenceMapping.getContainerPolicy().addInto(unmarshalRecord.getCurrentObject(), backpointerContainer, unmarshalRecord.getSession());
             }
         }
+        
+        // convert the value - if necessary
+        objectValue = xmlCompositeCollectionMapping.convertDataValueToObjectValue(objectValue, unmarshalRecord.getSession(), unmarshalRecord.getUnmarshaller());
+        unmarshalRecord.addAttributeValue(this, objectValue, collection);
+
         unmarshalRecord.setChildRecord(null);
 
     }
