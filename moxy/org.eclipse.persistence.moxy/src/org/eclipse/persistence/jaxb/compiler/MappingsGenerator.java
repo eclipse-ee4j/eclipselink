@@ -1314,9 +1314,13 @@ public class MappingsGenerator {
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
-        } else if (property.isNillable()){
-            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
-            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        } else {
+            NullPolicy nullPolicy = (NullPolicy) mapping.getNullPolicy();
+            nullPolicy.setSetPerformedForAbsentNode(false);
+            if(property.isNillable()) {
+                nullPolicy.setNullRepresentedByXsiNil(true);
+                nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+            }
         }
 
         if (referenceClassName == null){
