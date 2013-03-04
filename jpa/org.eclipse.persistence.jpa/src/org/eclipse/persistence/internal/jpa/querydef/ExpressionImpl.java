@@ -119,7 +119,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
     public Predicate in(Collection<?> values) {
         List list = new ArrayList();
         list.add(this);
-        return new CompoundExpressionImpl(this.metamodel, this.currentNode.in(values), list, "in");
+        return new InImpl(this.metamodel, this, values, list);
     }
     /**
      * Apply a predicate to test whether the expression is a member
@@ -131,7 +131,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         List list = new ArrayList();
         list.add(values);
         list.add(this);
-        return new CompoundExpressionImpl(metamodel, ((InternalSelection)values).getCurrentNode().equal(((InternalSelection)this).getCurrentNode()), list, "in");
+        return new InImpl(metamodel, (ExpressionImpl)values, this, list);
     }
     
     public Predicate isNotNull() {

@@ -465,7 +465,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     public Predicate not(Expression<Boolean> restriction){
         if (((InternalExpression)restriction).isPredicate()){
-            return ((PredicateImpl)restriction).not();
+            return ((Predicate)restriction).not();
         }
         org.eclipse.persistence.expressions.Expression parentNode = null;
         List<Expression<?>> compoundExpressions = null;
@@ -2088,7 +2088,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return in predicate
      */
     public <T> In<T> in(Expression<? extends T> expression){
-        return new InImpl(metamodel, expression, buildList(expression));
+        List list = new ArrayList();
+        list.add(expression);
+        return new InImpl(metamodel, (ExpressionImpl) expression, new ArrayList(), list);
     }
 
     // coalesce, nullif:
