@@ -74,6 +74,7 @@ public class JUnitTestCaseHelper {
         persistencePropertiesTestMap.put(PersistenceUnitProperties.JDBC_READ_CONNECTIONS_MAX, "4");
         persistencePropertiesTestMap.put(PersistenceUnitProperties.BATCH_WRITING_SIZE, "150");
         //persistencePropertiesTestMap.put(PersistenceUnitProperties.BATCH_WRITING, "ExaLogic");
+        //persistencePropertiesTestMap.put(PersistenceUnitProperties.PROFILER, "oracle.toplink.exalogic.tuning.TuningAgent");
     }
 
     /**

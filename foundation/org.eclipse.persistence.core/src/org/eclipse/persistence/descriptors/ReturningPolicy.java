@@ -764,7 +764,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
             return;
         }
         for (int i = modifyRow.size() - 1; i >= 0; i--) {
-            DatabaseField field = (DatabaseField)modifyRow.getFields().get(i);
+            DatabaseField field = modifyRow.getFields().get(i);
             if (fields.contains(field)) {
                 modifyRow.remove(field);
             }

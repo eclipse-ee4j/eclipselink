@@ -97,7 +97,7 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
      * INTERNAL:
      * Sets the accessor that this mechanism will use
      */
-    public void setAccessor(DatabaseAccessor accessor) {
+    public void setAccessor(DatabaseAccessor accessor, AbstractSession session) {
         databaseAccessor = accessor;
     }
 	

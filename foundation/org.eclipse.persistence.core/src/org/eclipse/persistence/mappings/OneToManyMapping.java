@@ -545,7 +545,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
         
         // all fields in modifyRow must have the same table
-        DatabaseTable table = ((DatabaseField)modifyRow.getFields().get(0)).getTable();
+        DatabaseTable table = (modifyRow.getFields().get(0)).getTable();
         
         // Build where clause expression.
         Expression whereClause = null;

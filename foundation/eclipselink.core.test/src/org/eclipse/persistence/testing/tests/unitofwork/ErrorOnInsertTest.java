@@ -97,7 +97,6 @@ public class ErrorOnInsertTest extends AutoVerifyTestCase {
             this.isInTransaction = accessor.isInTransaction();
             this.isConnected = accessor.isConnected();
             this.platform = accessor.getPlatform();
-            this.activeBatchWritingMechanism = accessor.getActiveBatchWritingMechanism();
             this.dynamicSQLMechanism = new DynamicSQLBatchWritingMechanism(this);
             this.parameterizedMechanism = new ParameterizedSQLBatchWritingMechanism(this);
             this.lobWriter = accessor.getLOBWriter();

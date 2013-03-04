@@ -38,6 +38,6 @@ public class BatchWritingTest extends TransactionalTestCase {
         }
         uow.commit();
         //a little hack to force the SQL to go to the Database
-        ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism().executeBatchedStatements(uow.getParent());
+        ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism(getAbstractSession()).executeBatchedStatements(uow.getParent());
     }
 }

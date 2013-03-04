@@ -880,7 +880,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * is for checking for pessimistic locking, and computing any joined
      * attributes declared on the descriptor.
      */
-    protected void checkPrePrepare(AbstractSession session) {
+    public void checkPrePrepare(AbstractSession session) {
         try {
             // This query is first prepared for global common state, this must be synced.
             if (!this.isPrePrepared) {// Avoid the monitor is already prePrepare, must check again for concurrency.      

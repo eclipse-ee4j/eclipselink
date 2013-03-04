@@ -1298,7 +1298,16 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
     public boolean isChangeTrackingSupported(Project project) {
         return ! isMutable();
     }
- 
+
+    /**
+     * INTERNAL:
+     * Return whether the specified object is instantiated.
+     */
+    @Override
+    public boolean isAttributeValueFromObjectInstantiated(Object object) {
+        return this.indirectionPolicy.objectIsInstantiated(object);
+    }
+    
     /**
      * PUBLIC:
      * Indirection means that a ValueHolder will be put in-between the attribute and the real object.

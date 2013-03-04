@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 public abstract class AbstractRecord extends CoreAbstractRecord implements Record, Cloneable, Serializable, Map {
 
     /** Use vector to store the fields/values for optimal performance.*/
-    protected Vector fields;
+    protected Vector<DatabaseField> fields;
 
     /** Use vector to store the fields/values for optimal performance.*/
     protected Vector values;
@@ -195,7 +195,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < this.size)) {
-            DatabaseField field = (DatabaseField)this.fields.get(index);
+            DatabaseField field = this.fields.get(index);
             if ((field == key) || field.equals(key)) {
                 return true;
             }
@@ -288,7 +288,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < this.size)) {
-            DatabaseField field = (DatabaseField)this.fields.get(index);
+            DatabaseField field = this.fields.get(index);
             if ((field == key) || field.equals(key)) {
                 return this.values.get(index);
             }
@@ -326,7 +326,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < this.size)) {
-            DatabaseField field = (DatabaseField)this.fields.get(index);
+            DatabaseField field = this.fields.get(index);
             if ((field == key) || field.equals(key)) {
                 return this.values.get(index);
             }
@@ -351,13 +351,13 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
         // Optimize check.
         int index = key.index;
         if ((index >= 0) && (index < getFields().size())) {
-            DatabaseField field = (DatabaseField)getFields().elementAt(index);
+            DatabaseField field = getFields().elementAt(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
         }
         for (index = 0; index < getFields().size(); index++) {
-            DatabaseField field = (DatabaseField)getFields().elementAt(index);
+            DatabaseField field = getFields().elementAt(index);
             if ((field == key) || field.equals(key)) {
                 return field;
             }
@@ -368,7 +368,7 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements Recor
     /**
      * INTERNAL:
      */
-    public Vector getFields() {
+    public Vector<DatabaseField> getFields() {
         return fields;
     }
 

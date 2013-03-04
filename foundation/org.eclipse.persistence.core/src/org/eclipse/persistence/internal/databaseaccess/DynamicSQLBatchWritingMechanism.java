@@ -173,7 +173,7 @@ public class DynamicSQLBatchWritingMechanism extends BatchWritingMechanism {
      */
     protected void switchMechanisms(AbstractSession session, DatabaseCall dbCall) {
         this.databaseAccessor.setActiveBatchWritingMechanismToParameterizedSQL();
-        this.databaseAccessor.getActiveBatchWritingMechanism().appendCall(session, dbCall);
+        this.databaseAccessor.getActiveBatchWritingMechanism(session).appendCall(session, dbCall);
     }
 
     /**

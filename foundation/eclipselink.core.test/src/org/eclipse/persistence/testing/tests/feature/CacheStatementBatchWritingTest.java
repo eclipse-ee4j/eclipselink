@@ -62,7 +62,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         }
         uow.commit();
         //a little hack to force the remaining SQL to go to the Database
-        ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism().executeBatchedStatements(uow.getParent());
+        ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism(getAbstractSession()).executeBatchedStatements(uow.getParent());
 
         //get statement
         PreparedStatement statement = null;
@@ -93,7 +93,7 @@ public class CacheStatementBatchWritingTest extends TransactionalTestCase {
         try {
             uow.commit();
             //a little hack to force the remaining SQL to go to the Database
-            ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism().executeBatchedStatements(uow.getParent());
+            ((DatabaseAccessor)uow.getParent().getAccessor()).getActiveBatchWritingMechanism(getAbstractSession()).executeBatchedStatements(uow.getParent());
         } catch (Exception ex) {
             return; // if the exception is thrown then TopLink is caching correctly
         } finally {

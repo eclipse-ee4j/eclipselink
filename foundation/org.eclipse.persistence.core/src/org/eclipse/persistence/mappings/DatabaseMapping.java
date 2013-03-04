@@ -753,6 +753,14 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
 
     /**
      * INTERNAL:
+     * Return whether the specified object is instantiated.
+     */
+    public boolean isAttributeValueFromObjectInstantiated(Object object) {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
      * Return the value of an attribute, unwrapping value holders if necessary.
      * If the value is null, build a new container.
      */

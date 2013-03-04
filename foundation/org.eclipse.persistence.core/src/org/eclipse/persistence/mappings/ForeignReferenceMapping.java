@@ -1027,6 +1027,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
     /**
      * INTERNAL:
+     * Return whether the specified object is instantiated.
+     */
+    @Override
+    public boolean isAttributeValueFromObjectInstantiated(Object object) {
+        return this.indirectionPolicy.objectIsInstantiated(getAttributeValueFromObject(object));
+    }
+    
+    /**
+     * INTERNAL:
      * Returns the join criteria stored in the mapping selection query. This criteria
      * is used to read reference objects across the tables from the database.
      */
@@ -1447,7 +1456,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (wasCacheUsed[0]){
             //must clone here as certain mappings require the clone object to clone the attribute.
             Integer refreshCascade = null;
-            if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+            if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && sourceQuery.shouldRefreshIdentityMapResult()) {
                 refreshCascade = sourceQuery.getCascadePolicy();
             }
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);

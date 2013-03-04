@@ -600,12 +600,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
             // we may want to refactor this some day
             if (dbCall.isBatchExecutionSupported()) {
                 // this will handle executing batched statements, or switching mechanisms if required
-                getActiveBatchWritingMechanism().appendCall(session, dbCall);
+                getActiveBatchWritingMechanism(session).appendCall(session, dbCall);
                 //bug 4241441: passing 1 back to avoid optimistic lock exceptions since there   
                 // is no way to know if it succeeded on the DB at this point.
                 return Integer.valueOf(1);
             } else {
-                getActiveBatchWritingMechanism().executeBatchedStatements(session);
+                getActiveBatchWritingMechanism(session).executeBatchedStatements(session);
             }
         }
 
@@ -1093,12 +1093,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * INTERNAL:
      * This method is used internally to return the active batch writing mechanism to batch the statement
      */
-    public BatchWritingMechanism getActiveBatchWritingMechanism() {
+    public BatchWritingMechanism getActiveBatchWritingMechanism(AbstractSession session) {
         if (this.activeBatchWritingMechanism == null) {
             // If the platform defines a custom mechanism, then use it.
             if (((DatabasePlatform)this.platform).getBatchWritingMechanism() != null) {
                 this.activeBatchWritingMechanism = ((DatabasePlatform)this.platform).getBatchWritingMechanism().clone();
-                this.activeBatchWritingMechanism.setAccessor(this);
+                this.activeBatchWritingMechanism.setAccessor(this, session);
             } else {
                 this.activeBatchWritingMechanism = getParameterizedMechanism();
             }
@@ -1683,7 +1683,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * Rollback a transaction on the database. This means toggling the auto-commit option.
      */
     public void rollbackTransaction(AbstractSession session) throws DatabaseException {
-        getActiveBatchWritingMechanism().clear();
+        getActiveBatchWritingMechanism(session).clear();
         super.rollbackTransaction(session);
     }
 
@@ -1829,7 +1829,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     public void writesCompleted(AbstractSession session) {
         if (isConnected && isInBatchWritingMode(session)) {
-            getActiveBatchWritingMechanism().executeBatchedStatements(session);
+            getActiveBatchWritingMechanism(session).executeBatchedStatements(session);
         }
     }
 }

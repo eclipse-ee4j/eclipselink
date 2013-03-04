@@ -233,7 +233,7 @@ public class TablePerClassPolicy extends InterfacePolicy implements Serializable
             AbstractRecord translationRow = query.getTranslationRow().clone();
             Vector allFields = new Vector();
             
-            for (DatabaseField field : (Vector<DatabaseField>) translationRow.getFields()) {
+            for (DatabaseField field : translationRow.getFields()) {
                 // Remove the table and let the descriptor figure it out.
                 allFields.add(new DatabaseField(field.getName()));
             }

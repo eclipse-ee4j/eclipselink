@@ -234,7 +234,7 @@ public abstract class EISInteraction extends DatasourceCall {
                 // ideally this would be a property on the row.
                 String recordName = elementName;
                 if (valuesRow.size() > 0) {
-                    recordName = ((DatabaseField)valuesRow.getFields().get(0)).getTableName();
+                    recordName = valuesRow.getFields().get(0).getTableName();
                 }
                 MappedRecord record = accessor.getRecordFactory().createMappedRecord(recordName);
                 for (Iterator keysIterator = valuesRow.getFields().iterator();
