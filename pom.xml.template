@@ -6,7 +6,7 @@
   <version>@version@</version>
   <packaging>jar</packaging>
   <name>@artifactName@</name>
-  <description>EclipseLink subversion revision @svn.revision@</description>
+  <description>EclipseLink build based upon Git transaction @git.hash@</description>
   <url>http://www.eclipse.org/eclipselink</url>
   <organization>
     <name>Eclipse.org - EclipseLink Project</name>
@@ -63,3 +63,6 @@
   </developers>
   @dependencies@
 </project>
+
+
+
