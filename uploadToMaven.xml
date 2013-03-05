@@ -168,7 +168,7 @@
             <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
         </condition>
 
-        <property name="target.repository"     value="eclipselink.repository">
+        <property name="target.repository"     value="eclipselink.repository"/>
 
         <!-- Validate Publish: No reason to continue if run setup not correct. -->
         <fail message="Requesting Milestone or Release build but git.hash not specified!" unless="git.hash.ok"/>

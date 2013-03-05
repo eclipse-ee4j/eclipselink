@@ -299,7 +299,7 @@
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        < antcall target="upload-artifact">
+        <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
