@@ -21,6 +21,7 @@ import javax.ws.rs.core.Application;
 
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.DatabaseExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.EntityExistsExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.EntityNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IOExceptionMapper;
@@ -75,6 +76,7 @@ public class JPARSApplication extends Application {
         // Exception Mapping
         c.add(ClassNotFoundExceptionMapper.class);
         c.add(ConversionExceptionMapper.class);
+        c.add(DatabaseExceptionMapper.class);
         c.add(EntityExistsExceptionMapper.class);
         c.add(EntityNotFoundExceptionMapper.class);
         c.add(IllegalAccessExceptionMapper.class);
