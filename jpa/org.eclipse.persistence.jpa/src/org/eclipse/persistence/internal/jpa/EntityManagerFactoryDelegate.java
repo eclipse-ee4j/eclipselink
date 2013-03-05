@@ -736,7 +736,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
             ((ObjectLevelReadQuery)unwrapped).setLockModeType(((QueryImpl)query).lockMode.name(), session);
         }
         if (unwrapped.isReadQuery()){
-            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResults()));
+            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResultsInternal()));
         }
         this.getServerSession().addQuery(name, unwrapped, true);
     }

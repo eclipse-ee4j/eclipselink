@@ -833,6 +833,14 @@ public class QueryImpl {
     }
 
     /**
+     * @see javax.persistence.Query#getMaxResults()
+     * @since Java Persistence API 2.0
+     */
+    public int getMaxResultsInternal() {
+        return this.maxResults;
+    }
+
+    /**
      * Set the maximum number of results to retrieve.
      * 
      * @param maxResult

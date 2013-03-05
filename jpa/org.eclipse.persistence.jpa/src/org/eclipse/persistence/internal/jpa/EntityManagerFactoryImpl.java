@@ -628,7 +628,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
             ((ObjectLevelReadQuery)unwrapped).setLockModeType(((QueryImpl)query).lockMode.name(), getServerSession());
         }
         if (unwrapped.isReadQuery()){
-            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResults()));
+            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResultsInternal()));
         }
         this.getServerSession().addQuery(name, unwrapped, true);
     }
