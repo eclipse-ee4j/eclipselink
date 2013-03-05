@@ -889,8 +889,10 @@ public class EmployeePopulator {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_Sys_Cursor");
 
+        proc.addArgument("f_name_v", String.class);
         proc.addOutputArgument("p_recordset", "SYS_REFCURSOR");
-        proc.addStatement("OPEN p_recordset FOR SELECT EMP_ID FROM JPA21_EMPLOYEE ORDER BY EMP_ID");
+        
+        proc.addStatement("OPEN p_recordset FOR SELECT EMP_ID, F_NAME FROM JPA21_EMPLOYEE WHERE F_NAME = f_name_v ORDER BY EMP_ID");
         
         return proc;
     }

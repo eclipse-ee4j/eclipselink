@@ -57,6 +57,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -403,21 +404,27 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 Integer parameterType = getCall().getParameterTypes().get(index);
                 String argumentName = getCall().getProcedureArgumentNames().get(index);
                     
-                DatabaseField field;
+                DatabaseField field = null;
                     
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
                 } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
                     field = (DatabaseField) parameter;
-                } else {
-                    continue; // not a parameter we care about at this point.
+                } else if (parameterType == getCall().LITERAL) {
+                    if (parameter instanceof OutputParameterForCallableStatement) {
+                        // Case: Oracle OUT_CURSOR after execution.
+                        field = ((OutputParameterForCallableStatement) parameter).getOutputField();
+                    }
                 }
-                        
-                // If the argument name is null then it is a positional parameter.
-                if (argumentName == null) {
-                    parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), Integer.parseInt(field.getName())));
-                } else {
-                    parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), field.getName()));
+                    
+                // If field is not null (one we care about) then add it, otherwise continue.
+                if (field != null) {
+                    // If the argument name is null then it is a positional parameter.
+                    if (argumentName == null) {
+                        parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), Integer.parseInt(field.getName())));
+                    } else {
+                        parameters.put(field.getName(), new ParameterExpressionImpl(null, field.getType(), field.getName()));
+                    }
                 }
                         
                 ++index;
@@ -756,6 +763,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
             
             call.useNamedCursorOutputAsResultSet(parameterName);
+            // Store the cursor ordinal position.
+            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
             
             // There are multiple cursor output parameters, then do not use the 
             // cursor as the result set. This will be set to true in the calls

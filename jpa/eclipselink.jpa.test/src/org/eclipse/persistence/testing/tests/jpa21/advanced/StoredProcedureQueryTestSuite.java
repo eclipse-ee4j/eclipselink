@@ -26,6 +26,7 @@ import junit.framework.TestSuite;
 import junit.framework.Test;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
@@ -56,6 +57,11 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         setPuName("MulitPU-1");
     }
     
+    @Override
+    public String getPersistenceUnitName() {
+       return "MulitPU-1";
+    }
+    
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("StoredProcedureQueryTestSuite");
@@ -72,7 +78,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor1"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
 
         // Add the named Annotation query tests.
         suite.addTest(NamedStoredProcedureQueryTestSuite.suite());
@@ -946,21 +953,28 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     }
     
     /**
-     * Tests a StoredProcedureQuery using a system cursor. 
+     * Tests a StoredProcedureQuery using a system cursor. Also tests 
+     * getParameters call BEFORE query execution. 
      */
-    public void testStoredProcedureQuerySysCursor() {
+    public void testStoredProcedureQuerySysCursor1() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
             
             try {
                 StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor", Employee.class);
+                query.registerStoredProcedureParameter("f_name_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("p_recordset", void.class, ParameterMode.REF_CURSOR);
                 
+                // Test the getParameters call BEFORE query execution.
+                assertTrue("The number of parameters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                
+                query.setParameter("f_name_v", "Fred");
+                
                 boolean execute = query.execute();
+                
                 assertFalse("Execute should have returned false.", execute);
                 
-                // TODO: investigate .. the name parameter "p_recordset" can't be looked up here, must use ordinal, why?
-                List<Employee> employees = (List<Employee>) query.getOutputParameterValue(1);
+                List<Employee> employees = (List<Employee>) query.getOutputParameterValue("p_recordset");
                 assertFalse("No employees were returned", employees.isEmpty());                
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
@@ -973,8 +987,40 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    @Override
-    public String getPersistenceUnitName() {
-       return "MulitPU-1";
+    
+    /**
+     * Tests a StoredProcedureQuery using a system cursor. Also tests 
+     * getParameters call AFTER query execution.
+     */
+    public void testStoredProcedureQuerySysCursor2() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor", Employee.class);
+                query.registerStoredProcedureParameter("f_name_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("p_recordset", void.class, ParameterMode.REF_CURSOR);
+                
+                query.setParameter("f_name_v", "Fred");
+                
+                boolean execute = query.execute();
+                
+                assertFalse("Execute should have returned false.", execute);
+                
+                // Test the getParameters call AFTER query execution.
+                assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                
+                List<Employee> employees = (List<Employee>) query.getOutputParameterValue("p_recordset");
+                assertFalse("No employees were returned", employees.isEmpty());                
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
     }
 }
