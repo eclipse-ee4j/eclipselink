@@ -1,0 +1,12 @@
+{"charHolder":{
+   "testIntDefault":12,
+    "testIntString":"11",
+    "testIntWithunsignedShort":13,
+    "testCharDefault":"a",
+    "testCharWithString":"d",
+    "testCharWithunsignedShort":101,
+    "testCharWithInteger":99,
+    "testCharWithDecimal":98,
+    "testOtherChar":53,
+    "testCharZero":48
+ }}

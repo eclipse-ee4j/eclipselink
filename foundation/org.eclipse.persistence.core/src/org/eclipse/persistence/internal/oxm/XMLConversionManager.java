@@ -256,6 +256,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertObjectToXMLGregorianCalendar(sourceObject, schemaTypeQName);
         } else if ((javaClass == CoreClassConstants.DURATION)) {
             return convertObjectToDuration(sourceObject);
+        } else if ((javaClass == CoreClassConstants.CHAR)) {
+            return convertObjectToChar(sourceObject, schemaTypeQName);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -316,6 +318,28 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertStringToDuration((String) sourceObject);
         }
         throw ConversionException.couldNotBeConverted(sourceObject, CoreClassConstants.DURATION);
+    }
+
+    /**
+     * Build a valid instance of Character from the provided sourceObject.
+     *
+     * @param sourceObject
+     */
+    protected Character convertObjectToChar(Object sourceObject, QName schemaTypeQName) throws ConversionException {    	
+        
+        if (sourceObject == null || sourceObject.equals(Constants.EMPTY_STRING)) {
+            return (char) 0;            
+        }
+        
+        if(sourceObject instanceof String && isNumericQName(schemaTypeQName)){
+        	int integer = Integer.parseInt((String)sourceObject);
+        	
+        	return Character.valueOf((char)integer);
+        	
+        }
+        
+        return super.convertObjectToChar(sourceObject);
+    	
     }
 
     /**
@@ -443,8 +467,16 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof Calendar) {
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
-        if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return Constants.EMPTY_STRING;
+        if (sourceObject instanceof Character){
+        	
+        	if(isNumericQName(schemaTypeQName)){
+        		return Integer.toString((int) (Character)sourceObject);        	
+        	} else {        	
+                    if(sourceObject.equals((char) 0)) {        
+                        return Constants.EMPTY_STRING;
+                    }
+                   super.convertObjectToString(sourceObject);
+        	}
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -2153,5 +2185,26 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return character == 0x20;
         }
         return false;
+    }
+    
+    private boolean isNumericQName(QName schemaTypeQName){
+    	if(schemaTypeQName == null){
+    		return false;
+    	}
+    	return(schemaTypeQName.equals(Constants.BYTE_QNAME ))
+  			||(schemaTypeQName.equals(Constants.DECIMAL_QNAME ))
+  			||(schemaTypeQName.equals(Constants.INT_QNAME ))
+  			||(schemaTypeQName.equals(Constants.INTEGER_QNAME ))
+  			||(schemaTypeQName.equals(Constants.FLOAT_QNAME ))
+  			||(schemaTypeQName.equals(Constants.LONG_QNAME ))
+            ||(schemaTypeQName.equals(Constants.NEGATIVE_INTEGER_QNAME))        			
+  			||(schemaTypeQName.equals(Constants.NON_NEGATIVE_INTEGER_QNAME))
+  			||(schemaTypeQName.equals(Constants.NON_POSITIVE_INTEGER_QNAME))
+  			||(schemaTypeQName.equals(Constants.POSITIVE_INTEGER_QNAME))	        			
+  			||(schemaTypeQName.equals(Constants.SHORT_QNAME ))
+  			||(schemaTypeQName.equals(Constants.UNSIGNED_SHORT_QNAME ))
+  			||(schemaTypeQName.equals(Constants.UNSIGNED_LONG_QNAME ))
+  			||(schemaTypeQName.equals(Constants.UNSIGNED_INT_QNAME ))
+  			||(schemaTypeQName.equals(Constants.UNSIGNED_BYTE_QNAME ));  			
     }
 }

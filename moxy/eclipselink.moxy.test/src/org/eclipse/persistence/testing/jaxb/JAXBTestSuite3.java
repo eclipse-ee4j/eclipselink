@@ -91,7 +91,8 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateEmptyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.NonNegativeIntegerSchemaTypeTestCases.class);
-                
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.CharTestCases.class);
+        
         suite.addTestSuite(JAXBContextByClassArrayWithIndexTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);

@@ -1,0 +1,12 @@
+<ns0:charHolder xmlns:ns0="myns">
+   <testIntDefault>12</testIntDefault>
+   <testIntString>11</testIntString>
+   <testIntWithunsignedShort>13</testIntWithunsignedShort>
+   <testCharDefault>a</testCharDefault>
+   <testCharWithString>d</testCharWithString>
+   <testCharWithunsignedShort>101</testCharWithunsignedShort>
+   <testCharWithInteger>99</testCharWithInteger>
+   <testCharWithDecimal>98</testCharWithDecimal>
+   <testOtherChar>53</testOtherChar>
+   <testCharZero>48</testCharZero>
+</ns0:charHolder>
