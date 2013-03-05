@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myns" targetNamespace="myns">
+   <xsd:complexType name="charHolder">
+      <xsd:sequence>
+         <xsd:element name="testIntDefault" type="xsd:int"/>
+         <xsd:element name="testIntString" type="xsd:string"/>
+         <xsd:element name="testIntWithunsignedShort" type="xsd:unsignedShort"/>
+         <xsd:element name="testCharDefault" type="xsd:string"/>
+         <xsd:element name="testCharWithString" type="xsd:string"/>
+         <xsd:element name="testCharWithunsignedShort" type="xsd:unsignedShort"/>
+         <xsd:element name="testCharWithInteger" type="xsd:integer"/>
+         <xsd:element name="testCharWithDecimal" type="xsd:decimal"/>
+         <xsd:element name="testOtherChar" type="xsd:float"/>
+         <xsd:element name="testCharZero" type="xsd:byte"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="charHolder" type="ns0:charHolder"/>
+</xsd:schema>

@@ -257,6 +257,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return convertObjectToXMLGregorianCalendar(sourceObject, schemaTypeQName);
         } else if ((javaClass == ClassConstants.DURATION)) {
             return convertObjectToDuration(sourceObject);
+        } else if ((javaClass == ClassConstants.CHAR)) {
+            return convertObjectToChar(sourceObject, schemaTypeQName);
         } else {
             try {
                 return super.convertObject(sourceObject, javaClass);
@@ -324,6 +326,27 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      *
      * @param sourceObject
      */
+    protected Character convertObjectToChar(Object sourceObject, QName schemaTypeQName) throws ConversionException {    	
+        
+        if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
+            return (char) 0;            
+        }
+        
+        if(sourceObject instanceof String && isNumericQName(schemaTypeQName)){
+        	int integer = Integer.parseInt((String)sourceObject);        	
+        	return Character.valueOf((char)integer);
+        	
+        }
+        
+        return super.convertObjectToChar(sourceObject);
+    	
+    }
+
+    /**
+     * Build a valid instance of Character from the provided sourceObject.
+     *
+     * @param sourceObject
+     */
     protected Character convertObjectToChar(Object sourceObject) throws ConversionException {
         if (sourceObject == null || sourceObject.equals(XMLConstants.EMPTY_STRING)) {
             return (char) 0;
@@ -331,7 +354,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
         return super.convertObjectToChar(sourceObject);
     }
-
+    
     /**
      * Convert a String to a URI.
      *
@@ -444,8 +467,15 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         if (sourceObject instanceof Calendar) {
             return stringFromCalendar((Calendar) sourceObject, schemaTypeQName);
         }
-        if (sourceObject instanceof Character && sourceObject.equals((char) 0)) {
-            return XMLConstants.EMPTY_STRING;
+        if (sourceObject instanceof Character){        	
+        	if(isNumericQName(schemaTypeQName)){
+        		return Integer.toString((int) (Character)sourceObject);        	
+        	} else {      
+        		if(sourceObject.equals((char) 0)) {        
+                    return XMLConstants.EMPTY_STRING;
+            	}
+        		super.convertObjectToString(sourceObject);
+        	}
         }
         if (sourceObject instanceof QName) {
             return stringFromQName((QName) sourceObject);
@@ -2154,5 +2184,26 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             return character == 0x20;
         }
         return false;
+    }
+    
+    private boolean isNumericQName(QName schemaTypeQName){
+    	if(schemaTypeQName == null){
+    		return false;
+    	}
+    	return(schemaTypeQName.equals(XMLConstants.BYTE_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.DECIMAL_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.INT_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.INTEGER_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.FLOAT_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.LONG_QNAME ))
+                        ||(schemaTypeQName.equals(XMLConstants.NEGATIVE_INTEGER_QNAME))        			
+  			||(schemaTypeQName.equals(XMLConstants.NON_NEGATIVE_INTEGER_QNAME))
+  			||(schemaTypeQName.equals(XMLConstants.NON_POSITIVE_INTEGER_QNAME))
+  			||(schemaTypeQName.equals(XMLConstants.POSITIVE_INTEGER_QNAME))	        			
+  			||(schemaTypeQName.equals(XMLConstants.SHORT_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.UNSIGNED_SHORT_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.UNSIGNED_LONG_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.UNSIGNED_INT_QNAME ))
+  			||(schemaTypeQName.equals(XMLConstants.UNSIGNED_BYTE_QNAME ));  			
     }
 }
