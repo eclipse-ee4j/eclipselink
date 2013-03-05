@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
@@ -649,11 +650,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         throw new PersistenceException(ExceptionLocalization.buildMessage("unable_to_unwrap_jpa", new String[]{EntityManagerFactory.class.getName(),cls.getName()}));
     }
 
-
-    // TODO: JPA 2.1 API
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        this.getServerSession().getAttributeGroups().put(graphName, ((EntityGraphImpl)entityGraph).getAttributeGroup());
-        this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(((EntityGraphImpl)entityGraph).getAttributeGroup());
+        AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
+        group.setName(graphName);
+        this.getServerSession().getAttributeGroups().put(graphName, group);
+        this.getServerSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
     }
 
 }

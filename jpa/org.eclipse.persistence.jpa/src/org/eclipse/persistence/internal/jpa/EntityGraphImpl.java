@@ -274,7 +274,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
             if (this.descriptor != null) {
                 localDescriptor = this.descriptor.getMappingForAttributeName(item.getAttributeName()).getReferenceDescriptor();
             }
-            if (item.getGroups() != null) {
+            if (item.getGroups() != null && ! item.getGroups().isEmpty()) {
                 Map<Class, AttributeNodeImpl> subGraphs = new HashMap<Class, AttributeNodeImpl>();
                 complex = true;
                 for (AttributeGroup subGroup : item.getGroups().values()) {
@@ -296,7 +296,7 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 }
                 this.attributeNodes.put(item.getAttributeName(), subGraphs);
             }
-            if (item.getKeyGroups() != null) {
+            if (item.getKeyGroups() != null && ! item.getKeyGroups().isEmpty()) {
                 Map<Class, AttributeNodeImpl> subGraphs = new HashMap<Class, AttributeNodeImpl>();
                 complex = true;
                 for (AttributeGroup subGroup : item.getKeyGroups().values()) {
@@ -318,7 +318,9 @@ public class EntityGraphImpl<X> extends AttributeNodeImpl<X> implements EntityGr
                 this.attributeNodes.put(item.getAttributeName(), subGraphs);
             }
             if (!complex) {
-                this.addAttributeNodeImpl(new AttributeNodeImpl(item.getAttributeName()));
+                Map map = new HashMap();
+                map.put(ClassConstants.Object_Class, new AttributeNodeImpl(item.getAttributeName()));
+                this.attributeNodes.put(item.getAttributeName(), map);
             }
         }
 

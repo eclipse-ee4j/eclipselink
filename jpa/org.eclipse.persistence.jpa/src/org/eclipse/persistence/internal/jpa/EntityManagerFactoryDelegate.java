@@ -45,6 +45,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
@@ -758,8 +759,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> entityGraph) {
-        this.getAbstractSession().getAttributeGroups().put(graphName, ((EntityGraphImpl)entityGraph).getAttributeGroup());
-        this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(((EntityGraphImpl)entityGraph).getAttributeGroup());
+        AttributeGroup group = ((EntityGraphImpl)entityGraph).getAttributeGroup().clone();
+        group.setName(graphName);
+        this.getAbstractSession().getAttributeGroups().put(graphName, group);
+        this.getAbstractSession().getDescriptor(((EntityGraphImpl)entityGraph).getClassType()).addAttributeGroup(group);
     }
 
 }
