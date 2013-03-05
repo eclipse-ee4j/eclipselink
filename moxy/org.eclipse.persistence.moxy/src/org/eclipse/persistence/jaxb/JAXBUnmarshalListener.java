@@ -19,10 +19,11 @@ import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
-import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
+import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 
 /**
  * INTERNAL:
@@ -78,6 +79,7 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
                         PrivilegedAccessHelper.invokeMethod(callback.getBeforeUnmarshalCallback(), target, new Object[]{unmarshaller, parent});
                     }
                 } catch(Exception ex) {
+                    throw XMLMarshalException.unmarshalException(ex);
                 }
             }
         }
@@ -105,7 +107,9 @@ public class JAXBUnmarshalListener implements XMLUnmarshalListener {
                     }else{
                         PrivilegedAccessHelper.invokeMethod(callback.getAfterUnmarshalCallback(), target, new Object[]{unmarshaller, parent});
                     }
-                } catch(Exception ex) {}
+                } catch(Exception ex) {
+                    throw XMLMarshalException.unmarshalException(ex);
+                }
             }
         }
         if(listener != null) {

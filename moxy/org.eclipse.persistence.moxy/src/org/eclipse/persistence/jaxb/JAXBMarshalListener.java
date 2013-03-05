@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.xml.bind.Marshaller;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
@@ -78,7 +79,9 @@ public class JAXBMarshalListener implements XMLMarshalListener {
                     }else{
                         PrivilegedAccessHelper.invokeMethod(callback.getBeforeMarshalCallback(), obj, new Object[]{marshaller});
                     }
-                } catch(Exception ex) {}
+                } catch(Exception ex) {
+                    throw XMLMarshalException.marshalException(ex);
+                }
             }
         }
         if (listener != null) {
@@ -108,7 +111,9 @@ public class JAXBMarshalListener implements XMLMarshalListener {
                     }else{
                         PrivilegedAccessHelper.invokeMethod(callback.getAfterMarshalCallback(), obj, new Object[]{marshaller});
                     }
-                } catch(Exception ex) {}
+                } catch(Exception ex) {
+                    throw XMLMarshalException.marshalException(ex);
+                }
             }
         }
         if (listener != null) {

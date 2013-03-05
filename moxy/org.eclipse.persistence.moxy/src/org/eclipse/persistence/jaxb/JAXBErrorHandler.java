@@ -17,6 +17,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.helpers.ValidationEventImpl;
 import javax.xml.bind.helpers.ValidationEventLocatorImpl;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
@@ -74,8 +75,15 @@ public class JAXBErrorHandler implements ErrorHandler {
         if(exception instanceof MarshalSAXParseException) {
             eventLocator.setObject(((MarshalSAXParseException) exception).getObject());
         }
-        ValidationEvent event = new ValidationEventImpl(severity, exception.getLocalizedMessage(), eventLocator, exception);
+        Throwable linkedException = exception.getCause();
+        if(linkedException instanceof EclipseLinkException) {
+            linkedException = exception.getCause();
+        }
+        ValidationEvent event = new ValidationEventImpl(severity, exception.getLocalizedMessage(), eventLocator, linkedException);
         if (!eventHandler.handleEvent(event)) {
+            if(linkedException instanceof EclipseLinkException) {
+                throw (EclipseLinkException) linkedException;
+            }
             throw exception;
         }
     }
