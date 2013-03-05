@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,7 @@ import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 
@@ -114,7 +115,12 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
             changes.setHasCmpPolicyForcedUpdate(true);
         }
         if (!changes.hasForcedChangesFromCascadeLocking() && unitOfWork.hasOptimisticReadLockObjects()) {
-            changes.setShouldModifyVersionField((Boolean)unitOfWork.getOptimisticReadLockObjects().get(clone));
+            Boolean modifyVersionField = (Boolean)unitOfWork.getOptimisticReadLockObjects().get(clone);
+            if (unitOfWork instanceof RepeatableWriteUnitOfWork && ((RepeatableWriteUnitOfWork) unitOfWork).getCumulativeUOWChangeSet() != null) {
+                // modify the version field if the UOW cumulative change set does not contain a changeset for this clone 
+                modifyVersionField = ((RepeatableWriteUnitOfWork)unitOfWork).getCumulativeUOWChangeSet().getObjectChangeSetForClone(clone) == null;
+            }            
+            changes.setShouldModifyVersionField(modifyVersionField);
         }
         if (changes.hasChanges() || changes.hasForcedChanges()) {
             return changes;
