@@ -315,52 +315,61 @@ public class DDLTestSuite extends JUnitTestCase {
     }
     
     public void testDatabaseSchemaGenerationCreateOnly() {
-        Map properties = new HashMap();
-        // Get database properties will pick up test.properties database connection details.
-        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
-        properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-create-only-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-create-only-create.jdbc");
-        
-        try {
-            Persistence.generateSchema("ddl-schema-template", properties);
-        } catch (Exception exception) {
-            fail("Exception caught when generating schema: " + exception.getMessage());
+        //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
+        if (!isOnServer()){
+            Map properties = new HashMap();
+            // Get database properties will pick up test.properties database connection details.
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
+            properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-create-only-session");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_ACTION);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-create-only-create.jdbc");
+            
+            try {
+                Persistence.generateSchema("ddl-schema-template", properties);
+            } catch (Exception exception) {
+                fail("Exception caught when generating schema: " + exception.getMessage());
+            }
         }
     }
     
     public void testDatabaseSchemaGenerationDropOnly() {
-        Map properties = new HashMap();
-        // Get database properties will pick up test.properties database connection details.
-        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
-        properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-only-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-only-drop.jdbc");
-        
-        try {
-            Persistence.generateSchema("ddl-schema-template", properties);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            fail("Exception caught when generating schema: " + exception.getMessage());
+        //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
+        if (!isOnServer()){
+            Map properties = new HashMap();
+            // Get database properties will pick up test.properties database connection details.
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
+            properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-only-session");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_ACTION);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-only-drop.jdbc");
+            
+            try {
+                Persistence.generateSchema("ddl-schema-template", properties);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                fail("Exception caught when generating schema: " + exception.getMessage());
+            }
         }
     }
     
     public void testDatabaseSchemaGenerationDropAndCreate() {
-        Map properties = new HashMap();
-        // Get database properties will pick up test.properties database connection details.
-        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
-        properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-and-create-session");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-and-create-drop.jdbc");
-        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-drop-and-create-create.jdbc");
-        
-        try {
-            Persistence.generateSchema("ddl-schema-template", properties);
-        } catch (Exception exception) {
-            fail("Exception caught when generating schema: " + exception.getMessage());
+        //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
+        if (!isOnServer()){
+            Map properties = new HashMap();
+            // Get database properties will pick up test.properties database connection details.
+            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
+            properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-drop-and-create-session");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS, "true");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "jpa21-ddl-schema-drop-and-create-drop.jdbc");
+            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "jpa21-ddl-schema-drop-and-create-create.jdbc");
+            
+            try {
+                Persistence.generateSchema("ddl-schema-template", properties);
+            } catch (Exception exception) {
+                fail("Exception caught when generating schema: " + exception.getMessage());
+            }
         }
     }
 }
