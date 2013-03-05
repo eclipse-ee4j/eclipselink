@@ -125,7 +125,6 @@ public abstract class XMLMarshaller<
 
     protected XMLAttachmentMarshaller attachmentMarshaller;
     private String attributePrefix;
-    private ErrorHandler errorHandler;
     private boolean fragment;
     private boolean includeRoot = true;
     private boolean marshalEmptyCollections = true;
@@ -155,7 +154,6 @@ public abstract class XMLMarshaller<
         super(xmlMarshaller);
         attachmentMarshaller = xmlMarshaller.getAttachmentMarshaller();
         attributePrefix = xmlMarshaller.getAttributePrefix();
-        errorHandler = xmlMarshaller.getErrorHandler();
         fragment = xmlMarshaller.isFragment();
         includeRoot = xmlMarshaller.isIncludeRoot();
         marshalEmptyCollections = xmlMarshaller.isMarshalEmptyCollections();
@@ -336,10 +334,6 @@ public abstract class XMLMarshaller<
 
           return descriptor;
       }
-
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
-    }
 
      /**
      * Get the MediaType for this xmlMarshaller.
@@ -1184,10 +1178,6 @@ public abstract class XMLMarshaller<
         if(null != transformer) {
             transformer.setEncoding(newEncoding);
         }
-    }
-
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
     }
 
     /**

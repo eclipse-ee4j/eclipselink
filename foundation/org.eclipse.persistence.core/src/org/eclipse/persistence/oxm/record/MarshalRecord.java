@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
@@ -41,8 +42,11 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
+import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
 
 /**
  * <p>A MarshalRecord encapsulates the marshal target.</p>
@@ -499,7 +503,21 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         if(null != marshaller) {
             XMLMarshalListener marshalListener = marshaller.getMarshalListener();
             if(null != marshalListener) {
-                marshalListener.beforeMarshal(child);
+                try {
+                    marshalListener.beforeMarshal(child);
+                } catch(EclipseLinkException e) {
+                    ErrorHandler errorHandler = marshaller.getErrorHandler();
+                    if(null == errorHandler) {
+                        throw e;
+                    } else {
+                        try {
+                            MarshalSAXParseException saxParseException = new MarshalSAXParseException(null, null, null, -1, -1, e, child);
+                            errorHandler.error(saxParseException);
+                        } catch(SAXException saxParseException) {
+                            throw e;
+                        }
+                    }
+                }
             }
         }
         setOwningObject(child);
@@ -509,7 +527,21 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         if(null != marshaller) {
             XMLMarshalListener marshalListener = marshaller.getMarshalListener();
             if(null != marshalListener) {
-                marshalListener.afterMarshal(child);
+                try {
+                    marshalListener.afterMarshal(child);
+                } catch(EclipseLinkException e) {
+                    ErrorHandler errorHandler = marshaller.getErrorHandler();
+                    if(null == errorHandler) {
+                        throw e;
+                    } else {
+                        try {
+                            MarshalSAXParseException saxParseException = new MarshalSAXParseException(null, null, null, -1, -1, e, child);
+                            errorHandler.error(saxParseException);
+                        } catch(SAXException saxParseException) {
+                            throw e;
+                        }
+                    }
+                }
             }
         }
         setOwningObject(parent);

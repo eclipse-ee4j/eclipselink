@@ -70,6 +70,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshalSchemaValidationTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.UnmarshallerNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.NoSchemaRefTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlmarshaller.HandleListenerExceptionsTestCases.class);
         suite.addTestSuite(XMLStreamWriterDefaultNamespaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.qname.QNameTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.qname.defaultnamespace.QNameTestCases.class);

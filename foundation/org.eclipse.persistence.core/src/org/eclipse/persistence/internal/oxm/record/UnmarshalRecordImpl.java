@@ -569,7 +569,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             if (null == xmlReader.getErrorHandler()) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                SAXParseException saxParseException = new SAXParseException(null, getDocumentLocator(), e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
@@ -662,7 +662,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             if (null == xmlReader.getErrorHandler()) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                SAXParseException saxParseException = new SAXParseException(null, getDocumentLocator(), e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
@@ -1049,7 +1049,8 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                Locator locator = xmlReader.getLocator();
+                SAXParseException saxParseException = new SAXParseException(null, getDocumentLocator(), e);
                 xmlReader.getErrorHandler().warning(saxParseException);
             }
         }
@@ -1130,7 +1131,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             if (null == xmlReader.getErrorHandler()) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                SAXParseException saxParseException = new SAXParseException(null, getDocumentLocator(), e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
