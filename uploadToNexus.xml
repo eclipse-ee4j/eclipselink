@@ -30,8 +30,8 @@
 *     mmeswani - initial API and implementation (checked in by tware)
 *     egwin    - updated variables as they have changed in the rest of the system
 *                updated svnversion to not break build, and default if exec fails
-*     egwin    - updated for publishing to Maven Central, add ability to override
-*                destination URL (to pub elsewhere override ${maven.repo.url})
+*     egwin    - updated for publishing to Maven Central, split nexus handling to
+*                new script
 *     egwin    - converted svn.revision to git.hash (was missed in original
 *                migration to Git)
 #******************************************************************************/-->
@@ -62,12 +62,9 @@
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
 
-    <!-- "maven dir" defined for later use ensuring only single upload occurs -->
-    <property name="maven.repo.dir" value="${eclipselink.root.download.dir}/maven.repo"/>
-    <!-- Setup a generic URL variable that can be overridden for publishing to other locations -->
-    <property name="maven.repo.url" value="file:///${maven.repo.dir}"/>
     <!-- The default repository where maven artifacts will be uploaded -->
-    <artifact:remoteRepository id="eclipselink.repository" url="${maven.repo.url}" />
+    <artifact:remoteRepository id="sonatype-nexus-staging"   url="https://oss.sonatype.org/service/local/staging/deploy/maven2" />
+    <artifact:remoteRepository id="sonatype-nexus-snapshots" url="https://oss.sonatype.org/content/repositories/snapshots" />
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -168,7 +165,35 @@
             <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
         </condition>
 
-        <property name="target.repository"     value="eclipselink.repository">
+        <!--  If "repository" specified, it means that the Push to Maven has a specific (nexus) target -->
+        <condition property="target.repository"     value="sonatype-nexus-staging">
+            <and>
+                <isset property="repository"/>
+                <contains string="${repository}" substring="sonatype"/>
+                <contains string="${repository}" substring="staging"/>
+            </and>
+        </condition>
+        <condition property="target.repository"     value="sonatype-nexus-snapshots">
+            <and>
+                <isset property="repository"/>
+                <contains string="${repository}" substring="sonatype"/>
+                <contains string="${repository}" substring="snapshot"/>
+            </and>
+        </condition>
+        <!--  If "repository" not specified, set default according to build.type -->
+        <condition property="target.repository"     value="sonatype-nexus-snapshots">
+            <and>
+                <not> <isset property="repository"/> </not>
+                <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+            </and>
+        </condition>
+        <condition property="target.repository"     value="sonatype-nexus-staging">
+            <!-- relies on Ant not overwriting already set variables -->
+            <not> <isset property="repository"/> </not>
+        </condition>
+        <!-- prevent 'fall-through' -->
+        <fail message="'repository' set to unknown value. 'target.repository' not set. Aborting..." unless="target.repository"/>
+        <echo message="Target repository: ${target.repository}"/>
 
         <!-- Validate Publish: No reason to continue if run setup not correct. -->
         <fail message="Requesting Milestone or Release build but git.hash not specified!" unless="git.hash.ok"/>
@@ -335,11 +360,16 @@
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
-    <target name="upload-static-built-jars" depends="discover-static-built-info">
+    <!-- Nexus typicaly is configured to disallow uploads of already published versions (non-snapshot)   -->
+    <!--   Aditionally Sonatype is configured to disallow publishing of non-snapshot versions to the     -->
+    <!--   snapshot server (400 error). Therefore Moving the JPA "snapshot" upload to the regular upload -->
+    <!--   section, and setting this target to conditionally only run if not a build.type of SNAPSHOT,   -->
+    <!--   and fix it so these uploads won't cause a build failure on Error (already uploaded)           -->
+    <target name="upload-static-built-jars" if="sign" depends="discover-static-built-info">
+        <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        <!-- antcall target="upload-release-artifact">
-            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${jpaapi.prefix}/${jpaapi.mvn.version}"/>
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -348,8 +378,9 @@
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
         </antcall -->
-        <antcall target="upload-release-artifact">
-            <param name="repo.dir"        value="/${maven.repo.dir}/org/eclipse/persistence/${sdoapi.prefix}/${sdoapi.mvn.version}"/>
+        <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
+        <!-- antcall target="upload-release-artifact" -->
+        <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
@@ -537,24 +568,10 @@
         </copy>
     </target>
 
-    <target name="verify-no-exist">
-        <available file="${repo.dir}" property="repo.version.exist" type="dir" value="true"/>
-        <say message="'${artifactName}' version '${artifactVersion}' already deployed to repository... skipping." if="repo.version.exist"/>
-     </target>
-
     <!-- Uploads a single artifact & source to maven repository only if one doesn't already exist -->
-    <target name="upload-release-artifact" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
-        <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
-        <!-- Deploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
-        <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
-          <artifact:attach file="${artifactSrc}" classifier="sources"/>
-        </artifact:deploy>
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
-    </target>
+    <!-- Removed "upload-release-artifact" because it depended upon filesystem access. Need a mechanism -->
+    <!-- to verify an artifact is already uploaded to Nexus server. For now, am hoping nexus is smart enough -->
+    <!-- to refuse redeployment. (Not hopeful though, seems too restrictive). -->
 
     <!-- Uploads a single artifact & source to maven repository -->
     <target name="upload-artifact" depends="prepare-pom">
