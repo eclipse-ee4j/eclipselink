@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -105,11 +105,6 @@ public class TransformerFactory {
      * class or from a superclass.
      */
     public void addClassDetailsForMappedSuperClasses(MetadataClass clz, ClassDescriptor initialDescriptor, ClassDetails classDetails, Map classDetailsMap, List unMappedAttributes, boolean weaveChangeTracking){
-        // If there are no unmapped attributes left, there is no work left to do.
-        if (unMappedAttributes.isEmpty()){
-            return;
-        }
-
         MetadataClass superClz = clz.getSuperclass();
         if (superClz == null || superClz.isObject()){
             return;
@@ -139,9 +134,6 @@ public class TransformerFactory {
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);
             classDetailsMap.put(superClassDetails.getClassName() ,superClassDetails);
-        }
-
-        if (((stillUnMappedMappings != null) && (stillUnMappedMappings.size() > 0))){
             addClassDetailsForMappedSuperClasses(superClz, initialDescriptor, classDetails, classDetailsMap, stillUnMappedMappings, weaveChangeTracking);
         }
     }
@@ -185,7 +177,7 @@ public class TransformerFactory {
 
                     classDetails.setShouldWeaveConstructorOptimization((classDetails.getDescribedClass().getFields().size() - (descriptor.getMappings().size() - unMappedAttributes.size()))<=0);
 
-                    if (!unMappedAttributes.isEmpty()){
+                    if (classDetails.getSuperClassName() != null) {
                         addClassDetailsForMappedSuperClasses(metaClass, descriptor, classDetails, classDetailsMap, unMappedAttributes, weaveChangeTracking);
                     }
                 }
