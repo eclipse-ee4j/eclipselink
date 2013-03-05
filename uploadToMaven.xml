@@ -32,12 +32,15 @@
 *                updated svnversion to not break build, and default if exec fails
 *     egwin    - updated for publishing to Maven Central, add ability to override
 *                destination URL (to pub elsewhere override ${maven.repo.url})
+*     egwin    - converted svn.revision to git.hash (was missed in original
+*                migration to Git)
 #******************************************************************************/-->
 <!-- Variables Needed:
 *         release.version - need three tokens: Major.Minor.Service
 *         build.date      - in format YYYYMMDD
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
 *         bundle.dir      - if location of bundles to publish isn't a git "view"
+*         git.hash        - for stamping pom, to link build with source repo
 *
 *********************************************************************************-->
 <!-- Build Assumptions:
@@ -69,8 +72,8 @@
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
     <target name="environment-init" if="bundle.dir">
-        <!--  If "bundle.dir" specified that means that the Push to Maven is occuring from a constructed -->
-        <!--  dir (expanded zips), rather than directly from a "view" (git repo) dir structure.          -->
+        <!--  If "bundle.dir" specified that means that the Push to Maven is occurring from a constructed -->
+        <!--  dir (expanded zips), rather than directly from a "view" (git repo) dir structure.           -->
         <property name="maven.2.pojo.dir"           value="${bundle.dir}"/>
         <property name="maven.2.common.plugins.dir" value="${bundle.dir}"/>
         <property name="maven.2.jpa.plugins.dir"    value="${bundle.dir}"/>
@@ -78,7 +81,7 @@
         <property name="maven.2.util.plugins.dir"   value="${bundle.dir}"/>
     </target>
 
-    <target name="discover-init" depends="environment-init">
+    <target name="init" depends="environment-init">
         <dirname  property="maven.build.location_temp" file="${ant.file.Upload2Maven}"/>
         <pathconvert targetos="unix" property="maven.build.location">
             <path>
@@ -109,9 +112,69 @@
         <echo message="maven.2.sdo.plugins.dir  (commonj)  = ${maven.2.sdo.plugins.dir}"/>
         <echo message="maven.2.util.plugins.dir (DDLparser)= ${maven.2.util.plugins.dir}"/>
         <echo message="maven.2.buildsys.dir                = ${maven.2.buildsys.dir}"/>
+
+        <!-- Defaults for testing, will be previously set on real run -->
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+        </tstamp>
+
+        <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
+        <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
+        <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
+
+        <!-- Validate appropriately set values for git.hash, depending upon build.type -->
+        <condition property="git.hash.ok">
+            <or>
+                <!-- Build is Milestone and git.hash is set -->
+                <and>
+                    <not> <equals arg1="${build.type}" arg2="RELEASE"/> </not>
+                    <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
+                    <isset property="git.hash"/>
+                </and>
+                <!-- is RELEASE and hash is set -->
+                <and>
+                    <equals arg1="${build.type}" arg2="RELEASE"/>
+                    <isset property="git.hash"/>
+                </and>
+            <or>
+        </condition>
+        <!-- If git hash not set, fill with dummy value -->
+        <property name="git.hash" value="NA"/>
+
+        <!-- Set version.string appropriately depending upon whether git.hash      -->
+        <!--    is present. variable should only be used for uploaded filenames    -->
+        <!--    or manifest entries.                                               -->
+        <!--    NOTE: Mostly redundant. version.string should already be set.      -->
+        <condition property="version.string" value="${release.version}.qualifier"
+                                              else="${release.version}.v${build.date}-${git.hash}">
+            <equals arg1="${git.hash}" arg2="NA"/>
+        </condition>
+
+        <!-- Set maven.version appropriately depending upon ${build.type}.         -->
+        <!--    variable should only be used for maven version element in POM.     -->
+        <condition property="maven.version" value="${release.version}"
+                                             else="${release.version}-${build.type}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+
+        <echo message="release.version: ${release.version}"/>
+        <echo message="build.date:      ${build.date}"/>
+        <echo message="build.type:      ${build.type}"/>
+        <echo message="git.hash:        ${git.hash}"/>
+        <echo message="version.string:  ${version.string}"/>
+        <echo message="maven.version:   ${maven.version}"/>
+
+        <condition property="sign">
+            <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
+        </condition>
+
+        <property name="target.repository"     value="eclipselink.repository">
+
+        <!-- Validate Publish: No reason to continue if run setup not correct. -->
+        <fail message="Requesting Milestone or Release build but git.hash not specified!" unless="git.hash.ok"/>
     </target>
 
-    <target name="discover-static-built-info" depends="discover-init">
+    <target name="discover-static-built-info" depends="init">
         <property name="jpaapi.prefix"        value="javax.persistence"/>
         <property name="jpaapi.criteria"      value="[2.0.100, 2.1.100)"/>
         <property name="jpaapi.name"          value="Javax Persistence"/>
@@ -165,12 +228,12 @@
         <!-- Set JPA 2.1 publishing version to align with EclipseLink build.type:                    -->
         <!--      Javax.persistence will use "upload-artifact" rather than "upload-release-artifact" -->
         <!--      EclipseLink SNAPSHOTS would cause "2.1.0-SNAPSHOT" to be created                   -->
-        <!--      Milestoning EclipseLink would resilt in 2.1.0-(EclipseLink_Milestone)              -->
+        <!--      Milestoning EclipseLink would result in 2.1.0-(EclipseLink_Milestone)              -->
         <!-- NOTE: This needs to be changed back just prior to javax.persistence 2.1 release         -->
         <!-- NOTE2: This section needs to occur prior to the StripQualifier task to discover the     -->
         <!--        jpaapi.mvn.version since its definition needs to supersede it.                   -->
         <property name="jpaapi.mvn.version" value="2.1.0-${build.type}"/>
-        <!-- Below is a failsafe to ensure EclipseLink cannot be released while javax.persistence    -->
+        <!-- Below is a fail-safe to ensure EclipseLink cannot be released while javax.persistence   -->
         <!-- retains the 2.0.10x OSGi versioning.                                                    -->
         <condition property="jpaapi.prerelease.ok">
             <and>
@@ -196,7 +259,7 @@
         <!-- the discovered "(bundle).version" (after release) -->
         <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
-        <!-- a rebuild (convienient for publishing OSGi-ified jars but against OSGi spec) then  -->
+        <!-- a rebuild (convenient for publishing OSGi-ified jars but against OSGi spec) then   -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
         <!-- bundles will never be published.                                                   -->
         <!-- NOTE: Decision made to preserve former rather than latter for commonj.sdo, it has  -->
@@ -209,7 +272,7 @@
         <!--   The Oracle bundles only build periodically, so the bundle version needs to be   -->
         <!--      'discovered' but they should be published as part of the build               -->
         <!--   ANTLR and ASM bundle versions follow the jar it is based upon, and so new builds-->
-        <!--      only rev the qualifier. Howevever they are uniquely EclipseLink due to the   -->
+        <!--      only rev the qualifier. However they are uniquely EclipseLink due to the     -->
         <!--      package renaming, so while the version needs to be 'discovered' for artifact -->
         <!--      publishing they will be published under the EclipseLink build version        -->
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
@@ -222,50 +285,6 @@
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
-        <!-- Defaults for testing, will be previously set on real run -->
-        <tstamp>
-            <format property="build.date" pattern="yyyyMMdd"/>
-        </tstamp>
-
-        <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
-        <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
-        <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
-
-        <!--  Get the subversion version for current working copy. A freshly       -->
-        <!--  checked out copy of workspace is guaranteed to not have mixed        -->
-        <!--  revisions                                                            -->
-        <exec outputproperty="svn.revision"
-            failonerror="false"
-            failifexecutionfails="false"
-            errorproperty="svnversion.failed"
-            executable="svnversion">
-            <arg line="."/>
-        </exec>
-        <property name="svn.revision" value="NA"/>
-        <!-- fail message="Cannot upload to Maven a build with an unknown revision!" if="svnversion.failed"/ -->
-
-        <!-- Set version.string appropriately depending upon build.type and if svn -->
-        <!--    is present. variable should only be used for uploaded filenames    -->
-        <!--    or manifest entries.                                               -->
-        <condition property="version.string" value="${release.version}.qualifier"
-                                              else="${release.version}.v${build.date}-r${svn.revision}">
-            <equals arg1="${svn.revision}" arg2="NA"/>
-        </condition>
-
-        <!-- Set maven.version appropriately depending upon ${build.type}.        -->
-        <!--    variable should only be used for maven version element in POM.    -->
-        <condition property="maven.version" value="${release.version}"
-                                             else="${release.version}-${build.type}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-
-        <echo message="release.version: ${release.version}"/>
-        <echo message="build.date:      ${build.date}"/>
-        <echo message="build.type:      ${build.type}"/>
-        <echo message="svn.revision:    ${svn.revision}"/>
-        <echo message="version.string:  ${version.string}"/>
-        <echo message="maven.version:   ${maven.version}"/>
-
         <!-- Setup static dependency definitions -->
         <!--  Would be nice to setup in the beginning, but the library definitions need version.string defined -->
         <!-- Also semi-static OSGi libraries need to use a stripped down 3-part version, rather than the 4-part OSGi version -->
@@ -281,7 +300,7 @@
         <property name="deps.foot" value="&lt;/dependencies&gt;"/>
 
         <!-- These use above, in order, to define a single library for an artifact dependency -->
-        <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with thier own version info -->
+        <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
@@ -317,17 +336,6 @@
     </target>
 
     <target name="upload-static-built-jars" depends="discover-static-built-info">
-        <!-- While JPA is pre-release use "upload-artifact" with fixed up 2.1.0-(EL ${build.type}) as version -->
-        <!-- Change back for (and post) release                                                               -->
-        <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="${jpaapi.prefix}"/>
-            <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
-            <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}_${jpaapi.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
-            <param name="artifactName"    value="${jpaapi.name}"/>
-            <param name="dependencies"    value=""/>
-        </antcall>
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
         <!-- antcall target="upload-release-artifact">
@@ -353,6 +361,17 @@
     </target>
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
+        <!-- While JPA is pre-release use "upload-artifact" with fixed up 2.1.0-(EL ${build.type}) as version -->
+        <!-- Change back for (and post) release                                                               -->
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="${jpaapi.prefix}"/>
+            <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
+            <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}_${jpaapi.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
+            <param name="artifactName"    value="${jpaapi.name}"/>
+            <param name="dependencies"    value=""/>
+        </antcall>
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -510,7 +529,7 @@
           <filterset>
             <filter token="groupId"      value="${groupId}"/>
             <filter token="version"      value="${artifactVersion}"/>
-            <filter token="svn.revision" value="${svn.revision}"/>
+            <filter token="git.hash"     value="${git.hash}"/>
             <filter token="artifactId"   value="${artifactId}"/>
             <filter token="artifactName" value="${artifactName}"/>
             <filter token="dependencies" value="${dependencies}"/>
@@ -526,10 +545,10 @@
     <!-- Uploads a single artifact & source to maven repository only if one doesn't already exist -->
     <target name="upload-release-artifact" unless="repo.version.exist" depends="verify-no-exist, prepare-pom">
         <echo message="Deploying '${artifactName}' version '${artifactVersion}' to repository..."/>
-        <!-- Delploy the jar to maven repository along with sources -->
+        <!-- Deploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
+          <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
@@ -539,10 +558,10 @@
 
     <!-- Uploads a single artifact & source to maven repository -->
     <target name="upload-artifact" depends="prepare-pom">
-        <!-- Delploy the jar to maven repository along with sources -->
+        <!-- Deploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
+          <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
@@ -552,10 +571,10 @@
 
     <!-- Uploads a single artifact, source & javadoc to maven repository -->
     <target name="upload-artifact-with-javadoc" depends="prepare-pom">
-        <!-- Delploy the jar to maven repository along with sources -->
+        <!-- Deploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
+          <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
           <artifact:attach file="${artifactJavadoc}" classifier="javadoc"/>
@@ -566,10 +585,10 @@
 
     <!-- Uploads a single artifact without src to maven repository -->
     <target name="upload-artifact-no-src" depends="prepare-pom">
-        <!-- Delploy the jar to maven repository along with sources -->
+        <!-- Deploy the jar to maven repository along with sources -->
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="eclipselink.repository"/>
+          <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
         </artifact:deploy>
         <!-- cleanup -->
