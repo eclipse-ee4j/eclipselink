@@ -139,14 +139,14 @@ public class TableCreator {
      * If the table already exists this will fail.
      */
     public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build) {
-        createTables(session, schemaManager, build, true);
+        createTables(session, schemaManager, build, true, true, true);
     }
 
     /**
      * This creates the tables on the database.
      * If the table already exists this will fail.
      */
-    public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build, boolean check) {
+    public void createTables(DatabaseSession session, SchemaManager schemaManager, boolean build, boolean check, boolean createSequenceTables, boolean createSequences) {
         buildConstraints(schemaManager, build);
 
         String sequenceTableName = getSequenceTableName(session);
@@ -176,7 +176,7 @@ public class TableCreator {
         
         createConstraints(missingTables, session, schemaManager, false);
 
-        schemaManager.createSequences();
+        schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
     }
 
     /**
@@ -319,11 +319,10 @@ public class TableCreator {
      * This will drop the tables if they exist and recreate them.
      */
     public void replaceTables(DatabaseSession session, SchemaManager schemaManager, boolean createSequenceTables, boolean createSequences) {
-        replaceTablesAndConstraints(schemaManager, session);
-        schemaManager.createOrReplaceSequences(createSequenceTables, createSequences);
+        replaceTablesAndConstraints(schemaManager, session, createSequenceTables, createSequences);
     }
     
-    protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
+    protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session, boolean createSequenceTables, boolean createSequences) {
         buildConstraints(schemaManager, true);
         boolean ignore = shouldIgnoreDatabaseException();
         setIgnoreDatabaseException(true);
@@ -332,7 +331,11 @@ public class TableCreator {
         } finally {
             setIgnoreDatabaseException(ignore);            
         }
-        createTables(session, schemaManager, false, false);
+        createTables(session, schemaManager, false, false, createSequenceTables, createSequences);
+    }
+    
+    protected void replaceTablesAndConstraints(SchemaManager schemaManager, DatabaseSession session) {
+        replaceTables(session, schemaManager, false, false);
     }
     
     /**
