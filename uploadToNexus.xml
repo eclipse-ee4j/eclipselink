@@ -118,37 +118,15 @@
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
+        <fail message="Cannot upload to Maven without 'git.hash' defined!"        unless="git.hash"/>
 
-        <!-- Validate appropriately set values for git.hash, depending upon build.type -->
-        <condition property="git.hash.ok">
-            <or>
-                <!-- Build is Milestone and git.hash is set -->
-                <and>
-                    <not> <equals arg1="${build.type}" arg2="RELEASE"/> </not>
-                    <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
-                    <isset property="git.hash"/>
-                </and>
-                <!-- is RELEASE and hash is set -->
-                <and>
-                    <equals arg1="${build.type}" arg2="RELEASE"/>
-                    <isset property="git.hash"/>
-                </and>
-            </or>
-        </condition>
-        <!-- If git hash not set, fill with dummy value -->
-        <property name="git.hash" value="NA"/>
+        <!-- Set version.string. variable should only be used for uploaded filenames -->
+        <!--    or manifest entries.                                                 -->
+        <!--    NOTE: Mostly redundant. version.string should already be set.        -->
+        <property name="version.string" value="${release.version}.v${build.date}-${git.hash}"/>
 
-        <!-- Set version.string appropriately depending upon whether git.hash      -->
-        <!--    is present. variable should only be used for uploaded filenames    -->
-        <!--    or manifest entries.                                               -->
-        <!--    NOTE: Mostly redundant. version.string should already be set.      -->
-        <condition property="version.string" value="${release.version}.qualifier"
-                                              else="${release.version}.v${build.date}-${git.hash}">
-            <equals arg1="${git.hash}" arg2="NA"/>
-        </condition>
-
-        <!-- Set maven.version appropriately depending upon ${build.type}.         -->
-        <!--    variable should only be used for maven version element in POM.     -->
+        <!-- Set maven.version appropriately depending upon ${build.type}.           -->
+        <!--    variable should only be used for maven version element in POM.       -->
         <condition property="maven.version" value="${release.version}"
                                              else="${release.version}-${build.type}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
@@ -194,14 +172,11 @@
         <!-- prevent 'fall-through' -->
         <fail message="'repository' set to unknown value. 'target.repository' not set. Aborting..." unless="target.repository"/>
         <echo message="Target repository: ${target.repository}"/>
-
-        <!-- Validate Publish: No reason to continue if run setup not correct. -->
-        <fail message="Requesting Milestone or Release build but git.hash not specified!" unless="git.hash.ok"/>
     </target>
 
     <target name="discover-static-built-info" depends="init">
         <property name="jpaapi.prefix"        value="javax.persistence"/>
-        <property name="jpaapi.criteria"      value="[2.0.100, 2.1.100)"/>
+        <property name="jpaapi.criteria"      value="[2.0.0,2.0.100)"/>
         <property name="jpaapi.name"          value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
@@ -250,26 +225,6 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <!-- Set JPA 2.1 publishing version to align with EclipseLink build.type:                    -->
-        <!--      Javax.persistence will use "upload-artifact" rather than "upload-release-artifact" -->
-        <!--      EclipseLink SNAPSHOTS would cause "2.1.0-SNAPSHOT" to be created                   -->
-        <!--      Milestoning EclipseLink would result in 2.1.0-(EclipseLink_Milestone)              -->
-        <!-- NOTE: This needs to be changed back just prior to javax.persistence 2.1 release         -->
-        <!-- NOTE2: This section needs to occur prior to the StripQualifier task to discover the     -->
-        <!--        jpaapi.mvn.version since its definition needs to supersede it.                   -->
-        <property name="jpaapi.mvn.version" value="2.1.0-${build.type}"/>
-        <!-- Below is a fail-safe to ensure EclipseLink cannot be released while javax.persistence   -->
-        <!-- retains the 2.0.10x OSGi versioning.                                                    -->
-        <condition property="jpaapi.prerelease.ok">
-            <and>
-                <contains string="${jpaapi.version}" substring="2.0."/>
-                <not>
-                    <equals arg1="${jpaapi.mvn.version}" arg2="2.1.0-RELEASE"/>
-                </not>
-            </and>
-        </condition>
-        <fail message="Attempting to RELEASE a pre-release version '${jpaapi.version}' of javax.persistence. Aborting..." unless="jpaapi.prerelease.ok"/>
-
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
@@ -290,10 +245,9 @@
         <!-- NOTE: Decision made to preserve former rather than latter for commonj.sdo, it has  -->
         <!--       not revved in several years and so is unlikely to do so in future (BD,DT,EG) -->
         <stripQualifier input="${sdoapi.version}"      property="sdoapi.mvn.version"/>
-        <!-- In addition these jars are special cases:                                         -->
-        <!--   Hermes OSGi versioning has changed, so will move into the regular build section -->
-        <!--   soon.                                                                           -->
-        <!--   OracleDDL is expected to follow suit                                            -->
+        <!-- In addition these jars are special cases:                                          -->
+        <!--   Hermes versioning is unique, but will be published under EclipseLink build.      -->
+        <!--   OracleDDL is the same                                                            -->
         <!--   The Oracle bundles only build periodically, so the bundle version needs to be   -->
         <!--      'discovered' but they should be published as part of the build               -->
         <!--   ANTLR and ASM bundle versions follow the jar it is based upon, and so new builds-->
@@ -337,13 +291,18 @@
         <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.oracle${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.jpa.equinox"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.equinox${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.modelgen"  value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.jpa.osgi"      value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.osgi${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.processor" value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen.processor${dep.ver}${maven.version}${dep.type}jar${dep.scope}runtime${dep.opt}false${dep.foot}"/>
+        <property name="dep.jpa.weaving"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.weaving${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
 
         <!-- These define the dependency block for a given artifact -->
+        <!-- * JPA does have a dependency upon javax.persistence, but it is left unstated because while 2.0 functionality -->
+        <!--   depends upon javax.persistence_2.0.x jpa 1.0 functionality can run with just javax.persistence_1.0         -->
         <!-- * The modelgen processor is a jar containing a single data resource used by the compiler to establish a      -->
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
@@ -355,6 +314,9 @@
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
+        <property name="osgi.dependencies"        value="${deps.head}${dep.jpa}${deps.foot}"/>
+        <property name="weaving.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
+        <property name="equinox.dependencies"     value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
@@ -369,7 +331,7 @@
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        <!-- antcall target="upload-artifact">
+        <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -377,7 +339,7 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall -->
+        </antcall>
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- antcall target="upload-release-artifact" -->
         <antcall target="upload-artifact">
@@ -392,17 +354,6 @@
     </target>
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
-        <!-- While JPA is pre-release use "upload-artifact" with fixed up 2.1.0-(EL ${build.type}) as version -->
-        <!-- Change back for (and post) release                                                               -->
-        <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="${jpaapi.prefix}"/>
-            <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
-            <param name="artifact"        value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}_${jpaapi.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
-            <param name="artifactName"    value="${jpaapi.name}"/>
-            <param name="dependencies"    value=""/>
-        </antcall>
         <!-- call upload for each artifact we want to upload -->
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -514,6 +465,33 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA Modelgen (non-OSGi)"/>
             <param name="dependencies"    value="${modelgen.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.weaving"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.equinox.weaving_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.equinox.weaving.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink JPA Weaving for Equinox Fragment"/>
+            <param name="dependencies"    value="${weaving.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.equinox"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.equinox_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.equinox.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink JPA Equinox Fragment"/>
+            <param name="dependencies"    value="${equinox.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.osgi"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.osgi_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.osgi.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink OSGi Deployment Fragment"/>
+            <param name="dependencies"    value="${equinox.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
