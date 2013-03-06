@@ -710,6 +710,7 @@
                     javax/persistence/StoredProcedureQuery.class,
                     javax/persistence/SynchronizationType.class,
                     javax/persistence/AttributeConverter.class,
+					javax/persistence/ConstraintMode.class,
                     javax/persistence/Convert.class,
                     javax/persistence/Converter.class,
                     javax/persistence/Converts.class,
