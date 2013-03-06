@@ -65,7 +65,9 @@ public class CompoundExpressionImpl extends FunctionExpressionImpl<Boolean> impl
      * @return list boolean expressions forming the predicate
      */
     public List<Expression<Boolean>> getExpressions(){
-        return this.expressions;
+        List<Expression<Boolean>> result = new ArrayList<Expression<Boolean>>();
+        result.add(this);
+        return result;
     }
 
     public boolean isCompoundExpression(){
