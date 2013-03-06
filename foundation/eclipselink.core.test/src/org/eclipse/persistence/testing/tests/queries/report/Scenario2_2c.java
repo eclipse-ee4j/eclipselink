@@ -38,10 +38,19 @@ public class Scenario2_2c extends ReportQueryTestCase {
             // Oracle returns a BigDecimal for count
             if (getSession().getPlatform().isOracle() || getSession().getPlatform().isTimesTen7() || getSession().getPlatform().isMaxDB()) {
                 result[1] = new java.math.BigDecimal(3);
-            } else if (getSession().getPlatform().isMySQL() || (getSession().getPlatform().isHANA())) {
+            } else if (getSession().getPlatform().isMySQL()) {
                 result[1] = new java.lang.Long(3);
             } else if (getSession().getPlatform().isSymfoware()) {
                 result[1] = new java.lang.Short((short)3);
+            } else if (getSession().getPlatform().isHANA()) {
+                String driverVersion = getAbstractSession().getAccessor().getConnection().getMetaData().getDriverVersion();
+                if (driverVersion.equals("1.0")) {
+                    // up to version 1.00.35 driver version is returned as "1.0"
+                    // and numeric constant is returned as Long 
+                    result[1] = new java.lang.Long(3);
+                } else {
+                    result[1] = new java.lang.Integer(3);
+                }
             } else {
                 result[1] = new java.lang.Integer(3);
             }
