@@ -478,7 +478,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         ObjectLevelReadQuery clone = (ObjectLevelReadQuery)clone();
         if (getSelectionCriteria() != null) {
             clone.setSelectionCriteria((Expression)getSelectionCriteria().clone());
-        } else if (defaultBuilder != null) {
+        } 
+        if (defaultBuilder != null) {
             clone.defaultBuilder = (ExpressionBuilder)defaultBuilder.clone();
         }
         return clone;
