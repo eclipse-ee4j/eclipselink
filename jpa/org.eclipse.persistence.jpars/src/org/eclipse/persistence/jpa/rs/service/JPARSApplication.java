@@ -38,6 +38,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.NoResultExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NoSuchMethodExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.OptimisticLockExceptionMapper;
+import org.eclipse.persistence.jpa.rs.exceptions.PersistenceExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.PessimisticLockExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.QueryTimeoutExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.RollbackExceptionMapper;
@@ -92,6 +93,7 @@ public class JPARSApplication extends Application {
         c.add(NoResultExceptionMapper.class);
         c.add(NoSuchMethodExceptionMapper.class);
         c.add(OptimisticLockExceptionMapper.class);
+        c.add(PersistenceExceptionMapper.class);
         c.add(PessimisticLockExceptionMapper.class);
         c.add(QueryTimeoutExceptionMapper.class);
         c.add(RollbackExceptionMapper.class);
