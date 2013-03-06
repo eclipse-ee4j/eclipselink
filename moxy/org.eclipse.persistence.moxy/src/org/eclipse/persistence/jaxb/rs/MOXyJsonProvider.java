@@ -234,6 +234,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return The corresponding domain class.
      */
     protected Class<?> getDomainClass(Type genericType) {
+        if(null == genericType) {
+            return Object.class;
+        }
         if(genericType instanceof Class && genericType != JAXBElement.class) {
             Class<?> clazz = (Class<?>) genericType;
             if(clazz.isArray()) {
@@ -372,12 +375,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return true indicating that <i>MOXyJsonProvider</i> will
      * be used for the JSON binding if the media type is of the following 
      * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
-     * any of the the following:
+     * any of (or a Collection or JAXBElement of) the following:
      * <ul>
      * <li>byte[]</li>
      * <li>java.io.File</li>
      * <li>java.io.InputStream</li>
      * <li>java.io.Reader</li>
+     * <li>java.lang.Object</li>
      * <li>java.lang.String</li>
      * <li>javax.activation.DataSource</li>
      * </ul>
@@ -395,6 +399,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(Reader.class.isAssignableFrom(type)) {
             return false;
+        } else if(Object.class == type) {
+            return false;
+        } else if(JAXBElement.class.isAssignableFrom(type)) {
+            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
+        } else if(Collection.class.isAssignableFrom(type)) {
+            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
         } else {
             return true;
         }
@@ -405,10 +415,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return true indicating that <i>MOXyJsonProvider</i> will
      * be used for the JSON binding if the media type is of the following 
      * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
-     * any of the the following:
+     * any of (or a Collection or JAXBElement of) the the following:
      * <ul>
      * <li>byte[]</li>
      * <li>java.io.File</li>
+     * <li>java.lang.Object</li>
      * <li>java.lang.String</li>
      * <li>javax.activation.DataSource</li>
      * <li>javax.ws.rs.core.StreamingOutput</li>
@@ -425,7 +436,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(StreamingOutput.class.isAssignableFrom(type)) {
             return false;
-        } else {
+        } else if(Object.class == type) {
+            return false;
+        } else if(JAXBElement.class.isAssignableFrom(type)) {
+            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
+        } else if(Collection.class.isAssignableFrom(type)) {
+            return isWriteable(getDomainClass(genericType), null, annotations, mediaType);
+         } else {
             return true;
         }
     }
