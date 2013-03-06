@@ -333,9 +333,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
             throw exception;
+        } catch (IllegalStateException e){
+            setRollbackOnly();
+            throw e;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         } 
     }
     
@@ -367,9 +373,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         } catch (LockTimeoutException exception) {
             throw exception;
+        } catch (PersistenceException e) {
+            setRollbackOnly();
+            throw e;
+        } catch (IllegalStateException e){
+            setRollbackOnly();
+            throw e;
         } catch (RuntimeException exception) {
             setRollbackOnly();
-            throw exception;
+            throw new PersistenceException(exception);
         } finally {
             close(); // Close the connection once we're done.
         }
@@ -502,6 +514,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     public List getResultList() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
             // If there is no execute statement, the user has not called
             // execute and is simply calling getResultList directly on the query.
@@ -538,6 +553,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             setRollbackOnly();
             throw e;
         } catch (IllegalStateException e) {
+            setRollbackOnly();
             throw e;
         } catch (Exception e) {
             setRollbackOnly();
@@ -563,6 +579,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     public Object getSingleResult() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
             // If there is no execute statement, the user has not called
             // execute and is simply calling getSingleResult directly on the query.
@@ -607,6 +626,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             setRollbackOnly();
             throw e;
         } catch (IllegalStateException e) {
+            setRollbackOnly();
             throw e;
         } catch (Exception e) {
             setRollbackOnly();
@@ -629,7 +649,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * is rolled back
      */
     public int getUpdateCount() {
-        entityManager.verifyOpen();
+        entityManager.verifyOpenWithSetRollbackOnly();
         
         if (executeStatement != null) {
             try {

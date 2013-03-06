@@ -846,11 +846,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
                     throw new OptimisticLockException(eclipselinkOLE);
                 }
-            } catch (RuntimeException e) {
-                if (EclipseLinkException.class.isAssignableFrom(e.getClass())) {
-                    throw new PersistenceException(e);
-                }
-                throw e;
+            } catch (EclipseLinkException e) {
+                throw new PersistenceException(e);
             }
         } catch (RuntimeException e) {
             setRollbackOnly();
@@ -1955,6 +1952,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * rolled back or after clear method was called).
      */
     public void setProperties(Map properties) {
+        verifyOpenWithSetRollbackOnly();
         this.properties = properties;
         if(this.hasActivePersistenceContext()) {
             this.extendedPersistenceContext.getParent().setProperties(properties);
@@ -1970,6 +1968,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @see EntityManager#setProperty(java.lang.String, java.lang.Object)
      */
     public void setProperty(String propertyName, Object value) {
+        verifyOpenWithSetRollbackOnly();
         if(propertyName == null || value == null) {
             return;
         }
@@ -2522,10 +2521,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since Java Persistence 2.0
      */
     public CriteriaBuilder getCriteriaBuilder() {
+        verifyOpenWithSetRollbackOnly();
         // defer to the parent entityManagerFactory
-        if(!this.isOpen()) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
-        }
         return this.factory.getCriteriaBuilder();
     }
     
@@ -2602,10 +2599,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since Java Persistence 2.0
      */
     public Metamodel getMetamodel() {
+        verifyOpenWithSetRollbackOnly();
         // defer to the parent entityManagerFactory
-        if(!this.isOpen()) {
-            throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager"));
-        }
         return this.factory.getMetamodel();
     }
 

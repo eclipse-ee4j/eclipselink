@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import junit.framework.*;
@@ -1306,7 +1307,8 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 // trigger indirection
                 beerConsumer.getDesignations().size();
                 fail("Exception was expected - but not thrown");
-            } catch (RuntimeException e) {
+            } catch (PersistenceException exc) {// QueryException.INVALID_CONTAINER_CLASS
+                Throwable e = exc.getCause();
                 boolean isCorrectException = false;
                 if(e instanceof QueryException) {
                     QueryException queryException = (QueryException)e;
@@ -1315,7 +1317,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                     }
                 }
                 if(!isCorrectException) {
-                    throw e;
+                    throw exc;
                 }
             } finally {
                 closeEntityManager(em);

@@ -80,6 +80,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping1"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping2"));
 
         // Add the named Annotation query tests.
         suite.addTest(NamedStoredProcedureQueryTestSuite.suite());
@@ -987,7 +989,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
     /**
      * Tests a StoredProcedureQuery using a system cursor. Also tests 
      * getParameters call AFTER query execution.
@@ -1021,6 +1023,46 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
             } finally {
                 closeEntityManager(em);
             }
+        }
+    }
+
+    /**
+     * Tests StoredProcedureQuery exception wrapping. 
+     */
+    public void testStoredProcedureQueryExceptionWrapping1() {
+        EntityManager em = createEntityManager();
+        try {
+            javax.persistence.Query query = em.createNativeQuery("DoesNotExist", Employee.class);
+
+            Object execute = query.getResultList();
+            fail("Executing a bad native SQL query did not throw a PersistenceException and instead returned: "+execute);
+        } catch (javax.persistence.PersistenceException pe) {
+            //expected.
+            pe.printStackTrace();
+        } catch (RuntimeException re) {
+            re.printStackTrace();
+            fail("Executing a bad native SQL query did not throw a PersistenceException and instead threw: "+re);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Tests StoredProcedureQuery exception wrapping. 
+     */
+    public void testStoredProcedureQueryExceptionWrapping2() {
+        EntityManager em = createEntityManager();
+        try {
+            StoredProcedureQuery query = em.createStoredProcedureQuery("DoesNotExist", Employee.class);
+
+            boolean execute = query.execute();
+            fail("Executing a non-existent stored procedure did not throw a PersistenceException and instead returned: "+execute);
+        } catch (javax.persistence.PersistenceException pe) {
+            //expected.
+        } catch (RuntimeException re) {
+            fail("Executing a non-existent stored procedure did not throw a PersistenceException and instead threw: "+re);
+        } finally {
+            closeEntityManager(em);
         }
     }
 }

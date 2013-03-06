@@ -276,10 +276,10 @@ public class QueryImpl {
      * @return the number of entities updated or deleted
      */
     public int executeUpdate() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            entityManager.verifyOpen();
             setAsSQLModifyQuery();
             // bug:4294241, only allow modify queries - UpdateAllQuery preferred
             if (!(getDatabaseQueryInternal() instanceof ModifyQuery)) {
@@ -297,9 +297,15 @@ public class QueryImpl {
             }
             Integer changedRows = (Integer) getActiveSession().executeQuery(databaseQuery, parameterValues);
             return changedRows.intValue();
-        } catch (RuntimeException e) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
-            throw e;
+            throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        }catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
 
@@ -368,7 +374,7 @@ public class QueryImpl {
             }
         } else {
             setRollbackOnly();
-            return e;
+            return new PersistenceException(e);
         }
     }
 
@@ -435,10 +441,10 @@ public class QueryImpl {
      * @return a list of the results
      */
     public List getResultList() {
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            this.entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
             // bug:4297903, check container policy class and throw exception if
@@ -462,9 +468,15 @@ public class QueryImpl {
             return (List) executeReadQuery();
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             setRollbackOnly();
             throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
  
@@ -490,10 +502,10 @@ public class QueryImpl {
      */
     public Object getSingleResult() {
         boolean rollbackOnException = true;
+        // bug51411440: need to throw IllegalStateException if query
+        // executed on closed em
+        this.entityManager.verifyOpenWithSetRollbackOnly();
         try {
-            // bug51411440: need to throw IllegalStateException if query
-            // executed on closed em
-            entityManager.verifyOpen();
             setAsSQLReadQuery();
             propagateResultProperties();
             // This API is used to return non-List results, so no other validation is done.
@@ -521,11 +533,17 @@ public class QueryImpl {
             }
         } catch (LockTimeoutException exception) {
             throw exception;
-        } catch (RuntimeException exception) {
+        } catch (PersistenceException exception) {
             if (rollbackOnException) {
                 setRollbackOnly();
             }
             throw exception;
+        } catch (IllegalStateException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw new PersistenceException(exception);
         }
     }
 

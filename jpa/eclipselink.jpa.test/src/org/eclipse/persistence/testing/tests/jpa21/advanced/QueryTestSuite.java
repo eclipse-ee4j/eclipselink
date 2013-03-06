@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -191,7 +192,11 @@ public class QueryTestSuite extends JUnitTestCase {
                 }
                 
                 fail("Null pointer exception caught on constructor result query.");
-            } catch (QueryException e) {
+            } catch (PersistenceException exc) {// QueryException.INVALID_CONTAINER_CLASS
+                if (! (exc.getCause() instanceof QueryException)) {
+                    throw exc;
+                }
+                QueryException e = (QueryException)exc.getCause();
                 assertTrue(e.getErrorCode() == QueryException.COLUMN_RESULT_NOT_FOUND);
             } finally {
                 closeEntityManager(em);

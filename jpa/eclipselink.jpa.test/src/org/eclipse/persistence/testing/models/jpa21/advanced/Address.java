@@ -40,8 +40,6 @@ import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import org.eclipse.persistence.annotations.Convert;
-
 import static javax.persistence.ParameterMode.IN;
 import static javax.persistence.ParameterMode.INOUT;
 import static javax.persistence.ParameterMode.OUT;
