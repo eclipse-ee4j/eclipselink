@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -9,7 +9,9 @@
  *
  * Contributors:
  *     08/10/2009-2.0 Guy Pelletier 
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes 
+ *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+ *     03/06/2013-2.5 Guy Pelletier 
+ *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)       
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -110,11 +112,25 @@ public class PersistenceXMLMappings {
     /**
      * INTERNAL:
      */
-    public static XMLContext createXMLContext() {
+    public static XMLContext createXML2_0Context() {
+        return createXMLContext("http://java.sun.com/xml/ns/persistence");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public static XMLContext createXML2_1Context() {
+        return createXMLContext("http://xmlns.jcp.org/xml/ns/persistence");
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected static XMLContext createXMLContext(String namespaceURI) {
         Project project = new Project();
 
         NamespaceResolver resolver = new NamespaceResolver();
-        resolver.setDefaultNamespaceURI("http://java.sun.com/xml/ns/persistence");
+        resolver.setDefaultNamespaceURI(namespaceURI);
 
         project.addDescriptor(buildPersistenceXMLDescriptor(resolver));
         project.addDescriptor(buildPUInfoDescriptor(resolver));

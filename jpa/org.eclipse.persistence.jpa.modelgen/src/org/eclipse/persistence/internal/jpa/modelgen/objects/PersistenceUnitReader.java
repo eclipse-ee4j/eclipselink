@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -16,6 +16,8 @@
  *       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
  *     06/01/2010-2.1 Guy Pelletier 
  *       - 315195: Add new property to avoid reading XML during the canonical model generation
+ *     03/06/2013-2.5 Guy Pelletier 
+ *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
@@ -39,7 +41,6 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXMLMappings;
-import org.eclipse.persistence.oxm.XMLContext;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML_DEFAULT;
@@ -162,15 +163,24 @@ public class PersistenceUnitReader {
         String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
         HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
 
-        InputStream inStream = null;
+        InputStream inStream1 = null;
+        InputStream inStream2 = null;
 
         try {
-            XMLContext context = PersistenceXMLMappings.createXMLContext();
-            inStream = getInputStream(filename, true);
+            inStream1 = getInputStream(filename, true);
             
             // If the persistence.xml was not found, then there is nothing to do.
-            if (inStream != null) {
-                PersistenceXML persistenceXML = (PersistenceXML) context.createUnmarshaller().unmarshal(inStream);
+            if (inStream1 != null) {
+                PersistenceXML persistenceXML;
+                
+                try {
+                    // Try a 2.1 context first.
+                    persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);
+                } catch (Exception e) {
+                    // Catch all exceptions and try a 2.0 context second with a new input stream.
+                    inStream2 = getInputStream(filename, true);
+                    persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_0Context().createUnmarshaller().unmarshal(inStream2);
+                }
 
                 for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
                     // If no persistence unit list has been specified or one
@@ -182,7 +192,8 @@ public class PersistenceUnitReader {
                 }
             }
         } finally {
-            closeInputStream(inStream);
+            closeInputStream(inStream1);
+            closeInputStream(inStream2);
         }
     }
 }
