@@ -712,7 +712,7 @@ public class QueryImpl {
     public static String getParameterId(Parameter param){
         Integer id= param.getPosition();
         if (id == null ){
-            return String.valueOf(param.getName());
+            return String.valueOf(((ParameterExpressionImpl)param).getInternalName());
         }
         return String.valueOf(id);
     }

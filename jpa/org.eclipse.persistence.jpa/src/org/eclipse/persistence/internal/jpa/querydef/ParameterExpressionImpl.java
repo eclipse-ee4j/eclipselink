@@ -22,17 +22,19 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T> {
     
     protected String name;
+    protected String internalName;
     protected Integer position;
     
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, String name){
         super(metamodel, javaType, new ExpressionBuilder().getParameter(name, javaType));
         this.name = name;
+        this.internalName = name;
     }
 
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType){
         super(metamodel, javaType, null);
-        this.name = String.valueOf(System.identityHashCode(this));
-        this.currentNode = new ExpressionBuilder().getParameter(this.name, javaType);
+        this.internalName = String.valueOf(System.identityHashCode(this));
+        this.currentNode = new ExpressionBuilder().getParameter(this.internalName, javaType);
     }
 
     public ParameterExpressionImpl(Metamodel metamodel, Class<T> javaType, Integer position){
@@ -52,6 +54,14 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      */
     public String getName(){
         return this.name;
+    }
+    
+    /**
+     * Returns the name used by EclipseLink when a name has not been assigned by the user.
+     * @return
+     */
+    public String getInternalName(){
+        return this.internalName;
     }
 
     /**
@@ -85,8 +95,8 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         if (position != null){
             return position.hashCode();
         }
-        if (this.name == null) this.name = "";
-        return this.name.hashCode();
+        if (this.internalName == null) this.internalName = "";
+        return this.internalName.hashCode();
     }
 
     public boolean isParameter(){
@@ -105,13 +115,13 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         if (obj == null)
             return false;
         if (ClassConstants.STRING == obj.getClass()) {
-            return (this.name.equals(obj));
+            return (this.internalName.equals(obj));
         }
         if (getClass() != obj.getClass())
             return false;
         ParameterExpressionImpl other = (ParameterExpressionImpl) obj;
-        if (name == null) {
-            if (other.name != null){
+        if (internalName == null) {
+            if (other.internalName != null){
                 return false;
             } else if (position == null){
                 if (other.position != null){
@@ -120,7 +130,7 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
             } else if (!position.equals(other.position)){
                 return false;
             }
-        } else if (!name.equals(other.name)){
+        } else if (!internalName.equals(other.internalName)){
             return false;
         } 
         return true;
