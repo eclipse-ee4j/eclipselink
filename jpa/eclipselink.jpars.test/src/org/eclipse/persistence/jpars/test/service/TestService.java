@@ -446,7 +446,7 @@ public class TestService {
         context.create(null, entity1);
 
         TestURIInfo ui = new TestURIInfo();
-        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui);
+        resource.delete("jpars_auction", "Auction", entity1.get("id").toString(), ui, generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON));
 
         entity1 = (DynamicEntity)context.find("Auction", entity1.get("id"));
 

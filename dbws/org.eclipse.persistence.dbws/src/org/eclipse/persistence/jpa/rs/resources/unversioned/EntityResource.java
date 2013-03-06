@@ -79,7 +79,7 @@ public class EntityResource extends AbstractEntityResource {
 
     @DELETE
     @Path("{type}/{key}")
-    public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui) {
-        return delete(null, persistenceUnit, type, key, ui, ui.getBaseUri());
+    public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context UriInfo ui, @Context HttpHeaders hh) {
+        return delete(null, persistenceUnit, type, key, ui, hh, ui.getBaseUri());
     }
 }

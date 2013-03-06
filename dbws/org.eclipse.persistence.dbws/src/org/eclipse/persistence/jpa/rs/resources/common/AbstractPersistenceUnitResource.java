@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.AbstractExceptionMapper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.QueryList;
@@ -57,12 +58,12 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             ClassDescriptor descriptor = app.getJpaSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null) {
                 JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[] { descriptorAlias, persistenceUnit });
-                return Response.status(Status.NOT_FOUND).build();
+                return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
                 Descriptor returnDescriptor = buildDescriptor(app, persistenceUnit, descriptor, baseURI.toString());
@@ -71,7 +72,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                     result = marshallMetadata(returnDescriptor, mediaType);
                 } catch (JAXBException e) {
                     JPARSLogger.fine("exception_marshalling_entity_metadata", new Object[] { descriptorAlias, persistenceUnit, e.toString() });
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
                 }
                 return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
             }
@@ -82,7 +83,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             List<Query> queries = new ArrayList<Query>();
             addQueries(queries, app, null);
@@ -98,7 +99,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 }
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_query_metadata", new Object[] { persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
             }
             return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
         }
@@ -108,7 +109,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             List<Query> returnQueries = new ArrayList<Query>();
             Map<String, List<DatabaseQuery>> queries = app.getJpaSession().getQueries();
@@ -129,7 +130,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 }
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_individual_query_metadata", new Object[] { queryName, persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
             }
             return Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes())).build();
         }
@@ -140,7 +141,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             PersistenceUnit pu = new PersistenceUnit();
             pu.setPersistenceUnitName(persistenceUnit);
@@ -165,7 +166,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 result = marshallMetadata(pu, mediaType);
             } catch (JAXBException e) {
                 JPARSLogger.fine("exception_marshalling_persitence_unit", new Object[] { persistenceUnit, e.toString() });
-                return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
             }
             ResponseBuilder rb = Response.ok(new StreamingOutputMarshaller(null, result, hh.getAcceptableMediaTypes()));
             rb.header("Content-Type", MediaType.APPLICATION_JSON);
