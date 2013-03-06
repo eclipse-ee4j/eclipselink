@@ -125,8 +125,8 @@
         </not>
     </condition>
     <echo message="Ant Version detected: '${ant.version}'"/>
-    <fail message="An non-compatible version of Ant was detected! Build won't run properly unless running 1.7.x of Ant!." unless="compat.ant"/>
-
+    <!-- fail message="An non-compatible version of Ant was detected! Build won't run properly unless running 1.7.x of Ant!." unless="compat.ant"/>
+ -->
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
         <contains string="${java.version}" substring="1.5"/>
