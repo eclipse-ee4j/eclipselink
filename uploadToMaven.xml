@@ -39,8 +39,9 @@
 *         release.version - need three tokens: Major.Minor.Service
 *         build.date      - in format YYYYMMDD
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
-*         bundle.dir      - if location of bundles to publish isn't a git "view"
 *         git.hash        - for stamping pom, to link build with source repo
+*    Optional variables:
+*         bundle.dir      - if location of bundles to publish isn't a git "view"
 *
 *********************************************************************************-->
 <!-- Build Assumptions:
@@ -121,37 +122,15 @@
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
+        <fail message="Cannot upload to Maven without 'git.hash' defined!"        unless="git.hash"/>
 
-        <!-- Validate appropriately set values for git.hash, depending upon build.type -->
-        <condition property="git.hash.ok">
-            <or>
-                <!-- Build is Milestone and git.hash is set -->
-                <and>
-                    <not> <equals arg1="${build.type}" arg2="RELEASE"/> </not>
-                    <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
-                    <isset property="git.hash"/>
-                </and>
-                <!-- is RELEASE and hash is set -->
-                <and>
-                    <equals arg1="${build.type}" arg2="RELEASE"/>
-                    <isset property="git.hash"/>
-                </and>
-            </or>
-        </condition>
-        <!-- If git hash not set, fill with dummy value -->
-        <property name="git.hash" value="NA"/>
+        <!-- Set version.string. variable should only be used for uploaded filenames -->
+        <!--    or manifest entries.                                                 -->
+        <!--    NOTE: Mostly redundant. version.string should already be set.        -->
+        <property name="version.string" value="${release.version}.v${build.date}-${git.hash}"/>
 
-        <!-- Set version.string appropriately depending upon whether git.hash      -->
-        <!--    is present. variable should only be used for uploaded filenames    -->
-        <!--    or manifest entries.                                               -->
-        <!--    NOTE: Mostly redundant. version.string should already be set.      -->
-        <condition property="version.string" value="${release.version}.qualifier"
-                                              else="${release.version}.v${build.date}-${git.hash}">
-            <equals arg1="${git.hash}" arg2="NA"/>
-        </condition>
-
-        <!-- Set maven.version appropriately depending upon ${build.type}.         -->
-        <!--    variable should only be used for maven version element in POM.     -->
+        <!-- Set maven.version appropriately depending upon ${build.type}.           -->
+        <!--    variable should only be used for maven version element in POM.       -->
         <condition property="maven.version" value="${release.version}"
                                              else="${release.version}-${build.type}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
