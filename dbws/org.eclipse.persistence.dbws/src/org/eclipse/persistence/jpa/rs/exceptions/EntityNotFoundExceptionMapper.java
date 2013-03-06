@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,9 +24,10 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class EntityNotFoundExceptionMapper implements ExceptionMapper<EntityNotFoundException> {
-
+    @Context
+    private HttpHeaders headers;
     public Response toResponse(EntityNotFoundException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.NOT_FOUND).build();
+        return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(headers)).build();
     }
 }

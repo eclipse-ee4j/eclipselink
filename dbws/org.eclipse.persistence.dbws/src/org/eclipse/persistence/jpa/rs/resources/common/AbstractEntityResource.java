@@ -37,6 +37,7 @@ import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
+import org.eclipse.persistence.jpa.rs.exceptions.AbstractExceptionMapper;
 import org.eclipse.persistence.jpa.rs.util.IdHelper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -60,7 +61,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
         Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
         Object id = IdHelper.buildId(app, type, key);
@@ -69,7 +70,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[] { type, key, attribute, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Boolean collectionContainsDomainObjects = collectionContainsDomainObjects(entity);
@@ -96,7 +97,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
         Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
 
@@ -106,7 +107,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
         if (entity == null) {
             JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[] { type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
         }
@@ -117,19 +118,19 @@ public abstract class AbstractEntityResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
         ClassDescriptor descriptor = app.getDescriptor(type);
         if (descriptor == null) {
             JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
         Object entity = null;
         try {
             entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).build();
+            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         // maintain idempotence on PUT by disallowing sequencing
@@ -140,7 +141,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField()))
                     || descriptor.getSequence().shouldAlwaysOverrideExistingValue()) {
                 JPARSLogger.fine("jpars_put_not_idempotent", new Object[] { type, persistenceUnit });
-                return Response.status(Status.BAD_REQUEST).build();
+                return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
             }
         }
 
@@ -198,14 +199,14 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
         Object entity = null;
         try {
             entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).build();
+            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         entity = app.merge(getMatrixParameters(uriInfo, persistenceUnit), entity);
@@ -220,7 +221,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Object id = IdHelper.buildId(app, type, key);
@@ -232,19 +233,19 @@ public abstract class AbstractEntityResource extends AbstractResource {
             DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()) {
                 JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-                return Response.status(Status.NOT_FOUND).build();
+                return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
             }
             entity = app.unmarshalEntity(((ForeignReferenceMapping) mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e) {
             JPARSLogger.fine("exception_while_unmarhalling_entity", new Object[] { type, persistenceUnit, e.toString() });
-            return Response.status(Status.BAD_REQUEST).build();
+            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Object result = app.updateOrAddAttribute(getMatrixParameters(ui, persistenceUnit), type, id, getQueryParameters(ui), attribute, entity, partner);
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
         }
@@ -268,11 +269,11 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.BAD_REQUEST).build();
+            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         if ((attribute == null) && (listItemId == null)) {
-            return Response.status(Status.BAD_REQUEST).build();
+            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Object id = IdHelper.buildId(app, type, key);
@@ -281,7 +282,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
         DatabaseMapping mapping = (DatabaseMapping) descriptor.getMappingForAttributeName(attribute);
         if (!mapping.isForeignReferenceMapping()) {
             JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);
@@ -290,13 +291,13 @@ public abstract class AbstractEntityResource extends AbstractResource {
 
         if (result == null) {
             JPARSLogger.fine("jpars_could_not_update_attribute", new Object[] { attribute, type, key, persistenceUnit });
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
         }
     }
 
-    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo ui, URI baseURI) {
+    protected Response delete(String version, String persistenceUnit, String type, String key, UriInfo ui, HttpHeaders hh, URI baseURI) {
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null || app.getClass(type) == null) {
             if (app == null) {
@@ -304,7 +305,7 @@ public abstract class AbstractEntityResource extends AbstractResource {
             } else {
                 JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[] { type, persistenceUnit });
             }
-            return Response.status(Status.NOT_FOUND).build();
+            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
         }
 
         Map<String, String> discriminators = getMatrixParameters(ui, persistenceUnit);

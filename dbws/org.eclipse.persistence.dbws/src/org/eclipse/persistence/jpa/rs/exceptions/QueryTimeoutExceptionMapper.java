@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import javax.persistence.QueryTimeoutException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,8 +24,10 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class QueryTimeoutExceptionMapper implements ExceptionMapper<QueryTimeoutException> {
+    @Context
+    private HttpHeaders headers;
     public Response toResponse(QueryTimeoutException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.BAD_REQUEST).build();
+        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
     }
 }

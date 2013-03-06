@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import javax.persistence.TransactionRequiredException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,8 +24,10 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class TransactionRequiredExceptionMapper implements ExceptionMapper<TransactionRequiredException> {
+    @Context
+    private HttpHeaders headers;
     public Response toResponse(TransactionRequiredException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(headers)).build();
     }
 }

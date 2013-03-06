@@ -10,22 +10,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import javax.persistence.PersistenceException;
-import javax.ws.rs.core.Context;
+import java.util.List;
+
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.core.MediaType;
 
-import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
-@Provider
-public class PersistenceExceptionMapper implements ExceptionMapper<PersistenceException> {
-    @Context
-    private HttpHeaders headers;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
-    public Response toResponse(PersistenceException exception){
-        JPARSLogger.exception("jpars_caught_exception", new Object[]{}, exception);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(headers)).build();
+public abstract class AbstractExceptionMapper {
+
+    public static MediaType getMediaType(HttpHeaders headers) {
+        MediaType mediaType = MediaType.APPLICATION_JSON_TYPE;
+        if (headers != null) {
+            List<MediaType> accepts = headers.getAcceptableMediaTypes();
+            if (accepts != null && accepts.size() > 0) {
+                try {
+                    mediaType = StreamingOutputMarshaller.mediaType(accepts);
+                } catch (Exception ex) {}
+            }
+        }
+        return mediaType;
     }
 }

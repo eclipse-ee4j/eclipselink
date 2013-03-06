@@ -13,6 +13,8 @@
 package org.eclipse.persistence.jpa.rs.exceptions;
 
 import javax.persistence.EntityExistsException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,9 +24,10 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 @Provider
 public class EntityExistsExceptionMapper implements ExceptionMapper<EntityExistsException> {
-
+    @Context
+    private HttpHeaders headers;
     public Response toResponse(EntityExistsException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.CONFLICT).build();
+        return Response.status(Status.CONFLICT).type(AbstractExceptionMapper.getMediaType(headers)).build();
     }
 }
