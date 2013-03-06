@@ -223,8 +223,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
     
     /**
-     * Build a ResultSetMappingQuery from a sql result set mapping name and a
-     * stored procedure call.
+     * Build a DataReadQuery with the stored procedure call given.
      */
     public static DatabaseQuery buildStoredProcedureQuery(StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         DataReadQuery query = new DataReadQuery();

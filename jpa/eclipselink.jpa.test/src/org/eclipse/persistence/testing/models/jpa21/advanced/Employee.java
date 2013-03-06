@@ -51,11 +51,13 @@ import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.StoredProcedureParameter;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
@@ -72,35 +74,10 @@ import org.eclipse.persistence.sessions.Session;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
+import static javax.persistence.ParameterMode.IN;
 import static javax.persistence.ParameterMode.INOUT;
 import static javax.persistence.ParameterMode.OUT;
 import static javax.persistence.ParameterMode.REF_CURSOR;
-
-@NamedEntityGraphs(
-        {@NamedEntityGraph(
-                attributeNodes={
-                        @NamedAttributeNode("address"),
-                        @NamedAttributeNode(value="projects", subgraph="projects")
-                },
-                subgraphs={
-                        @NamedSubgraph(
-                                name="projects",
-                                attributeNodes={
-                                        @NamedAttributeNode("properties")
-                                }
-                        ),
-                        @NamedSubgraph(
-                                name="projects",
-                                type=LargeProject.class,
-                                attributeNodes={
-                                    @NamedAttributeNode("executive")
-                                }
-                        )
-                }
-        )
-        }
-)
-
 
 @Entity
 @Table(name="JPA21_EMPLOYEE")
@@ -140,6 +117,14 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
             @StoredProcedureParameter(mode=REF_CURSOR, name="CUR1", type=void.class),
             @StoredProcedureParameter(mode=REF_CURSOR, name="CUR2", type=void.class)
         }
+    ),
+    @NamedStoredProcedureQuery(
+        name="read_using_sys_cursor",
+        procedureName="Read_Using_Sys_Cursor",
+        parameters = {
+            @StoredProcedureParameter(mode=IN, name="f_name_v", type=String.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, name="p_recordset", type=void.class)    
+        }
     )
 })
 @SqlResultSetMappings({
@@ -173,6 +158,25 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         @ConversionValue(dataValue="M", objectValue="Male")
     }
 )
+@NamedEntityGraphs({
+    @NamedEntityGraph(
+        attributeNodes={
+            @NamedAttributeNode("address"),
+            @NamedAttributeNode(value="projects", subgraph="projects")
+        },
+        subgraphs={
+            @NamedSubgraph(
+                name="projects",
+                attributeNodes={@NamedAttributeNode("properties")}
+            ),
+            @NamedSubgraph(
+                name="projects",
+                type=LargeProject.class,
+                attributeNodes={@NamedAttributeNode("executive")}
+            )
+        }
+    )
+})
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }

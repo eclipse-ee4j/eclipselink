@@ -272,8 +272,15 @@ public class JPAQuery extends DatabaseQuery  {
             Class clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = StoredProcedureQueryImpl.buildStoredProcedureQuery(clazz, call, hints, loader, (AbstractSession)session);
         } else {
-            // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-            query = StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, (AbstractSession)session);
+            // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session.
+            if (call.isStoredFunctionCall() || call.isStoredPLSQLProcedureCall()) {
+                // If it is a function (plsql or not) or plsql procedure use the data read query.
+                query = StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, (AbstractSession)session);
+            } else {
+                // Otherwise use a result set mapping query for stored procedure calls so users can use the execute
+                // method on it (JPA 2.1 API). Will return the same result, that is, Object[] in this case.
+                query = StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<SQLResultSetMapping>(), call, hints, loader, (AbstractSession)session);
+            }
         }
         query.setName(getName());
         

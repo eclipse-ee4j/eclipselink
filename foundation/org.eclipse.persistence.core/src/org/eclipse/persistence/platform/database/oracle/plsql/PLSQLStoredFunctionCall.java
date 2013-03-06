@@ -83,6 +83,11 @@ public class PLSQLStoredFunctionCall extends PLSQLStoredProcedureCall {
     public boolean isStoredFunctionCall() {
         return true;
     }
+    
+    @Override
+    public boolean isStoredPLSQLFunctionCall() {
+        return true;
+    }
 
     /**
      * INTERNAL:

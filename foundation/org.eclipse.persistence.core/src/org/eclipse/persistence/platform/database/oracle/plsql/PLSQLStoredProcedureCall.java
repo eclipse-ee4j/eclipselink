@@ -1224,7 +1224,12 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         }
         return info.sql2PlName;
     }
-
+    
+    @Override
+    public boolean isStoredPLSQLProcedureCall() {
+        return true;
+    }
+    
     /**
      * Return the conversion function name, generate the function if missing.
      */

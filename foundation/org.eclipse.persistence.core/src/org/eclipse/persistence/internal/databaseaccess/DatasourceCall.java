@@ -242,6 +242,14 @@ public abstract class DatasourceCall implements Call {
         return false;
     }
 
+    public boolean isStoredPLSQLFunctionCall() {
+        return false;
+    }
+    
+    public boolean isStoredPLSQLProcedureCall() {
+        return false;
+    }
+    
     public boolean isStoredFunctionCall() {
         return false;
     }

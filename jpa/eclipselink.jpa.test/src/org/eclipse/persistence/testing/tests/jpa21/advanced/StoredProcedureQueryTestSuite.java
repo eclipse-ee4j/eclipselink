@@ -999,7 +999,10 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
             
             try {
-                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor", Employee.class);
+                // Test stored procedure query created through API. //
+                beginTransaction(em);
+                
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor");
                 query.registerStoredProcedureParameter("f_name_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("p_recordset", void.class, ParameterMode.REF_CURSOR);
                 
@@ -1012,8 +1015,24 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test the getParameters call AFTER query execution.
                 assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
                 
-                List<Employee> employees = (List<Employee>) query.getOutputParameterValue("p_recordset");
-                assertFalse("No employees were returned", employees.isEmpty());                
+                List<Object[]> employees = (List<Object[]>) query.getOutputParameterValue("p_recordset");
+                assertFalse("No employees were returned", employees.isEmpty());
+                
+                commitTransaction(em);
+                
+                // Test now with the named stored procedure. //
+                beginTransaction(em);
+                
+                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("read_using_sys_cursor");
+                query2.setParameter("f_name_v", "Fred");
+                Object paramValue = query2.getParameterValue("f_name_v");
+                
+                boolean execute2 = query2.execute();
+                
+                List<Object[]> employees2 = (List<Object[]>) query2.getOutputParameterValue("p_recordset");
+                assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
+                
+                commitTransaction(em);
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
