@@ -148,9 +148,6 @@
         </condition>
 
         <property name="target.repository"     value="eclipselink.repository"/>
-
-        <!-- Validate Publish: No reason to continue if run setup not correct. -->
-        <fail message="Requesting Milestone or Release build but git.hash not specified!" unless="git.hash.ok"/>
     </target>
 
     <target name="discover-static-built-info" depends="init">
