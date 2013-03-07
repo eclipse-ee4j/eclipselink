@@ -2953,10 +2953,20 @@
         <ant antfile="antbuild.xml" dir="${jpatest.basedir}/../eclipselink.jpars.test"  target="create-jpars-war-file"/>
         <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
         <copy file="${jpatest.basedir}/../eclipselink.jpars.test/eclipselink.jpars.test.war" todir="${jpatest.basedir}/${build.dir}"/>
+        <antcall target="replace-jpars-jar-with-toplink-dataservices-web-jar"/>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
             <fileset dir="${jpatest.basedir}/${build.dir}" includes ="*.war"/>
         </ear>
         <copy file="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
+    <!-- replace org.eclipse.persistence.jpars*.jar with toplink-dataservices-web.jar in generated eclipselink.jpars.test.war -->
+    <target name="replace-jpars-jar-with-toplink-dataservices-web-jar" if="test.jpars.on.toplink.dataservices">
+        <unzip src="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" dest="${jpatest.basedir}/${build.dir}"/>
+        <delete dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
+        <mkdir dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
+        <copy file="/ade_autofs/ade_generic/TOPLINK_12.1.2.0.0_GENERIC.rdd/130305.1600/tldev/jlib/tl/toplink-dataservices-web.jar" todir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
+        <zip destfile="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" basedir="${jpatest.basedir}/${build.dir}" 
+        includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
     <!-- Build server test ear. -->
     <target name="server-build-ear" unless="is.jaxrs.or.jpars.testing">
@@ -3659,6 +3669,15 @@
     </target>
 
     <target name="server-test-jpars" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
+        <antcall target="server-test-jpars-core" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-jpars-on-toplink-dataservices" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
+        <property name="test.jpars.on.toplink.dataservices" value="true"/>
+        <antcall target="server-test-jpars-core" inheritRefs="true"/>
+    </target>
+
+    <target name="server-test-jpars-core">
         <echo message="jpars url is ${jpars.url}"/>
         <copy file="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml" tofile="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" overwrite="true"/>
         <replace file="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='Glassfish' value="${server.platform}"/>
