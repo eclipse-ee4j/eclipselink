@@ -103,6 +103,7 @@
         <taskdef name="selectbundle"   classname="${custom.selectbundle.task.class}"   classpath="${custom.tasks.lib}"/>
         <taskdef name="stripQualifier" classname="${custom.stripqualifier.task.class}" classpath="${custom.tasks.lib}"/>
 
+        <echo message="maven.build.location                = ${maven.build.location}"/>
         <echo message="maven.2.pojo.dir  (eclipselink.jar) = ${maven.2.pojo.dir}"/>
         <echo message="maven.2.common.plugins.dir (common) = ${maven.2.common.plugins.dir}"/>
         <echo message="maven.2.jpa.plugins.dir  (JPA-API)  = ${maven.2.jpa.plugins.dir}"/>
@@ -596,7 +597,7 @@
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
             <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
             <arg value="-DrepositoryId=sonatype-nexus-staging"/>
-            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifact}"/>
             <arg value="-Pgpg"/>
         </artifact:mvn>
@@ -607,7 +608,7 @@
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
             <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
             <arg value="-DrepositoryId=sonatype-nexus-staging"/>
-            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactSrc}"/>
             <arg value="-Dclassifier=sources"/>
             <arg value="-Pgpg"/>
@@ -619,7 +620,7 @@
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
             <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
             <arg value="-DrepositoryId=sonatype-nexus-staging"/>
-            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactJavadoc}"/>
             <arg value="-Dclassifier=javadoc"/>
             <arg value="-Pgpg"/>
