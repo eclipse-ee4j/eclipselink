@@ -19,6 +19,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 /**
  * @author gonural
@@ -30,6 +31,6 @@ public class ConversionExceptionMapper implements ExceptionMapper<ConversionExce
     private HttpHeaders headers;
     public Response toResponse(ConversionException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }

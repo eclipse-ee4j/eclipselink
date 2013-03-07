@@ -18,6 +18,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class ClassNotFoundExceptionMapper implements ExceptionMapper<ClassNotFoundException> {
@@ -25,7 +26,7 @@ public class ClassNotFoundExceptionMapper implements ExceptionMapper<ClassNotFou
     private HttpHeaders headers;
     public Response toResponse(ClassNotFoundException exception){
         JPARSLogger.exception("jpars_caught_exception", new Object[]{}, exception);
-        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
     /*
     public Response toResponse(ClassNotFoundException exception, MediaType mediaType){

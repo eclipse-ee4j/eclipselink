@@ -21,6 +21,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class OptimisticLockExceptionMapper implements ExceptionMapper<OptimisticLockException> {
@@ -28,6 +29,6 @@ public class OptimisticLockExceptionMapper implements ExceptionMapper<Optimistic
     private HttpHeaders headers;
     public Response toResponse(OptimisticLockException exception) {
         JPARSLogger.exception("jpars_caught_exception", new Object[] {}, exception);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }

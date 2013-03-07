@@ -19,6 +19,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class NamingExceptionMapper implements ExceptionMapper<NamingException> {
@@ -26,6 +27,6 @@ public class NamingExceptionMapper implements ExceptionMapper<NamingException> {
     private HttpHeaders headers;
     public Response toResponse(NamingException exception){
         JPARSLogger.exception("jpars_caught_exception", new Object[]{}, exception);
-        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }

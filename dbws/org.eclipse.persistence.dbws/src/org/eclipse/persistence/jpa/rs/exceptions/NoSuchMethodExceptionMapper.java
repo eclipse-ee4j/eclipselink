@@ -18,6 +18,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class NoSuchMethodExceptionMapper implements ExceptionMapper<NoSuchMethodException> {
@@ -25,6 +26,6 @@ public class NoSuchMethodExceptionMapper implements ExceptionMapper<NoSuchMethod
     private HttpHeaders headers;
     public Response toResponse(NoSuchMethodException exception){
         JPARSLogger.exception("jpars_caught_exception", new Object[]{}, exception);
-        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }

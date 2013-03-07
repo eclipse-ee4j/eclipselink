@@ -20,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class RollbackExceptionMapper implements ExceptionMapper<RollbackException> {
@@ -32,10 +33,10 @@ public class RollbackExceptionMapper implements ExceptionMapper<RollbackExceptio
             if (cause != null) {
                 if (cause instanceof DatabaseException) {
                     //  409 Conflict ("The request could not be completed due to a conflict with the current state of the resource.")
-                    return Response.status(Status.CONFLICT).type(AbstractExceptionMapper.getMediaType(headers)).build();
+                    return Response.status(Status.CONFLICT).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
                 }
             }
         }
-        return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }

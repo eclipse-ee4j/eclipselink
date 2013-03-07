@@ -24,7 +24,6 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.AbstractExceptionMapper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
@@ -42,7 +41,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
         int result = app.queryExecuteUpdate(getMatrixParameters(ui, persistenceUnit), name, getMatrixParameters(ui, name), getQueryParameters(ui));
         JAXBElement jaxbElement = new JAXBElement(new QName(StreamingOutputMarshaller.NO_ROUTE_JAXB_ELEMENT_LABEL), new Integer(result).getClass(), result);
@@ -54,7 +53,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
         PersistenceContext app = getPersistenceContext(persistenceUnit, ui.getBaseUri(), version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
         Query query = app.buildQuery(getMatrixParameters(ui, persistenceUnit), name, getMatrixParameters(ui, name), getQueryParameters(ui));
         DatabaseQuery dbQuery = ((EJBQueryImpl<?>) query).getDatabaseQuery();
@@ -68,7 +67,7 @@ public abstract class AbstractQueryResource extends AbstractResource {
                     return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
                 } else {
                  // something wrong with the descriptors
-                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
+                    return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
                 }
             }
             return Response.ok(new StreamingOutputMarshaller(app, queryResults, hh.getAcceptableMediaTypes())).build();

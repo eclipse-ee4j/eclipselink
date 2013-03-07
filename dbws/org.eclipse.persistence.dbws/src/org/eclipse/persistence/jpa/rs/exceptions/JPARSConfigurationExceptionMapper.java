@@ -20,6 +20,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
+import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 
 @Provider
 public class JPARSConfigurationExceptionMapper implements ExceptionMapper<JPARSConfigurationException> {
@@ -27,6 +28,6 @@ public class JPARSConfigurationExceptionMapper implements ExceptionMapper<JPARSC
     private HttpHeaders headers;
     public Response toResponse(JPARSConfigurationException exception){
         JPARSLogger.exception("jpars_caught_exception", new Object[]{}, exception);
-        return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(headers)).build();
+        return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(headers)).build();
     }
 }
