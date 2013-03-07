@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -29,6 +31,7 @@ public class DefaultNoNodeEmployee {
     DefaultNoNodeEmployee elementPOJONillable;
     String attribute;
     Object any;
+    List choiceList;
     DefaultNoNodeEmployee reference;
     DefaultNoNodeEmployee choice;
     
@@ -40,7 +43,11 @@ public class DefaultNoNodeEmployee {
     boolean wasSetAny;
     boolean wasSetReference;
     boolean wasSetChoice;
+    boolean wasSetChoiceList;
 
+    public DefaultNoNodeEmployee(){
+    }
+    
     @XmlAnyElement
     public Object getAny() {
         return any;
@@ -60,6 +67,16 @@ public class DefaultNoNodeEmployee {
         return choice;
     }
 
+    
+
+    @XmlElements({
+        @XmlElement(name="foo", type=DefaultNoNodeEmployee.class),
+        @XmlElement(name="bar", type=DefaultNoNodeEmployee.class)
+    })
+    public List getChoiceList() {
+        return choiceList;
+    }
+    
     public DefaultNoNodeEmployee getElementPOJO() {
         return elementPOJO;
     }
@@ -95,6 +112,11 @@ public class DefaultNoNodeEmployee {
         this.choice = choice;
         wasSetChoice = true;
     }
+    
+    public void setChoiceList(List choiceList) {
+        this.choiceList = choiceList;
+        wasSetChoiceList = true;
+    }
 
     public void setElementPOJO(DefaultNoNodeEmployee element) {
         this.elementPOJO = element;
@@ -128,19 +150,23 @@ public class DefaultNoNodeEmployee {
         }
         try {
             DefaultNoNodeEmployee test = (DefaultNoNodeEmployee) obj;
-            /*
+            
             if(any != test.any || wasSetAny != test.wasSetAny) {
                 return false;
-            }
-            */
+            }                    
+            
             if(attribute != test.attribute || wasSetAttribute != test.wasSetAttribute) {
                 return false;
             }
-            /*
+            
             if(choice != test.choice || wasSetChoice != test.wasSetChoice) {
                 return false;
             }
-            */
+            
+            if(choiceList != test.choiceList || wasSetChoiceList != test.wasSetChoiceList) {
+                return false;
+            }
+            
             if(elementString != test.elementString || wasSetElementString != test.wasSetElementString) {
                 return false;
             }

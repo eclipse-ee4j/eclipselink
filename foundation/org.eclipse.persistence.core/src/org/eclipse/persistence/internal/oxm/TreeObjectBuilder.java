@@ -312,7 +312,6 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         XMLField firstField = (XMLField)fields.next();
                         XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
                         firstNodeValue.setNullCapableNodeValue(firstNodeValue);
-                        this.addNullCapableValue(firstNodeValue);
                         addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
                             XMLField next = (XMLField)fields.next();

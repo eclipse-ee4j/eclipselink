@@ -43,7 +43,7 @@ import org.xml.sax.Attributes;
  * handled when used with the TreeObjectBuilder.</p> 
  * @author mmacivor
  */
-public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCapableValue {
+public class XMLChoiceObjectMappingNodeValue extends NodeValue {
     private NodeValue choiceElementNodeValue;
     private Map<Class, NodeValue> choiceElementNodeValues;
     private XMLChoiceObjectMapping xmlChoiceMapping;
@@ -94,11 +94,7 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     public void setNullCapableNodeValue(XMLChoiceObjectMappingNodeValue nodeValue) {
         this.nullCapableNodeValue = nodeValue;
     }
-    
-    public void setNullValue(Object object, Session session) {
-        xmlChoiceMapping.setAttributeValueInObject(object, null);
-    }
-
+  
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver) {
         return this.marshal(xPathFragment, marshalRecord, object, session, namespaceResolver, ObjectMarshalContext.getInstance());
     }
@@ -176,7 +172,6 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
         if(null != xmlChoiceMapping.getConverter()) {
             UnmarshalContext unmarshalContext = unmarshalRecord.getUnmarshalContext();
             unmarshalRecord.setUnmarshalContext(new ChoiceUnmarshalContext(unmarshalContext, xmlChoiceMapping.getConverter()));
@@ -188,7 +183,6 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     }
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
-        unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
         return this.choiceElementNodeValue.startElement(xPathFragment, unmarshalRecord, atts);
     }
     
@@ -207,7 +201,6 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
      * 
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
-        unmarshalRecord.removeNullCapableValue(this.nullCapableNodeValue);
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
     }
 }
