@@ -99,6 +99,7 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
@@ -4018,16 +4019,21 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (source instanceof Reader) {
                     reader = (Reader) source;
                 } else if (source instanceof String) {
+                    // Try to load the resource first, if not assume it as a well formed URL. If not, throw an exception. 
                     URL sourceURL = loader.getResource((String) source);
                     
                     if (sourceURL == null) {
-                        throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{ source }));
-                    } else {
-                        URLConnection connection = sourceURL.openConnection();
-                        // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
-                        connection.setUseCaches(false);
-                        reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
+                        try {
+                            sourceURL = new URL((String) source);
+                        }  catch (MalformedURLException e) {
+                            throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{ source }));
+                        }
                     }
+                    
+                    URLConnection connection = sourceURL.openConnection();
+                    // Set to false to prevent locking of jar files on Windows. EclipseLink issue 249664
+                    connection.setUseCaches(false);
+                    reader = new InputStreamReader(connection.getInputStream(), "UTF-8");
                 } else {
                     throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-invalid-source-script-type", new Object[]{ source , source.getClass()}));
                 }

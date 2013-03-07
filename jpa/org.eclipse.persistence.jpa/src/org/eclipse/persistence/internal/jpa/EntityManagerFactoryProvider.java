@@ -230,7 +230,7 @@ public class EntityManagerFactoryProvider {
         // us with a user name and password we will connect. At minimum if they 
         // provide the platform we'll generate the DDL as if we had connected.
         if ((databaseGenerationAction == null || databaseGenerationAction.equals(PersistenceUnitProperties.SCHEMA_GENERATION_NONE_ACTION)) && ! requiresConnection) {
-            session.loginNoConnectionRequired();
+            session.setDatasourceAndInitialize();
         } else {
             String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
             if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
