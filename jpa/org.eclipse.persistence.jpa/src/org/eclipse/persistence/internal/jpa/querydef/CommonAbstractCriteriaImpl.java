@@ -198,7 +198,7 @@ public abstract class CommonAbstractCriteriaImpl<T> implements CommonAbstractCri
     public DatabaseQuery translate() {
     	DatabaseQuery query = getDatabaseQuery();
     	for (ParameterExpression<?> parameter : getParameters()) {
-            query.addArgument(parameter.getName(), parameter.getJavaType());
+            query.addArgument(((ParameterExpressionImpl)parameter).getInternalName(), parameter.getJavaType());
         }
         if (this.where != null) {
             if (((InternalExpression) this.where).isPredicate() && ((InternalSelection) this.where).getCurrentNode() == null) {
