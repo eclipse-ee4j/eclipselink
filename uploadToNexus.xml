@@ -58,7 +58,7 @@
     <property name="mavenant.dir" value="${build.deps.dir}/mavenant"/>
     <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
 
-    <path id="maven-ant-tasks.classpath" path="${mavenant.dir}/maven-ant-tasks-2.0.8.jar" />
+    <path id="maven-ant-tasks.classpath" path="${mavenant.dir}/maven-ant-tasks-2.1.3.jar" />
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
 
@@ -549,42 +549,120 @@
     <!-- to refuse redeployment. (Not hopeful though, seems too restrictive). -->
 
     <!-- Uploads a single artifact & source to maven repository -->
-    <target name="upload-artifact" depends="prepare-pom">
-        <!-- Deploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
+    <target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging, us-staging">
+        <!-- cleanup -->
+        <delete file="pom.xml"/>
+    </target>
+    <target name="ua-snapshot" unless="sign">
+        <artifact:pom id="maven.project" file="pom.xml"/>
         <artifact:deploy file="${artifact}">
           <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
-          <artifact:attach file="${artifactSrc}" classifier="sources"/>
+          <attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
     </target>
 
     <!-- Uploads a single artifact, source & javadoc to maven repository -->
-    <target name="upload-artifact-with-javadoc" depends="prepare-pom">
-        <!-- Deploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
-        <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
-          <artifact:attach file="${artifactSrc}" classifier="sources"/>
-          <artifact:attach file="${artifactJavadoc}" classifier="javadoc"/>
-        </artifact:deploy>
+    <target name="upload-artifact-with-javadoc" depends="prepare-pom, uawj-snapshot, ua-staging, us-staging, uj-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
-
-    <!-- Uploads a single artifact without src to maven repository -->
-    <target name="upload-artifact-no-src" depends="prepare-pom">
-        <!-- Deploy the jar to maven repository along with sources -->
+    <target name="uawj-snapshot" unless="sign">
         <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
           <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
+          <attach file="${artifactSrc}"     type="jar" classifier="sources"/>
+          <attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>
         </artifact:deploy>
+    </target>
+
+    <target name="upload-artifact-no-src" depends="prepare-pom, uans-snapshot, ua-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
+    </target>
+    <target name="uans-snapshot" unless="sign">
+        <artifact:pom id="maven.project" file="pom.xml"/>
+        <artifact:deploy file="${artifact}">
+          <remoteRepository refid="${target.repository}"/>
+          <pom refid="maven.project"/>
+        </artifact:deploy>
+    </target>
+
+    <!-- Staging targets -->
+    <target name="ua-staging" if="sign">
+        <!-- sign and deploy the main artifact -->
+        <artifact:mvn>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-Dfile=${artifact}"/>
+            <arg value="-Pgpg"/>
+        </artifact:mvn>
+    </target>
+    <target name="us-staging" if="sign">
+        <!-- sign and deploy the sources artifact -->
+        <artifact:mvn>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-Dfile=${artifactSrc}"/>
+            <arg value="-Dclassifier=sources"/>
+            <arg value="-Pgpg"/>
+        </artifact:mvn>
+    </target>
+    <target name="uj-staging" if="sign">
+        <!-- sign and deploy the javadoc artifact -->
+        <artifact:mvn>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-DpomFile=pom.xml"/>
+            <arg value="-Dfile=${artifactJavadoc}"/>
+            <arg value="-Dclassifier=javadoc"/>
+            <arg value="-Pgpg"/>
+        </artifact:mvn>
+    </target>
+
+    <!-- ************************************* NOT USED **************************************** -->
+    <!-- Manual signing would look something like this (not commented out due to double dashes): -->
+    <target name="sign-artifact">
+        <echo message="Using gpg to sign '${artifactPath}'..."/>
+        <exec executable="gpg" failonerror="false" logError="true">
+            <arg value="-u ${keyID}"/>
+            <arg value="--sign"/>
+            <arg value="--detach-sign"/>
+            <arg value="-a ${artifactPath}"/>
+        </exec>
+    </target>
+    <!--  But the need to expose the key ID and somehow pass on the passphrase in the script is a major issue
+
+    Signing and deployment would be called like this:
+    -->
+    <target name="uawj-staging" unless="sign">
+        <!-- GPG signing calls:         -->
+        <antcall target="sign-artifact">
+            <param name="artifactPath"    value="${artifact}"/>
+        </antcall>
+        <antcall target="sign-artifact">
+            <param name="artifactPath"    value="${artifactSrc}"/>
+        </antcall>
+        <antcall target="sign-artifact">
+            <param name="artifactPath"    value="${artifactJavadoc}"/>
+        </antcall>
+        <!--  Deployment would then look something like:            -->
+        <artifact:pom id="maven.project" file="pom.xml" />
+        <artifact:deploy file="${artifact}">
+          <remoteRepository refid="${target.repository}"/>
+          <pom refid="maven.project"/>
+          <attach file="${artifact}.asc"        type="asc" classifier="all???"/>
+          <attach file="${artifactSrc}"         type="jar" classifier="sources"/>
+          <attach file="${artifactSrc}.asc"     type="asc" classifier="all"/>
+          <attach file="${artifactJavadoc}"     type="zip" classifier="javadoc"/>
+          <attach file="${artifactJavadoc}.asc" type="asc" classifier="all"/>
+        </artifact:deploy>
     </target>
 
 </project>
