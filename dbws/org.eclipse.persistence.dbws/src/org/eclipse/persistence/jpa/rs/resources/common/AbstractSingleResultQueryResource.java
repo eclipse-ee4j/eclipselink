@@ -25,7 +25,6 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.AbstractExceptionMapper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryList;
@@ -42,7 +41,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
         PersistenceContext app = getPersistenceContext(persistenceUnit, baseURI, version, null);
         if (app == null) {
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { persistenceUnit });
-            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
 
         Query query = app.buildQuery(getMatrixParameters(ui, persistenceUnit), name, getMatrixParameters(ui, name), getQueryParameters(ui));
@@ -69,7 +68,7 @@ public abstract class AbstractSingleResultQueryResource extends AbstractResource
                 return Response.ok(new StreamingOutputMarshaller(app, list, hh.getAcceptableMediaTypes())).build();
             } else {
                 // something went wrong with the descriptors, return error
-                return Response.status(Status.INTERNAL_SERVER_ERROR).type(AbstractExceptionMapper.getMediaType(hh)).build();
+                return Response.status(Status.INTERNAL_SERVER_ERROR).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
             }
         }
         Object queryResults = query.getSingleResult();

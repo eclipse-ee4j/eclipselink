@@ -22,8 +22,8 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +33,7 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.exceptions.UnsupportedMediaTypeException;
 import org.eclipse.persistence.jpa.rs.util.list.MultiResultQueryList;
 import org.eclipse.persistence.jpa.rs.util.xmladapters.LinkAdapter;
 
@@ -116,14 +117,15 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      *            List of {@link MediaType} values;
      * @return selected {@link MediaType}
      * @throws WebApplicationException
-     *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON or XML
-     *             values are found.
+     *             with Status.UNSUPPORTED_MEDIA_TYPE if neither the JSON, XML
+     *             or OCTET_STREAM values are found.
      */
     public static MediaType mediaType(List<MediaType> types) {
+        MediaType aMediaType = null;
         if ((types != null) && (!types.isEmpty())) {
             JPARSLogger.fine("jpars_requested_type", new Object[] { types });
             for (int i = 0; i < types.size(); i++) {
-                MediaType aMediaType = types.get(i);
+                aMediaType = types.get(i);
                 if (aMediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
                     return MediaType.APPLICATION_JSON_TYPE;
                 }
@@ -135,7 +137,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 }
             }
         }
-        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
+        throw new UnsupportedMediaTypeException((aMediaType != null) ? aMediaType.toString() : "unknown");
     }
 
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
@@ -156,5 +158,19 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             }
         });
         return marshaller;
+    }
+    
+    public static MediaType getResponseMediaType(HttpHeaders headers) {
+        MediaType mediaType = MediaType.TEXT_PLAIN_TYPE;
+        if (headers != null) {
+            List<MediaType> accepts = headers.getAcceptableMediaTypes();
+            if (accepts != null && accepts.size() > 0) {
+                try {
+                    mediaType = StreamingOutputMarshaller.mediaType(accepts);
+                } catch (Exception ex) {
+                }
+            }
+        }
+        return mediaType;
     }
 }

@@ -39,7 +39,6 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.exceptions.AbstractExceptionMapper;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpa.rs.util.list.LinkList;
@@ -53,7 +52,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
     protected Response getContexts(String version, HttpHeaders hh, URI baseURI) throws JAXBException {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
 
         Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
@@ -84,7 +83,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             InvocationTargetException, IllegalAccessException {
         if (!isValidVersion(version)) {
             JPARSLogger.fine("unsupported_service_version_in_the_request", new Object[] { version });
-            return Response.status(Status.BAD_REQUEST).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.BAD_REQUEST).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
 
         SessionBeanCall call = null;
@@ -95,7 +94,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
         Object ans = ctx.lookup(jndiName);
         if (ans == null) {
             JPARSLogger.fine("jpars_could_not_find_session_bean", new Object[] { jndiName });
-            return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
+            return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
         }
 
         PersistenceContext context = null;
@@ -103,7 +102,7 @@ public abstract class AbstractPersistenceResource extends AbstractResource {
             context = getPersistenceFactory().get(call.getContext(), ui.getBaseUri(), version, null);
             if (context == null) {
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[] { call.getContext() });
-                return Response.status(Status.NOT_FOUND).type(AbstractExceptionMapper.getMediaType(hh)).build();
+                return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
             }
         }
 
