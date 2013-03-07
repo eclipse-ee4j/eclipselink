@@ -742,9 +742,19 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      *
      * @see #login(Login)
      */
-    public void loginNoConnect() throws DatabaseException {
+    public void loginNoConnectionRequired() throws DatabaseException {
         preConnectDatasource();
-        setSchemaPlatform();
+        
+        if (! setSchemaPlatform()) {
+            // Try to connect. If we can, this will ensure we have platform details 
+            // if they are not provided through the schema generation properties.
+            try {
+                connect();
+            } catch (Exception e) {
+                // ignore any connection errors and move on.
+            }
+        }
+        
         postConnectDatasource();
     }
     
