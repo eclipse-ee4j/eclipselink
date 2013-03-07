@@ -449,7 +449,6 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
                         Field firstField = (Field)fields.next();
                         XMLChoiceObjectMappingNodeValue firstNodeValue = new XMLChoiceObjectMappingNodeValue(xmlChoiceMapping, firstField);
                         firstNodeValue.setNullCapableNodeValue(firstNodeValue);
-                        this.addNullCapableValue(firstNodeValue);
                         addChild(firstField.getXPathFragment(), firstNodeValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
                             Field next = (Field)fields.next();

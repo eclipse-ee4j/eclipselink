@@ -40,7 +40,7 @@ import org.xml.sax.SAXException;
  * <p><b>Purpose</b>: This is how the XML Any Object Mapping is handled when
  * used with the TreeObjectBuilder.</p>
  */
-public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValue implements NullCapableValue {
+public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValue {
     private AnyObjectMapping xmlAnyObjectMapping;
 
     public XMLAnyObjectMappingNodeValue(AnyObjectMapping xmlAnyObjectMapping) {
@@ -183,7 +183,6 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-        unmarshalRecord.removeNullCapableValue(this);
         UnmarshalRecord childRecord = unmarshalRecord.getChildRecord();
         if (null != childRecord) {
             Object childObject = childRecord.getCurrentObject();
@@ -233,15 +232,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
         }
     }
     
-
-    public void setNullValue(Object object, CoreSession session) {
-        xmlAnyObjectMapping.setAttributeValueInObject(object, null);
-    }
-
-    public boolean isNullCapableValue() {
-        return true;
-    }
-
+    
     private Namespace setupFragment(Root originalValue, XPathFragment xmlRootFragment, MarshalRecord marshalRecord) {
         Namespace generatedNamespace = null;
         String xpath = originalValue.getLocalName();
