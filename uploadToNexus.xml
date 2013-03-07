@@ -380,7 +380,7 @@
             <param name="dependencies"    value=""/>
         </antcall>
         <!-- call upload for each artifact we want to upload -->
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="eclipselink"/>
             <param name="artifactVersion" value="${maven.version}"/>
@@ -445,7 +445,7 @@
             <param name="artifactName"    value="${oraclenosql.name}"/>
             <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall>
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.nosql"/>
             <param name="artifactVersion" value="${maven.version}"/>
@@ -464,7 +464,7 @@
             <param name="artifactName"    value="EclipseLink JPA"/>
             <param name="dependencies"    value="${jpa.dependencies}"/>
         </antcall>
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.jpars"/>
             <param name="artifactVersion" value="${maven.version}"/>
