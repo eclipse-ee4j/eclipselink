@@ -2964,7 +2964,7 @@
         <unzip src="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" dest="${jpatest.basedir}/${build.dir}"/>
         <delete dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
-        <copy file="/ade_autofs/ade_generic/TOPLINK_12.1.2.0.0_GENERIC.rdd/130305.1600/tldev/jlib/tl/toplink-dataservices-web.jar" todir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
+        <copy file="/ade_autofs/ade_generic/TOPLINK_12.1.2.0.0_GENERIC.rdd/LATEST/tldev/jlib/tl/toplink-dataservices-web.jar" todir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
         <zip destfile="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" basedir="${jpatest.basedir}/${build.dir}" 
         includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
