@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
@@ -238,7 +239,7 @@ public class FetchGroup extends AttributeGroup {
      */
     protected void setSubclassShouldLoad(boolean shouldLoad) {
         if (this.subClasses != null){
-            for (AttributeGroup group : this.subClasses){
+            for (CoreAttributeGroup group : this.subClasses){
                 ((FetchGroup)group).shouldLoad = shouldLoad;
                 ((FetchGroup)group).setSubclassShouldLoad(shouldLoad);
             }
@@ -333,21 +334,21 @@ public class FetchGroup extends AttributeGroup {
     }
 
     @Override
-    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+    public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
         this.entityFetchGroup = null;
-        super.addAttribute(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
+        super.addAttribute(attributeNameOrPath, (group != null ? ((AttributeGroup)group).toFetchGroup() : null));
     }
 
     @Override
-    public void addAttribute(String attributeNameOrPath, Collection<AttributeGroup> groups) {
+    public void addAttribute(String attributeNameOrPath, Collection<? extends CoreAttributeGroup> groups) {
         this.entityFetchGroup = null;
         super.addAttribute(attributeNameOrPath, groups);
     }
 
     @Override
-    public void addAttributeKey(String attributeNameOrPath, AttributeGroup group) {
+    public void addAttributeKey(String attributeNameOrPath, CoreAttributeGroup group) {
         this.entityFetchGroup = null;
-        super.addAttributeKey(attributeNameOrPath, (group != null ? group.toFetchGroup() : null));
+        super.addAttributeKey(attributeNameOrPath, (group != null ? ((AttributeGroup)group).toFetchGroup() : null));
     }
     
 

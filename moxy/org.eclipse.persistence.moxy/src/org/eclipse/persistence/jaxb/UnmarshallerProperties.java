@@ -118,4 +118,8 @@ public class UnmarshallerProperties {
      * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String AUTO_DETECT_MEDIA_TYPE = "eclipselink.auto-detect-media-type";
+
+    
+    public static final String OBJECT_GRAPH = "eclipselink.object-graph";
+
 }

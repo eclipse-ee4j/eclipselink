@@ -152,4 +152,11 @@ public abstract class Unmarshaller<
 
     public abstract XMLUnmarshalListener getUnmarshalListener();
 
+    /**
+     * INTERNAL:
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
+     * unmarshal. 
+     */
+    public abstract Object getUnmarshalAttributeGroup(); 
+
 }

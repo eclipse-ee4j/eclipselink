@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.NodeValue;
@@ -577,5 +578,13 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
         unmarshalRecord.unmappedContent();
     }
 
-    
+    @Override
+    public CoreAttributeGroup getUnmarshalAttributeGroup() {
+        return unmarshalRecord.getUnmarshalAttributeGroup();
+    }
+
+    @Override
+    public void setUnmarshalAttributeGroup(CoreAttributeGroup group) {
+        unmarshalRecord.setUnmarshalAttributeGroup(group);
+    }
 }

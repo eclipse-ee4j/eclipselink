@@ -13,13 +13,18 @@
 package org.eclipse.persistence.core.descriptors;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.descriptors.CoreInstantiationPolicy;
 import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
 public abstract class CoreDescriptor<
+    ATTRIBUTE_GROUP extends CoreAttributeGroup,
     DESCRIPTOR_EVENT_MANAGER extends CoreDescriptorEventManager,
     FIELD extends CoreField,
     INHERITANCE_POLICY extends CoreInheritancePolicy,
@@ -32,7 +37,45 @@ public abstract class CoreDescriptor<
     protected INSTANTIATION_POLICY instantiationPolicy;
     protected INHERITANCE_POLICY inheritancePolicy;
     protected OBJECT_BUILDER objectBuilder;
+    
+    protected Map<String, ATTRIBUTE_GROUP> attributeGroups;
 
+    
+    /**
+     * Adds the attribute group to this descriptor. 
+     * @param group
+     */
+    public void addAttributeGroup(ATTRIBUTE_GROUP group) {
+        if (this.attributeGroups == null){
+            this.attributeGroups = new HashMap<String, ATTRIBUTE_GROUP>();
+        }
+        this.attributeGroups.put(group.getName(), group);
+    }
+    
+
+    /**
+     * PUBLIC:
+     * Returns the attribute group corresponding to the name provided.
+     * If no group is found with the specified name, null is returned.
+     */
+    public ATTRIBUTE_GROUP getAttributeGroup(String name){
+        if (this.attributeGroups == null){
+            return null;
+        }else if (name != null){
+            return this.attributeGroups.get(name);
+        }else{
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_argument_get_attributegroup"));
+        }
+    }
+    
+    /**
+     * ADVANCED:
+     * Returns the attribute groups for this Descriptor.
+     */
+    public Map<String, ATTRIBUTE_GROUP> getAttributeGroups(){
+        return this.attributeGroups;
+    }    
+       
     /**
      * PUBLIC:
      * Get the event manager for the descriptor.  The event manager is responsible
@@ -146,6 +189,5 @@ public abstract class CoreDescriptor<
      *
      * @see #addPrimaryKeyFieldName(String)
      */
-    public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields);
-      
+    public abstract void setPrimaryKeyFields(List<FIELD> primaryKeyFields); 
 }

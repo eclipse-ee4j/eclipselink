@@ -38,7 +38,7 @@ import org.xml.sax.Attributes;
  * handled when used with the TreeObjectBuilder.</p> 
  * @author mmacivor
  */
-public class XMLChoiceCollectionMappingUnmarshalNodeValue extends NodeValue implements ContainerValue {
+public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private NodeValue choiceElementNodeValue;
     private NodeValue choiceElementMarshalNodeValue;
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;

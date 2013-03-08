@@ -114,6 +114,10 @@ import org.eclipse.persistence.mappings.transformers.FieldTransformer;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.annotations.XmlNamedAttributeNode;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraph;
+import org.eclipse.persistence.oxm.annotations.XmlNamedObjectGraphs;
+import org.eclipse.persistence.oxm.annotations.XmlNamedSubgraph;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
@@ -553,6 +557,9 @@ public class AnnotationsProcessor {
             if (helper.isAnnotationPresent(javaClass, XmlInlineBinaryData.class)) {
                 info.setInlineBinaryData(true);
             }
+            
+            // handle @NamedObjectGraph
+            processNamedObjectGraphs(javaClass, info);
 
             // handle @XmlRootElement
             processXmlRootElement(javaClass, info);
@@ -624,6 +631,56 @@ public class AnnotationsProcessor {
             typeInfo.put(info.getJavaClassName(), info);
         }
         return typeInfo;
+    }
+
+    private void processNamedObjectGraphs(JavaClass javaClass, TypeInfo info) {
+        ArrayList<XmlNamedObjectGraph> objectGraphs = new ArrayList<XmlNamedObjectGraph>();
+        if(helper.isAnnotationPresent(javaClass, XmlNamedObjectGraphs.class)) {
+            XmlNamedObjectGraphs graphs = (XmlNamedObjectGraphs)helper.getAnnotation(javaClass, XmlNamedObjectGraphs.class);
+            for(XmlNamedObjectGraph next: graphs.value()) {
+                objectGraphs.add(next);    
+            }
+        }
+        if(helper.isAnnotationPresent(javaClass, XmlNamedObjectGraph.class)) {
+            objectGraphs.add((XmlNamedObjectGraph)helper.getAnnotation(javaClass, XmlNamedObjectGraph.class));
+        }
+        
+        for(XmlNamedObjectGraph next:objectGraphs) {
+            org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph namedGraph = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph();
+            namedGraph.setName(next.name());
+
+            for(XmlNamedAttributeNode nextNode:next.attributeNodes()) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode namedNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode();
+                namedNode.setName(nextNode.value());
+                namedNode.setSubgraph(nextNode.subgraph());
+                namedGraph.getXmlNamedAttributeNode().add(namedNode);
+            }
+            for(XmlNamedSubgraph nextSubgraph:next.subGraphs()) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph namedSubGraph = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph();
+                namedSubGraph.setName(nextSubgraph.name());
+                namedSubGraph.setType(nextSubgraph.type().getName());
+                for(XmlNamedAttributeNode nextNode:nextSubgraph.attributeNodes()) {
+                    org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode namedNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode();
+                    namedNode.setName(nextNode.value());
+                    namedNode.setSubgraph(nextNode.subgraph());
+                    namedSubGraph.getXmlNamedAttributeNode().add(namedNode);
+                }
+                namedGraph.getXmlNamedSubgraph().add(namedSubGraph);
+            }
+            for(XmlNamedSubgraph nextSubgraph:next.subclassGraphs()) {
+                org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph namedSubGraph = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph();
+                namedSubGraph.setName(nextSubgraph.name());
+                namedSubGraph.setType(nextSubgraph.type().getName());
+                for(XmlNamedAttributeNode nextNode:nextSubgraph.attributeNodes()) {
+                    org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode namedNode = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedAttributeNode();
+                    namedNode.setName(nextNode.value());
+                    namedNode.setSubgraph(nextNode.subgraph());
+                    namedSubGraph.getXmlNamedAttributeNode().add(namedNode);
+                }
+                namedGraph.getXmlNamedSubclassGraph().add(namedSubGraph);
+            }
+            info.getObjectGraphs().add(namedGraph);
+        }
     }
 
     private void processAccessorFactory(JavaClass javaClass, TypeInfo info) {

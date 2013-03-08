@@ -1,0 +1,8 @@
+{"customer": {
+  "firstName":"John",
+   "lastName":"Doe",
+   "address": {
+     "city":"Ottawa",
+     "country":"Canada"
+   }
+}} 

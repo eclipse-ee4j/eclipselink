@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+
 /**
  * <b>Purpose</b>: Used to load specified relationship attributes and nested
  * relationship attributes.
@@ -63,8 +65,8 @@ public class LoadGroup extends AttributeGroup {
     }
 
     @Override
-    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
-        super.addAttribute(attributeNameOrPath, (group != null ? group.toLoadGroup() : null));
+    public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
+        super.addAttribute(attributeNameOrPath, (group != null ? ((AttributeGroup)group).toLoadGroup() : null));
     }
 
     public void addAttribute(String attributeNameOrPath, LoadGroup group) {

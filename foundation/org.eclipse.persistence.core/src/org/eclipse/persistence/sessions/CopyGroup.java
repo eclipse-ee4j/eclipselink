@@ -17,6 +17,7 @@ package org.eclipse.persistence.sessions;
 
 import java.util.*;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.queries.AttributeGroup;
 
@@ -238,12 +239,12 @@ public class CopyGroup extends AttributeGroup {
     }
 
     @Override
-    public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
+    public void addAttribute(String attributeNameOrPath, CoreAttributeGroup group) {
         cascadeTree();
         if(group == null) {
             super.addAttribute(attributeNameOrPath, (AttributeGroup)null);
         } else {
-            addAttribute(attributeNameOrPath, group.toCopyGroup());
+            addAttribute(attributeNameOrPath, ((AttributeGroup)group).toCopyGroup());
         }
     }
 

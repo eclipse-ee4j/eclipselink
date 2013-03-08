@@ -50,10 +50,13 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLEventWriterRecord;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -293,6 +296,12 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	return null;
             }
             return wrapper.getPrefixMapper();
+        } else if (MarshallerProperties.OBJECT_GRAPH.equals(key)) {
+            Object graph = xmlMarshaller.getMarshalAttributeGroup();
+            if(graph instanceof CoreAttributeGroup) {
+                return new ObjectGraphImpl((CoreAttributeGroup)graph);
+            }
+            return graph;
         }
         throw new PropertyException(key);
     }
@@ -778,6 +787,17 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                  	throw new PropertyException(key, Constants.EMPTY_STRING);                	
                  }
                 xmlMarshaller.setNamespaceSeparator((Character)value);
+            } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {
+                if(value == null) {
+                    xmlMarshaller.setMarshalAttributeGroup(null);
+                }
+                if(value instanceof ObjectGraphImpl) {
+                    xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl)value).getAttributeGroup());
+                } else if(value.getClass() == ClassConstants.STRING){
+                    xmlMarshaller.setMarshalAttributeGroup(value);
+                } else {
+                    throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                }
             } else {
                 throw new PropertyException(key, value);
             }

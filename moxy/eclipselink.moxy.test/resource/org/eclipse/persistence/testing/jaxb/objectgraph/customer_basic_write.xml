@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <firstName>John</firstName>
+    <lastName>Doe</lastName>
+    <address>
+        <city>Ottawa</city>
+        <country>Canada</country>
+    </address>
+</customer>

@@ -38,6 +38,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
@@ -297,6 +298,22 @@ public class XMLProcessor {
                     // handle @XmlDiscriminatorNode override
                     if (javaType.getXmlDiscriminatorNode() != null) {
                         info.setXmlDiscriminatorNode(javaType.getXmlDiscriminatorNode());
+                    }
+                    // handle @NamedObjectGraph/@NamedObjectGraphs override
+                    if (javaType.getXmlNamedObjectGraphs() != null) {
+                        List<XmlNamedObjectGraph> currentGraphs = info.getObjectGraphs();
+                        for(XmlNamedObjectGraph nextGraph:javaType.getXmlNamedObjectGraphs().getXmlNamedObjectGraph()) {
+                            //check to see if a graph with the same name already exists
+                            //if so, remove it and replace it with the one from xml.
+                            //if not, add the new one
+                            for(XmlNamedObjectGraph nextExistingGraph: currentGraphs) {
+                                if(nextGraph.getName().equals(nextExistingGraph.getName())) {
+                                    currentGraphs.remove(nextExistingGraph);
+                                    break;
+                                }
+                            }
+                        }
+                        currentGraphs.addAll(javaType.getXmlNamedObjectGraphs().getXmlNamedObjectGraph());
                     }
                     // handle @XmlDiscriminatorValue override
                     if (javaType.getXmlDiscriminatorValue() != null) {

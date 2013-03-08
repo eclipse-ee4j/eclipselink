@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlList;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-named-object-graphs" minOccurs="0"/>
  *       &lt;/all>
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="super-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" />
@@ -89,6 +90,8 @@ public class JavaType {
     protected XmlProperties xmlProperties;
     @javax.xml.bind.annotation.XmlElement(name = "java-attributes")
     protected JavaType.JavaAttributes javaAttributes;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-named-object-graphs")
+    protected XmlNamedObjectGraphs xmlNamedObjectGraphs;
     @javax.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
     @javax.xml.bind.annotation.XmlAttribute(name = "super-type")
@@ -305,6 +308,30 @@ public class JavaType {
      */
     public void setJavaAttributes(JavaType.JavaAttributes value) {
         this.javaAttributes = value;
+    }
+
+    /**
+     * Gets the value of the xmlNamedObjectGraphs property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlNamedObjectGraphs }
+     *     
+     */
+    public XmlNamedObjectGraphs getXmlNamedObjectGraphs() {
+        return xmlNamedObjectGraphs;
+    }
+
+    /**
+     * Sets the value of the xmlNamedObjectGraphs property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlNamedObjectGraphs }
+     *     
+     */
+    public void setXmlNamedObjectGraphs(XmlNamedObjectGraphs value) {
+        this.xmlNamedObjectGraphs = value;
     }
 
     /**

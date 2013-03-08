@@ -32,6 +32,7 @@ import org.eclipse.persistence.jaxb.DefaultXMLNameTransformer;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNamedObjectGraph;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
@@ -87,6 +88,8 @@ public class TypeInfo {
     private Map<Object, Object> userProperties;
     private List<Property> xmlKeyProperties;
     private List<Property> predicateProperties;
+    
+    private List<XmlNamedObjectGraph> objectGraphs;
 
     private boolean isMixed;
     private boolean isTransient;
@@ -1192,5 +1195,11 @@ public class TypeInfo {
     public void setPackageLevelXmlAccessorFactory(AccessorFactoryWrapper packageLevelXmlAccessorFactory) {
         this.packageLevelXmlAccessorFactory = packageLevelXmlAccessorFactory;
     }
-
+    
+    public List<XmlNamedObjectGraph> getObjectGraphs() {
+        if(this.objectGraphs == null) {
+            this.objectGraphs = new ArrayList<XmlNamedObjectGraph>();
+        }
+        return this.objectGraphs;
+    }
 }

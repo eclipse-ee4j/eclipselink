@@ -223,7 +223,7 @@ public class JavaClassImpl implements JavaClass {
             }
         }
         try {
-            return new JavaConstructorImpl(jClass.getDeclaredConstructor(params), javaModelImpl);
+            return new JavaConstructorImpl(PrivilegedAccessHelper.getDeclaredConstructorFor(this.jClass, params, true), javaModelImpl);
         } catch (NoSuchMethodException nsme) {
             return null;
         }

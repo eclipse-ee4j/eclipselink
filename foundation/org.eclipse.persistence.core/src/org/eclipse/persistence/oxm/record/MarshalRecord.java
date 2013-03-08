@@ -17,6 +17,7 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Stack;
 
 import javax.xml.namespace.QName;
 
@@ -43,6 +44,7 @@ import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecordImpl;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
@@ -69,6 +71,8 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<Object>();
 
+    private Stack<CoreAttributeGroup> attributeGroupStack;
+    
     protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = Constants.COLON + Constants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
     
@@ -846,4 +850,26 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     }
     
+    public CoreAttributeGroup getCurrentAttributeGroup() {
+        if(this.attributeGroupStack == null || this.attributeGroupStack.isEmpty()) {
+            return DEFAULT_ATTRIBUTE_GROUP;
+        }
+        return attributeGroupStack.peek();
+    }
+    
+    public void pushAttributeGroup(CoreAttributeGroup group) {
+        if(group == DEFAULT_ATTRIBUTE_GROUP && this.attributeGroupStack == null) {
+            return;
+        }
+        if(this.attributeGroupStack == null) {
+            this.attributeGroupStack = new Stack<CoreAttributeGroup>();
+        }
+        this.attributeGroupStack.push(group);
+    }
+    
+    public void popAttributeGroup() {
+        if(attributeGroupStack != null) {
+            attributeGroupStack.pop();
+        }
+    }
 }

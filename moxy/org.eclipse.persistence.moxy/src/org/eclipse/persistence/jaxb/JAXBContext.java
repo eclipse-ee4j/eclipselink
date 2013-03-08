@@ -42,6 +42,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -616,6 +618,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public <T> T createByXPath(Object parentObject, String xPath, NamespaceResolver namespaceResolver, Class<T> returnType) {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
+    }
+    
+    public <T> ObjectGraph<T> createObjectGraph(Class<T> type) {
+        CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
+        return new ObjectGraphImpl<T>(group);
     }
 
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
@@ -1432,6 +1439,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             	setPropertyOnMarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, marshaller);
             	setPropertyOnMarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, marshaller);
             	setPropertyOnMarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.OBJECT_GRAPH, marshaller);
             }
         
             return marshaller;
@@ -1456,6 +1464,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                  setPropertyOnUnmarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, unmarshaller);
                  setPropertyOnUnmarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, unmarshaller);
                  setPropertyOnUnmarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.OBJECT_GRAPH, unmarshaller);
              }
              return unmarshaller;
         }

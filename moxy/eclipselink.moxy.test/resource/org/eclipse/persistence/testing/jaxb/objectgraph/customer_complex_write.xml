@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <firstName>John</firstName>
+    <lastName>Doe</lastName>
+    <gender>Male</gender>
+    <address>
+        <street>123 Fake Street</street>
+    </address>
+    <phone-numbers>
+        <phone-number>123-4567</phone-number>
+        <phone-number>345-6789</phone-number>
+    </phone-numbers>
+</customer>

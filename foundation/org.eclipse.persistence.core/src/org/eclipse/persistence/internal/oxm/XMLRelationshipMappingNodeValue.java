@@ -33,6 +33,8 @@ import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.XMLRecord;
 import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.queries.CoreAttributeItem;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -83,10 +85,28 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
         }
         ObjectBuilder targetObjectBuilder = (ObjectBuilder)xmlDescriptor.getObjectBuilder();
+        
+        CoreAttributeGroup group = unmarshalRecord.getUnmarshalAttributeGroup();
+        CoreAttributeGroup nestedGroup = null;
+        if(group == XMLRecord.DEFAULT_ATTRIBUTE_GROUP) { 
+            nestedGroup = group;
+        }
+        if(nestedGroup == null) {
+            CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
+            nestedGroup = item.getGroup(xmlDescriptor.getJavaClass());
+            if(nestedGroup == null) {
+                if(item.getGroup() == null) {
+                    nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
+                } else {
+                    nestedGroup = item.getGroup();
+                }
+            }
+        }
         UnmarshalRecord childRecord = unmarshalRecord.getChildUnmarshalRecord(targetObjectBuilder);
         childRecord.setAttributes(atts);
         childRecord.startDocument();
         childRecord.initializeRecord((Mapping) null);
+        childRecord.setUnmarshalAttributeGroup(nestedGroup);
         childRecord.startElement(xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), xPathFragment.getShortName(), atts);
 
         XMLReader xmlReader = unmarshalRecord.getXMLReader();

@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.oxm.record.MarshalRecord.CycleDetectionStack;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.w3c.dom.Node;
 
 /**
@@ -133,5 +134,10 @@ public interface MarshalRecord<
 
     public void startPrefixMapping(String prefix, String uri);
 
+    public CoreAttributeGroup getCurrentAttributeGroup();
+    
+    public void pushAttributeGroup(CoreAttributeGroup group);
+    
+    public void popAttributeGroup();
 
 }

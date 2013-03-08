@@ -60,6 +60,8 @@ import org.w3c.dom.Node;
  */
 public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarshaller<AbstractSession, XMLContext, XMLDescriptor, MediaType, NamespacePrefixMapper, TreeObjectBuilder> implements Cloneable {
 
+    private Object marshalAttributeGroup;
+
     /**
      * Create a new XMLMarshaller based on the specified session
      * @param session A single session
@@ -484,5 +486,4 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return super.getNamespacePrefixMapper();
     }
-
 }

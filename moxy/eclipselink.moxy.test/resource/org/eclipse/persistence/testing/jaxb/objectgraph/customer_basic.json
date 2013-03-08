@@ -1,0 +1,11 @@
+{"customer": {
+   "firstName":"John",
+   "lastName":"Doe",
+   "age":"35",
+   "gender":"Male",
+   "address": {
+     "street":"123 Fake Street",
+     "city":"Ottawa",
+     "country":"Canada"
+   }
+}} 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<customer>
+    <firstName>John</firstName>
+    <lastName>Doe</lastName>
+    <age>35</age>
+    <gender>Male</gender>
+    <address>
+        <street>123 Fake Street</street>
+        <city>Ottawa</city>
+        <country>Canada</country>
+    </address>
+    <phone-numbers>
+        <phone-number areaCode="613">123-4567</phone-number>
+        <phone-number areaCode="613">345-6789</phone-number>
+    </phone-numbers>
+</customer>

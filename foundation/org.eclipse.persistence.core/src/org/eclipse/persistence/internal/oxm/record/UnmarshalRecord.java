@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
@@ -202,5 +203,9 @@ public interface UnmarshalRecord<
     public void setXMLReader(XMLReader xmlReader);
 
     public void unmappedContent();
+
+    public CoreAttributeGroup getUnmarshalAttributeGroup();
+
+    public void setUnmarshalAttributeGroup(CoreAttributeGroup group);
 
 }

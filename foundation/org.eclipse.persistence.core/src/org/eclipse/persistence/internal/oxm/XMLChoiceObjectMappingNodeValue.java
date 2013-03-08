@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
@@ -41,7 +40,8 @@ import org.xml.sax.Attributes;
  * handled when used with the TreeObjectBuilder.</p> 
  * @author mmacivor
  */
-public class XMLChoiceObjectMappingNodeValue extends NodeValue {
+
+public class XMLChoiceObjectMappingNodeValue extends MappingNodeValue {
     private NodeValue choiceElementNodeValue;
     private Map<Class, NodeValue> choiceElementNodeValues;
     private ChoiceObjectMapping xmlChoiceMapping;
@@ -200,6 +200,11 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue {
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String URI, String localName, String value) {
         this.choiceElementNodeValue.attribute(unmarshalRecord, URI, localName, value);
+    }
+
+    @Override
+    public Mapping getMapping() {
+        return this.xmlChoiceMapping;
     }
 
 }

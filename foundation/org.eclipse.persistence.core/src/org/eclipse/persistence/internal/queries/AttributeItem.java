@@ -15,13 +15,12 @@
 package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.core.queries.CoreAttributeItem;
+
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.LoadGroup;
@@ -33,21 +32,7 @@ import org.eclipse.persistence.sessions.CopyGroup;
  * @author dclarke, ailitchev
  * @since EclipseLink 2.1
  */
-public class AttributeItem implements Serializable {
-
-    private String attributeName;
-
-    private AttributeGroup parent;
-
-    private AttributeGroup group;
-    
-    protected AttributeGroup keyGroup;
-
-    private Map<Object, AttributeGroup> subGroups;
-    
-    protected Map<Object, AttributeGroup> keyGroups;
-
-//    private transient DatabaseMapping mapping;
+public class AttributeItem extends CoreAttributeItem<AttributeGroup> implements Serializable {
 
     protected AttributeItem() {        
     }
@@ -61,170 +46,7 @@ public class AttributeItem implements Serializable {
         return this.attributeName;
     }
 
-    public AttributeGroup getGroup() {
-        if (this.group == null){
-            return null;
-        }
-        return this.group;
-    }
 
-    public AttributeGroup getGroup(Class type) {
-        if (this.subGroups == null || type == null){
-            return null;
-        }
-        AttributeGroup result = this.subGroups.get(type);
-        while(result == null && !type.equals(ClassConstants.Object_Class)){
-            type = type.getSuperclass();
-            if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type.toString(), this.attributeName}));
-            }
-            result = this.subGroups.get(type);
-        }
-        return result;
-    }
-
-    public Map<Object, AttributeGroup> getGroups(){
-        return this.subGroups;
-    }
-
-    public void setRootGroup(AttributeGroup group) {
-        this.group = group;
-        this.addSubGroup(group);
-    }
-
-    public void addSubGroup(AttributeGroup group) {
-        if (group != null){
-            if (this.subGroups == null){
-                this.subGroups = new HashMap<Object, AttributeGroup>();
-            }
-            if (this.group == null){
-                this.group = group;
-            }
-            Object type = group.getType();
-            if (type == null){
-                type = group.getTypeName();
-            }
-            if (type == null){
-                type = ClassConstants.Object_Class;
-                if (this.subGroups.containsKey(type)){
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("only_one_root_subgraph"));
-                }
-            }
-            this.subGroups.put(type, group);
-            if (orderInheritance(group, this.subGroups)){
-                group.insertSubClass(this.group);
-                this.group = group;
-            }
-        }
-    }
-
-    /**
-     * Will order the subGroups based on hierarchy.  Returns true if the group is the new root.
-     * @param group
-     * @param subGroups
-     * @return true if the group is the new root.
-     */
-    public static boolean orderInheritance(AttributeGroup group, Map<Object, AttributeGroup> subGroups) {
-        Class type = group.getType();
-        if (type != null){
-            AttributeGroup superClass = null;
-            while (!type.equals(ClassConstants.Object_Class) && superClass == null){
-                type = type.getSuperclass();
-                superClass = subGroups.get(type);
-            }
-            if (superClass != null){
-                superClass.insertSubClass(group);
-            }else{
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public AttributeGroup getKeyGroup() {
-        if (this.keyGroups == null){
-            return null;
-        }
-        return this.keyGroups.get(ClassConstants.Object_Class);
-    }
-
-    public AttributeGroup getKeyGroup(Class type) {
-        if (this.keyGroups == null || type == null){
-            return null;
-        }
-        AttributeGroup result = this.keyGroups.get(type);
-        while(result == null && !type.equals(ClassConstants.Object_Class)){
-            type = type.getSuperclass();
-            if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type.toString(), this.attributeName}));
-            }
-            result = this.keyGroups.get(type);
-        }
-        return result;
-    }
-
-    public Map<Object, AttributeGroup> getKeyGroups(){
-        return this.keyGroups;
-    }
-
-    public void addKeyGroup(AttributeGroup keyGroup) {
-        if (keyGroup != null){
-            if (this.keyGroups == null){
-                this.keyGroups = new HashMap<Object, AttributeGroup>();
-            }
-            if (this.keyGroup == null){
-                this.keyGroup = keyGroup;
-            }
-            Object type = keyGroup.getType();
-            if (type == null){
-                type = keyGroup.getTypeName();
-            }
-            if (type == null){
-                type = ClassConstants.Object_Class;
-                if (this.keyGroups.containsKey(type)){
-                    throw new IllegalArgumentException(ExceptionLocalization.buildMessage("only_one_root_subgraph"));
-                }
-            }
-            this.keyGroups.put(type, keyGroup);
-            if (orderInheritance(keyGroup, this.keyGroups)){
-                keyGroup.insertSubClass(this.keyGroup);
-                this.keyGroup = keyGroup;
-            }
-        }
-    }
-
-    public void addKeyGroups(Collection<AttributeGroup> keyGroups) {
-        for (AttributeGroup group : keyGroups){
-            this.addKeyGroup(group);
-        }
-    }
-
-    public AttributeItem clone(Map<AttributeGroup, AttributeGroup> cloneMap, AttributeGroup parentClone){
-        AttributeItem clone = new AttributeItem();
-        clone.attributeName = this.attributeName;
-        if (this.group != null){
-            clone.group = this.group.clone(cloneMap);
-        }
-        if (clone.keyGroup != null){
-            clone.keyGroup = this.keyGroup.clone(cloneMap);
-        }
-        clone.parent = parentClone;
-        if (this.subGroups != null){
-            clone.subGroups = new HashMap<Object, AttributeGroup>();
-            for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
-                clone.subGroups.put(group.getKey(), group.getValue().clone(cloneMap));
-            }
-        }
-        if (this.keyGroups != null){
-            clone.keyGroups = new HashMap<Object, AttributeGroup>();
-            for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
-                clone.keyGroups.put(group.getKey(), group.getValue().clone(cloneMap));
-            }
-        }
-        return clone;
-        
-    }
-    
     public AttributeItem toCopyGroup(Map<AttributeGroup, CopyGroup> cloneMap, CopyGroup parentClone, Map copies){
         AttributeItem clone = new AttributeItem();
         clone.attributeName = this.attributeName;
@@ -302,50 +124,9 @@ public class AttributeItem implements Serializable {
         return clone;
         
     }
-    /**
-     * INTERNAL:
-     * Convert all the class-name-based settings in this Descriptor to actual class-based
-     * settings. This method is used when converting a project that has been built
-     * with class names to a project with classes.
-     * @param classLoader 
-     */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
-        Map<Object, AttributeGroup> newMap = new HashMap<Object, AttributeGroup>();
-        if (this.subGroups != null){
-            for (AttributeGroup entry : this.subGroups.values()){
-                entry.convertClassNamesToClasses(classLoader);
-                newMap.put(entry.getType(), entry);
-                entry.setAllSubclasses(newMap);
-            }
-        }
-        this.subGroups = newMap;
-        
-        newMap = new HashMap<Object, AttributeGroup>();
-        if (this.keyGroups != null){
-            for (AttributeGroup entry : this.keyGroups.values()){
-                entry.convertClassNamesToClasses(classLoader);
-                newMap.put(entry.getType(), entry);
-                entry.setAllSubclasses(newMap);
-            }
-        }
-        this.keyGroups = newMap;
-        for (AttributeGroup group : this.subGroups.values()){
-            if (orderInheritance(group, this.subGroups)){
-                group.insertSubClass(this.group);
-                this.group = group;
-            }
-        }
-        for (AttributeGroup group : this.keyGroups.values()){
-            if (orderInheritance(group, this.keyGroups)){
-                group.insertSubClass(this.keyGroup);
-                this.keyGroup = group;
-            }
-            
-        }
-    }
 
     public AttributeGroup getParent() {
-        return this.parent;
+        return super.getParent();
     }
 
     public boolean equals(Object obj) {
@@ -398,41 +179,14 @@ public class AttributeItem implements Serializable {
         }
         return true;
     }
-
-    /**
-     * Lazily lookup and hold the mapping
-     * 
-     * @param session
-     * @param entity
-     * @return
-     */
-/*    public DatabaseMapping getMapping(Session session, Class<?> entityClass) {
-        if (this.mapping == null) {
-            ClassDescriptor descriptor = session.getClassDescriptor(entityClass);
-            this.mapping = descriptor.getMappingForAttributeName(getAttributeName());
-
-            if (this.mapping == null) {
-                throw QueryException.fetchGroupAttributeNotMapped(getAttributeName());
-            }
-        }
-        return this.mapping;
-    }*/
-
-    public String toString() {        
-        return getClass().getSimpleName() + "(" + getAttributeName() + ")" + (this.subGroups!=null ? " => " + this.subGroups.toString() : "") + (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
+    
+    public AttributeGroup getGroup() {
+        return super.getGroup();
+    }
+    
+    public void setGroup(AttributeGroup group) {
+        this.group = group;
     }
 
-    public String toStringNoClassName() {        
-        return getAttributeName() + (this.subGroups!=null ? " => " + this.subGroups.toString() : "")+ (this.keyGroups!=null ? " => " + this.keyGroups.toString() : "");
-    }
 
-    /**
-     * INTERNAL:
-     * Adds the list of groups as to the item
-     */
-    public void addGroups(Collection<AttributeGroup> groups) {
-        for (AttributeGroup group : groups){
-            addSubGroup(group);
-        }
-    }
 }

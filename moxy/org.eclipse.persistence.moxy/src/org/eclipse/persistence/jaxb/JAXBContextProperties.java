@@ -167,5 +167,11 @@ public class JAXBContextProperties {
      * @since 2.4.2
      */
     public static final String XML_ACCESSOR_FACTORY_SUPPORT = "eclipselink.xml-accessor-factory.support";
+    
+    /**
+     * The name of the property used to specify an ObjectGraph instance or name of an 
+     * ObjectGraph to be used on Unmarshallers and Marshallers created by the context. 
+     */
+    public static final String OBJECT_GRAPH = "eclipselink.object-graph";
 
 }

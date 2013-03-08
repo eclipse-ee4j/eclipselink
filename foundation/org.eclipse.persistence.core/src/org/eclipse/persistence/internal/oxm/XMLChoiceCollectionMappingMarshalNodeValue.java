@@ -36,7 +36,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import java.util.Iterator;
 
-public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implements ContainerValue {
+public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue implements ContainerValue {
     private ChoiceCollectionMapping xmlChoiceCollectionMapping;
     private Map<Field, NodeValue> fieldToNodeValues;
     private Map<Class, NodeValue> classToNodeValues;

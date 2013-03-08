@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.core.descriptors.CoreDescriptorEventManager;
 import org.eclipse.persistence.core.descriptors.CoreInheritancePolicy;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -63,6 +64,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.record.DOMRecord;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -131,6 +133,8 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     private XPathQName leafElementType;
     private NamespaceResolver namespaceResolver;
     
+    private CoreAttributeGroup unmarshalAttributeGroup;
+    
     // The "snapshot" location of this object, for @XmlLocation
     private Locator xmlLocation;
 
@@ -140,6 +144,7 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
         super();
         this.xPathFragment = new XPathFragment();
         xPathFragment.setNamespaceAware(isNamespaceAware());
+        this.setUnmarshalAttributeGroup(DEFAULT_ATTRIBUTE_GROUP);
         initialize(objectBuilder);
     }
 
@@ -736,9 +741,16 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             xpathNodeIsMixedContent = false;
             NodeValue xPathNodeUnmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
             if (null != xPathNodeUnmarshalNodeValue) {
-                xPathNodeUnmarshalNodeValue.endElement(xPathFragment, this);
-                if (xPathNode.getParent() != null) {
-                    xPathNode = xPathNode.getParent();
+                boolean isIncludedInAttributeGroup = true;
+                if(xPathNodeUnmarshalNodeValue.isMappingNodeValue()) {
+                    Mapping mapping = ((MappingNodeValue)xPathNodeUnmarshalNodeValue).getMapping();
+                    isIncludedInAttributeGroup = this.unmarshalAttributeGroup.containsAttributeInternal(mapping.getAttributeName());
+                }
+                if(isIncludedInAttributeGroup) {
+                    xPathNodeUnmarshalNodeValue.endElement(xPathFragment, this);
+                    if (xPathNode.getParent() != null) {
+                        xPathNode = xPathNode.getParent();
+                    }
                 }
             }
         }
@@ -815,7 +827,12 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                 
                 NodeValue nodeValue = node.getUnmarshalNodeValue();
                 if (null != nodeValue) {
-                    if (!nodeValue.startElement(xPathFragment, this, atts)) {
+                    boolean isIncludedInAttributeGroup = true;
+                    if(nodeValue.isMappingNodeValue()) {
+                        Mapping mapping = ((MappingNodeValue)nodeValue).getMapping();
+                        isIncludedInAttributeGroup = this.unmarshalAttributeGroup.containsAttributeInternal(mapping.getAttributeName());
+                    }
+                    if (!isIncludedInAttributeGroup || !nodeValue.startElement(xPathFragment, this, atts)) {
                         // UNMAPPED CONTENT
                         startUnmappedElement(namespaceURI, localName, qName, atts);
                         return;
@@ -871,6 +888,12 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
                             
                             try {
                                 if (attributeNodeValue != null) {
+                                    if(attributeNodeValue.isMappingNodeValue()) {
+                                        Mapping mapping = ((MappingNodeValue)attributeNodeValue).getMapping();
+                                        if(!unmarshalAttributeGroup.containsAttributeInternal(mapping.getAttributeName())) {
+                                            continue;
+                                        }
+                                    }
                                     attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
                                 } else {
                                     if (xPathNode.getAnyAttributeNodeValue() != null) {
@@ -984,8 +1007,18 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
             }
             NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
             if (null != unmarshalNodeValue) {
+                boolean isIncludedInAttributeGroup = true;
+                if(unmarshalNodeValue.isMappingNodeValue()) {
+                    Mapping mapping = ((MappingNodeValue)unmarshalNodeValue).getMapping();
+                    isIncludedInAttributeGroup = this.unmarshalAttributeGroup.containsAttributeInternal(mapping.getAttributeName());
+                }
                 try {
-                    unmarshalNodeValue.endElement(xPathFragment, this);
+                    if(isIncludedInAttributeGroup) {
+                        unmarshalNodeValue.endElement(xPathFragment, this);
+                    } else {
+                        resetStringBuffer();
+                    }
+                    
                 } catch(EclipseLinkException e) {
                 	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                         throw e;
@@ -1522,6 +1555,14 @@ public class UnmarshalRecordImpl extends CoreAbstractRecord implements Unmarshal
     @Override
     public void setSession(CoreAbstractSession session) {
         this.session = session;
+    }
+
+    public CoreAttributeGroup getUnmarshalAttributeGroup() {
+        return unmarshalAttributeGroup;
+    }
+
+    public void setUnmarshalAttributeGroup(CoreAttributeGroup unmarshalAttributeGroup) {
+        this.unmarshalAttributeGroup = unmarshalAttributeGroup;
     }
 
 }

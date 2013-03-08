@@ -240,7 +240,7 @@ public abstract class NodeValue {
     }
 
     public boolean isMappingNodeValue() {
-        return true;
+        return false;
     }
     
     public boolean isWhitespaceAware() {

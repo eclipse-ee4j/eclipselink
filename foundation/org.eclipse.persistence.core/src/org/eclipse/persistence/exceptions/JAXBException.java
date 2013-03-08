@@ -119,6 +119,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int ERROR_INVOKING_ACCESSOR = 50087;
     public static final int INVALID_ENUM_VALUE = 50088;
     public static final int INVALID_INTERFACE = 50089;
+    public static final int INVALID_VALUE_FOR_OBJECT_GRAPH = 50090;
     
 
 
@@ -1110,5 +1111,12 @@ public class JAXBException extends EclipseLinkException {
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_INTERFACE, args));
         validationException.setErrorCode(INVALID_INTERFACE);
         return validationException;
-    }    
+    }
+    
+    public static JAXBException invalidValueForObjectGraph(Object value) {
+        Object[] args = {value};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class,  INVALID_VALUE_FOR_OBJECT_GRAPH, args));
+        validationException.setErrorCode(INVALID_VALUE_FOR_OBJECT_GRAPH);
+        return validationException;
+    }
 }

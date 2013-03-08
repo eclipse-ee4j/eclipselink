@@ -134,5 +134,10 @@ public class MarshallerProperties {
      * @since 2.4.2
      */
     public static final String JSON_REDUCE_ANY_ARRAYS = "eclipselink.json.reduce-any-arrays";
+    
+    /**
+     * 
+     */
+    public static final String OBJECT_GRAPH = "eclipselink.object-graph";
    
 }

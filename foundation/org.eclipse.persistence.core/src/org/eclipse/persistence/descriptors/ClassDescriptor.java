@@ -51,7 +51,6 @@ import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -95,7 +94,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * @see org.eclipse.persistence.eis.EISDescriptor
  * @see org.eclipse.persistence.oxm.XMLDescriptor
  */
-public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, DatabaseField, InheritancePolicy, InstantiationPolicy, Vector, ObjectBuilder> implements Cloneable, Serializable {
+public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEventManager, DatabaseField, InheritancePolicy, InstantiationPolicy, Vector, ObjectBuilder> implements Cloneable, Serializable {
     protected Class javaClass;
     protected String javaClassName;
     protected Vector<DatabaseTable> tables;
@@ -154,9 +153,6 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
 
     //manage fetch group behaviors and operations
     protected FetchGroupManager fetchGroupManager;
-    
-    //managed named attribute groups.
-    protected Map<String, AttributeGroup> attributeGroups;
 
     /** Additional properties may be added. */
     protected Map properties;
@@ -1955,28 +1951,6 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
         return accessorTree;
     }
 
-    /**
-     * PUBLIC:
-     * Returns the attribute group corresponding to the name provided.
-     * If no group is found with the specified name, null is returned.
-     */
-    public AttributeGroup getAttributeGroup(String name){
-        if (this.attributeGroups == null){
-            return null;
-        }else if (name != null){
-            return this.attributeGroups.get(name);
-        }else{
-            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_argument_get_attributegroup"));
-        }
-    }
-    
-    /**
-     * ADVANCED:
-     * Returns the attribute groups for this Descriptor.
-     */
-    public Map<String, AttributeGroup> getAttributeGroups(){
-        return this.attributeGroups;
-    }
     
     /**
      * PUBLIC:
@@ -4410,13 +4384,7 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
         }
     }
 
-    public void addAttributeGroup(AttributeGroup group) {
-        if (this.attributeGroups == null){
-            this.attributeGroups = new HashMap<String, AttributeGroup>();
-        }
-        this.attributeGroups.put(group.getName(), group);
-    }
-    
+  
     /**
      * INTERNAL:
      * Set the event manager for the descriptor.  The event manager is responsible
@@ -6601,4 +6569,13 @@ public class ClassDescriptor extends CoreDescriptor<DescriptorEventManager, Data
         return false;
     }
     
+    @Override
+    public AttributeGroup getAttributeGroup(String name) {
+        return super.getAttributeGroup(name);
+    }
+
+    @Override
+    public Map<String, AttributeGroup> getAttributeGroups() {
+        return super.getAttributeGroups();
+    }
 }

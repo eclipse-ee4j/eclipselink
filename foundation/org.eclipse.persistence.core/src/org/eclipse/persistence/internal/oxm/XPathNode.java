@@ -19,9 +19,11 @@ import java.util.Map;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 
 /**
  * INTERNAL:
@@ -368,6 +370,13 @@ public class XPathNode {
 
             return hasValue;
         } else {
+            if(marshalNodeValue.isMappingNodeValue()) {
+                Mapping mapping = ((MappingNodeValue)marshalNodeValue).getMapping();
+                CoreAttributeGroup currentGroup = marshalRecord.getCurrentAttributeGroup();
+                if(!(currentGroup.containsAttributeInternal(mapping.getAttributeName()))) {
+                    return false;
+                }
+            }
             return marshalContext.marshal(marshalNodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver, rootFragment);
         }
     }

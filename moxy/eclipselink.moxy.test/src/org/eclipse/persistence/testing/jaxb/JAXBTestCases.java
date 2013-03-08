@@ -364,6 +364,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             	JAXBContext jaxbContextFromJSONBindings = createJaxbContextFromJSONBindings();
                	Unmarshaller jaxbUnmarshallerFromJSONBindings = jaxbContextFromJSONBindings.createUnmarshaller();
                	jaxbUnmarshallerFromJSONBindings.setAttachmentUnmarshaller(jaxbUnmarshaller.getAttachmentUnmarshaller());
+               	jaxbUnmarshallerFromJSONBindings.setProperty(UnmarshallerProperties.OBJECT_GRAPH, jaxbUnmarshaller.getProperty(UnmarshallerProperties.OBJECT_GRAPH));
                	jaxbUnmarshallerFromJSONBindings.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, jaxbMarshaller.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER));
             	Object testObject2 = null;
            	     log("************test with JSON bindings*********");
@@ -454,7 +455,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         	 
         	 
      		 jaxbMarshallerFromJSONBindings.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, jaxbMarshaller.getProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER));
-    		 
+    		 jaxbMarshallerFromJSONBindings.setProperty(MarshallerProperties.OBJECT_GRAPH, jaxbMarshaller.getProperty(MarshallerProperties.OBJECT_GRAPH));
 
         	 
              jaxbMarshallerFromJSONBindings.marshal(objectToWrite, stream2);        	         	 

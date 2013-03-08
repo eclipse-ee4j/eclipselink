@@ -141,6 +141,7 @@ public class XMLUnmarshaller extends Unmarshaller<AbstractSession, XMLContext, X
     private boolean includeRoot = true;
     private NamespaceResolver namespaceResolver;    
     private boolean autoDetectMediaType = false;
+    private Object unmarshalAttributeGroup;
 
     static {
         try {
@@ -875,6 +876,19 @@ public class XMLUnmarshaller extends Unmarshaller<AbstractSession, XMLContext, X
     public UnmarshalRecord createUnmarshalRecord(XMLDescriptor xmlDescriptor, AbstractSession session) {
         org.eclipse.persistence.oxm.record.UnmarshalRecord wrapper = (org.eclipse.persistence.oxm.record.UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) session);
         return wrapper.getUnmarshalRecord();
+    }
+
+    /**
+     * INTERNAL:
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
+     * unmarshal. 
+     */
+    public Object getUnmarshalAttributeGroup() {
+        return this.unmarshalAttributeGroup;
+    }
+    
+    public void setUnmarshalAttributeGroup(Object attributeGroup) {
+        this.unmarshalAttributeGroup = attributeGroup;
     }
 
 }

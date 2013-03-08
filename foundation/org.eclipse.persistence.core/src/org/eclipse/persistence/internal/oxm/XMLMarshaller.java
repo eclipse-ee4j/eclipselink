@@ -34,6 +34,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -137,6 +138,7 @@ public abstract class XMLMarshaller<
     protected XMLTransformer transformer;
     private String valueWrapper;
     private String xmlHeader;
+    private Object marshalAttributeGroup;
 
     public XMLMarshaller(CONTEXT context) {
         super(context);
@@ -600,6 +602,20 @@ public abstract class XMLMarshaller<
             marshalRecord.setCustomNamespaceMapper(true);
         }
 
+        if(this.getMarshalAttributeGroup() != null) {
+            if(marshalAttributeGroup.getClass() == ClassConstants.STRING) {
+                CoreAttributeGroup group = descriptor.getAttributeGroup((String)marshalAttributeGroup);
+                if(group != null) {
+                    marshalRecord.pushAttributeGroup(group);
+                } else {
+                    throw XMLMarshalException.invalidAttributeGroupName((String)marshalAttributeGroup, descriptor.getJavaClassName());
+                }
+            } else if(marshalAttributeGroup instanceof CoreAttributeGroup) {
+                marshalRecord.pushAttributeGroup((CoreAttributeGroup)marshalAttributeGroup);
+            } else {
+                //Error case
+            }
+        }
         NamespaceResolver nr = marshalRecord.getNamespaceResolver();
         if(node != null) {
             if(isXMLRoot) {
@@ -1297,4 +1313,12 @@ public abstract class XMLMarshaller<
         this.xmlHeader = xmlHeader;
     }
 
+    public void setMarshalAttributeGroup(Object group) {
+        this.marshalAttributeGroup = group;
+        
+    }
+    
+    public Object getMarshalAttributeGroup() {
+        return this.marshalAttributeGroup;
+    }
 }
