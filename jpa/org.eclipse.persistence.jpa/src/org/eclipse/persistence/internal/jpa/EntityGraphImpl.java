@@ -13,11 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -25,19 +23,10 @@ import javax.persistence.AttributeNode;
 import javax.persistence.EntityGraph;
 import javax.persistence.Subgraph;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.jpa.metamodel.EmbeddableTypeImpl;
-import org.eclipse.persistence.internal.jpa.metamodel.EntityTypeImpl;
-import org.eclipse.persistence.internal.jpa.metamodel.ManagedTypeImpl;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
-import org.eclipse.persistence.internal.jpa.metamodel.TypeImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;

@@ -24,7 +24,6 @@
 package org.eclipse.persistence.internal.jpa;
 
 import javax.persistence.Cache;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
