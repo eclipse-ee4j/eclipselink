@@ -42,6 +42,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
@@ -487,7 +488,13 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         entityManager.verifyOpenWithSetRollbackOnly();
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
-        return this.setParameter(getParameterId(param), value, temporalType);
+        //bug 402686: type validation
+        String position = getParameterId(param);
+        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (!parameter.getParameterType().equals(param.getParameterType())) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
+        }
+        return this.setParameter(position, value, temporalType);
     }
     
     /**
@@ -504,7 +511,13 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
     public TypedQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
         if (param == null)
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
-        return this.setParameter(getParameterId(param), value, temporalType);
+        //bug 402686: type validation
+        String position = getParameterId(param);
+        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (!parameter.getParameterType().equals(param.getParameterType())) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
+        }
+        return this.setParameter(position, value, temporalType);
     }
     
     /**
@@ -522,7 +535,13 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
         }
-        return this.setParameter(getParameterId(param), value);
+        //bug 402686: type validation
+        String position = getParameterId(param);
+        ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (!parameter.getParameterType().equals(param.getParameterType())) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
+        }
+        return this.setParameter(position, value);
     }
     
     /**
