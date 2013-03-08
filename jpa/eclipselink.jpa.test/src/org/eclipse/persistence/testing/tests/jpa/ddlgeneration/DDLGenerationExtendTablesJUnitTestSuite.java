@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -63,6 +64,8 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         } catch (DatabaseException caught){
             //we expect an exception since the table should not exist, but do not know what exception the database might throw.  
             exception = caught;
+        } catch (PersistenceException e){
+            exception = e;
         }
         this.assertNotNull("setup failed because a query on a drop table did not throw an exception.", exception);
 
