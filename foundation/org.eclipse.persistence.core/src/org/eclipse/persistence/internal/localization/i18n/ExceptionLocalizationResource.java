@@ -30,6 +30,8 @@ package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 /**
  * English ResourceBundle for ExceptionLocalization messages.
  *
@@ -215,8 +217,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occured with the source ddl generation script: {0}."},
                                            { "jpa21-ddl-invalid-source-script-type", "The source script provided {0} is of an invalid type {0}. Valid source script types are: java.io.Reader or a string designating a file URL."},
                                            { "jpa21-ddl-invalid-target-script-type", "The target script provided {0} is of an invalid type {0}. Valid target script types are: java.io.Writer or a string designating a file URL."},
-                                           { "jpa21-ddl-drop-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-drop-script-target] property."},
-                                           { "jpa21-ddl-create-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the [javax.persistence.ddl-create-script-target] property."},
+                                           { "jpa21-ddl-drop-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the ["+ PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET+"] property."},
+                                           { "jpa21-ddl-create-script-target-not-specified", "When the generating DDL to scripts, a drop script target must be specified using the ["+ PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET+"] property."},
                                            //criteria API IllegalArgumentExceptions
                                            { "jpa_criteriaapi_no_corresponding_element_in_result", "Element {0} does not correspond to an element in the query result."},
                                            { "jpa_criteriaapi_invalid_result_index", "index {0} invalid for result list of size {1}."},
