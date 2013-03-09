@@ -560,7 +560,7 @@
         <artifact:deploy file="${artifact}">
           <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
-          <attach file="${artifactSrc}" classifier="sources"/>
+          <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
     </target>
 
@@ -574,8 +574,8 @@
         <artifact:deploy file="${artifact}">
           <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
-          <attach file="${artifactSrc}"     type="jar" classifier="sources"/>
-          <attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>
+          <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
+          <artifact:attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>
         </artifact:deploy>
     </target>
 
@@ -659,11 +659,11 @@
         <artifact:deploy file="${artifact}">
           <remoteRepository refid="${target.repository}"/>
           <pom refid="maven.project"/>
-          <attach file="${artifact}.asc"        type="asc" classifier="all???"/>
-          <attach file="${artifactSrc}"         type="jar" classifier="sources"/>
-          <attach file="${artifactSrc}.asc"     type="asc" classifier="all"/>
-          <attach file="${artifactJavadoc}"     type="zip" classifier="javadoc"/>
-          <attach file="${artifactJavadoc}.asc" type="asc" classifier="all"/>
+          <artifact:attach file="${artifact}.asc"        type="asc" classifier="all???"/>
+          <artifact:attach file="${artifactSrc}"         type="jar" classifier="sources"/>
+          <artifact:attach file="${artifactSrc}.asc"     type="asc" classifier="all"/>
+          <artifact:attach file="${artifactJavadoc}"     type="zip" classifier="javadoc"/>
+          <artifact:attach file="${artifactJavadoc}.asc" type="asc" classifier="all"/>
         </artifact:deploy>
     </target>
 
