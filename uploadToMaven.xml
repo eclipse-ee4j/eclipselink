@@ -39,8 +39,9 @@
 *         release.version - need three tokens: Major.Minor.Service
 *         build.date      - in format YYYYMMDD
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
-*         bundle.dir      - if location of bundles to publish isn't a git "view"
 *         git.hash        - for stamping pom, to link build with source repo
+*    Optional variables:
+*         bundle.dir      - if location of bundles to publish isn't a git "view"
 *
 *********************************************************************************-->
 <!-- Build Assumptions:
@@ -106,6 +107,7 @@
         <taskdef name="selectbundle"   classname="${custom.selectbundle.task.class}"   classpath="${custom.tasks.lib}"/>
         <taskdef name="stripQualifier" classname="${custom.stripqualifier.task.class}" classpath="${custom.tasks.lib}"/>
 
+        <echo message="maven.build.location                = ${maven.build.location}"/>
         <echo message="maven.2.pojo.dir  (eclipselink.jar) = ${maven.2.pojo.dir}"/>
         <echo message="maven.2.common.plugins.dir (common) = ${maven.2.common.plugins.dir}"/>
         <echo message="maven.2.jpa.plugins.dir  (JPA-API)  = ${maven.2.jpa.plugins.dir}"/>
