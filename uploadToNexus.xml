@@ -63,9 +63,12 @@
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
 
-    <!-- The default repository where maven artifacts will be uploaded -->
-    <artifact:remoteRepository id="sonatype-nexus-staging"   url="https://oss.sonatype.org/service/local/staging/deploy/maven2" />
-    <artifact:remoteRepository id="sonatype-nexus-snapshots" url="https://oss.sonatype.org/content/repositories/snapshots" />
+    <!-- The repository info of where maven artifacts will be uploaded -->
+    <!--    Override value to change defaults                          -->
+    <property name="stagingId"   value="sonatype-nexus-staging"/>
+    <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+    <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
+    <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -145,35 +148,11 @@
             <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
         </condition>
 
-        <!--  If "repository" specified, it means that the Push to Maven has a specific (nexus) target -->
-        <condition property="target.repository"     value="sonatype-nexus-staging">
-            <and>
-                <isset property="repository"/>
-                <contains string="${repository}" substring="sonatype"/>
-                <contains string="${repository}" substring="staging"/>
-            </and>
+        <condition property="target.repo.message" value="Target repository ID: '${stagingId}' URL:'${stagingURL}'"
+                                                   else="Target repository ID: '${snapshotId}' URL:'${snapshotURL}'">
+            <isset property="sign"/>
         </condition>
-        <condition property="target.repository"     value="sonatype-nexus-snapshots">
-            <and>
-                <isset property="repository"/>
-                <contains string="${repository}" substring="sonatype"/>
-                <contains string="${repository}" substring="snapshot"/>
-            </and>
-        </condition>
-        <!--  If "repository" not specified, set default according to build.type -->
-        <condition property="target.repository"     value="sonatype-nexus-snapshots">
-            <and>
-                <not> <isset property="repository"/> </not>
-                <equals arg1="${build.type}" arg2="SNAPSHOT"/>
-            </and>
-        </condition>
-        <condition property="target.repository"     value="sonatype-nexus-staging">
-            <!-- relies on Ant not overwriting already set variables -->
-            <not> <isset property="repository"/> </not>
-        </condition>
-        <!-- prevent 'fall-through' -->
-        <fail message="'repository' set to unknown value. 'target.repository' not set. Aborting..." unless="target.repository"/>
-        <echo message="Target repository: ${target.repository}"/>
+        <echo message="${target.repo.message}"/>
     </target>
 
     <target name="discover-static-built-info" depends="init">
@@ -559,10 +538,12 @@
         <delete file="pom.xml"/>
     </target>
     <target name="ua-snapshot" unless="sign">
-        <artifact:pom id="maven.project" file="pom.xml"/>
+        <!-- Install provider for https protocol -->
+        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
+        <!-- Deploy Artifact to repote repo, attach source -->
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
+          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
+          <artifact:pom id="maven.project" file="pom.xml" />
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
         </artifact:deploy>
     </target>
@@ -573,10 +554,12 @@
         <delete file="pom.xml"/>
     </target>
     <target name="uawj-snapshot" unless="sign">
-        <artifact:pom id="maven.project" file="pom.xml" />
+        <!-- Install provider for https protocol -->
+        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
+        <!-- Deploy Artifact to repote repo, attach source and javadoc -->
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
+          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
+          <artifact:pom id="maven.project" file="pom.xml" />
           <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
           <artifact:attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>
         </artifact:deploy>
@@ -587,10 +570,12 @@
         <delete file="pom.xml"/>
     </target>
     <target name="uans-snapshot" unless="sign">
-        <artifact:pom id="maven.project" file="pom.xml"/>
+        <!-- Install provider for https protocol -->
+        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
+        <!-- Deploy Artifact to repote repo -->
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
+          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
+          <artifact:pom id="maven.project" file="pom.xml" />
         </artifact:deploy>
     </target>
 
@@ -599,8 +584,8 @@
         <!-- sign and deploy the main artifact -->
         <artifact:mvn>
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
-            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
-            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-Durl=${stagingURL}"/>
+            <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifact}"/>
             <arg value="-Pgpg"/>
@@ -610,8 +595,8 @@
         <!-- sign and deploy the sources artifact -->
         <artifact:mvn>
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
-            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
-            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-Durl=${stagingURL}"/>
+            <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactSrc}"/>
             <arg value="-Dclassifier=sources"/>
@@ -622,8 +607,8 @@
         <!-- sign and deploy the javadoc artifact -->
         <artifact:mvn>
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
-            <arg value="-Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
-            <arg value="-DrepositoryId=sonatype-nexus-staging"/>
+            <arg value="-Durl=${stagingURL}"/>
+            <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactJavadoc}"/>
             <arg value="-Dclassifier=javadoc"/>
@@ -658,10 +643,9 @@
             <param name="artifactPath"    value="${artifactJavadoc}"/>
         </antcall>
         <!--  Deployment would then look something like:            -->
-        <artifact:pom id="maven.project" file="pom.xml" />
         <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
+          <artifact:remoteRepository id="${stagingId}" url="${stagingURL}"/>
+          <artifact:pom id="maven.project" file="pom.xml" />
           <artifact:attach file="${artifact}.asc"        type="asc" classifier="all???"/>
           <artifact:attach file="${artifactSrc}"         type="jar" classifier="sources"/>
           <artifact:attach file="${artifactSrc}.asc"     type="asc" classifier="all"/>
