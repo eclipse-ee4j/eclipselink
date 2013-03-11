@@ -773,6 +773,24 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadAddressCity(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address_City");
+        proc.addArgument("address_id_v", Integer.class);
+        proc.addOutputArgument("city_v", String.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT CITY INTO @city_v FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+        } else {
+            statement = "SELECT CITY INTO city_v FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadAllAddresses() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_All_Addresses");
@@ -1438,6 +1456,7 @@ public class EmployeePopulator {
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
                 schema.replaceObject(buildStoredProcedureReadAllAddresses());
                 schema.replaceObject(buildStoredProcedureReadAllEmployees());
+                schema.replaceObject(buildStoredProcedureReadAddressCity(platform));
                 schema.replaceObject(buildStoredProcedureDeleteAllResponsibilities());
                 
                 if (platform.isOracle()) {

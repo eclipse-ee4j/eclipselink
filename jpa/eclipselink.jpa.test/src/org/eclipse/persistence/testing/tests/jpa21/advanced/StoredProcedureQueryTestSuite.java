@@ -77,6 +77,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithOutParam"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
@@ -909,6 +910,48 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
                 assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery using a class though EM API 
+     */
+    public void testQueryWithOutParam() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                beginTransaction(em);
+                
+                Address address = new Address();
+                address.setCity("TestCity");
+                address.setPostalCode("V4U 1P2");
+                address.setProvince("Nunavut");
+                address.setStreet("269 Lust Lane");
+                address.setCountry("Canada");
+                em.persist(address);
+                commitTransaction(em);
+                
+                // Clear the cache
+                em.clear();
+                clearCache();
+    
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_City");
+                query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("city_v", String.class, ParameterMode.OUT);
+                
+                boolean result = query.setParameter("address_id_v", address.getId()).execute();
+                String city = (String) query.getOutputParameterValue("city_v");
+                assertTrue("Incorrect city was returned.", (address.getCity().equals(city)));
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
