@@ -8,7 +8,6 @@
             <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
             <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
             <property name="eclipselink.partitioning" value="default"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="partitioned-xml" transaction-type="RESOURCE_LOCAL">
@@ -22,7 +21,6 @@
             <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
             <property name="eclipselink.partitioning" value="default"/>
             <property name="eclipselink.orm.validate.schema" value="true"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
 </persistence>

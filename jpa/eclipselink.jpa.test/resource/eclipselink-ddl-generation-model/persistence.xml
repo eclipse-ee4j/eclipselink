@@ -72,7 +72,6 @@
         
         <properties>
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
-            <!-- property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlGeneration.jdbc"/>
@@ -129,7 +128,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern</class>
         <properties>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerClass.jdbc"/>
@@ -169,7 +167,6 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ContactInfo</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PhoneNumber</class>
         <properties>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTableSuffix.jdbc"/>

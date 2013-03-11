@@ -8,8 +8,5 @@
         <class>org.eclipse.persistence.testing.models.jpa.cascadedeletes.LeafB</class>
         <class>org.eclipse.persistence.testing.models.jpa.cascadedeletes.MachineState</class>
         <class>org.eclipse.persistence.testing.models.jpa.cascadedeletes.ThreadInfo</class>
-        <properties>
-            <!--property name="eclipselink.logging.level" value="FINEST" /-->
-        </properties>
     </persistence-unit>
 </persistence>

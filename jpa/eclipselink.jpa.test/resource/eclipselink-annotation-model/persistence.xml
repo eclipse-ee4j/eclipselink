@@ -50,7 +50,6 @@
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
-            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="false"/>
@@ -312,7 +311,6 @@
         <mapping-file>META-INF/multitenant-vpd.xml</mapping-file>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.session-name" value="multi-tenant-vpd"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>

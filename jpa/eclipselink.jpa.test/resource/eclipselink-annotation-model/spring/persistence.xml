@@ -50,7 +50,6 @@
             <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
             <property name="eclipselink.descriptor.customizer.Project" value="org.eclipse.persistence.testing.models.jpa.advanced.Customizer"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
             <property name="eclipselink.persistence-context.reference-mode" value="WEAK"/>
             <property name="eclipselink.logging.timestamp" value="false"/>
             <property name="eclipselink.orm.throw.exceptions" value="false"/>

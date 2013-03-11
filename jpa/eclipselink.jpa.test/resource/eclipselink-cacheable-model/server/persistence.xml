@@ -8,7 +8,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-1" transaction-type="%%transaction-type%%">
@@ -38,7 +37,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-2" transaction-type="%%transaction-type%%">
@@ -68,7 +66,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-3" transaction-type="%%transaction-type%%">
@@ -98,7 +95,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-4" transaction-type="%%transaction-type%%">
@@ -128,7 +124,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="MulitPU-5" transaction-type="%%transaction-type%%">
@@ -158,7 +153,6 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
 </persistence>

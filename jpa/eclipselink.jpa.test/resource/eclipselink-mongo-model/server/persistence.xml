@@ -13,7 +13,6 @@
             <!--property name="eclipselink.nosql.property.mongo.port" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="mydb"/-->
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
     <persistence-unit name="mongo-dynamic" transaction-type="RESOURCE_LOCAL">
@@ -27,7 +26,6 @@
             <!--property name="eclipselink.nosql.property.mongo.port" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="mydb"/-->
-            <!--property name="eclipselink.logging.level" value="FINEST"/-->
         </properties>
     </persistence-unit>
 </persistence>

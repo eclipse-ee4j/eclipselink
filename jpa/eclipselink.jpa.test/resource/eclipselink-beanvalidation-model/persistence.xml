@@ -5,10 +5,5 @@
         <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Project</class>
         <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Address</class>
         <validation-mode>CALLBACK</validation-mode>
-        <!--
-        <properties>
-            <property name="eclipselink.logging.level" value="FINEST"/>
-        </properties>
-        -->
     </persistence-unit>
 </persistence>
