@@ -333,10 +333,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void addOpenQuery(QueryImpl query) {
         getOpenQueriesMap().put(query, query);
     	
-        // If there is an open transaction, tag the query to it to be closed
+        // If there is an open entity transaction, tag the query to it to be closed
         // on commit or rollback.
-        if (getTransaction() != null) {
-            ((EntityTransactionImpl) getTransaction()).addOpenQuery(query);
+        Object transaction = checkForTransaction(false);        
+        if (transaction != null && transaction instanceof EntityTransactionImpl) {
+            ((EntityTransactionImpl) transaction).addOpenQuery(query);
         }
     }
     
