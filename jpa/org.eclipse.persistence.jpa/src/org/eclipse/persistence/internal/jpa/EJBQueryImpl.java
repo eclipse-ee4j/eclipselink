@@ -491,6 +491,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
@@ -514,6 +517,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
@@ -538,6 +544,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
