@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
 
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance-bindings.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/substitution/instance.json";
     private final static String XML_BINDINGS = "org/eclipse/persistence/testing/jaxb/substitution/xml-bindings.xml";
     
