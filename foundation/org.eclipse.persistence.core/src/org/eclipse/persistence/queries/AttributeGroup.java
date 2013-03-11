@@ -316,53 +316,9 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem> implements
 
     @Override
     public AttributeGroup clone() {
-        Map<AttributeGroup, AttributeGroup> cloneMap = new IdentityHashMap<AttributeGroup, AttributeGroup>();
-        return clone(cloneMap);
+        return (AttributeGroup)super.clone();
     }
-    
-    /**
-     * INTERNAL:
-     *    This method is used internally in the clone processing.
-     * @param cloneMap
-     * @return
-     */
-    public AttributeGroup clone(Map<AttributeGroup, AttributeGroup> cloneMap){
-        AttributeGroup clone = cloneMap.get(this);
-        if (clone != null) {
-            return clone;
-        }
-        clone = (AttributeGroup) super.clone();
-        
-        clone.name = this.name;
-        clone.type = this.type;
-        clone.typeName = this.typeName;
-        clone.isValidated = this.isValidated;
-        cloneMap.put(this,clone);
-        if (this.allsubclasses != null){
-            for (CoreAttributeGroup group : this.allsubclasses.values()){
-                clone.getSubClassGroups().put(group.getType(), ((AttributeGroup)group).clone(cloneMap));
-            }
-        }
-        if (this.superClassGroup != null){
-            clone.superClassGroup = this.superClassGroup.clone(cloneMap);
-        }
-        if (this.subClasses != null){
-            clone.subClasses = new HashSet<CoreAttributeGroup>();
-            for (CoreAttributeGroup group : this.subClasses){
-                clone.subClasses.add(group.clone(cloneMap));
-            }
-        }
-        // all attributes and nested groups should be cloned, too
-        clone.items = null;
-        if (hasItems()) {
-            clone.items = new HashMap<String, AttributeItem>();
-            for (AttributeItem item : this.items.values()){
-                clone.items.put(item.getAttributeName(), (AttributeItem) item.clone(cloneMap, clone));
-            }
-        }
-        return clone;
-    }
-    
+
     /**
      * INTERNAL:
      * Only LoadGroups allow concurrency.
