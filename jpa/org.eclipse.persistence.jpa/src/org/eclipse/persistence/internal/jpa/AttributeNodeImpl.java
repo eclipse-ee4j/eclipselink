@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.AttributeNode;
@@ -27,6 +28,10 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     
     
     protected String currentAttribute;
+    
+    protected Map<Class, Subgraph> subgraphs;
+
+    protected Map<Class, Subgraph> keySubgraphs;
 
     protected AttributeNodeImpl(){
     }
@@ -40,13 +45,25 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     }
 
     public Map<Class, Subgraph> getSubgraphs() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.subgraphs;
     }
 
     public Map<Class, Subgraph> getKeySubgraphs() {
         // TODO Auto-generated method stub
-        return null;
+        return this.keySubgraphs;
     }
 
+    public void addSubgraph(EntityGraphImpl entityGraphImpl) {
+        if (this.subgraphs == null){
+            this.subgraphs = new HashMap<Class, Subgraph>();
+        }
+        this.subgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
+    }
+
+    public void addKeySubgraph(EntityGraphImpl entityGraphImpl) {
+        if (this.keySubgraphs == null){
+            this.keySubgraphs = new HashMap<Class, Subgraph>();
+        }
+        this.keySubgraphs.put(entityGraphImpl.getClassType(), entityGraphImpl);
+    }
 }
