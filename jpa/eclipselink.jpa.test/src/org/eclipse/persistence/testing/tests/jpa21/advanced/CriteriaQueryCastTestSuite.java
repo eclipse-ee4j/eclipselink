@@ -120,12 +120,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
             getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
-        getPersistenceUnitServerSession().setLogLevel(0);
     }
 
     public void testDowncastOneToManyLeafQueryKey(){
         EntityManager em = createEntityManager();
-        getPersistenceUnitServerSession().setLogLevel(0);
         beginTransaction(em);
         try {
 
@@ -914,7 +912,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     //last spec example, known not to work.
     public void testDoubleTreatOnRoot(){
-        System.out.println("Begin test testDoubleTreatOnRoot");
         EntityManager em = createEntityManager();
 
         beginTransaction(em);
@@ -960,7 +957,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
   //last spec example, known not to work.
     public void testDoubleTreatOnRootSTI(){
-        System.out.println("Begin test testDoubleTreatOnRootSTI");
         EntityManager em = createEntityManager();
 
         beginTransaction(em);
@@ -1003,7 +999,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
   //first Spec example, works due to joining
     public void testTreatInFrom(){
-        System.out.println("Begin test testTreatInFrom");
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1055,7 +1050,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatInFromSTI(){
-        System.out.println("Begin test testTreatInFromSTI");
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1104,7 +1098,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
   //second Spec example,
     public void testTreatInWhere(){
-        System.out.println("Begin test testTreatInFrom");
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1155,7 +1148,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatInWhereSTI(){
-        System.out.println("Begin test testTreatInFromSTI");
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1204,7 +1196,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     //more complex example 
     public void testTreatUsingAndOr(){
-        System.out.println("Begin test testTreatUsingAndOr");
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -1268,8 +1259,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
     
     //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatUsingAndOrSTI(){
-        System.out.println("Begin test testTreatUsingAndOrSTI");
-        getPersistenceUnitServerSession().setLogLevel(0);
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {

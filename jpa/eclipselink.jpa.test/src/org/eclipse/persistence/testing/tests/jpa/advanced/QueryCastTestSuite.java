@@ -108,12 +108,10 @@ public class QueryCastTestSuite extends JUnitTestCase {
         if (getServerSession().getPlatform().isPostgreSQL()) {
             getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
-        getServerSession().setLogLevel(0);
     }
 
     public void testDowncastOneToManyLeafQueryKey(){
         EntityManager em = createEntityManager();
-        getServerSession().setLogLevel(0);
         beginTransaction(em);
         try {
 
@@ -1273,7 +1271,6 @@ public class QueryCastTestSuite extends JUnitTestCase {
     
     //expected to fail.  "AS" doesn't add typecast to filter results
     public void testTreatUsingAndOrSTI(){
-        getServerSession().setLogLevel(0);
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
