@@ -53,6 +53,15 @@ public class MetadataField extends MetadataAnnotatedElement {
     
     /**
      * INTERNAL:
+     * Used to determine if this is a field EclipseLink weaved into the class.
+     * @return
+     */
+    public boolean isEclipseLinkWeavedField(){
+        return getName().startsWith(ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX);
+    }
+    
+    /**
+     * INTERNAL:
      * Return true is this field is a valid persistence field. This method
      * will validate against any declared annotations on the field. If the 
      * mustBeExplicit flag is true, then we are processing the inverse of an 

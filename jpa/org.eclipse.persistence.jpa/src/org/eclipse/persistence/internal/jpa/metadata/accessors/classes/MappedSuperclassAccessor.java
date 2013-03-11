@@ -551,7 +551,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         Collection<MetadataField> fields = getJavaClass().getFields().values();
         
         for (MetadataField field : fields) {
-            if (field.hasDeclaredAnnotations(this)) {
+            if (field.hasDeclaredAnnotations(this) && !field.isEclipseLinkWeavedField()) {
                 return true;
             }
         }
