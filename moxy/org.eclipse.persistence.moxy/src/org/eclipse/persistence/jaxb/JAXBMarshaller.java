@@ -790,8 +790,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {
                 if(value == null) {
                     xmlMarshaller.setMarshalAttributeGroup(null);
-                }
-                if(value instanceof ObjectGraphImpl) {
+                } else if(value instanceof ObjectGraphImpl) {
                     xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl)value).getAttributeGroup());
                 } else if(value.getClass() == ClassConstants.STRING){
                     xmlMarshaller.setMarshalAttributeGroup(value);

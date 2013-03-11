@@ -345,7 +345,7 @@ public class MappingsGenerator {
             if(type == null) {
                 type = "java.lang.Object";
             }
-            CoreAttributeGroup group = new CoreAttributeGroup(next.getName(), type, false);
+            AttributeGroup group = new AttributeGroup(next.getName(), type, false);
             if(subgroups.containsKey(group.getName())) {
                 List<CoreAttributeGroup> groups = subgroups.get(group.getName());
                 groups.add(group);
