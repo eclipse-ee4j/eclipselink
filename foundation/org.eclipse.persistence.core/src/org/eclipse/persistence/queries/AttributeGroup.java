@@ -137,13 +137,6 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem> implements
         return new AttributeItem(group, attrName);
     }
 
-    /**
-     * Subclass may create different types.
-     */
-    protected AttributeGroup newGroup(String name, AttributeGroup parent) {
-        return new AttributeGroup(name);
-    }
-
     @Override
     public AttributeGroup findGroup(ClassDescriptor type){
         return (AttributeGroup)super.findGroup(type);

@@ -278,7 +278,7 @@ public class FetchGroup extends AttributeGroup {
     }
     
     @Override
-    protected FetchGroup newGroup(String name, AttributeGroup parent) {
+    protected FetchGroup newGroup(String name, CoreAttributeGroup parent) {
         FetchGroup fetchGroup = new FetchGroup(name);
         if(parent != null) {
             fetchGroup.setShouldLoad(((FetchGroup)parent).shouldLoad());

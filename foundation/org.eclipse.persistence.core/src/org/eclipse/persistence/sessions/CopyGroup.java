@@ -278,7 +278,7 @@ public class CopyGroup extends AttributeGroup {
     }
 
     @Override
-    protected CopyGroup newGroup(String name, AttributeGroup parent) {
+    protected CopyGroup newGroup(String name, CoreAttributeGroup parent) {
         CopyGroup copyGroup = new CopyGroup(name);
         copyGroup.cascadeTree();
         if(parent != null) {

@@ -42,7 +42,7 @@ public class LoadGroup extends AttributeGroup {
     }
 
     @Override
-    protected LoadGroup newGroup(String name, AttributeGroup parent) {
+    protected LoadGroup newGroup(String name, CoreAttributeGroup parent) {
         return new LoadGroup(name);
     }
     
