@@ -15,7 +15,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author matt macivor
  * @since EclipseLink 2.5
  */
-public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> implements Serializable {
+public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> implements Serializable, Cloneable {
 
 
     protected String attributeName;
@@ -109,7 +109,13 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
     }
     
     public CoreAttributeItem<ATTRIBUTE_GROUP> clone(Map<ATTRIBUTE_GROUP, ATTRIBUTE_GROUP> cloneMap, ATTRIBUTE_GROUP parentClone){
-        CoreAttributeItem clone = new CoreAttributeItem();
+        CoreAttributeItem clone = null;
+        try {
+            clone = (CoreAttributeItem) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         clone.attributeName = this.attributeName;
         if (this.group != null){
             clone.group = this.group.clone(cloneMap);
