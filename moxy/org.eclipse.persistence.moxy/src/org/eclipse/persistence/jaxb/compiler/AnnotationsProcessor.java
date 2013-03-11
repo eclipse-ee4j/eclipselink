@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -3526,119 +3527,25 @@ public class AnnotationsProcessor {
         Collection methods = objectFactoryClass.getDeclaredMethods();
         Iterator methodsIter = methods.iterator();
         PackageInfo packageInfo = getPackageInfoForPackage(objectFactoryClass);
+        
         while (methodsIter.hasNext()) {
             JavaMethod next = (JavaMethod) methodsIter.next();
             if (next.getName().startsWith(CREATE)) {
                 JavaClass type = next.getReturnType();
-                if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {                    
-                    Object[] actutalTypeArguments = next.getReturnType().getActualTypeArguments().toArray();
+
+                if (JAVAX_XML_BIND_JAXBELEMENT.equals(type.getName())) {
+                	Object[] actutalTypeArguments = next.getReturnType().getActualTypeArguments().toArray();
                     if (actutalTypeArguments.length == 0) {
                         type = helper.getJavaClass(Object.class);
                     } else {
                         type = (JavaClass) next.getReturnType().getActualTypeArguments().toArray()[0];
-                    }
+                    } 
+                    processXmlElementDecl(type, next, packageInfo, elemDecls);
+                }else if (helper.getJavaClass(JAXBElement.class).isAssignableFrom(type)) {                                   
+                	this.factoryMethods.put(next.getReturnType().getRawName(), next);
+                	processXmlElementDecl(type, next, packageInfo, elemDecls);
                 } else {
-                    this.factoryMethods.put(next.getReturnType().getRawName(), next);
-                }
-                // if there's an XmlElementDecl for this method from XML, use it
-                // - otherwise look for an annotation
-                org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl xmlEltDecl = elemDecls.get(next.getName());
-                if (xmlEltDecl != null || helper.isAnnotationPresent(next, XmlElementDecl.class)) {
-                    QName qname;
-                    QName substitutionHead = null;
-                    String url;
-                    String localName;
-                    String defaultValue = null;
-                    Class scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
-
-                    if (xmlEltDecl != null) {
-                        url = xmlEltDecl.getNamespace();
-                        localName = xmlEltDecl.getName();
-                        String scopeClassName = xmlEltDecl.getScope();
-                        if (!scopeClassName.equals(ELEMENT_DECL_GLOBAL)) {
-                            JavaClass jScopeClass = helper.getJavaClass(scopeClassName);
-                            if (jScopeClass != null) {
-                                scopeClass = helper.getClassForJavaClass(jScopeClass);
-                                if (scopeClass == null) {
-                                    scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
-                                }
-                            }
-                        }
-                        if (!xmlEltDecl.getSubstitutionHeadName().equals(EMPTY_STRING)) {
-                            String subHeadLocal = xmlEltDecl.getSubstitutionHeadName();
-                            String subHeadNamespace = xmlEltDecl.getSubstitutionHeadNamespace();
-                            if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
-                                subHeadNamespace = packageInfo.getNamespace();
-                            }
-                            substitutionHead = new QName(subHeadNamespace, subHeadLocal);
-                        }
-                        if (!(xmlEltDecl.getDefaultValue().length() == 1 && xmlEltDecl.getDefaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
-                            defaultValue = xmlEltDecl.getDefaultValue();
-                        }
-                    } else {
-                        // there was no xml-element-decl for this method in XML,
-                        // so use the annotation
-                        XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
-                        url = elementDecl.namespace();
-                        localName = elementDecl.name();
-                        scopeClass = elementDecl.scope();
-                        if (!elementDecl.substitutionHeadName().equals(EMPTY_STRING)) {
-                            String subHeadLocal = elementDecl.substitutionHeadName();
-                            String subHeadNamespace = elementDecl.substitutionHeadNamespace();
-                            if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
-                                subHeadNamespace = packageInfo.getNamespace();
-                            }
-
-                            substitutionHead = new QName(subHeadNamespace, subHeadLocal);
-                        }
-                        if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
-                            defaultValue = elementDecl.defaultValue();
-                        }
-                    }
-                    
-                    if (XMLProcessor.DEFAULT.equals(url)) {
-                        url = packageInfo.getNamespace();
-                    }
-                    if(XMLConstants.EMPTY_STRING.equals(url)) {
-                        isDefaultNamespaceAllowed = false;
-                        qname = new QName(localName);
-                    }else{
-                        qname = new QName(url, localName);
-                    }
-
-                    boolean isList = false;
-                    if (JAVA_UTIL_LIST.equals(type.getName())) {
-                        isList = true;
-                        Collection args = type.getActualTypeArguments();
-                        if (args.size() > 0) {
-                            type = (JavaClass) args.iterator().next();
-                        }
-                    }
-
-                    ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList, scopeClass);
-                    if (substitutionHead != null) {
-                        declaration.setSubstitutionHead(substitutionHead);
-                    }
-                    if (defaultValue != null) {
-                        declaration.setDefaultValue(defaultValue);
-                    }
-
-                    if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
-                        XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
-                        Class typeAdapterClass = typeAdapter.value();
-                        declaration.setJavaTypeAdapterClass(typeAdapterClass);
-
-                        Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
-
-                        declaration.setJavaType(helper.getJavaClass(declJavaType));
-                        declaration.setAdaptedJavaType(type);
-                    }
-                    HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
-                    if (elements == null) {
-                        elements = new HashMap<QName, ElementDeclaration>();
-                        this.elementDeclarations.put(scopeClass.getName(), elements);
-                    }
-                    elements.put(qname, declaration);
+                    this.factoryMethods.put(next.getReturnType().getRawName(), next);                    
                 }
                 if (!helper.isBuiltInJavaType(type) && !helper.classExistsInArray(type, classes)) {
                     classes.add(type);
@@ -3651,6 +3558,114 @@ public class AnnotationsProcessor {
             return classes.toArray(new JavaClass[classes.size()]);
         } else {
             return new JavaClass[0];
+        }
+    }
+    
+    private void processXmlElementDecl(JavaClass type, JavaMethod next, PackageInfo packageInfo, Map<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl> elemDecls){
+        
+        // if there's an XmlElementDecl for this method from XML, use it
+        // - otherwise look for an annotation
+    	org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry.XmlElementDecl xmlEltDecl = elemDecls.get(next.getName());
+    	if (( xmlEltDecl != null) || helper.isAnnotationPresent(next, XmlElementDecl.class)) {
+            QName qname;
+            QName substitutionHead = null;
+            String url;
+            String localName;
+            String defaultValue = null;
+            Class scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+
+            if (xmlEltDecl != null) {
+                url = xmlEltDecl.getNamespace();
+                localName = xmlEltDecl.getName();
+                String scopeClassName = xmlEltDecl.getScope();
+                if (!scopeClassName.equals(ELEMENT_DECL_GLOBAL)) {
+                    JavaClass jScopeClass = helper.getJavaClass(scopeClassName);
+                    if (jScopeClass != null) {
+                        scopeClass = helper.getClassForJavaClass(jScopeClass);
+                        if (scopeClass == null) {
+                            scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+                        }
+                    }
+                }
+                if (!xmlEltDecl.getSubstitutionHeadName().equals(EMPTY_STRING)) {
+                    String subHeadLocal = xmlEltDecl.getSubstitutionHeadName();
+                    String subHeadNamespace = xmlEltDecl.getSubstitutionHeadNamespace();
+                    if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
+                        subHeadNamespace = packageInfo.getNamespace();
+                    }
+                    substitutionHead = new QName(subHeadNamespace, subHeadLocal);
+                }
+                if (!(xmlEltDecl.getDefaultValue().length() == 1 && xmlEltDecl.getDefaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
+                    defaultValue = xmlEltDecl.getDefaultValue();
+                }
+            } else {
+                // there was no xml-element-decl for this method in XML,
+                // so use the annotation
+                XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
+                url = elementDecl.namespace();
+                localName = elementDecl.name();
+                scopeClass = elementDecl.scope();
+                if (!elementDecl.substitutionHeadName().equals(EMPTY_STRING)) {
+                    String subHeadLocal = elementDecl.substitutionHeadName();
+                    String subHeadNamespace = elementDecl.substitutionHeadNamespace();
+                    if (subHeadNamespace.equals(XMLProcessor.DEFAULT)) {
+                        subHeadNamespace = packageInfo.getNamespace();
+                    }
+
+                    substitutionHead = new QName(subHeadNamespace, subHeadLocal);
+                }
+                if (!(elementDecl.defaultValue().length() == 1 && elementDecl.defaultValue().startsWith(ELEMENT_DECL_DEFAULT))) {
+                    defaultValue = elementDecl.defaultValue();
+                }
+            }
+            
+            if (XMLProcessor.DEFAULT.equals(url)) {
+                url = packageInfo.getNamespace();
+            }
+                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                isDefaultNamespaceAllowed = false;
+                qname = new QName(localName);
+            }else{
+                qname = new QName(url, localName);
+            }
+
+            boolean isList = false;
+            if (JAVA_UTIL_LIST.equals(type.getName())) {
+                isList = true;
+                Collection args = type.getActualTypeArguments();
+                if (args.size() > 0) {
+                    type = (JavaClass) args.iterator().next();
+                }
+            }
+
+            ElementDeclaration declaration = new ElementDeclaration(qname, type, type.getQualifiedName(), isList, scopeClass);
+            if (substitutionHead != null) {
+                declaration.setSubstitutionHead(substitutionHead);
+            }
+            if (defaultValue != null) {
+                declaration.setDefaultValue(defaultValue);
+            }
+
+            if (helper.isAnnotationPresent(next, XmlJavaTypeAdapter.class)) {
+                XmlJavaTypeAdapter typeAdapter = (XmlJavaTypeAdapter) helper.getAnnotation(next, XmlJavaTypeAdapter.class);
+                Class typeAdapterClass = typeAdapter.value();
+                declaration.setJavaTypeAdapterClass(typeAdapterClass);
+
+                Class declJavaType = CompilerHelper.getTypeFromAdapterClass(typeAdapterClass);
+
+                declaration.setJavaType(helper.getJavaClass(declJavaType));
+                declaration.setAdaptedJavaType(type);
+            }
+            HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
+            if (elements == null) {
+                elements = new HashMap<QName, ElementDeclaration>();
+                this.elementDeclarations.put(scopeClass.getName(), elements);
+            }
+            if(elements.containsKey(qname)){
+            	throw JAXBException.duplicateElementName(qname);
+            }
+
+            elements.put(qname, declaration);
         }
     }
 
