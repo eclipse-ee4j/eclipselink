@@ -661,7 +661,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 if (updateCount > -1) {
                     moveResultPointer();
                 }
-                
                 return updateCount;
             } catch (SQLException e) {
                 throw getDetailedException(DatabaseException.sqlException(e, executeCall, executeCall.getQuery().getAccessor(), executeCall.getQuery().getSession(), false));
@@ -936,6 +935,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
@@ -959,6 +961,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }
@@ -981,6 +986,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         //bug 402686: type validation
         String position = getParameterId(param);
         ParameterExpressionImpl parameter = (ParameterExpressionImpl) this.getInternalParameters().get(position);
+        if (parameter == null ) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NO_PARAMETER_WITH_NAME", new Object[] { param.toString(), this.databaseQuery }));
+        }
         if (!parameter.getParameterType().equals(param.getParameterType())) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("INCORRECT_PARAMETER_TYPE", new Object[] { position, param.getParameterType() }));
         }

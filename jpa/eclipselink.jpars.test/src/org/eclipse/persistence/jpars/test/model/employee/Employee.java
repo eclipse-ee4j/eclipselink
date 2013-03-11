@@ -137,6 +137,11 @@ public class Employee {
     @JoinColumn(name = "OFFICE_ID")
     private Office office;
     
+    
+    @ElementCollection
+    @CollectionTable(name = "JPARS_CERTIFICATION", joinColumns = {@JoinColumn(name="EMP_ID")})
+    private List<Certification> certifications = new ArrayList<Certification>();
+    
     public Employee() {
     }
 
@@ -306,6 +311,14 @@ public class Employee {
 
     public void setOffice(Office office) {
         this.office = office;
+    }
+
+    public List<Certification> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(List<Certification> certifications) {
+        this.certifications = certifications;
     }
 
     public String toString() {

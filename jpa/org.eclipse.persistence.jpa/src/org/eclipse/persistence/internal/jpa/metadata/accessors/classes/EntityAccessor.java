@@ -609,6 +609,10 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the default access methods after determining access type.
         processAccessMethods();
         
+        // Process a @Struct and @EIS annotation to create the correct type of descriptor.
+        processStruct();
+        processNoSql();
+        
         // Process our parents metadata after processing our own.
         super.preProcess();
     }

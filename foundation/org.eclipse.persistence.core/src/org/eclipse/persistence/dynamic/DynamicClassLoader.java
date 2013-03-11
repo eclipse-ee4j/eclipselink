@@ -166,13 +166,11 @@ public class DynamicClassLoader extends ClassLoader {
         }
         return checkAssignable(newDynamicClass);
     }
-    
+
     protected Class<?> checkAssignable(Class<?> clz) {
         EclipseLinkClassWriter assignedClassWriter = getClassWriters().get(clz.getName());
-        if ((assignedClassWriter.getParentClass() == null && !assignedClassWriter.getParentClassName().equals(clz.getName())) || 
-                !assignedClassWriter.getParentClass().isAssignableFrom(clz)) {
-            throw new IllegalArgumentException("DynamicClassLoader: " + clz.getName() + 
-                   " not compatible with parent class " + assignedClassWriter.getParentClass().getName());
+        if ((assignedClassWriter.getParentClass() == null && !assignedClassWriter.getParentClassName().equals(clz.getName())) || !assignedClassWriter.getParentClass().isAssignableFrom(clz)) {
+            throw new IllegalArgumentException("DynamicClassLoader: " + clz.getName() + " not compatible with parent class " + assignedClassWriter.getParentClass().getName());
         }
         return clz;
     }
@@ -210,24 +208,34 @@ public class DynamicClassLoader extends ClassLoader {
         if (writer != null) {
             try {
                 byte[] bytes = writer.writeClass(this, className);
-                if (bytes != null){
+                if (bytes != null) {
                     String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
-                             
+
                     if (!outputPath.equals("")) {
                         Helper.outputClassFile(className, bytes, outputPath);
                     }
                 }
-                return defineClass(className, bytes, 0, bytes.length);
-            }
-            catch (ClassFormatError cfe) {
+                return defineDynamicClass(className, bytes);
+            } catch (ClassFormatError cfe) {
                 throw new ClassNotFoundException(className, cfe);
-            }
-            catch (ClassCircularityError cce) {
+            } catch (ClassCircularityError cce) {
                 throw new ClassNotFoundException(className, cce);
             }
         }
 
         return super.findClass(className);
+    }
+
+    /**
+     * Converts an array of bytes into an instance of class <tt>Class</tt>.
+     * Before the <tt>Class</tt> can be used it must be resolved.
+     * 
+     * @param name
+     * @param b
+     * @throws ClassFormatError
+     */
+    protected Class<?> defineDynamicClass(String name, byte[] b)  {
+        return defineClass(name, b, 0, b.length);
     }
 
     /**
@@ -264,15 +272,19 @@ public class DynamicClassLoader extends ClassLoader {
     public static class EnumInfo {
         String className;
         List<String> literalLabels = new ArrayList<String>();
+
         public EnumInfo(String className) {
             this.className = className;
         }
+
         public String getClassName() {
             return className;
         }
+
         public String[] getLiteralLabels() {
             return literalLabels.toArray(new String[literalLabels.size()]);
         }
+
         public void addLiteralLabel(String literalLabel) {
             if (!literalLabels.contains(literalLabel) && literalLabel != null) {
                 literalLabels.add(literalLabel);

@@ -1208,10 +1208,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing. 
      */
     public void preProcess() {
-        // First check for a @Struct and @EIS annotation to create the correct type of descriptor.
-        processStruct();
-        processNoSql();
-        
         // Process the global converters.
         processConverters();
         
@@ -1423,6 +1419,87 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
+     * Process PL/SQL record and table types, Oracle object array and XMLType types.
+     */
+    public void processComplexMetadataTypes() {
+        // PLSQL types.
+        
+        // Process the XML first.
+        for (PLSQLRecordMetadata record : m_plsqlRecords) {
+            getProject().addComplexMetadataType(record);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
+        if (records != null) {
+            for (Object record : records.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new PLSQLRecordMetadata((MetadataAnnotation) record, this));
+            }
+        }
+        
+        MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
+        if (record != null) {
+            getProject().addComplexMetadataType(new PLSQLRecordMetadata(record, this));
+        }
+        
+        // Process the XML first.
+        for (PLSQLTableMetadata table : m_plsqlTables) {
+            getProject().addComplexMetadataType(table);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
+        if (tables != null) {
+            for (Object table : tables.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new PLSQLTableMetadata((MetadataAnnotation) table, this));
+            }
+        }
+        
+        MetadataAnnotation table = getAnnotation(PLSQLTable.class);
+        if (table != null) {
+            getProject().addComplexMetadataType(new PLSQLTableMetadata(table, this));
+        }
+        
+        // Oracle advanced JDBC types.
+        
+        // Process XML.
+        for (OracleObjectTypeMetadata objectType : m_oracleObjectTypes) {
+            getProject().addComplexMetadataType(objectType);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation objectTypes = getAnnotation(OracleObjects.class);
+        if (objectTypes != null) {
+            for (Object objectType : objectTypes.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new OracleObjectTypeMetadata((MetadataAnnotation) objectType, this));
+            }
+        }
+        
+        MetadataAnnotation objectType = getAnnotation(OracleObject.class);
+        if (objectType != null) {
+            getProject().addComplexMetadataType(new OracleObjectTypeMetadata(objectType, this));
+        }
+        
+        // Process XML.
+        for (OracleArrayTypeMetadata arrayType : m_oracleArrayTypes) {
+            getProject().addComplexMetadataType(arrayType);
+        }
+        
+        // Process the annotations.
+        MetadataAnnotation arrayTypes = getAnnotation(OracleArrays.class);
+        if (arrayTypes != null) {
+            for (Object arrayType : arrayTypes.getAttributeArray("value")) { 
+                getProject().addComplexMetadataType(new OracleArrayTypeMetadata((MetadataAnnotation) arrayType, this));
+            }
+        }
+        
+        MetadataAnnotation arrayType = getAnnotation(OracleArray.class);
+        if (arrayType != null) {
+            getProject().addComplexMetadataType(new OracleArrayTypeMetadata(arrayType, this));
+        }        
+    }
+    
+    /**
      * INTERNAL:
      */
     protected void processCopyPolicy(){
@@ -1573,6 +1650,29 @@ public abstract class ClassAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
+     * Check for and process a NoSql annotation and configure the correct 
+     * descriptor type. 
+     * 
+     * NOTE: NoSql metadata is supported only on Entity and Embeddable. 
+     */
+    protected void processNoSql() {
+        MetadataAnnotation noSql = getAnnotation("org.eclipse.persistence.nosql.annotations.NoSql");
+        
+        if (m_noSql != null || noSql != null) {
+            if (m_noSql == null) {
+                new NoSqlMetadata(noSql, this).process(getDescriptor());
+            } else {
+                if (noSql != null) {
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, noSql, getJavaClassName(), getLocation());
+                }
+                    
+                m_noSql.process(getDescriptor());
+            }
+        }   
+    }
+    
+    /**
+     * INTERNAL:
      * If the user specified a parent class set it on the metadata class
      * for this accessor. The parent class is only ever required in a VIRTUAL
      * case when no java class file is available (otherwise we look at the
@@ -1586,83 +1686,6 @@ public abstract class ClassAccessor extends MetadataAccessor {
             // Default the superclass to Object.class if no superclass exists.
             getJavaClass().setSuperclass(getMetadataClass(Object.class));   
         }
-    }
-    
-    /**
-     * Process PL/SQL record and table types, Oracle object array and XMLType types.
-     */
-    public void processComplexMetadataTypes() {
-        // PLSQL types.
-        
-        // Process the XML first.
-        for (PLSQLRecordMetadata record : m_plsqlRecords) {
-            getProject().addComplexMetadataType(record);
-        }
-        
-        // Process the annotations.
-        MetadataAnnotation records = getAnnotation(PLSQLRecords.class);
-        if (records != null) {
-            for (Object record : records.getAttributeArray("value")) { 
-                getProject().addComplexMetadataType(new PLSQLRecordMetadata((MetadataAnnotation) record, this));
-            }
-        }
-        
-        MetadataAnnotation record = getAnnotation(PLSQLRecord.class);
-        if (record != null) {
-            getProject().addComplexMetadataType(new PLSQLRecordMetadata(record, this));
-        }
-        
-        // Process the XML first.
-        for (PLSQLTableMetadata table : m_plsqlTables) {
-            getProject().addComplexMetadataType(table);
-        }
-        
-        // Process the annotations.
-        MetadataAnnotation tables = getAnnotation(PLSQLTables.class);
-        if (tables != null) {
-            for (Object table : tables.getAttributeArray("value")) { 
-                getProject().addComplexMetadataType(new PLSQLTableMetadata((MetadataAnnotation) table, this));
-            }
-        }
-        
-        MetadataAnnotation table = getAnnotation(PLSQLTable.class);
-        if (table != null) {
-            getProject().addComplexMetadataType(new PLSQLTableMetadata(table, this));
-        }
-        
-        // Oracle advanced JDBC types.
-        
-        // Process XML.
-        for (OracleObjectTypeMetadata objectType : m_oracleObjectTypes) {
-            getProject().addComplexMetadataType(objectType);
-        }
-        // Process the annotations.
-        MetadataAnnotation objectTypes = getAnnotation(OracleObjects.class);
-        if (objectTypes != null) {
-            for (Object objectType : objectTypes.getAttributeArray("value")) { 
-                getProject().addComplexMetadataType(new OracleObjectTypeMetadata((MetadataAnnotation) objectType, this));
-            }
-        }
-        MetadataAnnotation objectType = getAnnotation(OracleObject.class);
-        if (objectType != null) {
-            getProject().addComplexMetadataType(new OracleObjectTypeMetadata(objectType, this));
-        }
-        
-        // Process XML.
-        for (OracleArrayTypeMetadata arrayType : m_oracleArrayTypes) {
-            getProject().addComplexMetadataType(arrayType);
-        }
-        // Process the annotations.
-        MetadataAnnotation arrayTypes = getAnnotation(OracleArrays.class);
-        if (arrayTypes != null) {
-            for (Object arrayType : arrayTypes.getAttributeArray("value")) { 
-                getProject().addComplexMetadataType(new OracleArrayTypeMetadata((MetadataAnnotation) arrayType, this));
-            }
-        }
-        MetadataAnnotation arrayType = getAnnotation(OracleArray.class);
-        if (arrayType != null) {
-            getProject().addComplexMetadataType(new OracleArrayTypeMetadata(arrayType, this));
-        }        
     }
     
     /**
@@ -1688,35 +1711,25 @@ public abstract class ClassAccessor extends MetadataAccessor {
     }
     
     /**
-     * Check for and process a Struct annotation and configure the correct descriptor type. 
+     * Check for and process a Struct annotation and configure the correct 
+     * descriptor type. 
+     * 
+     * NOTE: Struct metadata is supported only on Entity and Embeddable. 
      */
     protected void processStruct() {
-        // Check for XML defined struct.
-        if (m_struct != null) {
-            m_struct.process(getDescriptor());
-        } else {
-            // Check for a annotation
-            MetadataAnnotation struct = getAnnotation(Struct.class);
-            if (struct != null) {
+        MetadataAnnotation struct = getAnnotation(Struct.class);
+        
+        if (m_struct != null || struct != null) {
+            if (m_struct == null) {
                 new StructMetadata(struct, this).process(getDescriptor());
+            } else {
+                if (struct != null) {
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, struct, getJavaClassName(), getLocation());
+                }
+                    
+                m_struct.process(getDescriptor());
             }
-        }
-    }
-    
-    /**
-     * Check for and process a Struct annotation and configure the correct descriptor type. 
-     */
-    protected void processNoSql() {
-        // Check for XML defined struct.
-        if (m_noSql != null) {
-            m_noSql.process(getDescriptor());
-        } else {
-            // Check for a annotation
-            MetadataAnnotation eis = getAnnotation("org.eclipse.persistence.nosql.annotations.NoSql");
-            if (eis != null) {
-                new NoSqlMetadata(eis, this).process(getDescriptor());
-            }
-        }
+        } 
     }
 
     /**

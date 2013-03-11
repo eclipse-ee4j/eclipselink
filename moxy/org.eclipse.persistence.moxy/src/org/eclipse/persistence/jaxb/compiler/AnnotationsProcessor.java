@@ -3807,7 +3807,9 @@ public class AnnotationsProcessor {
         property.addReferencedElement(referencedElement);
         if (referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
             for (ElementDeclaration substitutable : referencedElement.getSubstitutableElements()) {
-                addReferencedElement(property, substitutable);
+            	if(substitutable != referencedElement){
+                    addReferencedElement(property, substitutable);
+            	}
             }
         }
     }

@@ -248,6 +248,12 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      */
     private static void convertMappingToXMLChoiceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping jpaMapping, ClassLoader cl) {
         if ((jpaMapping != null) && (jaxbDescriptor != null)) {
+            if ((jpaMapping.isAggregateCollectionMapping()) || (jpaMapping.isAggregateMapping())) {
+                // Fix for Bug 402385 - JPA-RS: ClassNotFound when using ElementCollection of Embeddables
+                // Aggregates don't have identity to create links, thus no weaved REST adapters to insert choice mappings   
+                return;
+            }
+            
             String attributeName = jpaMapping.getAttributeName();
             DatabaseMapping jaxbMapping = jaxbDescriptor.getMappingForAttributeName(jpaMapping.getAttributeName());
             if (!(jaxbMapping.isXMLMapping() && (jaxbMapping.isAbstractCompositeCollectionMapping() || jaxbMapping.isAbstractCompositeObjectMapping()))) {

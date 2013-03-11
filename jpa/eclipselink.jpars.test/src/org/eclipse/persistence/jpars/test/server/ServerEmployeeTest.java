@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
+import org.eclipse.persistence.jpars.test.model.employee.Certification;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
@@ -508,16 +510,31 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null,  MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
     }
 
+    /**
+     * Test read employee with address lazy fetch one2 one xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testReadEmployeeWithAddressLazyFetchOne2OneXML() throws Exception {
         readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test read employee with address lazy fetch one2 one json.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testReadEmployeeWithAddressLazyFetchOne2OneJSON() throws Exception {
         readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test create employee with expertise non idempotent.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateEmployeeWithExpertiseNonIdempotent() throws Exception {
         String employee = RestUtils.getJSONMessage("employee-expertiseByValueNoId.json");
@@ -526,12 +543,22 @@ public class ServerEmployeeTest {
         RestUtils.restCreateWithSequence(employee, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test create office with employee non idempotent.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateOfficeWithEmployeeNonIdempotent() throws Exception {
         String office = RestUtils.getJSONMessage("office-employeeByValueNoId.json");
         RestUtils.restCreateWithSequence(office, Office.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
     
+    /**
+     * Test create employee with office many to one inverse mapping.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testCreateEmployeeWithOfficeManyToOneInverseMapping() throws Exception {
         String msg = RestUtils.getJSONMessage("employee-officeByValueNoId.json");
@@ -544,16 +571,46 @@ public class ServerEmployeeTest {
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.0");
     }
 
+    /**
+     * Test query employee find all json.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testQueryEmployeeFindAllJSON() throws Exception {
         queryEmployeeFindAll(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test query employee find all xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testQueryEmployeeFindAllXML() throws Exception {
         queryEmployeeFindAll(MediaType.APPLICATION_XML_TYPE);
     }
+    
+    /**
+     * Test read employee with certifications xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testReadEmployeeWithCertificationsXML() throws Exception {
+        readEmployeeWithCertifications(MediaType.APPLICATION_XML_TYPE);
+    }
 
+    /**
+     * Test read employee with certifications json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testReadEmployeeWithCertificationsJSON() throws Exception {
+        readEmployeeWithCertifications(MediaType.APPLICATION_JSON_TYPE);
+    }
+    
     private void queryEmployeeFindAll(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
@@ -1426,5 +1483,34 @@ public class ServerEmployeeTest {
 
         // delete manager
         RestUtils.restDelete(manager.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+    
+    
+    private void readEmployeeWithCertifications(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(201204);
+        employee.setFirstName("John");
+        employee.setLastName("Doe");
+
+        List<Certification> certifications = new ArrayList<Certification>();
+        
+        Certification certification = new Certification();
+        certification.setName("Java");
+        certification.setIssueDate(GregorianCalendar.getInstance());
+        certifications.add(certification);
+        
+        employee.setCertifications(certifications);
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        employee = RestUtils.restRead(context, new Integer(201204), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
+        assertNotNull(employee.getCertifications());
+        assertTrue(employee.getCertifications().size() == 1);
+        assertTrue("Java".equals(employee.getCertifications().get(0).getName()));
+
+        // delete employee
+        RestUtils.restDelete(new Integer(201204), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
     }
 }
