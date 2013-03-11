@@ -656,7 +656,7 @@ public class AnnotationsProcessor {
                 namedNode.setSubgraph(nextNode.subgraph());
                 namedGraph.getXmlNamedAttributeNode().add(namedNode);
             }
-            for(XmlNamedSubgraph nextSubgraph:next.subGraphs()) {
+            for(XmlNamedSubgraph nextSubgraph:next.subgraphs()) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph namedSubGraph = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph();
                 namedSubGraph.setName(nextSubgraph.name());
                 namedSubGraph.setType(nextSubgraph.type().getName());
@@ -668,7 +668,7 @@ public class AnnotationsProcessor {
                 }
                 namedGraph.getXmlNamedSubgraph().add(namedSubGraph);
             }
-            for(XmlNamedSubgraph nextSubgraph:next.subclassGraphs()) {
+            for(XmlNamedSubgraph nextSubgraph:next.subclassSubgraphs()) {
                 org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph namedSubGraph = new org.eclipse.persistence.jaxb.xmlmodel.XmlNamedSubgraph();
                 namedSubGraph.setName(nextSubgraph.name());
                 namedSubGraph.setType(nextSubgraph.type().getName());

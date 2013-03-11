@@ -29,7 +29,7 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
             @XmlNamedAttributeNode("lastName"),
             @XmlNamedAttributeNode(value="address", subgraph="simple-address")
     }, 
-    subGraphs={
+    subgraphs={
             @XmlNamedSubgraph(name="simple-address", attributeNodes={
                     @XmlNamedAttributeNode("city"),
                     @XmlNamedAttributeNode("country")
@@ -42,7 +42,7 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
             @XmlNamedAttributeNode(value="address", subgraph="basic"),
             @XmlNamedAttributeNode(value="phoneNumbers", subgraph="simple-phone")
     },
-    subGraphs={
+    subgraphs={
             @XmlNamedSubgraph(name="simple-phone", attributeNodes={
                     @XmlNamedAttributeNode("number")
             })

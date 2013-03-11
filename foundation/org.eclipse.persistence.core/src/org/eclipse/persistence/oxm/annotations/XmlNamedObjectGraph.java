@@ -42,11 +42,11 @@ public @interface XmlNamedObjectGraph {
      * Optional: a list of named subgraphs that are referenced 
      * from the property entries.
      */
-    XmlNamedSubgraph[] subGraphs() default {};
+    XmlNamedSubgraph[] subgraphs() default {};
  
     /**
      * Optional: a list of named subgraphs for any subclasses
      * of this class.
      */
-    XmlNamedSubgraph[] subclassGraphs() default {};
+    XmlNamedSubgraph[] subclassSubgraphs() default {};
 }
