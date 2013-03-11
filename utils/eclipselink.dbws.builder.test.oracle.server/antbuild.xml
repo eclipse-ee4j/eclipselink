@@ -92,7 +92,7 @@
     <target name="clean" description="Clean all generated content">
         <DeleteDirQuietly dir="${classes.dir}"/>
         <DeleteDirQuietly dir="${run.dir}"/>
-        <DeleteDirQuietly dir="${stage.dir}"/>
+        <!--DeleteDirQuietly dir="${stage.dir}"/-->
         <DeleteFileQuietly file="${dbwsbldrorcltst.jar}"/>
         <delete>
           <fileset dir="." includes="TEST-*xml"/>
