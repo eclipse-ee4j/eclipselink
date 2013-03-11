@@ -71,7 +71,7 @@ public final class CountFunction extends AggregateFunction {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalCountBNF.ID;
 	}
 }

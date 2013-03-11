@@ -169,7 +169,7 @@ public final class JPQLExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Creates an object where the {@link Expression} is the leaf at the given position.
+	 * Creates a map of the position of the cursor within each {@link Expression} of the parsed tree.
 	 *
 	 * @param actualQuery The actual query is a string representation of the query that may contain
 	 * extra whitespace

@@ -161,16 +161,6 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	}
 
 	/**
-	 * Sets the query statement to be a select clause.
-	 *
-	 * @return This expression's select clause
-	 */
-	public final SelectClause addSelectClause() {
-		selectClause = buildSelectClause();
-		return (SelectClause) selectClause;
-	}
-
-	/**
 	 * Creates the expression representing the from clause of this select statement.
 	 *
 	 * @return A new from clause, <code>null</code> can't be returned
@@ -183,6 +173,35 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	 * @return A new from clause, <code>null</code> can't be returned
 	 */
 	protected abstract AbstractSelectClause buildSelectClause();
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((selectClause != null) && selectClause.isAncestor(expression)) {
+			return selectClause.getQueryBNF();
+		}
+
+		if ((fromClause != null) && fromClause.isAncestor(expression)) {
+			return fromClause.getQueryBNF();
+		}
+
+		if ((whereClause != null) && whereClause.isAncestor(expression)) {
+			return whereClause.getQueryBNF();
+		}
+
+		if ((groupByClause != null) && groupByClause.isAncestor(expression)) {
+			return groupByClause.getQueryBNF();
+		}
+
+		if ((havingClause != null) && havingClause.isAncestor(expression)) {
+			return havingClause.getQueryBNF();
+		}
+
+		return super.findQueryBNF(expression);
+	}
 
 	/**
 	 * Returns the {@link Expression} representing the <b>FROM</b> clause.

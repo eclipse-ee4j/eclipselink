@@ -224,7 +224,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 *
 	 * @param abstractSchemaType The abstract schema type that is a valid proposal
 	 */
-	public void addAbstractSchemaType(IEntity abstractSchemaType) {
+	public void addEntity(IEntity abstractSchemaType) {
 		entities.add(abstractSchemaType);
 	}
 
@@ -721,6 +721,10 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		return new SnapshotCloneIterable<IMapping>(mappings);
 	}
 
+	protected void removeIdentifier(String identifier) {
+		identifiers.remove(identifier);
+	}
+
 	/**
 	 * Adds the given prefix that will be used to filter the list of possible class names.
 	 *
@@ -810,6 +814,14 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 				sb.append(", ");
 			}
 			sb.append(identificationVariables);
+		}
+
+		// Range identification variables
+		if (!rangeIdentificationVariables.isEmpty()) {
+			if (sb.length() > 0) {
+				sb.append(", ");
+			}
+			sb.append(rangeIdentificationVariables);
 		}
 
 		// Mappings

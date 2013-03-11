@@ -61,7 +61,7 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return queryBNF.getId();
 	}
 
@@ -69,9 +69,9 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if (hasExpression() && (getExpression() == expression)) {
+		if (hasExpression() && (getExpression().isAncestor(expression))) {
 			return queryBNF;
 		}
 

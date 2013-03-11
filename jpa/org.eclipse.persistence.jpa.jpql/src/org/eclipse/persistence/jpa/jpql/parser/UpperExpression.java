@@ -49,7 +49,7 @@ public final class UpperExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalUpperExpressionBNF.ID;
 	}
 

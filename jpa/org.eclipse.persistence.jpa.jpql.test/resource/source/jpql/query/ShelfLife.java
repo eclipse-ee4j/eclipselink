@@ -6,9 +6,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Embeddable
-@SuppressWarnings("unused")
 public class ShelfLife {
 
 	@Temporal(TemporalType.DATE)
 	private Date soldDate;
+
+	public Date getSoldDate() {
+		return soldDate;
+	}
+
+	public void setSoldDate(Date soldDate) {
+		this.soldDate = soldDate;
+	}
 }

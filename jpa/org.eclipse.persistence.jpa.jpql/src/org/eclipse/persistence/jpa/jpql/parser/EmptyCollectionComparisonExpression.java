@@ -143,6 +143,19 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((this.expression != null) && this.expression.isAncestor(expression)) {
+			return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>EMPTY</b> found in the string representation of the JPQL query, which
 	 * has the actual case that was used.
 	 *
@@ -326,6 +339,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		// Make sure a StateFieldPathExpression is converted into a
 		// CollectionValuedPathExpression
 		if (expression != null) {
+
 			StateFieldPathToCollectionValuedPathConverter converter = buildConverter(expression);
 			expression.accept(converter);
 

@@ -55,7 +55,7 @@ public final class AbsExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return SimpleArithmeticExpressionBNF.ID;
 	}
 

@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The <b>CONCAT</b> function returns a string that is a concatenation of its arguments.
  * <p>
@@ -50,10 +53,29 @@ public final class ConcatExpression extends AbstractSingleEncapsulatedExpression
 	}
 
 	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single constructor item.
+	 *
+	 * @return The single constructor item represented by a temporary collection
+	 */
+	public CollectionExpression buildCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add((AbstractExpression) getExpression());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(Boolean.FALSE);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalConcatExpressionBNF.ID;
 	}
 

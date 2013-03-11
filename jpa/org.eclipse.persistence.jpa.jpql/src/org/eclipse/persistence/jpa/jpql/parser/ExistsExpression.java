@@ -53,7 +53,7 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return SubqueryBNF.ID;
 	}
 

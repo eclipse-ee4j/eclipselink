@@ -54,6 +54,17 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public String getParameterQueryBNFId(int index) {
+		switch (index) {
+			case 0:  return InternalSubstringStringExpressionBNF.ID;
+			default: return InternalSubstringPositionExpressionBNF.ID;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
 	}
@@ -64,16 +75,5 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	@Override
 	protected boolean isThirdExpressionOptional() {
 		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String parameterExpressionBNF(int index) {
-		switch (index) {
-			case 0:  return InternalSubstringStringExpressionBNF.ID;
-			default: return InternalSubstringPositionExpressionBNF.ID;
-		}
 	}
 }

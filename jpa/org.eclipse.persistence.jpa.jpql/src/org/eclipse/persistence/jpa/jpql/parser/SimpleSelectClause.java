@@ -54,7 +54,7 @@ public final class SimpleSelectClause extends AbstractSelectClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String selectItemBNF() {
+	public String getSelectItemQueryBNFId() {
 		return InternalSimpleSelectExpressionBNF.ID;
 	}
 }

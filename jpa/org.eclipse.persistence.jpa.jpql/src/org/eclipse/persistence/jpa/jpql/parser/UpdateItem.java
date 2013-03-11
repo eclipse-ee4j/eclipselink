@@ -120,6 +120,23 @@ public final class UpdateItem extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((stateFieldExpression != null) && stateFieldExpression.isAncestor(expression)) {
+			return getQueryBNF(UpdateItemStateFieldPathExpressionBNF.ID);
+		}
+
+		if ((newValue != null) && newValue.isAncestor(expression)) {
+			return getQueryBNF(NewValueBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the {@link Expression} representing the new value, which is the new value of the property.
 	 *
 	 * @return The expression for the new value

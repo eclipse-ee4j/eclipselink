@@ -147,6 +147,23 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((rootObject != null) && rootObject.isAncestor(expression)) {
+			return getQueryBNF(RangeDeclarationBNF.ID);
+		}
+
+		if ((identificationVariable != null) && identificationVariable.isAncestor(expression)) {
+			return getQueryBNF(IdentificationVariableBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>AS</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
@@ -278,25 +295,17 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
 
-		// Parse the identification variable
-		identificationVariable = parseIdentificationVariable(wordParser, tolerant);
-	}
-
-	private AbstractExpression parseIdentificationVariable(WordParser wordParser, boolean tolerant) {
-
 		// Special case when parsing the range variable declaration of an UPDATE clause that does
 		// not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
-		if (wordParser.startsWithIdentifier(SET)) {
-			return null;
+		if (!wordParser.startsWithIdentifier(SET)) {
+			if (tolerant) {
+				identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
+			}
+			else {
+				identificationVariable = new IdentificationVariable(this, wordParser.word());
+				identificationVariable.parse(wordParser, tolerant);
+			}
 		}
-
-		if (tolerant) {
-			return parse(wordParser, IdentificationVariableBNF.ID, tolerant);
-		}
-
-		IdentificationVariable expression = new IdentificationVariable(this, wordParser.word());
-		expression.parse(wordParser, tolerant);
-		return expression;
 	}
 
 	/**

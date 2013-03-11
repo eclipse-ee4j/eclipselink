@@ -1234,7 +1234,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
 
 		// Cache the input parameter type
-		queryContext.addInputParameter(parameterName, type);
+		queryContext.addInputParameter(expression, queryExpression);
 	}
 
 	/**
@@ -2309,15 +2309,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			if (singleInputParameter) {
 				String parameterName = expression.getParameter();
 
-				// The type is by default Collection
-				Class<?> type = Collection.class;
-
-				// Create the expression
+				// Create the expression with Collection as the default type
 				queryExpression = queryContext.getBaseExpression();
-				queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+				queryExpression = queryExpression.getParameter(parameterName.substring(1), Collection.class);
 
 				// Cache the input parameter type, which is by default Collection
-				queryContext.addInputParameter(parameterName, type);
+				queryContext.addInputParameter(expression, queryExpression);
 
 				if (hasNot) {
 					queryExpression = leftExpression.notIn(queryExpression);

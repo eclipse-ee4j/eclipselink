@@ -38,7 +38,11 @@ public final class IsExpressionFactory extends ExpressionFactory {
 	 * Creates a new <code>IsExpressionFactory</code>.
 	 */
 	public IsExpressionFactory() {
-		super(ID, IS);
+		super(ID, IS,
+		      IS_EMPTY,
+		      IS_NOT_EMPTY,
+		      IS_NOT_NULL,
+		      IS_NULL);
 	}
 
 	/**

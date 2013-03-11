@@ -121,7 +121,7 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return parameterQueryBNFId;
 	}
 

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,8 +43,6 @@ public final class EmptyCollectionComparisonExpressionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		registerExpressionFactory(EmptyCollectionComparisonExpressionFactory.ID);
 		registerExpressionFactory(IsExpressionFactory.ID);
 	}
 }

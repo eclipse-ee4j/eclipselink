@@ -60,6 +60,11 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	private boolean hasSpaceAfterCollectionValuedPathExpression;
 
 	/**
+	 * Determines which child expression is been currently parsed.
+	 */
+	private int parameterIndex;
+
+	/**
 	 * Creates a new <code>TreatExpression</code>.
 	 *
 	 * @param parent The parent of this expression
@@ -120,6 +125,23 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		if (entityType != null) {
 			children.add(entityType);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((collectionValuedPathExpression != null) && collectionValuedPathExpression.isAncestor(expression)) {
+			return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+		}
+
+		if ((entityType != null) && entityType.isAncestor(expression)) {
+			return getQueryBNF(EntityTypeLiteralBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**
@@ -228,9 +250,32 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = wordParser.character();
+
+		// When parsing an invalid JPQL query (eg: LOCATE + ABS(e.name)) then "+ ABS(e.name)"
+		// should not be parsed as an invalid first expression
+		if ((parameterIndex == 0) &&
+		    ((character == '+') || (character == '-')) &&
+		    !hasLeftParenthesis()) {
+
+			parameterIndex = -1;
+			return true;
+		}
+
+		return super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void parseEncapsulatedExpression(WordParser wordParser,
 	                                           int whitespaceCount,
 	                                           boolean tolerant) {
+
+		parameterIndex = 0;
 
 		// Collection-valued path expression
 		collectionValuedPathExpression = parse(
@@ -239,6 +284,11 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 			tolerant
 		);
 
+		// See comment in isParsingComplete()
+		if (parameterIndex == -1) {
+			return;
+		}
+
 		hasSpaceAfterCollectionValuedPathExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'AS'
@@ -246,6 +296,8 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
+
+		parameterIndex = 1;
 
 		// Entity type
 		if (tolerant) {

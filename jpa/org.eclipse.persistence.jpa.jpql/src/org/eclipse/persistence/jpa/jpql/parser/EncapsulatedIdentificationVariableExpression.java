@@ -43,7 +43,7 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final String encapsulatedExpressionBNF() {
+	public final String getEncapsulatedExpressionQueryBNFId() {
 		return IdentificationVariableBNF.ID;
 	}
 

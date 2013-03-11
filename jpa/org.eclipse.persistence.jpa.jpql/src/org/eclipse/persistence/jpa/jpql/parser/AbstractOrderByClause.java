@@ -91,7 +91,7 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
 	 *
 	 * @return The single order by item represented by a temporary collection
 	 */
-	public CollectionExpression buildCollectionExpression() {
+	public final CollectionExpression buildCollectionExpression() {
 
 		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
 		children.add((AbstractExpression) getOrderByItems());
@@ -106,12 +106,25 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((orderByItems != null) && orderByItems.isAncestor(expression)) {
+			return getQueryBNF(OrderByItemBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual identifier found in the string representation of the JPQL query, which
 	 * has the actual case that was used.
 	 *
 	 * @return The actual identifier that was actually parsed
 	 */
-	public String getActualIdentifier() {
+	public final String getActualIdentifier() {
 		return identifier;
 	}
 
@@ -120,7 +133,7 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
 	 *
 	 * @return The expression representing the list of items to order
 	 */
-	public Expression getOrderByItems() {
+	public final Expression getOrderByItems() {
 		if (orderByItems == null) {
 			orderByItems = buildNullExpression();
 		}
@@ -132,7 +145,7 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
 	 *
 	 * @return <code>true</code> the list of items to order was parsed; <code>false</code> otherwise
 	 */
-	public boolean hasOrderByItems() {
+	public final boolean hasOrderByItems() {
 		return orderByItems != null &&
 		      !orderByItems.isNull();
 	}
@@ -140,10 +153,9 @@ public abstract class AbstractOrderByClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the identifier.
 	 *
-	 * @return <code>true</code> if a whitespace was parsed after the identifier; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if a whitespace was parsed after the identifier; <code>false</code> otherwise
 	 */
-	public boolean hasSpaceAfterIdentifier() {
+	public final boolean hasSpaceAfterIdentifier() {
 		return hasSpaceAfterIdentifier;
 	}
 

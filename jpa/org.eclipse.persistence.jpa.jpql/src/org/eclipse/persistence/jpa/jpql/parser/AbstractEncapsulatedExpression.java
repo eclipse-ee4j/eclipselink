@@ -160,6 +160,11 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
+		// Parsing is only complete when the character is ')'
+//		if (!tolerant) {
+//			return false;
+//		}
+
 		if (wordParser.startsWith(RIGHT_PARENTHESIS) ||
 		    word.equalsIgnoreCase(WHEN)              ||
 		    word.equalsIgnoreCase(SET)               ||
@@ -254,6 +259,10 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	                                                    int whitespaceCount,
 	                                                    boolean tolerant);
 
+	/**
+	 * Removes the encapsulated {@link Expression} that was parsed, it should not be part of this one.
+	 * This happens when the parsed information does not have both '(' and ')'.
+	 */
 	protected abstract void removeEncapsulatedExpression();
 
 	/**

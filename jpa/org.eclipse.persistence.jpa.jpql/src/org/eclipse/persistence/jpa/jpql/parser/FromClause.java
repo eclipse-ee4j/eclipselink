@@ -26,7 +26,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * EclipseLink 2.5:
  * <div nowrap><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -52,7 +52,7 @@ public final class FromClause extends AbstractFromClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String declarationBNF() {
+	public String getDeclarationQueryBNFId() {
 		return InternalFromClauseBNF.ID;
 	}
 

@@ -148,7 +148,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return StringPrimaryBNF.ID;
 	}
 
@@ -290,7 +290,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 		if (!wordParser.startsWithIdentifier(FROM)) {
 			// Make sure to parse with the encapsulated expression because if it is not
 			// the trim character but the string primary, then it has to be parsed correctly
-			trimCharacter = parse(wordParser, encapsulatedExpressionBNF(), tolerant);
+			trimCharacter = parse(wordParser, getEncapsulatedExpressionQueryBNFId(), tolerant);
 		}
 
 		if (hasTrimCharacter()) {

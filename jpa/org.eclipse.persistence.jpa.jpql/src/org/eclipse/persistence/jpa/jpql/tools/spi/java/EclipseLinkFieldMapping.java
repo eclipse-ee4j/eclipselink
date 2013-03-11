@@ -17,18 +17,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 import static org.eclipse.persistence.jpa.jpql.tools.spi.IEclipseLinkMappingType.*;
-import static org.eclipse.persistence.jpa.jpql.tools.spi.IMappingType.*;
 
 /**
  * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}
  * that is wrapping the runtime representation of an EclipseLink mapping that is represented by a
  * persistent attribute.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings({"nls", "unused" /* For the extra import statement, see bug 330740 */})
+@SuppressWarnings("nls")
 public class EclipseLinkFieldMapping extends AbstractFieldMapping {
 
 	/**
@@ -73,11 +72,8 @@ public class EclipseLinkFieldMapping extends AbstractFieldMapping {
 	public boolean isCollection() {
 		switch (getMappingType()) {
 			case BASIC_COLLECTION:
-			case BASIC_MAP:
-			case ELEMENT_COLLECTION:
-			case MANY_TO_MANY:
-			case ONE_TO_MANY: return true;
-			default:          return false;
+			case BASIC_MAP: return true;
+			default: return super.isCollection();
 		}
 	}
 
@@ -87,14 +83,8 @@ public class EclipseLinkFieldMapping extends AbstractFieldMapping {
 	@Override
 	public boolean isRelationship() {
 		switch (getMappingType()) {
-			case ELEMENT_COLLECTION:
-			case EMBEDDED_ID:
-			case MANY_TO_MANY:
-			case MANY_TO_ONE:
-			case ONE_TO_MANY:
-			case ONE_TO_ONE:
 			case VARIABLE_ONE_TO_ONE: return true;
-			default:                  return false;
+			default: return super.isRelationship();
 		}
 	}
 }

@@ -38,23 +38,10 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [orderby_clause]
  *                                                    {union_clause}*</code>
  * <p>
- * EclipseLink 2.5:
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
- *                                                    from_clause
- *                                                    [flashback_query_clause]
- *                                                    [where_clause]
- *                                                    [hierarchical_query_clause]
- *                                                    [groupby_clause]
- *                                                    [having_clause]
- *                                                    [orderby_clause]
- *                                                    {union_clause}*</code>
- * <p>
  * HQL query (EclipseLink 2.5):
  * <div nowrap><b>BNF:</b> <code>select_statement ::= [select_clause]
  *                                                    from_clause
- *                                                    [flashback_query_clause]
  *                                                    [where_clause]
- *                                                    [hierarchical_query_clause]
  *                                                    [groupby_clause]
  *                                                    [having_clause]
  *                                                    [orderby_clause]
@@ -172,6 +159,23 @@ public final class SelectStatement extends AbstractSelectStatement {
 	@Override
 	protected SelectClause buildSelectClause() {
 		return new SelectClause(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((orderByClause != null) && orderByClause.isAncestor(expression)) {
+			return orderByClause.getQueryBNF();
+		}
+
+		if ((unionClauses != null) && unionClauses.isAncestor(expression)) {
+			return getQueryBNF(UnionClauseBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

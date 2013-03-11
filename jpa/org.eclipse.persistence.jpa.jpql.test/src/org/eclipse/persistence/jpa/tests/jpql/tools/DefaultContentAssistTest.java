@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries using the default (generic) JPA support.
@@ -27,7 +30,55 @@ public final class DefaultContentAssistTest extends AbstractContentAssistTest {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected Class<?> acceptableType(String identifier) {
+		return defaultAcceptableType(identifier);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> classNames() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> columnNames(String tableName) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> enumConstants() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> enumTypes() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> tableNames() {
+		return Collections.emptyList();
 	}
 }

@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= left_expression identifier right_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -104,6 +104,23 @@ public abstract class CompoundExpression extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if (getLeftExpression().isAncestor(expression)) {
+			return getQueryBNF(getLeftExpressionQueryBNFId());
+		}
+
+		if (getRightExpression().isAncestor(expression)) {
+			return getQueryBNF(getRightExpressionQueryBNFId());
+		}
+
+		return getParent().findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual identifier found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
@@ -111,6 +128,15 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 */
 	public final String getActualIdentifier() {
 		return identifier;
+	}
+
+	/**
+	 * Returns the JPQL identifier of this expression.
+	 *
+	 * @return The JPQL identifier
+	 */
+	public String getIdentifier() {
+		return super.getText();
 	}
 
 	/**
@@ -127,6 +153,13 @@ public abstract class CompoundExpression extends AbstractExpression {
 	}
 
 	/**
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} for the left expression.
+	 *
+	 * @return The ID of the BNF used when parsing the expression before the identifier
+	 */
+	public abstract String getLeftExpressionQueryBNFId();
+
+	/**
 	 * Returns the {@link Expression} that represents the second expression, which is after the
 	 * identifier.
 	 *
@@ -138,6 +171,13 @@ public abstract class CompoundExpression extends AbstractExpression {
 		}
 		return rightExpression;
 	}
+
+	/**
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} for the right expression.
+	 *
+	 * @return The ID of the BNF used when parsing the expression after the identifier
+	 */
+	public abstract String getRightExpressionQueryBNFId();
 
 	/**
 	 * Determines whether the first expression of the query was parsed.
@@ -185,7 +225,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 		hasSpaceAfterIdentifier = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the right expression
-		rightExpression = parse(wordParser, rightExpressionBNF(), tolerant);
+		rightExpression = parse(wordParser, getRightExpressionQueryBNFId(), tolerant);
 
 		if (!hasSpaceAfterIdentifier && (rightExpression != null)) {
 			hasSpaceAfterIdentifier = true;
@@ -199,14 +239,6 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 * @return The identifier for this expression
 	 */
 	protected abstract String parseIdentifier(WordParser wordParser);
-
-	/**
-	 * Returns the unique identifier of the {@link JPQLQueryBNF} used to determine how to parse the
-	 * right expression.
-	 *
-	 * @return The ID of the BNF used when parsing the expression after the identifier
-	 */
-	public abstract String rightExpressionBNF();
 
 	/**
 	 * Sets the given {@link Expression} to be the first expression of this compound one.

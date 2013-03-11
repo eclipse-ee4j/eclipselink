@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,13 +19,11 @@ import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
 
 /**
- * Unit-test for {@link ContentAssistExtension} when the JPQL grammar is based on the JPA spec.
- *
  * @version 2.5
  * @since 2.5
  * @author Pascal Filion
  */
-public final class DefaultContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
+public final class DefaultDefaultContentAssistExtensionTest extends AbstractContentAssistTest {
 
 	/**
 	 * {@inheritDoc}
@@ -43,9 +41,9 @@ public final class DefaultContentAssistExtensionTest extends AbstractContentAssi
 		return new ContentAssistExtension() {
 			public Iterable<String> classNames(String prefix, ClassType type) {
 				if (type == ClassType.INSTANTIABLE) {
-					return filter(DefaultContentAssistExtensionTest.this.classNames(), prefix);
+					return filter(DefaultDefaultContentAssistExtensionTest.this.classNames(), prefix);
 				}
-				return filter(DefaultContentAssistExtensionTest.this.enumTypes(), prefix);
+				return filter(DefaultDefaultContentAssistExtensionTest.this.enumTypes(), prefix);
 			}
 			public Iterable<String> columnNames(String tableName, String prefix) {
 				return Collections.emptyList();
@@ -76,8 +74,24 @@ public final class DefaultContentAssistExtensionTest extends AbstractContentAssi
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected List<String> enumConstants() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected List<String> enumTypes() {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isJoinFetchIdentifiable() {
+		return false;
 	}
 
 	/**

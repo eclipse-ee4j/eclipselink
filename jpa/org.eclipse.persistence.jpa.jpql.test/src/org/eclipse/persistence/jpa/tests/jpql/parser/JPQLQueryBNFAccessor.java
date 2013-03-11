@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
@@ -30,12 +32,14 @@ import org.eclipse.persistence.jpa.jpql.parser.GeneralIdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalConcatExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
 
 /**
@@ -68,6 +72,19 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> aggregates(Iterable<String> identifiers) {
 		return filter(identifiers, IdentifierRole.AGGREGATE);
+	}
+
+	public Iterable<String> arithmetics() {
+		ExpressionFactory factory = getExpressionFactory(ArithmeticExpressionFactory.ID);
+		return new ArrayIterable<String>(factory.identifiers());
+	}
+
+	public Iterable<String> arithmeticTermFunctions() {
+		return functions(arithmeticTermIdentifiers());
+	}
+
+	public Iterable<String> arithmeticTermIdentifiers() {
+		return getIdentifiers(ArithmeticTermBNF.ID);
 	}
 
 	public Iterable<String> clauses(Iterable<String> identifiers) {
@@ -209,6 +226,14 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(InternalAggregateFunctionBNF.ID);
 	}
 
+	public Iterable<String> internalConcatExpressionFunctions() {
+		return functions(internalConcatExpressionIdentifiers());
+	}
+
+	private Iterable<String> internalConcatExpressionIdentifiers() {
+		return getIdentifiers(InternalConcatExpressionBNF.ID);
+	}
+
 	public Iterable<String> patternValueFunctions() {
 		return functions(patternValueIdentifiers());
 	}
@@ -239,6 +264,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> selectItemIdentifiers() {
 		return getIdentifiers(SelectExpressionBNF.ID);
+	}
+
+	public Iterable<String> stringExpressionFunctions() {
+		return functions(stringExpressionIdentifiers());
+	}
+
+	private Iterable<String> stringExpressionIdentifiers() {
+		return getIdentifiers(StringExpressionBNF.ID);
 	}
 
 	public Iterable<String> subSelectFunctions() {

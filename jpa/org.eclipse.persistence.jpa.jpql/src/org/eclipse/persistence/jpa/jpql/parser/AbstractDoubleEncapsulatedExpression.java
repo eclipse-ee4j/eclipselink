@@ -130,6 +130,23 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((firstExpression != null) && firstExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(0));
+		}
+
+		if ((secondExpression != null) && secondExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(1));
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the {@link Expression} that represents the first expression.
 	 *
 	 * @return The expression that was parsed representing the first expression

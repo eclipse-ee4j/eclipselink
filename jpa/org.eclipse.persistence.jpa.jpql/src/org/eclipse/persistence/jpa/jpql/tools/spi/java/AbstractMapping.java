@@ -38,10 +38,11 @@ import static org.eclipse.persistence.jpa.jpql.tools.spi.IMappingType.*;
  * The abstract implementation of {@link IMapping} that is wrapping the runtime representation
  * of a persistent attribute.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public abstract class AbstractMapping implements IMapping {
 
 	/**
@@ -321,6 +322,6 @@ public abstract class AbstractMapping implements IMapping {
 	 */
 	@Override
 	public String toString() {
-		return getName();
+		return getName() + " : " + getTypeDeclaration();
 	}
 }

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -44,6 +44,5 @@ public final class NullComparisonExpressionBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 		registerExpressionFactory(IsExpressionFactory.ID);
-		registerExpressionFactory(NullComparisonExpressionFactory.ID);
 	}
 }

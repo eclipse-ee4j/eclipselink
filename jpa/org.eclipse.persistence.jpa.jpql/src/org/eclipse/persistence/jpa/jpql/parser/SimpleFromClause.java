@@ -14,17 +14,15 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The <b>FROM</b> clause of a query defines the domain of the query by declaring
- * identification variables. An identification variable is an identifier
- * declared in the <b>FROM</b> clause of a query. The domain of the query may be
- * constrained by path expressions. Identification variables designate instances
- * of a particular entity abstract schema type. The <b>FROM</b> clause can
- * contain multiple identification variable declarations separated by a comma
- * (,).
+ * The <b>FROM</b> clause of a query defines the domain of the query by declaring identification
+ * variables. An identification variable is an identifier declared in the <b>FROM</b> clause of a
+ * query. The domain of the query may be constrained by path expressions. Identification variables
+ * designate instances of a particular entity abstract schema type. The <b>FROM</b> clause can
+ * contain multiple identification variable declarations separated by a comma (,).
  *
  * <div nowrap><b>BNF:</b> <code>subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration}*</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -50,7 +48,7 @@ public final class SimpleFromClause extends AbstractFromClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String declarationBNF() {
+	public String getDeclarationQueryBNFId() {
 		return InternalSimpleFromClauseBNF.ID;
 	}
 

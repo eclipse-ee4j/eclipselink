@@ -455,7 +455,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerFactory(new DateTimeFactory());
 		registerFactory(new DeleteClauseFactory());
 		registerFactory(new DeleteStatementFactory());
-		registerFactory(new EmptyCollectionComparisonExpressionFactory());
 		registerFactory(new ExistsExpressionFactory());
 		registerFactory(new FromClauseFactory());
 		registerFactory(new GroupByClauseFactory());
@@ -477,7 +476,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerFactory(new MinFunctionFactory());
 		registerFactory(new ModExpressionFactory());
 		registerFactory(new NotExpressionFactory());
-		registerFactory(new NullComparisonExpressionFactory());
 		registerFactory(new ObjectExpressionFactory());
 		registerFactory(new OrderByClauseFactory());
 		registerFactory(new OrderByItemFactory());

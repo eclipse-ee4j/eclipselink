@@ -36,15 +36,6 @@ public abstract class LogicalExpression extends CompoundExpression {
 	}
 
 	/**
-	 * Returns the identifier that is aggregating the two expressions.
-	 *
-	 * @return Either <b>AND</b> or <b>OR</b>
-	 */
-	public final String getIdentifier() {
-		return getText();
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public final JPQLQueryBNF getQueryBNF() {

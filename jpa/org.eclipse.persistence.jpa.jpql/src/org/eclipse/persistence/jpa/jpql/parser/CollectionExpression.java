@@ -208,7 +208,7 @@ public final class CollectionExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 		return getParent().findQueryBNF(expression);
 	}
 

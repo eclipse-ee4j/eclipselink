@@ -1384,8 +1384,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			ArithmeticFactor factor = (ArithmeticFactor) expression;
 			assertEquals(toString(),    factor.toParsedText());
-			assertEquals(sign == MINUS, factor.isMinusSign());
-			assertEquals(sign == PLUS,  factor.isPlusSign());
+			assertEquals(sign == MINUS, factor.isNegative());
+			assertEquals(sign == PLUS,  factor.isPositive());
 
 			this.expression.test(factor.getExpression());
 		}
@@ -2888,9 +2888,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			assertInstance(expression, InputParameter.class);
 
 			InputParameter inputParameter = (InputParameter) expression;
-			assertEquals(toString(), inputParameter.toParsedText());
+			assertEquals(toString(),                           inputParameter.toParsedText());
 			assertEquals(this.inputParameter.charAt(0) == '?', inputParameter.isPositional());
 			assertEquals(this.inputParameter.charAt(0) == ':', inputParameter.isNamed());
+			assertEquals(this.inputParameter.substring(1),     inputParameter.getParameterName());
 		}
 
 		@Override

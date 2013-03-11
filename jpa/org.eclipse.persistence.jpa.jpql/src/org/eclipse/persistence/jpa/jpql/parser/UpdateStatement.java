@@ -104,6 +104,23 @@ public final class UpdateStatement extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if (updateClause.isAncestor(expression)) {
+			return getQueryBNF(UpdateClauseBNF.ID);
+		}
+
+		if ((whereClause != null) && whereClause.isAncestor(expression)) {
+			return getQueryBNF(WhereClauseBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(UpdateStatementBNF.ID);
 	}

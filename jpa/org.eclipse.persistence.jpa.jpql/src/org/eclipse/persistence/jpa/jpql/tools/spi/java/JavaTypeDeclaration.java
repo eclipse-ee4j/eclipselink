@@ -266,6 +266,15 @@ public class JavaTypeDeclaration implements ITypeDeclaration {
 	 */
 	@Override
 	public String toString() {
-		return (genericType != null) ? genericType.toString() : type.toString();
+
+		if (genericType == null) {
+			return type.toString();
+		}
+
+		if (genericType instanceof Class<?>) {
+			return ((Class<?>) genericType).getName();
+		}
+
+		return genericType.toString();
 	}
 }

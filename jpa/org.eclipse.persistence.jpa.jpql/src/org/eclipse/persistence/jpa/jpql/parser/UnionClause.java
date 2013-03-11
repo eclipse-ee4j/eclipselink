@@ -116,6 +116,19 @@ public final class UnionClause extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((query != null) && query.isAncestor(expression)) {
+			return getQueryBNF(SubqueryBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <code><b>ALL</b></code>< found in the string representation of the JPQL
 	 * query, which has the actual case that was used.
 	 *
@@ -268,7 +281,13 @@ public final class UnionClause extends AbstractExpression {
 		}
 	}
 
-	private String parseIdentifier() {
+	/**
+	 * Parses the JPQL identifier identifier the type of union.
+	 *
+	 * @return Either {@link Expression#UNION UNION}, {@link Expression#INTERSECT INTERSECT} or
+	 * {@link Expression#EXCEPT EXCEPT}
+	 */
+	protected String parseIdentifier() {
 		switch (getText().charAt(0)) {
 			case 'U': case 'u': return UNION;
 			case 'I': case 'i': return INTERSECT;

@@ -59,6 +59,11 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	private boolean hasSpaceAfterSecondComma;
 
 	/**
+	 * Determines which child expression is been currently parsed.
+	 */
+	protected int parameterIndex;
+
+	/**
 	 * The {@link Expression} that represents the second expression.
 	 */
 	private AbstractExpression secondExpression;
@@ -164,6 +169,27 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((firstExpression != null) && firstExpression.isAncestor(expression)) {
+			return getQueryBNF(getParameterQueryBNFId(0));
+		}
+
+		if ((secondExpression != null) && secondExpression.isAncestor(expression)) {
+			return getQueryBNF(getParameterQueryBNFId(1));
+		}
+
+		if ((thirdExpression != null) && thirdExpression.isAncestor(expression)) {
+			return getQueryBNF(getParameterQueryBNFId(2));
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the {@link Expression} that represents the first expression.
 	 *
 	 * @return The expression that was parsed representing the first expression
@@ -174,6 +200,16 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 		return firstExpression;
 	}
+
+	/**
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} to be used to parse one of the
+	 * encapsulated expression at the given position.
+	 *
+	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
+	 * within the parenthesis, which starts at position 0
+	 * @return The ID of the {@link JPQLQueryBNF} to be used to parse one of the encapsulated expression
+	 */
+	public abstract String getParameterQueryBNFId(int index);
 
 	/**
 	 * Returns the {@link Expression} that represents the second expression.
@@ -283,6 +319,27 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = wordParser.character();
+
+		// When parsing an invalid JPQL query (eg: LOCATE + ABS(e.name)) then "+ ABS(e.name)"
+		// should not be parsed as an invalid first expression
+		if ((parameterIndex == 0) &&
+		    ((character == '+') || (character == '-')) &&
+		    !hasLeftParenthesis()) {
+
+			parameterIndex = -1;
+			return true;
+		}
+
+		return super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
 	 * Determines whether the third expression is an optional expression, which means a valid query
 	 * can have it or not.
 	 *
@@ -290,15 +347,6 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * query; <code>false</code> if it's mandatory
 	 */
 	protected abstract boolean isThirdExpressionOptional();
-
-	/**
-	 * Returns the BNF to be used to parse one of the encapsulated expression.
-	 *
-	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
-	 * within the parenthesis, which starts at position 0
-	 * @return The BNF to be used to parse one of the encapsulated expression
-	 */
-	public abstract String parameterExpressionBNF(int index);
 
 	/**
 	 * {@inheritDoc}
@@ -311,10 +359,15 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		int count = 0;
 
 		// Parse the first expression
-		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
+		parameterIndex = 0;
+		firstExpression = parse(wordParser, getParameterQueryBNFId(0), tolerant);
 
-		if (hasFirstExpression()) {
+		if (firstExpression != null) {
 			count = wordParser.skipLeadingWhitespace();
+		}
+		// See comment in isParsingComplete()
+		else if (parameterIndex == -1) {
+			return;
 		}
 
 		// Parse ','
@@ -327,7 +380,8 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the second expression
-		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
+		parameterIndex = 1;
+		secondExpression = parse(wordParser, getParameterQueryBNFId(1), tolerant);
 
 		if (!hasFirstComma) {
 			hasSpaceAfterFirstComma = (count > 0);
@@ -345,9 +399,10 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the third expression
-		thirdExpression = parse(wordParser, parameterExpressionBNF(2), tolerant);
+		parameterIndex = 2;
+		thirdExpression = parse(wordParser, getParameterQueryBNFId(2), tolerant);
 
-		if (!hasSecondComma && (!isThirdExpressionOptional() || hasThirdExpression())) {
+		if (!hasSecondComma && (!isThirdExpressionOptional() || (thirdExpression != null))) {
 			hasSpaceAfterSecondComma = (count > 0);
 		}
 	}

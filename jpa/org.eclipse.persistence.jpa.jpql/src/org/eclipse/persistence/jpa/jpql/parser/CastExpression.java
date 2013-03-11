@@ -111,7 +111,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return ScalarExpressionBNF.ID;
 	}
 
@@ -199,7 +199,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 			return super.isParsingComplete(wordParser, word, expression);
 		}
 
-		ExpressionFactory factory = getQueryBNF(encapsulatedExpressionBNF()).getExpressionFactory(word);
+		ExpressionFactory factory = getQueryBNF(getEncapsulatedExpressionQueryBNFId()).getExpressionFactory(word);
 
 		// The first check is used to stop parsing the scalar expression,
 		// example: CAST(e.firstName NUMERIC(2, 3)) and "NUMERIC" is the current word,

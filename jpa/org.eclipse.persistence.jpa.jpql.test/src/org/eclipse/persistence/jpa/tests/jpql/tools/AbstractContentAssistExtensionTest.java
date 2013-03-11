@@ -15,13 +15,11 @@ package org.eclipse.persistence.jpa.tests.jpql.tools;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.AccessType;
-import jpql.query.Address;
-import jpql.query.Employee;
 import jpql.query.EnumType;
-import jpql.query.Project;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.tools.ResultQuery;
+import org.eclipse.persistence.jpa.jpql.tools.spi.IType;
+import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
@@ -37,37 +35,6 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("nls")
 public abstract class AbstractContentAssistExtensionTest extends ContentAssistTest {
-
-	protected List<String> classNames() {
-
-		List<String> classNames = new ArrayList<String>();
-		classNames.add(Address      .class.getName());
-		classNames.add(ArrayList    .class.getName());
-		classNames.add(Employee     .class.getName());
-		classNames.add(Project      .class.getName());
-		classNames.add(String       .class.getName());
-		classNames.add(StringBuilder.class.getName());
-		return classNames;
-	}
-
-	protected List<String> enumConstants() {
-
-		List<String> names = new ArrayList<String>();
-
-		for (Enum<EnumType> enumType : EnumType.values()) {
-			names.add(enumType.name());
-		}
-
-		return names;
-	}
-
-	protected List<String> enumTypes() {
-
-		List<String> classNames = new ArrayList<String>();
-		classNames.add(EnumType  .class.getName());
-		classNames.add(AccessType.class.getName());
-		return classNames;
-	}
 
 	@Test
 	public final void test_buildQuery_07() throws Exception {
@@ -163,30 +130,30 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 	public final void test_classNames_08() throws Exception {
 
 		String jpqlQuery = "SELECT e, NEW java.lang FROM Employee e";
-		int position = "SELECT e, NEW ".length();
+		int position = "SELECT e, NEW java.lang".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, filter(classNames(), "java.lang"));
 	}
 
 	@Test
 	public final void test_classNames_09() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.FIRST_NAME";
-		int position = "SELECT e FROM Employee e WHERE e.status == jpql.query.".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
+		int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, filter(enumTypes(), "jpql.query."));
 	}
 
 	@Test
 	public final void test_classNames_10() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.FIRST_NAME";
-		int position = "SELECT e FROM Employee e WHERE e.status == jpql.query.E".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
+		int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.E".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, filter(enumTypes(), "jpql.query.E"));
 	}
 
 	@Test
 	public final void test_enumConstants_01() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
 	}
@@ -194,7 +161,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 	@Test
 	public final void test_enumConstants_02() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.F";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.F";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, filter(enumConstants(), "F"));
 	}
@@ -202,24 +169,24 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 	@Test
 	public final void test_enumConstants_03() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.FIRST_NAME";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, EnumType.FIRST_NAME.name());
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(enumConstants(), EnumType.FIRST_NAME.name()));
 	}
 
 	@Test
 	public final void test_enumConstants_04() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.FIRST_NAME";
-		int position = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.FIRST_NAME";
+		int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
 	}
 
 	@Test
 	public final void test_enumConstants_05() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.F";
-		int position = "SELECT e FROM Employee e WHERE e.status == jpql.query.EnumType.".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.F";
+		int position = "SELECT e FROM Employee e WHERE e.status = jpql.query.EnumType.".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
 	}
 
@@ -228,7 +195,12 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, enumTypes());
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
@@ -236,7 +208,12 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN jpql.query.EnumType.";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
+
+		IType type = getPersistenceUnit().getTypeRepository().getType(EnumType.class.getName());
+		List<String> proposals = new ArrayList<String>();
+		CollectionTools.addAll(proposals, type.getEnumConstants());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
@@ -244,7 +221,12 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN jpql.query.EnumType.FIRST_NAME THEN ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
@@ -252,6 +234,11 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CASE e.status WHEN jpql.query.EnumType.FIRST_NAME THEN 'JPQL' ELSE ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, enumConstants());
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 }

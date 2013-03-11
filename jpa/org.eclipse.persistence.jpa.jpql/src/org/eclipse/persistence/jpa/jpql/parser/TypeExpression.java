@@ -51,7 +51,7 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalEntityTypeExpressionBNF.ID;
 	}
 

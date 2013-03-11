@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p>
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -153,6 +153,19 @@ public final class ConstructorExpression extends AbstractExpression {
 		spaces.add(Boolean.FALSE);
 
 		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((constructorItems != null) && constructorItems.isAncestor(expression)) {
+			return getQueryBNF(ConstructorItemBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

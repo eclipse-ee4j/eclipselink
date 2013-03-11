@@ -72,11 +72,24 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((expression != null) && expression.isAncestor(expression)) {
+			return getQueryBNF(getEncapsulatedExpressionQueryBNFId());
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the BNF used to parse the encapsulated expression.
 	 *
 	 * @return The BNF used to parse the encapsulated expression
 	 */
-	public abstract String encapsulatedExpressionBNF();
+	public abstract String getEncapsulatedExpressionQueryBNFId();
 
 	/**
 	 * Returns the {@link Expression} that is encapsulated within parenthesis.
@@ -117,7 +130,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	                                           int whitespaceCount,
 	                                           boolean tolerant) {
 
-		expression = parse(wordParser, encapsulatedExpressionBNF(), tolerant);
+		expression = parse(wordParser, getEncapsulatedExpressionQueryBNFId(), tolerant);
 	}
 
 	/**

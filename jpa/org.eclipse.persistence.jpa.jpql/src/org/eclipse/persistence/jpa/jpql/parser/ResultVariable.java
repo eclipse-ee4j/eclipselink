@@ -117,6 +117,23 @@ public final class ResultVariable extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((selectExpression != null) && selectExpression.isAncestor(expression)) {
+			return getQueryBNF(SelectExpressionBNF.ID);
+		}
+
+		if ((resultVariable != null) && resultVariable.isAncestor(expression)) {
+			return getQueryBNF(IdentificationVariableBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>AS</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
@@ -227,7 +244,10 @@ public final class ResultVariable extends AbstractExpression {
 		// Select expression
 		if (selectExpression != null) {
 			selectExpression.toParsedText(writer, actual);
-			writer.append(SPACE);
+
+			if ((writer.length() > 0) && (writer.charAt(writer.length() - 1) != SPACE)) {
+				writer.append(SPACE);
+			}
 		}
 
 		// 'AS'

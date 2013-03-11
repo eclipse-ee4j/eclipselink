@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -22,12 +21,18 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see ResultVariable
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public final class ResultVariableFactory extends ExpressionFactory {
+
+	/**
+	 * Caches the visitor that determines if the parent {@link Expression} is the top-level
+	 * <code><b>SELECT</b></code> clause.
+	 */
+	private SelectClauseVisitor selectClauseVisitor;
 
 	/**
 	 * The unique identifier of this {@link ResultVariableFactory}.
@@ -52,10 +57,24 @@ public final class ResultVariableFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
+		SelectClauseVisitor visitor = selectClauseVisitor();
+
+		try {
+			if (expression != null) {
+				parent.accept(visitor);
+				if (!visitor.supported) {
+					expression = null;
+				}
+			}
+		}
+		finally {
+			visitor.supported = false;
+		}
+
 		// There was already an expression parsed, we'll assume it's a valid
-		// expression and it will have an identification variable
+		// expression and it will have an identification variable, and the identifier is optional
+		// Example: "SELECT e.salary / 1000D n" or "SELECT e.salary / 1000D AS n"
 		if (((expression != null) || word.equalsIgnoreCase(Expression.AS)) &&
-		    isSupported(parent) &&
 		    (word.indexOf(".") == -1)) {
 
 			ResultVariable resultVariable = new ResultVariable(parent, expression);
@@ -63,31 +82,57 @@ public final class ResultVariableFactory extends ExpressionFactory {
 			return resultVariable;
 		}
 
-		ExpressionRegistry registry = getExpressionRegistry();
-
-		// The word is a JPQL identifier, lets try to parse the query using the factory so
-		// the invalid portion can be properly validated and possibly the rest of the query
-		// can be parsed correctly
-		if (tolerant && registry.isIdentifier(word)) {
-
-			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
-
-			if (factory != null) {
-
-				expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-
-				if (expression != null) {
-					return new BadExpression(parent, expression);
-				}
-			}
-		}
-
 		// Use the default factory
-		ExpressionFactory factory = registry.getExpressionFactory(LiteralExpressionFactory.ID);
+		ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(LiteralExpressionFactory.ID);
 		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 	}
 
-	private boolean isSupported(AbstractExpression parent) {
-		return parent.getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0);
+	private SelectClauseVisitor selectClauseVisitor() {
+		if (selectClauseVisitor == null) {
+			selectClauseVisitor = new SelectClauseVisitor();
+		}
+		return selectClauseVisitor;
+	}
+
+	/**
+	 * This visitor determines whether the result variable should set the parsed expression as the
+	 * select expression or not. The allowed locations are:
+	 * <ul>
+	 * <li>Root: To support parsing a JPQL fragment.</li>
+	 * <li>Top-level <code><b>SELECT</b></code> clause: default valid location.</li>
+	 * <li>Subquery <code><b>SELECT</b></code> clause: to support from within the
+	 * <code><b>FROM</b></code> clause.</li>
+	 * </ul>
+	 */
+	private static class SelectClauseVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * Indicates if the result variable should have already parsed expression as its select expression.
+		 */
+		boolean supported;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(JPQLExpression expression) {
+			this.supported = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SelectClause expression) {
+			this.supported = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectClause expression) {
+			this.supported = true;
+		}
 	}
 }

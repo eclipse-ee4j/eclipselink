@@ -41,7 +41,8 @@ public final class AllContentAssistTests {
 
 	@SuiteClasses({
 		DefaultContentAssistTest.class,
-		DefaultContentAssistExtensionTest.class
+		DefaultContentAssistExtensionTest.class,
+		DefaultDefaultContentAssistExtensionTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllDefaultContentAssistTests {
@@ -65,7 +66,8 @@ public final class AllContentAssistTests {
 	@SuiteClasses({
 		EclipseLinkContentAssistTest2_4.class,
 		EclipseLinkContentAssistTest2_5.class,
-		EclipseLinkContentAssistExtensionTest.class
+		EclipseLinkContentAssistExtensionTest.class,
+		EclipseLinkEclipseLinkContentAssistExtensionTest.class
 	})
 	@RunWith(JPQLTestRunner.class)
 	public static class AllEclipseLinkContentAssistTests {

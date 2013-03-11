@@ -48,7 +48,7 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalCoalesceExpressionBNF.ID;
 	}
 

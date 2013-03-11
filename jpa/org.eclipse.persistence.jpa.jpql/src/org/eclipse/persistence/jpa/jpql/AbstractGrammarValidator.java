@@ -307,7 +307,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			@Override
 			protected boolean isEncapsulatedExpressionValid(CoalesceExpression expression) {
-				return isValidWithChildCollectionBypass(expression.getExpression(), expression.encapsulatedExpressionBNF());
+				return isValidWithChildCollectionBypass(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
 			}
 			public String leftParenthesisMissingKey(CoalesceExpression expression) {
 				return CoalesceExpression_MissingLeftParenthesis;
@@ -476,18 +476,18 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 					case ONE: {
 						return isValid(
 							expression.getExpression(),
-							expression.encapsulatedExpressionBNF()
+							expression.getEncapsulatedExpressionQueryBNFId()
 						);
 					}
 					case ONE_OR_MANY: {
 						return isValidWithChildCollectionBypass(
 							expression.getExpression(),
-							expression.encapsulatedExpressionBNF()
+							expression.getEncapsulatedExpressionQueryBNFId()
 						);
 					}
 					case ZERO_OR_ONE: {
 						return !expression.hasExpression() ||
-						       isValid(expression.getExpression(), expression.encapsulatedExpressionBNF());
+						       isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
 					}
 					default: {
 						return true;
@@ -1808,7 +1808,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				}
 			}
 			// The select expression is not valid
-			else if (!isValid(selectExpression, expression.selectItemBNF())) {
+			else if (!isValid(selectExpression, expression.getSelectItemQueryBNFId())) {
 
 				int startPosition = position(expression) +
 				                    6 /* SELECT */ +
@@ -2943,7 +2943,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			else {
 				for (Expression child : collectionExpression.children()) {
-					if (!isValid(child, expression.encapsulatedExpressionBNF())) {
+					if (!isValid(child, expression.getEncapsulatedExpressionQueryBNFId())) {
 						addProblem(child, ConcatExpression_InvalidExpression, child.toParsedText());
 					}
 				}
@@ -3368,7 +3368,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 		else {
 			Expression leftExpression = expression.getExpression();
-			JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionExpressionBNF());
+			JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionExpressionQueryBNFId());
 
 			// First check for nested array support
 			if (isNestedArray(leftExpression)) {
@@ -3437,7 +3437,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				);
 
 				// Validate each item
-				JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionItemBNF());
+				JPQLQueryBNF queryBNF = getQueryBNF(expression.getExpressionItemQueryBNFId());
 				int index = 0;
 
 				for (Expression child : collectionExpression.children()) {
@@ -3464,7 +3464,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				}
 			}
 			// The single item is invalid
-			else if (!isValid(inItems, expression.getExpressionItemBNF())) {
+			else if (!isValid(inItems, expression.getExpressionItemQueryBNFId())) {
 				addProblem(inItems, InExpression_ItemInvalidExpression);
 			}
 			// Validate the single item
@@ -4253,7 +4253,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, TrimExpression_MissingExpression);
 		}
 		// Invalid string primary
-		else if (!isValid(expression.getExpression(), expression.encapsulatedExpressionBNF())) {
+		else if (!isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId())) {
 
 			int startPosition = position(expression) +
 			                    4 /* TRIM */ +
@@ -4827,7 +4827,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		 * otherwise
 		 */
 		protected boolean isEncapsulatedExpressionValid(T expression) {
-			return isValid(expression.getExpression(), expression.encapsulatedExpressionBNF());
+			return isValid(expression.getExpression(), expression.getEncapsulatedExpressionQueryBNFId());
 		}
 
 		/**
@@ -4890,7 +4890,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		protected boolean isFirstExpressionValid(T expression) {
-			return isValid(expression.getFirstExpression(), expression.parameterExpressionBNF(0));
+			return isValid(expression.getFirstExpression(), expression.getParameterQueryBNFId(0));
 		}
 
 		/**
@@ -4938,11 +4938,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		protected boolean isSecondExpressionValid(T expression) {
-			return isValid(expression.getSecondExpression(), expression.parameterExpressionBNF(1));
+			return isValid(expression.getSecondExpression(), expression.getParameterQueryBNFId(1));
 		}
 
 		protected boolean isThirdExpressionValid(T expression) {
-			return isValid(expression.getThirdExpression(), expression.parameterExpressionBNF(2));
+			return isValid(expression.getThirdExpression(), expression.getParameterQueryBNFId(2));
 		}
 
 		protected abstract String secondCommaMissingKey();

@@ -41,6 +41,14 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+		return getParent().findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the arithmetic sign this expression is actually representing.
 	 *
 	 * @return The single character value of the arithmetic sign
@@ -52,8 +60,24 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public String getLeftExpressionQueryBNFId() {
+		return ArithmeticExpressionBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public final JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ArithmeticTermBNF.ID);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final String getRightExpressionQueryBNFId() {
+		return ArithmeticTermBNF.ID;
 	}
 
 	/**
@@ -88,13 +112,5 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	@Override
 	protected final String parseIdentifier(WordParser wordParser) {
 		return getText();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public final String rightExpressionBNF() {
-		return ArithmeticTermBNF.ID;
 	}
 }

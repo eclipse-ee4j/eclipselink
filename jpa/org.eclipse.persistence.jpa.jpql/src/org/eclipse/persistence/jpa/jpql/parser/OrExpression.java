@@ -37,7 +37,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_expression ::= conditional_expression OR conditional_term</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -63,7 +63,15 @@ public final class OrExpression extends LogicalExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String rightExpressionBNF() {
+	public String getLeftExpressionQueryBNFId() {
+		return ConditionalExpressionBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getRightExpressionQueryBNFId() {
 		return ConditionalTermBNF.ID;
 	}
 }

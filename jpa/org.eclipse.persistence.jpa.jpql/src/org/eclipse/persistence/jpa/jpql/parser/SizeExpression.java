@@ -47,7 +47,7 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return CollectionValuedPathExpressionBNF.ID;
 	}
 

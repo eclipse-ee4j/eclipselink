@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -65,17 +65,25 @@ public final class AndExpression extends LogicalExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(AND) ||
-		       word.equalsIgnoreCase(OR)  ||
-		       super.isParsingComplete(wordParser, word, expression);
+	public String getLeftExpressionQueryBNFId() {
+		return ConditionalTermBNF.ID;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String rightExpressionBNF() {
+	public String getRightExpressionQueryBNFId() {
 		return ConditionalFactorBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equalsIgnoreCase(AND) ||
+		       word.equalsIgnoreCase(OR)  ||
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 }

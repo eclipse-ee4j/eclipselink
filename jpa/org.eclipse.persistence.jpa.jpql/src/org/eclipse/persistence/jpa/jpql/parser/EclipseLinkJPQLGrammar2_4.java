@@ -280,7 +280,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerIdentifierRole(INTERSECT,      IdentifierRole.CLAUSE);
 		registerIdentifierRole(NULLS_FIRST,    IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(NULLS_LAST,     IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(ON,             IdentifierRole.COMPOUND_FUNCTION); // ON x
+		registerIdentifierRole(ON,             IdentifierRole.CLAUSE);            // ON x
 		registerIdentifierRole(OPERATOR,       IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(REGEXP,         IdentifierRole.COMPOUND_FUNCTION); // x REGEXP y
 		registerIdentifierRole(SQL,            IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)

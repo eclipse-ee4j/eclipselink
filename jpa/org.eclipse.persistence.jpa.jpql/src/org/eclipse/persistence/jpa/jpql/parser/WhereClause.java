@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -33,7 +33,7 @@ public final class WhereClause extends AbstractConditionalClause {
 	 *
 	 * @param parent The parent of this expression
 	 */
-	WhereClause(AbstractExpression parent) {
+	public WhereClause(AbstractExpression parent) {
 		super(parent, WHERE);
 	}
 

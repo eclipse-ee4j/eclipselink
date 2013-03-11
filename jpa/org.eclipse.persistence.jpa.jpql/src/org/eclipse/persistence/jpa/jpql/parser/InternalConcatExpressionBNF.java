@@ -26,7 +26,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_expression, string_expression {, string_expression}*)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -36,7 +36,7 @@ public final class InternalConcatExpressionBNF extends JPQLQueryBNF {
 	/**
 	 * The unique identifier of this <code>InternalConcatExpressionBNF</code>.
 	 */
-	final static String ID = "internal_concat";
+	public final static String ID = "internal_concat";
 
 	/**
 	 * Creates a new <code>InternalConcatExpressionBNF</code>.
@@ -53,7 +53,7 @@ public final class InternalConcatExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleAggregate(true); // To support invalid queries
 		setHandleCollection(true);
-		setFallbackBNFId(StringPrimaryBNF.ID);
+		setFallbackBNFId(LiteralExpressionFactory.ID);
 		registerChild(StringPrimaryBNF.ID);
 	}
 }

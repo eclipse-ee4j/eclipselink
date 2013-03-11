@@ -104,7 +104,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return ScalarExpressionBNF.ID;
 	}
 

@@ -49,7 +49,7 @@ public final class LengthExpression extends AbstractSingleEncapsulatedExpression
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalLengthExpressionBNF.ID;
 	}
 

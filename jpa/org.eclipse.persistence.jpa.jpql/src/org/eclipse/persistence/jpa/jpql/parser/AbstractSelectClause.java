@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
@@ -117,6 +118,38 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	}
 
 	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single select item.
+	 *
+	 * @return The single select item represented by a temporary collection
+	 */
+	public CollectionExpression buildCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add((AbstractExpression) getSelectExpression());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(Boolean.FALSE);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((selectExpression != null) && selectExpression.isAncestor(expression)) {
+			return getQueryBNF(getSelectItemQueryBNFId());
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
 	 * query, which has the actual case that was used.
 	 *
@@ -149,6 +182,13 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 		return selectExpression;
 	}
+
+	/**
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} for the list of select items to parse.
+	 *
+	 * @return The ID of the query BNF for the list of select items to parse
+	 */
+	public abstract String getSelectItemQueryBNFId();
 
 	/**
 	 * Determines whether the identifier <b>DISTINCT</b> was parsed or not.
@@ -209,15 +249,8 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 
 		// Parse the select expression
-		selectExpression = parse(wordParser, selectItemBNF(), tolerant);
+		selectExpression = parse(wordParser, getSelectItemQueryBNFId(), tolerant);
 	}
-
-	/**
-	 * Returns the BNF for the list of select items to parse.
-	 *
-	 * @return The BNF for the list of select items to parse
-	 */
-	public abstract String selectItemBNF();
 
 	/**
 	 * {@inheritDoc}

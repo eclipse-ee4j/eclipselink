@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author James Sutherland
  */
@@ -116,6 +116,23 @@ public final class RegexpExpression extends AbstractExpression {
 		if (patternValue != null) {
 			children.add(patternValue);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((stringExpression != null) && stringExpression.isAncestor(expression)) {
+			return getQueryBNF(StringExpressionBNF.ID);
+		}
+
+		if ((patternValue != null) && patternValue.isAncestor(expression)) {
+			return getQueryBNF(PatternValueBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

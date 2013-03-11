@@ -43,15 +43,15 @@ public final class AsOfClause extends AbstractExpression {
 	private AbstractExpression expression;
 
 	/**
-	 * Determines whether a whitespace was found after <code><b>AS OF</b><code>.
-	 */
-	private boolean hasSpaceAfterIdentifier;
-
-	/**
 	 * Determines whether a whitespace was found after either <code><b>SCN</b><code> or
 	 * <code><b>TIMESTAMP</b></code>.
 	 */
 	private boolean hasSpaceAfterCategory;
+
+	/**
+	 * Determines whether a whitespace was found after <code><b>AS OF</b><code>.
+	 */
+	private boolean hasSpaceAfterIdentifier;
 
 	/**
 	 * The actual identifier found in the string representation of the JPQL query.
@@ -134,6 +134,19 @@ public final class AsOfClause extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((this.expression != null) && this.expression.isAncestor(expression)) {
+			return getQueryBNF(ScalarExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>AS OF</b> identifier found in the string representation of the JPQL
 	 * query, which has the actual case that was used.
 	 *
@@ -204,15 +217,6 @@ public final class AsOfClause extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether a whitespace was found after <b>AS OF</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>AS OF</b>; <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterIdentifier() {
-		return hasSpaceAfterIdentifier;
-	}
-
-	/**
 	 * Determines whether a whitespace was found after either <b>SCN</b> or <code>TIMESTAMP</code>.
 	 *
 	 * @return <code>true</code> if there was a whitespace after <b>SCN</b> or <code>TIMESTAMP</code>;
@@ -220,6 +224,15 @@ public final class AsOfClause extends AbstractExpression {
 	 */
 	public boolean hasSpaceAfterCategory() {
 		return hasSpaceAfterCategory;
+	}
+
+	/**
+	 * Determines whether a whitespace was found after <b>AS OF</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace after <b>AS OF</b>; <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterIdentifier() {
+		return hasSpaceAfterIdentifier;
 	}
 
 	/**

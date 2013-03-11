@@ -101,7 +101,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalAggregateFunctionBNF.ID;
 	}
 

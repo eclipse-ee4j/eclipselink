@@ -875,6 +875,11 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	public static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
 
 		/**
+		 *
+		 */
+		public boolean bypassCompound;
+
+		/**
 		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
 		 */
 		private JPQLQueryBNF queryBNF;
@@ -896,7 +901,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		}
 
 		private void allJPQLQueryBNFs(Set<String> queryBNFIds, JPQLQueryBNF queryBNF) {
-			if (queryBNFIds.add(queryBNF.getId()) && !queryBNF.isCompound()) {
+			if (queryBNFIds.add(queryBNF.getId()) && (bypassCompound || !queryBNF.isCompound())) {
 				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
 					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
 				}

@@ -169,6 +169,26 @@ public class BetweenExpression extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((upperBoundExpression != null) && upperBoundExpression.isAncestor(expression) ||
+		    (lowerBoundExpression != null) && lowerBoundExpression.isAncestor(expression)) {
+
+			return getQueryBNF(InternalBetweenExpressionBNF.ID);
+		}
+
+		// There is no generic BNF so we'll generalize with scalar expression
+		if ((this.expression != null) && expression.isAncestor(expression)) {
+			return getQueryBNF(ScalarExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>AND</b> identifier found in the string representation of the JPQL query,
 	 * which has the actual case that was used.
 	 *

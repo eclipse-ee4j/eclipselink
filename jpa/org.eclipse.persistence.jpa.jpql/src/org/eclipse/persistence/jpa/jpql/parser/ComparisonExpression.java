@@ -48,7 +48,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                          arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
  *                          <b>entity_type_expression {=|<>} entity_type_expression}</b></code></pre>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -83,8 +83,24 @@ public final class ComparisonExpression extends CompoundExpression {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public String getLeftExpressionQueryBNFId() {
+		return ComparisonExpressionBNF.ID;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ComparisonExpressionBNF.ID);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getRightExpressionQueryBNFId() {
+		return ComparisonExpressionBNF.ID;
 	}
 
 	/**
@@ -121,13 +137,5 @@ public final class ComparisonExpression extends CompoundExpression {
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
 		return getText();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String rightExpressionBNF() {
-		return ComparisonExpressionBNF.ID;
 	}
 }

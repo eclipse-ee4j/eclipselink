@@ -49,7 +49,7 @@ public final class LowerExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalLowerExpressionBNF.ID;
 	}
 

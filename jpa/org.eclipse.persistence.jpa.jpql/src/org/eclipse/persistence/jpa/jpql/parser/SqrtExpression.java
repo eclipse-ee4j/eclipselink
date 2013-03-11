@@ -49,7 +49,7 @@ public final class SqrtExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return InternalSqrtExpressionBNF.ID;
 	}
 

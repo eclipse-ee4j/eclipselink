@@ -155,6 +155,23 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((entityExpression != null) && entityExpression.isAncestor(expression)) {
+			return getQueryBNF(EntityExpressionBNF.ID);
+		}
+
+		if ((collectionValuedPathExpression != null) && collectionValuedPathExpression.isAncestor(expression)) {
+			return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>MEMBER</b> identifier found in the string representation of the JPQL
 	 * query, which has the actual case that was used.
 	 *

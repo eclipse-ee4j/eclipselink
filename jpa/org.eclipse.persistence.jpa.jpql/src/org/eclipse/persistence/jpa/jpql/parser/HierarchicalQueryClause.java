@@ -130,6 +130,27 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((startWithClause != null) && startWithClause.isAncestor(expression)) {
+			return getQueryBNF(StartWithClauseBNF.ID);
+		}
+
+		if ((connectByClause != null) && connectByClause.isAncestor(expression)) {
+			return getQueryBNF(ConnectByClauseBNF.ID);
+		}
+
+		if ((orderSiblingsByClause != null) && orderSiblingsByClause.isAncestor(expression)) {
+			return getQueryBNF(OrderSiblingsByClauseBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the {@link Expression} representing the <b>CONNECT BY</b> clause.
 	 *
 	 * @return The expression representing the <b>CONNECT BY</b> clause

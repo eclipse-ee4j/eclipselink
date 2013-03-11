@@ -437,7 +437,7 @@ public abstract class AbstractExpression implements Expression {
 	 * @param expression The {@link Expression} for which its BNF is needed
 	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
 	 */
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 		return getQueryBNF();
 	}
 
@@ -722,6 +722,9 @@ public abstract class AbstractExpression implements Expression {
 
 			child = null;
 
+			//
+			// Step 1
+			//
 			// Right away create a SubExpression and parse the encapsulated expression
 			if (character == LEFT_PARENTHESIS) {
 
@@ -773,6 +776,9 @@ public abstract class AbstractExpression implements Expression {
 					break;
 				}
 
+				//
+				// Step 2
+				//
 				// Parse using the ExpressionFactory that is mapped with a JPQL identifier (word)
 				if (shouldParseWithFactoryFirst() &&
 				    (wordParser.getWordType() == WordType.WORD)) {
@@ -803,6 +809,9 @@ public abstract class AbstractExpression implements Expression {
 					}
 				}
 
+				//
+				// Step 3
+				//
 				// No factories could be used, use the fall back ExpressionFactory
 				if (child == null) {
 					child = buildExpressionFromFallingBack(wordParser, word, queryBNF, expression, tolerant);
@@ -827,6 +836,9 @@ public abstract class AbstractExpression implements Expression {
 					}
 				}
 
+				//
+				// Step 4
+				//
 				// If nothing was parsed, then attempt to parse the fragment by retrieving the factory
 				// directory from the JPQL grammar and not from the one registered with the current BNF
 				if (tolerant && (child == null)) {
@@ -890,9 +902,7 @@ public abstract class AbstractExpression implements Expression {
 
 				// The current expression does not handle collection, then stop the
 				// parsing here so the parent can continue to parse
-				if (!handleCollection(queryBNF) ||
-				    isParsingComplete(wordParser, word, expression)) {
-
+				if (!handleCollection(queryBNF) || tolerant && isParsingComplete(wordParser, word, expression)) {
 					break;
 				}
 

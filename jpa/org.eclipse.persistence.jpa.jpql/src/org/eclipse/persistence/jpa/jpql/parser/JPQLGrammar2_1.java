@@ -280,13 +280,13 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * type_discriminator ::= TYPE(identification_variable | single_valued_object_path_expression | input_parameter)
  *
- * functions_returning_numerics::= LENGTH(string_expression) |
- *                                 LOCATE(string_expression, string_expression[, arithmetic_expression]) |
- *                                 ABS(arithmetic_expression) |
- *                                 SQRT(arithmetic_expression) |
- *                                 MOD(arithmetic_expression, arithmetic_expression) |
- *                                 SIZE(collection_valued_path_expression) |
- *                                 INDEX(identification_variable)
+ * functions_returning_numerics ::= LENGTH(string_expression) |
+ *                                  LOCATE(string_expression, string_expression[, arithmetic_expression]) |
+ *                                  ABS(arithmetic_expression) |
+ *                                  SQRT(arithmetic_expression) |
+ *                                  MOD(arithmetic_expression, arithmetic_expression) |
+ *                                  SIZE(collection_valued_path_expression) |
+ *                                  INDEX(identification_variable)
  *
  * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP
  *
@@ -455,9 +455,14 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 		// Extends the query BNF to add support for FUNCTION
 		addChildBNF(AggregateExpressionBNF.ID, FunctionExpressionBNF.ID);
 
+		// string_primary becomes string_expression in CONCAT
+		addChildBNF(InternalConcatExpressionBNF.ID, StringExpressionBNF.ID);
+
 		// string_primary becomes string_expression, simply add the new query BNFs
-		addChildBNF(StringPrimaryBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(StringPrimaryBNF.ID, SubqueryBNF.ID);
+		addChildBNF(StringPrimaryBNF.ID,    FunctionExpressionBNF.ID);
+		addChildBNF(StringPrimaryBNF.ID,    SubqueryBNF.ID);
+		addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
+		addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
 
 		// datetime_primary becomes datetime_expression, simply add the new query BNFs
 		addChildBNF(DateTimePrimaryBNF.ID, FunctionExpressionBNF.ID);
@@ -473,10 +478,6 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 		// arithmetic_primary becomes arithmetic_expression, simply add the new query BNFs
 		addChildBNF(ArithmeticPrimaryBNF.ID, FunctionExpressionBNF.ID);
 		addChildBNF(ArithmeticPrimaryBNF.ID, SubqueryBNF.ID);
-
-		// string_expression
-		addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
 
 		// datetime_expression
 		addChildBNF(DatetimeExpressionBNF.ID, FunctionExpressionBNF.ID);
@@ -507,9 +508,9 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(ON,          IdentifierRole.COMPOUND_FUNCTION); // ON x
-		registerIdentifierRole(TREAT,       IdentifierRole.COMPOUND_FUNCTION); // TREAT(x AS y)
+		registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(ON,          IdentifierRole.CLAUSE);   // ON x
+		registerIdentifierRole(TREAT,       IdentifierRole.FUNCTION); // TREAT(x AS y)
 
 		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);

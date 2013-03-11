@@ -165,11 +165,17 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the BNF of the declaration part of this clause.
-	 *
-	 * @return The BNF of the declaration part of this clause
+	 * {@inheritDoc}
 	 */
-	public abstract String declarationBNF();
+	@Override
+	public final JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((declaration != null) && declaration.isAncestor(expression)) {
+			return getQueryBNF(getDeclarationQueryBNFId());
+		}
+
+		return super.findQueryBNF(expression);
+	}
 
 	/**
 	 * Returns the actual <b>FROM</b> identifier found in the string representation of the JPQL
@@ -204,6 +210,13 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		}
 		return declaration;
 	}
+
+	/**
+	 * Returns the BNF of the declaration part of this clause.
+	 *
+	 * @return The BNF of the declaration part of this clause
+	 */
+	public abstract String getDeclarationQueryBNFId();
 
 	/**
 	 * Returns the {@link Expression} representing the hierarchical query clause.
@@ -310,7 +323,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		hasSpace = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the declaration
-		declaration = parse(wordParser, declarationBNF(), tolerant);
+		declaration = parse(wordParser, getDeclarationQueryBNFId(), tolerant);
 
 		int count = wordParser.skipLeadingWhitespace();
 		hasSpaceDeclaration = (count > 0);

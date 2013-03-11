@@ -33,6 +33,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("nls")
 public final class EclipseLinkContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
 
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -52,40 +53,6 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
 				return filter(EclipseLinkContentAssistExtensionTest.this.tableNames(), prefix);
 			}
 		};
-	}
-
-	private List<String> columnNames(String tableName) {
-
-		List<String> columnNames = new ArrayList<String>();
-
-		if ("EMPLOYEE".equals(tableName)) {
-			columnNames.add("ADDRESS");
-			columnNames.add("EMPLOYEE_ID");
-			columnNames.add("FIRST_NAME");
-			columnNames.add("LAST_NAME");
-			columnNames.add("MANAGER");
-		}
-		else if ("ADDRESS".equals(tableName)) {
-			columnNames.add("ADDRESS_ID");
-			columnNames.add("APT_NUMBER");
-			columnNames.add("COUNTRY");
-			columnNames.add("STREET");
-			columnNames.add("ZIP_CODE");
-		}
-
-		return columnNames;
-	}
-
-	private List<String> tableNames() {
-
-		List<String> tableNames = new ArrayList<String>();
-		tableNames.add("ADDRESS");
-		tableNames.add("EMPLOYEE");
-		tableNames.add("EMPLOYEE_SEQ");
-		tableNames.add("MANAGER");
-		tableNames.add("DEPARTMENT");
-
-		return tableNames;
 	}
 
 	private void test_buildQuery(String jpqlQuery,
@@ -442,7 +409,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
 
 		String jpqlQuery = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.A = 100";
 		int position = "SELECT e FROM Employee e, TABLE('EMPLOYEE') EMP, TABLE('ADDRESS') a WHERE e.name = EMP.LAST_NAME and a.A".length();
-		testDoesNotHaveTheseProposals(jpqlQuery, position, filter(columnNames("ADDRESS"), "A"));
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(columnNames("ADDRESS"), "A"));
 	}
 
 	@Test
@@ -538,7 +505,7 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
 
 		String jpqlQuery = "SELECT e FROM Employee e, TABLE('E";
 		int position = "SELECT e FROM Employee e, TABLE('".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, filter(tableNames(), "E"));
+		testHasOnlyTheseProposals(jpqlQuery, position, tableNames());
 	}
 
 	@Test

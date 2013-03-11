@@ -614,7 +614,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 
 		ArithmeticFactorStateObject stateObject = new ArithmeticFactorStateObject(
 			parent,
-			expression.isPlusSign(),
+			expression.isPositive(),
 			this.stateObject
 		);
 

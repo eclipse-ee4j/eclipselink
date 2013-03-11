@@ -46,7 +46,7 @@ public final class TableExpression extends AbstractSingleEncapsulatedExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return StringLiteralBNF.ID;
 	}
 

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -117,6 +118,38 @@ public final class DeleteClause extends AbstractExpression {
 		if (rangeVariableDeclaration != null) {
 			children.add(rangeVariableDeclaration);
 		}
+	}
+
+	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single range variable declaration.
+	 *
+	 * @return The single range variable declaration represented by a temporary collection
+	 */
+	public CollectionExpression buildCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add((AbstractExpression) getRangeVariableDeclaration());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(Boolean.FALSE);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
+			return getQueryBNF(DeleteClauseRangeVariableDeclarationBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -30,7 +30,7 @@ public final class HavingClause extends AbstractConditionalClause {
 	 *
 	 * @param parent The parent of this expression
 	 */
-	HavingClause(AbstractExpression parent) {
+	public HavingClause(AbstractExpression parent) {
 		super(parent, HAVING);
 	}
 

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
@@ -97,6 +98,38 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 		if (conditionalExpression != null) {
 			children.add(conditionalExpression);
 		}
+	}
+
+	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single select item.
+	 *
+	 * @return The single select item represented by a temporary collection
+	 */
+	public CollectionExpression buildCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add((AbstractExpression) getConditionalExpression());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(Boolean.FALSE);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((conditionalExpression != null) && conditionalExpression.isAncestor(expression)) {
+			return getQueryBNF(ConditionalExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

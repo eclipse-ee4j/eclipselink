@@ -61,7 +61,7 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String encapsulatedExpressionBNF() {
+	public String getEncapsulatedExpressionQueryBNFId() {
 		return SubqueryBNF.ID;
 	}
 

@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
@@ -30,6 +31,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
@@ -88,13 +90,16 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	private void addArguments(JPQLQueryContext queryContext, DatabaseQuery databaseQuery) {
 
-		Map<String, Class<?>> inputParameters = queryContext.inputParameters();
+		if (queryContext.inputParameters != null) {
 
-		if (inputParameters != null) {
+			for (Map.Entry<InputParameter, Expression> entry : queryContext.inputParameters.entrySet()) {
+				ParameterExpression parameter = (ParameterExpression) entry.getValue();
 
-			for (String inputParameter : inputParameters.keySet()) {
-			    ParameterType type = inputParameter.startsWith("?")? ParameterType.POSITIONAL: ParameterType.NAMED; 
-				databaseQuery.addArgument(inputParameter.substring(1), inputParameters.get(inputParameter), type);
+				databaseQuery.addArgument(
+					parameter.getField().getName(),
+					(Class<?>) parameter.getType(),
+					entry.getKey().isPositional() ? ParameterType.POSITIONAL : ParameterType.NAMED
+				);
 			}
 		}
 	}

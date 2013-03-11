@@ -31,9 +31,24 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <b>NOT IN</b> expression is <b>NULL</b> or unknown, the value of the expression is unknown.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p>
- * JPA 2.0
- * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p>
+ * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code></p>
+ * <p>
+ * JPA 2.0:
+ * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code></p>
+ * <p>
+ * EclipseLink 2.1:
+ * <div nowrap><b>BNF:</b> <code>in_item ::= literal | single_valued_input_parameter | scalar_expression</code></p>
+ * <p>
+ * EclipseLink 2.5:
+ * <div nowrap><b>BNF:</b> <pre><code> in_expression ::= { in_expression_expression | nested_array_expression } [NOT] IN { ( in_item {, in_item}* ) | (subquery) | ( nested_array_item {, nested_array_item}+ ) | collection_valued_input_parameter }
+ *
+ * in_expression_expression ::= { state_field_path_expression | type_discriminator |
+ *                                single_valued_input_parameter | identification_variable |
+ *                                scalar_expression }
+ *
+ * nested_array_expression ::= ( in_expression_expression {, in_expression_expression}+ )
+ *
+ * nested_array_item ::= ( in_item {, in_item}+ )</code></pre></p>
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b> :city</p>
  * <p>
@@ -169,9 +184,9 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if (this.expression == expression) {
+		if (this.expression.isAncestor(expression)) {
 			return getQueryBNF(InExpressionExpressionBNF.ID);
 		}
 
@@ -222,7 +237,7 @@ public final class InExpression extends AbstractExpression {
 	 *
 	 * @return {@link InExpressionExpressionBNF#ID}
 	 */
-	public String getExpressionExpressionBNF() {
+	public String getExpressionExpressionQueryBNFId() {
 		return InExpressionExpressionBNF.ID;
 	}
 
@@ -231,7 +246,7 @@ public final class InExpression extends AbstractExpression {
 	 *
 	 * @return {@link InExpressionItemBNF#ID}
 	 */
-	public String getExpressionItemBNF() {
+	public String getExpressionItemQueryBNFId() {
 		return InExpressionItemBNF.ID;
 	}
 

@@ -21,11 +21,21 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * mixed in a single query. Input parameters can only be used in the <b>WHERE</b> clause or
  * <b>HAVING</b> clause of a query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 public final class InputParameter extends AbstractExpression {
+
+	/**
+	 * The cached parameter name without the identifier.
+	 */
+	private String parameterName;
+
+	/**
+	 * Flag caching the type of the input parameter, which is either positional or named.
+	 */
+	private Boolean positional;
 
 	/**
 	 * Creates a new <code>InputParameter</code>.
@@ -48,6 +58,7 @@ public final class InputParameter extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
+		// Does not have children
 	}
 
 	/**
@@ -59,13 +70,27 @@ public final class InputParameter extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the positional parameter or the named parameter.
+	 * Returns the positional parameter or the named parameter, which includes the identifier.
 	 *
-	 * @return The parameter following the constant used to determine if it's a positional or named
-	 * parameter
+	 * @return The parameter following the constant used to determine if it's a positional or named parameter
+	 * @see #getParameterName()
 	 */
 	public String getParameter() {
 		return getText();
+	}
+
+	/**
+	 * Returns the positional parameter or the named parameter without the identifier.
+	 *
+	 * @return The parameter following the constant used to determine if it's a positional or named parameter
+	 * @see #getParameter()
+	 * @since 2.5
+	 */
+	public String getParameterName() {
+		if (parameterName == null) {
+			parameterName = getText().substring(1);
+		}
+		return parameterName;
 	}
 
 	/**
@@ -81,7 +106,10 @@ public final class InputParameter extends AbstractExpression {
 	 * @return <code>true</code> if the parameter type is '?'; <code>false</code> if it's ':'
 	 */
 	public boolean isNamed() {
-		return getText().charAt(0) == NAMED_PARAMETER.charAt(0);
+		if (positional == null) {
+			positional = getText().charAt(0) == '?';
+		}
+		return (positional == Boolean.FALSE);
 	}
 
 	/**
@@ -90,7 +118,10 @@ public final class InputParameter extends AbstractExpression {
 	 * @return <code>true</code> if the parameter type is ':'; <code>false</code> if it's '?'
 	 */
 	public boolean isPositional() {
-		return getText().charAt(0) == POSITIONAL_PARAMETER.charAt(0);
+		if (positional == null) {
+			positional = getText().charAt(0) == '?';
+		}
+		return (positional == Boolean.TRUE);
 	}
 
 	/**
