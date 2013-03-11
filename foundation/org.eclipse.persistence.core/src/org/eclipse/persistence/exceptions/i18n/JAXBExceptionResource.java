@@ -109,7 +109,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50087", "An exception occured while attempting to invoke the {0} method on the Accessor {1}"},
         {"50088", "Enum value {0} is not valid for an XmlEnum with class {1}"},
         {"50089", "The java interface {0} can not be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"},
-        {"50090", "Invalid value for object graph: {0}. The value must be a string or an instance of ObjectGraph."}
+        {"50090", "Invalid value for object graph: {0}. The value must be a string or an instance of ObjectGraph."},
+        {"50091", "The element name {0} has more than one mapping."}
     };
 
     /**

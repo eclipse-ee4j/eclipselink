@@ -120,6 +120,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_ENUM_VALUE = 50088;
     public static final int INVALID_INTERFACE = 50089;
     public static final int INVALID_VALUE_FOR_OBJECT_GRAPH = 50090;
+    public static final int DUPLICATE_ELEMENT_NAME = 50091;
     
 
 
@@ -1119,4 +1120,12 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_VALUE_FOR_OBJECT_GRAPH);
         return validationException;
     }
+
+    public static JAXBException duplicateElementName(QName qName) {
+        Object[] args = {qName};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, DUPLICATE_ELEMENT_NAME, args));
+        validationException.setErrorCode(DUPLICATE_ELEMENT_NAME);
+        return validationException;
+    }
+
 }

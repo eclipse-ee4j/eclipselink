@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.duplicateelem.ObjectFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
@@ -98,6 +99,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBContextByClassArrayWithRefTestCases.class);
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
         suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
+        suite.addTestSuite(ObjectFactoryTestCases.class);
         
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
