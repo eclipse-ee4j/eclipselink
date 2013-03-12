@@ -110,7 +110,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50088", "Enum value {0} is not valid for an XmlEnum with class {1}"},
         {"50089", "The java interface {0} can not be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"},
         {"50090", "The element name {0} has more than one mapping."},
-        
+        {"50091", "Only one XmlElementRef property of type {0} allowed on class {1}."}
     };
 
     /**

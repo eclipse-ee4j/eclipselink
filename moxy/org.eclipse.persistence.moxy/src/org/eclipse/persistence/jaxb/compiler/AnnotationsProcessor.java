@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -846,6 +847,10 @@ public class AnnotationsProcessor {
             if (tInfo.getXmlValueProperty() != null) {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
+
+            // Ensure that there is no more than one XmlElementRef per type QName
+            Set<QName> referenceQNames = new HashSet<QName>();
+
             for (Property property : tInfo.getPropertyList()) {
             	JavaClass typeClass = property.getActualType();
             
@@ -873,18 +878,16 @@ public class AnnotationsProcessor {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
-                
-                
+
                 // handle XmlElementRef(s) - validate and build the required
-                // ElementDeclaration object               
-                 if (property.isReference()) {
-                    processReferenceProperty(property, tInfo, jClass);
+                // ElementDeclaration object
+                if (property.isReference()) {
+                    processReferenceProperty(property, tInfo, jClass, referenceQNames);
                 }
                  
                 if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
                     this.hasSwaRef = true;
                 }
-             
                 // there can only be one XmlID per type info
                 if (property.isXmlId() && tInfo.getIDProperty() != null && !(tInfo.getIDProperty().getPropertyName().equals(property.getPropertyName()))) {
                     throw JAXBException.idAlreadySet(property.getPropertyName(), tInfo.getIDProperty().getPropertyName(), jClass.getName());
@@ -2322,7 +2325,7 @@ public class AnnotationsProcessor {
      * @param javaHasAnnotations
      * @return
      */
-    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
+    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls, Set<QName> referenceQNames) {
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
@@ -2342,7 +2345,7 @@ public class AnnotationsProcessor {
             for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
                 ElementDeclaration entryValue = entry.getValue();
                 if (!(areEquals(type, Object.class)) && type.isAssignableFrom(entryValue.getJavaType())) {
-                    addReferencedElement(property, entryValue);
+                    addReferencedElement(property, entryValue, referenceQNames, typeName, cls.getName());
                     missingReference = false;
                 }
             }
@@ -2369,7 +2372,7 @@ public class AnnotationsProcessor {
                     referencedElement = this.getGlobalElements().get(qname);
                 }
                 if (referencedElement != null) {
-                    addReferencedElement(property, referencedElement);
+                    addReferencedElement(property, referencedElement, referenceQNames, typeName, cls.getName());
                 } else {
                     throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
                 }
@@ -3750,13 +3753,18 @@ public class AnnotationsProcessor {
         }
     }
 
-    private void addReferencedElement(Property property, ElementDeclaration referencedElement) {
+    private void addReferencedElement(Property property, ElementDeclaration referencedElement, Set<QName> referenceQNames, String typeName, String className) {
+        boolean canAdd = referenceQNames.add(referencedElement.getElementName());
+        if (!canAdd && !(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName))) {
+            throw org.eclipse.persistence.exceptions.JAXBException.multipleXmlElementRef(typeName, className);
+        }
+
         property.addReferencedElement(referencedElement);
         if (referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
             for (ElementDeclaration substitutable : referencedElement.getSubstitutableElements()) {
-            	if(substitutable != referencedElement){
-                    addReferencedElement(property, substitutable);
-            	}
+                if (substitutable != referencedElement) {
+                    addReferencedElement(property, substitutable, referenceQNames, typeName, className);
+                }
             }
         }
     }
