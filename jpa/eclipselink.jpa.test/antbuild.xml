@@ -2955,7 +2955,7 @@
         <copy file="${jpatest.basedir}/../eclipselink.jpars.test/eclipselink.jpars.test.war" todir="${jpatest.basedir}/${build.dir}"/>
         <antcall target="replace-jpars-jar-with-toplink-dataservices-web-jar"/>
         <ear destfile="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
-            <fileset dir="${jpatest.basedir}/${build.dir}" includes ="*.war"/>
+            <fileset dir="${jpatest.basedir}/${build.dir}" includes ="eclipselink.jpars.test.war"/>
         </ear>
         <copy file="${jpatest.basedir}/${build.dir}/${EAR_NAME}.ear" todir="."/>
     </target>
