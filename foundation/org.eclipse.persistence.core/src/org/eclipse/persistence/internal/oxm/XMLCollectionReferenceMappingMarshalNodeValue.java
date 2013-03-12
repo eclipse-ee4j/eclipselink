@@ -133,6 +133,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         return false;
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return true;
+    }
+
     private static class XMLCollectionReferenceMappingFKMarshalNodeValue extends MappingNodeValue {
 
         private CollectionReferenceMapping xmlCollectionReferenceMapping;

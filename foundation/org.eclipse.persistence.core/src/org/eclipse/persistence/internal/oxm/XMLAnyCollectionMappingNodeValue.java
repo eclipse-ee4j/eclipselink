@@ -465,7 +465,12 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
     public boolean isWhitespaceAware() {
         return this.xmlAnyCollectionMapping.isMixedContent() && this.xmlAnyCollectionMapping.isWhitespacePreservedForMixedContent();
     }
-    
+
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
     public boolean isAnyMappingNodeValue() {
         return true;
     }

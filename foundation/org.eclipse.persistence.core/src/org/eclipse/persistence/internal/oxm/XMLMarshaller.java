@@ -64,7 +64,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 public abstract class XMLMarshaller<
@@ -137,6 +136,7 @@ public abstract class XMLMarshaller<
     private String schemaLocation;
     protected XMLTransformer transformer;
     private String valueWrapper;
+    private boolean wrapperAsCollectionName = false;
     private String xmlHeader;
     private Object marshalAttributeGroup;
 
@@ -170,6 +170,7 @@ public abstract class XMLMarshaller<
 
         schemaLocation = xmlMarshaller.getSchemaLocation();
         valueWrapper = xmlMarshaller.getValueWrapper();
+        wrapperAsCollectionName = xmlMarshaller.isWrapperAsCollectionName();
         xmlHeader = xmlMarshaller.getXmlHeader();
     }
 
@@ -461,6 +462,10 @@ public abstract class XMLMarshaller<
      */
     public boolean isMarshalEmptyCollections() {
         return marshalEmptyCollections;
+    }
+
+    public boolean isWrapperAsCollectionName() {
+        return wrapperAsCollectionName;
     }
 
     protected boolean isSimpleXMLRoot(Root xmlRoot) {
@@ -1285,6 +1290,10 @@ public abstract class XMLMarshaller<
      */
     public void setSchemaLocation(String newSchemaLocation) {
        schemaLocation = newSchemaLocation;
+    }
+
+    public void setWrapperAsCollectionName(boolean wrapperAsCollectionName) {
+        this.wrapperAsCollectionName = wrapperAsCollectionName;
     }
 
     /**

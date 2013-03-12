@@ -122,4 +122,51 @@ public class UnmarshallerProperties {
     
     public static final String OBJECT_GRAPH = "eclipselink.object-graph";
 
+    /**
+     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 
+     * element will be used as the JSON key. There is no effect when media type 
+     * is "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this.
+     * 
+     * <p><b>Example</b></p>
+     * <p>Given the following class:</p>
+     * <pre>
+     * &#64;XmlAccessorType(XmlAccessType.FIELD)
+     * public class Customer {
+     * 
+     *     &#64;XmlElementWrapper(name="phone-numbers")
+     *     &#64;XmlElement(name="phone-number")
+     *     private List<PhoneNumber> phoneNumbers;
+     * 
+     * }
+     * </pre>
+     * <p>If the property is set to false (the default) the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : {
+     *         "phone-number" : [ {
+     *             ...
+     *         }, {
+     *             ...
+     *         }]
+     *     }
+     * }
+     * </pre>
+     * <p>And if the property is set to true, then the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : [ {
+     *         ...
+     *     }, {
+     *         ...
+     *     }]
+     * }
+     * </pre>
+     * @since 2.4.2
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     */
+    public static final String JSON_WRAPPER_AS_ARRAY_NAME = JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME;
+
 }

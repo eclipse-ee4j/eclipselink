@@ -68,6 +68,13 @@ public interface ContainerValue {
     public boolean isDefaultEmptyContainer();
 
     /**
+     * For media types that provide a native representation of collections (such
+     * as JSON arrays), can the representation be simplified so that the 
+     * grouping element can be used as the collection name.
+     */
+    public boolean isWrapperAllowedAsCollectionName();
+
+    /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization 

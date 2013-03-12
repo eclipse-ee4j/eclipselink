@@ -89,6 +89,8 @@ public interface MarshalRecord<
 
     public void endPrefixMapping(String prefix);
 
+    public CoreAttributeGroup getCurrentAttributeGroup();
+
     public CycleDetectionStack<Object>  getCycleDetectionStack();
 
     public ArrayList<XPathNode> getGroupingElements();
@@ -99,6 +101,8 @@ public interface MarshalRecord<
             XMLConversionManager conversionManager);
 
     public boolean hasCustomNamespaceMapper();
+
+    public boolean isWrapperAsCollectionName();
 
     public boolean isXOPPackage();
 
@@ -117,8 +121,12 @@ public interface MarshalRecord<
     public XPathFragment openStartGroupingElements(
             NAMESPACE_RESOLVER namespaceResolver);
 
+    public void popAttributeGroup();
+
     public void predicateAttribute(XPathFragment anXPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
+
+    public void pushAttributeGroup(CoreAttributeGroup group);
 
     public void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
 
@@ -129,15 +137,9 @@ public interface MarshalRecord<
     public void setLeafElementType(QName leafElementType);
 
     public void setMarshaller(MARSHALLER marshaller);
-
+    
     public void startCollection();
-
+    
     public void startPrefixMapping(String prefix, String uri);
-
-    public CoreAttributeGroup getCurrentAttributeGroup();
-    
-    public void pushAttributeGroup(CoreAttributeGroup group);
-    
-    public void popAttributeGroup();
 
 }

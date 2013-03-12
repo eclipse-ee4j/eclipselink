@@ -35,13 +35,16 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.CollectionGroupingElementNodeValue;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.MappingNodeValue;
 import org.eclipse.persistence.internal.oxm.MediaType;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
@@ -55,6 +58,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.AttributesImpl;
 
 public class JSONReader extends XMLReaderAdapter {
 
@@ -373,20 +377,62 @@ public class JSONReader extends XMLReaderAdapter {
 		               }
 			}else{
             
-            
+			XPathFragment groupingXPathFragment = null;
+			XPathFragment itemXPathFragment = null;
+            if(contentHandler instanceof UnmarshalRecord) {
+                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
+                if(unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
+                    XPathNode unmarshalRecordXPathNode = unmarshalRecord.getXPathNode();
+                    if(null != unmarshalRecordXPathNode) {
+                        XPathFragment currentFragment = new XPathFragment();
+                        currentFragment.setLocalName(parentLocalName);
+                        currentFragment.setNamespaceURI(uri);
+                        currentFragment.setNamespaceAware(namespaceAware);
+                        XPathNode groupingXPathNode = unmarshalRecordXPathNode.getNonAttributeChildrenMap().get(currentFragment);
+                        if(groupingXPathNode != null) {
+                            if(groupingXPathNode.getUnmarshalNodeValue() instanceof CollectionGroupingElementNodeValue) {
+                                groupingXPathFragment = groupingXPathNode.getXPathFragment();
+                                contentHandler.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
+                                XPathNode itemXPathNode = groupingXPathNode.getNonAttributeChildren().get(0);
+                                itemXPathFragment = itemXPathNode.getXPathFragment();
+                            } else if(groupingXPathNode.getUnmarshalNodeValue() == null) {
+                                XPathNode itemXPathNode = groupingXPathNode.getNonAttributeChildren().get(0);
+                                if(itemXPathNode != null) {
+                                    if(((MappingNodeValue)itemXPathNode.getUnmarshalNodeValue()).isContainerValue()) {
+                                        groupingXPathFragment = groupingXPathNode.getXPathFragment();
+                                        contentHandler.startElement(uri, parentLocalName, parentLocalName, new AttributesImpl());
+                                         itemXPathFragment = itemXPathNode.getXPathFragment();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             for(int x=0; x<size; x++) {
         	   CommonTree nextChildTree = (CommonTree) tree.getChild(x);
         	   if(nextChildTree.getType() == JSONLexer.NULL){
         		   ((UnmarshalRecord)contentHandler).setNil(true);
         	   }
         	   if(!isTextValue){
-         	   contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
-         	   }
+        	       if(null != itemXPathFragment) {
+                       contentHandler.startElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName(), attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+        	       } else {
+        	           contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
+        	       }
+        	   }
                parse(nextChildTree);
                if(!isTextValue){
-                  contentHandler.endElement(uri, parentLocalName, parentLocalName);
+                   if(null != itemXPathFragment) {
+                       contentHandler.endElement(uri, itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName());
+                   } else {
+                       contentHandler.endElement(uri, parentLocalName, parentLocalName);
+                   }
                }
-            } 
+            }
+            if(null != groupingXPathFragment) {
+                contentHandler.endElement(uri, groupingXPathFragment.getLocalName(), groupingXPathFragment.getLocalName());
+            }
             }
             endCollection();
 

@@ -373,4 +373,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         return getMapping().isDefaultEmptyContainer();
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return true;
+    }
+
 }

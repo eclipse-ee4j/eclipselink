@@ -169,6 +169,8 @@ public abstract class Marshaller<
      */
     public abstract boolean isReduceAnyArrays();
 
+    public abstract boolean isWrapperAsCollectionName();
+
     /**
      * Set this Marshaller's CharacterEscapeHandler.
      * @since 2.3.3

@@ -124,7 +124,16 @@ public abstract class Unmarshaller<
      */
     public abstract Class getUnmappedContentHandlerClass();
 
+    /**
+     * INTERNAL:
+     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
+     * unmarshal. 
+     */
+    public abstract Object getUnmarshalAttributeGroup();
+
     public abstract UNMARSHALLER_HANDLER getUnmarshallerHandler();
+
+    public abstract XMLUnmarshalListener getUnmarshalListener();
 
     /**
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
@@ -147,16 +156,9 @@ public abstract class Unmarshaller<
     public abstract boolean isIncludeRoot();
 
     public abstract boolean isResultAlwaysXMLRoot();
-    
-    public abstract void setIDResolver(ID_RESOLVER idResolver);
 
-    public abstract XMLUnmarshalListener getUnmarshalListener();
+    public abstract boolean isWrapperAsCollectionName();
 
-    /**
-     * INTERNAL:
-     * Returns the AttributeGroup or the name of the AttributeGroup to be used to 
-     * unmarshal. 
-     */
-    public abstract Object getUnmarshalAttributeGroup(); 
+    public abstract void setIDResolver(ID_RESOLVER idResolver); 
 
 }

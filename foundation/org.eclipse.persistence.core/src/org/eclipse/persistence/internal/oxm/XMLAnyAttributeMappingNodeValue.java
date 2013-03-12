@@ -45,6 +45,11 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
         return xPathFragment == null;
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlAnyAttributeMapping.isReadOnly()) {
             return false;

@@ -164,7 +164,11 @@ public class XMLChoiceCollectionMappingUnmarshalNodeValue extends MappingNodeVal
     public boolean isUnmarshalNodeValue() {
         return true;
     }
-    
+
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
     public boolean isMarshalNodeValue() {
         return false;
     }

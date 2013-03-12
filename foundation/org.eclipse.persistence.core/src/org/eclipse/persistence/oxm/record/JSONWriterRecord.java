@@ -762,6 +762,11 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         }
     }
 
+    @Override
+    public boolean isWrapperAsCollectionName() {
+        return marshaller.isWrapperAsCollectionName();
+    }
+
     /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events

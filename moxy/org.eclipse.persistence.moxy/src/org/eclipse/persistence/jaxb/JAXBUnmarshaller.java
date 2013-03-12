@@ -804,6 +804,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             } else {
                 throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
             }
+        } else if (UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+            xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
         } else {
             throw new PropertyException(key, value);
         }
@@ -863,6 +865,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 return new ObjectGraphImpl((CoreAttributeGroup)graph);
             }
             return graph;
+        } else if(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+            return xmlUnmarshaller.isWrapperAsCollectionName();
         }
         throw new PropertyException(key);
     }

@@ -849,6 +849,11 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
         }
 
     }
+
+    @Override
+    public boolean isWrapperAsCollectionName() {
+        return false;
+    }
     
     public CoreAttributeGroup getCurrentAttributeGroup() {
         if(this.attributeGroupStack == null || this.attributeGroupStack.isEmpty()) {

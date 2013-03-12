@@ -213,6 +213,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     private Map<String, String> namespacePrefixMapper;
     private char namespaceSeperator = Constants.DOT;
     private String valueWrapper;
+    private boolean wrapperAsArrayName = false;
 
     /**
      * The value that will be prepended to all keys that are mapped to an XML
@@ -409,7 +410,52 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return true;
         }
     }
- 
+
+    /**
+     * If true the grouping element will be used as the JSON key.
+     * 
+     * <p><b>Example</b></p>
+     * <p>Given the following class:</p>
+     * <pre>
+     * &#64;XmlAccessorType(XmlAccessType.FIELD)
+     * public class Customer {
+     * 
+     *     &#64;XmlElementWrapper(name="phone-numbers")
+     *     &#64;XmlElement(name="phone-number")
+     *     private List<PhoneNumber> phoneNumbers;
+     * 
+     * }
+     * </pre>
+     * <p>If the property is set to false (the default) the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : {
+     *         "phone-number" : [ {
+     *             ...
+     *         }, {
+     *             ...
+     *         }]
+     *     }
+     * }
+     * </pre>
+     * <p>And if the property is set to true, then the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : [ {
+     *         ...
+     *     }, {
+     *         ...
+     *     }]
+     * }
+     * </pre>
+     * @since 2.4.2
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     */
+    public boolean isWrapperAsArrayName() {
+        return wrapperAsArrayName;
+    }
 
     /**
      * @return true indicating that <i>MOXyJsonProvider</i> will
@@ -506,6 +552,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             if(null != valueWrapper) {
                 unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             }
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, wrapperAsArrayName);
             preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
 
             StreamSource jsonSource;
@@ -650,6 +697,52 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
+     * If true the grouping element will be used as the JSON key.
+     * 
+     * <p><b>Example</b></p>
+     * <p>Given the following class:</p>
+     * <pre>
+     * &#64;XmlAccessorType(XmlAccessType.FIELD)
+     * public class Customer {
+     * 
+     *     &#64;XmlElementWrapper(name="phone-numbers")
+     *     &#64;XmlElement(name="phone-number")
+     *     private List<PhoneNumber> phoneNumbers;
+     * 
+     * }
+     * </pre>
+     * <p>If the property is set to false (the default) the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : {
+     *         "phone-number" : [ {
+     *             ...
+     *         }, {
+     *             ...
+     *         }]
+     *     }
+     * }
+     * </pre>
+     * <p>And if the property is set to true, then the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : [ {
+     *         ...
+     *     }, {
+     *         ...
+     *     }]
+     * }
+     * </pre>
+     * @since 2.4.2
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     */
+    public void setWrapperAsArrayName(boolean wrapperAsArrayName) {
+        this.wrapperAsArrayName = wrapperAsArrayName;
+    }
+
+    /**
      * Specify the key that will correspond to the property mapped with
      * @XmlValue.  This key will only be used if there are other mapped
      * properties.
@@ -690,6 +783,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             if(null != valueWrapper) {
                 marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             }
+            marshaller.setProperty(MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, wrapperAsArrayName);
             marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
 
             Map<String, String> mediaTypeParameters = mediaType.getParameters();

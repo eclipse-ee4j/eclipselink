@@ -1,0 +1,25 @@
+{
+   "strings" : {
+      "string" : [ "FOO", "BAR" ]
+   },
+   "employees" : {
+      "employee" : [ {
+         "phoneNumbers" : {
+            "phoneNumber" : [ "A", "B" ]
+         }
+      }, {
+         "phoneNumbers" : {
+            "phoneNumber" : [ "B", "C" ]
+         }
+      } ]
+   },
+   "phone-numbers" : {
+      "phone-number" : [ {
+         "id" : "A"
+      }, {
+         "id" : "B"
+      }, {
+         "id" : "C"
+      } ]
+   }
+}

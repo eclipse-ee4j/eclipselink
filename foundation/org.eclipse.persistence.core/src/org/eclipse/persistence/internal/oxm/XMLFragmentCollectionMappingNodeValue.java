@@ -162,4 +162,9 @@ public class XMLFragmentCollectionMappingNodeValue extends NodeValue implements 
         return getMapping().isDefaultEmptyContainer();
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
 }

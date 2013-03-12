@@ -338,6 +338,19 @@ public class XPathNode {
 
     public boolean marshal(MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver, Marshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
         if ((null == marshalNodeValue) || isMarshalOnlyNodeValue) {
+            if(marshalRecord.isWrapperAsCollectionName() && null != nonAttributeChildren && nonAttributeChildren.size() == 1) {
+                XPathNode childXPathNode = nonAttributeChildren.get(0);
+                NodeValue childXPathNodeUnmarshalNodeValue = childXPathNode.getUnmarshalNodeValue();
+                if(childXPathNode != null && childXPathNodeUnmarshalNodeValue.isContainerValue()) {
+                    ContainerValue containerValue = (ContainerValue) childXPathNodeUnmarshalNodeValue;
+                    if(containerValue.isWrapperAllowedAsCollectionName()) {
+                        XPathNode wrapperXPathNode = new XPathNode();
+                        wrapperXPathNode.setXPathFragment(this.getXPathFragment());
+                        wrapperXPathNode.setMarshalNodeValue(childXPathNode.getMarshalNodeValue());
+                        return wrapperXPathNode.marshal(marshalRecord, object, session, namespaceResolver, marshaller, marshalContext, rootFragment);
+                    }
+                }
+            }
             marshalRecord.addGroupingElement(this);
 
             boolean hasValue = false;

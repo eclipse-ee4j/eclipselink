@@ -1,0 +1,15 @@
+{
+   "bar.strings" : [ "FOO", "BAR" ],
+   "bar.employees" : [ {
+      "bar.phoneNumbers" : [ "A", "B" ]
+   }, {
+      "bar.phoneNumbers" : [ "B", "C" ]
+   } ],
+   "bar.phone-numbers" : [ {
+      "foo.id" : "A"
+   }, {
+      "foo.id" : "B"
+   }, {
+      "foo.id" : "C"
+   } ]
+}

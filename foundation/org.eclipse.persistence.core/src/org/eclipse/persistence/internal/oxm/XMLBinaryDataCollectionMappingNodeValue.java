@@ -66,6 +66,11 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return xPathFragment.getNextFragment() == null || xPathFragment.isAttribute();
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return true;
+    }
+
     public boolean marshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, CoreAbstractSession session, NamespaceResolver namespaceResolver) {
         if (xmlBinaryDataCollectionMapping.isReadOnly()) {
             return false;

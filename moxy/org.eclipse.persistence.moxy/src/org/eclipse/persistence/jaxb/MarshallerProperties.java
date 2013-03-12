@@ -120,15 +120,15 @@ public class MarshallerProperties {
     public static final String NAMESPACE_PREFIX_MAPPER = JAXBContextProperties.NAMESPACE_PREFIX_MAPPER;
 
     /**
-     * The Constant JSON_MARSHAL_EMPTY_COLLECTIONS.  If true an empty collection
-     * will be marshalled as an empty array, if false it will be represented as
-     * an absent node.
+     * The Constant JSON_MARSHAL_EMPTY_COLLECTIONS.  If true an empty or null 
+     * collection will be marshalled as null or empty array, if false both will be
+     * represented as an absent node.
      * @since 2.4
      */
     public static final String JSON_MARSHAL_EMPTY_COLLECTIONS = "eclipselink.json.marshal-empty-collections";
     
     /**
-     * The Constant JSON_REDUCE_WILDCARD_ARRAYS.  If true arrays that have just one item in them
+     * The Constant JSON_REDUCE_ANY_ARRAYS.  If true arrays that have just one item in them
      * will be reduced and marshalled as a single item and not as a collection.  ie: no [ ] in the marshalled JSON
      * Default is false so all collections (even size 1) will have the [ ] around them.
      * @since 2.4.2
@@ -140,4 +140,51 @@ public class MarshallerProperties {
      */
     public static final String OBJECT_GRAPH = "eclipselink.object-graph";
    
+    /**
+     * The Constant JSON_WRAPPER_AS_ARRAY_NAME. If true the grouping 
+     * element will be used as the JSON key. There is no effect when media type 
+     * is "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this.
+     * 
+     * <p><b>Example</b></p>
+     * <p>Given the following class:</p>
+     * <pre>
+     * &#64;XmlAccessorType(XmlAccessType.FIELD)
+     * public class Customer {
+     * 
+     *     &#64;XmlElementWrapper(name="phone-numbers")
+     *     &#64;XmlElement(name="phone-number")
+     *     private List<PhoneNumber> phoneNumbers;
+     * 
+     * }
+     * </pre>
+     * <p>If the property is set to false (the default) the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : {
+     *         "phone-number" : [ {
+     *             ...
+     *         }, {
+     *             ...
+     *         }]
+     *     }
+     * }
+     * </pre>
+     * <p>And if the property is set to true, then the JSON output will be:</p>
+     * <pre>
+     * {
+     *     "phone-numbers" : [ {
+     *         ...
+     *     }, {
+     *         ...
+     *     }]
+     * }
+     * </pre>
+     * @since 2.4.2
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME
+     */
+    public static final String JSON_WRAPPER_AS_ARRAY_NAME = JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME;
+
 }

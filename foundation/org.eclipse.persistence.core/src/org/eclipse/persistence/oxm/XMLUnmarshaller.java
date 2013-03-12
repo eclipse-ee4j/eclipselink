@@ -142,6 +142,7 @@ public class XMLUnmarshaller extends Unmarshaller<AbstractSession, XMLContext, X
     private NamespaceResolver namespaceResolver;    
     private boolean autoDetectMediaType = false;
     private Object unmarshalAttributeGroup;
+    private boolean wrapperAsCollectionName = false;
 
     static {
         try {
@@ -808,6 +809,21 @@ public class XMLUnmarshaller extends Unmarshaller<AbstractSession, XMLContext, X
         this.namespaceResolver = namespaceResolver;
     }
     
+    /**
+     * @since 2.4.2
+     */
+    @Override
+    public boolean isWrapperAsCollectionName() {
+        return wrapperAsCollectionName;
+    }
+
+    /**
+     * @since 2.4.2
+     */
+    public void setWrapperAsCollectionName(boolean wrapperAsCollectionName) {
+        this.wrapperAsCollectionName = wrapperAsCollectionName;
+    }
+
     @Override
     public XMLUnmarshaller clone() {
         XMLUnmarshaller clone = new XMLUnmarshaller(context);
