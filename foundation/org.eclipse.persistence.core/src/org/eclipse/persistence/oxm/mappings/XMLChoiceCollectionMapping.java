@@ -730,8 +730,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     private void addChoiceElementMapping(XMLField xmlField, String className){              
          if (xmlField.getLastXPathFragment().nameIsText() || xmlField.getLastXPathFragment().isAttribute()) {
              XMLCompositeDirectCollectionMapping xmlMapping = new XMLCompositeDirectCollectionMapping();             
-             Class theClass = XMLConversionManager.getDefaultXMLManager().convertClassNameToClass(className);
-             xmlMapping.setAttributeElementClass(theClass);             
+             xmlMapping.setAttributeElementClassName(className);             
              xmlMapping.setField(xmlField);             
              xmlMapping.setAttributeAccessor(temporaryAccessor);
              this.choiceElementMappings.put(xmlField, xmlMapping);
