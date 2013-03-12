@@ -123,7 +123,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
  */
 public class MetamodelMetamodelTest extends MetamodelTest {
 
-    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 145;//6;
+    public static final int METAMODEL_ALL_ATTRIBUTES_SIZE = 147;//6;
     // Note: Since BasicTypes are lazy - loaded into the metamodel-types Map - this test must preceed any test that verifies all BasicType objects like "testIdentifiableType_getIdType_Method"
     public static final int METAMODEL_ALL_TYPES = 51;
     public static final int METAMODEL_MANUFACTURER_DECLARED_TYPES = 28;

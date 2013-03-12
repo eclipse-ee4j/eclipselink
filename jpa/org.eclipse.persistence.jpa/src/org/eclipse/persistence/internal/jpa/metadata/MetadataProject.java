@@ -1754,6 +1754,15 @@ public class MetadataProject {
                 m_autoApplyConvertAccessors.put(converterAccessor.getAttributeClassification(), converterAccessor);
             }
         }
+        
+        // 4 - Pre-process the embeddables.
+        for (EmbeddableAccessor embeddable : getEmbeddableAccessors()) {
+            // If the accessor hasn't been processed yet, then process it. An
+            // EmbeddableAccessor is normally fast tracked if it is a reference.
+            if (! embeddable.isPreProcessed()) {
+                embeddable.preProcess();
+            }
+        }
     }
     
     /**

@@ -246,9 +246,12 @@ public class EmbeddableAccessor extends ClassAccessor {
      */
     @Override
     public MetadataDescriptor getOwningDescriptor() {
-        // Return the first owning descriptor. In most cases this will be OK
-        // since in most cases there is only one.
-        return getOwningDescriptors().get(0);
+        if (getOwningDescriptors() != null && getOwningDescriptors().size() > 0) {
+            // Return the first owning descriptor. In most cases this will be OK
+            // since in most cases there is only one.
+            return getOwningDescriptors().get(0);
+        } 
+        return this.getDescriptor();
     }
     
     /** 
