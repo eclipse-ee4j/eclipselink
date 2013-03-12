@@ -832,13 +832,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n      </orm:basic>" +
         "\n    </orm:attributes>" +
         "\n  </orm:entity>" +
-        "\n  <orm:entity access=\"VIRTUAL\" class=\"dbws.force.embeddable.processing.Entity\">" +
-        "\n    <orm:attributes>" +
-        "\n      <orm:id attribute-type=\"java.lang.String\" name=\"fakePk\">" +
-        "\n        <orm:column name=\"FAKE_PK\"/>" +
-        "\n      </orm:id>" +
-        "\n    </orm:attributes>" +
-        "\n  </orm:entity>" +
         "\n</orm:entity-mappings>";
     
     /*

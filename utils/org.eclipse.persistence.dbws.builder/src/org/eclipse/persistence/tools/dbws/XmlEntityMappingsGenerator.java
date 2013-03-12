@@ -104,10 +104,6 @@ public class XmlEntityMappingsGenerator {
     static final String OUT_STR = "OUT";
     static final String CURSOR_STR = "OUT_CURSOR";
 
-    static final String ENTITY_STR = "dbws.force.embeddable.processing.Entity";
-    static final String FAKE_STR = "fake";
-    static final String FAKEPK_STR = "fakePk";
-    static final String FAKE_PK_STR = "FAKE_PK";
     static final String ARRAYLIST_STR = "java.util.ArrayList";
     static final String STRING_STR = "java.lang.String";
     
@@ -463,37 +459,6 @@ public class XmlEntityMappingsGenerator {
                 }
             }
         }
-        
-        // to handle the case where we have a wrapper class that needs to be an embeddable,
-        // but no entities have referencing embeddeds, we will create an entity with
-        // embeddeds for each:  this forces processing of the non-referenced embeddables
-        
-        EntityAccessor eAccessor = new EntityAccessor();
-        eAccessor.setAttributes(new XMLAttributes());
-        eAccessor.getAttributes().setEmbeddeds(new ArrayList<EmbeddedAccessor>());
-        eAccessor.getAttributes().setIds(new ArrayList<IdAccessor>());
-        eAccessor.setClassName(ENTITY_STR);
-        eAccessor.setAccess(EL_ACCESS_VIRTUAL);
-        xmlEntityMappings.getEntities().add(eAccessor);
-        EmbeddedAccessor fakeAccessor;
-        int i=0;
-        for (ClassDescriptor cdesc : descriptors) {
-            if (cdesc.isAggregateDescriptor()) {
-                fakeAccessor = new EmbeddedAccessor();
-                fakeAccessor.setName(FAKE_STR+i++);
-                fakeAccessor.setAttributeType(cdesc.getJavaClassName());
-                eAccessor.getAttributes().getEmbeddeds().add(fakeAccessor);
-            }
-        }
-        
-        IdAccessor idAccessor = new IdAccessor();
-        idAccessor.setName(FAKEPK_STR);
-        idAccessor.setAttributeType(STRING_STR);
-        ColumnMetadata column = new ColumnMetadata();
-        column.setName(FAKE_PK_STR);
-        idAccessor.setColumn(column);
-        eAccessor.getAttributes().getIds().add(idAccessor);       
-        
         return xmlEntityMappings;
     }
     
