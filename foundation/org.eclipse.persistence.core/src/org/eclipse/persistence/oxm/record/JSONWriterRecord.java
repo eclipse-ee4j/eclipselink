@@ -122,17 +122,19 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {    	
     	 if(marshaller.isMarshalEmptyCollections()){  
     		 super.emptyCollection(xPathFragment, namespaceResolver, true);
-    		 startCollection();
-    		 if(xPathFragment != null && !xPathFragment.isSelfFragment()){
-	    		 openStartElement(xPathFragment, namespaceResolver);	    		 
-	    		 if(!levels.isEmpty()){
-	          	   Level position = levels.peek();
-	          	   position.setNeedToCloseComplex(false);
-	          	   position.setNeedToOpenComplex(false);
-	          	 }
-	    		 endElement(xPathFragment, namespaceResolver);
-    		 }
-    		 endEmptyCollection();
+            if (null != xPathFragment) {
+                startCollection();
+                if (!xPathFragment.isSelfFragment()) {
+                    openStartElement(xPathFragment, namespaceResolver);
+                    if (!levels.isEmpty()) {
+                        Level position = levels.peek();
+                        position.setNeedToCloseComplex(false);
+                        position.setNeedToOpenComplex(false);
+                    }
+                    endElement(xPathFragment, namespaceResolver);
+                }
+                endEmptyCollection();
+            }
     		 return true;
     	 }else{
     		 return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
