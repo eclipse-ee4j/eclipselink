@@ -4026,7 +4026,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         try {
                             sourceURL = new URL((String) source);
                         }  catch (MalformedURLException e) {
-                            throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{ source }));
+                            throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-not-found", new Object[]{ source }), e);
                         }
                     }
                     
