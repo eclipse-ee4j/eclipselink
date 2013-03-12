@@ -45,11 +45,16 @@ public class AttributeNodeImpl<X> implements AttributeNode<X>{
     }
 
     public Map<Class, Subgraph> getSubgraphs() {
+        if (this.subgraphs == null){
+            this.subgraphs = new HashMap<Class, Subgraph>();
+        }
         return this.subgraphs;
     }
 
     public Map<Class, Subgraph> getKeySubgraphs() {
-        // TODO Auto-generated method stub
+        if (this.keySubgraphs == null){
+            this.keySubgraphs = new HashMap<Class, Subgraph>();
+        }
         return this.keySubgraphs;
     }
 
