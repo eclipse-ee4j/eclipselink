@@ -121,7 +121,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_INTERFACE = 50089;
     public static final int INVALID_VALUE_FOR_OBJECT_GRAPH = 50090;
     public static final int DUPLICATE_ELEMENT_NAME = 50091;
-    
+    public static final int MULTIPLE_XMLELEMREF = 50092;
 
 
     protected JAXBException(String message) {
@@ -1128,4 +1128,10 @@ public class JAXBException extends EclipseLinkException {
         return validationException;
     }
 
+    public static JAXBException multipleXmlElementRef(String propertyTypeName, String className) {
+        Object[] args = { propertyTypeName, className };
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, MULTIPLE_XMLELEMREF, args));
+        validationException.setErrorCode(MULTIPLE_XMLELEMREF);
+        return validationException;
+    }
 }
