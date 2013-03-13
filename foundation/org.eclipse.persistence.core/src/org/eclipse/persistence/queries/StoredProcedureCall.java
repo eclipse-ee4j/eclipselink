@@ -922,6 +922,17 @@ public class StoredProcedureCall extends DatabaseCall {
     
     /**
      * PUBLIC:
+     * Used for Oracle result sets through procedures.
+     * This can only be used if the arguments are not named but ordered.
+     */
+    public void useUnnamedCursorOutputAsResultSet(int position) {
+        setIsCursorOutputProcedure(true);
+        getProcedureArgumentNames().add(null);
+        appendOut(new DatabaseField(String.valueOf(position)));
+    }
+    
+    /**
+     * PUBLIC:
      * Set if the call returns multiple result sets.
      * Some databases support having stored procedures that return multiple result set.
      * This can be used by data queries, if an object query is used, all of the result sets must return

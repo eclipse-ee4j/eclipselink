@@ -740,7 +740,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
             
-            call.useUnnamedCursorOutputAsResultSet();
+            call.useUnnamedCursorOutputAsResultSet(position);
             
             // There are multiple cursor output parameters, then do not use the 
             // cursor as the result set. This will be set to true in the calls

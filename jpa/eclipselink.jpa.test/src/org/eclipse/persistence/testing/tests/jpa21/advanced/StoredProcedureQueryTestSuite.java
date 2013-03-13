@@ -79,7 +79,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithOutParam"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor1"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Named"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Positional"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping2"));
@@ -1001,7 +1002,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a system cursor. Also tests 
      * getParameters call BEFORE query execution. 
      */
-    public void testStoredProcedureQuerySysCursor1() {
+    public void testStoredProcedureQuerySysCursor_Named() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
             
@@ -1020,6 +1021,42 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertFalse("Execute should have returned false.", execute);
                 
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue("p_recordset");
+                assertFalse("No employees were returned", employees.isEmpty());                
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery using a system cursor. Also tests 
+     * getParameters call BEFORE query execution. 
+     */
+    public void testStoredProcedureQuerySysCursor_Positional() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor", Employee.class);
+                query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
+                
+                // Test the getParameters call BEFORE query execution.
+                assertTrue("The number of parameters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                
+                query.setParameter(1, "Fred");
+                
+                boolean execute = query.execute();
+                
+                assertFalse("Execute should have returned false.", execute);
+                
+                List<Employee> employees = (List<Employee>) query.getOutputParameterValue(2);
                 assertFalse("No employees were returned", employees.isEmpty());                
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){

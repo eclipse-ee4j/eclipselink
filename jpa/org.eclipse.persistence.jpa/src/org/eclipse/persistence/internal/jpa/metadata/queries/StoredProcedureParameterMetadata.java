@@ -459,7 +459,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
             
             if (callByIndex) {
-                call.useUnnamedCursorOutputAsResultSet();
+                call.useUnnamedCursorOutputAsResultSet(index);
             } else {
                 call.useNamedCursorOutputAsResultSet(m_queryParameter);
                 call.setCursorOrdinalPosition(m_queryParameter, index);
