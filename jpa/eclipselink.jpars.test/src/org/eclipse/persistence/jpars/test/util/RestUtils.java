@@ -44,6 +44,7 @@ import com.sun.jersey.api.client.WebResource;
 public class RestUtils {
     private static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/persistence/";
     private static final String SERVER_URI_BASE = "server.uri.base";
+    private static final String JPA_RS_VERSION_STRING = "jpars.version.string";
     private static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
     private static final String JSON_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/json/";
     private static final String XML_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/xml/";
@@ -59,7 +60,10 @@ public class RestUtils {
      */
     public static URI getServerURI() throws URISyntaxException {
         String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
-        return new URI(serverURIBase + APPLICATION_LOCATION);
+        String versionString = System.getProperty(JPA_RS_VERSION_STRING, "");
+        String versionStringUrlFragment = versionString.equals("") ? versionString : versionString + "/";
+        
+        return new URI(serverURIBase + APPLICATION_LOCATION + versionStringUrlFragment);
     }
 
     /**
