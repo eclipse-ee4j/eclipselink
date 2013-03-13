@@ -125,12 +125,12 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
     public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup graph, AttributeGroup entityGraph) {
         // Process the subgraph.
         if (getSubgraph() != null) {
-            if (attributeGraphs.containsKey(getName())) {
-                graph.addAttribute(getName(), attributeGraphs.get(getName()).values());
+            if (attributeGraphs.containsKey(getSubgraph())) {
+                graph.addAttribute(getName(), attributeGraphs.get(getSubgraph()).values());
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getSubgraph()}));
             }
-        } else {
+        }else {
             graph.addAttribute(getName());
         }
            
