@@ -623,12 +623,13 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
     
     public void addNamedQuery(String name, Query query) {
-        DatabaseQuery unwrapped = (DatabaseQuery) query.unwrap(DatabaseQuery.class).clone();
-        if (((QueryImpl)query).lockMode != null){
-            ((ObjectLevelReadQuery)unwrapped).setLockModeType(((QueryImpl)query).lockMode.name(), getServerSession());
+        QueryImpl queryImpl = query.unwrap(QueryImpl.class);
+        DatabaseQuery unwrapped = (DatabaseQuery) queryImpl.getDatabaseQueryInternal().clone();
+        if (queryImpl.lockMode != null){
+            ((ObjectLevelReadQuery)unwrapped).setLockModeType(queryImpl.lockMode.name(), getServerSession());
         }
         if (unwrapped.isReadQuery()){
-            ((ReadQuery)unwrapped).setInternalMax((((QueryImpl)query).getMaxResultsInternal()));
+            ((ReadQuery)unwrapped).setInternalMax((queryImpl.getMaxResultsInternal()));
         }
         this.getServerSession().addQuery(name, unwrapped, true);
     }
