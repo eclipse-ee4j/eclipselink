@@ -72,6 +72,8 @@ public class XJCJavaClassImpl implements JavaClass {
     private boolean isArray;
     private boolean isPrimitive;
 
+    private JavaClass arg;
+    
     private DynamicClassLoader dynamicClassLoader;
 
     private static Field JDEFINEDCLASS_ANNOTATIONS = null;
@@ -130,6 +132,10 @@ public class XJCJavaClassImpl implements JavaClass {
 
     // ========================================================================
 
+    public void setActualTypeArgument(JavaClass javaClass){
+    	arg = javaClass;
+    }
+    
     /**
      * Return the "actual" type from a parameterized type.  For example, if this
      * <code>JavaClass</code> represents <code>List&lt;Employee</code>, this method will return the
@@ -138,10 +144,18 @@ public class XJCJavaClassImpl implements JavaClass {
      * @return a <code>Collection</code> containing the actual type's <code>JavaClass</code>.
      */
     public Collection<JavaClass> getActualTypeArguments() {
+    	
+    	
         JTypeVar[] typeParams = xjcClass.typeParams();
 
-        if (null == typeParams || 0 == typeParams.length) {
-            return new ArrayList<JavaClass>(0);
+        if (null == typeParams || 0 == typeParams.length ) {
+        	if(arg != null){
+        		java.util.List<JavaClass> theList = new ArrayList<JavaClass>(1);
+        		theList.add(arg);
+        		return theList;
+        	}else{
+                return new ArrayList<JavaClass>(0);
+        	}
         }
 
         try {

@@ -183,7 +183,10 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
                                            { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},                                           
                                            { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},                                           
-                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."}
+                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."},
+                                           { "null_argument_get_attributegroup", "Search name for AttributeGroup must not be null."},
+                                           { "add_attribute_key_was_null", "When specifying an AttributeGroup for a subclass of an attribute's type the type parameter must not be null"},
+                                           { "managed_component_not_found", "An attribute: {1} listed in entity graph: {0} references a subgraph named: {2} which can not be found."}
                                         };
     /**
      * Return the lookup table.

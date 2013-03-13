@@ -170,7 +170,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
         if (attributeValue == null) {
             return null;
         }
-        if (isNewObject) { // only true if cloningSession is UOW as this signature only exists in this mapping.
+        if (cloningSession.isUnitOfWork() && isNewObject) { // only true if cloningSession is UOW as this signature only exists in this mapping.
             ((UnitOfWorkImpl)cloningSession).addNewAggregate(attributeValue);
         }
 

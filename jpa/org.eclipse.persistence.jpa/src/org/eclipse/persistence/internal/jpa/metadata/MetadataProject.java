@@ -153,6 +153,7 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
 
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.sequencing.Sequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
@@ -481,6 +482,14 @@ public class MetadataProject {
         // Grab the implemented interfaces (used when defaulting v1-1 mappings)
         m_interfacesImplementedByEntities.addAll(accessor.getJavaClass().getInterfaces());
         m_entityAccessors.put(accessor.getJavaClassName(), accessor);       
+    }
+    
+    /**
+     * INTERNAL:
+     * Add the given entity graph (internal attribute group).
+     */
+    public void addEntityGraph(AttributeGroup entityGraph) {
+        getProject().getAttributeGroups().put(entityGraph.getName(), entityGraph);
     }
     
     /**
@@ -1292,6 +1301,14 @@ public class MetadataProject {
      */
     public boolean hasEntity(String className) {
         return m_entityAccessors.containsKey(className);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true is there exist and entity graph already for the given name.
+     */
+    public boolean hasEntityGraph(String name) {
+        return getProject().getAttributeGroups().containsKey(name);
     }
     
     /**

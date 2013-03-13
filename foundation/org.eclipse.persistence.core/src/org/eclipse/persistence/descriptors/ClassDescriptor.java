@@ -48,9 +48,12 @@ import org.eclipse.persistence.internal.expressions.SQLStatement;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -152,6 +155,9 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     //manage fetch group behaviors and operations
     protected FetchGroupManager fetchGroupManager;
+    
+    //managed named attribute groups.
+    protected Map<String, AttributeGroup> attributeGroups;
 
     /** Additional properties may be added. */
     protected Map properties;
@@ -1660,6 +1666,11 @@ public class ClassDescriptor implements Cloneable, Serializable {
                 getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
             }
         }
+        if (this.attributeGroups != null){
+            for (AttributeGroup group : this.attributeGroups.values()){
+                group.convertClassNamesToClasses(classLoader);
+            }
+        }
     }
 
     /**
@@ -1943,6 +1954,21 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return accessorTree;
     }
 
+    /**
+     * PUBLIC:
+     * Returns the attribute group corresponding to the name provided.
+     * If no group is found with the specified name, null is returned.
+     */
+    public AttributeGroup getAttributeGroup(String name){
+        if (this.attributeGroups == null){
+            return null;
+        }else if (name != null){
+            return this.attributeGroups.get(name);
+        }else{
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_argument_get_attributegroup"));
+        }
+    }
+    
     /**
      * PUBLIC:
      * Return this objects ObjectChangePolicy.
@@ -4333,6 +4359,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
     }
 
+    public void addAttributeGroup(AttributeGroup group) {
+        if (this.attributeGroups == null){
+            this.attributeGroups = new HashMap<String, AttributeGroup>();
+        }
+        this.attributeGroups.put(group.getName(), group);
+    }
+    
     /**
      * INTERNAL:
      * Set the event manager for the descriptor.  The event manager is responsible
@@ -6509,5 +6542,5 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         return false;
     }
-    
+
 }

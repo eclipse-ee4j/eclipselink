@@ -198,23 +198,30 @@ public class XJCJavaMethodImpl implements JavaMethod {
     @SuppressWarnings("unchecked")
     public JavaClass getReturnType() {
         JType type = xjcMethod.type();
-
+        JavaClass returnClass = null;
+        JClass arg = null;
         try {
             Field argsField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "args", true);
             List<JClass> args = (List<JClass>) PrivilegedAccessHelper.getValueFromField(argsField, type);
-            type = args.get(0);
+             arg = args.get(0);
         } catch (Exception e) {
         }
 
         if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
-            return ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName());
+        	returnClass =((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName()); 
         }
-
-        try {
-            return new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
-        } catch (JClassAlreadyExistsException ex) {
-            return new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
+        else {
+            try {
+        	returnClass = new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
+            } catch (JClassAlreadyExistsException ex) {
+        	returnClass = new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
+            }
         }
+        if(arg != null){
+        	JavaClass argClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(arg.fullName()); 
+        	((XJCJavaClassImpl)returnClass).setActualTypeArgument(argClass);
+        }
+        return returnClass;
     }
 
     /**

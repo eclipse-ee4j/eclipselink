@@ -93,16 +93,21 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 import java.lang.reflect.Modifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
+import org.eclipse.persistence.annotations.NamedEntityGraph;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Indexes;
 import org.eclipse.persistence.annotations.VirtualAccessMethods;
 import org.eclipse.persistence.exceptions.ValidationException;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -114,6 +119,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
@@ -124,10 +130,14 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.queries.AttributeItem;
+import org.eclipse.persistence.queries.AttributeGroup;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
@@ -135,6 +145,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_VALUE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERIES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLE;
@@ -165,6 +177,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
+    private List<NamedEntityGraphMetadata> m_namedEntityGraphs = new ArrayList<NamedEntityGraphMetadata>();
     
     private MetadataClass m_classExtractor;
     
@@ -630,6 +643,8 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Finally, process the mapping accessors on this entity (and all those 
         // from super classes that apply to us).
         processMappingAccessors();
+        
+        processEntityGraphs();
     }
     
     /**
@@ -935,6 +950,17 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         getProject().addAlias(m_entityName, getDescriptor());
     }
     
+    /**
+     * INTERNAL:
+     * Process the entity graph metadata on this entity accessor.
+     */
+    protected void processEntityGraphs() {
+        // Look for an NamedEntityGraphs annotation.
+        if (isAnnotationPresent(NamedEntityGraph.class)) {
+                new NamedEntityGraphMetadata(getAnnotation(NamedEntityGraph.class), this).process(this);
+        }
+    }
+
     /**
      * INTERNAL:
      * Process index information for the given metadata descriptor.

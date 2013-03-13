@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -31,6 +32,7 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
+import org.eclipse.persistence.jpars.test.model.employee.Certification;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
@@ -299,7 +301,7 @@ public class ServerEmployeeTest {
         executeMultiResultQueryGetEmployeeWithDomainObject(MediaType.APPLICATION_XML_TYPE);
     }
 
-
+  
     /**
      * Test employee address multi result named query with binary data xml.
      *
@@ -400,7 +402,7 @@ public class ServerEmployeeTest {
     public void testSingleResultQueryMaxJSON() throws Exception {
         executeSingleResultQueryMax(MediaType.APPLICATION_JSON_TYPE);
     }
-
+    
     /**
      * Test multi result query count xml.
      *
@@ -440,8 +442,8 @@ public class ServerEmployeeTest {
     public void testSingleResultQueryCountJSON() throws Exception {
         executeSingleResultQueryCount(MediaType.APPLICATION_JSON_TYPE);
     }
-
-
+    
+    
     /**
      * Test employee address single result named query with binary data xml.
      *
@@ -471,7 +473,7 @@ public class ServerEmployeeTest {
     public void testEmployeeAddressSingleResultNamedQueryWithBinaryDataOctetStream() throws Exception {
         getEmployeeAddressSingleResultNamedQueryWithBinaryData(MediaType.APPLICATION_OCTET_STREAM_TYPE);
     }
-
+    
     /**
      * Test versioning.
      *
@@ -496,28 +498,43 @@ public class ServerEmployeeTest {
         // test QueryResource
         result = RestUtils.restNamedMultiResultQuery("Employee.count", DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull(result);
-
+        
         // test PersistenceResource
         result = RestUtils.restGetContexts(MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
         assertNotNull(result);
-
+        
         // test PersistenceUnitResource
-        result = RestUtils.restGetTypes(DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
+        result = RestUtils.restGetTypes(DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0); 
         assertNotNull(result);
-
+        
         RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null,  MediaType.APPLICATION_JSON_TYPE, AbstractResource.SERVICE_VERSION_1_0);
     }
 
+    /**
+     * Test read employee with address lazy fetch one2 one xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testReadEmployeeWithAddressLazyFetchOne2OneXML() throws Exception {
         readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_XML_TYPE);
     }
 
+    /**
+     * Test read employee with address lazy fetch one2 one json.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testReadEmployeeWithAddressLazyFetchOne2OneJSON() throws Exception {
         readEmployeeWithAddressLazyFetchOne2One(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test create employee with expertise non idempotent.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateEmployeeWithExpertiseNonIdempotent() throws Exception {
         String employee = RestUtils.getJSONMessage("employee-expertiseByValueNoId.json");
@@ -526,12 +543,22 @@ public class ServerEmployeeTest {
         RestUtils.restCreateWithSequence(employee, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test create office with employee non idempotent.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = RestCallFailedException.class)
     public void testCreateOfficeWithEmployeeNonIdempotent() throws Exception {
         String office = RestUtils.getJSONMessage("office-employeeByValueNoId.json");
         RestUtils.restCreateWithSequence(office, Office.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
-
+    
+    /**
+     * Test create employee with office many to one inverse mapping.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testCreateEmployeeWithOfficeManyToOneInverseMapping() throws Exception {
         String msg = RestUtils.getJSONMessage("employee-officeByValueNoId.json");
@@ -540,20 +567,50 @@ public class ServerEmployeeTest {
         assertNotNull(employee);
         assertTrue(employee.getId() == 121098);
         assertNull(employee.getOffice());
-
+        
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, "v1.0");
     }
 
+    /**
+     * Test query employee find all json.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testQueryEmployeeFindAllJSON() throws Exception {
         queryEmployeeFindAll(MediaType.APPLICATION_JSON_TYPE);
     }
 
+    /**
+     * Test query employee find all xml.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testQueryEmployeeFindAllXML() throws Exception {
         queryEmployeeFindAll(MediaType.APPLICATION_XML_TYPE);
     }
+    
+    /**
+     * Test read employee with certifications xml.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testReadEmployeeWithCertificationsXML() throws Exception {
+        readEmployeeWithCertifications(MediaType.APPLICATION_XML_TYPE);
+    }
 
+    /**
+     * Test read employee with certifications json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testReadEmployeeWithCertificationsJSON() throws Exception {
+        readEmployeeWithCertifications(MediaType.APPLICATION_JSON_TYPE);
+    }
+    
     private void queryEmployeeFindAll(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
@@ -588,7 +645,7 @@ public class ServerEmployeeTest {
     private void readEmployeeWithAddressLazyFetchOne2One(MediaType mediaType) throws Exception {
         // address on employee object is annoted to be LAZY fetch
         // Create an employee without any address, and make sure that read employee response doesn't contain address,
-        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address
+        // then add an address to the employee and re-read the employee to make sure that the response contains a link to the address  
         // even if it is fetched lazily.
 
         // create an employee
@@ -599,7 +656,7 @@ public class ServerEmployeeTest {
         employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true, null);
         assertNotNull("Employee create failed.", employee);
         assertTrue(employee.getAddress() == null);
-
+        
         // create an address for this employee
         EmployeeAddress address = new EmployeeAddress();
         address.setCity("Toronto");
@@ -607,7 +664,7 @@ public class ServerEmployeeTest {
         address.setPostalCode("ON");
         address.setCountry("CA");
         address.setPostalCode("H0H 0H0");
-
+        
         address = RestUtils.restUpdate(context, address, EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, mediaType, true, null);
         assertNotNull("Employee address create failed.", address);
         assertTrue("Queen street".equals(address.getStreet()));
@@ -624,7 +681,7 @@ public class ServerEmployeeTest {
         // read employee with an addresss
         String employeeWithAddress = RestUtils.restRead(context, new Integer(employee.getId()), Employee.class.getSimpleName(), DEFAULT_PU, null, mediaType);
         assertNotNull("Employee read failed.", employeeWithAddress);
-        // make sure employee has address
+        // make sure employee has address 
         assertTrue(employeeWithAddress.contains(addressLinkHref));
 
         // delete employee (cascade deletes address)
@@ -670,7 +727,7 @@ public class ServerEmployeeTest {
         // delete employee address
         RestUtils.restDelete(address.getId(), EmployeeAddress.class.getSimpleName(), EmployeeAddress.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, null);
     }
-
+    
     private void executeMultiResultQueryMax(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
@@ -695,7 +752,7 @@ public class ServerEmployeeTest {
         // query
         String queryResult = RestUtils.restNamedMultiResultQuery("Employee.salaryMax", DEFAULT_PU, null, null, mediaType, null);
         assertNotNull(queryResult);
-
+        
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.contains("{\"id\":" + employee2.getId() + ",\"max_salary\":30000.0}"));
             assertTrue(queryResult.contains("{\"id\":" + 	employee1.getId() + ",\"max_salary\":20000.0}"));
@@ -709,7 +766,7 @@ public class ServerEmployeeTest {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
         }
-
+        
         // delete employees
         RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
         RestUtils.restDelete(employee2.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
@@ -729,7 +786,7 @@ public class ServerEmployeeTest {
         // query
         String queryResult = RestUtils.restNamedSingleResultQuery("Employee.salaryMax", DEFAULT_PU, null, null, mediaType, null);
         assertNotNull(queryResult);
-
+        
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.equals("{\"id\":" + employee.getId() + ",\"max_salary\":20000.0}"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE){
@@ -740,11 +797,11 @@ public class ServerEmployeeTest {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
         }
-
+        
         // delete employee
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
     }
-
+    
     private void executeSingleResultQueryCount(MediaType mediaType) throws Exception {
         // create an employee
         Employee employee1 = new Employee();
@@ -767,7 +824,7 @@ public class ServerEmployeeTest {
         // query
         String queryResult = RestUtils.restNamedSingleResultQuery("Employee.count", DEFAULT_PU, null, null, mediaType, null);
         assertNotNull(queryResult);
-
+        
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.equals("{\"COUNT\":2}"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
@@ -805,7 +862,7 @@ public class ServerEmployeeTest {
         // query
         String queryResult = RestUtils.restNamedMultiResultQuery("Employee.count", DEFAULT_PU, null, null, mediaType, null);
         assertNotNull(queryResult);
-
+        
         if (mediaType == MediaType.APPLICATION_JSON_TYPE) {
             assertTrue(queryResult.equals("[{\"COUNT\":2}]"));
         } else if (mediaType == MediaType.APPLICATION_XML_TYPE) {
@@ -815,7 +872,7 @@ public class ServerEmployeeTest {
             // unsupported media type
             throw new RestCallFailedException(Status.BAD_REQUEST);
         }
-
+        
         // delete employees
         RestUtils.restDelete(employee1.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
         RestUtils.restDelete(employee2.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
@@ -1149,7 +1206,7 @@ public class ServerEmployeeTest {
                 assertTrue(!largeProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/LargeProject/" + largeProject.getId() + "\""));
 
                 // Disassociate small project from the employee
-                String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU,
+                String smallProjectDisassociated = RestUtils.restRemoveBidirectionalRelationship(String.valueOf(employee.getId()), Employee.class.getSimpleName(), "projects", DEFAULT_PU, 
                         mediaType, "teamLeader", String.valueOf(smallProject.getId()));
                 assertTrue(smallProjectDisassociated.contains("<employee><firstName>Charles</firstName><gender>Male</gender><id>" + employee.getId() + "</id><lastName>Mingus</lastName><salary>0.0</salary>"));
                 assertTrue(smallProjectDisassociated.contains("href=\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/Employee/" + employee.getId() + "/manager"));
@@ -1229,14 +1286,14 @@ public class ServerEmployeeTest {
         assertNotNull(phoneNumbers);
         assertTrue(phoneNumbers.size()==1);
         assertTrue("613".equals(phoneNumbers.get(0).getAreaCode()));
-
+        
         // update employee
         employee.setSalary(20000);
         employee = RestUtils.restUpdate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, true, null);
         assertNotNull(employee);
         assertTrue(employee.getId() == 743627);
         assertTrue(employee.getSalary() == 20000);
-
+        
         // delete
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE, null);
     }
@@ -1426,5 +1483,34 @@ public class ServerEmployeeTest {
 
         // delete manager
         RestUtils.restDelete(manager.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
+    }
+    
+    
+    private void readEmployeeWithCertifications(MediaType mediaType) throws Exception {
+        // create an employee
+        Employee employee = new Employee();
+        employee.setId(201204);
+        employee.setFirstName("John");
+        employee.setLastName("Doe");
+
+        List<Certification> certifications = new ArrayList<Certification>();
+        
+        Certification certification = new Certification();
+        certification.setName("Java");
+        certification.setIssueDate(GregorianCalendar.getInstance());
+        certifications.add(certification);
+        
+        employee.setCertifications(certifications);
+
+        employee = RestUtils.restCreate(context, employee, Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType, true);
+        assertNotNull("Employee create failed.", employee);
+
+        employee = RestUtils.restRead(context, new Integer(201204), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, mediaType);
+        assertNotNull(employee.getCertifications());
+        assertTrue(employee.getCertifications().size() == 1);
+        assertTrue("Java".equals(employee.getCertifications().get(0).getName()));
+
+        // delete employee
+        RestUtils.restDelete(new Integer(201204), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, mediaType, null);
     }
 }

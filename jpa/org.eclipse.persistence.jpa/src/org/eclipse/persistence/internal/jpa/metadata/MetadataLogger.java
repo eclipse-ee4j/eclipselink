@@ -176,6 +176,7 @@ public class MetadataLogger {
     public static final String QK_COLUMN = "metadata_default_qk_column";
     public static final String ORDER_COLUMN = "metadata_default_order_column";
     public static final String MAP_KEY_COLUMN = "metadata_default_key_column";
+    public static final String NAMED_ENTITY_GRAPH_NAME = "metadata_default_entity_graph_name";
     public static final String VALUE_COLUMN = "metadata_default_value_column"; // applies to maps and collections
     public static final String SOURCE_PK_COLUMN = "metadata_default_source_pk_column";
     public static final String SOURCE_FK_COLUMN = "metadata_default_source_fk_column";

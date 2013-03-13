@@ -115,7 +115,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnit, properties);
                 ClassLoader sessionLoader = factory.getServerSession().getLoader();
-                if (!sessionLoader.getClass().isAssignableFrom(DynamicClassLoader.class) ) {
+                if (!DynamicClassLoader.class.isAssignableFrom(sessionLoader.getClass()) ) {
                     properties = new HashMap<String, Object>();
                     dcl = new DynamicClassLoader(sessionLoader);
                     properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);

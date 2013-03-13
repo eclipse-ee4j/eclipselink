@@ -239,7 +239,7 @@ public class CopyGroup extends AttributeGroup {
     public void addAttribute(String attributeNameOrPath, AttributeGroup group) {
         cascadeTree();
         if(group == null) {
-            super.addAttribute(attributeNameOrPath, null);
+            super.addAttribute(attributeNameOrPath, (AttributeGroup)null);
         } else {
             addAttribute(attributeNameOrPath, group.toCopyGroup());
         }

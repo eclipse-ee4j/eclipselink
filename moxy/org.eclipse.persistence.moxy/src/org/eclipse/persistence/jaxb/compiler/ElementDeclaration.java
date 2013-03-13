@@ -105,7 +105,9 @@ public class ElementDeclaration {
      * Add an element to the list of elements which can be substituted for this element (ie: has this element in their substitutionGroup)
      */
     public void addSubstitutableElement(ElementDeclaration element) {
-        this.substitutableElements.add(element);
+    	if(element != this){
+            this.substitutableElements.add(element);
+    	}
     }
     
     /**

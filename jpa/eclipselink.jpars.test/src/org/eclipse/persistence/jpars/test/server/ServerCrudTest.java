@@ -54,7 +54,7 @@ public class ServerCrudTest {
     @BeforeClass
     public static void setup() throws URISyntaxException {
         Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties);
+        ExamplePropertiesLoader.loadProperties(properties); 
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
@@ -62,7 +62,7 @@ public class ServerCrudTest {
 
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("auction-static", emf, RestUtils.getServerURI(), null, false);
+        context = factory.bootstrapPersistenceContext(DEFAULT_PU, emf, RestUtils.getServerURI(), null, false);
 
         StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();
@@ -661,7 +661,7 @@ public class ServerCrudTest {
         auction.setDescription("Lego auction");
         auction = restCreate(auction, "StaticAuction", StaticAuction.class);
 
-        // Create address
+        // Create address 
         StaticAddress address = new StaticAddress();
         address.setCity("Ottawa");
         address.setId(123456);
@@ -739,7 +739,7 @@ public class ServerCrudTest {
         auction.setDescription("PlayStation auction");
         auction = restUpdate(auction, "StaticAuction", StaticAuction.class, false);
 
-        // Create a user (no id)
+        // Create a user (no id) 
         StaticUser user = new StaticUser();
         user.setName("LegoLover");
         user = restUpdate(user, "StaticUser", StaticUser.class, false);
@@ -770,7 +770,7 @@ public class ServerCrudTest {
         dbDelete(bid);
         dbDelete(user);
         dbDelete(auction);
-    }
+    } 
 
     /**
      * Test read composite pk.
@@ -825,7 +825,7 @@ public class ServerCrudTest {
         String result = response.getEntity(String.class);
 
         assertTrue(result != null);
-
+        
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static-local/metadata"));
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_auction-static/metadata"));
@@ -833,7 +833,7 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
-
+    
     /**
      * Test get contexts json.
      *
@@ -860,7 +860,7 @@ public class ServerCrudTest {
         assertTrue(result.contains(RestUtils.getServerURI() + "jpars_phonebook/metadata"));
     }
 
-
+    
     /**
      * Test get types xml.
      *
@@ -906,7 +906,7 @@ public class ServerCrudTest {
         }
 
         String result = response.getEntity(String.class);
-
+        
         assertTrue(result != null);
         assertTrue(result.contains("{\"persistenceUnitName\":\"jpars_auction-static\",\"types\":[{\"_link\":{\"href\":\""));
         assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAddress\",\"method\":\"application/json\",\"rel\":\"StaticAddress\""));
@@ -916,7 +916,7 @@ public class ServerCrudTest {
         assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAuction\",\"method\":\"application/json\",\"rel\":\"StaticAuction\""));
     }
 
-
+    
     /**
      * Test remove relationship non collection.
      *
@@ -955,7 +955,7 @@ public class ServerCrudTest {
         // So, create operation on auction with bid list should fail.
         RestUtils.restCreateWithSequence(auction, StaticAuction.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
-
+    
     private static void dbCreate(Object object) {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
