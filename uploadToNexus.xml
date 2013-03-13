@@ -608,6 +608,7 @@
             <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactJavadoc}"/>
+            <arg value="-Dtype=zip"/>
             <arg value="-Dclassifier=javadoc"/>
             <arg value="-Pgpg"/>
         </artifact:mvn>
