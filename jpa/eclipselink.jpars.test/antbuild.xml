@@ -247,6 +247,7 @@
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
         <property name="SERVER_URL" value="http://localhost:8080"/>
         <echo message="Server url is ${SERVER_URL}"/>
+        <echo message="jpars version is ${JPARS_VERSION}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
     </target>
     <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
@@ -327,7 +328,8 @@
                 <sysproperty key="useDeploymentXML" value="false"/>
                 <sysproperty key="test.properties" value="${jparstest.build.location}/test.properties"/>
                 <sysproperty key="jpars.xmlfile.directory" value="META-INF/xmldocs/"/>
-        <sysproperty key="server.uri.base" value="${SERVER_URL}"/>
+                <sysproperty key="server.uri.base" value="${SERVER_URL}"/>
+                <sysproperty key="jpars.version.string" value="${JPARS_VERSION}"/>
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
                         <include name="${jpars.test.class}"/>

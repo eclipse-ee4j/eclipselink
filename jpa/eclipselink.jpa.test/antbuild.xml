@@ -3690,6 +3690,7 @@
         </antcall>
         <ant antfile="antbuild.xml" dir="${jpatest.basedir}/../eclipselink.jpars.test"  target="test" inheritAll="false">
             <property name="SERVER_URL" value="${jpars.url}"/>
+            <property name="JPARS_VERSION" value="v1.0"/>
         </ant>
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
