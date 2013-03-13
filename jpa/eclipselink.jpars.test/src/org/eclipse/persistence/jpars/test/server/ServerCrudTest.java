@@ -882,11 +882,11 @@ public class ServerCrudTest {
         assertTrue(result != null);
         assertTrue(result.contains("<persistenceUnit><persistenceUnitName>jpars_auction-static"));
         assertTrue(result.contains("<types>"));
-        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticAddress\" method=\"application/xml\" rel=\"StaticAddress\""));
-        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticBid\" method=\"application/xml\" rel=\"StaticBid\""));
-        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticUser\" method=\"application/xml\" rel=\"StaticUser\""));
-        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/Account\" method=\"application/xml\" rel=\"Account\""));
-        assertTrue(result.contains("persistence/jpars_auction-static/metadata/entity/StaticAuction\" method=\"application/xml\" rel=\"StaticAuction\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAddress\" method=\"application/xml\" rel=\"StaticAddress\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticBid\" method=\"application/xml\" rel=\"StaticBid\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticUser\" method=\"application/xml\" rel=\"StaticUser\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/Account\" method=\"application/xml\" rel=\"Account\""));
+        assertTrue(result.contains("jpars_auction-static/metadata/entity/StaticAuction\" method=\"application/xml\" rel=\"StaticAuction\""));
     }
 
     /**
