@@ -129,7 +129,7 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="D:/Indigo-gm/eclipse"/>
+        <property name="p2.SDK.install.dir" value="D:\Juno-M7\eclipse"/>
         <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
@@ -169,7 +169,7 @@
         <echo message="p2.mirror.dir         ='${p2.mirror.dir}'"/>
         <echo message="p2.feature.dir        ='${p2.feature.dir}'"/>
         <echo message="p2.bundle.dir         ='${p2.bundle.dir}'"/>
-        <say  message="bundle.install.file   ='${bundle.install.file}'" if="bundle.installer.exist"/>
+        <say  message="bundle.install.file   ='${bundle.install.file}'"                if="bundle.installer.exist"/>
         <say  message="bundle.install.file:   '${bundle.install.file}' not found!" unless="bundle.installer.exist"/>
         <echo message="site.dir              ='${site.dir}'"/>
         <echo message="site.dir.url          ='${site.dir.url}'"/>
@@ -216,7 +216,7 @@
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
         <!-- For EclipseLink bundles -->
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
-        <property name="hermes.criteria" value="[1.0,2.0)"/>
+        <property name="hermes.criteria" value="[1.0,9.0)"/>
     </target>
 
     <!-- Need to copy only the bundles that will be in the features into the "p2.repos.dir/plugins" dir
@@ -281,23 +281,23 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
         <echo message="Searching ${feature.2.sdo.plugins.dir}..."/>
-        <say  message="   sdo.version         = '${sdo.version}'"         if="sdo.version"/>
+        <say  message="   sdo.version         = '${sdo.version}'"                                                             if="sdo.version"/>
         <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                 unless="sdo.version"/>
         <echo message="Searching ${feature.2.jpa.plugins.dir}..."/>
-        <say  message="   persistence.version = '${persistence.version}'" if="persistence.version"/>
+        <say  message="   persistence.version = '${persistence.version}'"                                                     if="persistence.version"/>
         <say  message="   '${persistence.prefix}_${persistence.criteria}.jar' not found! Generated features will be invalid." unless="persistence.version"/>
         <echo message="Searching ${feature.2.common.plugins.dir}..."/>
-        <say  message="   activation.version  = '${activation.version}'"  if="activation.version"/>
+        <say  message="   activation.version  = '${activation.version}'"                                                      if="activation.version"/>
         <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
-        <say  message="   mail.version        = '${mail.version}'"        if="mail.version"/>
+        <say  message="   mail.version        = '${mail.version}'"                                                            if="mail.version"/>
         <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
-        <say  message="   servlet.version     = '${servlet.version}'"     if="servlet.version"/>
+        <say  message="   servlet.version     = '${servlet.version}'"                                                         if="servlet.version"/>
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
-        <say  message="   xml.bind.version    = '${xml.bind.version}'"    if="xml.bind.version"/>
+        <say  message="   xml.bind.version    = '${xml.bind.version}'"                                                        if="xml.bind.version"/>
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
-        <say  message="   xml.stream.version  = '${xml.stream.version}'"  if="xml.stream.version"/>
+        <say  message="   xml.stream.version  = '${xml.stream.version}'"                                                      if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
-        <say  message="   hermes.version      = '${hermes.version}'"      if="hermes.version"/>
+        <say  message="   hermes.version      = '${hermes.version}'"                                                          if="hermes.version"/>
         <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
     </target>
 
@@ -418,6 +418,10 @@
             <available file="${p2.archive.presigned.zip}"/>
         </condition>
         <available file="${p2.archive.zip}" property="signing.archive.exist"/>
+        <say  message="p2.archive.zip      ='${p2.archive.zip}'"                 if="signing.archive.exist"/>
+        <say  message="p2.archive.zip:      '${p2.archive.zip}' not found!"  unless="signing.archive.exist"/>
+        <say  message="bundle.install.file ='${bundle.install.file}'"                if="bundle.installer.exist"/>
+        <say  message="bundle.install.file: '${bundle.install.file}' not found!" unless="bundle.installer.exist"/>
         <condition property="ready-to-go">
             <and>
                 <isset property="signing.archive.exist"/>
@@ -427,7 +431,7 @@
     </target>
 
     <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
-        <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
+        <fail message="Bundle Installer (${bundle.install.file}) or p2 archive (${p2.archive.zip})not found! Skipping P2 repos generation."/>
     </target>
 
     <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
@@ -452,6 +456,7 @@
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
+                          *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
