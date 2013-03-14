@@ -850,7 +850,12 @@ public class AnnotationsProcessor {
 
             // Ensure that there is no more than one XmlElementRef per type QName
             Set<QName> referenceQNames = new HashSet<QName>();
-
+            Map<QName, Set<QName>> referenceQNamesForWrapper = new HashMap<QName, Set<QName>>();
+            
+            // Keep a list of "any" properties to verify if multiples exist
+            // that they have different element wrappers
+            List<Property> anyElementProperties = new ArrayList<Property>();
+            
             for (Property property : tInfo.getPropertyList()) {
             	JavaClass typeClass = property.getActualType();
             
@@ -878,11 +883,12 @@ public class AnnotationsProcessor {
                         throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
                     }
                 }
-
+                
+                
                 // handle XmlElementRef(s) - validate and build the required
                 // ElementDeclaration object
                 if (property.isReference()) {
-                    processReferenceProperty(property, tInfo, jClass, referenceQNames);
+                    processReferenceProperty(property, tInfo, jClass, referenceQNames, referenceQNamesForWrapper);
                 }
                  
                 if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
@@ -897,8 +903,22 @@ public class AnnotationsProcessor {
                     throw JAXBException.multipleAnyAttributeMapping(jClass.getName());
                 }
                 // there can only be one XmlAnyElement per type info
-                if (property.isAny() && tInfo.isSetAnyElementPropertyName() && !(tInfo.getAnyElementPropertyName().equals(property.getPropertyName()))) {
-                    throw JAXBException.xmlAnyElementAlreadySet(property.getPropertyName(), tInfo.getAnyElementPropertyName(), jClass.getName());
+                if (property.isAny()) {
+                    if(!anyElementProperties.isEmpty()) {
+                        for(Property nextAny:anyElementProperties) {
+                            if(!property.isSetXmlElementWrapper() && !nextAny.isSetXmlElementWrapper()) {
+                                throw JAXBException.xmlAnyElementAlreadySet(property.getPropertyName(), nextAny.getPropertyName(), jClass.getName());
+                            }
+                            org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper wrapper = property.getXmlElementWrapper();
+                            org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper targetWrapper = nextAny.getXmlElementWrapper();
+                            if(wrapper != null && targetWrapper != null) {
+                                if(wrapper.getName().equals(targetWrapper.getName()) && wrapper.getNamespace().equals(targetWrapper.getNamespace())) {
+                                    throw JAXBException.xmlAnyElementAlreadySet(property.getPropertyName(), nextAny.getPropertyName(), jClass.getName());
+                                }
+                            }
+                        }
+                    }
+                    anyElementProperties.add(property);
                 }
                 // an XmlAttachmentRef can only appear on a DataHandler property
                 if (property.isSwaAttachmentRef() && !areEquals(property.getActualType(), JAVAX_ACTIVATION_DATAHANDLER)) {
@@ -2325,7 +2345,17 @@ public class AnnotationsProcessor {
      * @param javaHasAnnotations
      * @return
      */
-    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls, Set<QName> referenceQNames) {
+    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls, Set<QName> referenceQNames, Map<QName, Set<QName>> referenceQNamesForWrappers) {
+   
+        if(property.isSetXmlElementWrapper()) {
+            QName wrapperQName = new QName(property.getXmlElementWrapper().getNamespace(), property.getXmlElementWrapper().getName());
+            Set<QName> qnamesForWrapper = referenceQNamesForWrappers.get(wrapperQName);
+            if(qnamesForWrapper == null) {
+                qnamesForWrapper = new HashSet<QName>();
+                referenceQNamesForWrappers.put(wrapperQName, qnamesForWrapper);
+            }
+            referenceQNames = qnamesForWrapper;
+        }
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
