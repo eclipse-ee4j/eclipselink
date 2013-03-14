@@ -38,6 +38,8 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -69,6 +71,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
@@ -366,10 +369,6 @@ public class QueryOperation extends Operation {
         if (query.getProperty(DATABASEQUERY_STR) != null) {
             query = (DatabaseQuery) query.getProperty(DATABASEQUERY_STR);
         }
-        // a named query created via ORM metadata processing needs initialization
-        if (query instanceof JPAQuery) {
-            query = ((JPAQuery) query).processSQLQuery(xrService.getORSession().getActiveSession());
-        }
 
         // a named query created via ORM metadata processing does not have
         // parameters set, however, the operation should
@@ -398,6 +397,23 @@ public class QueryOperation extends Operation {
         Object value = xrService.getORSession().getActiveSession().executeQuery(query);
 
         if (value != null) {
+            // JPA spec returns an ArrayList<Object[]> for stored procedure queries - will need to unwrap.
+            // Note that for legacy deployment XML projects this is not the case.
+            if (value instanceof ArrayList) {
+                ArrayList returnedList = (ArrayList) value;
+                if (returnedList.size() > 0 && returnedList.get(0) instanceof Object[]) {
+                    Object[] objs = (Object[]) returnedList.get(0);
+                    if (isCollection()) {
+                        value = new ArrayList();
+                        for (Object obj : objs) {
+                            ((ArrayList) value).add(obj);
+                        }
+                    } else {
+                        value = objs[0];
+                    }
+                }
+            }
+         
             // handle SimpleXML
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
@@ -511,7 +527,28 @@ public class QueryOperation extends Operation {
             tempXMLTag = xmlTag;
         }
         Vector<DatabaseRecord> records = null;
-        if (value instanceof Vector) {
+        if (value instanceof ArrayList) {
+            // JPA query results in a list of raw values
+            // Here we have raw values returned as opposed to DatabaseRecords - this means
+            // we need to figure out the tag names based on the call's output parameters.
+            // assumes JPAQuery
+            JPAQuery jpaQuery = (JPAQuery) queryHandler.getDatabaseQuery();
+            // to match field names with results, we need to gather the database fields from each of the Output parameters
+            List<DatabaseField> paramFlds = new ArrayList<DatabaseField>();
+            DatasourceCall dsCall = (DatasourceCall) jpaQuery.getDatabaseQuery().getDatasourceCall();
+            for (Object obj : dsCall.getParameters()) {
+                if (obj instanceof OutputParameterForCallableStatement) {
+                    paramFlds.add(((OutputParameterForCallableStatement) obj).getOutputField());
+                }
+            }
+            // now create a record using DatabaseField/value pairs
+            DatabaseRecord dr = new DatabaseRecord();
+            for (int i=0; i <  ((ArrayList) value).size(); i++) {
+                dr.add(paramFlds.get(i), ((ArrayList) value).get(i));
+            }
+            records = new Vector<DatabaseRecord>();
+            records.add(dr);
+        } else if (value instanceof Vector) {
             Class vectorContent = ((Vector)value).firstElement().getClass();
             if (DatabaseRecord.class.isAssignableFrom(vectorContent)) {
                 records = (Vector<DatabaseRecord>)value;
