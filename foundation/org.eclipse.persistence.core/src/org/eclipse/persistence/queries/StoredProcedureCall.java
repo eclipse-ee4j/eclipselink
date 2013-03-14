@@ -899,25 +899,38 @@ public class StoredProcedureCall extends DatabaseCall {
     }
 
     /**
+     * INTERNAL:
+     * Add the unnamed output cursor to return the result.
+     */
+    protected void useCursorOutputResultSet(String argumentName, String outputFieldName) {
+        // Set the isCursorOutputProcedure first based on the outputCursor list.
+        // Should be true if there is one and only one, once a second is added,
+        // the flag must be false.
+        setIsCursorOutputProcedure(!hasOutputCursors());
+        setIsMultipleCursorOutputProcedure(hasOutputCursors());
+        
+        getProcedureArgumentNames().add(argumentName);
+        appendOutCursor(new DatabaseField(outputFieldName));
+    }
+    
+    /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
      * This can only be used if the arguments are not named but ordered.
      */
     public void useNamedCursorOutputAsResultSet(String argumentName) {
-        setIsCursorOutputProcedure(true);
-        getProcedureArgumentNames().add(argumentName);
-        appendOutCursor(new DatabaseField(argumentName));
+        useCursorOutputResultSet(argumentName, argumentName);
+        // Store the cursor ordinal position after you add it.
+        setCursorOrdinalPosition(argumentName, getParameters().size());
     }
-
+    
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.
      * This can only be used if the arguments are not named but ordered.
      */
     public void useUnnamedCursorOutputAsResultSet() {
-        setIsCursorOutputProcedure(true);
-        getProcedureArgumentNames().add(null);
-        appendOut(new DatabaseField("CURSOR"));
+        useCursorOutputResultSet(null, "CURSOR");
     }
     
     /**
@@ -926,9 +939,10 @@ public class StoredProcedureCall extends DatabaseCall {
      * This can only be used if the arguments are not named but ordered.
      */
     public void useUnnamedCursorOutputAsResultSet(int position) {
-        setIsCursorOutputProcedure(true);
-        getProcedureArgumentNames().add(null);
-        appendOut(new DatabaseField(String.valueOf(position)));
+        String positionName = String.valueOf(position);
+        useCursorOutputResultSet(null, positionName);
+        // Store the cursor ordinal position after you add it.
+        setCursorOrdinalPosition(positionName, position);
     }
     
     /**

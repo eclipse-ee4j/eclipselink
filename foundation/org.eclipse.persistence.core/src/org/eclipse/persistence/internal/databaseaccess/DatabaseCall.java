@@ -147,6 +147,11 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     protected boolean isBatchExecutionSupported;
     
+    /**
+     * Keep a list of the output cursors.
+     */
+    protected List<DatabaseField> outputCursors;
+    
     public DatabaseCall() {
         super.shouldProcessTokenInQuotes = false;
         this.usesBinding = null;
@@ -215,6 +220,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void appendOutCursor(DatabaseField outField) {
         getParameters().add(outField);
         getParameterTypes().add(OUT_CURSOR);
+        getOutputCursors().add(outField);
     }
 
     /**
@@ -475,6 +481,18 @@ public abstract class DatabaseCall extends DatasourceCall {
         }
         return fields;
     }
+    
+    /**
+     * INTERNAL:
+     * Return the output cursors for this stored procedure call.
+     */
+    public List<DatabaseField> getOutputCursors() {
+        if (outputCursors == null) {
+            outputCursors = new ArrayList<DatabaseField>();
+        }
+        
+        return outputCursors;
+    }
 
     /**
      * INTERNAL:
@@ -545,6 +563,13 @@ public abstract class DatabaseCall extends DatasourceCall {
         return hasOptimisticLock;
     }
 
+    /**
+     * Return true if there are output cursors on this call.
+     */
+    public boolean hasOutputCursors() {
+        return outputCursors != null && ! outputCursors.isEmpty();
+    }
+    
     /**
      * Callable statement is required if there is an output parameter.
      */

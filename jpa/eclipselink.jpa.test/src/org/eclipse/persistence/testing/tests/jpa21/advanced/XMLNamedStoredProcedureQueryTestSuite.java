@@ -147,8 +147,6 @@ public class XMLNamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertFalse("No employees were returned", employees.isEmpty());
                 List<Address> addresses = (List<Address>) query.getOutputParameterValue("CUR2");
                 assertFalse("No addresses were returned", addresses.isEmpty());
-                
-                assertFalse("The query had more results", query.hasMoreResults());
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
@@ -175,8 +173,6 @@ public class XMLNamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue(1);
                 assertFalse("No employees were returned", employees.isEmpty());
-                
-                assertFalse("The query had more results", query.hasMoreResults());
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
@@ -199,27 +195,11 @@ public class XMLNamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             try {
                 StoredProcedureQuery query = em.createNamedStoredProcedureQuery("XMLReadUsingNamedRefCursors");
                 
-                // Calling get result list here on an oracle platform will
-                // return an illegal state exception since the execute call
-                // will return false for no result set was returned. Users 
-                // should be calling execute and getting results from the out
-                // parameters.
-                try { 
-                    query.getResultList();
-                } catch (IllegalStateException ise) {
-                    // We expect the exception here, now check through the output parameters (as expected)
-                    List<Employee> employees = (List<Employee>) query.getOutputParameterValue("CUR1");
-                    assertFalse("No employees were returned", employees.isEmpty());
+                List<Employee> employees = (List<Employee>) query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
                     
-                    List<Address> addresses = (List<Address>) query.getOutputParameterValue("CUR2");
-                    assertFalse("No addresses were returned", addresses.isEmpty());
-                    
-                    assertFalse("The query had more results", query.hasMoreResults());
-                    
-                    return;
-                }
-                
-                fail("No IllegalStateException thrown on getResultList() to an Oracle stored procedure using ref cursors");
+                List<Address> addresses = (List<Address>) query.getResultList();
+                assertFalse("No addresses were returned", addresses.isEmpty());
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);

@@ -1018,7 +1018,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 boolean execute = query.execute();
                 
-                assertFalse("Execute should have returned false.", execute);
+                assertTrue("Execute returned false.", execute);
                 
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue("p_recordset");
                 assertFalse("No employees were returned", employees.isEmpty());                
@@ -1054,7 +1054,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 boolean execute = query.execute();
                 
-                assertFalse("Execute should have returned false.", execute);
+                assertTrue("Execute returned false.", execute);
                 
                 List<Employee> employees = (List<Employee>) query.getOutputParameterValue(2);
                 assertFalse("No employees were returned", employees.isEmpty());                
@@ -1090,7 +1090,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 boolean execute = query.execute();
                 
-                assertFalse("Execute should have returned false.", execute);
+                assertTrue("Execute returned false.", execute);
                 
                 // Test the getParameters call AFTER query execution.
                 assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);

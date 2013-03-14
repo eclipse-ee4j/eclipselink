@@ -82,6 +82,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     protected Statement executeStatement;
     protected int executeResultSetIndex = -1;
     
+    // If the procedure returns output cursor(s), we'll use them to satisfy
+    // getResultList and getSingleResult calls so keep track of our index.
+    protected int outputCursorIndex = -1;
+    protected boolean isOutputCursorResultSet = false;
+    
     /**
      * Base constructor for EJBQueryImpl. Initializes basic variables.
      */
@@ -329,6 +334,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             
             hasMoreResults = executeCall.getExecuteReturnValue();
             
+            // If execute returned false but we have output cursors then return
+            // true and build the results from the output cursors. 
+            if (!hasMoreResults && getCall().hasOutputCursors()) {
+                hasMoreResults = true;
+                outputCursorIndex = 0;
+                isOutputCursorResultSet = true;
+            }
+            
             return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
@@ -535,13 +548,23 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 }
             } else {
                 if (hasMoreResults()) {
-                    // Build the result records first.
-                    List result = buildResultRecords(executeStatement.getResultSet());
+                    if (isOutputCursorResultSet) {
+                        // Return result set list for the current outputCursorIndex.
+                        List results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        
+                        // Update the hasMoreResults flag.
+                        hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
+                        
+                        return results;
+                    } else {
+                        // Build the result records first.
+                        List result = buildResultRecords(executeStatement.getResultSet());
                     
-                    // Move the result pointer.
-                    moveResultPointer();
+                        // Move the result pointer.
+                        moveResultPointer();
                     
-                    return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+                        return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+                    }
                 } else {
                     return null;
                 }
@@ -602,18 +625,32 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             } else {
                 if (hasMoreResults()) {
                     // Build the result records first.
-                    List result = buildResultRecords(executeStatement.getResultSet());
+                    List results;
                     
-                    // Move the result pointer.
-                    moveResultPointer();
+                    if (isOutputCursorResultSet) {
+                        // Return result set list for the current outputCursorIndex.
+                        results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        
+                        // Update the hasMoreResults flag.
+                        hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
+                    } else {
+                        // Build the result records first.
+                        List result = buildResultRecords(executeStatement.getResultSet());
                     
-                    List results = getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+                        // Move the result pointer.
+                        moveResultPointer();
+                        
+                        results = getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
+                    }
+                    
                     if (results.size() > 1) {
                         throwNonUniqueResultException(ExceptionLocalization.buildMessage("too_many_results_for_get_single_result", (Object[]) null));
                     } else if (results.isEmpty()) {
                         throwNoResultException(ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_single_result", (Object[]) null));
                     }
                         
+                    // TODO: if hasMoreResults is true, we 'could' and maybe should throw an exception here.
+                    
                     return results.get(0);
                 } else {
                     return null;
@@ -738,16 +775,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addUnamedInOutputArgument(String.valueOf(position), String.valueOf(position), type);
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
-            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
-            
             call.useUnnamedCursorOutputAsResultSet(position);
-            
-            // There are multiple cursor output parameters, then do not use the 
-            // cursor as the result set. This will be set to true in the calls
-            // above so we must do the multiple cursor call before hand.
-            if (multipleCursors) {
-                call.setIsCursorOutputProcedure(false);
-            }
         }
         
         // Force a re-calculate of the parameters.
@@ -778,18 +806,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
-            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
-            
             call.useNamedCursorOutputAsResultSet(parameterName);
-            // Store the cursor ordinal position.
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
-            
-            // There are multiple cursor output parameters, then do not use the 
-            // cursor as the result set. This will be set to true in the calls
-            // above so we must do the multiple cursor call before hand.
-            if (multipleCursors) {
-                call.setIsCursorOutputProcedure(false);
-            }
         }
 
         // Force a re-calculate of the parameters.

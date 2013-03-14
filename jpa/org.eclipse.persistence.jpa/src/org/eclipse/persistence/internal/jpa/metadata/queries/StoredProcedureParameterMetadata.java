@@ -456,21 +456,10 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             
             setDatabaseFieldSettings((DatabaseField) array[1]);
         } else if (m_mode.equals(Direction.OUT_CURSOR.name()) || m_mode.equals(JPA_PARAMETER_REF_CURSOR)) {
-            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
-            
             if (callByIndex) {
                 call.useUnnamedCursorOutputAsResultSet(index);
             } else {
                 call.useNamedCursorOutputAsResultSet(m_queryParameter);
-                call.setCursorOrdinalPosition(m_queryParameter, index);
-            }
-            
-            // There are multiple cursor output parameters, then do not use the 
-            // cursor as the result set. This will be set to true in the calls
-            // above so we must do the multiple cursor call before hand.
-            if (multipleCursors) {
-                call.setIsMultipleCursorOutputProcedure(true);
-                call.setIsCursorOutputProcedure(false);
             }
         }
     }
