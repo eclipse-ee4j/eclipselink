@@ -833,5 +833,9 @@ public abstract class MarshalRecord extends XMLRecord {
         }
 
     }
-    
+
+    public boolean isWrapperAsCollectionName() {
+        return false;
+    }
+
 }

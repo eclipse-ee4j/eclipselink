@@ -113,6 +113,7 @@ public class XMLMarshaller implements Cloneable {
     private boolean marshalEmptyCollections;
     private boolean reduceAnyArrays;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
+    private boolean wrapperAsCollectionName;
     
     private NamespacePrefixMapper mapper;
     private String indentString;
@@ -1770,7 +1771,21 @@ public class XMLMarshaller implements Cloneable {
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
     }
-    
+
+    /**
+     * @since 2.4.2
+     */
+    public boolean isWrapperAsCollectionName() {
+        return wrapperAsCollectionName;
+    }
+
+    /**
+     * @since 2.4.2
+     */
+    public void setWrapperAsCollectionName(boolean wrapperAsCollectionName) {
+        this.wrapperAsCollectionName = wrapperAsCollectionName;
+    }
+
     /**
      * Name of the property to determine if empty collections should be marshalled as []   
      * Ignored marshalling XML.  

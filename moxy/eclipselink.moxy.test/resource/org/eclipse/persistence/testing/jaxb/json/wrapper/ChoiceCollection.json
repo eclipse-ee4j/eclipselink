@@ -1,0 +1,6 @@
+{
+    "wrapperItems" : {
+        "foo" : ["Hello", "World"],
+        "bar" : [123, 456]
+    }
+}

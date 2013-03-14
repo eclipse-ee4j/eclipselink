@@ -139,6 +139,11 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         return super.isOwningNode(xPathFragment);
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return true;
+    }
+
     public boolean isContainerValue() {
         return true;
     }

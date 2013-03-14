@@ -137,6 +137,7 @@ public class XMLUnmarshaller implements Cloneable {
     private boolean includeRoot = true;
     private NamespaceResolver namespaceResolver;    
     private boolean autoDetectMediaType = false;
+    private boolean wrapperAsCollectionName = false;
 
     static {
         try {
@@ -724,7 +725,21 @@ public class XMLUnmarshaller implements Cloneable {
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
     }
-        
+
+    /**
+     * @since 2.4.2
+     */
+    public boolean isWrapperAsCollectionName() {
+        return wrapperAsCollectionName;
+    }
+
+    /**
+     * since 2.4.2
+     */
+    public void setWrapperAsCollectionName(boolean wrapperAsCollectionName) {
+        this.wrapperAsCollectionName = wrapperAsCollectionName;
+    }
+
     /**
      * Get the namespace separator used during unmarshal operations.
      * If mediaType is application/json '.' is the default

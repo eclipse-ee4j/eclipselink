@@ -794,6 +794,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         	}else {
                     setIDResolver(new IDResolverWrapper(value));
         	}
+        } else if (UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+            xmlUnmarshaller.setWrapperAsCollectionName((Boolean) value);
         } else {
             throw new PropertyException(key, value);
         }
@@ -847,6 +849,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             	return null;
             }
             return wrapper.getResolver();
+        } else if (UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+            return xmlUnmarshaller.isWrapperAsCollectionName();
         }
         throw new PropertyException(key);
     }

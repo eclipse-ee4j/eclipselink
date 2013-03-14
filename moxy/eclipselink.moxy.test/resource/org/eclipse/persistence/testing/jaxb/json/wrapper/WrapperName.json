@@ -1,0 +1,15 @@
+{
+   "strings" : [ "FOO", "BAR" ],
+   "employees" : [ {
+      "phoneNumbers" : [ "A", "B" ]
+   }, {
+      "phoneNumbers" : [ "B", "C" ]
+   } ],
+   "phone-numbers" : [ {
+      "id" : "A"
+   }, {
+      "id" : "B"
+   }, {
+      "id" : "C"
+   } ]
+}

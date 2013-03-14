@@ -47,6 +47,11 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
         return true;
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }

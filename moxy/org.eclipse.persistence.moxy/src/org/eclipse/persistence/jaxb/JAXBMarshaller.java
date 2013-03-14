@@ -281,6 +281,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getValueWrapper(); 
         } else if (MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)) {
             return xmlMarshaller.getNamespaceSeparator();
+        } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+            return xmlMarshaller.isWrapperAsCollectionName();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
                 CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
@@ -728,7 +730,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)){
             	xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
             } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)){
-            	xmlMarshaller.setReduceAnyArrays((Boolean) value);
+                xmlMarshaller.setReduceAnyArrays((Boolean) value);
+            } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+                xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
             } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
             } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {

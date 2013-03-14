@@ -32,7 +32,6 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.oxm.XMLRoot;
 
 import org.xml.sax.Attributes;

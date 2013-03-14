@@ -361,4 +361,9 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         return xmlCompositeCollectionMapping.isDefaultEmptyContainer();
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return true;
+    }
+
 }

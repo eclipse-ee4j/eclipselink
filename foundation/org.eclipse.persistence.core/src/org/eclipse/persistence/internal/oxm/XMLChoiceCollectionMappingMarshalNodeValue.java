@@ -390,6 +390,11 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         return false;
     }
 
+    @Override
+    public boolean isWrapperAllowedAsCollectionName() {
+        return false;
+    }
+
     public Object getContainerInstance() {
         return getContainerPolicy().containerInstance();
     }
