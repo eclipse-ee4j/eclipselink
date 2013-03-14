@@ -25,6 +25,8 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.xml.bind.annotation.XmlElement;
+
 public class ListofObjects {
 	public List<Employee> empList;
 	public TreeSet<Employee> empTreeSet;
@@ -34,7 +36,11 @@ public class ListofObjects {
 	public Integer[] integerArray;
 	public Float[] floatArray;
 	public int[] intArray;
-	public boolean[] booleanArray;
+	
+	@XmlElement(required=false)
+    public int[] intArrayOptional;	
+
+    public boolean[] booleanArray;
 	public Map<String, Integer> stringIntegerHashMap;
 	public LinkedList<Integer> integerLinkedList;
 	public Hashtable<String, Employee> stringEmployeeHashtable;	

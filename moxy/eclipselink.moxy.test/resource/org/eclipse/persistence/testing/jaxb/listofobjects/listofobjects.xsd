@@ -10,6 +10,7 @@
          <xsd:element name="integerArray" type="xsd:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="floatArray" type="xsd:float" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="intArray" type="xsd:int" nillable="true" maxOccurs="unbounded"/>
+         <xsd:element name="intArrayOptional" type="xsd:int" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="booleanArray" type="xsd:boolean" nillable="true" maxOccurs="unbounded"/>
          <xsd:element name="stringIntegerHashMap" minOccurs="0">
             <xsd:complexType>

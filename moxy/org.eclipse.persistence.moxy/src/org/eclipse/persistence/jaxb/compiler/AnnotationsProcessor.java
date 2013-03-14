@@ -2047,7 +2047,12 @@ public class AnnotationsProcessor {
 
         ptype = property.getActualType();
         if (ptype.isPrimitive()) {
-            property.setIsRequired(true);
+            if (property.getType().isArray() && helper.isAnnotationPresent(javaHasAnnotations, XmlElement.class)) {
+                XmlElement elemAnno = (XmlElement) helper.getAnnotation(javaHasAnnotations, XmlElement.class);
+                property.setIsRequired(elemAnno.required());
+            } else {
+                property.setIsRequired(true);
+            }
         }
 
         // apply class level adapters - don't override property level adapter
