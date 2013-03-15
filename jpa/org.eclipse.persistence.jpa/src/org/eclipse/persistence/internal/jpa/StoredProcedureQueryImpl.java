@@ -803,8 +803,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             call.addNamedArgument(parameterName, parameterName, type);
         } else if (mode.equals(ParameterMode.OUT)) {
             call.addNamedOutputArgument(parameterName, parameterName, type);
+            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
+            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             call.useNamedCursorOutputAsResultSet(parameterName);
         }
