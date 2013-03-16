@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This expression represents a logical expression, which means the first and second expressions are
  * aggregated with either <b>AND</b> or <b>OR</b>.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

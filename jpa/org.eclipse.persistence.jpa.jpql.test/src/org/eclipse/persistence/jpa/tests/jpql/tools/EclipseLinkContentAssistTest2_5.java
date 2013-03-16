@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.tests.jpql.EclipseLinkVersionTools;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -358,7 +359,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 		proposals.add(SCN);
 		proposals.add(TIMESTAMP);
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -371,7 +372,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -400,7 +401,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -437,7 +438,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -530,7 +531,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -623,7 +624,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.collectionValuedPathExpressionFunctions());
 
 		testHasTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -636,7 +637,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("k");
-		addAll(proposals, filter(bnfAccessor.collectionValuedPathExpressionFunctions(), "K"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.collectionValuedPathExpressionFunctions(), "K"));
 
 		testHasTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -649,7 +650,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -661,7 +662,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "C"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "C"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -673,7 +674,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "O"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "O"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -685,8 +686,8 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, fromClauseInternalClauses(CONNECT_BY));
-		addAll(proposals, clauses(FROM, null, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(CONNECT_BY));
+		CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -699,7 +700,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -711,8 +712,8 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(fromClauseInternalClauses(CONNECT_BY), "O"));
-		addAll(proposals, filter(clauses(FROM, null, false), "O"));
+		CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(CONNECT_BY), "O"));
+		CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "O"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -855,7 +856,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -948,7 +949,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.arithmeticTermFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.arithmeticTermFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}

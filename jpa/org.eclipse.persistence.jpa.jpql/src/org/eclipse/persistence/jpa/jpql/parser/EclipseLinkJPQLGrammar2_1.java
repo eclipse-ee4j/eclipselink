@@ -34,6 +34,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * between_expression ::= scalar_expression [NOT] BETWEEN scalar_expression AND scalar_expression
  *
+ * in_expression ::= in_expression_expression [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }
+ *
+ * in_expression_expression ::= { state_field_path_expression | type_discriminator |
+ *                                single_valued_input_parameter | identification_variable |
+ *                                scalar_expression }
+ *
  * in_item ::= literal | single_valued_input_parameter | scalar_expression
  *
  * scalar_expression ::= arithmetic_expression |
@@ -193,6 +199,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		// Extend to support scalarOrSubSelectExpression
 		addChildBNF(InternalBetweenExpressionBNF.ID,           ScalarExpressionBNF.ID);
 		addChildBNF(InternalBetweenExpressionBNF.ID,           ArithmeticExpressionBNF.ID);
+		addChildBNF(InExpressionExpressionBNF.ID,              ScalarExpressionBNF.ID);
 		addChildBNF(InExpressionItemBNF.ID,                    ScalarExpressionBNF.ID);
 		addChildBNF(InExpressionItemBNF.ID,                    ArithmeticExpressionBNF.ID);
 		addChildBNF(PatternValueBNF.ID,                        ScalarExpressionBNF.ID);

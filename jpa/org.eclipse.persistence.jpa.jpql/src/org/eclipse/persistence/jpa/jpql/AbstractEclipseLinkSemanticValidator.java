@@ -623,7 +623,7 @@ public class AbstractEclipseLinkSemanticValidator extends AbstractSemanticValida
 
 			// Derived path is not allowed, this could although be a fully
 			// qualified class name, which was added to EclipseLink 2.4
-			EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+			EclipseLinkVersion version = EclipseLinkVersion.value(getProviderVersion());
 			valid = version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 
 			if (valid) {

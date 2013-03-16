@@ -198,7 +198,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -224,7 +224,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -237,7 +237,7 @@ public abstract class AbstractContentAssistExtensionTest extends ContentAssistTe
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}

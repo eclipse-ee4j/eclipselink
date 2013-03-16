@@ -215,17 +215,15 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 
 		// Parsing the join expressions
 		if (parsingJoinExpression) {
-
-			return !word.equalsIgnoreCase(INNER) &&
-			       !word.equalsIgnoreCase(JOIN)  &&
+			return !word.equalsIgnoreCase(JOIN)  &&
+			       !word.equalsIgnoreCase(INNER) &&
 			       !word.equalsIgnoreCase(OUTER) &&
-			       !word.equalsIgnoreCase(LEFT)  &&
-			       super.isParsingComplete(wordParser, word, expression);
+			       !word.equalsIgnoreCase(LEFT);
 		}
 
 		// Parsing the range variable declaration
-		return word.equalsIgnoreCase(INNER) ||
-		       word.equalsIgnoreCase(JOIN)  ||
+		return word.equalsIgnoreCase(JOIN)  ||
+		       word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(LEFT)  ||
 		       word.equalsIgnoreCase(OUTER) ||
 		       word.equalsIgnoreCase(IN)    ||

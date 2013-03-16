@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This expression contains a portion of the query that is unknown to the parser. This can happen
  * when the query is malformed or incomplete.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

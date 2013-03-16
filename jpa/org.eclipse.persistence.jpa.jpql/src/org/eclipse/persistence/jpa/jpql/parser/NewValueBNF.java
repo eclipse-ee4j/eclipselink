@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>new_value ::= scalar_expression | simple_entity_expression | NULL</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

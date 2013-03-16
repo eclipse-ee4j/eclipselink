@@ -359,7 +359,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
-		EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		EclipseLinkVersion version = EclipseLinkVersion.value(getProviderVersion());
 		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 	}
 

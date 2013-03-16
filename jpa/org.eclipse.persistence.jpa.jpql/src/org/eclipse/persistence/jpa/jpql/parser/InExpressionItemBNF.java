@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div nowrap><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* ) | (subquery) | collection_valued_input_parameter</code><p>
  * <div nowrap><b>BNF:</b> <code>actual_in_item ::= literal | input_parameter
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

@@ -227,8 +227,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -283,8 +283,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -318,7 +318,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, entityNames());
 
 		testDoesNotHaveTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -331,8 +331,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -345,8 +345,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -359,8 +359,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -372,8 +372,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(fromClauseInternalClauses(FROM), "J"));
-		addAll(proposals, filter(clauses(FROM, null, false), "J"));
+		CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "J"));
+		CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "J"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -385,8 +385,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(fromClauseInternalClauses(FROM), "e"));
-		addAll(proposals, filter(clauses(FROM, null, false), "e"));
+		CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "e"));
+		CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -604,7 +604,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -618,7 +618,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -631,7 +631,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -686,7 +686,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -699,7 +699,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -711,7 +711,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -725,7 +725,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -738,7 +738,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -765,7 +765,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -786,7 +786,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -799,7 +799,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1280,7 +1280,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
+		CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1292,7 +1292,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
+		CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1304,7 +1304,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
+		CollectionTools.addAll(proposals, bnfAccessor.collectionMemberDeclarationParameters());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1424,9 +1424,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, bnfAccessor.comparators());
-		addAll(proposals, bnfAccessor.arithmetics());
-		addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.comparators());
+		CollectionTools.addAll(proposals, bnfAccessor.arithmetics());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
 		// These are filtered out
 		proposals.remove(IS_EMPTY);
@@ -1442,8 +1442,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
-		addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
 		// These are filtered out
 		proposals.remove(AND);
@@ -1463,7 +1463,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1499,8 +1499,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		proposals.add(SELECT);
-		addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalConcatExpressionClauses());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1512,8 +1512,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, (S".length();
 
 		List<String> proposals = new ArrayList<String>();
-		proposals.add(SELECT);
-		addAll(proposals, filter(bnfAccessor.internalConcatExpressionFunctions(), "S"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalConcatExpressionFunctions(), "S"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalConcatExpressionClauses(), "S"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1567,7 +1567,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.constructorItemFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.constructorItemFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1580,7 +1580,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1620,7 +1620,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("c");
-		addAll(proposals, bnfAccessor.constructorItemFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.constructorItemFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1632,7 +1632,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("c");
-		addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "c"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.constructorItemFunctions(), "c"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1736,7 +1736,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1750,7 +1750,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1763,7 +1763,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1818,7 +1818,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1831,7 +1831,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1844,7 +1844,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1857,7 +1857,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1870,7 +1870,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1883,7 +1883,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1896,7 +1896,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "emp"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "emp"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1909,7 +1909,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1922,7 +1922,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "em"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1935,7 +1935,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.countFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.countFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1948,7 +1948,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.countFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -2796,11 +2796,11 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 					String filter = identifier.substring(0, positionIndex);
 
 					List<String> proposals = new ArrayList<String>();
-					addAll(proposals, filter(functionProposals(), filter));
+					CollectionTools.addAll(proposals, filter(functionProposals(), filter));
 					CollectionTools.addAll(proposals, filter(new String[] { "e" }, filter));
 
 					if (subqueryAllowed) {
-						addAll(proposals, filter(new String[] { SELECT }, filter));
+						CollectionTools.addAll(proposals, filter(new String[] { SELECT }, filter));
 					}
 
 					tweaker.tweak(proposals, identifier, identifierFragment, positionIndex);
@@ -3438,8 +3438,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, fromClauseInternalClauses(FROM));
-		addAll(proposals, clauses(FROM, null, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
+		CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -3460,18 +3460,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_Join_38() {
-
 		String jpqlQuery = "SELECT o from Countries o JOIN o.locationsList e LEFT ";
 		int position = jpqlQuery.length();
-
-		testHasOnlyTheseProposals(
-			jpqlQuery,
-			position,
-			LEFT_JOIN,
-			LEFT_JOIN_FETCH,
-			LEFT_OUTER_JOIN,
-			LEFT_OUTER_JOIN_FETCH
-		);
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(joinIdentifiers(), "LEFT "));
 	}
 
 	@Test
@@ -3777,7 +3768,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(AND);
 		proposals.add(OR);
-		addAll(proposals, clauses(WHERE, null, false));
+		CollectionTools.addAll(proposals, clauses(WHERE, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4028,7 +4019,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4042,7 +4033,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4055,7 +4046,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4110,7 +4101,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4123,7 +4114,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4136,7 +4127,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4150,7 +4141,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4163,7 +4154,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4190,7 +4181,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4211,7 +4202,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4224,7 +4215,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4265,7 +4256,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4279,7 +4270,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4292,7 +4283,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4347,7 +4338,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4360,7 +4351,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4373,7 +4364,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4387,7 +4378,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4400,7 +4391,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4427,7 +4418,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4448,7 +4439,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4461,7 +4452,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4654,8 +4645,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, fromClauseInternalClauses(FROM));
-		addAll(proposals, clauses(FROM, null, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
+		CollectionTools.addAll(proposals, clauses(FROM, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4667,8 +4658,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT e FROM Employee e ".length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, fromClauseInternalClauses(FROM));
-		addAll(proposals, clauses(FROM, ORDER_BY, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
+		CollectionTools.addAll(proposals, clauses(FROM, ORDER_BY, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4681,8 +4672,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(ORDER_BY);
-		addAll(proposals, fromClauseInternalClauses(FROM));
-		addAll(proposals, clauses(FROM, ORDER_BY, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
+		CollectionTools.addAll(proposals, clauses(FROM, ORDER_BY, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4694,8 +4685,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT e FROM Employee e ".length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, fromClauseInternalClauses(FROM));
-		addAll(proposals, clauses(FROM, HAVING, false));
+		CollectionTools.addAll(proposals, fromClauseInternalClauses(FROM));
+		CollectionTools.addAll(proposals, clauses(FROM, HAVING, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4709,7 +4700,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(AND);
 		proposals.add(OR);
-		addAll(proposals, clauses(WHERE, null, false));
+		CollectionTools.addAll(proposals, clauses(WHERE, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4721,8 +4712,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(fromClauseInternalClauses(FROM), "A"));
-		addAll(proposals, filter(clauses(FROM, null, false), "A"));
+		CollectionTools.addAll(proposals, filter(fromClauseInternalClauses(FROM), "A"));
+		CollectionTools.addAll(proposals, filter(clauses(FROM, null, false), "A"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -4999,7 +4990,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5010,10 +5001,10 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT AVG(e".length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		List<String> selectProposals = new ArrayList<String>();
-		addAll(selectProposals, filter(bnfAccessor.selectItemIdentifiers(), "e"));
+		CollectionTools.addAll(selectProposals, filter(bnfAccessor.selectItemIdentifiers(), "e"));
 		selectProposals.removeAll(proposals);
 
 		testDoesNotHaveTheseProposals(jpqlQuery, position, selectProposals);
@@ -5040,7 +5031,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.selectItemFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5052,7 +5043,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(bnfAccessor.selectItemFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.selectItemFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5065,7 +5056,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.selectItemFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5100,7 +5091,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(AS);
 		proposals.add(FROM);
-		addAll(proposals, bnfAccessor.selectItemAggregates());
+		CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5122,7 +5113,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("o");
-		addAll(proposals, bnfAccessor.selectItemFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.selectItemFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5274,8 +5265,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.comparisonExpressionFunctions());
-		addAll(proposals, bnfAccessor.comparisonExpressionClauses());
+		CollectionTools.addAll(proposals, bnfAccessor.comparisonExpressionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.comparisonExpressionClauses());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5344,7 +5335,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(FROM);
-		addAll(proposals, bnfAccessor.selectItemAggregates());
+		CollectionTools.addAll(proposals, bnfAccessor.selectItemAggregates());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5366,7 +5357,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("s");
 		proposals.add(SELECT);
-		addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "s"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "s"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5380,7 +5371,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(SELECT);
-		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5511,7 +5502,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5525,7 +5516,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5538,7 +5529,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5593,7 +5584,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5606,7 +5597,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5619,7 +5610,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5633,7 +5624,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5646,7 +5637,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5673,7 +5664,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5694,7 +5685,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
+		CollectionTools.addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5707,7 +5698,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
-		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
+		CollectionTools.addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}

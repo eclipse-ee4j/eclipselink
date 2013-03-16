@@ -226,6 +226,10 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(InternalAggregateFunctionBNF.ID);
 	}
 
+	public Iterable<String> internalConcatExpressionClauses() {
+		return clauses(internalConcatExpressionIdentifiers());
+	}
+
 	public Iterable<String> internalConcatExpressionFunctions() {
 		return functions(internalConcatExpressionIdentifiers());
 	}

@@ -291,12 +291,10 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * Adds the given range identification variable that is mapping the given abstract schema type.
 	 *
 	 * @param identificationVariable The range identification variable mapping the abstract schema name
-	 * @param abstractSchemaType The abstract type name that identifies the type of the variable
+	 * @param entity The abstract type name that identifies the type of the variable
 	 */
-	public void addRangeIdentificationVariable(String identificationVariable,
-	                                           IEntity abstractSchemaType) {
-
-		rangeIdentificationVariables.put(identificationVariable, abstractSchemaType);
+	public void addRangeIdentificationVariable(String identificationVariable, IEntity entity) {
+		rangeIdentificationVariables.put(identificationVariable, entity);
 	}
 
 	/**
@@ -721,6 +719,11 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		return new SnapshotCloneIterable<IMapping>(mappings);
 	}
 
+	/**
+	 * Removes the given JPQL identifier.
+	 *
+	 * @param identifier The identifier that was added but actually needs to be removed
+	 */
 	protected void removeIdentifier(String identifier) {
 		identifiers.remove(identifier);
 	}

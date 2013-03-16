@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
-public class BetweenExpression extends AbstractExpression {
+public final class BetweenExpression extends AbstractExpression {
 
 	/**
 	 * The actual <b>AND</b> identifier found in the string representation of the JPQL query.
@@ -199,7 +199,7 @@ public class BetweenExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the actual found in the string representation of the JPQL query, which has the actual
+	 * Returns the actual identifier found in the string representation of the JPQL query, which has the actual
 	 * case that was used.
 	 *
 	 * @return The identifier that was actually parsed

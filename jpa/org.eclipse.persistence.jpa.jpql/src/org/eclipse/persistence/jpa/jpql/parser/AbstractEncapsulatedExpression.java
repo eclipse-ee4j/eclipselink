@@ -160,11 +160,6 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-		// Parsing is only complete when the character is ')'
-//		if (!tolerant) {
-//			return false;
-//		}
-
 		if (wordParser.startsWith(RIGHT_PARENTHESIS) ||
 		    word.equalsIgnoreCase(WHEN)              ||
 		    word.equalsIgnoreCase(SET)               ||

@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
 import org.eclipse.persistence.jpa.jpql.tools.ResultQuery;
+import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.junit.Test;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
@@ -342,8 +343,8 @@ public final class EclipseLinkContentAssistExtensionTest extends AbstractContent
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
-		addAll(proposals, entityNames());
-		addAll(proposals, classNames());
+		CollectionTools.addAll(proposals, entityNames());
+		CollectionTools.addAll(proposals, classNames());
 
 		testHasTheseProposals(jpqlQuery, position, proposals);
 	}

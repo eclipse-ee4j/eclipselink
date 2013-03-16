@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see MultiplicationExpression
  * @see SubtractionExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

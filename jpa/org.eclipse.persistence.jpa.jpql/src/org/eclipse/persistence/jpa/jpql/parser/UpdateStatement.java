@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see UpdateClause
  * @see WhereClause
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

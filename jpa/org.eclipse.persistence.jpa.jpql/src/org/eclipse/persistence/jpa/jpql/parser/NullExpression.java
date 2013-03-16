@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A <code>null</code> {@link Expression} is used instead of a true <code>null</code>, which allows
  * operations to be performed without doing a <code>null</code> check first.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

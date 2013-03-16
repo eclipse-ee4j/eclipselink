@@ -66,13 +66,6 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return null;
 	}
 
-	protected final <T extends Collection<String>> T addAll(T items1, Iterable<String> items2) {
-		for (String item2 : items2) {
-			items1.add(item2);
-		}
-		return items1;
-	}
-
 	protected final void addIdentifiers(List<String> identifiers, String... expressionFactoryIds) {
 
 		ExpressionRegistry registry = getGrammar().getExpressionRegistry();
@@ -107,7 +100,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
 		// In case the Iterable is read-only
 		List<String> expectedProposals = new ArrayList<String>();
-		addAll(expectedProposals, proposals);
+		CollectionTools.addAll(expectedProposals, proposals);
 
 		ContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
 		List<String> unexpectedProposals = new ArrayList<String>();
@@ -361,8 +354,8 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 
 	protected final Iterable<String> relationshipAndCollectionFieldNames(Class<?> persistentType) throws Exception {
 		Set<String> uniqueNames = new HashSet<String>();
-		addAll(uniqueNames, relationshipFieldNames(persistentType));
-		addAll(uniqueNames, collectionValuedFieldNames(persistentType));
+		CollectionTools.addAll(uniqueNames, relationshipFieldNames(persistentType));
+		CollectionTools.addAll(uniqueNames, collectionValuedFieldNames(persistentType));
 		return uniqueNames;
 	}
 

@@ -101,6 +101,20 @@ public final class WordParser {
 	}
 
 	/**
+	 * Determines whether the query ends with the given suffix and the end position is the end of the
+	 * range for testing. The case of the character is ignored.
+	 *
+	 * @param endPosition The position where the check stops
+	 * @param suffix The suffix is the text that is used to match it with the substring within the text
+	 * @return <code>true</code> if the character sequence represented by the argument is a suffix of
+	 * the query; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public boolean endsWithIgnoreCase(int endPosition, String suffix) {
+		return startsWithIgnoreCase(suffix, endPosition - suffix.length());
+	}
+
+	/**
 	 * Retrieves a word starting at the current position. The text before and after the position will
 	 * be part of the returned value.
 	 * <p>
@@ -732,8 +746,7 @@ public final class WordParser {
 	}
 
 	/**
-	 * Determines whether the text starts with the given character. The case of the character is
-	 * ignored.
+	 * Determines whether the text starts with the given character. The case of the character is ignored.
 	 *
 	 * @param possibleCharacter The possible character at the current position
 	 * @return <code>true</code> if the text starts with the given character at the current position;
@@ -748,9 +761,9 @@ public final class WordParser {
 	}
 
 	/**
-	 * Tests if the string starts with the specified prefix.
+	 * Tests if the string starts with the specified prefix. The case of the character is ignored.
 	 *
-	 * @param prefix The prefix
+	 * @param prefix The prefix to test against
 	 * @return <code>true</code> if the character sequence represented by the argument is a prefix of
 	 * the character sequence represented by this string; <code>false</code> otherwise. Note also
 	 * that <code>true</code> will be returned if the argument is an empty string or is equal to this
@@ -761,9 +774,9 @@ public final class WordParser {
 	}
 
 	/**
-	 * Tests if the string starts with the specified prefix.
+	 * Tests if the string starts with the specified prefix. The case of the character is ignored.
 	 *
-	 * @param prefix The prefix
+	 * @param prefix The prefix to test against
 	 * @param offset Where to begin looking in this string
 	 * @return <code>true</code> if the character sequence represented by the argument is a prefix of
 	 * the character sequence represented by this string; <code>false</code> otherwise

@@ -787,6 +787,16 @@ public interface Expression {
 	ListIterable<Expression> children();
 
 	/**
+	 * Retrieves the {@link JPQLQueryBNF} that represents the fragment of this {@link Expression}
+	 * that was used when parsing the given {@link Expression}.
+	 *
+	 * @param expression The {@link Expression} that is a descendant of this one
+	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
+	 * @since 2.5
+	 */
+	JPQLQueryBNF findQueryBNF(Expression expression);
+
+	/**
 	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
 	 *
 	 * @return The {@link JPQLGrammar} that was used to parse this {@link Expression}

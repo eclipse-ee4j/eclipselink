@@ -432,10 +432,7 @@ public abstract class AbstractExpression implements Expression {
 	}
 
 	/**
-	 * Retrieves the {@link JPQLQueryBNF} that was used to parse the given {@link Expression}.
-	 *
-	 * @param expression The {@link Expression} for which its BNF is needed
-	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
+	 * {@inheritDoc}
 	 */
 	public JPQLQueryBNF findQueryBNF(Expression expression) {
 		return getQueryBNF();
@@ -624,7 +621,6 @@ public abstract class AbstractExpression implements Expression {
 		       wordParser.startsWithIdentifier(START_WITH)        ||
 		       wordParser.startsWithIdentifier(CONNECT_BY)        ||
 		       wordParser.startsWithIdentifier(ORDER_SIBLINGS_BY) ||
-		       word.equalsIgnoreCase(UNION)                       ||
 		       word.equalsIgnoreCase(UNION)                       ||
 		       word.equalsIgnoreCase(INTERSECT)                   ||
 		       word.equalsIgnoreCase(EXCEPT);

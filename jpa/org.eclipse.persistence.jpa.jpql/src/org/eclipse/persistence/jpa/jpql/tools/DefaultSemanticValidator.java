@@ -401,10 +401,10 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		try {
 			JPQLQueryBNF childQueryBNF = expression.getParent().findQueryBNF(expression);
 			validator.validate(childQueryBNF);
-			return validator.valid;
+			return validator.isValid();
 		}
 		finally {
-			validator.valid = false;
+			validator.dispose();
 		}
 	}
 

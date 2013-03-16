@@ -107,7 +107,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(AbsExpression expression) {
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -115,7 +115,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(ArithmeticFactor expression) {
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -123,7 +123,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(AvgFunction expression) {
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -131,7 +131,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(ConcatExpression expression) {
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -139,7 +139,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(LengthExpression expression) {
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -148,7 +148,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		@Override
 		public void visit(LocateExpression expression) {
 			// TODO: Handle the position
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -156,7 +156,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(LowerExpression expression) {
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -165,7 +165,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		@Override
 		public void visit(ModExpression expression) {
 			// In theory we would only allow Long and Integer
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -173,7 +173,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(SqrtExpression expression) {
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -182,7 +182,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		@Override
 		public void visit(SubstringExpression expression) {
 			// TODO: Handle the position
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -190,7 +190,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(SumFunction expression) {
-			type = getType(Number.class);
+			type = queryContext.getType(Number.class);
 		}
 
 		/**
@@ -198,7 +198,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(TrimExpression expression) {
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 
 		/**
@@ -206,7 +206,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 		 */
 		@Override
 		public void visit(UpperExpression expression) {
-			type = getType(CharSequence.class);
+			type = queryContext.getType(CharSequence.class);
 		}
 	}
 }

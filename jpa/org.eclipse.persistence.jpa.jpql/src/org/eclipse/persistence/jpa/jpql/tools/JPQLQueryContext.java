@@ -538,6 +538,17 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
+	 * Returns the version of the persistence provider.
+	 *
+	 * @return The version of the persistence provider, if one is extending the default JPQL grammar
+	 * defined in the Java Persistence specification, otherwise returns an empty string
+	 * @since 2.5
+	 */
+	public String getProviderVersion() {
+		return jpqlGrammar.getProviderVersion();
+	}
+
+	/**
 	 * Returns the external form of the JPQL query.
 	 *
 	 * @return The external form of the JPQL query

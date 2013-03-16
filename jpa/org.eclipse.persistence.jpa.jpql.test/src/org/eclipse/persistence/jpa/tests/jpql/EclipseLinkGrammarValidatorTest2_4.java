@@ -1243,7 +1243,7 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_1)) {
 			testHasNoProblems(problems);
 		}
 		else {

@@ -14,7 +14,8 @@
 package org.eclipse.persistence.jpa.tests.jpql.tools;
 
 import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.tools.DefaultJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.tools.DefaultJPQLQueryHelper;
@@ -27,7 +28,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * The suite related to testing content assist.
+ * This class defines the JPQL content assist unit-tests.
  *
  * @version 2.5
  * @since 2.4
@@ -51,14 +52,19 @@ public final class AllContentAssistTests {
 			super();
 		}
 
-		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new DefaultJPQLQueryContext(DefaultJPQLGrammar.instance());
+		private static JPQLQueryContext buildJPQLQueryContext2_0() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_1() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_1.instance());
 		}
 
 		@JPQLQueryHelperTestHelper
 		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
 			return new AbstractJPQLQueryHelper[] {
-				new DefaultJPQLQueryHelper(buildJPQLQueryContext())
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_0()),
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_1())
 			};
 		}
 	}

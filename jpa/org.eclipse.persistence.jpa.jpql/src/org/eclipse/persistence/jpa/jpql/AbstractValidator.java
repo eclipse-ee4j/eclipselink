@@ -877,7 +877,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 *
 		 */
-		public boolean bypassCompound;
+		protected boolean bypassCompound;
 
 		/**
 		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
@@ -888,7 +888,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
 		 * used for validation.
 		 */
-		public boolean valid;
+		protected boolean valid;
 
 		/**
 		 * Creates a new <code>JPQLQueryBNFValidator</code>.
@@ -906,6 +906,33 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
 				}
 			}
+		}
+
+		/**
+		 * Disposes of the internal data.
+		 */
+		public void dispose() {
+			valid = false;
+			bypassCompound = false;
+		}
+
+		/**
+		 * Determines whether the visited {@link Expression} is valid or not based on the {@link
+		 * JPQLQueryBNF} that was specified.
+		 *
+		 * @return <code>true</code> if the {@link Expression} is valid; <code>false</code> otherwise
+		 */
+		public boolean isValid() {
+			return valid;
+		}
+
+		/**
+		 * Sets
+		 *
+		 * @param bypassCompound
+		 */
+		public void setBypassCompound(boolean bypassCompound) {
+			this.bypassCompound = bypassCompound;
 		}
 
 		/**

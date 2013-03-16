@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Appropriate suffixes may be used to indicate the specific type of a numeric literal in accordance
  * with the Java Language Specification.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

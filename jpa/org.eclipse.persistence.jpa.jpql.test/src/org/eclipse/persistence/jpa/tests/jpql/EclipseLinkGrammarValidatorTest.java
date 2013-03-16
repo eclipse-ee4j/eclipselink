@@ -127,7 +127,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
-		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_5)) {
+		if (isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_1)) {
 			testHasNoProblems(problems);
 		}
 		else {

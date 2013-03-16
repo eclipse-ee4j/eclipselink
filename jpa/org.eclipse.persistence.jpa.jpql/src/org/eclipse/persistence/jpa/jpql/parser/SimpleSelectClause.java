@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * @see AbstractSelectClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */

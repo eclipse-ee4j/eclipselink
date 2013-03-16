@@ -288,7 +288,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"IDENTIFICATION_VARIABLE_INVALID_NOT_DECLARED",        "The identification variable ''{0}'' is not defined in the FROM clause."},
 
 			// IdentificationVariableDeclaration - Grammar
-			{"IDENTIFICATION_VARIABLE_DECLARATION_INVALID_JOIN",                       "''{0}'' is not a valid JOIN expression."},
 			{"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA",               "The JOIN expressions cannot end with a comma."},
 			{"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA",                    "JOIN expressions cannot be separated by a comma."},
 			{"IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration must be specified."},

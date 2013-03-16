@@ -79,7 +79,6 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.parser.JoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -2321,6 +2320,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 			// Validate multiple JOIN expression
 			if (children.size() > 1) {
+
 				validateCollectionSeparatedBySpace(
 					joins,
 					IdentificationVariableDeclaration_JoinsEndWithComma,
@@ -2330,21 +2330,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				// Make sure each child is a JOIN expression
 				for (int index = children.size(); --index >= 0; ) {
 					Expression child = children.get(index);
-
-					// The child expression is not a JOIN expression
-					if (!isValid(child, JoinBNF.ID)) {
-						addProblem(child, IdentificationVariableDeclaration_InvalidJoin, child.toActualText());
-					}
-					// Validate the JOIN expression
-					else {
-						child.accept(this);
-					}
+					child.accept(this);
 				}
 			}
 			// Make sure the single expression is a JOIN expression
-			else if (!isValid(joins, JoinBNF.ID)) {
-				addProblem(joins, IdentificationVariableDeclaration_InvalidJoin, joins.toActualText());
-			}
 			// Validate the JOIN expression
 			else {
 				joins.accept(this);

@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-
 /**
  * The <b>ABS</b> function removes the minus sign from a specified argument and returns the absolute
  * value, which is always a positive number or zero.

@@ -101,7 +101,6 @@ public final class ArithmeticFactor extends AbstractExpression {
 
 		if ((this.expression != null) && this.expression.isAncestor(expression)) {
 			return getQueryBNF(ArithmeticPrimaryBNF.ID);
-//			return getParent().findQueryBNF(expression);
 		}
 
 		return super.findQueryBNF(expression);
