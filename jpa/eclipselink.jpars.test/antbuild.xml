@@ -246,6 +246,7 @@
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
         <property name="SERVER_URL" value="http://localhost:8080"/>
+        <property name="JPARS_VERSION" value="v1.0"/>
         <echo message="Server url is ${SERVER_URL}"/>
         <echo message="jpars version is ${JPARS_VERSION}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
