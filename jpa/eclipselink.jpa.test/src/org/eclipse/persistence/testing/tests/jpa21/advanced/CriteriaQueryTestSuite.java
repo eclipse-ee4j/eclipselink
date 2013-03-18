@@ -79,10 +79,11 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdate"));
         suite.addTest(new CriteriaQueryTestSuite("testComplexConditionCaseInCriteriaUpdate"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateEmbeddedField"));
-        //suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateCompareSQL"));
+        suite.addTest(new CriteriaQueryTestSuite("testCriteriaUpdateCompareSQL"));
+        suite.addTest(new CriteriaQueryTestSuite("testReusingCriteriaUpdate"));
         suite.addTest(new CriteriaQueryTestSuite("simpleCriteriaDeleteTest"));
         suite.addTest(new CriteriaQueryTestSuite("testCriteriaDelete"));
-        //suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
+        suite.addTest(new CriteriaQueryTestSuite("testCriteriaDeleteCompareSQL"));
         //Downcast/treat support - needs to be moved so it can use the JPA 2.0 models
         //suite.addTest(CriteriaQueryCastTestSuite.suite());
 
@@ -362,6 +363,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("UPDATE Employee e SET e.firstName = 'CHANGED' where e.firstName is not null");
         String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
+        List baseSQLStrings = query.getDatabaseQuery().getTranslatedSQLStrings(this.getDatabaseSession(),
+                    new org.eclipse.persistence.sessions.DatabaseRecord());
 
         // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
@@ -373,15 +376,75 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
+        List testSQLStrings = testQuery.getDatabaseQuery().getTranslatedSQLStrings(this.getDatabaseSession(),
+                new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
-        if (testSQL == null) {
-            fail("UPDATE Criteria expected: \""+baseSQL+"\" got null with databasecalls: "+testQuery.getDatabaseQuery().getDatasourceCalls());
+        if (testSQL != null) {
+            this.assertEquals("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+                        +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
+        } else {
+            //check list of strings instead
+            boolean pass = true;
+            if (testSQLStrings == null || baseSQLStrings == null || testSQLStrings.size() != baseSQLStrings.size()) {
+                pass = false;
+            } else {
+                List clonedBaseStrings = new java.util.ArrayList(baseSQLStrings);
+                for (String testSQLString: (List<String>)testSQLStrings) {
+                    if (clonedBaseStrings.contains(testSQLString)) {
+                        clonedBaseStrings.remove(testSQLString);
+                    } else {
+                        pass = false;
+                        break;
+                    }
+                }
+                if (clonedBaseStrings.size()!=0) {
+                    pass = false;
+                }
+            }
+            assertTrue("UPDATE Criteria query translated strings did not match JPQL query; criteria generated "
+                    +testSQLStrings +" but JPQL generated "+baseSQLStrings, pass);
         }
+    }
 
-        if (!testSQL.equals(baseSQL)) {
-            fail("UPDATE Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
-                    +testSQL + "\"  but we expected: \""+baseSQL+"\"");
+    //Bug 403518 - reusing CriteriaUpdate qb.createCriteriaUpdate in multiple queries causes duplicate query executions
+    public void testReusingCriteriaUpdate() {
+        if ((getPersistenceUnitServerSession()).getPlatform().isSymfoware()) {
+            getPersistenceUnitServerSession().logMessage("Test simpleUpdate skipped for this platform, "
+                    + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        int nrOfEmps = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e where e.firstName is not null").getSingleResult()).intValue();
+        int nrOfEmpsWLastName = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e where e.lastName is not null").getSingleResult()).intValue();
+
+        // test query "UPDATE Employee e SET e.firstName = 'CHANGED'";
+        CriteriaBuilder qb = em.getCriteriaBuilder();
+        CriteriaUpdate<Employee>cq = qb.createCriteriaUpdate(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        cq.set(root.get("firstName"), "CHANGED");
+        cq.where(qb.isNotNull(root.get("firstName")));
+
+        beginTransaction(em);
+        try {
+            Query q = em.createQuery(cq);
+            int updated = q.executeUpdate();
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
+                    nrOfEmps, updated);
+
+            // check database changes
+            int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
+            assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
+                    nrOfEmps, nr);
+            this.getDatabaseSession().setLogLevel(0);
+            cq.where(qb.isNotNull(root.get("lastName")));
+            q = em.createQuery(cq);
+            int updatedLastNames = q.executeUpdate();
+            assertEquals("simpleCriteriaUpdateTest: wrong number of updated instances",
+                    nrOfEmpsWLastName, updatedLastNames);
+            
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
     }
 
@@ -461,6 +524,8 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         EJBQueryImpl query = (EJBQueryImpl)jpaEM.createQuery("DELETE FROM PhoneNumber phone where phone.owner.firstName is not null");
         String baseSQL = query.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
+        List baseSQLStrings = query.getDatabaseQuery().getTranslatedSQLStrings(this.getDatabaseSession(),
+                new org.eclipse.persistence.sessions.DatabaseRecord());
 
         // test query "Delete Employee e where e.firstName is not null";
         CriteriaBuilder qb = jpaEM.getCriteriaBuilder();
@@ -471,12 +536,35 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
 
         String testSQL = testQuery.getDatabaseQuery().getTranslatedSQLString(this.getDatabaseSession(),
                 new org.eclipse.persistence.sessions.DatabaseRecord());
+        List testSQLStrings = testQuery.getDatabaseQuery().getTranslatedSQLStrings(this.getDatabaseSession(),
+                new org.eclipse.persistence.sessions.DatabaseRecord());
 
         closeEntityManager(em);
-
-        if (!testSQL.equals(baseSQL)) {
-            fail("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
-                    +testSQL + "\"  but we expected: \""+baseSQL+"\"");
+        
+        if (testSQL != null) {
+            this.assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+                        +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
+        } else {
+            //check list of strings instead
+            boolean pass = true;
+            if (testSQLStrings == null || baseSQLStrings == null || testSQLStrings.size() != baseSQLStrings.size()) {
+                pass = false;
+            } else {
+                List clonedBaseStrings = new java.util.ArrayList(baseSQLStrings);
+                for (String testSQLString: (List<String>)testSQLStrings) {
+                    if (clonedBaseStrings.contains(testSQLString)) {
+                        clonedBaseStrings.remove(testSQLString);
+                    } else {
+                        pass = false;
+                        break;
+                    }
+                }
+                if (clonedBaseStrings.size()!=0) {
+                    pass = false;
+                }
+            }
+            assertTrue("Delete Criteria query translated strings did not match JPQL query; criteria generated "
+                    +testSQLStrings +" but JPQL generated "+baseSQLStrings, pass);
         }
     }
     @Override

@@ -44,10 +44,12 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> implements CriteriaUpdate<T>, Serializable {
     protected Root<T> root;
     protected UpdateAllQuery query;
-	
+
     public CriteriaUpdateImpl(Metamodel metamodel, CriteriaBuilderImpl queryBuilder, Class<T> resultType){
-    	super(metamodel, queryBuilder, resultType);
-    	getDatabaseQuery();//initialize the query.
+        super(metamodel, queryBuilder, resultType);
+        //initialize the query.
+        query = new UpdateAllQuery(this.queryType);
+        query.setShouldDeferExecutionInUOW(false);
     }
 
     @Override
@@ -63,14 +65,14 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public Root<T> getRoot() {
-    	if (this.root == null) {
-    	    if (getResultType() !=null) {
-    	        EntityType entity = this.metamodel.entity(this.queryType);
-    	        RootImpl newRoot = new RootImpl(entity, this.metamodel, this.queryType, query.getExpressionBuilder(), entity);
-    	        this.root = newRoot;
-    	    }
-    	}
-    	return this.root;
+        if (this.root == null) {
+            if (getResultType() !=null) {
+                EntityType entity = this.metamodel.entity(this.queryType);
+                RootImpl newRoot = new RootImpl(entity, this.metamodel, this.queryType, query.getExpressionBuilder(), entity);
+                this.root = newRoot;
+            }
+        }
+        return this.root;
     }
 
     @Override
@@ -107,7 +109,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
         query.addUpdate(attributeName, value);
         return this;
     }
-    
+
     @Override
     public CriteriaUpdate<T> where(Expression<Boolean> restriction) {
         return (CriteriaUpdate<T>)super.where(restriction);
@@ -123,16 +125,12 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
             this.root = root;
         }
     }
-    
+
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         return query.getExpressionBuilder();
     }
-    
+
     protected DatabaseQuery getDatabaseQuery() {
-        if (query == null){
-            query = new UpdateAllQuery(this.queryType);
-            query.setShouldDeferExecutionInUOW(false);
-        }
-        return query;
+        return (DatabaseQuery)query.clone();
     }
 }
