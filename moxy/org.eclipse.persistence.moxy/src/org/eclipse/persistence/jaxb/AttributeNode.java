@@ -16,7 +16,7 @@ package org.eclipse.persistence.jaxb;
 /**
  * Represents an AttributeNode of an entity graph.
  */
-public interface AttributeNode<T> {
+public interface AttributeNode {
 
     /*
      * returns the name of the referencing attribute.

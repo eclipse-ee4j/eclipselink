@@ -23,7 +23,7 @@ import java.util.List;
  *            the Class type of the AttributeNode.
  */
 
-public interface SubGraph<T> extends AttributeNode<T> {
+public interface Subgraph extends AttributeNode {
 
     /**
      * Add an AttributeNode attribute to the entity graph.
@@ -33,7 +33,7 @@ public interface SubGraph<T> extends AttributeNode<T> {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public <X> void  addAttributeNodes(String ... attributeName);
+    public void  addAttributeNodes(String ... attributeName);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type. This
@@ -47,7 +47,7 @@ public interface SubGraph<T> extends AttributeNode<T> {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public <X> SubGraph<X> addSubGraph(String attribute);
+    public Subgraph addSubGraph(String attribute);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type with
@@ -62,7 +62,7 @@ public interface SubGraph<T> extends AttributeNode<T> {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public <X> SubGraph<X> addSubGraph(String attribute, Class<X> type);
+    public Subgraph addSubGraph(String attribute, Class type);
 
 
 
@@ -70,7 +70,7 @@ public interface SubGraph<T> extends AttributeNode<T> {
      * returns the attributes of this managed type that are included in the
      * sub-graph
      */
-    public List<AttributeNode<?>> getAttributeNodes();
+    public List<AttributeNode> getAttributeNodes();
 
     /**
      * returns the attribute that references this sub-graph.
@@ -81,5 +81,5 @@ public interface SubGraph<T> extends AttributeNode<T> {
      * returns the type of this sub-graph if it was used to extend a superclass
      * sub-graph definition.
      */
-    public <X> Class<X> getClassType();
+    public Class getClassType();
 }

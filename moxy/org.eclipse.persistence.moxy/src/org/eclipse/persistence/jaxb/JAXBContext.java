@@ -620,9 +620,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         return getXMLContext().createByXPath(parentObject, xPath, namespaceResolver, returnType);
     }
     
-    public <T> ObjectGraph<T> createObjectGraph(Class<T> type) {
+    public ObjectGraph createObjectGraph(Class type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
-        return new ObjectGraphImpl<T>(group);
+        return new ObjectGraphImpl(group);
     }
 
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
