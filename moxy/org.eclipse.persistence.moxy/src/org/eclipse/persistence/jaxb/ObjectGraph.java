@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @since EclipseLink 2.5
  */
-public interface ObjectGraph<T> {
+public interface ObjectGraph {
     /**
      * Returns the name of the static EntityGraph.  Will return null if the
      * EntityGraph is not a named EntityGraph.
@@ -41,7 +41,7 @@ public interface ObjectGraph<T> {
      * @throws IllegalStateException if this EntityGraph has been statically
      * defined
      */
-    public <X> void addAttributeNodes(String ... attributeName);
+    public void addAttributeNodes(String ... attributeName);
 
 
     /*
@@ -57,7 +57,7 @@ public interface ObjectGraph<T> {
      * @throws IllegalStateException if this EntityGraph has been statically
      * defined
      */
-    public <X> SubGraph<X> addSubGraph(String attribute);
+    public Subgraph addSubGraph(String attribute);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type with
@@ -72,13 +72,13 @@ public interface ObjectGraph<T> {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public <X> SubGraph<X> addSubGraph(String attribute, Class<X> type);
+    public Subgraph addSubGraph(String attribute, Class type);
 
     /*
      * returns the attributes of this entity that are included in the entity
      * graph
      */
-    public List<AttributeNode<?>> getAttributeNodes();
+    public List<AttributeNode> getAttributeNodes();
 
 }
 

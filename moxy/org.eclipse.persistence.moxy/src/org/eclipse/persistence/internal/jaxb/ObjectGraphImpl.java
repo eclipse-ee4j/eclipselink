@@ -8,9 +8,9 @@ import java.util.Map;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.jaxb.AttributeNode;
 import org.eclipse.persistence.jaxb.ObjectGraph;
-import org.eclipse.persistence.jaxb.SubGraph;
+import org.eclipse.persistence.jaxb.Subgraph;
 
-public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGraph<X>, SubGraph<X>{
+public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, Subgraph {
 
     private CoreAttributeGroup attributeGroup;
     private Map<String, AttributeNode> attributeNodes;
@@ -21,7 +21,7 @@ public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGr
         this.attributeGroup = group;
         this.attributeNodes = new HashMap<String, AttributeNode>();
     }
-    public <X> Class<X> getClassType() {
+    public Class getClassType() {
         return attributeGroup.getType();
     }
 
@@ -29,7 +29,7 @@ public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGr
         return attributeGroup.getName();
     }
 
-    public <X> void addAttributeNodes(String... attributeName) {
+    public void addAttributeNodes(String... attributeName) {
         for(String attribute:attributeName) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);
             this.attributeNodes.put(attribute, impl);
@@ -37,7 +37,7 @@ public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGr
         }
     }
 
-    public <X> SubGraph<X> addSubGraph(String attribute) {
+    public Subgraph addSubGraph(String attribute) {
         CoreAttributeGroup group = new CoreAttributeGroup();
         if(attributeGroup.getItem(attribute) == null) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);
@@ -48,7 +48,7 @@ public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGr
         return new ObjectGraphImpl(group);
     }
 
-    public <X> SubGraph<X> addSubGraph(String attribute, Class<X> type) {
+    public Subgraph addSubGraph(String attribute, Class type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         if(attributeGroup.getItem(attribute) == null) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);
@@ -59,9 +59,9 @@ public class ObjectGraphImpl<X> extends AttributeNodeImpl<X> implements ObjectGr
         return new ObjectGraphImpl(group);
     }
 
-    public List<AttributeNode<?>> getAttributeNodes() {
-        ArrayList<AttributeNode<?>> nodes = new ArrayList<AttributeNode<?>>();
-        for(AttributeNode<?> next:this.attributeNodes.values()) {
+    public List<AttributeNode> getAttributeNodes() {
+        ArrayList<AttributeNode> nodes = new ArrayList<AttributeNode>();
+        for(AttributeNode next:this.attributeNodes.values()) {
             nodes.add(next);
         }
         return nodes;

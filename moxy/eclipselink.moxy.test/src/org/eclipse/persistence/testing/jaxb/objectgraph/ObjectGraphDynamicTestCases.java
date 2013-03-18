@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.ObjectGraph;
-import org.eclipse.persistence.jaxb.SubGraph;
+import org.eclipse.persistence.jaxb.Subgraph;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -36,10 +36,10 @@ public class ObjectGraphDynamicTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_WRITE_RESOURCE);
         setWriteControlJSON(JSON_WRITE_RESOURCE);
         
-        ObjectGraph<Customer> graph = ((JAXBContext)jaxbContext).createObjectGraph(Customer.class);
+        ObjectGraph graph = ((JAXBContext)jaxbContext).createObjectGraph(Customer.class);
         graph.addAttributeNodes("lastName");
         graph.addAttributeNodes("age");
-        SubGraph<Address> subGraph = graph.addSubGraph("address", Address.class);
+        Subgraph subGraph = graph.addSubGraph("address", Address.class);
         subGraph.addAttributeNodes("country");
         
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.OBJECT_GRAPH, graph);
