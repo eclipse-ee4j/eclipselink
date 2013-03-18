@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This wraps another {@link Expression} that was correctly parsed by it is located in an invalid
  * location within the JPQL query.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -66,7 +66,7 @@ public final class BadExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
-		getExpression().accept(visitor);
+		// Don't traverse the invalid expression
 	}
 
 	/**
@@ -74,7 +74,7 @@ public final class BadExpression extends AbstractExpression {
 	 */
 	@Override
 	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getExpression());
+		// Don't traverse the invalid expression
 	}
 
 	/**
@@ -82,14 +82,14 @@ public final class BadExpression extends AbstractExpression {
 	 */
 	@Override
 	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(expression);
+		children.add(buildStringExpression(toParsedText()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 		return getParent().findQueryBNF(expression);
 	}
 

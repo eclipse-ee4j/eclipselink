@@ -24,6 +24,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the parameter of an aggregate expression.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -41,7 +41,8 @@ public final class InternalAggregateFunctionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 	}
 }

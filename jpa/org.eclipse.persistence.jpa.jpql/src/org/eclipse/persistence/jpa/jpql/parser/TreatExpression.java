@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>SELECT e FROM Employee e JOIN TREAT(e.projects AS LargeProject) lp WHERE lp.budget = value</code>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -125,6 +125,23 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		if (entityType != null) {
 			children.add(entityType);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((collectionValuedPathExpression != null) && collectionValuedPathExpression.isAncestor(expression)) {
+			return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
+		}
+
+		if ((entityType != null) && entityType.isAncestor(expression)) {
+			return getQueryBNF(EntityTypeLiteralBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

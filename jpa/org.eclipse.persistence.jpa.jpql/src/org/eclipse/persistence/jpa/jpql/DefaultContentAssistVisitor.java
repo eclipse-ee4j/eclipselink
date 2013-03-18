@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,6 +12,20 @@
  *
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
+
+import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
+import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 
 /**
  * This visitor traverses the JPQL parsed tree and gathers the possible proposals at a given position.
@@ -47,7 +61,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -67,7 +81,129 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
+		return new AcceptableTypeVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean isJoinFetchIdentifiable() {
+		// Generic JPA does not support identifying a JOIN FETCH with an identification variable
 		return false;
+	}
+
+	/**
+	 * The concrete instance that determines the return type of a function expression.
+	 */
+	protected class AcceptableTypeVisitor extends AbstractContentAssistVisitor.AcceptableTypeVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbsExpression expression) {
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ArithmeticFactor expression) {
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AvgFunction expression) {
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ConcatExpression expression) {
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LengthExpression expression) {
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LocateExpression expression) {
+			// TODO: Handle the position
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(LowerExpression expression) {
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ModExpression expression) {
+			// In theory we would only allow Long and Integer
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SqrtExpression expression) {
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubstringExpression expression) {
+			// TODO: Handle the position
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SumFunction expression) {
+			type = queryContext.getType(Number.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TrimExpression expression) {
+			type = queryContext.getType(CharSequence.class);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UpperExpression expression) {
+			type = queryContext.getType(CharSequence.class);
+		}
 	}
 }

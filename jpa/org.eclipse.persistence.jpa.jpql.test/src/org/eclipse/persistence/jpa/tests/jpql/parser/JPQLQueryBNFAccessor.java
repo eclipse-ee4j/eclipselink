@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
@@ -26,22 +28,25 @@ import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.GeneralIdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalConcatExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.util.iterator.ArrayIterator;
 
 /**
  * This accessor is used to easily retrieve the JPQL identifiers registered with various {@link
  * JPQLQueryBNF}. Note: the methods are added as needed.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -69,11 +74,32 @@ public class JPQLQueryBNFAccessor {
 		return filter(identifiers, IdentifierRole.AGGREGATE);
 	}
 
+	public Iterable<String> arithmetics() {
+		ExpressionFactory factory = getExpressionFactory(ArithmeticExpressionFactory.ID);
+		return new ArrayIterator<String>(factory.identifiers());
+	}
+
+	public Iterable<String> arithmeticTermFunctions() {
+		return functions(arithmeticTermIdentifiers());
+	}
+
+	public Iterable<String> arithmeticTermIdentifiers() {
+		return getIdentifiers(ArithmeticTermBNF.ID);
+	}
+
 	public Iterable<String> clauses(Iterable<String> identifiers) {
 		return filter(identifiers, IdentifierRole.CLAUSE);
 	}
 
 	public Iterable<String> collectionMemberDeclarationParameters() {
+		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
+	}
+
+	public Iterable<String> collectionValuedPathExpressionFunctions() {
+		return functions(collectionValuedPathExpressionIdentifiers());
+	}
+
+	public Iterable<String> collectionValuedPathExpressionIdentifiers() {
 		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
 	}
 
@@ -115,6 +141,14 @@ public class JPQLQueryBNFAccessor {
 		return conditionalExpressions(IdentifierRole.COMPOUND_FUNCTION);
 	}
 
+	public Iterable<String> conditionalExpressionsFunctions() {
+		return functions(conditionalExpressionsIdentifiers());
+	}
+
+	public Iterable<String> conditionalExpressionsIdentifiers() {
+		return getIdentifiers(ConditionalExpressionBNF.ID);
+	}
+
 	public Iterable<String> constructorItemFunctions() {
 		return functions(constructorItemIdentifiers());
 	}
@@ -146,6 +180,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> functions(Iterable<String> identifiers) {
 		return filter(identifiers, IdentifierRole.FUNCTION);
+	}
+
+	public Iterable<String> generalIdentificationVariableFunctions() {
+		return functions(generalIdentificationVariableIdentifiers());
+	}
+
+	public Iterable<String> generalIdentificationVariableIdentifiers() {
+		return getIdentifiers(GeneralIdentificationVariableBNF.ID);
 	}
 
 	public ExpressionFactory getExpressionFactory(String expressionFactoryId) {
@@ -184,6 +226,18 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(InternalAggregateFunctionBNF.ID);
 	}
 
+	public Iterable<String> internalConcatExpressionClauses() {
+		return clauses(internalConcatExpressionIdentifiers());
+	}
+
+	public Iterable<String> internalConcatExpressionFunctions() {
+		return functions(internalConcatExpressionIdentifiers());
+	}
+
+	private Iterable<String> internalConcatExpressionIdentifiers() {
+		return getIdentifiers(InternalConcatExpressionBNF.ID);
+	}
+
 	public Iterable<String> patternValueFunctions() {
 		return functions(patternValueIdentifiers());
 	}
@@ -214,6 +268,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> selectItemIdentifiers() {
 		return getIdentifiers(SelectExpressionBNF.ID);
+	}
+
+	public Iterable<String> stringExpressionFunctions() {
+		return functions(stringExpressionIdentifiers());
+	}
+
+	private Iterable<String> stringExpressionIdentifiers() {
+		return getIdentifiers(StringExpressionBNF.ID);
 	}
 
 	public Iterable<String> subSelectFunctions() {

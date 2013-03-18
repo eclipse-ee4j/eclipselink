@@ -584,7 +584,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 			// If a subquery is defined in a WHERE clause of an update query,
 			// then check for a path expression
-			if (isSubquery(expression)) {
+			if (isWithinSubquery(expression)) {
 
 				// Find the identification variable from the UPDATE range declaration
 				IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -79,7 +79,6 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.parser.JoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
@@ -130,7 +129,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -306,6 +304,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			@Override
 			public String encapsulatedExpressionMissingKey(CoalesceExpression expression) {
 				return CoalesceExpression_MissingExpression;
+			}
+			@Override
+			protected boolean isEncapsulatedExpressionValid(CoalesceExpression expression) {
+				return isValidWithChildCollectionBypass(expression.getExpression(), expression.encapsulatedExpressionBNF());
 			}
 			public String leftParenthesisMissingKey(CoalesceExpression expression) {
 				return CoalesceExpression_MissingLeftParenthesis;
@@ -2307,6 +2309,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 			// Validate multiple JOIN expression
 			if (children.size() > 1) {
+
 				validateCollectionSeparatedBySpace(
 					joins,
 					IdentificationVariableDeclaration_JoinsEndWithComma,
@@ -2316,21 +2319,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				// Make sure each child is a JOIN expression
 				for (int index = children.size(); --index >= 0; ) {
 					Expression child = children.get(index);
-
-					// The child expression is not a JOIN expression
-					if (!isValid(child, JoinBNF.ID)) {
-						addProblem(child, IdentificationVariableDeclaration_InvalidJoin, child.toActualText());
-					}
-					// Validate the JOIN expression
-					else {
-						child.accept(this);
-					}
+					child.accept(this);
 				}
 			}
 			// Make sure the single expression is a JOIN expression
-			else if (!isValid(joins, JoinBNF.ID)) {
-				addProblem(joins, IdentificationVariableDeclaration_InvalidJoin, joins.toActualText());
-			}
 			// Validate the JOIN expression
 			else {
 				joins.accept(this);

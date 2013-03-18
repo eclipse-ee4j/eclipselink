@@ -137,6 +137,28 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	}
 
 	@Test
+	public void test_InExpression_InvalidExpression() throws Exception {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE ABS(e.salary) IN :age";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		if (!isEclipseLink2_0()) {
+			testHasNoProblems(problems);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e WHERE ".length();
+			int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.salary)".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				InExpression_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
 	public final void test_OrderByClause_GroupByItemIsMissingComma_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY LENGTH(e.age) e.name";

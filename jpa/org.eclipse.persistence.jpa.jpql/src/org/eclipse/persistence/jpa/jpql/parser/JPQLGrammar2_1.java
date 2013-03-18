@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,14 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
- * href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a>.
- * <p>
- * The following is the BNF for the JPQL query version 2.1.
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a>.</p>
+ *
+ * The following is the JPQL grammar defined in JPA version 2.1.
  *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
@@ -170,7 +169,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * conditional_term ::= conditional_factor | conditional_term AND conditional_factor
  *
- * conditional_factor ::= [ NOT ] conditional_primary
+ * conditional_factor ::= [NOT] conditional_primary
  *
  * conditional_primary ::= simple_cond_expression | (conditional_expression)
  *
@@ -281,13 +280,13 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * type_discriminator ::= TYPE(identification_variable | single_valued_object_path_expression | input_parameter)
  *
- * functions_returning_numerics::= LENGTH(string_expression) |
- *                                 LOCATE(string_expression, string_expression[, arithmetic_expression]) |
- *                                 ABS(arithmetic_expression) |
- *                                 SQRT(arithmetic_expression) |
- *                                 MOD(arithmetic_expression, arithmetic_expression) |
- *                                 SIZE(collection_valued_path_expression) |
- *                                 INDEX(identification_variable)
+ * functions_returning_numerics ::= LENGTH(string_expression) |
+ *                                  LOCATE(string_expression, string_expression[, arithmetic_expression]) |
+ *                                  ABS(arithmetic_expression) |
+ *                                  SQRT(arithmetic_expression) |
+ *                                  MOD(arithmetic_expression, arithmetic_expression) |
+ *                                  SIZE(collection_valued_path_expression) |
+ *                                  INDEX(identification_variable)
  *
  * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP
  *
@@ -350,10 +349,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * date_string ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
  *
- * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
- * </pre></code>
+ * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*</pre></code>
  *
- * @version 2.4
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
+ *
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -445,9 +448,14 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 		// Extends the query BNF to add support for FUNCTION
 		addChildBNF(AggregateExpressionBNF.ID, FunctionExpressionBNF.ID);
 
+		// string_primary becomes string_expression in CONCAT
+		addChildBNF(InternalConcatExpressionBNF.ID, StringExpressionBNF.ID);
+
 		// string_primary becomes string_expression, simply add the new query BNFs
-		addChildBNF(StringPrimaryBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(StringPrimaryBNF.ID, SubqueryBNF.ID);
+		addChildBNF(StringPrimaryBNF.ID,    FunctionExpressionBNF.ID);
+		addChildBNF(StringPrimaryBNF.ID,    SubqueryBNF.ID);
+		addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
+		addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
 
 		// datetime_primary becomes datetime_expression, simply add the new query BNFs
 		addChildBNF(DateTimePrimaryBNF.ID, FunctionExpressionBNF.ID);
@@ -463,10 +471,6 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 		// arithmetic_primary becomes arithmetic_expression, simply add the new query BNFs
 		addChildBNF(ArithmeticPrimaryBNF.ID, FunctionExpressionBNF.ID);
 		addChildBNF(ArithmeticPrimaryBNF.ID, SubqueryBNF.ID);
-
-		// string_expression
-		addChildBNF(StringExpressionBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(StringExpressionBNF.ID, SubqueryBNF.ID);
 
 		// datetime_expression
 		addChildBNF(DatetimeExpressionBNF.ID, FunctionExpressionBNF.ID);
@@ -497,9 +501,9 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(FUNCTION, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(ON,       IdentifierRole.COMPOUND_FUNCTION); // ON x
-		registerIdentifierRole(TREAT,    IdentifierRole.COMPOUND_FUNCTION); // TREAT(x AS y)
+		registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION); // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(ON,          IdentifierRole.CLAUSE);   // ON x
+		registerIdentifierRole(TREAT,       IdentifierRole.FUNCTION); // TREAT(x AS y)
 
 		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);

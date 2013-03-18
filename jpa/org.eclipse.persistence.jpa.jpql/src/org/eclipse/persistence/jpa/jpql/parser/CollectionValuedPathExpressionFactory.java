@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -20,17 +20,17 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see CollectionValuedPathExpression
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class CollectionValuedPathExpressionFactory extends AbstractCollectionValuedPathExpressionFactory {
+public final class CollectionValuedPathExpressionFactory extends AbstractLiteralExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link CollectionValuedPathExpressionFactory}.
 	 */
-	public static final String ID = "collection_valued_path";
+	public static final String ID = "collection-valued-path";
 
 	/**
 	 * Creates a new <code>CollectionValuedPathExpressionFactory</code>.
@@ -43,14 +43,22 @@ public final class CollectionValuedPathExpressionFactory extends AbstractCollect
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected AbstractExpression buildFallbackExpression(AbstractExpression parent,
-	                                                     WordParser wordParser,
-	                                                     String word,
-	                                                     JPQLQueryBNF queryBNF,
-	                                                     AbstractExpression expression,
-	                                                     boolean tolerant) {
+	protected AbstractExpression buildExpression(AbstractExpression parent,
+	                                             WordParser wordParser,
+	                                             String word,
+	                                             AbstractExpression expression,
+	                                             boolean tolerant) {
 
-		ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(PreLiteralExpressionFactory.ID);
-		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+		expression = new IdentificationVariable(parent, word);
+		expression.parse(wordParser, tolerant);
+		return expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isCollection() {
+		return true;
 	}
 }

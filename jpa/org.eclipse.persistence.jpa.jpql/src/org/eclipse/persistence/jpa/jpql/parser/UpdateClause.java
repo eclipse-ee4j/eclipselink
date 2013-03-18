@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see UpdateStatement
  * @see UpdateItem
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -167,11 +167,27 @@ public final class UpdateClause extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
+			return getQueryBNF(RangeVariableDeclarationBNF.ID);
+		}
+
+		if ((updateItems != null) && updateItems.isAncestor(expression)) {
+			return getQueryBNF(InternalUpdateClauseBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>SET</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
-	 * @return The <b>SET</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>SET</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualSetIdentifier() {
 		return (setIdentifier != null) ? setIdentifier : ExpressionTools.EMPTY_STRING;

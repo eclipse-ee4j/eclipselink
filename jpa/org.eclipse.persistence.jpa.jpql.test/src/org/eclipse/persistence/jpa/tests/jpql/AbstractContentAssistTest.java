@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,9 +14,19 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import jpql.query.Address;
+import jpql.query.Alias;
+import jpql.query.CodeAssist;
+import jpql.query.Customer;
+import jpql.query.Employee;
+import jpql.query.Product;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
+import org.junit.Assert;
 import org.junit.Test;
+
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -30,63 +40,150 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
+	protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
+
+		List<String> proposals = new ArrayList<String>();
+
+		if (afterIdentifier == SELECT) {
+
+			if (beforeIdentifier != FROM) {
+				proposals.add(FROM);
+			}
+
+			if (beforeIdentifier != FROM &&
+			    beforeIdentifier != WHERE) {
+
+				proposals.add(WHERE);
+			}
+
+			if (beforeIdentifier != FROM  &&
+			    beforeIdentifier != WHERE &&
+			    beforeIdentifier != GROUP_BY) {
+
+				proposals.add(GROUP_BY);
+			}
+
+			if (beforeIdentifier != FROM     &&
+			    beforeIdentifier != WHERE    &&
+			    beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING) {
+
+				proposals.add(HAVING);
+			}
+
+			if (!subquery) {
+				if (beforeIdentifier != FROM     &&
+				    beforeIdentifier != WHERE    &&
+				    beforeIdentifier != GROUP_BY &&
+				    beforeIdentifier != HAVING   &&
+				    beforeIdentifier != ORDER_BY) {
+
+					proposals.add(ORDER_BY);
+				}
+			}
+		}
+		else if (afterIdentifier == FROM) {
+
+			if (beforeIdentifier != WHERE) {
+				proposals.add(WHERE);
+			}
+
+			if (beforeIdentifier != WHERE &&
+			    beforeIdentifier != GROUP_BY) {
+
+				proposals.add(GROUP_BY);
+			}
+
+			if (beforeIdentifier != WHERE    &&
+			    beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING) {
+
+				proposals.add(HAVING);
+			}
+
+			if (!subquery) {
+				if (beforeIdentifier != WHERE    &&
+				    beforeIdentifier != GROUP_BY &&
+				    beforeIdentifier != HAVING   &&
+				    beforeIdentifier != ORDER_BY) {
+
+					proposals.add(ORDER_BY);
+				}
+			}
+		}
+		else if (afterIdentifier == WHERE) {
+
+			if (beforeIdentifier != GROUP_BY) {
+				proposals.add(GROUP_BY);
+			}
+
+			if (beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING) {
+
+				proposals.add(HAVING);
+			}
+
+			if (!subquery) {
+				if (beforeIdentifier != GROUP_BY &&
+				    beforeIdentifier != HAVING   &&
+				    beforeIdentifier != ORDER_BY) {
+
+					proposals.add(ORDER_BY);
+				}
+			}
+		}
+		else if (afterIdentifier == GROUP_BY) {
+
+			if (beforeIdentifier != HAVING) {
+				proposals.add(HAVING);
+			}
+
+			if (!subquery) {
+				if (beforeIdentifier != HAVING   &&
+				    beforeIdentifier != ORDER_BY) {
+
+					proposals.add(ORDER_BY);
+				}
+			}
+		}
+		else if (afterIdentifier == HAVING) {
+			if (!subquery) {
+				if (beforeIdentifier != ORDER_BY) {
+					proposals.add(ORDER_BY);
+				}
+			}
+		}
+
+		return proposals;
+	}
+
+	protected List<String> fromClauseInternalClauses(String afterIdentifier) {
+
+		if (afterIdentifier == FROM) {
+			return joinIdentifiers();
+		}
+
+		return Collections.emptyList();
+	}
+
+	private Iterable<String> functionProposals() {
+
+		List<String> identifiers = CollectionTools.list(
+			bnfAccessor.conditionalExpressionsFunctions().iterator()
+		);
+
+		Collections.sort(identifiers);
+		return identifiers;
+	}
+
 	/**
 	 * Determines whether a <code><b>JOIN FETCH</b></code> expression can be identified with an
 	 * identification variable.
 	 *
-	 * @return <code>true</code> if it can be identified by an identification variable; <code>false</code> otherwise
+	 * @return <code>true</code> if it can be identified by an identification variable;
+	 * <code>false</code> otherwise
 	 */
 	protected abstract boolean isJoinFetchIdentifiable();
-
-	@Test
-	public final void test_Abs_01() {
-		test_AbstractSingleEncapsulatedExpression_01(ABS);
-	}
-
-	@Test
-	public final void test_Abs_02() {
-		test_AbstractSingleEncapsulatedExpression_02(ABS);
-	}
-
-	@Test
-	public final void test_Abs_03() {
-		test_AbstractSingleEncapsulatedExpression_03(ABS);
-	}
-
-	@Test
-	public final void test_Abs_04() {
-		test_AbstractSingleEncapsulatedExpression_04(ABS);
-	}
-
-	@Test
-	public final void test_Abs_05() {
-		test_AbstractSingleEncapsulatedExpression_05(ABS);
-	}
-
-	@Test
-	public final void test_Abs_06() {
-		test_AbstractSingleEncapsulatedExpression_06(ABS);
-	}
-
-	@Test
-	public final void test_Abs_07() {
-		test_AbstractSingleEncapsulatedExpression_07(ABS);
-	}
-
-	@Test
-	public final void test_Abs_08() {
-		test_AbstractSingleEncapsulatedExpression_08(ABS);
-	}
-
-	@Test
-	public final void test_Abs_09() {
-		test_AbstractSingleEncapsulatedExpression_09(ABS);
-	}
-
-	@Test
-	public final void test_Abs_10() {
-		test_AbstractSingleEncapsulatedExpression_10(ABS);
-	}
 
 	@Test
 	public final void test_AbstractSchemaName_01() throws Exception {
@@ -104,7 +201,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_AbstractSchemaName_03() throws Exception {
-		String jpqlQuery = "SELECT AVG(e.age) FROM ";
+		String jpqlQuery = "SELECT AVG(e.roomNumber) FROM ";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, entityNames());
 	}
@@ -125,12 +222,14 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_AbstractSchemaName_06() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e, ";
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
 		addAll(proposals, entityNames());
+		addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -179,12 +278,14 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_AbstractSchemaName_13() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e, Address a ";
 		int position = "SELECT e FROM Employee e, ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
 		addAll(proposals, entityNames());
+		addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -212,6 +313,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_AbstractSchemaName_17() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e";
 		int position = "SELECT e FROM Employee ".length();
 
@@ -224,68 +326,84 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_AbstractSchemaName_18() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e, , Address a";
 		int position = "SELECT e FROM Employee e,".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
 		addAll(proposals, entityNames());
+		addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
 	public final void test_AbstractSchemaName_19() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e, , Address a";
 		int position = "SELECT e FROM Employee e, ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
 		addAll(proposals, entityNames());
+		addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
 	public final void test_AbstractSchemaName_20() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e,, Address a";
 		int position = "SELECT e FROM Employee e,".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(IN);
 		addAll(proposals, entityNames());
+		addAll(proposals, classNames());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
-	protected final void test_AbstractSingleEncapsulatedExpression_01(String identifier) {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
+	@Test
+	public final void test_AbstractSchemaName_21() {
+
+		String jpqlQuery = "SELECT e FROM Employee e J";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, identifier);
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(fromClauseInternalClauses(FROM), "J"));
+		addAll(proposals, filter(clauses(FROM, null, false), "J"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
-	protected final void test_AbstractSingleEncapsulatedExpression_02(String identifier) {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE " + identifier.charAt(0);
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, identifier);
+	@Test
+	public final void test_AbstractSchemaName_22() {
+
+		String jpqlQuery = "SELECT e FROM Employee e E";
+		int position = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(fromClauseInternalClauses(FROM), "e"));
+		addAll(proposals, filter(clauses(FROM, null, false), "e"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
-	protected final void test_AbstractSingleEncapsulatedExpression_03(String identifier) {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE " + identifier.charAt(0);
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, identifier);
+	@Test
+	public final void test_AbstractSchemaName_23() {
+		String jpqlQuery = "SELECT e FROM Employee e Order b, Address e";
+		int position = "SELECT e FROM Employee e Order b".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
-	protected final void test_AbstractSingleEncapsulatedExpression_04(String identifier) {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE " + identifier.substring(0, 2);
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, identifier);
-	}
-
-	protected final void test_AbstractSingleEncapsulatedExpression_05(String identifier) {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE " + identifier;
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, identifier);
+	@Test
+	public final void test_AbstractSchemaName_24() {
+		String jpqlQuery = "SELECT e FROM Employee e Order b WHERE e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e Order b".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	protected final void test_AbstractSingleEncapsulatedExpression_06(String identifier) {
@@ -319,288 +437,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
-	public final void test_All_01() {
-		test_AbstractSingleEncapsulatedExpression_01(ALL);
-	}
-
-	@Test
-	public final void test_All_02() {
-		test_AbstractSingleEncapsulatedExpression_02(ALL);
-	}
-
-	@Test
-	public final void test_All_03() {
-		test_AbstractSingleEncapsulatedExpression_03(ALL);
-	}
-
-	@Test
-	public final void test_All_04() {
-		test_AbstractSingleEncapsulatedExpression_04(ALL);
-	}
-
-	@Test
-	public final void test_All_05() {
-		test_AbstractSingleEncapsulatedExpression_05(ALL);
-	}
-
-	@Test
-	public final void test_All_06() {
-		test_AbstractSingleEncapsulatedExpression_06(ALL);
-	}
-
-	@Test
-	public final void test_All_07() {
-		test_AbstractSingleEncapsulatedExpression_07(ALL);
-	}
-
-	@Test
-	public final void test_All_08() {
-		test_AbstractSingleEncapsulatedExpression_08(ALL);
-	}
-
-	@Test
-	public final void test_All_09() {
-		test_AbstractSingleEncapsulatedExpression_09(ALL);
-	}
-
-	@Test
-	public final void test_All_10() {
-		test_AbstractSingleEncapsulatedExpression_10(ALL);
-	}
-
-	@Test
-	public final void test_AllOrAny_All_1() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE AL";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ALL);
-	}
-
-	@Test
-	public final void test_AllOrAny_All_2() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ALL";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ALL);
-	}
-
-	@Test
-	public final void test_AllOrAny_All_3() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (AL)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ALL);
-	}
-
-	@Test
-	public final void test_AllOrAny_All_4() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (ALL)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ALL);
-	}
-
-	@Test
-	public final void test_AllOrAny_Any_1() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE AN";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_Any_2() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ANY";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_Any_3() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (AN)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_Any_4() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (ANY)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_AnyOrAny_1() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_AnyOrAny_2() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE A";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_AnyOrAny_3() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_AnyOrAny_4() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (A";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_AnyOrAny_5() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (A)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, ANY);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE S";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE S";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE SO";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE SOM";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE SOME";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (S";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SO";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SOM";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SOME";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (S)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SO)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SOM)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_AllOrAny_Some_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (SOME)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, SOME);
-	}
-
-	@Test
-	public final void test_Any_01() {
-		test_AbstractSingleEncapsulatedExpression_01(ANY);
-	}
-
-	@Test
-	public final void test_Any_02() {
-		test_AbstractSingleEncapsulatedExpression_02(ANY);
-	}
-
-	@Test
-	public final void test_Any_03() {
-		test_AbstractSingleEncapsulatedExpression_03(ANY);
-	}
-
-	@Test
-	public final void test_Any_04() {
-		test_AbstractSingleEncapsulatedExpression_04(ANY);
-	}
-
-	@Test
-	public final void test_Any_05() {
-		test_AbstractSingleEncapsulatedExpression_05(ANY);
-	}
-
-	@Test
-	public final void test_Any_06() {
-		test_AbstractSingleEncapsulatedExpression_06(ANY);
-	}
-
-	@Test
-	public final void test_Any_07() {
-		test_AbstractSingleEncapsulatedExpression_07(ANY);
-	}
-
-	@Test
-	public final void test_Any_08() {
-		test_AbstractSingleEncapsulatedExpression_08(ANY);
-	}
-
-	@Test
-	public final void test_Any_09() {
-		test_AbstractSingleEncapsulatedExpression_09(ANY);
-	}
-
-	@Test
-	public final void test_Any_10() {
-		test_AbstractSingleEncapsulatedExpression_10(ANY);
-	}
-
-	@Test
 	public final void test_As_01() {
 		String jpqlQuery = "SELECT o FROM Countries ";
 		int position = jpqlQuery.length();
@@ -623,21 +459,21 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_As_04() {
+		String jpqlQuery = "SELECT o FROM Countries j";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_05() {
 		String jpqlQuery = "SELECT o FROM Countries o ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AS);
 	}
 
 	@Test
-	public final void test_As_05() {
-		String jpqlQuery = "SELECT o FROM Countries A o";
-		int position = "SELECT o FROM Countries A".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, AS);
-	}
-
-	@Test
 	public final void test_As_06() {
-		String jpqlQuery = "SELECT o FROM Countries AS o";
+		String jpqlQuery = "SELECT o FROM Countries A o";
 		int position = "SELECT o FROM Countries A".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AS);
 	}
@@ -645,29 +481,92 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_As_07() {
 		String jpqlQuery = "SELECT o FROM Countries AS o";
-		int position = "SELECT o FROM Countries AS".length();
+		int position = "SELECT o FROM Countries A".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AS);
 	}
 
 	@Test
 	public final void test_As_08() {
 		String jpqlQuery = "SELECT o FROM Countries AS o";
+		int position = "SELECT o FROM Countries AS".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, AS);
+	}
+
+	@Test
+	public final void test_As_09() {
+		String jpqlQuery = "SELECT o FROM Countries AS o";
 		int position = "SELECT o FROM Countries AS ".length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AS);
 	}
 
 	@Test
-	public final void test_As_09() {
+	public final void test_As_10() {
 		String jpqlQuery = "SELECT ABS(a.city)  FROM Address AS a";
 		int position = "SELECT ABS(a.city) ".length();
 		testHasTheseProposals(jpqlQuery, position, AS);
 	}
 
 	@Test
-	public final void test_As_10() {
+	public final void test_As_11() {
 		String jpqlQuery = "SELECT ABS(a.city) AS FROM Address AS a";
 		int position = "SELECT ABS(a.city) AS ".length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AS);
+	}
+
+	@Test
+	public final void test_As_12() {
+		// To test GROUP BY is not added
+		String jpqlQuery = "SELECT o FROM Countries g";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_13() {
+		// To test HAVING is not added
+		String jpqlQuery = "SELECT o FROM Countries h";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_14() {
+		// To test ORDER BY is not added
+		String jpqlQuery = "SELECT o FROM Countries o";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_15() {
+		// To test GROUP BY/ORDER BY are not added
+		String jpqlQuery = "SELECT o FROM Countries b";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_16() {
+		// To test UNION is not added (specific to EclipseLink 2.4 or later)
+		String jpqlQuery = "SELECT o FROM Countries u";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_17() {
+		// To test START WITH is not added (specific to EclipseLink 2.5 or later)
+		String jpqlQuery = "SELECT o FROM Countries s";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
+	}
+
+	@Test
+	public final void test_As_18() {
+		// To test AS OF is not added (specific to EclipseLink 2.5 or later)
+		String jpqlQuery = "SELECT o FROM Countries AS o";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
@@ -915,213 +814,163 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_Between_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber ";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN, NOT_BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age B";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber B";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BE";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BET";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BET";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETW";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETW";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWE";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEE";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, BETWEEN, NOT_BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age NOT";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber NOT";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, NOT_BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age NOT ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber NOT ";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, NOT_BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age NOT B";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber NOT B";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, NOT_BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 ";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AND);
 	}
 
 	@Test
 	public final void test_Between_14() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 A";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 A";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AND);
 	}
 
 	@Test
 	public final void test_Between_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 AN";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 AN";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AND);
 	}
 
 	@Test
 	public final void test_Between_16() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 AND";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 AND";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AND);
 	}
 
 	@Test
 	public final void test_Between_17() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 AND ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 AND ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AND);
 	}
 
 	@Test
 	public final void test_Between_18() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age B";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber B";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_19() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BE";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BE";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_20() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BET";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BET";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_21() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETW";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETW";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_22() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWE";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWE";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_32() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEE";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEE";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
 	}
 
 	@Test
 	public final void test_Between_33() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN";
-		int position = "SELECT e FROM Employee e WHERE e.age ".length();
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN";
+		int position = "SELECT e FROM Employee e WHERE e.roomNumber ".length();
 		testHasTheseProposals(jpqlQuery, position, BETWEEN);
-	}
-
-	@Test
-	public final void test_Coalesce_01() {
-		test_AbstractSingleEncapsulatedExpression_01(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_02() {
-		test_AbstractSingleEncapsulatedExpression_02(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_03() {
-		test_AbstractSingleEncapsulatedExpression_03(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_04() {
-		test_AbstractSingleEncapsulatedExpression_04(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_05() {
-		test_AbstractSingleEncapsulatedExpression_05(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_06() {
-		test_AbstractSingleEncapsulatedExpression_06(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_07() {
-		test_AbstractSingleEncapsulatedExpression_07(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_08() {
-		test_AbstractSingleEncapsulatedExpression_08(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_09() {
-		test_AbstractSingleEncapsulatedExpression_09(COALESCE);
-	}
-
-	@Test
-	public final void test_Coalesce_10() {
-		test_AbstractSingleEncapsulatedExpression_10(COALESCE);
 	}
 
 	@Test
@@ -1135,13 +984,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	public final void test_CollectionMember_02() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e ";
 		int position = jpqlQuery.length();
-
-		testHasTheseProposals(
-			jpqlQuery,
-			position,
-			MEMBER,
-			NOT_MEMBER
-		);
+		testHasTheseProposals(jpqlQuery, position, MEMBER, NOT_MEMBER);
 	}
 
 	@Test
@@ -1514,7 +1357,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_02() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber ";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1522,7 +1365,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_03() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber <";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1530,7 +1373,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_04() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age >";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber >";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1538,7 +1381,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_05() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age =";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber =";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1546,7 +1389,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_06() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <=";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber <=";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1554,7 +1397,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_07() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age >=";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber >=";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1562,7 +1405,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_08() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <>";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber <>";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1570,7 +1413,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Comparison_09() {
 
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age IS ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber IS ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, bnfAccessor.comparators());
 	}
@@ -1583,7 +1426,12 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 		List<String> proposals = new ArrayList<String>();
 		addAll(proposals, bnfAccessor.comparators());
+		addAll(proposals, bnfAccessor.arithmetics());
 		addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
+
+		// These are filtered out
+		proposals.remove(IS_EMPTY);
+		proposals.remove(IS_NOT_EMPTY);
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -1594,223 +1442,88 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
 		int position = jpqlQuery.length();
 
-		List<String> identifiers = new ArrayList<String>();
-		addAll(identifiers, bnfAccessor.conditionalExpressionsAggregates());
-		addAll(identifiers, bnfAccessor.conditionalExpressionsCompoundFunctions());
-		identifiers.remove(AND);
-		identifiers.remove(OR);
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, bnfAccessor.conditionalExpressionsAggregates());
+		addAll(proposals, bnfAccessor.conditionalExpressionsCompoundFunctions());
 
-		testHasOnlyTheseProposals(jpqlQuery, position, identifiers);
+		// These are filtered out
+		proposals.remove(AND);
+		proposals.remove(OR);
+		proposals.remove(IS_EMPTY);
+		proposals.remove(IS_NOT_EMPTY);
+		removeAll(proposals, bnfAccessor.arithmetics());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_001() {
-		test_AbstractSingleEncapsulatedExpression_01(CONCAT);
+	public final void test_Concat_34() {
+
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, AS e)";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, ".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_002() {
-		test_AbstractSingleEncapsulatedExpression_02(CONCAT);
+	public final void test_Concat_35() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, AS e)";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, A".length();
+		Iterable<String> proposals = filter(bnfAccessor.internalConcatExpressionFunctions(), "A");
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_003() {
-		test_AbstractSingleEncapsulatedExpression_03(CONCAT);
+	public final void test_Concat_36() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, AS e.name)";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, AS e.".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
-	public final void test_Concat_004() {
-		test_AbstractSingleEncapsulatedExpression_04(CONCAT);
+	public final void test_Concat_37() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, S)";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, S".length();
+		Iterable<String> proposals = filter(bnfAccessor.internalConcatExpressionFunctions(), "S");
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_005() {
-		test_AbstractSingleEncapsulatedExpression_05(CONCAT);
+	public final void test_Concat_38() {
+
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, ()";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, (".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.internalConcatExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalConcatExpressionClauses());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_006() {
-		test_AbstractSingleEncapsulatedExpression_06(CONCAT);
+	public final void test_Concat_39() {
+
+		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT(e.name, (S)";
+		int position = "SELECT e FROM Employee e WHERE CONCAT(e.name, (S".length();
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(bnfAccessor.internalConcatExpressionFunctions(), "S"));
+		addAll(proposals, filter(bnfAccessor.internalConcatExpressionClauses(), "S"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
-	public final void test_Concat_007() {
-		test_AbstractSingleEncapsulatedExpression_07(CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_008() {
-		test_AbstractSingleEncapsulatedExpression_08(CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_009() {
-		test_AbstractSingleEncapsulatedExpression_09(CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
+	public final void test_ConditionalExpression_01() throws Exception {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_010() {
-		test_AbstractSingleEncapsulatedExpression_10(CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE C";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE C";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE CO";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE CON";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE CONC";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCA";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE CONCAT";
-		testHasTheseProposals(jpqlQuery, jpqlQuery.length(), CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (C";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CO";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CON";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONC";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_14() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONCA";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONCAT";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_16() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ()";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_17() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (C)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_18() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CO)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_19() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CON)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_20() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONC)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_21() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONCA)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_22() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (CONCAT)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, CONCAT);
-	}
-
-	@Test
-	public final void test_Concat_23() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
-		int position = jpqlQuery.length() - 1;
-		testDoesNotHaveTheseProposals(jpqlQuery, position, CONCAT);
+		testHasOnlyTheseProposals(jpqlQuery, position, nonTransientFieldNames(Employee.class));
 	}
 
 	@Test
@@ -2334,17 +2047,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_DateTime_14() {
-
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CURRENT_DATE";
 		int position = jpqlQuery.length();
-
-		List<String> proposals = new ArrayList<String>();
-		proposals.add(CURRENT_DATE);
-		proposals.add(CURRENT_TIME);
-		proposals.add(CURRENT_TIMESTAMP);
-		addAll(proposals, bnfAccessor.comparators());
-
-		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+		testHasOnlyTheseProposals(jpqlQuery, position, CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP);
 	}
 
 	@Test
@@ -2370,17 +2075,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_DateTime_18() {
-
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CURRENT_TIME";
 		int position = jpqlQuery.length();
-
-		List<String> proposals = new ArrayList<String>();
-		proposals.add(CURRENT_DATE);
-		proposals.add(CURRENT_TIME);
-		proposals.add(CURRENT_TIMESTAMP);
-		addAll(proposals, bnfAccessor.comparators());
-
-		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+		testHasOnlyTheseProposals(jpqlQuery, position, CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP);
 	}
 
 	@Test
@@ -2413,17 +2110,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_DateTime_23() {
-
 		String jpqlQuery = "SELECT e FROM Employee e WHERE CURRENT_TIMESTAMP";
 		int position = jpqlQuery.length();
-
-		List<String> proposals = new ArrayList<String>();
-		proposals.add(CURRENT_DATE);
-		proposals.add(CURRENT_TIME);
-		proposals.add(CURRENT_TIMESTAMP);
-		addAll(proposals, bnfAccessor.comparators());
-
-		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+		testHasOnlyTheseProposals(jpqlQuery, position, CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP);
 	}
 
 	@Test
@@ -2611,9 +2300,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Delete_27() {
 		String jpqlQuery = "DELETE FROM Employee WHERE n";
-		int position = jpqlQuery.length() - "WHERE n".length();
+		int position = "DELETE FROM Employee ".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AS);
-		testDoesNotHaveTheseProposals(jpqlQuery, position, WHERE);
 	}
 
 	@Test
@@ -2680,305 +2368,248 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
+	public final void test_EmptyCollectionComparison_02() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers ";
+		int position = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
+	}
+
+	@Test
 	public final void test_EmptyCollectionComparison_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers I";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name I";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
-	}
-
-	@Test
-	public final void test_EmptyCollectionComparison_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS N";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS N";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_EmptyCollectionComparison_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NO";
+	public final void test_EmptyCollectionComparison_06() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NO";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL, IS_NOT_EMPTY);
 	}
 
 	@Test
+	public final void test_EmptyCollectionComparison_07() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NOT_NULL);
+	}
+
+	@Test
 	public final void test_EmptyCollectionComparison_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT ";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT E";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT E";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EM";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EM";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EMP";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMP";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EMPT";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMPT";
-		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
-	}
-
-	@Test
-	public final void test_EmptyCollectionComparison_14() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMPTY";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EMPTY";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
+	public final void test_EmptyCollectionComparison_14() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS E";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY);
+	}
+
+	@Test
 	public final void test_EmptyCollectionComparison_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS E";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS EM";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_16() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EM";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS EMP";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_17() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMP";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS EMPT";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
 	public final void test_EmptyCollectionComparison_18() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMPT";
-		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY);
-	}
-
-	@Test
-	public final void test_EmptyCollectionComparison_19() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMPTY";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.phoneNumbers IS EMPTY";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_001() {
-		test_AbstractSingleEncapsulatedExpression_01(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_002() {
-		test_AbstractSingleEncapsulatedExpression_02(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_003() {
-		test_AbstractSingleEncapsulatedExpression_03(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_004() {
-		test_AbstractSingleEncapsulatedExpression_04(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_005() {
-		test_AbstractSingleEncapsulatedExpression_05(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_006() {
-		test_AbstractSingleEncapsulatedExpression_06(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_007() {
-		test_AbstractSingleEncapsulatedExpression_07(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_008() {
-		test_AbstractSingleEncapsulatedExpression_08(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_009() {
-		test_AbstractSingleEncapsulatedExpression_09(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_010() {
-		test_AbstractSingleEncapsulatedExpression_10(EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE E";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
-	}
-
-	@Test
-	public final void test_Exists_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE EX";
+	public final void test_EmptyCollectionComparison_19() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE EXI";
+	public final void test_EmptyCollectionComparison_20() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE EXIS";
+	public final void test_EmptyCollectionComparison_21() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name I";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE EXIST";
+	public final void test_EmptyCollectionComparison_22() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE EXISTS";
+	public final void test_EmptyCollectionComparison_23() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS N";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (";
+	public final void test_EmptyCollectionComparison_24() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NO";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (E";
+	public final void test_EmptyCollectionComparison_25() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EX";
+	public final void test_EmptyCollectionComparison_26() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXI";
+	public final void test_EmptyCollectionComparison_27() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT E";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXIS";
+	public final void test_EmptyCollectionComparison_28() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EM";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXIST";
+	public final void test_EmptyCollectionComparison_29() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMP";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_14() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXISTS";
+	public final void test_EmptyCollectionComparison_30() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMPT";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (E)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_31() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT EMPTY";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_16() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EX)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_32() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS E";
+		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_17() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXI)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_33() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EM";
+		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_18() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXIS)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_34() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMP";
+		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_19() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXIST)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_35() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMPT";
+		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_EMPTY);
 	}
 
 	@Test
-	public final void test_Exists_20() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (EXISTS)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, EXISTS);
+	public final void test_EmptyCollectionComparison_36() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS EMPTY";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_EMPTY, IS_NOT_EMPTY);
 	}
 
 	@Test
@@ -2997,21 +2628,21 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_From_03() throws Exception {
-		String jpqlQuery = "SELECT AVG(e.age)";
+		String jpqlQuery = "SELECT AVG(e.roomNumber)";
 		int position = jpqlQuery.length();
-		testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
+		testHasTheseProposals(jpqlQuery, position, FROM);
 	}
 
 	@Test
 	public final void test_From_04() throws Exception {
-		String jpqlQuery = "SELECT AVG(e.age) ";
+		String jpqlQuery = "SELECT AVG(e.roomNumber) ";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, FROM);
 	}
 
 	@Test
 	public final void test_From_05() throws Exception {
-		String jpqlQuery = "SELECT AVG(e.age) F";
+		String jpqlQuery = "SELECT AVG(e.roomNumber) F";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, FROM);
 	}
@@ -3046,7 +2677,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_From_10() throws Exception {
-		String jpqlQuery = "SELECT AVG(e.age ";
+		String jpqlQuery = "SELECT AVG(e.roomNumber ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
 	}
@@ -3060,6 +2691,7 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_From_12() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Address a," +
 		               "              Employee emp JOIN emp.customers emp_c, " +
 		               "              Address ea " +
@@ -3074,6 +2706,25 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT e F";
 		int position = jpqlQuery.length();
 		testHasOnlyTheseProposals(jpqlQuery, position, FROM);
+	}
+
+	@Test
+	public final void test_From_14() throws Exception {
+		String jpqlQuery = "SELECT e F, E";
+		int position = "SELECT e F".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, FROM);
+	}
+
+	@Test
+	public final void test_From_15() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Address a," +
+		               "              Employee emp JOIN emp.customers emp_c, " +
+		               "              Address ea " +
+		               "WHERE ALL(SELECT a w";
+
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
@@ -3116,6 +2767,103 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT e FROM Employee AS e";
 		int position = "SELECT e FROM Employee AS".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, AS);
+	}
+
+	protected final void test_Function(String fragment,
+	                                   String ending,
+	                                   boolean subqueryAllowed) throws Exception {
+
+		test_Function(fragment, ending, subqueryAllowed, new TweakFunctionIdentifiers());
+	}
+
+	protected final void test_Function(String fragment,
+	                                   String ending,
+	                                   boolean subqueryAllowed,
+	                                   TweakFunctionIdentifiers tweaker) throws Exception {
+
+		// Test all functions (example: MAX)
+		for (String identifier : functionProposals()) {
+
+			// Test by cutting the identifier from all the characters making the identifier up to cutting none
+			for (int index = 0; index <= identifier.length(); index++) {
+
+				String identifierFragment = identifier.substring(0, index);
+				String jpqlQuery = fragment + identifierFragment + ending;
+
+				// Now move the cursor position from the beginning of the fragment identifier to the end of it
+				for (int positionIndex = 0; positionIndex <= index; positionIndex++) {
+
+					int position = fragment.length() + positionIndex;
+					String filter = identifier.substring(0, positionIndex);
+
+					List<String> proposals = new ArrayList<String>();
+					addAll(proposals, filter(functionProposals(), filter));
+					addAll(proposals, filter(new String[] { "e" }, filter));
+
+					if (subqueryAllowed) {
+						addAll(proposals, filter(new String[] { SELECT }, filter));
+					}
+
+					tweaker.tweak(proposals, identifier, identifierFragment, positionIndex);
+
+					// Now to the test
+					try {
+						testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+					}
+					catch (AssertionError e) {
+						StringBuilder sb = new StringBuilder();
+						sb.append(e.getMessage());
+						sb.append(" \"");
+						sb.append(jpqlQuery.substring(0, position));
+						sb.append("|");
+						sb.append(jpqlQuery.substring(position, jpqlQuery.length()));
+						sb.append("\" [");
+						sb.append(position);
+						sb.append("]");
+						Assert.fail(sb.toString());
+					}
+					finally {
+						tearDown();
+					}
+				}
+			}
+		}
+	}
+
+	@Test
+	public final void test_Function_01() throws Exception {
+		String fragment = "select e from Employee e where ";
+		test_Function(fragment, ExpressionTools.EMPTY_STRING, false);
+	}
+
+	@Test
+	public final void test_Function_02() throws Exception {
+		String fragment = "select e from Employee e where ";
+		test_Function(fragment, "(", false);
+	}
+
+	@Test
+	public final void test_Function_03() throws Exception {
+		String fragment = "select e from Employee e where (";
+		test_Function(fragment, ExpressionTools.EMPTY_STRING, true);
+	}
+
+	@Test
+	public final void test_Function_04() throws Exception {
+		String fragment = "select e from Employee e where (";
+		test_Function(fragment, "(", true);
+	}
+
+	@Test
+	public final void test_Function_05() throws Exception {
+		String fragment = "select e from Employee e where (";
+		test_Function(fragment, ")", true);
+	}
+
+	@Test
+	public final void test_Function_06() throws Exception {
+		String fragment = "select e from Employee e where ";
+		test_Function(fragment, " + ABS(e.roomNumber)", false);
 	}
 
 	@Test
@@ -3171,14 +2919,14 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	public final void test_GroupBy_08() {
 		String jpqlQuery = "SELECT e FROM Employee e GROUP ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, GROUP_BY);
+		testHasOnlyTheseProposals(jpqlQuery, position, AS, GROUP_BY);
 	}
 
 	@Test
 	public final void test_GroupBy_09() {
 		String jpqlQuery = "SELECT e FROM Employee e GROUP B";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, GROUP_BY);
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
 	@Test
@@ -3199,13 +2947,27 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	public final void test_GroupBy_12() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE (e.name = 'Pascal') G";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, GROUP_BY);
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
 	@Test
 	public final void test_GroupBy_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber";
 		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_GroupBy_14() {
+		String jpqlQuery = "SELECT e FROM Employee e, GROUP";
+		int position = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, GROUP_BY);
+	}
+
+	@Test
+	public final void test_GroupBy_15() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP, Address a";
+		int position = "SELECT e FROM Employee e GROUP".length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
@@ -3309,79 +3071,112 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_Having_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber ";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, HAVING);
 	}
 
 	@Test
-	public final void test_Index_01() {
-		test_AbstractSingleEncapsulatedExpression_01(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_01() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
 	@Test
-	public final void test_Index_02() {
-		test_AbstractSingleEncapsulatedExpression_02(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_02() {
+		String jpqlQuery = "SELECT e FROM Employee e ORDER B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, ORDER_BY);
 	}
 
 	@Test
-	public final void test_Index_03() {
-		test_AbstractSingleEncapsulatedExpression_03(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_03() {
+		String jpqlQuery = "SELECT e FROM Employee e ORDER B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e ORDER B".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
-	public final void test_Index_04() {
-		test_AbstractSingleEncapsulatedExpression_04(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_04() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
 	@Test
-	public final void test_Index_05() {
-		test_AbstractSingleEncapsulatedExpression_05(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_05() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B HAVING e.name = 'JPQL'";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, GROUP_BY);
 	}
 
 	@Test
-	public final void test_Index_06() {
-		test_AbstractSingleEncapsulatedExpression_06(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_06() {
+		String jpqlQuery = "SELECT e FROM Employee e HAVING e.name = 'JPQL' ORDER B";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, ORDER_BY);
 	}
 
 	@Test
-	public final void test_Index_07() {
-		test_AbstractSingleEncapsulatedExpression_07(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_07() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE ALL(SELECT a FROM Address a HAVING e.name = 'JPQL' ORDER B";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
-	public final void test_Index_08() {
-		test_AbstractSingleEncapsulatedExpression_08(INDEX);
+	public final void test_IncompleteCollectionExpressionVisitor_08() {
+		String jpqlQuery = "SELECT e FROM Employee e GROUP B ORT b a";
+		int position = "SELECT e FROM Employee e GROUP B".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
-	public final void test_Index_09() {
-		test_AbstractSingleEncapsulatedExpression_09(INDEX);
+	public final void test_Invalid_01() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee e WHERE e.name IS e.".length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
-	public final void test_Index_10() {
-		test_AbstractSingleEncapsulatedExpression_10(INDEX);
+	public final void test_Invalid_02() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS CONCAT(";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
 	public final void test_Is_01() throws Exception {
-
 		String jpqlQuery = "select e from Employee e where e.managerEmployee is not ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_EMPTY, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_Is_02() throws Exception {
-
 		String jpqlQuery = "select e from Employee e where (select a from e.employees) is ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL, IS_EMPTY, IS_NOT_EMPTY);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
+	}
+
+	@Test
+	public final void test_Is_03() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS e.name";
+		int position = "SELECT e FROM Employee e WHERE e.name IS ".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
+	}
+
+	@Test
+	public final void test_Is_04() {
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS WHERE";
+		int position = "SELECT e FROM Employee e WHERE e.name IS ".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_Join_01() {
+
 		String jpqlQuery = "SELECT pub FROM Publisher pub LEFT JOIN";
 		int position = "SELECT pub FROM Publisher pub ".length();
 
@@ -3644,8 +3439,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, joinIdentifiers());
-		addClauseIdentifiers(FROM, null, proposals);
+		addAll(proposals, fromClauseInternalClauses(FROM));
+		addAll(proposals, clauses(FROM, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -3666,18 +3461,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_Join_38() {
-
 		String jpqlQuery = "SELECT o from Countries o JOIN o.locationsList e LEFT ";
 		int position = jpqlQuery.length();
-
-		testHasOnlyTheseProposals(
-			jpqlQuery,
-			position,
-			LEFT_JOIN,
-			LEFT_JOIN_FETCH,
-			LEFT_OUTER_JOIN,
-			LEFT_OUTER_JOIN_FETCH
-		);
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(joinIdentifiers(), "LEFT "));
 	}
 
 	@Test
@@ -3727,56 +3513,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT o from Countries o JOIN o.locationsList J LEFT JOIN L";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, "o");
-	}
-
-	@Test
-	public final void test_Key_01() {
-		test_AbstractSingleEncapsulatedExpression_01(KEY);
-	}
-
-	@Test
-	public final void test_Key_02() {
-		test_AbstractSingleEncapsulatedExpression_02(KEY);
-	}
-
-	@Test
-	public final void test_Key_03() {
-		test_AbstractSingleEncapsulatedExpression_03(KEY);
-	}
-
-	@Test
-	public final void test_Key_04() {
-		test_AbstractSingleEncapsulatedExpression_04(KEY);
-	}
-
-	@Test
-	public final void test_Key_05() {
-		test_AbstractSingleEncapsulatedExpression_05(KEY);
-	}
-
-	@Test
-	public final void test_Key_06() {
-		test_AbstractSingleEncapsulatedExpression_06(KEY);
-	}
-
-	@Test
-	public final void test_Key_07() {
-		test_AbstractSingleEncapsulatedExpression_07(KEY);
-	}
-
-	@Test
-	public final void test_Key_08() {
-		test_AbstractSingleEncapsulatedExpression_08(KEY);
-	}
-
-	@Test
-	public final void test_Key_09() {
-		test_AbstractSingleEncapsulatedExpression_09(KEY);
-	}
-
-	@Test
-	public final void test_Key_10() {
-		test_AbstractSingleEncapsulatedExpression_10(KEY);
 	}
 
 	@Test
@@ -4025,193 +3761,17 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
-	public final void test_Length_001() {
-		test_AbstractSingleEncapsulatedExpression_01(LENGTH);
-	}
+	public final void test_Keyword_36() {
 
-	@Test
-	public final void test_Length_002() {
-		test_AbstractSingleEncapsulatedExpression_02(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_003() {
-		test_AbstractSingleEncapsulatedExpression_03(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_004() {
-		test_AbstractSingleEncapsulatedExpression_04(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_005() {
-		test_AbstractSingleEncapsulatedExpression_05(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_006() {
-		test_AbstractSingleEncapsulatedExpression_06(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_007() {
-		test_AbstractSingleEncapsulatedExpression_07(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_008() {
-		test_AbstractSingleEncapsulatedExpression_08(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_009() {
-		test_AbstractSingleEncapsulatedExpression_09(LENGTH);
-	}
-
-	@Test
-	public final void test_Length_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.hired = NULL ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
 
-	@Test
-	public final void test_Length_010() {
-		test_AbstractSingleEncapsulatedExpression_10(LENGTH);
-	}
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AND);
+		proposals.add(OR);
+		addAll(proposals, clauses(WHERE, null, false));
 
-	@Test
-	public final void test_Length_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE L";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LE";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LEN";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LENG";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_06() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LENGT";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_07() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LENGTH";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_08() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (L";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_09() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LE";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_10() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LEN";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_11() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENG";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENGT";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_13() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENGTH";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_14() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ()";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_15() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (L)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_16() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LE)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_17() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LEN)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_18() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENG)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_19() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENGT)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
-	}
-
-	@Test
-	public final void test_Length_20() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE (LENGTH)";
-		int position = jpqlQuery.length() - 1;
-		testHasTheseProposals(jpqlQuery, position, LENGTH);
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
@@ -4447,93 +4007,9 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 
 	@Test
 	public final void test_Logical_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age BETWEEN 1 AND 3 ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.roomNumber BETWEEN 1 AND 3 ";
 		int position = jpqlQuery.length();
 		testHasTheseProposals(jpqlQuery, position, AND, OR);
-	}
-
-	@Test
-	public final void test_Lower_01() {
-		test_AbstractSingleEncapsulatedExpression_01(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_02() {
-		test_AbstractSingleEncapsulatedExpression_02(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_03() {
-		test_AbstractSingleEncapsulatedExpression_03(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_04() {
-		test_AbstractSingleEncapsulatedExpression_04(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_05() {
-		test_AbstractSingleEncapsulatedExpression_05(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_06() {
-		test_AbstractSingleEncapsulatedExpression_06(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_07() {
-		test_AbstractSingleEncapsulatedExpression_07(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_08() {
-		test_AbstractSingleEncapsulatedExpression_08(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_09() {
-		test_AbstractSingleEncapsulatedExpression_09(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_10() {
-		test_AbstractSingleEncapsulatedExpression_10(LOWER);
-	}
-
-	@Test
-	public final void test_Lower_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE LOWER";
-		testHasTheseProposals(jpqlQuery, jpqlQuery.length(), LOWER);
-	}
-
-	@Test
-	public final void test_MaxFunction_01() {
-		String jpqlQuery = "SELECT ";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, MAX);
-	}
-
-	@Test
-	public final void test_MaxFunction_02() {
-		String jpqlQuery = "SELECT M";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, MAX);
-	}
-
-	@Test
-	public final void test_MaxFunction_03() {
-		String jpqlQuery = "SELECT MA";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, MAX);
-	}
-
-	@Test
-	public final void test_MaxFunction_04() {
-		String jpqlQuery = "SELECT MAX";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, MAX);
 	}
 
 	@Test
@@ -4986,77 +4462,77 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	public final void test_NullComparison_01() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
 		int position = jpqlQuery.length();
-		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NULL);
+		testDoesNotHaveTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_02() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NULL);
+		testHasTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_03() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name I";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NULL);
+		testHasTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_04() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NULL);
+		testHasTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_05() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS ";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NULL);
+		testHasTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_06() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS N";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NULL);
+		testHasTheseProposals(jpqlQuery, position, IS_NULL, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_07() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NO";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_08() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_09() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT N";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_10() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT NU";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
 	public final void test_NullComparison_11() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT NUL";
 		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, IS_NOT_NULL);
+		testHasOnlyTheseProposals(jpqlQuery, position, IS_NOT_NULL);
 	}
 
 	@Test
@@ -5170,8 +4646,8 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, joinIdentifiers());
-		addClauseIdentifiers(FROM, null, proposals);
+		addAll(proposals, fromClauseInternalClauses(FROM));
+		addAll(proposals, clauses(FROM, null, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
@@ -5183,68 +4659,71 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT e FROM Employee e ".length();
 
 		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, joinIdentifiers());
-		addClauseIdentifiers(FROM, ORDER_BY, proposals);
+		addAll(proposals, fromClauseInternalClauses(FROM));
+		addAll(proposals, clauses(FROM, ORDER_BY, false));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
 	public final void test_OptionalClauses_03() {
+
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e.name";
 		int position = "SELECT e FROM Employee e ".length();
 
-		testHasOnlyTheseProposals(
-			jpqlQuery,
-			position,
-			INNER_JOIN,
-			INNER_JOIN_FETCH,
-			JOIN,
-			JOIN_FETCH,
-			LEFT_JOIN,
-			LEFT_JOIN_FETCH,
-			LEFT_OUTER_JOIN,
-			LEFT_OUTER_JOIN_FETCH,
-			WHERE,
-			GROUP_BY,
-			HAVING,
-			ORDER_BY
-		);
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(ORDER_BY);
+		addAll(proposals, fromClauseInternalClauses(FROM));
+		addAll(proposals, clauses(FROM, ORDER_BY, false));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
 	public final void test_OptionalClauses_04() {
+
 		String jpqlQuery = "SELECT e FROM Employee e GROUP BY e.name";
 		int position = "SELECT e FROM Employee e ".length();
 
-		testHasOnlyTheseProposals(
-			jpqlQuery,
-			position,
-			INNER_JOIN,
-			INNER_JOIN_FETCH,
-			JOIN,
-			JOIN_FETCH,
-			LEFT_JOIN,
-			LEFT_JOIN_FETCH,
-			LEFT_OUTER_JOIN,
-			LEFT_OUTER_JOIN_FETCH,
-			WHERE,
-			GROUP_BY
-		);
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, fromClauseInternalClauses(FROM));
+		addAll(proposals, clauses(FROM, HAVING, false));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
 	@Test
 	public final void test_OptionalClauses_05() {
+
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name = 'Oracle' ";
 		int position = jpqlQuery.length();
 
-		testHasTheseProposals(
-			jpqlQuery,
-			position,
-			GROUP_BY,
-			HAVING,
-			ORDER_BY
-		);
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AND);
+		proposals.add(OR);
+		addAll(proposals, clauses(WHERE, null, false));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_OptionalClauses_06() {
+
+		String jpqlQuery = "SELECT e FROM Employee e A";
+		int position = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(fromClauseInternalClauses(FROM), "A"));
+		addAll(proposals, filter(clauses(FROM, null, false), "A"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_OptionalClauses_07() {
+		String jpqlQuery = "SELECT e FROM Employee e";
+		int position = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, position);
 	}
 
 	@Test
@@ -5607,6 +5086,20 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	@Test
 	public final void test_Select_07() throws Exception {
 
+		String jpqlQuery = "SELECT AVG(e.age)  FROM Employee e";
+		int position = "SELECT AVG(e.age) ".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AS);
+		proposals.add(FROM);
+		addAll(proposals, bnfAccessor.selectItemAggregates());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_Select_08() throws Exception {
+
 		String jpqlQuery = SELECT;
 
 		for (int position = 1, count = jpqlQuery.length(); position < count; position++) {
@@ -5634,202 +5127,52 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
-	public final void test_Size_01() {
-		test_AbstractSingleEncapsulatedExpression_01(SIZE);
-	}
-
-	@Test
-	public final void test_Size_02() {
-		test_AbstractSingleEncapsulatedExpression_02(SIZE);
-	}
-
-	@Test
-	public final void test_Size_03() {
-		test_AbstractSingleEncapsulatedExpression_03(SIZE);
-	}
-
-	@Test
-	public final void test_Size_04() {
-		test_AbstractSingleEncapsulatedExpression_04(SIZE);
-	}
-
-	@Test
-	public final void test_Size_05() {
-		test_AbstractSingleEncapsulatedExpression_05(SIZE);
-	}
-
-	@Test
-	public final void test_Size_06() {
-		test_AbstractSingleEncapsulatedExpression_06(SIZE);
-	}
-
-	@Test
-	public final void test_Size_07() {
-		test_AbstractSingleEncapsulatedExpression_07(SIZE);
-	}
-
-	@Test
-	public final void test_Size_08() {
-		test_AbstractSingleEncapsulatedExpression_08(SIZE);
-	}
-
-	@Test
-	public final void test_Size_09() {
-		test_AbstractSingleEncapsulatedExpression_09(SIZE);
-	}
-
-	@Test
-	public final void test_Size_10() {
-		test_AbstractSingleEncapsulatedExpression_10(SIZE);
-	}
-
-	@Test
-	public final void test_Some_01() {
-		test_AbstractSingleEncapsulatedExpression_01(SOME);
-	}
-
-	@Test
-	public final void test_Some_02() {
-		test_AbstractSingleEncapsulatedExpression_02(SOME);
-	}
-
-	@Test
-	public final void test_Some_03() {
-		test_AbstractSingleEncapsulatedExpression_03(SOME);
-	}
-
-	@Test
-	public final void test_Some_04() {
-		test_AbstractSingleEncapsulatedExpression_04(SOME);
-	}
-
-	@Test
-	public final void test_Some_05() {
-		test_AbstractSingleEncapsulatedExpression_05(SOME);
-	}
-
-	@Test
-	public final void test_Some_06() {
-		test_AbstractSingleEncapsulatedExpression_06(SOME);
-	}
-
-	@Test
-	public final void test_Some_07() {
-		test_AbstractSingleEncapsulatedExpression_07(SOME);
-	}
-
-	@Test
-	public final void test_Some_08() {
-		test_AbstractSingleEncapsulatedExpression_08(SOME);
-	}
-
-	@Test
-	public final void test_Some_09() {
-		test_AbstractSingleEncapsulatedExpression_09(SOME);
-	}
-
-	@Test
-	public final void test_Some_10() {
-		test_AbstractSingleEncapsulatedExpression_10(SOME);
-	}
-
-	@Test
-	public final void test_Sqrt_01() {
-		test_AbstractSingleEncapsulatedExpression_01(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_02() {
-		test_AbstractSingleEncapsulatedExpression_02(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_03() {
-		test_AbstractSingleEncapsulatedExpression_03(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_04() {
-		test_AbstractSingleEncapsulatedExpression_04(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_05() {
-		test_AbstractSingleEncapsulatedExpression_05(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_06() {
-		test_AbstractSingleEncapsulatedExpression_06(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_07() {
-		test_AbstractSingleEncapsulatedExpression_07(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_08() {
-		test_AbstractSingleEncapsulatedExpression_08(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_09() {
-		test_AbstractSingleEncapsulatedExpression_09(SQRT);
-	}
-
-	@Test
-	public final void test_Sqrt_10() {
-		test_AbstractSingleEncapsulatedExpression_10(SQRT);
-	}
-
-	@Test
 	public final void test_StateFieldPath_01() throws Exception {
 		String jpqlQuery = "SELECT c. FROM CodeAssist c";
 		int position = "SELECT c.".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "id", "name", "manager");
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(CodeAssist.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_02() throws Exception {
 		String jpqlQuery = "SELECT c.name FROM CodeAssist c";
 		int position = "SELECT c.n".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "name");
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(singledValuedObjectFieldNames(CodeAssist.class), "n"));
 	}
 
 	@Test
 	public final void test_StateFieldPath_03() throws Exception {
 		String jpqlQuery = "SELECT c.name FROM CodeAssist c";
 		int position = "SELECT c.name".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "name");
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(singledValuedObjectFieldNames(CodeAssist.class), "name"));
 	}
 
 	@Test
 	public final void test_StateFieldPath_04() throws Exception {
 		String jpqlQuery = "SELECT c.manager.name FROM CodeAssist c";
 		int position = "SELECT c.m".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "manager");
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(singledValuedObjectFieldNames(CodeAssist.class), "m"));
 	}
 
 	@Test
 	public final void test_StateFieldPath_05() throws Exception {
 		String jpqlQuery = "SELECT c.manager.name FROM CodeAssist c";
 		int position = "SELECT c.manager".length();
-		testHasTheseProposals(jpqlQuery, position, "manager");
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(singledValuedObjectFieldNames(CodeAssist.class), "manager"));
 	}
 
 	@Test
 	public final void test_StateFieldPath_06() throws Exception {
 		String jpqlQuery = "SELECT c.manager.name FROM CodeAssist c";
 		int position = "SELECT c.manager.".length();
-		testHasTheseProposals(jpqlQuery, position, "department", "empId", "manager", "name", "salary", "dept");
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(Employee.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_07() throws Exception {
 		String jpqlQuery = "SELECT c.manager.name FROM CodeAssist c";
 		int position = "SELECT c.manager.name".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "name");
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(singledValuedObjectFieldNames(Employee.class), "name"));
 	}
 
 	@Test
@@ -5843,57 +5186,77 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	public final void test_StateFieldPath_09() throws Exception {
 		String jpqlQuery = "SELECT e. FROM CodeAssist c JOIN c.employees e";
 		int position = "SELECT e.".length();
-		testHasTheseProposals(jpqlQuery, position, "department", "empId", "manager", "name", "salary", "dept");
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(Employee.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_10() throws Exception {
-		String jpqlQuery = "SELECT e. FROM CodeAssist c, IN c.employees e";
+		String jpqlQuery = "SELECT e. FROM CodeAssist c, IN (c.employees) e";
 		int position = "SELECT e.".length();
-		testHasTheseProposals(jpqlQuery, position, "department", "empId", "manager", "name", "salary", "dept");
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(Employee.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_11() throws Exception {
-		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a";
+		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
 		int position = "SELECT a.".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "alias", "customer", "id");
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(Alias.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_12() throws Exception {
-		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a";
+		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
 		int position = "SELECT a.alias".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, "alias");
 	}
 
 	@Test
 	public final void test_StateFieldPath_13() throws Exception {
-		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a";
-		int position = "SELECT a.alias FROM CodeAssist c, IN c.".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "employees", "customerMapAddress", "customerMap", "manager");
+		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
+		int position = "SELECT a.alias FROM CodeAssist c, IN (c.".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, relationshipAndCollectionFieldNames(CodeAssist.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_14() throws Exception {
-		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a";
-		int position = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(".length();
+		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
+		int position = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, "cust");
 	}
 
 	@Test
 	public final void test_StateFieldPath_15() throws Exception {
-		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).aliases) a";
-		int position = "SELECT a.alias FROM CodeAssist c, IN c.customerMap cust, IN(KEY(cust).".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "address", "home", "dept", "phoneList", "aliases");
+		String jpqlQuery = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).aliases) a";
+		int position = "SELECT a.alias FROM CodeAssist c, IN (c.customerMap) cust, IN(KEY(cust).".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, relationshipAndCollectionFieldNames(Customer.class));
 	}
 
 	@Test
 	public final void test_StateFieldPath_16() throws Exception {
+		String jpqlQuery = "SELECT c FROM CodeAssist c WHERE ALL(SELECT e FROM c.";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, relationshipAndCollectionFieldNames(CodeAssist.class));
+	}
 
+	@Test
+	public final void test_StateFieldPath_17() throws Exception {
+		String jpqlQuery = "SELECT c FROM CodeAssist c WHERE ALL(SELECT e FROM c.employees e";
+		int position = "SELECT c FROM CodeAssist c WHERE ALL(SELECT e FROM c.employees".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, filter(relationshipAndCollectionFieldNames(CodeAssist.class), "employees"));
+	}
+
+	@Test
+	public final void test_StateFieldPath_18() throws Exception {
 		String jpqlQuery = "update Employee e set e.name = 'JPQL' where (select a from address a where a.";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "city", "id", "state", "street", "zip");
+		testHasOnlyTheseProposals(jpqlQuery, position, nonTransientFieldNames(Address.class));
+	}
+
+	@Test
+	public final void test_StateFieldPath_19() throws Exception {
+		String jpqlQuery = "select O from Product O where O.";
+		int position = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, position, singledValuedObjectFieldNames(Product.class));
 	}
 
 	@Test
@@ -5972,7 +5335,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) ".length();
 
 		List<String> proposals = new ArrayList<String>();
-		proposals.add(AS);
 		proposals.add(FROM);
 		addAll(proposals, bnfAccessor.selectItemAggregates());
 
@@ -5988,10 +5350,44 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
+	public final void test_Subquery_12() throws Exception {
+
+		String jpqlQuery = "select s from Employee s where (s";
+		int position = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("s");
+		proposals.add(SELECT);
+		addAll(proposals, filter(bnfAccessor.conditionalExpressionsFunctions(), "s"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_Subquery_13() throws Exception {
+
+		String jpqlQuery = "select e from Employee e where (";
+		int position = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		proposals.add(SELECT);
+		addAll(proposals, bnfAccessor.conditionalExpressionsFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
 	public final void test_Subquery_StateFieldPath_01() throws Exception {
+
 		String jpqlQuery = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)";
 		int position = "SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, "empId", "roomNumber", "salary", "address", "dept", "managerEmployee");
+
+		testHasOnlyTheseProposals(
+			jpqlQuery,
+			position,
+			singledValuedObjectFieldNames(Employee.class, acceptableType(AVG))
+		);
 	}
 
 	@Test
@@ -6309,91 +5705,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
-	public final void test_Trim_001() {
-		test_AbstractSingleEncapsulatedExpression_01(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_002() {
-		test_AbstractSingleEncapsulatedExpression_02(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_003() {
-		test_AbstractSingleEncapsulatedExpression_03(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_004() {
-		test_AbstractSingleEncapsulatedExpression_04(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_005() {
-		test_AbstractSingleEncapsulatedExpression_05(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_006() {
-		test_AbstractSingleEncapsulatedExpression_06(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_007() {
-		test_AbstractSingleEncapsulatedExpression_07(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_008() {
-		test_AbstractSingleEncapsulatedExpression_08(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_009() {
-		test_AbstractSingleEncapsulatedExpression_09(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_01() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE ";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, TRIM);
-	}
-
-	@Test
-	public final void test_Trim_010() {
-		test_AbstractSingleEncapsulatedExpression_10(TRIM);
-	}
-
-	@Test
-	public final void test_Trim_02() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE T";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, TRIM);
-	}
-
-	@Test
-	public final void test_Trim_03() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE TR";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, TRIM);
-	}
-
-	@Test
-	public final void test_Trim_04() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE TRI";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, TRIM);
-	}
-
-	@Test
-	public final void test_Trim_05() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE TRIM";
-		int position = jpqlQuery.length();
-		testHasTheseProposals(jpqlQuery, position, TRIM);
-	}
-
-	@Test
 	public final void test_Trim_06() {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE TRIM(";
 		int position = jpqlQuery.length();
@@ -6580,56 +5891,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT e FROM Employee e WHERE TRIM(TRAILING 'd' FROM";
 		int position = jpqlQuery.length() - 1;
 		testHasOnlyTheseProposals(jpqlQuery, position, FROM);
-	}
-
-	@Test
-	public final void test_Type_01() {
-		test_AbstractSingleEncapsulatedExpression_01(TYPE);
-	}
-
-	@Test
-	public final void test_Type_02() {
-		test_AbstractSingleEncapsulatedExpression_02(TYPE);
-	}
-
-	@Test
-	public final void test_Type_03() {
-		test_AbstractSingleEncapsulatedExpression_03(TYPE);
-	}
-
-	@Test
-	public final void test_Type_04() {
-		test_AbstractSingleEncapsulatedExpression_04(TYPE);
-	}
-
-	@Test
-	public final void test_Type_05() {
-		test_AbstractSingleEncapsulatedExpression_05(TYPE);
-	}
-
-	@Test
-	public final void test_Type_06() {
-		test_AbstractSingleEncapsulatedExpression_06(TYPE);
-	}
-
-	@Test
-	public final void test_Type_07() {
-		test_AbstractSingleEncapsulatedExpression_07(TYPE);
-	}
-
-	@Test
-	public final void test_Type_08() {
-		test_AbstractSingleEncapsulatedExpression_08(TYPE);
-	}
-
-	@Test
-	public final void test_Type_09() {
-		test_AbstractSingleEncapsulatedExpression_09(TYPE);
-	}
-
-	@Test
-	public final void test_Type_10() {
-		test_AbstractSingleEncapsulatedExpression_10(TYPE);
 	}
 
 	@Test
@@ -6850,112 +6111,6 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 	}
 
 	@Test
-	public final void test_Upper_01() {
-		test_AbstractSingleEncapsulatedExpression_01(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_02() {
-		test_AbstractSingleEncapsulatedExpression_02(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_03() {
-		test_AbstractSingleEncapsulatedExpression_03(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_04() {
-		test_AbstractSingleEncapsulatedExpression_04(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_05() {
-		test_AbstractSingleEncapsulatedExpression_05(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_06() {
-		test_AbstractSingleEncapsulatedExpression_06(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_07() {
-		test_AbstractSingleEncapsulatedExpression_07(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_08() {
-		test_AbstractSingleEncapsulatedExpression_08(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_09() {
-		test_AbstractSingleEncapsulatedExpression_09(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_10() {
-		test_AbstractSingleEncapsulatedExpression_10(UPPER);
-	}
-
-	@Test
-	public final void test_Upper_12() {
-		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER";
-		testHasTheseProposals(jpqlQuery, jpqlQuery.length(), UPPER);
-	}
-
-	@Test
-	public final void test_Value_01() {
-		test_AbstractSingleEncapsulatedExpression_01(VALUE);
-	}
-
-	@Test
-	public final void test_Value_02() {
-		test_AbstractSingleEncapsulatedExpression_02(VALUE);
-	}
-
-	@Test
-	public final void test_Value_03() {
-		test_AbstractSingleEncapsulatedExpression_03(VALUE);
-	}
-
-	@Test
-	public final void test_Value_04() {
-		test_AbstractSingleEncapsulatedExpression_04(VALUE);
-	}
-
-	@Test
-	public final void test_Value_05() {
-		test_AbstractSingleEncapsulatedExpression_05(VALUE);
-	}
-
-	@Test
-	public final void test_Value_06() {
-		test_AbstractSingleEncapsulatedExpression_06(VALUE);
-	}
-
-	@Test
-	public final void test_Value_07() {
-		test_AbstractSingleEncapsulatedExpression_07(VALUE);
-	}
-
-	@Test
-	public final void test_Value_08() {
-		test_AbstractSingleEncapsulatedExpression_08(VALUE);
-	}
-
-	@Test
-	public final void test_Value_09() {
-		test_AbstractSingleEncapsulatedExpression_09(VALUE);
-	}
-
-	@Test
-	public final void test_Value_10() {
-		test_AbstractSingleEncapsulatedExpression_10(VALUE);
-	}
-
-	@Test
 	public final void test_Where_01() {
 		String jpqlQuery = "SELECT e FROM Employee e ";
 		int position = jpqlQuery.length();
@@ -7065,5 +6220,114 @@ public abstract class AbstractContentAssistTest extends ContentAssistTest {
 		String jpqlQuery = "SELECT e FROM Employee e J";
 		int position = jpqlQuery.length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, WHERE);
+	}
+
+	protected class TweakFunctionIdentifiers {
+
+		protected void tweak(List<String> proposals,
+		                     String identifier,
+		                     String identifierFragment,
+		                     int positionIndex) {
+
+			// Special case for ALL/SOME/ANY
+			if (identifier.equals(ALL) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(SOME)) {
+					proposals.add(SOME);
+				}
+				if (!proposals.contains(ANY)) {
+					proposals.add(ANY);
+				}
+			}
+			else if (identifier.equals(ANY) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(ALL)) {
+					proposals.add(ALL);
+				}
+				if (!proposals.contains(SOME)) {
+					proposals.add(SOME);
+				}
+			}
+			else if (identifier.equals(SOME) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(ALL)) {
+					proposals.add(ALL);
+				}
+				if (!proposals.contains(ANY)) {
+					proposals.add(ANY);
+				}
+			}
+
+			// Special case for CURRENT_DATE/CURRENT_TIME/CURRENT_TIMESTAMP
+			else if (identifier.equals(CURRENT_DATE) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(CURRENT_TIME)) {
+					proposals.add(CURRENT_TIME);
+				}
+				if (!proposals.contains(CURRENT_TIMESTAMP)) {
+					proposals.add(CURRENT_TIMESTAMP);
+				}
+			}
+			else if (identifier.equals(CURRENT_TIME) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(CURRENT_DATE)) {
+					proposals.add(CURRENT_DATE);
+				}
+				if (!proposals.contains(CURRENT_TIMESTAMP)) {
+					proposals.add(CURRENT_TIMESTAMP);
+				}
+			}
+			else if (identifier.equals(CURRENT_TIMESTAMP) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(CURRENT_DATE)) {
+					proposals.add(CURRENT_DATE);
+				}
+				if (!proposals.contains(CURRENT_TIME)) {
+					proposals.add(CURRENT_TIME);
+				}
+			}
+			else if (identifier.equals(CURRENT_TIME) && identifierFragment.equals(CURRENT_TIMESTAMP) ||
+			         identifier.equals(CURRENT_TIMESTAMP) && identifierFragment.equals(CURRENT_TIME)) {
+
+				if (!proposals.contains(CURRENT_DATE)) {
+					proposals.add(CURRENT_DATE);
+				}
+			}
+
+			// Special case for EXISTS/NOT EXISTS
+			else if (identifier.equals(EXISTS) && identifier.equals(identifierFragment) && positionIndex > 0) {
+				if (!proposals.contains(NOT_EXISTS)) {
+					proposals.add(NOT_EXISTS);
+				}
+			}
+
+			// Special case for TRUE/FALSE/NULL
+			else if (identifier.equals(TRUE) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(FALSE)) {
+					proposals.add(FALSE);
+				}
+				if (!proposals.contains(NULL)) {
+					proposals.add(NULL);
+				}
+			}
+			else if (identifier.equals(FALSE) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(TRUE)) {
+					proposals.add(TRUE);
+				}
+				if (!proposals.contains(NULL)) {
+					proposals.add(NULL);
+				}
+			}
+			else if (identifier.equals(NULL) && identifier.equals(identifierFragment)) {
+				if (!proposals.contains(FALSE)) {
+					proposals.add(FALSE);
+				}
+				if (!proposals.contains(TRUE)) {
+					proposals.add(TRUE);
+				}
+			}
+			else if (identifier.equals(NULLIF) && identifierFragment.equals(NULL)) {
+				if (!proposals.contains(FALSE)) {
+					proposals.add(FALSE);
+				}
+				if (!proposals.contains(TRUE)) {
+					proposals.add(TRUE);
+				}
+			}
+		}
 	}
 }

@@ -13,12 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;

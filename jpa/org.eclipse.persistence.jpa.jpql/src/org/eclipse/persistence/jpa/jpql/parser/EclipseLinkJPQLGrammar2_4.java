@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,14 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.ParameterCount;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * <p>This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a> and the additional
- * support provided by EclipseLink 2.4.
- * <p>
+ * support provided by EclipseLink 2.4.</p>
+ *
  * The BNFs of the additional support are the following:
  *
  * <pre><code> select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause] {union_clause}*
@@ -74,11 +73,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * database_type ::= data_type_literal [( [numeric_literal [, numeric_literal]] )]
  *
- * data_type_literal ::= [CHAR, VARCHAR, NUMERIC, INTEGER, DATE, TIME, TIMESTAMP, etc]
+ * data_type_literal ::= [CHAR, VARCHAR, NUMERIC, INTEGER, DATE, TIME, TIMESTAMP, etc]</code></pre>
  *
- * </code></pre>
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -270,7 +272,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerIdentifierRole(INTERSECT,      IdentifierRole.CLAUSE);
 		registerIdentifierRole(NULLS_FIRST,    IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(NULLS_LAST,     IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(ON,             IdentifierRole.COMPOUND_FUNCTION); // ON x
+		registerIdentifierRole(ON,             IdentifierRole.CLAUSE);            // ON x
 		registerIdentifierRole(OPERATOR,       IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(REGEXP,         IdentifierRole.COMPOUND_FUNCTION); // x REGEXP y
 		registerIdentifierRole(SQL,            IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  *
  * @see JPQLGrammar
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -724,6 +724,17 @@ public interface Expression {
 	IterableListIterator<Expression> children();
 
 	/**
+	 * Retrieves the {@link JPQLQueryBNF} that represents the fragment of this {@link Expression}
+	 * that was used when parsing the given {@link Expression}.
+	 *
+	 * @param expression The {@link Expression} that is a descendant of this one
+	 * @return The {@link JPQLQueryBNF} that was used to parse the given expression
+	 * @since 2.5
+	 */
+	JPQLQueryBNF findQueryBNF(Expression expression);
+
+
+	/**
 	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
 	 *
 	 * @return The {@link JPQLGrammar} that was used to parse this {@link Expression}
@@ -781,19 +792,17 @@ public interface Expression {
 	boolean isAncestor(Expression expression);
 
 	/**
-	 * Creates a list representing this expression and its children. In order to add every piece of
-	 * the expression.
+	 * Returns the list representing this {@link Expression} and its children.
 	 *
 	 * @return The {@link Expression Expressions} representing this {@link Expression}
 	 */
 	IterableListIterator<Expression> orderedChildren();
 
 	/**
-	 * Retrieves the <code>Expression</code> located at the given position using the actual
-	 * query, which may have extra whitespace.
+	 * Retrieves the <code>Expression</code> located at the given position using the actual query,
+	 * which may have extra whitespace.
 	 *
-	 * @param position The array has one element and is the position of the {@link Expression}
-	 * to retrieve
+	 * @param position The array has one element and is the position of the {@link Expression} to retrieve
 	 */
 	void populatePosition(QueryPosition queryPosition, int position);
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see ModExpression
  * @see NullIfExpression
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -126,6 +126,23 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		spaces.add(Boolean.FALSE);
 
 		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((firstExpression != null) && firstExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(0));
+		}
+
+		if ((secondExpression != null) && secondExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(1));
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**
@@ -248,7 +265,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		// Parse the first expression
 		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
 
-		if (hasFirstExpression()) {
+		if (firstExpression != null) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
@@ -267,7 +284,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		// Parse the second expression
 		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
-		if (!hasSecondExpression()) {
+		if (secondExpression == null) {
 			if (!hasComma && isSecondExpressionOptional()) {
 				hasSpaceAfterComma = false;
 			}

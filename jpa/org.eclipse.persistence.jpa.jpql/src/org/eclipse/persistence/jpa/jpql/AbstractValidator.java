@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
@@ -110,6 +111,13 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * The list of {@link JPQLQueryProblem} describing grammatical and semantic issues found in the query.
 	 */
 	private Collection<JPQLQueryProblem> problems;
+
+	/**
+	 * This visitor determines whether the visited {@link Expression} is a subquery or not.
+	 *
+	 * @since 2.5
+	 */
+	private SubqueryVisitor subqueryVisitor;
 
 	/**
 	 * The {@link JPQLQueryBNFValidator} mapped by the BNF IDs.
@@ -247,6 +255,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			messageKey,
 			messageArguments
 		);
+	}
+
+	/**
+	 * Creates the visitor that checks if the visited expression is a subquery or not..
+	 *
+	 * @return A new {@link SubqueryVisitor}
+	 * @since 2.5
+	 */
+	protected SubqueryVisitor buildSubqueryVisitor() {
+		return new SubqueryVisitor();
 	}
 
 	/**
@@ -423,6 +441,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the visitor that checks if the visited expression is a subquery or not.
+	 *
+	 * @return {@link SubqueryVisitor}
+	 * @since 2.5
+	 */
+	protected SubqueryVisitor getSubqueryVisitor() {
+		if (subqueryVisitor == null) {
+			subqueryVisitor = buildSubqueryVisitor();
+		}
+		return subqueryVisitor;
+	}
+
+	/**
 	 * Initializes this validator.
 	 */
 	protected void initialize() {
@@ -430,42 +461,20 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * Determines whether the given {@link Expression} is part of a subquery.
+	 * Determines whether the given {@link Expression} is a subquery.
 	 *
-	 * @param expression The {@link Expression} to start scanning its location
-	 * @return <code>true</code> if the given {@link Expression} is part of a subquery; <code>false</code>
-	 * if it's part of the top-level query
-	 * @since 2.4
+	 * @param expression The {@link Expression} to check its type
+	 * @return <code>true</code> if the given {@link Expression} is a subquery; <code>false</code> otherwise
+	 * @since 2.4.2
 	 */
 	protected boolean isSubquery(Expression expression) {
-		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		SubqueryVisitor visitor = getSubqueryVisitor();
 		try {
 			expression.accept(visitor);
-			return visitor.simpleSelectStatement != null;
+			return visitor.expression != null;
 		}
 		finally {
-			visitor.dispose();
-		}
-	}
-
-	/**
-	 * Determines whether the given {@link Expression} is part of the top-level query.
-	 *
-	 * @param expression The {@link Expression} to start scanning its location
-	 * @return <code>true</code> if the given {@link Expression} is part of the top-level query;
-	 * <code>false</code> if it's part of a subquery
-	 * @since 2.4
-	 */
-	protected boolean isTopLevelQuery(Expression expression) {
-		OwningStatementVisitor visitor = getOwningStatementVisitor();
-		try {
-			expression.accept(visitor);
-			return visitor.deleteStatement != null ||
-			       visitor.selectStatement != null ||
-			       visitor.updateStatement != null;
-		}
-		finally {
-			visitor.dispose();
+			visitor.expression = null;
 		}
 	}
 
@@ -544,6 +553,46 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		finally {
 			bypassValidator.visitor = null;
 			validator.valid = false;
+		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of a subquery.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of a subquery; <code>false</code>
+	 * if it's part of the top-level query
+	 * @since 2.4
+	 */
+	protected boolean isWithinSubquery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.simpleSelectStatement != null;
+		}
+		finally {
+			visitor.dispose();
+		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of the top-level query.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of the top-level query;
+	 * <code>false</code> if it's part of a subquery
+	 * @since 2.4
+	 */
+	protected boolean isWithinTopLevelQuery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.deleteStatement != null ||
+			       visitor.selectStatement != null ||
+			       visitor.updateStatement != null;
+		}
+		finally {
+			visitor.dispose();
 		}
 	}
 
@@ -744,7 +793,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	/**
 	 * This visitor validates any {@link Expression} by checking its BNF against some BNFs.
 	 */
-	protected static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
+	public static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
+
+		/**
+		 *
+		 */
+		protected boolean bypassCompound;
 
 		/**
 		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
@@ -755,24 +809,51 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
 		 * used for validation.
 		 */
-		public boolean valid;
+		protected boolean valid;
 
 		/**
 		 * Creates a new <code>JPQLQueryBNFValidator</code>.
 		 *
 		 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid
 		 */
-		protected JPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
+		public JPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
 			super();
 			this.queryBNF = queryBNF;
 		}
 
 		private void allJPQLQueryBNFs(Set<String> queryBNFIds, JPQLQueryBNF queryBNF) {
-			if (queryBNFIds.add(queryBNF.getId()) && !queryBNF.isCompound()) {
+			if (queryBNFIds.add(queryBNF.getId()) && (bypassCompound || !queryBNF.isCompound())) {
 				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
 					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
 				}
 			}
+		}
+
+		/**
+		 * Disposes of the internal data.
+		 */
+		public void dispose() {
+			valid = false;
+			bypassCompound = false;
+		}
+
+		/**
+		 * Determines whether the visited {@link Expression} is valid or not based on the {@link
+		 * JPQLQueryBNF} that was specified.
+		 *
+		 * @return <code>true</code> if the {@link Expression} is valid; <code>false</code> otherwise
+		 */
+		public boolean isValid() {
+			return valid;
+		}
+
+		/**
+		 * Sets
+		 *
+		 * @param bypassCompound
+		 */
+		public void setBypassCompound(boolean bypassCompound) {
+			this.bypassCompound = bypassCompound;
 		}
 
 		/**
@@ -807,6 +888,15 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(BadExpression expression) {
 			// This is not a valid expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			// A collection expression is never valid
+			valid = false;
 		}
 
 		/**
@@ -848,7 +938,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	/**
 	 * This visitor retrieves the clause owning the visited {@link Expression}.
 	 */
-	protected static class OwningClauseVisitor extends AbstractTraverseParentVisitor {
+	public static class OwningClauseVisitor extends AbstractTraverseParentVisitor {
 
 		public DeleteClause deleteClause;
 		public FromClause fromClause;
@@ -871,7 +961,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 * Disposes the internal data.
 		 */
-		protected void dispose() {
+		public void dispose() {
 			deleteClause       = null;
 			fromClause         = null;
 			groupByClause      = null;
@@ -1015,6 +1105,25 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(UpdateStatement expression) {
 			updateStatement = expression;
+		}
+	}
+
+	/**
+	 * This visitor retrieves the statement owning the visited {@link Expression}.
+	 */
+	protected static class SubqueryVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The subquery is the visited {@link Expression} is a subquery.
+		 */
+		private SimpleSelectStatement expression;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			this.expression = expression;
 		}
 	}
 }

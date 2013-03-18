@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -175,9 +175,9 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF findQueryBNF(AbstractExpression expression) {
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
 
-		if (this.expression == expression) {
+		if (this.expression.isAncestor(expression)) {
 			return getQueryBNF(InExpressionExpressionBNF.ID);
 		}
 

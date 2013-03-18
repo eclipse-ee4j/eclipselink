@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -149,6 +149,23 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		if (identificationVariable != null) {
 			children.add(identificationVariable);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((rootObject != null) && rootObject.isAncestor(expression)) {
+			return getQueryBNF(RangeDeclarationBNF.ID);
+		}
+
+		if ((identificationVariable != null) && identificationVariable.isAncestor(expression)) {
+			return getQueryBNF(IdentificationVariableBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

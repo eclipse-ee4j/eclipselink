@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
@@ -24,27 +25,140 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries and make sure the EclipseLink additional support works correctly.
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	protected void addClauseIdentifiers(String afterIdentifier,
-	                                    String beforeIdentifier,
-	                                    List<String> proposals) {
+	protected List<String> classNames() {
+		return Collections.emptyList();
+	}
 
-		super.addClauseIdentifiers(afterIdentifier, beforeIdentifier, proposals);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> clauses(String afterIdentifier, String beforeIdentifier, boolean subquery) {
 
-		if (afterIdentifier != SELECT &&
-		    beforeIdentifier == null) {
+		List<String> proposals = super.clauses(afterIdentifier, beforeIdentifier, subquery);
 
-			proposals.add(EXCEPT);
-			proposals.add(INTERSECT);
-			proposals.add(UNION);
+		if (subquery) {
+			return proposals;
 		}
+
+		if (afterIdentifier == SELECT) {
+
+			if (beforeIdentifier != FROM     &&
+			    beforeIdentifier != WHERE    &&
+			    beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING   &&
+			    beforeIdentifier != ORDER_BY &&
+			    beforeIdentifier != UNION    &&
+			    beforeIdentifier != EXCEPT   &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+		else if (afterIdentifier == FROM) {
+
+			if (beforeIdentifier != WHERE    &&
+			    beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING   &&
+			    beforeIdentifier != ORDER_BY &&
+			    beforeIdentifier != UNION    &&
+			    beforeIdentifier != EXCEPT   &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+		else if (afterIdentifier == WHERE) {
+
+			if (beforeIdentifier != GROUP_BY &&
+			    beforeIdentifier != HAVING   &&
+			    beforeIdentifier != ORDER_BY &&
+			    beforeIdentifier != UNION    &&
+			    beforeIdentifier != EXCEPT   &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+		else if (afterIdentifier == GROUP_BY) {
+
+			if (beforeIdentifier != HAVING   &&
+			    beforeIdentifier != ORDER_BY &&
+			    beforeIdentifier != UNION    &&
+			    beforeIdentifier != EXCEPT   &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+		else if (afterIdentifier == HAVING) {
+
+			if (beforeIdentifier != ORDER_BY &&
+			    beforeIdentifier != UNION    &&
+			    beforeIdentifier != EXCEPT   &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+		else if (afterIdentifier == ORDER_BY) {
+
+			if (beforeIdentifier != UNION  &&
+			    beforeIdentifier != EXCEPT &&
+			    beforeIdentifier != INTERSECT) {
+
+				proposals.add(UNION);
+				proposals.add(EXCEPT);
+				proposals.add(INTERSECT);
+			}
+		}
+
+		return proposals;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> columnNames(String tableName) {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> enumConstants() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> enumTypes() {
+		return Collections.emptyList();
 	}
 
 	/**
@@ -53,6 +167,14 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return getGrammar().getProviderVersion().equals(EclipseLinkJPQLGrammar2_4.VERSION);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<String> tableNames() {
+		return Collections.emptyList();
 	}
 
 	@Test
@@ -535,61 +657,11 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	public void test_Func_01() {
-		test_AbstractSingleEncapsulatedExpression_01(FUNC);
-	}
-
-	@Test
-	public void test_Func_02() {
-		test_AbstractSingleEncapsulatedExpression_02(FUNC);
-	}
-
-	@Test
-	public void test_Func_03() {
-		test_AbstractSingleEncapsulatedExpression_03(FUNC);
-	}
-
-	@Test
-	public void test_Func_04() {
-		test_AbstractSingleEncapsulatedExpression_04(FUNC);
-	}
-
-	@Test
-	public void test_Func_05() {
-		test_AbstractSingleEncapsulatedExpression_05(FUNC);
-	}
-
-	@Test
-	public void test_Func_06() {
-		test_AbstractSingleEncapsulatedExpression_06(FUNC);
-	}
-
-	@Test
-	public void test_Func_07() {
-		test_AbstractSingleEncapsulatedExpression_07(FUNC);
-	}
-
-	@Test
-	public void test_Func_08() {
-		test_AbstractSingleEncapsulatedExpression_08(FUNC);
-	}
-
-	@Test
-	public void test_Func_09() {
-		test_AbstractSingleEncapsulatedExpression_09(FUNC);
-	}
-
-	@Test
-	public void test_Func_10() {
-		test_AbstractSingleEncapsulatedExpression_10(FUNC);
-	}
-
-	@Test
 	public void test_OrderByItem_NullOrdering_01() {
 
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e";
 		int position = jpqlQuery.length();
-		testHasNoProposals(jpqlQuery, position);
+		testHasOnlyTheseProposals(jpqlQuery, position, "e");
 	}
 
 	@Test
@@ -949,6 +1021,22 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 		addAll(proposals, filter(bnfAccessor.patternValueFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_SubqueryInFrom_PathtExpression_01() {
+
+		String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
+		int position = "Select avg(e3.".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, "c", "name");
+	}
+
+	@Test
+	public void test_SubqueryInFrom_PathtExpression_02() {
+
+		String jpqlQuery  = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.name";
+		int position = "Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.name from Employee e2 group by e2.name) e3 where e.name = e3.".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, "c", "name");
 	}
 
 	@Test
@@ -1861,6 +1949,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 		int startPosition = jpqlQuery.length();
 
 		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
 		addAll(proposals, filter(bnfAccessor.groupByItemFunctions(), "e"));
 
 		testHasOnlyTheseProposals(jpqlQuery, startPosition, proposals);
@@ -1871,10 +1960,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
 		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name, e e";
 		int startPosition = jpqlQuery.length();
-
-		List<String> proposals = new ArrayList<String>();
-		addAll(proposals, filter(bnfAccessor.groupByItemFunctions(), "e"));
-
+		Iterable<String> proposals = filter(clauses(GROUP_BY, null, false), "e");
 		testHasOnlyTheseProposals(jpqlQuery, startPosition, proposals);
 	}
 }

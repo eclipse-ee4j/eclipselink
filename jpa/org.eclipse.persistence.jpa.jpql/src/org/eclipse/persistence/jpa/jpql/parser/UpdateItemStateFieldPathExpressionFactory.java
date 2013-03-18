@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see StateFieldPathExpression
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -74,19 +74,13 @@ public final class UpdateItemStateFieldPathExpressionFactory extends ExpressionF
 				return expression;
 			}
 
-			factory = registry.getExpressionFactory(PreLiteralExpressionFactory.ID);
-
-			// Pass on the fallback ExpressionFactory, this will allow PreLiteralExpressionFactory to
-			// give to LiteralExpressionFactory the ExpressionFactory that will be used to create the
-			// right object but will still create the right object when the query is invalid
-			factory.setFallBackExpressionFactory(StateFieldPathExpressionFactory.ID);
-
+			factory = registry.getExpressionFactory(StateFieldPathExpressionFactory.ID);
 			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 		}
-		else {
-			expression = new StateFieldPathExpression(parent, word);
-			expression.parse(wordParser, tolerant);
-			return expression;
-		}
+
+		// Create the state path expression
+		expression = new StateFieldPathExpression(parent, word);
+		expression.parse(wordParser, tolerant);
+		return expression;
 	}
 }

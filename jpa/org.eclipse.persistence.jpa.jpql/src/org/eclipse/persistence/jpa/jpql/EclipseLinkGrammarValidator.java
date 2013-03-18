@@ -31,7 +31,6 @@ import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -586,7 +585,7 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		 * {@inheritDoc}
 		 */
 		@Override
-		protected void dispose() {
+		public void dispose() {
 			super.dispose();
 			unionClause = null;
 		}

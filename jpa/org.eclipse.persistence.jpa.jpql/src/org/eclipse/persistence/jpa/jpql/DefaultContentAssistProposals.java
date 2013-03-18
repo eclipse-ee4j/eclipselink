@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -28,13 +28,12 @@ import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The default implementation of {@link ContentAssistProposals} which stores the valid proposals.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -482,6 +481,15 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		}
 
 		return removed;
+	}
+
+	/**
+	 * Removes the given JPQL identifier.
+	 *
+	 * @param identifier The identifier that was added but actually needs to be removed
+	 */
+	protected void removeIdentifier(String identifier) {
+		identifiers.remove(identifier);
 	}
 
 	private int startPositionImp(WordParser wordParser, String proposal) {

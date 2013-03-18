@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -110,6 +110,19 @@ public final class GroupByClause extends AbstractExpression {
 		spaces.add(Boolean.FALSE);
 
 		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((groupByItems != null) && groupByItems.isAncestor(expression)) {
+			return getQueryBNF(GroupByItemBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

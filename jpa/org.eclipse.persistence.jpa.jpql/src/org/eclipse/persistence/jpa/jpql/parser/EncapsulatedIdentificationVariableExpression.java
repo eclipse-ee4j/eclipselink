@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,7 +43,7 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	 */
 	@Override
 	public final String encapsulatedExpressionBNF() {
-		return PreLiteralExpressionBNF.ID;
+		return IdentificationVariableBNF.ID;
 	}
 
 	/**
@@ -60,7 +60,7 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
 		if (tolerant) {
-			return super.parse(wordParser, queryBNFId, tolerant);
+			return super.parse(wordParser, LiteralBNF.ID, tolerant);
 		}
 
 		String word = wordParser.word();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -122,11 +122,27 @@ public final class ResultVariable extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((selectExpression != null) && selectExpression.isAncestor(expression)) {
+			return getQueryBNF(SelectExpressionBNF.ID);
+		}
+
+		if ((resultVariable != null) && resultVariable.isAncestor(expression)) {
+			return getQueryBNF(IdentificationVariableBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual <b>AS</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
-	 * @return The <b>AS</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>AS</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualAsIdentifier() {
 		return (asIdentifier != null) ? asIdentifier : ExpressionTools.EMPTY_STRING;
@@ -196,8 +212,7 @@ public final class ResultVariable extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>AS</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
@@ -235,7 +250,10 @@ public final class ResultVariable extends AbstractExpression {
 		// Select expression
 		if (selectExpression != null) {
 			selectExpression.toParsedText(writer, actual);
-			writer.append(SPACE);
+
+			if ((writer.length() > 0) && (writer.charAt(writer.length() - 1) != SPACE)) {
+				writer.append(SPACE);
+			}
 		}
 
 		// 'AS'

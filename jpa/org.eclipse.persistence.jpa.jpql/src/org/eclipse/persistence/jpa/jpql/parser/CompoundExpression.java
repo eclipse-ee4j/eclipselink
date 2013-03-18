@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>expression ::= left_expression identifier right_expression</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -104,6 +104,23 @@ public abstract class CompoundExpression extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if (getLeftExpression().isAncestor(expression)) {
+			return getQueryBNF(leftExpressionBNF());
+		}
+
+		if (getRightExpression().isAncestor(expression)) {
+			return getQueryBNF(rightExpressionBNF());
+		}
+
+		return getParent().findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the actual identifier found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
@@ -111,6 +128,15 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 */
 	public final String getActualIdentifier() {
 		return identifier;
+	}
+
+	/**
+	 * Returns the JPQL identifier of this expression.
+	 *
+	 * @return The JPQL identifier
+	 */
+	public String getIdentifier() {
+		return super.getText();
 	}
 
 	/**
@@ -170,6 +196,13 @@ public abstract class CompoundExpression extends AbstractExpression {
 	public final boolean hasSpaceAfterIdentifier() {
 		return hasSpaceAfterIdentifier;
 	}
+
+	/**
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} for the right expression.
+	 *
+	 * @return The ID of the BNF used when parsing the expression after the identifier
+	 */
+	public abstract String leftExpressionBNF();
 
 	/**
 	 * {@inheritDoc}

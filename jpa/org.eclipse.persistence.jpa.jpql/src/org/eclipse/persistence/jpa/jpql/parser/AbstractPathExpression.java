@@ -231,6 +231,19 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((identificationVariable != null) && identificationVariable.isAncestor(expression)) {
+			return getQueryBNF(GeneralIdentificationVariableBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
+	}
+
+	/**
 	 * Returns the identification variable that starts the path expression, which can be a sample
 	 * identification variable, a map value, map key or map entry expression.
 	 *

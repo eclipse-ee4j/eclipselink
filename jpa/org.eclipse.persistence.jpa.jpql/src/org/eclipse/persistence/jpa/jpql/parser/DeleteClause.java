@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -29,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>DELETE FROM Employee e</code>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -122,6 +123,38 @@ public final class DeleteClause extends AbstractExpression {
 		if (rangeVariableDeclaration != null) {
 			children.add(rangeVariableDeclaration);
 		}
+	}
+
+	/**
+	 * Creates a new {@link CollectionExpression} that will wrap the single range variable declaration.
+	 *
+	 * @return The single range variable declaration represented by a temporary collection
+	 */
+	public CollectionExpression buildCollectionExpression() {
+
+		List<AbstractExpression> children = new ArrayList<AbstractExpression>(1);
+		children.add((AbstractExpression) getRangeVariableDeclaration());
+
+		List<Boolean> commas = new ArrayList<Boolean>(1);
+		commas.add(Boolean.FALSE);
+
+		List<Boolean> spaces = new ArrayList<Boolean>(1);
+		spaces.add(Boolean.FALSE);
+
+		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((rangeVariableDeclaration != null) && rangeVariableDeclaration.isAncestor(expression)) {
+			return getQueryBNF(DeleteClauseRangeVariableDeclarationBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

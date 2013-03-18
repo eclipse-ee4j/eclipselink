@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,9 +15,8 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
-import org.eclipse.persistence.jpa.jpql.parser.PreLiteralExpressionBNF;
-
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -29,7 +28,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see NullComparisonExpression
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -214,7 +213,7 @@ public class NullComparisonExpressionStateObject extends AbstractStateObject {
 	 * @param path Either a singled-valued path expression or an input parameter
 	 */
 	private void parse(String path) {
-		StateObject stateObject = buildStateObject(path, PreLiteralExpressionBNF.ID);
+		StateObject stateObject = buildStateObject(path, LiteralBNF.ID);
 		setStateObject(stateObject);
 	}
 

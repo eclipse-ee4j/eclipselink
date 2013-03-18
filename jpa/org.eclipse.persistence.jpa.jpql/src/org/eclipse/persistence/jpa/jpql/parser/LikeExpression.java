@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -31,7 +31,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -182,6 +182,23 @@ public final class LikeExpression extends AbstractExpression {
 		if (escapeCharacter != null) {
 			children.add(escapeCharacter);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((patternValue != null) && patternValue.isAncestor(expression)) {
+			return getQueryBNF(PatternValueBNF.ID);
+		}
+
+		if ((escapeCharacter != null) && escapeCharacter.isAncestor(expression)) {
+			return getQueryBNF(LikeExpressionEscapeCharacterBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

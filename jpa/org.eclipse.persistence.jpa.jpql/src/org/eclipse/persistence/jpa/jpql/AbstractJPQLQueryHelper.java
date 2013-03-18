@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse protected License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,6 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.QueryPosition;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
@@ -63,7 +62,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.<p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -146,24 +145,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The list of valid proposals regrouped by categories
 	 */
 	public ContentAssistProposals buildContentAssistProposals(int position) {
-
-		// Create a map of the positions within the parsed tree
-		QueryPosition queryPosition = getJPQLExpression().buildPosition(
-			getQuery().getExpression(),
-			position
-		);
-
-		// Visit the expression, which will collect the possible proposals
-		AbstractContentAssistVisitor visitor = getContentAssistVisitor();
-
-		try {
-			visitor.prepare(queryPosition);
-			queryPosition.getExpression().accept(visitor);
-			return visitor.getProposals();
-		}
-		finally {
-			visitor.dispose();
-		}
+		return getContentAssistVisitor().buildProposals(position);
 	}
 
 	/**
@@ -240,6 +222,13 @@ public abstract class AbstractJPQLQueryHelper {
 		}
 	}
 
+	/**
+	 * Returns the visitor that can visit a JPQL query and based on the position of the cursor within
+	 * the JPQL query and determines the valid proposals.
+	 *
+	 * @return A concrete instance of {@link AbstractContentAssistVisitor}
+	 * @see {@link #buildContentAssistVisitor(JPQLQueryContext)}
+	 */
 	protected AbstractContentAssistVisitor getContentAssistVisitor() {
 		if (contentAssistVisitor == null) {
 			contentAssistVisitor = buildContentAssistVisitor(getQueryContext());

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,9 +14,18 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import javax.persistence.AccessType;
+import jpql.query.Address;
+import jpql.query.Employee;
+import jpql.query.EnumType;
+import jpql.query.Project;
 import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.ContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
@@ -24,8 +33,9 @@ import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
+import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
@@ -37,7 +47,7 @@ import static org.junit.Assert.*;
 /**
  * The abstract unit-test providing helper methods required for testing content assist.
  *
- * @version 2.5
+ * @version 2.4.2
  * @since 2.5
  * @author Pascal Filion
  */
@@ -49,47 +59,15 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	protected AbstractJPQLQueryHelper queryHelper;
 	protected JavaQuery virtualQuery;
 
-	protected final List<String> addAll(List<String> items1, Iterable<String> items2) {
+	protected Class<?> acceptableType(String identifier) {
+		return null;
+	}
+
+	protected final <T extends Collection<String>> T addAll(T items1, Iterable<String> items2) {
 		for (String item2 : items2) {
 			items1.add(item2);
 		}
 		return items1;
-	}
-
-	protected void addClauseIdentifiers(String afterIdentifier,
-	                                    String beforeIdentifier,
-	                                    List<String> proposals) {
-
-		if (afterIdentifier == SELECT) {
-			proposals.add(FROM);
-		}
-		else if (afterIdentifier == FROM) {
-			proposals.add(WHERE);
-
-			if (beforeIdentifier != GROUP_BY) {
-				proposals.add(GROUP_BY);
-
-				if (beforeIdentifier != HAVING) {
-					proposals.add(HAVING);
-
-					if (beforeIdentifier != ORDER_BY) {
-						proposals.add(ORDER_BY);
-					}
-				}
-			}
-		}
-		else if (afterIdentifier == WHERE) {
-			proposals.add(GROUP_BY);
-			proposals.add(HAVING);
-			proposals.add(ORDER_BY);
-		}
-		else if (afterIdentifier == GROUP_BY) {
-			proposals.add(HAVING);
-			proposals.add(ORDER_BY);
-		}
-		else if (afterIdentifier == HAVING) {
-			proposals.add(ORDER_BY);
-		}
 	}
 
 	protected final void addIdentifiers(List<String> identifiers, String... expressionFactoryIds) {
@@ -105,16 +83,10 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		}
 	}
 
-	protected final ContentAssistProposals buildContentAssistProposals(String actualQuery,
-	                                                                   int position) {
-
-		queryHelper.setQuery(buildQuery(actualQuery));
-		return queryHelper.buildContentAssistProposals(position);
-	}
-
-	protected final IQuery buildQuery(String jpqlQuery) {
+	protected final ContentAssistProposals buildContentAssistProposals(String jpqlQuery, int position) {
 		virtualQuery.setExpression(jpqlQuery);
-		return virtualQuery;
+		queryHelper.setQuery(virtualQuery);
+		return queryHelper.buildContentAssistProposals(position);
 	}
 
 	/**
@@ -124,121 +96,104 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	@SuppressWarnings("unchecked")
 	protected List<String>[] buildResults(String jpqlQuery,
 	                                      int position,
-	                                      Iterable<String> expectedProposals) {
+	                                      Iterable<String> proposals) {
+
+		// In case the Iterable is read-only
+		List<String> expectedProposals = new ArrayList<String>();
+		addAll(expectedProposals, proposals);
 
 		ContentAssistProposals contentAssistProposals = buildContentAssistProposals(jpqlQuery, position);
 		List<String> unexpectedProposals = new ArrayList<String>();
-		Iterator<String> iter = expectedProposals.iterator();
-		boolean removed = true;
+
+		// Entities
+		for (IEntity entity : contentAssistProposals.abstractSchemaTypes()) {
+			handleProposal(expectedProposals, unexpectedProposals, entity.getName());
+		}
 
 		// Identification variables
 		for (String identificationVariable : contentAssistProposals.identificationVariables()) {
-
-			// Iterate through the expected proposals and see if the identification variable is expected
-			while (iter.hasNext()) {
-				String proposal = iter.next();
-
-				// The identification variable is an expected proposal
-				if (proposal.equalsIgnoreCase(identificationVariable)) {
-					// Remove it from the list of expected proposals
-					iter.remove();
-					// Indicate it was removed, if not, we'll add the identification
-					// variable to the list of unexpected proposals
-					removed = true;
-					break;
-				}
-			}
-
-			// The identification variable found by content assist is not expected
-			if (!removed) {
-				unexpectedProposals.add(identificationVariable);
-			}
+			handleProposal(expectedProposals, unexpectedProposals, identificationVariable);
 		}
 
 		// JPQL identifiers
 		for (String identifier : contentAssistProposals.identifiers()) {
-
-			// Iterate through the expected proposals and see if the identifier is expected
-			while (iter.hasNext()) {
-				String proposal = iter.next();
-
-				// The identifier is an expected proposal
-				if (proposal.equalsIgnoreCase(identifier)) {
-					// Remove it from the list of expected proposals
-					iter.remove();
-					// Indicate it was removed, if not, we'll add the identifier
-					// to the list of unexpected proposals
-					removed = true;
-					break;
-				}
-			}
-
-			// The JPQL identifier found by content assist is not expected
-			if (!removed) {
-				unexpectedProposals.add(identifier);
-			}
-		}
-
-		// Entities
-		for (IEntity entity : contentAssistProposals.abstractSchemaTypes()) {
-
-			String entityName = entity.getName();
-
-			// Iterate through the expected proposals and see if the entity name is expected
-			while (iter.hasNext()) {
-				String proposal = iter.next();
-
-				// The entity name is an expected proposal
-				if (proposal.equalsIgnoreCase(entityName)) {
-					// Remove it from the list of expected proposals
-					iter.remove();
-					// Indicate it was removed, if not, we'll add the entity name
-					// to the list of unexpected proposals
-					removed = true;
-					break;
-				}
-			}
-
-			// The entity found by content assist is not expected
-			if (!removed) {
-				unexpectedProposals.add(entityName);
-			}
+			handleProposal(expectedProposals, unexpectedProposals, identifier);
 		}
 
 		// Mappings
 		for (IMapping mapping : contentAssistProposals.mappings()) {
-
-			String mappingName = mapping.getName();
-
-			// Iterate through the expected proposals and see if the mapping name is expected
-			while (iter.hasNext()) {
-				String proposal = iter.next();
-
-				// The mapping name is an expected proposal
-				if (proposal.equalsIgnoreCase(mappingName)) {
-					// Remove it from the list of expected proposals
-					iter.remove();
-					// Indicate it was removed, if not, we'll add the mapping name
-					// to the list of unexpected proposals
-					removed = true;
-					break;
-				}
-			}
-
-			// The mapping found by the content assist is not expected
-			if (!removed) {
-				unexpectedProposals.add(mappingName);
-			}
+			handleProposal(expectedProposals, unexpectedProposals, mapping.getName());
 		}
 
 		// The remaining proposals were not part of any proposal list
 		List<String> proposalsNotRemoved = new ArrayList<String>();
-
-		while (iter.hasNext()) {
-			proposalsNotRemoved.add(iter.next());
-		}
+		addAll(proposalsNotRemoved, expectedProposals);
 
 		return new List[] { proposalsNotRemoved, unexpectedProposals };
+	}
+
+	protected List<String> classNames() {
+		List<String> classNames = new ArrayList<String>();
+		classNames.add(Address      .class.getName());
+		classNames.add(ArrayList    .class.getName());
+		classNames.add(Employee     .class.getName());
+		classNames.add(Project      .class.getName());
+		classNames.add(String       .class.getName());
+		classNames.add(StringBuilder.class.getName());
+		return classNames;
+	}
+
+	protected final Iterable<String> collectionValuedFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.COLLECTION_VALUED_FIELD);
+	}
+
+	protected List<String> columnNames(String tableName) {
+
+		List<String> columnNames = new ArrayList<String>();
+
+		if ("EMPLOYEE".equals(tableName)) {
+			columnNames.add("ADDRESS");
+			columnNames.add("EMPLOYEE_ID");
+			columnNames.add("FIRST_NAME");
+			columnNames.add("LAST_NAME");
+			columnNames.add("MANAGER");
+		}
+		else if ("ADDRESS".equals(tableName)) {
+			columnNames.add("ADDRESS_ID");
+			columnNames.add("APT_NUMBER");
+			columnNames.add("COUNTRY");
+			columnNames.add("STREET");
+			columnNames.add("ZIP_CODE");
+		}
+
+		return columnNames;
+	}
+
+	protected Class<?> defaultAcceptableType(String identifier) {
+
+		if (identifier == ABS   ||
+		    identifier == PLUS  ||
+		    identifier == MINUS ||
+		    identifier == AVG   ||
+		    identifier == MOD   ||
+		    identifier == SQRT  ||
+		    identifier == SUM) {
+
+			return Number.class;
+		}
+
+		if (identifier == CONCAT    ||
+		    identifier == LENGTH    ||
+		    identifier == LOCATE    ||
+		    identifier == LOWER     ||
+		    identifier == SUBSTRING ||
+		    identifier == TRIM      ||
+		    identifier == UPPER) {
+
+			return String.class;
+		}
+
+		return null;
 	}
 
 	protected final Iterable<IEntity> entities() throws Exception {
@@ -253,6 +208,24 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return names;
 	}
 
+	protected List<String> enumConstants() {
+
+		List<String> names = new ArrayList<String>();
+
+		for (Enum<EnumType> enumType : EnumType.values()) {
+			names.add(enumType.name());
+		}
+
+		return names;
+	}
+
+	protected List<String> enumTypes() {
+		List<String> classNames = new ArrayList<String>();
+		classNames.add(EnumType  .class.getName());
+		classNames.add(AccessType.class.getName());
+		return classNames;
+	}
+
 	protected final Iterable<String> filter(Iterable<String> proposals, String startsWith) {
 
 		List<String> results = new ArrayList<String>();
@@ -264,6 +237,10 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		}
 
 		return results;
+	}
+
+	protected final Iterable<String> filter(String[] proposals, String startsWith) {
+		return filter(Arrays.asList(proposals), startsWith);
 	}
 
 	protected final JPQLGrammar getGrammar() {
@@ -282,6 +259,34 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return virtualQuery;
 	}
 
+	private void handleProposal(Iterable<String> expectedProposals,
+	                            List<String> unexpectedProposals,
+	                            String possibleProposal) {
+
+		boolean removed = false;
+
+		// Iterate through the expected proposals and see if the class name is expected
+		for (Iterator<String> iter = expectedProposals.iterator(); iter.hasNext(); ) {
+
+			String expectedProposal = iter.next();
+
+			// The proposal is an expected proposal
+			if (expectedProposal.equalsIgnoreCase(possibleProposal)) {
+				// Remove it from the list of expected proposals
+				iter.remove();
+				// Indicate it was removed, if not, we'll add the proposal
+				// to the list of unexpected proposals
+				removed = true;
+				break;
+			}
+		}
+
+		// The proposal found by content assist is not expected
+		if (!removed) {
+			unexpectedProposals.add(possibleProposal);
+		}
+	}
+
 	protected final boolean isJPA1_0() {
 		return jpqlGrammar().getJPAVersion() == JPAVersion.VERSION_1_0;
 	}
@@ -294,7 +299,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return jpqlGrammar().getJPAVersion() == JPAVersion.VERSION_2_1;
 	}
 
-	protected final Iterable<String> joinIdentifiers() {
+	protected final List<String> joinIdentifiers() {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(INNER_JOIN);
 		proposals.add(INNER_JOIN_FETCH);
@@ -307,7 +312,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return proposals;
 	}
 
-	protected final Iterable<String> joinOnlyIdentifiers() {
+	protected final List<String> joinOnlyIdentifiers() {
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(INNER_JOIN);
 		proposals.add(JOIN);
@@ -320,6 +325,65 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		return queryHelper.getGrammar();
 	}
 
+	protected final Iterable<String> nonTransientFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.NON_TRANSIENT);
+	}
+
+	protected final Iterable<String> relationshipAndCollectionFieldNames(Class<?> persistentType) throws Exception {
+		Set<String> uniqueNames = new HashSet<String>();
+		addAll(uniqueNames, relationshipFieldNames(persistentType));
+		addAll(uniqueNames, collectionValuedFieldNames(persistentType));
+		return uniqueNames;
+	}
+
+	protected final Iterable<String> relationshipFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.RELATIONSHIP_FIELD);
+	}
+
+	protected final <T extends Collection<String>> T removeAll(T items1, Iterable<String> items2) {
+		for (String item2 : items2) {
+			items1.remove(item2);
+		}
+		return items1;
+	}
+
+	protected final Iterable<String> retrieveMappingNames(Class<?> persistentType,
+	                                                      MappingType mappingType) throws Exception {
+
+		return retrieveMappingNames(persistentType, mappingType, null);
+	}
+
+	protected final Iterable<String> retrieveMappingNames(Class<?> persistentType,
+	                                                      MappingType mappingType,
+	                                                      Class<?> allowedType) throws Exception {
+
+		IManagedType managedType = getPersistenceUnit().getManagedType(persistentType.getName());
+
+		if (managedType == null) {
+			return Collections.emptyList();
+		}
+
+		List<String> names = new ArrayList<String>();
+		IType type = (allowedType != null) ? getPersistenceUnit().getTypeRepository().getType(allowedType) : null;
+
+		for (IMapping mapping : managedType.mappings()) {
+
+			if (mappingType.isValid(mapping) &&
+			    ((type == null) || mapping.getType().isAssignableTo(type))) {
+
+				names.add(mapping.getName());
+			}
+			// Allow incomplete path
+			else if (mappingType == MappingType.SINGLE_VALUED_OBJECT_FIELD) {
+				if (mapping.isRelationship() && !mapping.isCollection()) {
+					names.add(mapping.getName());
+				}
+			}
+		}
+
+		return names;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -328,6 +392,36 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		super.setUpClass();
 		virtualQuery = new JavaQuery(getPersistenceUnit(), null);
 		bnfAccessor  = new JPQLQueryBNFAccessor(getGrammar().getExpressionRegistry());
+	}
+
+	protected final Iterable<String> singledValuedObjectFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.SINGLE_VALUED_OBJECT_FIELD);
+	}
+
+	protected final Iterable<String> singledValuedObjectFieldNames(Class<?> persistentType,
+	                                                               Class<?> allowedType) throws Exception {
+
+		return retrieveMappingNames(persistentType, MappingType.SINGLE_VALUED_OBJECT_FIELD, allowedType);
+	}
+
+	protected final Iterable<String> stateFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.STATE_FIELD);
+	}
+
+	protected final Iterable<String> stateFieldNames(Class<?> persistentType, Class<?> allowedType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.STATE_FIELD, allowedType);
+	}
+
+	protected List<String> tableNames() {
+
+		List<String> tableNames = new ArrayList<String>();
+		tableNames.add("ADDRESS");
+		tableNames.add("EMPLOYEE");
+		tableNames.add("EMPLOYEE_SEQ");
+		tableNames.add("MANAGER");
+		tableNames.add("DEPARTMENT");
+
+		return tableNames;
 	}
 
 	/**
@@ -363,10 +457,13 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	                                                   Iterable<String> proposals) {
 
 		List<String>[] results = buildResults(jpqlQuery, position, Collections.<String>emptyList());
-		List<String> unexpectedProposals = results[1];
+		List<String> expectedEroposals = results[1];
+		List<String> unexpectedProposals = new ArrayList<String>();
 
 		for (String proposal : proposals) {
-			unexpectedProposals.remove(proposal);
+			if (expectedEroposals.remove(proposal)) {
+				unexpectedProposals.add(proposal);
+			}
 		}
 
 		assertTrue(unexpectedProposals + " should not be proposals.", unexpectedProposals.isEmpty());
@@ -380,7 +477,6 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	}
 
 	protected final void testHasNoProposals(String jpqlQuery, int position) {
-
 		List<String>[] results = buildResults(jpqlQuery, position, Collections.<String>emptyList());
 		List<String> unexpectedProposals = results[1];
 		assertTrue(unexpectedProposals + " should not be proposals.", unexpectedProposals.isEmpty());
@@ -402,7 +498,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		// Inconsistent list of proposals
 		if (!unexpectedProposals.isEmpty() && !proposalsNotRemoved.isEmpty()) {
 			if (proposalsNotRemoved.size() == 1) {
-				fail(proposalsNotRemoved + " should be a proposal and " + unexpectedProposals + " should not be a proposal.");
+				fail(proposalsNotRemoved.get(0) + " should be a proposal and " + unexpectedProposals + " should not be a proposal.");
 			}
 			else {
 				fail(proposalsNotRemoved + " should be proposals and " + unexpectedProposals + " should not be proposals.");
@@ -411,7 +507,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		// Added more proposals than it should
 		else if (!unexpectedProposals.isEmpty() && proposalsNotRemoved.isEmpty()) {
 			if (proposalsNotRemoved.size() == 1) {
-				fail(unexpectedProposals + " should not be a proposal.");
+				fail(unexpectedProposals.get(0) + " should not be a proposal.");
 			}
 			else {
 				fail(unexpectedProposals + " should not be proposals.");
@@ -420,7 +516,7 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		// Forgot to add some proposals
 		else if (!proposalsNotRemoved.isEmpty()) {
 			if (proposalsNotRemoved.size() == 1) {
-				fail(proposalsNotRemoved + " should be a proposal.");
+				fail(proposalsNotRemoved.get(0) + " should be a proposal.");
 			}
 			else {
 				fail(proposalsNotRemoved + " should be proposals.");
@@ -467,5 +563,56 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 		}
 
 		return names;
+	}
+
+	protected final Iterable<String> transientFieldNames(Class<?> persistentType) throws Exception {
+		return retrieveMappingNames(persistentType, MappingType.TRANSIENT);
+	}
+
+	private enum MappingType {
+
+		COLLECTION_VALUED_FIELD {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return mapping.isCollection();
+			}
+		},
+
+		NON_TRANSIENT {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return !mapping.isTransient();
+			}
+		},
+
+		RELATIONSHIP_FIELD {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return mapping.isRelationship() && !mapping.isCollection();
+			}
+		},
+
+		SINGLE_VALUED_OBJECT_FIELD {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return !mapping.isTransient() && !mapping.isCollection();
+			}
+		},
+
+		STATE_FIELD {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return mapping.isProperty();
+			}
+		},
+
+		TRANSIENT {
+			@Override
+			public boolean isValid(IMapping mapping) {
+				return mapping.isTransient();
+			}
+		};
+
+		abstract boolean isValid(IMapping mapping);
 	}
 }

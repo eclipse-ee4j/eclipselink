@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see StateFieldPathExpression
  * @see IdentificationVariable
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,13 +43,13 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 	/**
 	 * Creates the actual {@link AbstractExpression} this factory manages.
 	 *
-	 * @param parent The parent expression
+	 * @param parent The parent {@link AbstractExpression}
 	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param word The current word to parse
-	 * @param expression During the parsing, it is possible the first part of
-	 * an expression was parsed which needs to be used as a sub-expression of the newly created
-	 * expression
-	 * @return A new {@link AbstractExpression} representing the given word
+	 * @param word The current word being parsed
+	 * @param expression During the parsing, it is possible the first part of an expression was
+	 * parsed which needs to be used as a sub-expression of the newly created expression
+	 * @return A new {@link AbstractExpression} representing the portion or the totality of the
+	 * text held by {@link WordParser} starting at the cursor position
 	 */
 	protected abstract AbstractExpression buildExpression(AbstractExpression parent,
 	                                                      WordParser wordParser,
@@ -89,37 +89,55 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 			}
 		}
 
-		char character = word.charAt(0);
-
-		// StateFieldPathExpression
+		// Path expression
 		if (word.indexOf(AbstractExpression.DOT) > -1) {
+			char character = word.charAt(0);
 
 			if ((expression != null) && (character == AbstractExpression.DOT)) {
-				expression = new StateFieldPathExpression(parent, expression, word);
+				if (isCollection()) {
+					expression = new CollectionValuedPathExpression(parent, expression, word);
+				}
+				else {
+					expression = new StateFieldPathExpression(parent, expression, word);
+				}
 			}
 			else {
-				expression = new StateFieldPathExpression(parent, word);
+				if (isCollection()) {
+					expression = new CollectionValuedPathExpression(parent, word);
+				}
+				else {
+					expression = new StateFieldPathExpression(parent, word);
+				}
 			}
 
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
 
-		// Check for a temporary fallback ExpressionFactory
-		String fallBackExpressionFactoryId = getFallBackExpressionFactoryId();
+		// Checks for invalid JPQL queries
+		ExpressionRegistry registry = getExpressionRegistry();
 
-		if (fallBackExpressionFactoryId != null) {
+		if (tolerant && registry.isIdentifier(word)) {
+			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+			// TODO: Before creating the expression, check to make sure it's not a function: 'identifier('
+			if (factory != null) {
+				expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 
-			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(fallBackExpressionFactoryId);
-			expression = factory.buildExpression(parent, wordParser, word, null, expression, tolerant);
-
-			setFallBackExpressionFactory(null);
-
-			if (expression != null) {
-				return expression;
+				if (expression != null) {
+					return new BadExpression(parent, expression);
+				}
 			}
 		}
 
 		return buildExpression(parent, wordParser, word, expression, tolerant);
+	}
+
+	/**
+	 * Determines
+	 *
+	 * @return
+	 */
+	protected boolean isCollection() {
+		return false;
 	}
 }

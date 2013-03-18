@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -48,7 +48,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                          arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
  *                          <b>entity_type_expression {=|<>} entity_type_expression}</b></code></pre>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -113,6 +113,14 @@ public final class ComparisonExpression extends CompoundExpression {
 		       word.equalsIgnoreCase(JOIN)  ||
 
 		       super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String leftExpressionBNF() {
+		return ComparisonExpressionBNF.ID;
 	}
 
 	/**

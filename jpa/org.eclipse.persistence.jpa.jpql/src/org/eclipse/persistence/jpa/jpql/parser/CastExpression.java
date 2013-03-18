@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see DatabaseType
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author James Sutherland
  */
@@ -156,6 +156,17 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	@Override
 	public boolean hasEncapsulatedExpression() {
 		return super.hasEncapsulatedExpression() || hasAs || hasDatabaseType();
+	}
+
+	/**
+	 * Determines whether something was parsed after the left parenthesis and before the
+	 * <code><b>AS</b></code> identifier.
+	 *
+	 * @return <code>true</code> the expression to be cast was parsed; <code>false</code> otherwise
+	 * @since 2.4.2
+	 */
+	public boolean hasScalarExpression() {
+		return super.hasEncapsulatedExpression();
 	}
 
 	/**

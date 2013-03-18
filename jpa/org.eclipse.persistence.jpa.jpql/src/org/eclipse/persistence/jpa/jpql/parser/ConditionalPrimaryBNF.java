@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_primary ::= simple_cond_expression | (conditional_expression)</code><p>
  *
- * @version 2.4.1
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,8 +43,8 @@ public final class ConditionalPrimaryBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		setFallbackBNFId(PreLiteralExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
 		registerChild(SimpleConditionalExpressionBNF.ID);
 		registerChild(ConditionalExpressionBNF.ID);
 	}

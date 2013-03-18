@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -27,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see LocateExpression
  * @see SubstringExpression
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -57,6 +57,11 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * Determines whether a whitespace is following the comma.
 	 */
 	private boolean hasSpaceAfterSecondComma;
+
+	/**
+	 * Determines which child expression is been currently parsed.
+	 */
+	protected int parameterIndex;
 
 	/**
 	 * The {@link Expression} that represents the second expression.
@@ -160,6 +165,27 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		spaces.add(Boolean.FALSE);
 
 		return new CollectionExpression(this, children, commas, spaces, true);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((firstExpression != null) && firstExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(0));
+		}
+
+		if ((secondExpression != null) && secondExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(1));
+		}
+
+		if ((thirdExpression != null) && thirdExpression.isAncestor(expression)) {
+			return getQueryBNF(parameterExpressionBNF(2));
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**
@@ -282,6 +308,27 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = wordParser.character();
+
+		// When parsing an invalid JPQL query (eg: LOCATE + ABS(e.name)) then "+ ABS(e.name)"
+		// should not be parsed as an invalid first expression
+		if ((parameterIndex == 0) &&
+		    ((character == '+') || (character == '-')) &&
+		    !hasLeftParenthesis()) {
+
+			parameterIndex = -1;
+			return true;
+		}
+
+		return super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
 	 * Determines whether the third expression is an optional expression, which means a valid query
 	 * can have it or not.
 	 *
@@ -310,10 +357,15 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		int count = 0;
 
 		// Parse the first expression
+		parameterIndex = 0;
 		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
 
-		if (hasFirstExpression()) {
+		if (firstExpression != null) {
 			count = wordParser.skipLeadingWhitespace();
+		}
+		// See comment in isParsingComplete()
+		else if (parameterIndex == -1) {
+			return;
 		}
 
 		// Parse ','
@@ -326,6 +378,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the second expression
+		parameterIndex = 1;
 		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
 		if (!hasFirstComma) {
@@ -344,9 +397,10 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the third expression
+		parameterIndex = 2;
 		thirdExpression = parse(wordParser, parameterExpressionBNF(2), tolerant);
 
-		if (!hasSecondComma && (!isThirdExpressionOptional() || hasThirdExpression())) {
+		if (!hasSecondComma && (!isThirdExpressionOptional() || (thirdExpression != null))) {
 			hasSpaceAfterSecondComma = (count > 0);
 		}
 	}

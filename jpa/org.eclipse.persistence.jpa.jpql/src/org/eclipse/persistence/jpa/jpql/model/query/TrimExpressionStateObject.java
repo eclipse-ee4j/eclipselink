@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -17,11 +17,10 @@ import java.io.IOException;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionsReturningStringsBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.PreLiteralExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.LiteralBNF;
 import org.eclipse.persistence.jpa.jpql.parser.StringPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
-
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -37,7 +36,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see TrimExpression
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -252,7 +251,7 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
 	 * @param jpqlFragment The portion of the query to parse
 	 */
 	public void parseTrimCharacter(CharSequence jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, PreLiteralExpressionBNF.ID);
+		StateObject stateObject = buildStateObject(jpqlFragment, LiteralBNF.ID);
 		setTrimCharacter(stateObject);
 	}
 

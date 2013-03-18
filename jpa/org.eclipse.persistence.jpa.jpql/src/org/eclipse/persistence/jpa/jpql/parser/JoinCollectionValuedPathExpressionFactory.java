@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,12 +19,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This factory is used by EclipseLink 2.4 to add support for parsing an abstract schema name when
  * the expression is not a join association path expression.
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class JoinCollectionValuedPathExpressionFactory extends AbstractCollectionValuedPathExpressionFactory {
+public final class JoinCollectionValuedPathExpressionFactory extends AbstractLiteralExpressionFactory {
 
 	/**
 	 * The unique identifier of this BNF rule.
@@ -42,20 +42,22 @@ public final class JoinCollectionValuedPathExpressionFactory extends AbstractCol
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected AbstractExpression buildFallbackExpression(AbstractExpression parent,
-	                                                     WordParser wordParser,
-	                                                     String word,
-	                                                     JPQLQueryBNF queryBNF,
-	                                                     AbstractExpression expression,
-	                                                     boolean tolerant) {
+	protected AbstractExpression buildExpression(AbstractExpression parent,
+	                                             WordParser wordParser,
+	                                             String word,
+	                                             AbstractExpression expression,
+	                                             boolean tolerant) {
 
-		ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(PreLiteralExpressionFactory.ID);
+		expression = new AbstractSchemaName(parent, word);
+		expression.parse(wordParser, tolerant);
+		return expression;
+	}
 
-		// Pass on the fallback ExpressionFactory, this will allow PreLiteralExpressionFactory to
-		// give to LiteralExpressionFactory the ExpressionFactory that will be used to create the
-		// right object but will still create the right object when the query is invalid
-		factory.setFallBackExpressionFactory(AbstractSchemaNameFactory.ID);
-
-		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isCollection() {
+		return true;
 	}
 }

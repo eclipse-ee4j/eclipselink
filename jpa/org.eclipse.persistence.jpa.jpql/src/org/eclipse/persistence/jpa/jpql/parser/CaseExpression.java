@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * or
  * <div nowrap><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -187,6 +187,27 @@ public final class CaseExpression extends AbstractExpression {
 		if (hasEnd) {
 			children.add(buildStringExpression(END));
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((caseOperand != null) && caseOperand.isAncestor(expression)) {
+			return getQueryBNF(CaseOperandBNF.ID);
+		}
+
+		if ((whenClauses != null) && whenClauses.isAncestor(expression)) {
+			return getQueryBNF(WhenClauseBNF.ID);
+		}
+
+		if ((elseExpression != null) && elseExpression.isAncestor(expression)) {
+			return getQueryBNF(ElseExpressionBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**

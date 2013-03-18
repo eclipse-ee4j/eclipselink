@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,11 +16,16 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in
+ * <p>This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in
  * <a href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>. EclipseLink
- * 1.x does not provide additional support.
+ * 1.x does not provide additional support.</p>
  *
- * @version 2.4
+ * <p>Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.</p>
+ *
+ * @version 2.4.2
  * @since 2.4
  * @author Pascal Filion
  */
@@ -33,7 +38,7 @@ public final class EclipseLinkJPQLGrammar1 extends AbstractJPQLGrammar {
 	private static final JPQLGrammar INSTANCE = new EclipseLinkJPQLGrammar1();
 
 	/**
-	 * The EclipseLink version, which is 1.
+	 * The EclipseLink version, which is 1.x.
 	 */
 	public static final String VERSION = "1";
 

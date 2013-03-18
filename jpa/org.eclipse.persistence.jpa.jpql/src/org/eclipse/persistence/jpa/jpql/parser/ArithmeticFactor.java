@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * <div nowrap><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code><p>
  *
- * @version 2.4
+ * @version 2.4.2
  * @since 2.3
  * @author Pascal Filion
  */
@@ -32,6 +32,11 @@ public final class ArithmeticFactor extends AbstractExpression {
 	 * The {@link Expression} representing the arithmetic primary.
 	 */
 	private AbstractExpression expression;
+
+	/**
+	 * Determines whether there is a whitespace after the arithmetic operator.
+	 */
+	private boolean hasSpaceAfterArithmeticOperator;
 
 	/**
 	 * Creates a new <code>ArithmeticFactor</code>.
@@ -73,9 +78,26 @@ public final class ArithmeticFactor extends AbstractExpression {
 
 		children.add(buildStringExpression(getText()));
 
+		if (hasSpaceAfterArithmeticOperator) {
+			children.add(buildStringExpression(SPACE));
+		}
+
 		if (expression != null) {
 			children.add(expression);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public JPQLQueryBNF findQueryBNF(Expression expression) {
+
+		if ((this.expression != null) && this.expression.isAncestor(expression)) {
+			return getQueryBNF(ArithmeticPrimaryBNF.ID);
+		}
+
+		return super.findQueryBNF(expression);
 	}
 
 	/**
@@ -117,6 +139,16 @@ public final class ArithmeticFactor extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether a whitespace was parsed after the arithmetic operator.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the arithmetic operator;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterArithmeticOperator() {
+		return hasSpaceAfterArithmeticOperator;
+	}
+
+	/**
 	 * Determines if the arithmetic primary is prepended with the minus sign.
 	 *
 	 * @return <code>true</code> if the expression is prepended with '-'; <code>false</code> otherwise
@@ -154,7 +186,7 @@ public final class ArithmeticFactor extends AbstractExpression {
 		// Remove the arithmetic operator
 		wordParser.moveForward(1);
 
-		wordParser.skipLeadingWhitespace();
+		hasSpaceAfterArithmeticOperator = (wordParser.skipLeadingWhitespace() > 0);
 
 		// Parse the expression
 		expression = parse(wordParser, ArithmeticFactorBNF.ID, tolerant);
@@ -167,6 +199,10 @@ public final class ArithmeticFactor extends AbstractExpression {
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 
 		writer.append(getText());
+
+		if (hasSpaceAfterArithmeticOperator) {
+			writer.append(SPACE);
+		}
 
 		if (expression != null) {
 			expression.toParsedText(writer, actual);
