@@ -18,6 +18,7 @@
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.Writer;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -921,32 +922,35 @@ public class SchemaManager {
         this.createSchemaWriter = null;
         this.dropSchemaWriter = null;
     }
-
+    
     /**
      * PUBLIC:
      * Output all DDL statements to a file writer specified by the name in the parameter.
      */
     public void outputDDLToFile(String fileName) {
-        try {
-            this.createSchemaWriter = new java.io.FileWriter(fileName);
-        } catch (java.io.IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
+        this.createSchemaWriter = getWriter(fileName);
     }
 
     public void outputCreateDDLToFile(String fileName) {
-        try {
-            this.createSchemaWriter = new java.io.FileWriter(fileName);
-        } catch (java.io.IOException ioException) {
-            throw ValidationException.fileError(ioException);
-        }
+        this.createSchemaWriter = getWriter(fileName);
     }
 
     public void outputDropDDLToFile(String fileName) {
+        this.dropSchemaWriter = getWriter(fileName);
+    }
+    
+    protected Writer getWriter(String fileName) {
         try {
-            this.dropSchemaWriter = new java.io.FileWriter(fileName);
+            return new java.io.FileWriter(fileName);
         } catch (java.io.IOException ioException) {
-            throw ValidationException.fileError(ioException);
+            // Try a url next, otherwise throw the existing error.
+            try {
+                URL url = new URL(fileName);
+                return new java.io.FileWriter(url.getFile());
+            } catch (Exception e) {
+                // MalformedURLException and IOException
+                throw ValidationException.fileError(ioException);
+            }
         }
     }
 

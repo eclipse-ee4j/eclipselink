@@ -100,6 +100,7 @@ public class DDLTestSuite extends JUnitTestCase {
         suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationCreateOnly"));
         suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationDropOnly"));
         suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationDropAndCreate"));
+        //suite.addTest(new DDLTestSuite("testDatabaseSchemaGenerationURLTargets"));
         
         return suite;
     }
@@ -332,21 +333,18 @@ public class DDLTestSuite extends JUnitTestCase {
     }
     
     public void testRootTargetScriptFileName() {
-        // Since the nightlies run on MySql on a machine we do not own nor
-        // control, avoid this test since we do not have file permission at the
-        // root level.
-        if (! getPlatform().isMySQL()) {
-            Map properties = new HashMap();
-            // Get database properties will pick up test.properties database connection details.
-            properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
-            properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
-            properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "/temp-generate-schema-drop.jdbc");
-            properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "/temp-generate-schema-create.jdbc");
+        // This test is not called. It can be tested manually by uncommenting
+        // it out in the suite setup.
+        Map properties = new HashMap();
+        // Get database properties will pick up test.properties database connection details.
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(getPersistenceUnitName()));
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "testRootTargetScriptFileName");
+        properties.put(PersistenceUnitProperties.ORM_SCHEMA_VALIDATION, "true");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "/temp-generate-schema-drop.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "/temp-generate-schema-create.jdbc");
              
-            Persistence.generateSchema(getPersistenceUnitName(), properties);
-        }
+        Persistence.generateSchema(getPersistenceUnitName(), properties);
     }
     
     public void testIllegalArgumentExceptionWithNoScriptTargetProvided() {
@@ -369,7 +367,7 @@ public class DDLTestSuite extends JUnitTestCase {
     
     public void testDatabaseSchemaGenerationCreateOnly() {
         //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
-        if (!isOnServer()){
+        if (!isOnServer()) {
             Map properties = new HashMap();
             // Get database properties will pick up test.properties database connection details.
             properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
@@ -388,7 +386,7 @@ public class DDLTestSuite extends JUnitTestCase {
     
     public void testDatabaseSchemaGenerationDropOnly() {
         //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
-        if (!isOnServer()){
+        if (!isOnServer()) {
             Map properties = new HashMap();
             // Get database properties will pick up test.properties database connection details.
             properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
@@ -408,7 +406,7 @@ public class DDLTestSuite extends JUnitTestCase {
     
     public void testDatabaseSchemaGenerationDropAndCreate() {
         //currently server test framework supports multiple persistence units tests up to 5 PUs(MulitPU-1...5), the tests of this 6th PU will be excluded from running on server
-        if (!isOnServer()){
+        if (!isOnServer()) {
             Map properties = new HashMap();
             // Get database properties will pick up test.properties database connection details.
             properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
@@ -423,6 +421,24 @@ public class DDLTestSuite extends JUnitTestCase {
             } catch (Exception exception) {
                 fail("Exception caught when generating schema: " + exception.getMessage());
             }
+        }
+    }
+    
+    public void testDatabaseSchemaGenerationURLTargets() {
+        // This test is not called. It can be tested manually by uncommenting
+        // it out in the suite setup.
+        Map properties = new HashMap();
+        // Get database properties will pick up test.properties database connection details.
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties("ddl-schema-template"));
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "ddl-schema-url-target-session");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_ACTION, PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET, "file:///jpa21-ddl-schema-url-target-create.jdbc");
+        properties.put(PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPTS_DROP_TARGET, "file:///jpa21-ddl-schema-url-target-drop.jdbc");
+            
+        try {
+            Persistence.generateSchema("ddl-schema-template", properties);
+        } catch (Exception exception) {
+            fail("Exception caught when generating schema: " + exception.getMessage());
         }
     }
 }
