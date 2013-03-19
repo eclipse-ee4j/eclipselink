@@ -842,8 +842,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
             verifyOpen();
             try {
+                RepeatableWriteUnitOfWork uow = getActivePersistenceContext(checkForTransaction(true));
+                //398934 - verify that the em is joined to the transaction before writing changes
+                if (!transaction.isJoinedToTransaction(uow)) {
+                    throw new TransactionRequiredException(ExceptionLocalization.buildMessage("cannot_flush_on_unsynced_pc"));
+                }
                 try {
-                    getActivePersistenceContext(checkForTransaction(true)).writeChanges();
+                    uow.writeChanges();
                 } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
                     throw new OptimisticLockException(eclipselinkOLE);
                 }
