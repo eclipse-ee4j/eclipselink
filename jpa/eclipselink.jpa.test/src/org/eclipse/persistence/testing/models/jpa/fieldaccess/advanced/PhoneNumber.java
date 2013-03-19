@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 @Entity(name = "PhoneNumber")
 @Table(name = "CMP3_FA_PHONENUMBER")
 @PrimaryKey(columns = { @Column(name = "OWNER_ID"), @Column(name = "TYPE") })
-public class PhoneNumber extends PhoneNumberMappedSuperclass implements Serializable {
+public class PhoneNumber extends PhoneNumberMappedSuperclass {
     public enum PhoneStatus {
         ACTIVE, ASSIGNED, UNASSIGNED, DEAD
     }

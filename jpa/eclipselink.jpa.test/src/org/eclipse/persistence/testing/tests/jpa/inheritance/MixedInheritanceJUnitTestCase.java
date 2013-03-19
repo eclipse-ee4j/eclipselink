@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,16 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.MudTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.RockTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireRating;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireRatingComment;
+
+import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityJoined;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityJoined;
+import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassJoined;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntitySingleTable;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntitySingleTable;
+import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassSingleTable;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SuperclassEntityTablePerClass;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SubclassEntityTablePerClass;
+import org.eclipse.persistence.testing.models.jpa.inheritance.MappedSuperclassTablePerClass;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.TireInfoListener;
 
@@ -61,6 +71,14 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
         suite.addTest(new MixedInheritanceJUnitTestCase("testReadNewRockTire"));
         
         suite.addTest(new MixedInheritanceJUnitTestCase("testAppleComputers"));
+        
+        // bug 396587 - Weaving of mapped superclass hierarchy ends at superclass without attributes
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewJoinedTableSuperclass"));
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewSingleTableSuperclass"));
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewTablePerClassSuperclass"));
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewJoinedTableSubclass"));
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewSingleTableSubclass"));
+        suite.addTest(new MixedInheritanceJUnitTestCase("testCreateNewTablePerClassSubclass"));
         
         return suite;
     }
@@ -181,4 +199,215 @@ public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
     public void testReadNewRockTire() {
         assertNotNull("The new rock tire info could not be read back.", createEntityManager().find(RockTireInfo.class, rockTireId));
     }
+    
+    public void testCreateNewJoinedTableSuperclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SuperclassEntityJoined newObject = new SuperclassEntityJoined();
+        newObject.setSuperclassAttribute("superclass-entity-joined");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SuperclassEntityJoined readObject = em.find(SuperclassEntityJoined.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testCreateNewSingleTableSuperclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SuperclassEntitySingleTable newObject = new SuperclassEntitySingleTable();
+        newObject.setSuperclassAttribute("superclass-entity-singletable");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SuperclassEntitySingleTable readObject = em.find(SuperclassEntitySingleTable.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testCreateNewTablePerClassSuperclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SuperclassEntityTablePerClass newObject = new SuperclassEntityTablePerClass();
+        newObject.setSuperclassAttribute("superclass-entity-tableperclass");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SuperclassEntityTablePerClass readObject = em.find(SuperclassEntityTablePerClass.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testCreateNewJoinedTableSubclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SubclassEntityJoined newObject = new SubclassEntityJoined();
+        newObject.setSuperclassAttribute("superclass-entity-joined");
+        newObject.setSubclassAttribute("subclass-entity-joined");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SubclassEntityJoined readObject = em.find(SubclassEntityJoined.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            assertEquals("subclassAttribute", newObject.getSubclassAttribute(), readObject.getSubclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testCreateNewSingleTableSubclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SubclassEntitySingleTable newObject = new SubclassEntitySingleTable();
+        newObject.setSuperclassAttribute("superclass-entity-singletable");
+        newObject.setSubclassAttribute("subclass-entity-singletable");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SubclassEntitySingleTable readObject = em.find(SubclassEntitySingleTable.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            assertEquals("subclassAttribute", newObject.getSubclassAttribute(), readObject.getSubclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testCreateNewTablePerClassSubclass() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        
+        SubclassEntityTablePerClass newObject = new SubclassEntityTablePerClass();
+        newObject.setSuperclassAttribute("superclass-entity-tableperclass");
+        newObject.setSubclassAttribute("subclass-entity-tableperclass");
+        long persistedId = 0;
+        
+        try {
+            em.persist(newObject);
+            persistedId = newObject.getId();
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting new object: " + exception.getMessage());
+        } finally {
+            closeEntityManager(em);
+        }
+        
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            
+            SubclassEntityTablePerClass readObject = em.find(SubclassEntityTablePerClass.class, persistedId);
+            
+            assertNotNull("Object read back with pk " + persistedId + " must not be null", readObject);
+            assertEquals("id", newObject.getId(), readObject.getId());
+            assertEquals("superclassAttribute", newObject.getSuperclassAttribute(), readObject.getSuperclassAttribute());
+            assertEquals("subclassAttribute", newObject.getSubclassAttribute(), readObject.getSubclassAttribute());
+            
+            commitTransaction(em);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
 }

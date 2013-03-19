@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -80,6 +80,209 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildAPPLETable());
         addTableDefinition(buildMACBOOKTable());
         addTableDefinition(buildMACBOOKPROTable());
+        
+        // bug 396587
+        addTableDefinition(buildTPC_SUPERCLASSTable());
+        addTableDefinition(buildTPC_SUBCLASSTable());
+        addTableDefinition(buildJOINED_SUPERCLASSTable());
+        addTableDefinition(buildJOINED_SUBCLASSTable());
+        addTableDefinition(buildSTI_SUPERCLASSTable());
+    }
+    
+    public TableDefinition buildSTI_SUPERCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_STI_SUPERCLASS");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldCLASSTYPE = new FieldDefinition();
+        fieldCLASSTYPE.setName("CLASSTYPE");
+        fieldCLASSTYPE.setTypeName("VARCHAR2");
+        fieldCLASSTYPE.setSize(3);
+        fieldCLASSTYPE.setSubSize(0);
+        fieldCLASSTYPE.setIsPrimaryKey(false);
+        fieldCLASSTYPE.setIsIdentity(false);
+        fieldCLASSTYPE.setUnique(false);
+        fieldCLASSTYPE.setShouldAllowNull(false);
+        table.addField(fieldCLASSTYPE);
+        
+        FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
+        fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUPERCLASS_ATTRIBUTE.setSize(64);
+        fieldSUPERCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUPERCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUPERCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
+        table.addField(fieldSUPERCLASS_ATTRIBUTE);
+        
+        FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
+        fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUBCLASS_ATTRIBUTE.setSize(64);
+        fieldSUBCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUBCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUBCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUBCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUBCLASS_ATTRIBUTE.setShouldAllowNull(true);
+        table.addField(fieldSUBCLASS_ATTRIBUTE);
+
+        return table;
+    }
+    
+    public TableDefinition buildJOINED_SUPERCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_JOINED_SUPERCLASS");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldCLASSTYPE = new FieldDefinition();
+        fieldCLASSTYPE.setName("CLASSTYPE");
+        fieldCLASSTYPE.setTypeName("VARCHAR2");
+        fieldCLASSTYPE.setSize(3);
+        fieldCLASSTYPE.setSubSize(0);
+        fieldCLASSTYPE.setIsPrimaryKey(false);
+        fieldCLASSTYPE.setIsIdentity(false);
+        fieldCLASSTYPE.setUnique(false);
+        fieldCLASSTYPE.setShouldAllowNull(false);
+        table.addField(fieldCLASSTYPE);
+        
+        FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
+        fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUPERCLASS_ATTRIBUTE.setSize(64);
+        fieldSUPERCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUPERCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUPERCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
+        table.addField(fieldSUPERCLASS_ATTRIBUTE);
+        
+        return table;
+    }
+    
+    public TableDefinition buildJOINED_SUBCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_JOINED_SUBCLASS");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
+        fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUBCLASS_ATTRIBUTE.setSize(64);
+        fieldSUBCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUBCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUBCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUBCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUBCLASS_ATTRIBUTE.setShouldAllowNull(true);
+        table.addField(fieldSUBCLASS_ATTRIBUTE);
+        
+        ForeignKeyConstraint fkConstraint = new ForeignKeyConstraint();
+        fkConstraint.setName("JPA_JOINED_SUBCLASS_FK1");
+        fkConstraint.setTargetTable("JPA_JOINED_SUPERCLASS");
+        fkConstraint.addSourceField("ID");
+        fkConstraint.addTargetField("ID");
+        table.addForeignKeyConstraint(fkConstraint);
+
+        return table;
+    }
+    
+    public TableDefinition buildTPC_SUPERCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_TPC_SUPERCLASS");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
+        fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUPERCLASS_ATTRIBUTE.setSize(64);
+        fieldSUPERCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUPERCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUPERCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
+        table.addField(fieldSUPERCLASS_ATTRIBUTE);
+
+        return table;
+    }
+    
+    public TableDefinition buildTPC_SUBCLASSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_TPC_SUBCLASS");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(15);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldSUPERCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUPERCLASS_ATTRIBUTE.setName("SUPERCLASS_ATTRIBUTE");
+        fieldSUPERCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUPERCLASS_ATTRIBUTE.setSize(64);
+        fieldSUPERCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUPERCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUPERCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUPERCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUPERCLASS_ATTRIBUTE.setShouldAllowNull(false);
+        table.addField(fieldSUPERCLASS_ATTRIBUTE);
+        
+        FieldDefinition fieldSUBCLASS_ATTRIBUTE = new FieldDefinition();
+        fieldSUBCLASS_ATTRIBUTE.setName("SUBCLASS_ATTRIBUTE");
+        fieldSUBCLASS_ATTRIBUTE.setTypeName("VARCHAR2");
+        fieldSUBCLASS_ATTRIBUTE.setSize(64);
+        fieldSUBCLASS_ATTRIBUTE.setSubSize(0);
+        fieldSUBCLASS_ATTRIBUTE.setIsPrimaryKey(false);
+        fieldSUBCLASS_ATTRIBUTE.setIsIdentity(false);
+        fieldSUBCLASS_ATTRIBUTE.setUnique(false);
+        fieldSUBCLASS_ATTRIBUTE.setShouldAllowNull(true);
+        table.addField(fieldSUBCLASS_ATTRIBUTE);
+
+        return table;
     }
     
     public TableDefinition buildAPPLETable() {
