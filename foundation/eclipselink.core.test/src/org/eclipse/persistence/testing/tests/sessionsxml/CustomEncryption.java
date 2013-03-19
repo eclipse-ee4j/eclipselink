@@ -22,7 +22,11 @@ public class CustomEncryption implements Securable {
     }
 
     public String decryptPassword(String encryptedPswd) {
-        return encryptedPswd.substring(3);
+        if (encryptedPswd.startsWith("123")) {
+            return encryptedPswd.substring(3);
+        } else {
+            return encryptedPswd;
+        }
     }
 }
 

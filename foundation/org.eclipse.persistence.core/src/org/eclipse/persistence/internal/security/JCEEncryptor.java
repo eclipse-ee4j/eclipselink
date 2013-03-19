@@ -89,50 +89,53 @@ public class JCEEncryptor implements Securable {
      */
     public synchronized String decryptPassword(String encryptedPswd) {
         String password = null;
-        ObjectInputStream ois = null;
         
-        try {
-            byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
+        if (encryptedPswd != null) {
+            ObjectInputStream ois = null;
             
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
-            CipherInputStream cis = new CipherInputStream(bais, decryptCipherAES);
-            ois = new ObjectInputStream(cis);
-
-            password = (String)ois.readObject();
-        } catch (Exception ex) {
-            // Catch all exceptions when trying to decrypt using AES and try the
-            // old DES decryptor before deciding what to do.
             try {
                 byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
-    
+                
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
-                CipherInputStream cis = new CipherInputStream(bais, decryptCipherDES);
+                CipherInputStream cis = new CipherInputStream(bais, decryptCipherAES);
                 ois = new ObjectInputStream(cis);
     
                 password = (String)ois.readObject();
-                ois.close();
-            } catch (IOException e) {
-                // JCE 1.2.2 couldn't decrypt it, assume clear text
-                password = encryptedPswd;
-            } catch (ArrayIndexOutOfBoundsException e) {
-                // JCE 1.2.1 couldn't decrypt it, assume clear text
-                password = encryptedPswd;
-            } catch (ConversionException e) {
-                // Never prepared (buildBytesFromHexString failed), assume clear text
-                password = encryptedPswd;
-            } catch (Exception e) {
-                throw ValidationException.errorDecryptingPassword(e);
-            }
-        } finally {
-            try {
-                if (ois != null) {
+            } catch (Exception ex) {
+                // Catch all exceptions when trying to decrypt using AES and try the
+                // old DES decryptor before deciding what to do.
+                try {
+                    byte[] bytePassword = Helper.buildBytesFromHexString(encryptedPswd);
+        
+                    ByteArrayInputStream bais = new ByteArrayInputStream(bytePassword);
+                    CipherInputStream cis = new CipherInputStream(bais, decryptCipherDES);
+                    ois = new ObjectInputStream(cis);
+        
+                    password = (String)ois.readObject();
                     ois.close();
+                } catch (IOException e) {
+                    // JCE 1.2.2 couldn't decrypt it, assume clear text
+                    password = encryptedPswd;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // JCE 1.2.1 couldn't decrypt it, assume clear text
+                    password = encryptedPswd;
+                } catch (ConversionException e) {
+                    // Never prepared (buildBytesFromHexString failed), assume clear text
+                    password = encryptedPswd;
+                } catch (Exception e) {
+                    throw ValidationException.errorDecryptingPassword(e);
                 }
-            } catch (IOException ioexception) {
-                // swallow it
+            } finally {
+                try {
+                    if (ois != null) {
+                        ois.close();
+                    }
+                } catch (IOException ioexception) {
+                    // swallow it
+                }
             }
         }
-
+            
         return password;
     }
 

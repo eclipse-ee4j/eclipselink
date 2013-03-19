@@ -58,8 +58,12 @@ public class MWConfigModelEncryptionTest extends AutoVerifyTestCase {
         String password2 = m_sessionConfig1.getLoginConfig().getPassword();
         String password3 = m_sessionConfig1.getLoginConfig().getEncryptedPassword();
 
-        if (password1.equals(password3)) {
-            throw new TestErrorException("The password was not encrypted on the getPassword() call. Either the password was already encrypted or the detection failed.");
+        if (! password1.equals(password3)) {
+            throw new TestErrorException("Get encrypted password returned different values.");
+        }
+        
+        if (password1.equals(password2)) {
+            throw new TestErrorException("Get password returned an encrypted password."); 
         }
 
         // For the second config test the getPassword() call with a null password

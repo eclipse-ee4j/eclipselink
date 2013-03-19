@@ -752,7 +752,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.addMapping(encryptionClassMapping);
 
         XMLDirectMapping passwordMapping = new XMLDirectMapping();
-        passwordMapping.setAttributeName("m_password");
+        passwordMapping.setAttributeName("m_encryptedPassword");
         passwordMapping.setGetMethodName("getEncryptedPassword");
         passwordMapping.setSetMethodName("setEncryptedPassword");
         passwordMapping.setXPath("password/text()");

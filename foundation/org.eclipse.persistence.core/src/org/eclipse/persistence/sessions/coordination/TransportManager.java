@@ -168,7 +168,7 @@ public abstract class TransportManager {
      * cached context properties.
      */
     public String getPassword() {
-        return (String)getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS);
+        return (String) decrypt((String) getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS));
     }
 
     /**
@@ -360,10 +360,11 @@ public abstract class TransportManager {
      */
     public void setEncryptionClassName(String encryptionClassName) {
         String originalPwd = null;
-        if (getPassword() != null) {
-            originalPwd = decrypt(getPassword());
+        if (hasPassword()) {
+            // getPassword will decrypt it.
+            originalPwd = getPassword();
         }
-
+        
         // re-initialize encryption mechanism
         securableObjectHolder = new SecurableObjectHolder();
         securableObjectHolder.setEncryptionClassName(encryptionClassName);
@@ -372,6 +373,14 @@ public abstract class TransportManager {
         setPassword(originalPwd);
     }
 
+    /**
+     * INTERNAL:
+     * @return true if a non null password has been set.
+     */
+    protected boolean hasPassword() { 
+        return getRemoteContextProperties().containsKey(Context.SECURITY_CREDENTIALS) && getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS) != null;
+    }
+    
     /**
      * INTERNAL:
      * Initialize default properties.
@@ -419,9 +428,10 @@ public abstract class TransportManager {
         Object[] args = { remoteProperties };
         rcm.logDebug("context_props_for_remote_lookup", args);
 
-        if (getPassword() != null) {
-            // decrypt password just before looking up context
-            remoteProperties.put(Context.SECURITY_CREDENTIALS, decrypt(getPassword()));
+        if (hasPassword()) {
+            // decrypt password just before looking up context. Calling 
+            // getPassword() will decrypt it.
+            remoteProperties.put(Context.SECURITY_CREDENTIALS, getPassword());
         }
 
         return getContext(remoteProperties);
