@@ -1052,7 +1052,6 @@ public abstract class XMLMarshaller<
 
         
         MarshalRecord writerRecord;
-        //writer = new BufferedWriter(writer);
         writer = wrapWriter(writer);
         if (isFormattedOutput()) {
             if(mediaType.isApplicationJSON()) {                          
