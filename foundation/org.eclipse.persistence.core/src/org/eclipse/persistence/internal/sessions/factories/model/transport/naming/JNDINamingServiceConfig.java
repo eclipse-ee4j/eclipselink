@@ -21,7 +21,6 @@ import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 public class JNDINamingServiceConfig {
     private String m_url;
     private String m_username;
-    private String m_encryptionClass;
     private char[] m_encryptedPassword;
     private SecurableObjectHolder m_securableObjectHolder;
     private String m_initialContextFactoryName;
@@ -32,7 +31,7 @@ public class JNDINamingServiceConfig {
         // default to JCE.
         m_securableObjectHolder = new SecurableObjectHolder();
     }
-
+    
     public void setURL(String url) {
         m_url = url;
     }
@@ -50,12 +49,11 @@ public class JNDINamingServiceConfig {
     }
 
     public void setEncryptionClass(String encryptionClass) {
-        m_encryptionClass = encryptionClass;
-        m_securableObjectHolder.setEncryptionClassName(m_encryptionClass);
+        m_securableObjectHolder.setEncryptionClassName(encryptionClass);
     }
 
     public String getEncryptionClass() {
-        return m_encryptionClass;
+        return m_securableObjectHolder.getEncryptionClassName();
     }
 
     /**
@@ -68,14 +66,7 @@ public class JNDINamingServiceConfig {
      * @param password
      */
     public void setPassword(String password) {
-        // Bug 4117441 - Secure programming practices, store password in char[]
-        String passwordString = m_securableObjectHolder.getSecurableObject().encryptPassword(password);
-        if (passwordString != null) {
-            m_encryptedPassword = passwordString.toCharArray();
-        } else {
-            // ensure explicit de-referencing of password
-            m_encryptedPassword = null;
-        }
+        setEncryptedPassword(password);
     }
 
     /**
@@ -87,38 +78,30 @@ public class JNDINamingServiceConfig {
      */
     public void setEncryptedPassword(String encryptedPassword) {
         // Bug 4117441 - Secure programming practices, store password in char[]
-        if (encryptedPassword != null) {
-            m_encryptedPassword = encryptedPassword.toCharArray();
-        } else {
-            // ensure explicit de-referencing of password
+        if (encryptedPassword == null) {
+            // respect explicit de-referencing of password
             m_encryptedPassword = null;
+        } else if (encryptedPassword.length() == 0) {
+            m_encryptedPassword = new char[0];
+        } else {
+            // If the decrypted password is the same as the encrypted one then 
+            // it was not encrypted so make sure to store the encrypted password.
+            if (encryptedPassword.equals(m_securableObjectHolder.getSecurableObject().decryptPassword(encryptedPassword))) {
+                m_encryptedPassword = m_securableObjectHolder.getSecurableObject().encryptPassword(encryptedPassword).toCharArray();
+            } else {
+                m_encryptedPassword = encryptedPassword.toCharArray();
+            }
         }
     }
 
     /**
-     * We must decrypt the password. Once the password is decrypted, check to
-     * see if it was 'actually' decrypted. If not, store it encrypted by calling
-     * setPassword(). This will cover the case that the password was not
-     * actually encrypted when we read it in. On read in we always assume it
-     * is encrypted so only setEncryptedPassword() is ever called.
+     * This method will return the decrypted password. This method should
+     * only be called by the Mapping Workbench.
      *
      * @return decryptedPassword
      */
     public String getPassword() {
-        String decryptedPassword = null;
-        
-        if (m_encryptedPassword != null) {
-            // Bug 4117441 - Secure programming practices, unwrap password from char[]
-            String passwordString = new String(m_encryptedPassword);
-            decryptedPassword = m_securableObjectHolder.getSecurableObject().decryptPassword(passwordString);
-            // compare against the String passwordString
-            if (decryptedPassword.equals(passwordString)) {
-                // Password was never encrypted so encrypt it.
-                setPassword(decryptedPassword);
-            }
-        }
-
-        return decryptedPassword;
+        return m_securableObjectHolder.getSecurableObject().decryptPassword(getEncryptedPassword());
     }
 
     /**

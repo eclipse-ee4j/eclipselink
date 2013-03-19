@@ -46,6 +46,10 @@ public class SecurableObjectHolder {
         m_securableClassName = securableClassName;
     }
 
+    public String getEncryptionClassName() {
+        return m_securableClassName;
+    }
+    
     public void setEncryptionClassName(String securableClassName) {
         m_securableClassName = securableClassName;
     }
@@ -63,10 +67,10 @@ public class SecurableObjectHolder {
     }
 
     /**
-       * Convert a String into a Securable object
-       * Class name must be fully qualified, eg. org.eclipse.persistence.internal.security.JCEEncryptor
+     * Convert a String into a Securable object
+     * Class name must be fully qualified, eg. org.eclipse.persistence.internal.security.JCEEncryptor
      * Default is the JCEEncryptor
-       */
+     */
     private void initSecurableObject() {
         boolean initPassThroughEncryptor = false;
 

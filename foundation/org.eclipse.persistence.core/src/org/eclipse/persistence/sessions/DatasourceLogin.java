@@ -314,13 +314,13 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
                 // If isEncryptedPasswordSet is true, or we have a SecurableObject then we stored 
                 // the password as a char[], and we need to convert it into a String for the 
                 // prepared Properties object.
-                String passwordString = null;
                 if (passwordObject instanceof char[]) {
-                    passwordString = new String((char[])passwordObject);
+                    result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword(new String((char[])passwordObject)));
                 } else if (passwordObject instanceof String) {
-                    passwordString = (String)passwordObject;
+                    result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword((String)passwordObject));
+                } else {
+                    result.put("password", null);
                 }
-                result.put("password", getSecurableObjectHolder().getSecurableObject().decryptPassword(passwordString));
             } else if ((passwordObject instanceof char[]) && (((char[])passwordObject).length == 0)) {
                 // Bug 236726 - deal with empty string for passwords
                 result.put("password", "");
