@@ -16,6 +16,7 @@ import java.util.ConcurrentModificationException;
 
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 
@@ -37,6 +38,10 @@ public class UnitOfWorkConcurrentRevertTest extends org.eclipse.persistence.test
     }
 
     public void setup() {
+        if (getSession().getPlatform().isHANA()) {
+            // bug 403748
+            throw new TestWarningException("This test is not supported on the HANA platform.");
+        }
         getAbstractSession().beginTransaction();
     }
 
