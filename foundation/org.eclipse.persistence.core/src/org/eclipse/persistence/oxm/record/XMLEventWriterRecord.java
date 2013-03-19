@@ -236,6 +236,7 @@ public class XMLEventWriterRecord extends MarshalRecord {
                 isStartElementOpen = false;
             }
             xmlEventWriter.add(xmlEventFactory.createEndDocument());
+            xmlEventWriter.flush();
         } catch(Exception e) {
             throw XMLMarshalException.marshalException(e);
         }
