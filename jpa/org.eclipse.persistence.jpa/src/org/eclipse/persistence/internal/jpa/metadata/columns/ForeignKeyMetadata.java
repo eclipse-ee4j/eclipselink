@@ -148,7 +148,7 @@ public class ForeignKeyMetadata extends ORMetadata {
      * INTERNAL:
      */
     protected boolean isProviderDefaultConstraintMode() {
-        return m_constraintMode != null && m_constraintMode.equals(MetadataConstants.JPA_CONSTRAINT_MODE_NO_CONSTRAINT);
+        return m_constraintMode != null && m_constraintMode.equals(MetadataConstants.JPA_CONSTRAINT_MODE_PROVIDER_DEFAULT);
     }
     
     /**

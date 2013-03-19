@@ -32,6 +32,9 @@ public class Address {
     public String state;
     public String country;
     public String zipCode;
+    public AddressType type;
+    
+    public enum AddressType { Home, Work }
 
     public String toString() {
         return "Address(" + addressee + ", " + street + ", " + city + ", " + state + ", " + country + ", " + zipCode + ")";

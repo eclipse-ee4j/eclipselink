@@ -837,6 +837,10 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.databaseEventListener != null) {
             this.databaseEventListener.register(this);
         }
+        if ((getDatasourcePlatform() instanceof DatabasePlatform) && getPlatform().getBatchWritingMechanism() != null) {
+            getPlatform().getBatchWritingMechanism().initialize(this);
+        }
+        
     }
 
     /**

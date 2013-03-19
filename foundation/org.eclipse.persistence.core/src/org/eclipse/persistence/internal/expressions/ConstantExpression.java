@@ -86,7 +86,7 @@ public class ConstantExpression extends Expression {
         }
     }
 
-    protected Expression getLocalBase() {
+    public Expression getLocalBase() {
         return localBase;
     }
 

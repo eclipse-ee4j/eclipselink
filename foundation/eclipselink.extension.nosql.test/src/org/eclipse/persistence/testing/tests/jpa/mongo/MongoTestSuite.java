@@ -48,6 +48,7 @@ import org.eclipse.persistence.testing.models.jpa.mongo.Customer;
 import org.eclipse.persistence.testing.models.jpa.mongo.LineItem;
 import org.eclipse.persistence.testing.models.jpa.mongo.Order;
 import org.eclipse.persistence.testing.models.jpa.mongo.Address;
+import org.eclipse.persistence.testing.models.jpa.mongo.Address.AddressType;
 
 import com.mongodb.DB;
 import com.mongodb.Mongo;
@@ -81,6 +82,7 @@ public class MongoTestSuite extends JUnitTestCase {
         suite.addTest(new MongoTestSuite("testSimpleJPQL"));
         suite.addTest(new MongoTestSuite("testJPQLLike"));
         suite.addTest(new MongoTestSuite("testComplexJPQL"));
+        suite.addTest(new MongoTestSuite("testJPQLEnum"));
         suite.addTest(new MongoTestSuite("testNativeQuery"));
         suite.addTest(new MongoTestSuite("testExternalFactory"));
         suite.addTest(new MongoTestSuite("testUserPassword"));
@@ -152,6 +154,7 @@ public class MongoTestSuite extends JUnitTestCase {
             order.orderedBy = "ACME";
             order.address = new Address();
             order.address.city = "Ottawa";
+            order.address.type = AddressType.Work;
             
             LineItem item = new LineItem();
             item.itemName = "stuff";
@@ -651,6 +654,26 @@ public class MongoTestSuite extends JUnitTestCase {
             results = query.getResultList();
             if (results.size() != 10) {
                 fail("Expected 10 result: " + results);
+            }
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test enum query.
+     */
+    public void testJPQLEnum() {
+        // Clear db first.
+        testSetup();
+        EntityManager em = createEntityManager();
+        try {
+            // like
+            Query query = em.createQuery("Select o from Order o where o.address.type = :type");
+            query.setParameter("type", AddressType.Home);
+            List results = query.getResultList();
+            if (results.size() != 0) {
+                fail("Expected 0 result: " + results);
             }
         } finally {
             closeEntityManager(em);

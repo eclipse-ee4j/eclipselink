@@ -136,4 +136,12 @@ public abstract class BatchWritingMechanism implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Allow initialization with the session after login.
+     */
+    public void initialize(AbstractSession session) {
+        
+    }
+
 }

@@ -464,8 +464,14 @@ public class MongoPlatform extends EISPlatform {
             value = ((FieldExpression)expression).getField();
         } else if (expression.isConstantExpression()) {
             value = ((ConstantExpression)expression).getValue();
+            if (((ConstantExpression)expression).getLocalBase() != null) {
+                value = ((ConstantExpression)expression).getLocalBase().getFieldValue(value, query.getSession());
+            }
         } else if (expression.isParameterExpression()) {
             value = query.getTranslationRow().get(((ParameterExpression)expression).getField());
+            if (((ParameterExpression)expression).getLocalBase() != null) {
+                value = ((ParameterExpression)expression).getLocalBase().getFieldValue(value, query.getSession());
+            }
         } else {
             throw new EISException("Query too complex for Mongo translation, comparison of [" + expression + "] not supported in query: " + query);
         }

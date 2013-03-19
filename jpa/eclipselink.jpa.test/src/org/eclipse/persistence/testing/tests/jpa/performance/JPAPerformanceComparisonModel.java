@@ -12,31 +12,22 @@
  ******************************************************************************/  
  package org.eclipse.persistence.testing.tests.jpa.performance;
 
-//import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-//import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.spi.PersistenceProvider;
 
-//import oracle.toplink.exalogic.batch.DynamicParameterizedBatchWritingMechanism;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.sessions.server.ServerSession;
-//import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.performance.emulateddb.EmulatedDriver;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-//import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-//import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
@@ -620,7 +611,33 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                 };
                 test.setName("BufferedBatchTest");
-                //addTest(test);
+                addTest(test);
+                
+                /*test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        DatabaseAccessor accessor =  null;
+                        try {
+                            em.getTransaction().begin();
+                            persistBatch(em);
+                            UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
+                            uow.beginEarlyTransaction();
+                            accessor = (DatabaseAccessor)uow.getAccessor();
+                            accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism());
+                            accessor.getActiveBatchWritingMechanism(uow.getParent()).setAccessor(accessor, uow.getParent());
+                            em.getTransaction().commit();
+                        } finally {
+                            em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                            em.close();
+                            if (accessor != null) {
+                                accessor.setActiveBatchWritingMechanism(null);
+                            }
+                        }
+                    }
+                };   
+                test.setName("DynamicParameterizedBatchTest");
+                addTest(test);
                 
                 test = new PerformanceComparisonTestCase() {
                     public void test() {
@@ -633,7 +650,8 @@ public class JPAPerformanceComparisonModel extends TestModel {
                             UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
                             uow.beginEarlyTransaction();
                             accessor = (DatabaseAccessor)uow.getAccessor();
-                            //accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism(accessor));
+                            accessor.setActiveBatchWritingMechanism(new DynamicParameterizedHybridBatchWritingMechanism());
+                            accessor.getActiveBatchWritingMechanism(uow.getParent()).setAccessor(accessor, uow.getParent());
                             em.getTransaction().commit();
                         } finally {
                             em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
@@ -644,8 +662,8 @@ public class JPAPerformanceComparisonModel extends TestModel {
                         }
                     }
                 };   
-                test.setName("DynamicParameterizedBatchTest");
-                //addTest(test);
+                test.setName("DynamicParameterizedHybridBatchTest");
+                addTest(test);*/
             }
             
             public void test() throws Exception {
@@ -731,6 +749,26 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 test.setName("DynamicBatchUpdateTest");
                 addTest(test);
                                 
+                /*test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        EntityManager em = getExecutor().createEntityManager();
+                        em.unwrap(ServerSession.class).getLogin().useBatchWriting();
+                        em.getTransaction().begin();
+                        persistBatch(em);
+                        UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
+                        uow.beginEarlyTransaction();
+                        DatabaseAccessor accessor = (DatabaseAccessor)uow.getAccessor();
+                        accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism());
+                        accessor.getActiveBatchWritingMechanism(uow.getParent()).setAccessor(accessor, uow.getParent());
+                        em.getTransaction().commit();
+                        em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
+                        em.close();
+                        accessor.setActiveBatchWritingMechanism(null);
+                    }
+                };   
+                test.setName("DynamicParameterizedBatchUpdateTest");
+                addTest(test);        
+                
                 test = new PerformanceComparisonTestCase() {
                     public void test() {
                         EntityManager em = getExecutor().createEntityManager();
@@ -740,15 +778,16 @@ public class JPAPerformanceComparisonModel extends TestModel {
                         UnitOfWorkImpl uow = (UnitOfWorkImpl)em.unwrap(UnitOfWork.class);
                         uow.beginEarlyTransaction();
                         DatabaseAccessor accessor = (DatabaseAccessor)uow.getAccessor();
-                        //accessor.setActiveBatchWritingMechanism(new DynamicParameterizedBatchWritingMechanism(accessor));
+                        accessor.setActiveBatchWritingMechanism(new DynamicParameterizedHybridBatchWritingMechanism());
+                        accessor.getActiveBatchWritingMechanism(uow.getParent()).setAccessor(accessor, uow.getParent());
                         em.getTransaction().commit();
                         em.unwrap(ServerSession.class).getLogin().dontUseBatchWriting();
                         em.close();
                         accessor.setActiveBatchWritingMechanism(null);
                     }
                 };   
-                test.setName("DynamicParameterizedBatchUpdateTest");
-                //addTest(test);
+                test.setName("DynamicParameterizedHybridBatchUpdateTest");
+                addTest(test);*/
             }
             
             public void test() throws Exception {
