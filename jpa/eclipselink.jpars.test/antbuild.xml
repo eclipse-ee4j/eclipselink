@@ -251,6 +251,7 @@
         <echo message="jpars version is ${JPARS_VERSION}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
     </target>
+
     <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
         <run_jpars_tests runpathref="jparstest.run.against.jar.path"/>
     </target>
