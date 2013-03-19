@@ -848,10 +848,6 @@ public class AnnotationsProcessor {
                 validateXmlValueFieldOrProperty(jClass, tInfo.getXmlValueProperty());
             }
 
-            // Ensure that there is no more than one XmlElementRef per type QName
-            Set<QName> referenceQNames = new HashSet<QName>();
-            Map<QName, Set<QName>> referenceQNamesForWrapper = new HashMap<QName, Set<QName>>();
-            
             // Keep a list of "any" properties to verify if multiples exist
             // that they have different element wrappers
             List<Property> anyElementProperties = new ArrayList<Property>();
@@ -888,7 +884,7 @@ public class AnnotationsProcessor {
                 // handle XmlElementRef(s) - validate and build the required
                 // ElementDeclaration object
                 if (property.isReference()) {
-                    processReferenceProperty(property, tInfo, jClass, referenceQNames, referenceQNamesForWrapper);
+                    processReferenceProperty(property, tInfo, jClass);
                 }
                  
                 if (property.isSwaAttachmentRef() && !this.hasSwaRef) {
@@ -2350,17 +2346,8 @@ public class AnnotationsProcessor {
      * @param javaHasAnnotations
      * @return
      */
-    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls, Set<QName> referenceQNames, Map<QName, Set<QName>> referenceQNamesForWrappers) {
+    private Property processReferenceProperty(Property property, TypeInfo info, JavaClass cls) {
    
-        if(property.isSetXmlElementWrapper()) {
-            QName wrapperQName = new QName(property.getXmlElementWrapper().getNamespace(), property.getXmlElementWrapper().getName());
-            Set<QName> qnamesForWrapper = referenceQNamesForWrappers.get(wrapperQName);
-            if(qnamesForWrapper == null) {
-                qnamesForWrapper = new HashSet<QName>();
-                referenceQNamesForWrappers.put(wrapperQName, qnamesForWrapper);
-            }
-            referenceQNames = qnamesForWrapper;
-        }
         for (org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef nextRef : property.getXmlElementRefs()) {
             JavaClass type = property.getType();
             String typeName = type.getQualifiedName();
@@ -2380,7 +2367,7 @@ public class AnnotationsProcessor {
             for (Entry<String, ElementDeclaration> entry : xmlRootElements.entrySet()) {
                 ElementDeclaration entryValue = entry.getValue();
                 if (!(areEquals(type, Object.class)) && type.isAssignableFrom(entryValue.getJavaType())) {
-                    addReferencedElement(property, entryValue, referenceQNames, typeName, cls.getName());
+                    addReferencedElement(property, entryValue);
                     missingReference = false;
                 }
             }
@@ -2407,7 +2394,7 @@ public class AnnotationsProcessor {
                     referencedElement = this.getGlobalElements().get(qname);
                 }
                 if (referencedElement != null) {
-                    addReferencedElement(property, referencedElement, referenceQNames, typeName, cls.getName());
+                    addReferencedElement(property, referencedElement);
                 } else {
                     throw org.eclipse.persistence.exceptions.JAXBException.invalidElementRef(property.getPropertyName(), cls.getName());
                 }
@@ -3788,17 +3775,12 @@ public class AnnotationsProcessor {
         }
     }
 
-    private void addReferencedElement(Property property, ElementDeclaration referencedElement, Set<QName> referenceQNames, String typeName, String className) {
-        boolean canAdd = referenceQNames.add(referencedElement.getElementName());
-        if (!canAdd && !(JAVAX_XML_BIND_JAXBELEMENT.equals(typeName))) {
-            throw org.eclipse.persistence.exceptions.JAXBException.multipleXmlElementRef(typeName, className);
-        }
-
+    private void addReferencedElement(Property property, ElementDeclaration referencedElement) {
         property.addReferencedElement(referencedElement);
         if (referencedElement.getSubstitutableElements() != null && referencedElement.getSubstitutableElements().size() > 0) {
             for (ElementDeclaration substitutable : referencedElement.getSubstitutableElements()) {
                 if (substitutable != referencedElement) {
-                    addReferencedElement(property, substitutable, referenceQNames, typeName, className);
+                    addReferencedElement(property, substitutable);
                 }
             }
         }

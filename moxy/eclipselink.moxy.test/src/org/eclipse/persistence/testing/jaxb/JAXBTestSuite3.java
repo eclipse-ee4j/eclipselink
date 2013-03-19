@@ -102,7 +102,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBContextByClassArrayWithRefInBindingsTestCases.class);
         suite.addTestSuite(JAXBContextByPackageWithIndexTestCases.class);
         suite.addTestSuite(ObjectFactoryTestCases.class);
-        suite.addTestSuite(MultipleXmlElementRefTestCases.class);
+        //suite.addTestSuite(MultipleXmlElementRefTestCases.class);
         
         suite.addTestSuite(PropOrderTestCases.class);
         suite.addTestSuite(LazyInitTestCases.class);
