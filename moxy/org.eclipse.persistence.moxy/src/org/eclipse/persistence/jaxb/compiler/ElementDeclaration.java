@@ -105,9 +105,15 @@ public class ElementDeclaration {
      * Add an element to the list of elements which can be substituted for this element (ie: has this element in their substitutionGroup)
      */
     public void addSubstitutableElement(ElementDeclaration element) {
-    	if(element != this){
+        if (element != this && element != null) {
+            QName elementName = element.getElementName();
+            for (ElementDeclaration substitutableElement : substitutableElements) {
+                if (substitutableElement.getElementName().equals(elementName)) {
+                    return;
+                }
+            }
             this.substitutableElements.add(element);
-    	}
+        }
     }
     
     /**
