@@ -37,7 +37,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         }
     }
 
-    public Subgraph addSubGraph(String attribute) {
+    public Subgraph addSubgraph(String attribute) {
         CoreAttributeGroup group = new CoreAttributeGroup();
         if(attributeGroup.getItem(attribute) == null) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);
@@ -48,7 +48,7 @@ public class ObjectGraphImpl extends AttributeNodeImpl implements ObjectGraph, S
         return new ObjectGraphImpl(group);
     }
 
-    public Subgraph addSubGraph(String attribute, Class type) {
+    public Subgraph addSubgraph(String attribute, Class type) {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         if(attributeGroup.getItem(attribute) == null) {
             AttributeNodeImpl impl = new AttributeNodeImpl(attribute);

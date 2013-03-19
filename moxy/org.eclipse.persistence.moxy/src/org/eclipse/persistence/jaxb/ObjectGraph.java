@@ -57,7 +57,7 @@ public interface ObjectGraph {
      * @throws IllegalStateException if this EntityGraph has been statically
      * defined
      */
-    public Subgraph addSubGraph(String attribute);
+    public Subgraph addSubgraph(String attribute);
 
     /**
      * Used to add a node of the graph that corresponds to a managed type with
@@ -72,7 +72,7 @@ public interface ObjectGraph {
      * @throws IllegalStateException
      *             if this EntityGraph has been statically defined
      */
-    public Subgraph addSubGraph(String attribute, Class type);
+    public Subgraph addSubgraph(String attribute, Class type);
 
     /*
      * returns the attributes of this entity that are included in the entity

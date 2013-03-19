@@ -39,7 +39,7 @@ public class ObjectGraphDynamicTestCases extends JAXBWithJSONTestCases {
         ObjectGraph graph = ((JAXBContext)jaxbContext).createObjectGraph(Customer.class);
         graph.addAttributeNodes("lastName");
         graph.addAttributeNodes("age");
-        Subgraph subGraph = graph.addSubGraph("address", Address.class);
+        Subgraph subGraph = graph.addSubgraph("address", Address.class);
         subGraph.addAttributeNodes("country");
         
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.OBJECT_GRAPH, graph);
