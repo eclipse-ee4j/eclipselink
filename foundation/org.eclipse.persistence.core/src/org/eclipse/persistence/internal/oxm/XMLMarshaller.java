@@ -1053,6 +1053,7 @@ public abstract class XMLMarshaller<
         
         MarshalRecord writerRecord;
         writer = new BufferedWriter(writer);
+        //writer = wrapWriter(writer);
         if (isFormattedOutput()) {
             if(mediaType.isApplicationJSON()) {                          
                 writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
@@ -1128,6 +1129,18 @@ public abstract class XMLMarshaller<
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Wrap Writer in a BufferedWriter only if its write() operations may be costly
+     * (such as FileWriters and OutputStreamWriters). 
+     */
+    private Writer wrapWriter(Writer writer) {
+        if (writer instanceof OutputStreamWriter || writer instanceof FileWriter) {
+            return new BufferedWriter(writer);
+        }
+        return writer;
     }
 
     /**
