@@ -652,7 +652,7 @@ public class XMLMarshaller implements Cloneable {
 
         
         MarshalRecord writerRecord;
-        writer = new BufferedWriter(writer);
+        writer = wrapWriter(writer);
         if (isFormattedOutput()) {
             if(MediaType.APPLICATION_JSON == mediaType) {                          
                 writerRecord = new JSONFormattedWriterRecord(writer, callbackName);                
@@ -756,7 +756,19 @@ public class XMLMarshaller implements Cloneable {
             throw XMLMarshalException.marshalException(e);
         }
     }
-    
+
+    /**
+     * INTERNAL:
+     * Wrap Writer in a BufferedWriter only if its write() operations may be costly
+     * (such as FileWriters and OutputStreamWriters). 
+     */
+    private Writer wrapWriter(Writer writer) {
+        if (writer instanceof OutputStreamWriter || writer instanceof FileWriter) {
+            return new BufferedWriter(writer);
+        }
+        return writer;
+    }
+
     /**
     * PUBLIC:
     * Convert the given object to XML and update the given contentHandler with that XML Document
