@@ -4056,12 +4056,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             aChar = (char) data;
                         }
 
-                        String sqlString = sqlBuffer.toString();
-                        try {
-                            session.executeNonSelectingSQL(sqlString);
-                        } catch (DatabaseException e) {
-                            // TODO: ignore for now, although the spec seems to want an exception??
-                            //throw new PersistenceException(ExceptionLocalization.buildMessage("jpa21-ddl-source-script-sql-exception", new Object[]{sqlString, source}), e); 
+                        // Remove trailing and leading white space characters.
+                        String sqlString = sqlBuffer.toString().trim();
+                        
+                        // If the string isn't empty, then fire it.
+                        if (! sqlString.equals("")) {
+                            try {
+                                session.executeNonSelectingSQL(sqlString);
+                            } catch (DatabaseException e) {
+                                // Swallow any database exceptions as these could 
+                                // be drop failures of a table that doesn't exist etc.
+                                // SQLExceptions will be thrown to the user.
+                            }
                         }
                             
                         data = reader.read();
