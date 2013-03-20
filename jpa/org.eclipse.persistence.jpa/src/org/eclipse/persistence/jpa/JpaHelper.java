@@ -153,10 +153,20 @@ public class JpaHelper {
      * return that interface from this method instead
      * 
      * @see JpaEntityManagerFactory
+     * @deprecated
      */ 
-    public static EntityManagerFactoryImpl getEntityManagerFactory(EntityManagerFactory emf) { 
-        if (emf instanceof EntityManagerFactoryImpl) { 
-            return ((EntityManagerFactoryImpl)emf); 
+    public static EntityManagerFactoryImpl getEntityManagerFactory(EntityManagerFactoryImpl emf) { 
+        return ((EntityManagerFactoryImpl)emf); 
+    }
+
+    /** 
+     * Given a JPA EntityManagerFactory attempt to cast it to a EclipseLink EMF.
+     * 
+     * @see JpaEntityManagerFactory
+     */ 
+    public static JpaEntityManagerFactory getEntityManagerFactory(EntityManagerFactory emf) { 
+        if (emf instanceof JpaEntityManagerFactory) { 
+            return ((JpaEntityManagerFactory)emf); 
         }
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa_helper_invalid_entity_manager_factory", new Object[]{emf.getClass()}));
     }
