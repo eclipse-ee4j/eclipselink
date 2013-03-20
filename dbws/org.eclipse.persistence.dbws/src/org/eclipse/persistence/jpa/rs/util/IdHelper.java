@@ -83,7 +83,8 @@ public class IdHelper {
                     attributeClasification = mapping.getFields().get(0).getType();
                 }
             }
-            Object idValue = session.getPlatform().getConversionManager().convertObject(token, attributeClasification);
+            
+            Object idValue = session.getDatasourcePlatform().getConversionManager().convertObject(token, attributeClasification);
             keyElements[key.getIndex()] = idValue;
             index++;
         }

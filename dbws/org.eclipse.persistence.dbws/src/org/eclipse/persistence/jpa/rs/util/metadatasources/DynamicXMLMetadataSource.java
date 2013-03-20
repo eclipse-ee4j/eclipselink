@@ -78,7 +78,11 @@ public class DynamicXMLMetadataSource implements MetadataSource {
      */
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
-        javaType.setName(classDescriptor.getAlias());
+        String alias = classDescriptor.getAlias();
+        if (alias == null || alias.isEmpty()){
+            alias = classDescriptor.getJavaClass().getSimpleName();
+        }
+        javaType.setName(alias);
         javaType.setJavaAttributes(new JavaAttributes());
         boolean isDynamic = DynamicEntity.class.isAssignableFrom(classDescriptor.getJavaClass());
         for (DatabaseMapping ormMapping : classDescriptor.getMappings()) {
@@ -89,6 +93,10 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         }
         // Make them all root elements for now
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
+        // Embeddables don't need Rest adapters, return if the classDescriptor is an aggregate descriptor.
+        if (classDescriptor.isAggregateDescriptor()) {
+            return javaType;
+        }
 
         // Set an adapter that is a subclass of ReferenceAdapter that can adapt the class to create a link for
         // the persistence_href field that has been weaved in.
@@ -129,6 +137,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                     xmlElement.setContainerType(((EISCompositeDirectCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
                 } else if (mapping instanceof EISCompositeCollectionMapping) {
                     xmlElement.setContainerType(((EISCompositeCollectionMapping) mapping).getContainerPolicy().getContainerClassName());
+                    xmlElement.setType(((EISCompositeCollectionMapping) mapping).getReferenceClassName());
                 }
             } else {
                 xmlElement.setType(((CollectionMapping) mapping).getReferenceClassName());

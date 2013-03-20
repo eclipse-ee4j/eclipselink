@@ -139,8 +139,8 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverte
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.ComplexTypeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
@@ -2008,7 +2008,19 @@ public class MetadataProject {
      */
     public boolean usesMultitenantSharedEmf() {
         return m_multitenantSharedEmf;
-    }    
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if the entity manager factory for this project has any virtual classes
+     * 
+     */
+    public boolean hasVirtualClasses() {
+        if ((m_virtualClasses != null) && (!m_virtualClasses.isEmpty())) {
+            return true;
+        }
+        return false;
+    }
  }
 
 
