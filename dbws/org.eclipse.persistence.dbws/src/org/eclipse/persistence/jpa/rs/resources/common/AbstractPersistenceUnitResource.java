@@ -66,7 +66,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
-                Descriptor returnDescriptor = buildDescriptor(app, persistenceUnit, descriptor, baseURI.toString());
+                Descriptor returnDescriptor = buildDescriptor(app, persistenceUnit, descriptor, baseURI.toString(), version);
                 String result = null;
                 try {
                     result = marshallMetadata(returnDescriptor, mediaType);
@@ -176,24 +176,37 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
 
     protected void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
         String target = null;
+        String collectionName = null;
         if (mapping.isCollectionMapping()) {
             if (mapping.isEISMapping()) {
                 EISCompositeCollectionMapping collectionMapping = (EISCompositeCollectionMapping) mapping;
                 String collectionType = mapping.getContainerPolicy().getContainerClass().getSimpleName();
+                if (collectionMapping.getReferenceClass() != null) {
+                    collectionName = collectionMapping.getReferenceClass().getSimpleName();
+                } 
+                if ((collectionName == null) && (collectionMapping.getAttributeClassification() != null)) {
+                    collectionName = collectionMapping.getAttributeClassification().getSimpleName();
+                }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
                     String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
-                    target = collectionType + "<" + mapKeyType + ", " + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                    target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
-                    target = collectionType + "<" + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                    target = collectionType + "<" + collectionName + ">";
                 }
             } else {
                 CollectionMapping collectionMapping = (CollectionMapping) mapping;
-                String collectionType = collectionMapping.getContainerPolicy().getContainerClassName();
+                String collectionType = collectionMapping.getContainerPolicy().getContainerClass().getSimpleName();
+                if (collectionMapping.getReferenceClass() != null) {
+                    collectionName = collectionMapping.getReferenceClass().getSimpleName();
+                } 
+                if ((collectionName == null) && (collectionMapping.getAttributeClassification() != null)) {
+                    collectionName = collectionMapping.getAttributeClassification().getSimpleName();
+                }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
                     String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
-                    target = collectionType + "<" + mapKeyType + ", " + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                    target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
-                    target = collectionType + "<" + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                    target = collectionType + "<" + collectionName + ">";
                 }
             }
         } else if (mapping.isForeignReferenceMapping()) {
@@ -223,15 +236,23 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
+    protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri, String version) {
         Descriptor returnDescriptor = new Descriptor();
         returnDescriptor.setName(descriptor.getAlias());
         returnDescriptor.setType(descriptor.getJavaClass().getSimpleName());
-        returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
-        returnDescriptor.getLinkTemplates().add(new LinkTemplate("persist", "put", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
-        returnDescriptor.getLinkTemplates().add(new LinkTemplate("update", "post", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
-        returnDescriptor.getLinkTemplates().add(new LinkTemplate("delete", "delete", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
-
+        
+        if (version != null) {
+            version = version + "/";
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + version + persistenceUnit +  "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("persist", "put", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias()));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("update", "post", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias()));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("delete", "delete", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
+        } else {
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("persist", "put", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("update", "post", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("delete", "delete", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
+        }
         if (!descriptor.getMappings().isEmpty()) {
             Iterator<DatabaseMapping> mappingIterator = descriptor.getMappings().iterator();
             while (mappingIterator.hasNext()) {
@@ -253,8 +274,15 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             parameterString.append(";");
             parameterString.append(argument + "={" + argument + "}");
         }
-        Query returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, app.getBaseURI() + app.getName() + "/query/" + query.getName() + parameterString));
-        if (query.isReportQuery()) {
+        
+        String version = app.getVersion();
+        Query returnQuery = null;
+        if (version != null) {
+            returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, app.getBaseURI() + version + "/" + app.getName() + "/query/" + query.getName() + parameterString));
+        } else {
+            returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, app.getBaseURI() + app.getName() + "/query/" + query.getName() + parameterString));
+        }
+        if (query.isReportQuery()) { 
             query.checkPrepare((AbstractSession) app.getJpaSession(), new DatabaseRecord());
             for (ReportItem item : ((ReportQuery) query).getItems()) {
                 if (item.getMapping() != null) {
