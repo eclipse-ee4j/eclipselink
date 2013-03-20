@@ -4060,7 +4060,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         String sqlString = sqlBuffer.toString().trim();
                         
                         // If the string isn't empty, then fire it.
-                        if (! sqlString.equals("")) {
+                        if ((! sqlString.equals("")) && (! sqlString.startsWith("#"))) {
                             try {
                                 session.executeNonSelectingSQL(sqlString);
                             } catch (DatabaseException e) {
