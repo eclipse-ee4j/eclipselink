@@ -1,0 +1,6 @@
+{"employee":
+   {"contactInfo":[
+      {"type":"addressInh","contactType":"billingAddress","city":"Any Town"},
+      {"type":"phoneNumberInh","contactType":"work","number":"555-1111"}]
+   }
+}

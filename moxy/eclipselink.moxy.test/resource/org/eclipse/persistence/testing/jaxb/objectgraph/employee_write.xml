@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<employee>
+    <contactInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="addressInh">
+        <contactType>billingAddress</contactType>
+        <city>Any Town</city>
+    </contactInfo>
+    <contactInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="phoneNumberInh">
+        <contactType>work</contactType>
+        <number>555-1111</number>
+    </contactInfo>
+</employee>

@@ -1,0 +1,13 @@
+{"employee":{"contactInfo":[
+   {"type":"addressInh",
+    "id":"1", 
+    "contactType":"billingAddress",
+    "street":"1 A St",
+    "city":"Any Town"
+   },
+   {"type":"phoneNumberInh",
+    "id":"2",
+    "contactType":"work",
+    "number":"555-1111"}
+   ]}
+}

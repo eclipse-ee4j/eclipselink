@@ -304,10 +304,11 @@ public class MappingsGenerator {
                         }
                     }
                 }
+
+
                 for(XmlNamedSubgraph nextSubclass:next.getXmlNamedSubclassGraph()) {
-                    AttributeGroup subclassGroup = new AttributeGroup(next.getName(), nextSubclass.getType(), false);
-                    group.getSubClassGroups().put(nextSubclass.getName(), subclassGroup);
-                    
+                    AttributeGroup subclassGroup = new AttributeGroup(next.getName(), nextSubclass.getType(), true);
+                    group.getSubClassGroups().put(nextSubclass.getType(), subclassGroup);
                     for(XmlNamedAttributeNode nextAttributeNode:nextSubclass.getXmlNamedAttributeNode()) {
                         if(nextAttributeNode.getSubgraph() == null || nextAttributeNode.getSubgraph().length() == 0) {
                             subclassGroup.addAttribute(nextAttributeNode.getName());
@@ -331,7 +332,7 @@ public class MappingsGenerator {
                                 }
                             }
                         }
-                    }          
+                    }
                 }
             }
         }

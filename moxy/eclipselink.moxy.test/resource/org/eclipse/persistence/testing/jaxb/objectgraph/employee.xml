@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<employee>
+    <contactInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="addressInh">
+        <id>1</id>
+        <contactType>billingAddress</contactType>
+        <street>1 A St</street>
+        <city>Any Town</city>
+    </contactInfo>
+    <contactInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="phoneNumberInh">
+        <id>2</id>
+        <contactType>work</contactType>
+        <number>555-1111</number>
+    </contactInfo>
+</employee>

@@ -151,6 +151,9 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         if (this.subGroups != null){
             for (ATTRIBUTE_GROUP entry : this.subGroups.values()){
                 entry.convertClassNamesToClasses(classLoader);
+                if(!(entry.getSubClassGroups().isEmpty())) {
+                    newMap.putAll(entry.getSubClassGroups());
+                }
                 newMap.put(entry.getType(), entry);
                 entry.setAllSubclasses(newMap);
             }

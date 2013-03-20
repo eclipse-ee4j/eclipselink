@@ -353,12 +353,11 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
                 for (CoreAttributeGroup subClass : allsubclasses.values()){
                     subClass.convertClassNamesToClasses(classLoader);
                     allGroups.put(subClass.getType(), subClass);
-                    subClasses.add(subClass);
                 }
                 this.allsubclasses = allGroups;
-                for (CoreAttributeGroup subClass : subClasses){
+                for (CoreAttributeGroup subClass : allsubclasses.values()){
                     if (AttributeItem.orderInheritance(subClass, allGroups)){
-                        subClass.insertSubClass(this);
+                        this.insertSubClass(subClass);
                     }
                 }
             }
@@ -584,7 +583,7 @@ public class CoreAttributeGroup<ATTRIBUTE_ITEM extends CoreAttributeItem> implem
         if (subClasses != null){
             for (Iterator<CoreAttributeGroup> subClasses = this.subClasses.iterator(); subClasses.hasNext();){
                 CoreAttributeGroup subClass = subClasses.next();
-                if (group.getType().isAssignableFrom(subClass.getType())){
+                if (group != subClass && group.getType().isAssignableFrom(subClass.getType())){
                     group.subClasses.add(subClass);
                     subClass.superClassGroup = group;
                     subClasses.remove();

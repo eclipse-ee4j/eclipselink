@@ -309,8 +309,13 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             CoreAttributeGroup group = marshalRecord.getCurrentAttributeGroup();
             CoreAttributeGroup nestedGroup = XMLRecord.DEFAULT_ATTRIBUTE_GROUP;
             CoreAttributeItem item = group.getItem(getMapping().getAttributeName());
-            if(item != null && item.getGroup() != null) {
-                nestedGroup = item.getGroup();
+            if(item != null) {
+                if(item.getGroups() != null) {
+                    nestedGroup = item.getGroup(descriptor.getJavaClass());
+                } 
+                if(nestedGroup == null) {
+                    nestedGroup = item.getGroup() == null?XMLRecord.DEFAULT_ATTRIBUTE_GROUP:item.getGroup();
+                }
             }
             marshalRecord.pushAttributeGroup(nestedGroup);
             objectBuilder.buildRow(marshalRecord, value, session, marshaller, xPathFragment);

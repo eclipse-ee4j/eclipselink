@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.map.MapTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphBasicTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphDynamicTestCases;
+import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.objectgraph.ObjectGraphRefSubTestCases;
 import org.eclipse.persistence.testing.jaxb.refresh.RefreshTestSuite;
 import org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar.XMLGregorianCalendarObjectTestCases;
@@ -63,6 +64,7 @@ public class JAXBTestSuite4 {
         suite.addTestSuite(ObjectGraphBindingsTestCases.class);
         suite.addTestSuite(ObjectGraphDynamicTestCases.class);
         suite.addTestSuite(ObjectGraphRefSubTestCases.class);
+        suite.addTestSuite(ObjectGraphInheritanceTestCases.class);
 	    
 	    return suite;
 	}
