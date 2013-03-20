@@ -436,7 +436,6 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             int nr = ((Number)em.createQuery("SELECT COUNT(e) FROM Employee e WHERE e.firstName = 'CHANGED'").getSingleResult()).intValue();
             assertEquals("simpleCriteriaUpdateTest: unexpected number of changed values in the database",
                     nrOfEmps, nr);
-            this.getDatabaseSession().setLogLevel(0);
             cq.where(qb.isNotNull(root.get("lastName")));
             q = em.createQuery(cq);
             int updatedLastNames = q.executeUpdate();
