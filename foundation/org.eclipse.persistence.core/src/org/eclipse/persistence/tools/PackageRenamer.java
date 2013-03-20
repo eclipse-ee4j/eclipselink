@@ -444,8 +444,9 @@ public class PackageRenamer {
 
         // Reading file into string.
         // stringContainAllFile = readAllStringsFromFile(sourceFileName);
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(new java.io.File(sourceFileName));
+            fis = new FileInputStream(new java.io.File(sourceFileName));
             byte[] buf = new byte[BUFSIZ];
             StringBuffer strBuf = new StringBuffer((int)new java.io.File(sourceFileName).length());
             int i = 0;
@@ -464,6 +465,14 @@ public class PackageRenamer {
 
         } catch (IOException ioException) {
             throw new PackageRenamerException("Unexpected exception was thrown during file manipulation." + ioException.getMessage());
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
 
         // Sorting key package name.
