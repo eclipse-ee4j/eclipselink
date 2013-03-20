@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foo:address xmlns:foo="urn:foo"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="foo:canadianAddress">
+    <foo:street>1 A Street</foo:street>
+    <foo:city>Any Town</foo:city>
+    <foo:province>Ontario</foo:province>
+    <foo:postalCode>A1B 2C3</foo:postalCode>
+</foo:address>
