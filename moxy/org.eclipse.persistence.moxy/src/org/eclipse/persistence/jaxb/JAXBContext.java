@@ -45,6 +45,7 @@ import javax.xml.transform.Source;
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -624,7 +625,17 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         CoreAttributeGroup group = new CoreAttributeGroup(null, type, true);
         return new ObjectGraphImpl(group);
     }
-
+    
+    public ObjectGraph createObjectGraph(String typeName) {
+        ClassLoader loader = this.contextInput.classLoader;
+        try {
+            Class cls = PrivilegedAccessHelper.getClassForName(typeName, true, loader);
+            return createObjectGraph(cls);
+        } catch(Exception ex) {
+           throw ConversionException.couldNotBeConvertedToClass(typeName, Class.class, ex);
+        }
+    }
+    
     protected JAXBElement createJAXBElementFromXMLRoot(Root xmlRoot, Class declaredType) {
         Object value = xmlRoot.getObject();
 
