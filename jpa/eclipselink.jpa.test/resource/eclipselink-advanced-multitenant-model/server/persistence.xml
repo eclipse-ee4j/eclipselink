@@ -83,7 +83,7 @@
             <property name="eclipselink.target-database" value="%%database-platform%%"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
             <property name="eclipselink.validate-existence" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
             <property name="eclipselink.session-name" value="multi-tenant-vpd"/>
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <!--property name="eclipselink.create-ddl-jdbc-file-name" value="createMultitenantVPD_ddlGeneration.jdbc"/>

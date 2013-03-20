@@ -107,7 +107,7 @@
             <property name="eclipselink.session-name" value="extended-dynamic-session"/>
             <property name="eclipselink.weaving" value="static"/>
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.create-ddl-jdbc-file-name" value="extended-xml-dynamic-model-create.jdbc"/>
             <property name="eclipselink.drop-ddl-jdbc-file-name" value="extended-xml-dynamic-model-drop.jdbc"/>

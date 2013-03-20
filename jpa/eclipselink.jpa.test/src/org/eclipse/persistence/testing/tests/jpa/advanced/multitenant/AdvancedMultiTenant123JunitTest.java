@@ -156,7 +156,6 @@ public class AdvancedMultiTenant123JunitTest extends AdvancedMultiTenantJunitTes
             // Try a delete all on single table (Contracts)
             try {
                 beginTransaction(em);
-                this.getServerSession(getMULTI_TENANT_PU_123()).setLogLevel(0);
                 int contracts = em.createNamedQuery("FindAllContracts").getResultList().size();                
                 int deletes = em.createNamedQuery("DeleteAllContracts").executeUpdate();
                 assertTrue("Incorrect number of contracts deleted [" + deletes + "], expected [" + contracts + "]", deletes == 2);

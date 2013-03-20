@@ -9,7 +9,7 @@
         <class>org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address</class>
         <properties>
             <property name="eclipselink.target-server" value="WebLogic"/>
-            <property name="eclipselink.logging.level" value="FINEST"/>
+            <!-- property name="eclipselink.logging.level" value="FINEST"/ -->
 
             <property name="eclipselink.cache.coordination.protocol" value="%%cachecoordination-protocol%%" />
             <property name="eclipselink.cache.coordination.jms.host" value="%%topic-host-url%%" />
