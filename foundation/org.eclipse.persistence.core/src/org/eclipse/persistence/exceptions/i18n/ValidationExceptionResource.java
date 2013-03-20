@@ -352,6 +352,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7353", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert specification." },
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
+                                           { "7356", "Precedure: [{1}] can not be excuted because {0} does not currently support multiple out parameters"},
                                            
  };
     

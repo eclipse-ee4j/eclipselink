@@ -457,7 +457,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_MAPPING_FOR_CONVERT = 7353;
     public static final int INVALID_MAPPING_FOR_MAP_KEY_CONVERT = 7354;
     public static final int INVALID_MAPPING_FOR_CONVERT_WITH_ATTRIBUTE_NAME = 7355;
-    
+    public static final int MULTIPLE_OUT_PARAMS_NOT_SUPPORTED = 7356;
+  
     /**
      * INTERNAL:
      * EclipseLink exceptions should only be thrown by EclipseLink.
@@ -2354,6 +2355,14 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
     
+    public static ValidationException multipleOutParamsNotSupported(String platformTypeName, String procedureName) {
+        Object[] args = { platformTypeName, procedureName};
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTIPLE_OUT_PARAMS_NOT_SUPPORTED, args));
+        validationException.setErrorCode(MULTIPLE_OUT_PARAMS_NOT_SUPPORTED);
+        return validationException;
+    }
+
     public static ValidationException multipleCursorsNotSupported(String callString) {
         Object[] args = { callString };
 
