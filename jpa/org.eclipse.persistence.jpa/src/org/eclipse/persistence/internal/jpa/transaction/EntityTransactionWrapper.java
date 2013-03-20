@@ -76,21 +76,8 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
     }
     
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
-        return entityTransaction.isActive();
+        return (entityTransaction != null) && entityTransaction.isActive();
     }
-    
-    /**
-    * Mark the current transaction so that the only possible
-    * outcome of the transaction is for the transaction to be
-    * rolled back.
-    * This is an internal method and if the txn is not active will do nothing
-    */
-    // From old parent
-    //public void setRollbackOnlyInternal(){
-      //  if (entityTransaction != null && entityTransaction.isActive()){
-        //    entityTransaction.setRollbackOnly();
-        //}
-    //}
     
     /**
      * Mark the current transaction so that the only possible
@@ -103,15 +90,6 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
              this.getTransaction().setRollbackOnly();
          }
      }
-        
-    public boolean shouldFlushBeforeQuery(UnitOfWorkImpl uow){
-        return true;
-    }
-    
-    // From old parent
-    //protected void throwCheckTransactionFailedException() {
-      //  throw TransactionException.transactionNotActive();
-    //}
 
     protected void throwCheckTransactionFailedException() {
         throw new TransactionRequiredException(TransactionException.transactionNotActive().getMessage());

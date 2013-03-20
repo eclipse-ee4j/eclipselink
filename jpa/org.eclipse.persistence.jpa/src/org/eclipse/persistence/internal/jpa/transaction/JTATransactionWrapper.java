@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.jpa.transaction;
 
 import javax.persistence.EntityTransaction;
+import javax.persistence.SynchronizationType;
 import javax.persistence.TransactionRequiredException;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -89,19 +90,17 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
     public void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow){
         uow.registerWithTransactionIfRequired();
     }
-    
-    public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
-        return uow.getParent().hasExternalTransactionController() && uow.isSynchronized();
+
+    public boolean isJoinedToTransaction(UnitOfWorkImpl uow) {
+        if (uow != null) {
+            return uow.getParent().hasExternalTransactionController() && uow.isSynchronized();
+        } else if (checkForTransaction(false) != null) {
+            return (entityManager.getSyncType() == null || entityManager.getSyncType().equals(SynchronizationType.SYNCHRONIZED));
+        }
+        return false;
     }
-    
+
     public void verifyRegisterUnitOfWorkWithTxn(){
-    }
-    
-    /**
-     * We should only flush the entity manager before the query if the query is
-     * joined to a transaction
-     */
-    public boolean shouldFlushBeforeQuery(UnitOfWorkImpl uow){
-        return uow.isSynchronized();
+        this.entityManager.getActivePersistenceContext(checkForTransaction(true));
     }
 }

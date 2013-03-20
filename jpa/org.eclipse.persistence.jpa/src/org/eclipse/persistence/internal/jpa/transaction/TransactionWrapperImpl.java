@@ -72,11 +72,5 @@ public abstract class TransactionWrapperImpl  {
     * This is an internal method and if the txn is not active will do nothing
     */
     public abstract void setRollbackOnlyInternal();
-    
-    /**
-     * This method will be called when a query is executed.  If changes in the entity manager
-     * should be flushed this method should return true
-     */
-    public abstract boolean shouldFlushBeforeQuery(UnitOfWorkImpl uow);
-    
+
 }

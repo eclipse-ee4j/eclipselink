@@ -842,13 +842,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
             verifyOpen();
             try {
-                RepeatableWriteUnitOfWork uow = getActivePersistenceContext(checkForTransaction(true));
-                //398934 - verify that the em is joined to the transaction before writing changes
-                if (!transaction.isJoinedToTransaction(uow)) {
-                    throw new TransactionRequiredException(ExceptionLocalization.buildMessage("cannot_flush_on_unsynced_pc"));
-                }
                 try {
-                    uow.writeChanges();
+                    getActivePersistenceContext(checkForTransaction(true)).writeChanges();
                 } catch (org.eclipse.persistence.exceptions.OptimisticLockException eclipselinkOLE) {
                     throw new OptimisticLockException(eclipselinkOLE);
                 }
@@ -1930,7 +1925,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setShouldOrderUpdates(this.shouldOrderUpdates);
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
-            if (txn != null  && (syncType == null || syncType.equals(SynchronizationType.SYNCHRONIZED))) {
+            if (txn != null) {
                 // if there is an active txn we must register with it on
                 // creation of PC
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
@@ -2020,15 +2015,19 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * an error if there is no transaction, otherwise return null.
      */
     protected Object checkForTransaction(boolean validateExistence) {
-        return this.transaction.checkForTransaction(validateExistence);
+        Object txn = this.transaction.checkForTransaction(validateExistence);
+        //use transaction.isJoinedToTransaction EM is open verification.
+        if ((txn != null) && !transaction.isJoinedToTransaction(this.extendedPersistenceContext)) {
+            if (validateExistence) {
+                throw new TransactionRequiredException(ExceptionLocalization.buildMessage("cannot_use_transaction_on_unsynced_pc"));
+            }
+            return null;
+        }
+        return txn;
     }
 
     public boolean shouldFlushBeforeQuery() {
-        Object foundTransaction = checkForTransaction(false);
-        if ((foundTransaction != null) && transaction.shouldFlushBeforeQuery(getActivePersistenceContext(foundTransaction))) {
-            return true;
-        }
-        return false;
+        return (checkForTransaction(false)!= null);
     }
 
     /**
@@ -2052,7 +2051,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void joinTransaction() {
         try {
             verifyOpen();
-            checkForTransaction(true);
+            //Use the transaction's checkForTransaction to avoid the isJoinToTransaction validation check
+            transaction.checkForTransaction(true);
             if(this.hasActivePersistenceContext()) {
                 transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
             } else {
@@ -2839,10 +2839,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     public boolean isJoinedToTransaction() {
         verifyOpen();
-        if(this.hasActivePersistenceContext()) {
-                return transaction.isJoinedToTransaction(this.extendedPersistenceContext);
-        }
-        return false;
+        return transaction.isJoinedToTransaction(this.extendedPersistenceContext);
     }
 
     public <T> EntityGraph<T> createEntityGraph(Class<T> rootType) {
@@ -2891,4 +2888,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return result;
     }
 
+    /**
+     * INTERNAL:
+     * Tracks if this EntityManager should automatically associate with the transaction or not
+     * @return the syncType
+     */
+    public SynchronizationType getSyncType() {
+        return syncType;
+    }
 }
