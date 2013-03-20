@@ -440,7 +440,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         
         if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)) {
             classLoaderToUse = (ClassLoader) additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
-        } else if ((this.processor != null) && (this.processor.getProject().hasVirtualClasses()) && (this.state == STATE_PREDEPLOYED) && (!(classLoaderToUse instanceof DynamicClassLoader))) {
+        } else if ((this.processor != null) &&  (this.processor.getProject() != null) && (this.processor.getProject().hasVirtualClasses()) && (this.state == STATE_PREDEPLOYED) && (!(classLoaderToUse instanceof DynamicClassLoader))) {
             classLoaderToUse = new DynamicClassLoader(classLoaderToUse);
         }
 
