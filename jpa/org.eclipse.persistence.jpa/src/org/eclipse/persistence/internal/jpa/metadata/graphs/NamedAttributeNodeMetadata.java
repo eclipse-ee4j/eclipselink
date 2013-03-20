@@ -122,7 +122,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
      * INTERNAL:
      * Process the named attribute node metadata.
      */
-    public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup graph, AttributeGroup entityGraph) {
+    public void process(Map<String, Map<String, AttributeGroup>> attributeGraphs, AttributeGroup graph, AttributeGroup rootGraph) {
         // Process the subgraph.
         if (getSubgraph() != null) {
             if (attributeGraphs.containsKey(getSubgraph())) {
@@ -134,12 +134,11 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
             graph.addAttribute(getName());
         }
            
-        // Process the key subgraph (these always add to the root entity graph?!?).
         if (getKeySubgraph() != null) {
-            if (attributeGraphs.containsKey(attributeGraphs.get(entityGraph.getName()))) {
-                entityGraph.getItem(getName()).addKeyGroups(attributeGraphs.get(entityGraph.getName()).values());
+            if (attributeGraphs.containsKey(getKeySubgraph())) {
+                graph.getItem(getName()).addKeyGroups(attributeGraphs.get(getKeySubgraph()).values());
             } else {
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getSubgraph()}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("managed_component_not_found", new Object[]{graph.getName(), getName(), getKeySubgraph()}));
             }
         }
     }
