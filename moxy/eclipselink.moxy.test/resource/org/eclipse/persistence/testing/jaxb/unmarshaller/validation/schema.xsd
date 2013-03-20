@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema 
+    xmlns="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="urn:foo" 
+    xmlns:tns="urn:foo" 
+    elementFormDefault="qualified">
+
+    <element name="address" type="tns:address"/>
+
+    <complexType name="address">
+        <sequence>
+            <element name="street" type="string"/>
+            <element name="city" type="string"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="canadianAddress">
+        <complexContent>
+            <extension base="tns:address">
+                <sequence>
+                    <element name="province" type="string"/>
+                    <element name="postalCode" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+</schema>

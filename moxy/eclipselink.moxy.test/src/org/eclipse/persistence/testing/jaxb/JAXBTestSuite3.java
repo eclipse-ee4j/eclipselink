@@ -38,6 +38,7 @@ import org.eclipse.persistence.testing.jaxb.unmarshaller.autodetect.AutoDetectFa
 import org.eclipse.persistence.testing.jaxb.unmarshaller.autodetect.AutoDetectMediaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.autodetect.AutoDetectSmallDocTestCases;
 import org.eclipse.persistence.testing.jaxb.unmarshaller.space.UnmarshalWithSpaceEventTestCases;
+import org.eclipse.persistence.testing.jaxb.unmarshaller.validation.ValidationTestCases;
 import org.eclipse.persistence.testing.jaxb.uri.ChildURITestCases;
 import org.eclipse.persistence.testing.jaxb.uri.URITestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsPopulatedTestCases;
@@ -115,6 +116,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JSONUnmarshalTestCases.class);
         suite.addTestSuite(JSONUnmarshalAutoDetectTestCases.class);
         suite.addTestSuite(DefaultValueTestCases.class);
+        suite.addTestSuite(ValidationTestCases.class);
         suite.addTestSuite(AutoDetectMediaTypeTestCases.class);
         suite.addTestSuite(AutoDetectFailsTestCases.class);
         suite.addTestSuite(AutoDetectSmallDocTestCases.class);
