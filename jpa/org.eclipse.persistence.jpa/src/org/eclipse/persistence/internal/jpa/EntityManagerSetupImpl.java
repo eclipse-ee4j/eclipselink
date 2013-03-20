@@ -438,9 +438,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         
         ClassLoader classLoaderToUse = realClassLoader;
         
-        if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)){
-            classLoaderToUse = (ClassLoader)additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
+        if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)) {
+            classLoaderToUse = (ClassLoader) additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
+        } else if ((this.processor.getProject().hasVirtualClasses()) && (this.state == STATE_PREDEPLOYED) && (!(classLoaderToUse instanceof DynamicClassLoader))) {
+            classLoaderToUse = new DynamicClassLoader(classLoaderToUse);
         }
+
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {

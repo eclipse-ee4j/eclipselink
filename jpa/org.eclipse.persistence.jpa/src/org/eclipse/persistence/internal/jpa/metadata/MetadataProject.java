@@ -1928,7 +1928,19 @@ public class MetadataProject {
      */
     public boolean usesMultitenantSharedEmf() {
         return m_multitenantSharedEmf;
-    }    
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if the entity manager factory for this project has any virtual classes
+     *
+     */
+    public boolean hasVirtualClasses() {
+        if ((m_virtualClasses != null) && (!m_virtualClasses.isEmpty())) {
+            return true;
+        }
+        return false;
+    }
  }
 
 

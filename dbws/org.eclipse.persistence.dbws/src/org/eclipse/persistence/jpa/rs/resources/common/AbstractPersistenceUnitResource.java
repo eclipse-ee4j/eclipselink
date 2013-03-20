@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -176,18 +177,29 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     protected void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
         String target = null;
         if (mapping.isCollectionMapping()) {
-            CollectionMapping collectionMapping = (CollectionMapping) mapping;
-            String collectionType = collectionMapping.getContainerPolicy().getContainerClassName();
-            if (collectionMapping.getContainerPolicy().isMapPolicy()) {
-                String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
-                target = collectionType + "<" + mapKeyType + ", " + collectionMapping.getReferenceClassName() + ">";
+            if (mapping.isEISMapping()) {
+                EISCompositeCollectionMapping collectionMapping = (EISCompositeCollectionMapping) mapping;
+                String collectionType = mapping.getContainerPolicy().getContainerClass().getSimpleName();
+                if (collectionMapping.getContainerPolicy().isMapPolicy()) {
+                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
+                    target = collectionType + "<" + mapKeyType + ", " + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                } else {
+                    target = collectionType + "<" + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                }
             } else {
-                target = collectionType + "<" + collectionMapping.getReferenceClassName() + ">";
+                CollectionMapping collectionMapping = (CollectionMapping) mapping;
+                String collectionType = collectionMapping.getContainerPolicy().getContainerClassName();
+                if (collectionMapping.getContainerPolicy().isMapPolicy()) {
+                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
+                    target = collectionType + "<" + mapKeyType + ", " + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                } else {
+                    target = collectionType + "<" + collectionMapping.getReferenceClass().getSimpleName() + ">";
+                }
             }
         } else if (mapping.isForeignReferenceMapping()) {
-            target = ((ForeignReferenceMapping) mapping).getReferenceClass().getName();
+            target = ((ForeignReferenceMapping) mapping).getReferenceClass().getSimpleName();
         } else {
-            target = mapping.getAttributeClassification().getName();
+            target = mapping.getAttributeClassification().getSimpleName();
         }
         descriptor.getAttributes().add(new Attribute(mapping.getAttributeName(), target));
     }
@@ -214,7 +226,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
     protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
         Descriptor returnDescriptor = new Descriptor();
         returnDescriptor.setName(descriptor.getAlias());
-        returnDescriptor.setType(descriptor.getJavaClassName());
+        returnDescriptor.setType(descriptor.getJavaClass().getSimpleName());
         returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
         returnDescriptor.getLinkTemplates().add(new LinkTemplate("persist", "put", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
         returnDescriptor.getLinkTemplates().add(new LinkTemplate("update", "post", baseUri + persistenceUnit + "/entity/" + descriptor.getAlias()));
@@ -248,26 +260,26 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 if (item.getMapping() != null) {
                     if (item.getAttributeExpression() != null && item.getAttributeExpression().isMapEntryExpression()) {
                         if (((MapEntryExpression) item.getAttributeExpression()).shouldReturnMapEntry()) {
-                            returnQuery.getReturnTypes().add(Map.Entry.class.getName());
+                            returnQuery.getReturnTypes().add(Map.Entry.class.getSimpleName());
                         } else {
-                            returnQuery.getReturnTypes().add(((Class<?>) ((CollectionMapping) item.getMapping()).getContainerPolicy().getKeyType()).getName());
+                            returnQuery.getReturnTypes().add(((Class<?>) ((CollectionMapping) item.getMapping()).getContainerPolicy().getKeyType()).getSimpleName());
                         }
                     } else {
-                        returnQuery.getReturnTypes().add(item.getMapping().getAttributeClassification().getName());
+                        returnQuery.getReturnTypes().add(item.getMapping().getAttributeClassification().getSimpleName());
                     }
                 } else if (item.getResultType() != null) {
-                    returnQuery.getReturnTypes().add(item.getResultType().getName());
+                    returnQuery.getReturnTypes().add(item.getResultType().getSimpleName());
                 } else if (item.getDescriptor() != null) {
-                    returnQuery.getReturnTypes().add(item.getDescriptor().getJavaClass().getName());
+                    returnQuery.getReturnTypes().add(item.getDescriptor().getJavaClass().getSimpleName());
                 } else if (item.getAttributeExpression() != null && item.getAttributeExpression().isConstantExpression()) {
-                    returnQuery.getReturnTypes().add(((ConstantExpression) item.getAttributeExpression()).getValue().getClass().getName());
+                    returnQuery.getReturnTypes().add(((ConstantExpression) item.getAttributeExpression()).getValue().getClass().getSimpleName());
                 } else {
                     // Use Object.class by default.
-                    returnQuery.getReturnTypes().add(ClassConstants.OBJECT.getName());
+                    returnQuery.getReturnTypes().add(ClassConstants.OBJECT.getSimpleName());
                 }
             }
         } else {
-            returnQuery.getReturnTypes().add(query.getReferenceClassName() == null ? "" : query.getReferenceClassName());
+            returnQuery.getReturnTypes().add(query.getReferenceClassName() == null ? "" : query.getReferenceClass().getSimpleName());
         }
         return returnQuery;
     }
