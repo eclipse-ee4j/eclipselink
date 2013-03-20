@@ -164,11 +164,20 @@ public abstract class TransportManager {
 
     /**
      * PUBLIC:
-     * Return the password used as the value to the SECURITY_CREDENTIALS key in the
-     * cached context properties.
+     * Return the password used as the value to the SECURITY_CREDENTIALS key in 
+     * the cached context properties.
      */
     public String getPassword() {
-        return (String) decrypt((String) getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS));
+        return (String) decrypt(getEncryptedPassword());
+    }
+    
+    /**
+     * PUBLIC:
+     * Return the encrypted (assumed) password used as the value to the 
+     * SECURITY_CREDENTIALS key in the cached context properties.
+     */
+    public String getEncryptedPassword() {
+        return (String) getRemoteContextProperties().get(Context.SECURITY_CREDENTIALS);
     }
 
     /**
@@ -359,18 +368,16 @@ public abstract class TransportManager {
      * Set encryption class that will be loaded by the SecurableObjectHolder
      */
     public void setEncryptionClassName(String encryptionClassName) {
-        String originalPwd = null;
-        if (hasPassword()) {
-            // getPassword will decrypt it.
-            originalPwd = getPassword();
-        }
+        SecurableObjectHolder oldHolder = securableObjectHolder;
         
         // re-initialize encryption mechanism
         securableObjectHolder = new SecurableObjectHolder();
         securableObjectHolder.setEncryptionClassName(encryptionClassName);
 
         // re-encrypt password
-        setPassword(originalPwd);
+        if (hasPassword()) {
+            setPassword(oldHolder.getSecurableObject().decryptPassword(getEncryptedPassword()));
+        }
     }
 
     /**
