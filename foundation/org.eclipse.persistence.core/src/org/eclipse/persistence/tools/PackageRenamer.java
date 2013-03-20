@@ -352,14 +352,22 @@ public class PackageRenamer {
     */
     public Properties readChangesFile(String filename) {
         Properties props = new Properties();
+        InputStream in = null;
         try {
-            InputStream in = new FileInputStream(filename);
+            in = new FileInputStream(filename);
             props.load(in);
-            in.close();
         } catch (FileNotFoundException fileNotFoundException) {
             throw new PackageRenamerException("Properties file was not found:" + CR + "  '" + filename + "'");
         } catch (IOException ioException) {
             throw new PackageRenamerException("IO error occurred while reading the properties file:'" + filename + "'" + ioException.getMessage());
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
         logln("Using properties file: " + filename);
         return props;

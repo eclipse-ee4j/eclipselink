@@ -775,6 +775,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                             line = reader.readLine();
                         }
                     } catch (Exception ex) {
+                    } finally {
+                        try {
+                            reader.close();
+                        } catch (Exception e) {
+                            // ignore
+                        }
                     }
                 }
             }
