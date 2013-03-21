@@ -16,10 +16,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
-import java.sql.Types;
 import java.util.*;
-import java.sql.CallableStatement;
-import java.sql.SQLException;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

@@ -64,7 +64,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshalListener;
 import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
