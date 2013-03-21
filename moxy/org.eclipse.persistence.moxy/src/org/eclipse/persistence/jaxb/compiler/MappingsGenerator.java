@@ -2997,7 +2997,7 @@ public class MappingsGenerator {
 	              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
 	              	      mapping.setMimeType(nextElement.getXmlMimeType());
 	              	  //}
-	                  desc.addMapping((CoreMapping)mapping);
+	                  desc.addMapping(mapping);
 
 	              }else{
 	                  XMLDirectMapping mapping = new XMLDirectMapping();
