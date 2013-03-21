@@ -1300,18 +1300,16 @@ public class DatabaseAccessor extends DatasourceAccessor {
                         Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.APBYTE);
                         platform.freeTemporaryObject(originalValue);
-                    }
-                    if (isClob(type)) {
+                    } else if (isClob(type)) {
                         // EL Bug 294578 - Store previous value of CLOB so that temporary objects can be freed after conversion
                         Object originalValue = value;
                         value = platform.convertObject(value, ClassConstants.STRING);
                         platform.freeTemporaryObject(originalValue);
-                    }
-                    //Bug6068155 convert early if type is Array and Structs.
-                    if (isArray(type)){
+                    } else if (isArray(type)){
+                        //Bug6068155 convert early if type is Array and Structs.
                         value = ObjectRelationalDataTypeDescriptor.buildArrayObjectFromArray(value);
-                    }
-                    if (isStruct(type, value)){
+                    } else if (isStruct(type, value)){
+                        //Bug6068155 convert early if type is Array and Structs.
                         value=ObjectRelationalDataTypeDescriptor.buildArrayObjectFromStruct(value);
                     }
                 }

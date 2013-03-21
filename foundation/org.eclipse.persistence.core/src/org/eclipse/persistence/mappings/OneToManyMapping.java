@@ -754,6 +754,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getDescriptor().getPrimaryKeyFields()));
         }
         initializeTargetForeignKeysToSourceKeys();
+        if (usesIndirection()) {
+            for (DatabaseField field : getSourceKeyFields()) {
+                field.setKeepInRow(true);
+            }
+        }
         if(requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
             initializeTargetPrimaryKeyFields();
         }

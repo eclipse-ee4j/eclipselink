@@ -1784,6 +1784,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected void initializeSourceKeys(AbstractSession session) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
             DatabaseField field = getDescriptor().buildField(getSourceKeyFields().get(index));
+            if (usesIndirection()) {
+                field.setKeepInRow(true);
+            }
             getSourceKeyFields().set(index, field);
         }
     }
@@ -1795,7 +1798,11 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected void initializeSourceKeysWithDefaults(AbstractSession session) {
         List<DatabaseField> primaryKeyFields = getDescriptor().getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            getSourceKeyFields().addElement(primaryKeyFields.get(index));
+            DatabaseField field = primaryKeyFields.get(index);
+            if (usesIndirection()) {
+                field.setKeepInRow(true);
+            }
+            getSourceKeyFields().addElement(field);
         }
     }
     

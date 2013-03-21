@@ -1187,6 +1187,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             Map.Entry<DatabaseField, DatabaseField> entry = iterator.next();
             DatabaseField sourceField = entry.getKey();
             sourceField = getDescriptor().buildField(sourceField, keyTableForMapKey);
+            if (usesIndirection()) {
+                sourceField.setKeepInRow(true);
+            }
             DatabaseField targetField = entry.getValue();
             targetField = getReferenceDescriptor().buildField(targetField, keyTableForMapKey);
             newSourceToTargetKeyFields.put(sourceField, targetField);
@@ -1214,6 +1217,9 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             //grab the only element out of the map
             DatabaseField sourceField = getSourceToTargetKeyFields().keySet().iterator().next();
             sourceField = getDescriptor().buildField(sourceField);
+            if (usesIndirection()) {
+                sourceField.setKeepInRow(true);
+            }
             getSourceToTargetKeyFields().clear();
             getTargetToSourceKeyFields().clear();
             getSourceToTargetKeyFields().put(sourceField, targetKeys.get(0));

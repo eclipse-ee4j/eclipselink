@@ -170,19 +170,20 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
             for (int index = 0; index < REPEATS; index++) {
                 long startTime, endTime;
                 int iterations = 0;
+                long testRunTimeNano = performanceTest.getTestRunTime() * 1000000;
                 try {
                     System.gc();
                     Thread.sleep(1000);
                     performanceTest.resetIterations();
-                    startTime = System.currentTimeMillis();
+                    startTime = System.nanoTime();
                     performanceTest.startTest();
                     endTime = startTime;
                     // Count how many times the test can be invoked in the run time.
                     // This allows for the test run time to be easily changed.
-                    while ((startTime + performanceTest.getTestRunTime()) >= endTime) {
+                    while (testRunTimeNano >= (endTime - startTime)) {
                         ((TestCase)performanceTest).test();
                         performanceTest.incrementIterations();
-                        endTime = System.currentTimeMillis();
+                        endTime = System.nanoTime();
                     }
                     iterations = performanceTest.getIterations();
                 } finally {

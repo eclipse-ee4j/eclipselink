@@ -112,6 +112,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     protected boolean mayHaveNullInPrimaryKey;
     /** attribute name corresponding to optimistic lock field, set only if optimistic locking is used */
     protected String lockAttribute; 
+    /** PERF: is there a mapping using indirection (could be nested in aggregate(s)), or any other reason to keep row after the object has been created. 
+     Used by ObjectLevelReadQuery ResultSetAccessOptimization. */
+    protected boolean shouldKeepRow = false;
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -1185,6 +1188,73 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             } finally {
                 session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
             }
+        }
+        return domainObjects;
+    }
+
+    /**
+     * Version of buildObjectsInto method that takes call instead of rows.
+     * Return a container which contains the instances of the receivers javaClass.
+     * Set the fields of the instance to the values stored in the result set.
+     */
+    public Object buildObjectsFromResultSetInto(ReadAllQuery query, ResultSet resultSet, Vector fields, DatabaseField[] fieldsArray, Object domainObjects) throws SQLException {
+        AbstractSession session = query.getSession();
+        session.startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
+        try {
+            boolean hasNext = resultSet.next();
+            if (hasNext) {
+                InheritancePolicy inheritancePolicy = null;
+                if (this.descriptor.hasInheritance()) {
+                    inheritancePolicy = this.descriptor.getInheritancePolicy();
+                }
+                boolean isUnitOfWork = session.isUnitOfWork();
+                boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
+                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+                // PERF: Avoid lazy init of join manager if no joining.
+                JoinedAttributeManager joinManager = null;
+                if (query.hasJoining()) {
+                    joinManager = query.getJoinedAttributeManager();
+                }
+                ContainerPolicy policy = query.getContainerPolicy();
+                // !cp.shouldAddAll() - query with SortedListContainerPolicy - currently does not use this method 
+                boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
+                ResultSetMetaData metaData = resultSet.getMetaData();
+                ResultSetRecord row = null;
+                AbstractSession executionSession = query.getExecutionSession();
+                DatabaseAccessor dbAccessor = (DatabaseAccessor)query.getAccessor();
+                if (this.isSimple) {
+                    // None of the fields are relational - the row could be reused, just clear all the values.
+                    row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    if (this.descriptor.isDescriptorTypeAggregate()) {
+                        // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
+                        ((SimpleResultSetRecord)row).setShouldKeepValues(true);
+                    }
+                }
+                while (hasNext) {
+                    if (!this.isSimple) {
+                        row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    }
+                    Object domainObject = buildObject(query, row, joinManager, session, this.descriptor, inheritancePolicy,
+                            isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy);
+                    if (quickAdd) {
+                        ((Collection)domainObjects).add(domainObject);
+                    } else {
+                        // query with MappedKeyMapPolicy currently does not use this method
+                        policy.addInto(domainObject, domainObjects, session);
+                    }
+    
+                    if (this.isSimple) {
+                        ((SimpleResultSetRecord)row).reset();
+                    } else {
+                        if (this.shouldKeepRow && !row.hasResultSet()) {
+                            row.removeNonIndirectionValues();
+                        }
+                    }
+                    hasNext = resultSet.next();
+                }
+            }
+        } finally {
+            session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         }
         return domainObjects;
     }
@@ -3384,6 +3454,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public void postInitialize(AbstractSession session) throws DescriptorException {
         // PERF: Cache if needs to unwrap to optimize unwrapping.
         this.hasWrapperPolicy = this.descriptor.hasWrapperPolicy() || session.getProject().hasProxyIndirection();
+        // PERF: Used by ObjectLevelReadQuery ResultSetAccessOptimization.
+        this.shouldKeepRow = false;
+        for (DatabaseField field : this.descriptor.getFields()) {
+            if (field.keepInRow()) {
+                this.shouldKeepRow = true;
+                break;
+            }
+        }
     }
     
     /**
@@ -3855,7 +3933,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 OptimisticLockingPolicy policy = concreteDescriptor.getOptimisticLockingPolicy();
                 Object cacheValue = policy.getValueToPutInCache(databaseRow, session);
                 if (concreteDescriptor.getCachePolicy().shouldOnlyRefreshCacheIfNewerVersion()) {
-                    refreshRequired = policy.isNewerVersion(databaseRow, domainObject, cacheKey.getKey(), session);
+                    if (cacheValue == null) {
+                        refreshRequired = policy.isNewerVersion(databaseRow, domainObject, cacheKey.getKey(), session);
+                    } else {
+                        // avoid extracting lock value from the row for the second time, that would unnecessary trigger ResultSetRecord
+                        refreshRequired = policy.isNewerVersion(cacheValue, domainObject, cacheKey.getKey(), session);
+                    }
                     if (!refreshRequired) {
                         cacheKey.setReadTime(query.getExecutionTime());
                     }
@@ -4119,5 +4202,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     
     public String getLockAttribute() {
         return this.lockAttribute;
+    }
+    
+    public boolean shouldKeepRow() {
+        return this.shouldKeepRow;
     }
 }

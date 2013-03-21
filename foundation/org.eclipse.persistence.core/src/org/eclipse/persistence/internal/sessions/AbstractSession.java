@@ -283,6 +283,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     
     /** Allow CDI injection of entity listeners **/
     transient protected EntityListenerInjectionManager entityListenerInjectionManager;
+    
+    /** Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
+     * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
+     * If the optimization specified by the session is ignored if incompatible with other query settings. 
+     */
+    protected Boolean shouldOptimizeResultSetAccess; 
+    
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -1464,6 +1471,15 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 query.setAccessors(null);
             }
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Release (if required) connection after call.
+     * @param query
+     * @return
+     */
+    public void releaseConnectionAfterCall(DatabaseQuery query) {
     }
 
     /**
@@ -5159,4 +5175,32 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
    public void setIsConcurrent(boolean isConcurrent) {
        this.isConcurrent = isConcurrent;
    }
+   
+   /**
+    * ADVANCED:
+    * Set to indicate whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
+    * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
+    * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    */
+   public void setShouldOptimizeResultSetAccess(boolean shouldOptimizeResultSetAccess) {
+       this.shouldOptimizeResultSetAccess = shouldOptimizeResultSetAccess;
+   }
+   
+   /**
+    * ADVANCED:
+    * Indicates whether ObjectLevelReadQuery should by default use ResultSet Access optimization. 
+    * If not set then parent's flag is used, is none set then ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault is used.
+    * If the optimization specified by the session is ignored if incompatible with other query settings. 
+    */
+   public boolean shouldOptimizeResultSetAccess() {
+       if (this.shouldOptimizeResultSetAccess != null) {
+           return this.shouldOptimizeResultSetAccess.booleanValue();
+       } else {
+           if (getParent() != null) {
+               return getParent().shouldOptimizeResultSetAccess();
+           } else {
+               return ObjectLevelReadQuery.isResultSetAccessOptimizedQueryDefault;
+           }
+       }
+   }   
 }

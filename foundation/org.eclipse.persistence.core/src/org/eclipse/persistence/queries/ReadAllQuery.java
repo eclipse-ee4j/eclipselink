@@ -26,6 +26,8 @@ import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ResultSetRecord;
+import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -211,7 +213,13 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
         }
         if (isCustomQueryUsed().booleanValue()) {
-            return this.descriptor.getQueryManager().getReadAllQuery();
+            ReadAllQuery customQuery = this.descriptor.getQueryManager().getReadAllQuery();
+            if (this.accessors != null) {
+                customQuery = (ReadAllQuery) customQuery.clone();
+                customQuery.setIsExecutionClone(true);
+                customQuery.setAccessors(this.accessors);
+            }
+            return customQuery;
         } else {
             return null;
         }
@@ -419,34 +427,82 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
             result = this.containerPolicy.containerInstance();
         } else {
-            List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
-            this.executionTime = System.currentTimeMillis();
+            checkResultSetAccessOptimization();
             
-            // If using 1-m joins, must set all rows.
-            if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
-                this.joinedAttributeManager.setDataResults(rows, this.session);
-            }
-            // Batch fetching in IN requires access to the rows to build the id array.
-            if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
-                this.batchFetchPolicy.setDataResults(rows);
-            }
-    
-            if (this.session.isUnitOfWork()) {
-                result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
+            if (this.usesResultSetAccessOptimization) {
+                DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
+                this.executionTime = System.currentTimeMillis();
+                Statement statement = call.getStatement();
+                ResultSet resultSet = call.getResult();
+                DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
+                boolean exceptionOccured = false;
+                try {
+                    if (this.session.isUnitOfWork()) {
+                        result = registerResultSetInUnitOfWork(resultSet, call.getFields(), call.getFieldsArray(), (UnitOfWorkImpl)this.session, this.translationRow); 
+                    } else {
+                        result = this.containerPolicy.containerInstance();
+                        this.descriptor.getObjectBuilder().buildObjectsFromResultSetInto(this, resultSet, call.getFields(), call.getFieldsArray(), result);
+                    }
+                } catch (SQLException exception) {
+                    exceptionOccured = true;
+                    DatabaseException commException = dbAccessor.processExceptionForCommError(this.session, exception, call);
+                    if (commException != null) {
+                        throw commException;
+                    }
+                    throw DatabaseException.sqlException(exception, call, dbAccessor, this.session, false);
+                } finally {
+                    try {
+                        if (resultSet != null) {
+                            resultSet.close();
+                        }
+                        if (dbAccessor != null) {
+                            if (statement != null) {
+                                dbAccessor.releaseStatement(statement, call.getSQLString(), call, this.session);
+                            }
+                        }
+                        if (call.hasAllocatedConnection()) {
+                            getExecutionSession().releaseConnectionAfterCall(this);
+                        }
+                    } catch (RuntimeException cleanupException) {
+                        if (!exceptionOccured) {
+                            throw cleanupException;
+                        }
+                    } catch (SQLException cleanupSQLException) {
+                        if (!exceptionOccured) {
+                            throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, this.session, false);
+                        }
+                    }
+                }                
             } else {
-                if (rows instanceof ThreadCursoredList) {
-                    result = this.containerPolicy.containerInstance();
-                } else {
-                    result = this.containerPolicy.containerInstance(rows.size());
+                List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
+                this.executionTime = System.currentTimeMillis();
+                
+                // If using 1-m joins, must set all rows.
+                if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                    this.joinedAttributeManager.setDataResults(rows, this.session);
                 }
-                this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
-            }
-    
-            if (this.shouldIncludeData) {
-                ComplexQueryResult complexResult = new ComplexQueryResult();
-                complexResult.setResult(result);
-                complexResult.setData(rows);
-                result = complexResult;
+                // Batch fetching in IN requires access to the rows to build the id array.
+                if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+                    this.batchFetchPolicy.setDataResults(rows);
+                }                        
+        
+                if (this.session.isUnitOfWork()) {
+                    result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
+                } else {
+                    if (rows instanceof ThreadCursoredList) {
+                        result = this.containerPolicy.containerInstance();
+                    } else {
+                        result = this.containerPolicy.containerInstance(rows.size());
+                    }
+                    this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
+                }
+        
+                if (this.shouldIncludeData) {
+                    ComplexQueryResult complexResult = new ComplexQueryResult();
+                    complexResult.setResult(result);
+                    complexResult.setData(rows);
+                    result = complexResult;
+                }
             }
         }
 
@@ -474,9 +530,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
         AbstractSession session = this.session;
         DatabasePlatform platform = session.getPlatform();
-        DatabaseCall call = (DatabaseCall)((CallQueryMechanism)this.queryMechanism).getCall();
-        call.returnCursor();
-        call = this.queryMechanism.cursorSelectAllRows();
+        DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
         Statement statement = call.getStatement();
         ResultSet resultSet = call.getResult();
         DatabaseAccessor accessor = (DatabaseAccessor)getAccessor();
@@ -660,6 +714,11 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         }
         
         prepareSelectAllRows();
+
+        if (!isReportQuery()) {
+            // should be called after prepareSelectRow so that the call knows whether it returns ResultSet
+            prepareResultSetAccessOptimization();
+        }
     }
     
     /**
@@ -835,6 +894,70 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
     /**
      * INTERNAL:
+     * Version of the previous method for ResultSet optimization.
+     *
+     * @return the final (conformed, refreshed, wrapped) UnitOfWork query result
+     */
+    public Object registerResultSetInUnitOfWork(ResultSet resultSet, Vector fields, DatabaseField[] fieldsArray, UnitOfWorkImpl unitOfWork, AbstractRecord arguments) throws SQLException {
+        // TODO: add support for Conforming results in UOW - currently conforming in uow is not compatible with ResultSet optimization.
+
+        ContainerPolicy cp = this.containerPolicy;
+        Object clones = cp.containerInstance();
+        ResultSetMetaData metaData = resultSet.getMetaData();
+        boolean hasNext = resultSet.next();
+        if (hasNext) {
+            // TODO: possibly add support for SortedListContainerPolicy (cp.shouldAddAll() == true) - this policy currently is not compatible with ResultSet optimization 
+            boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
+            DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
+            boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
+            AbstractSession executionSession = getExecutionSession();
+            if (useSimple) {
+                // None of the fields are relational - the row could be reused, just clear all the values.
+                SimpleResultSetRecord row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                if (this.descriptor.isDescriptorTypeAggregate()) {
+                    // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
+                    row.setShouldKeepValues(true);
+                }
+                if (quickAdd) {
+                    while (hasNext) {
+                        Object clone = buildObject(row);
+                        ((Collection)clones).add(clone);
+                        row.reset(); 
+                        hasNext = resultSet.next(); 
+                    }
+                } else {
+                    while (hasNext) {
+                        Object clone = buildObject(row);
+                        // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
+                        cp.addInto(clone, clones, unitOfWork);
+                        row.reset();                
+                        hasNext = resultSet.next(); 
+                    }
+                }
+            } else {
+                boolean shouldKeepRow = this.descriptor.getObjectBuilder().shouldKeepRow();
+                while (hasNext) {
+                    ResultSetRecord row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    Object clone = buildObject(row);
+                    if (quickAdd) {
+                        ((Collection)clones).add(clone);
+                    } else {
+                        // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
+                        cp.addInto(clone, clones, unitOfWork);
+                    }
+                    
+                    if (shouldKeepRow && !row.hasResultSet()) {
+                        row.removeNonIndirectionValues();
+                    }
+                    hasNext = resultSet.next(); 
+                }
+            }
+        }
+        return clones;
+    }
+
+    /**
+     * INTERNAL:
      * Execute the query through remote session.
      */
     @Override
@@ -996,5 +1119,38 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
     public void useScrollableCursor(ScrollableCursorPolicy policy) {
         policy.setQuery(this);
         setContainerPolicy(policy);
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the query can use ResultSet optimization.
+     * The method is called when the query is prepared, 
+     * so it should refer only to the attributes that cannot be altered without re-preparing the query.
+     * If the query is a clone and the original has been already prepared
+     * this method will be called to set a (transient and therefore set to null) usesResultSetOptimization attribute. 
+     */
+    @Override
+    public boolean supportsResultSetAccessOptimizationOnPrepare() {
+        if (!super.supportsResultSetAccessOptimizationOnPrepare()) {
+            return false;
+        }
+        return !this.containerPolicy.isMappedKeyMapPolicy() && !this.containerPolicy.shouldAddAll() &&  // MappedKeyMapPolicy requires the whole row, OrderListContainerPolicy requires all rows.
+                !this.descriptor.shouldAlwaysConformResultsInUnitOfWork();  // will be supported when conformResult method is adapted to use ResultSet;  
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the query can use ResultSet optimization.
+     * Note that the session must be already set.
+     * The method is called when the query is executed, 
+     * so it should refer only to the attributes that can be altered without re-preparing the query.
+     */
+    public boolean supportsResultSetAccessOptimizationOnExecute() {
+        if (!super.supportsResultSetAccessOptimizationOnExecute()) {
+            return false;
+        }
+        return !shouldConformResultsInUnitOfWork() && // will be supported when conformResult method is adapted to use ResultSet
+            (this.batchFetchPolicy == null || !this.batchFetchPolicy.isIN()) &&  // batchFetchPolicy.isIN() requires all rows up front - can't support it 
+            !this.shouldIncludeData; // could be supported
     }
 }

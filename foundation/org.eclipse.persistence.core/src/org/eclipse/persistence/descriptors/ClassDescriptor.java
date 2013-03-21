@@ -3292,7 +3292,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     secondaryKeyField.setTable(table);
                     newKeyMapping.put(primaryKeyField, secondaryKeyField);
                     // Must add this field to read, so translations work on database row.
-                    getFields().add(secondaryKeyField);
+                    getFields().add(buildField(secondaryKeyField));
 
                     if (!getQueryManager().hasCustomMultipleTableJoinExpression()) {
                         keyJoinExpression = builder.getField(secondaryKeyField).equal(builder.getField(primaryKeyField)).and(keyJoinExpression);
@@ -3330,6 +3330,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 for (int index = 0; index < getPrimaryKeyFields().size(); index++) {
                     DatabaseField primaryKey = getPrimaryKeyFields().get(index);
                     primaryKey = buildField(primaryKey);
+                    primaryKey.setPrimaryKey(true);
                     getPrimaryKeyFields().set(index, primaryKey);
                 }
                 List primaryKeyFields = (List)((ArrayList)getPrimaryKeyFields()).clone();
@@ -3684,6 +3685,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             if (fieldIndex != -1) {
                 primaryKeyField = getFields().get(fieldIndex);
                 getPrimaryKeyFields().set(index, primaryKeyField);
+                primaryKeyField.setPrimaryKey(true);
             }
         }
 

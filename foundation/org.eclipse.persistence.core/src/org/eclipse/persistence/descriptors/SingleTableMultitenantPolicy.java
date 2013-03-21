@@ -202,8 +202,10 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
      * Allow the descriptor to initialize any dependencies on this session.
      */
     public void preInitialize(AbstractSession session) throws DescriptorException {
-        for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {                
-            getDescriptor().getFields().add(getDescriptor().buildField(discriminatorField));
+        for (DatabaseField discriminatorField : tenantDiscriminatorFields.keySet()) {
+            DatabaseField field = getDescriptor().buildField(discriminatorField);
+            field.setKeepInRow(true);
+            getDescriptor().getFields().add(field);
         }
     }
     

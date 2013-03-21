@@ -140,6 +140,9 @@ public abstract class DatabaseCall extends DatasourceCall {
 
     /** The SQL string to execute. */
     protected String sqlString;
+    
+    /** Indicates whether the call has allocated connection. May be set if the call has not finished */
+    protected boolean hasAllocatedConnection;
 
     /**
      * Define if this query is compatible with batch writing.
@@ -1317,5 +1320,19 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void setBatchExecutionSupported(boolean isBatchExecutionSupported) {
         this.isBatchExecutionSupported = isBatchExecutionSupported;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasAllocatedConnection() {
+        return this.hasAllocatedConnection;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    public void setHasAllocatedConnection(boolean hasAllocatedConnection) {
+        this.hasAllocatedConnection = hasAllocatedConnection;
     }
 }

@@ -477,6 +477,11 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
         super.initialize(session);
         initializeForeignKeys(session);
         setFields(collectFields());
+        if (usesIndirection()) {
+            for (DatabaseField field : this.fields) {
+                field.setKeepInRow(true);
+            }
+        }
         if (getTypeField() != null) {
             setTypeField(getDescriptor().buildField(getTypeField()));
         }

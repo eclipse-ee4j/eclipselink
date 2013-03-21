@@ -84,6 +84,25 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             throw QueryException.mustUseCursorStreamPolicy();
         }
     }
+    
+    /**
+     * Read all rows from the database, return ResultSet
+     * @exception  DatabaseException - an error has occurred on the database
+     */
+    public DatabaseCall selectResultSet() throws DatabaseException {
+        try {
+            // For CR 2923 must move to session we will execute call on now
+            // so correct DatasourcePlatform used by translate.        
+            AbstractSession sessionToUse = this.query.getExecutionSession();
+            DatabaseCall clonedCall = (DatabaseCall)this.call.clone();
+            clonedCall.setQuery(this.query);
+            clonedCall.translate(this.query.getTranslationRow(), getModifyRow(), sessionToUse);
+            clonedCall.returnCursor();
+            return (DatabaseCall)sessionToUse.executeCall(clonedCall, this.query.getTranslationRow(), this.query);
+        } catch (java.lang.ClassCastException e) {
+            throw QueryException.invalidDatabaseCall(this.call);
+        }
+    }
 
     /**
      * INTERNAL:

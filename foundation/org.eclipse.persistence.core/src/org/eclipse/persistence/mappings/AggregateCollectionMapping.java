@@ -1943,6 +1943,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         for (int index = 0;  index < getSourceKeyFields().size(); index++) {
             DatabaseField sourceKeyfield = getSourceKeyFields().get(index);
             sourceKeyfield = getDescriptor().buildField(sourceKeyfield);
+            if (usesIndirection()) {
+                sourceKeyfield.setKeepInRow(true);
+            }
             getSourceKeyFields().set(index, sourceKeyfield);
         }
 
@@ -1968,6 +1971,11 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         List<DatabaseField> sourceKeys = getDescriptor().getPrimaryKeyFields();
+        if (usesIndirection()) {
+            for (DatabaseField field : sourceKeys) {
+                field.setKeepInRow(true);
+            }
+        }
         setSourceKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(sourceKeys));
         for (int index = 0; index < getTargetForeignKeyFields().size(); index++) {
             DatabaseField foreignKeyfield = getTargetForeignKeyFields().get(index);

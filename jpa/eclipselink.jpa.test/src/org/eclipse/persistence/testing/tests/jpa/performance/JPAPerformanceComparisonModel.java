@@ -44,7 +44,13 @@ public class JPAPerformanceComparisonModel extends TestModel {
     public void addTests() {
         TestSuite suite = new TestSuite();
         suite.setName("ReadingSuite");
-        suite.addTest(buildReadAllVsReadAllResultSet());
+        suite.addTest(buildReadAllVsReadAllResultSet(Address.class));
+        suite.addTest(buildReadAllVsReadAllResultSet(Employee.class));
+        // ResultSetSideBySideTest useful for profiling regular vs ResultSet Access optimization.
+/*        suite.addTest(new ResultSetSideBySideTest(Address.class, true));
+        suite.addTest(new ResultSetSideBySideTest(Address.class, false));
+        suite.addTest(new ResultSetSideBySideTest(Employee.class, true));
+        suite.addTest(new ResultSetSideBySideTest(Employee.class, false));*/
         suite.addTest(buildBatchFetchTest());
         suite.addTest(buildLoadTest());
         addTest(suite);
@@ -183,40 +189,66 @@ public class JPAPerformanceComparisonModel extends TestModel {
         return properties;
     }
     
+    static class PerformanceComparisonTestCaseWithTargetClass extends PerformanceComparisonTestCase {
+        Class targetClass;
+        public PerformanceComparisonTestCaseWithTargetClass(Class targetClass) {
+            super();
+            this.targetClass = targetClass;
+        }
+    }
     /**
      * Add a test to see if the provider is using change tracking.
      */
-    public TestCase buildReadAllVsReadAllResultSet() {
-        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+    public TestCase buildReadAllVsReadAllResultSet(Class targetClass) {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCaseWithTargetClass(targetClass) {
             ReadAllQuery query;
             ReadAllQuery resultSetQuery;
+            ReadAllQuery resultSetAccessQuery;
 
             public void setup() {
-                this.query = new ReadAllQuery(Address.class);
-                this.resultSetQuery = new ReadAllQuery(Address.class);
+                this.query = new ReadAllQuery(targetClass);
+                this.resultSetQuery = new ReadAllQuery(targetClass);
                 this.resultSetQuery.setIsResultSetOptimizedQuery(true);
+                this.resultSetAccessQuery = new ReadAllQuery(targetClass);
+                this.resultSetAccessQuery.setIsResultSetAccessOptimizedQuery(true);
+                
+                boolean isSimple = createEntityManager().unwrap(Session.class).getDescriptor(targetClass).getObjectBuilder().isSimple();
 
                 if (!getTests().isEmpty()) {
                     return;
                 }
                 
-                // Read from result set.
-                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                PerformanceComparisonTestCase test;
+                if (isSimple) {
+                    // Read from result set.
+                    test = new PerformanceComparisonTestCase() {
+                        public void test() {
+                            EntityManager em = createEntityManager();
+                            ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
+                            em.close();
+                        }
+                    };
+                    test.setName("ReadAllResultSet");
+                    addTest(test);
+                }
+                
+                // Read with result set access optimization.
+                test = new PerformanceComparisonTestCase() {
                     public void test() {
                         EntityManager em = createEntityManager();
-                        ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
+                        ((JpaEntityManager)em).createQuery(resultSetAccessQuery).getResultList();
                         em.close();
                     }
                 };
-                test.setName("ReadAllResultSet");
+                test.setName("ReadAllResultSetAccess");
                 addTest(test);
                 
                 // Read, no cache.
                 test = new PerformanceComparisonTestCase() {
                     public void startTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
                     public void test() {
@@ -226,35 +258,60 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.SHARED);
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                         em.close();
                     }
                 };
                 test.setName("ReadAllNoCache");
                 addTest(test);
                 
-                // Read from result set, no cache.
+                if (isSimple) {
+                    // Read from result set, no cache.
+                    test = new PerformanceComparisonTestCase() {
+                        public void startTest() {
+                            EntityManager em = createEntityManager();
+                            createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
+                            createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+                            em.close();
+                        }
+                        public void test() {
+                            EntityManager em = createEntityManager();
+                            ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
+                            em.close();
+                        }
+                        public void endTest() {
+                            EntityManager em = createEntityManager();
+                            createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
+                            createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                            em.close();
+                        }
+                    };
+                    test.setName("ReadAllResultSetNoCache");
+                    addTest(test);
+                }
+                
+                // Read with result set access optimization, no cache.
                 test = new PerformanceComparisonTestCase() {
                     public void startTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
                     public void test() {
                         EntityManager em = createEntityManager();
-                        ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
+                        ((JpaEntityManager)em).createQuery(resultSetAccessQuery).getResultList();
                         em.close();
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.SHARED);
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                         em.close();
                     }
                 };
-                test.setName("ReadAllResultSetNoCache");
+                test.setName("ReadAllResultSetAccessNoCache");
                 addTest(test);
                 
                 /**
@@ -342,7 +399,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                 em.close();
             }
         };
-        test.setName("ReadAllVsReadAllResultSet");
+        test.setName("ReadAllVsReadAllResultSet(" + Helper.getShortClassName(targetClass) + ')');
         return test;
     }
     
@@ -818,5 +875,103 @@ public class JPAPerformanceComparisonModel extends TestModel {
         };
         test.setName("BatchUpdateTest");
         return test;
+    }
+    
+    /**
+     * Useful for side-by-side profiling regular vs ResultSet Access optimization.
+     */
+    static class ResultSetSideBySideTest extends TestCase {
+        Class targetClass;
+        boolean withCache;
+        ReadAllQuery query;
+        ReadAllQuery resultSetQuery;
+        int n = 1000;
+        long time0;
+        long time1;
+        long time0square;
+        long time1square;
+        public ResultSetSideBySideTest(Class targetClass, boolean withCache) {
+            super();
+            this.targetClass = targetClass;
+            this.withCache = withCache;
+            setName("ResultSetOptimizationSideBySideTest(" + Helper.getShortClassName(targetClass) + ')' + (withCache ? " CACHE" : " NO CACHE"));
+        }
+
+        @Override
+        protected void setup() {
+            this.query = new ReadAllQuery(targetClass);
+            this.query.setIsResultSetAccessOptimizedQuery(false);
+            this.resultSetQuery = new ReadAllQuery(targetClass);
+            this.resultSetQuery.setIsResultSetAccessOptimizedQuery(true);
+            if (!withCache) {
+                createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.ISOLATED);
+                createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
+            }
+            time0 = 0;
+            time1 = 0;
+            time0square = 0;
+            time1square = 0;
+        }
+
+        @Override
+        protected void test() {
+            for (int i=0; i < n; i++) {
+                long testTime0 = test0();
+                long testTime1 = test1();
+                if (testTime0 != 0l) {
+                    time0 += testTime0;
+                    time0square += testTime0 * testTime0;
+                }
+                if (testTime1 != 0l) {
+                    time1 += testTime1;
+                    time1square += testTime1 * testTime1;
+                }
+            }
+            System.out.println(getName());
+            System.out.println("No optimization time:");
+            System.out.println(Long.toString(time0 / 1000000));
+            System.out.println("Mean per test:");
+            System.out.println(Double.toString((double)time0 / (n*1000000)));
+            System.out.println("std dev:");
+            System.out.println(Double.toString(Math.sqrt((double)time0square/n - (double)(time0/n)*(time0/n))/1000000));
+            System.out.println("zero time tests:");
+            System.out.println("ResultSet optimization time:");
+            System.out.println(Long.toString(time1 / 1000000));
+            System.out.println("Mean per test:");
+            System.out.println(Double.toString((double)time1 / (n*1000000)));
+            System.out.println("std dev:");
+            System.out.println(Double.toString(Math.sqrt((double)time1square/n - (double)(time1/n)*(time1/n))/1000000));
+            System.out.println("zero time tests:");
+            System.out.println("No Optimization - Optimization:");
+            System.out.println(Long.toString((time0 - time1)/1000000));
+        }
+        
+        long test0() {
+            EntityManager em = createEntityManager();
+            long timeStart = System.nanoTime();
+            List result = ((JpaEntityManager)em).createQuery(query).getResultList();
+            long testTime = System.nanoTime() - timeStart;
+            assertTrue(result.size() == 100);
+            em.close();
+            return testTime;
+        }
+
+        long test1() {
+            EntityManager em = createEntityManager();
+            long timeStart = System.nanoTime();
+            List result = ((JpaEntityManager)em).createQuery(resultSetQuery).getResultList();
+            long testTime = System.nanoTime() - timeStart;
+            assertTrue(result.size() == 100);
+            em.close();
+            return testTime;
+        }
+
+        @Override
+        public void reset() {
+            if (!withCache) {
+                createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setCacheIsolation(CacheIsolationType.SHARED);
+                createEntityManager().unwrap(Session.class).getDescriptor(targetClass).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
+            }
+        }
     }
 }

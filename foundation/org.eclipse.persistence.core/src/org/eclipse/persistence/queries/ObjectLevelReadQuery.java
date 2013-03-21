@@ -171,6 +171,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** PERF: Allow queries to build directly from the database result-set. */
     protected boolean isResultSetOptimizedQuery = false;
     
+    /** PERF: Allow queries to build while accessing the database result-set. Skips accessing result set non-pk fields in case the cached object is found. 
+     If ResultSet optimization is used (isResultSetOptimizedQuery is set to true) then ResultSet Access optimization is ignored. */
+    protected Boolean isResultSetAccessOptimizedQuery;
+    
+    /** If neither query specifies isResultSetOptimizedQuery nor session specifies shouldOptimizeResultSetAccess 
+     * then this value is used to indicate whether optimization should be attempted 
+     */
+    public static boolean isResultSetAccessOptimizedQueryDefault = false;
+
+    /** PERF: Indicates whether the query is actually using ResultSet optimization. If isResultSetOptimizedQuery==null set automatically before executing call. */
+    protected transient Boolean usesResultSetAccessOptimization;
+    
     /** PERF: Allow queries to be defined as read-only in unit of work execution. */
     protected boolean isReadOnly = false;
     
@@ -463,6 +475,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             cloneQuery.fetchGroup = this.fetchGroup.clone();
             // don't clone immutable entityFetchGroup
         }
+        cloneQuery.clearUsesResultSetAccessOptimization();
         return cloneQuery;
     }
 
@@ -2700,7 +2713,89 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * singleton primary key, direct mapped, simple type, no inheritance, uow isolated objects.
      */
     public boolean isResultSetOptimizedQuery() {
-        return isResultSetOptimizedQuery;
+        return this.isResultSetOptimizedQuery;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return if the query result set access should be optimized.
+     */
+    public Boolean isResultSetAccessOptimizedQuery() {
+        return this.isResultSetAccessOptimizedQuery;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the query uses ResultSet optimization.
+     * Note that to be accurate it's required to be set by prepareResultSetAccessOptimization or checkResultSetAccessOptimization method.
+     * It's always returns the same value as this.isResultSetOptimizedQuery.booleanValue (if not null).
+     * Note that in this case if optimization is incompatible with other query settings then exception is thrown.
+     * Otherwise - if the session demand optimization and it is possible - optimizes (returns true),
+     * otherwise false.
+     */
+    public boolean usesResultSetAccessOptimization() {
+        return this.usesResultSetAccessOptimization != null && this.usesResultSetAccessOptimization;
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets usesResultSetAccessOptimization based on isResultSetAccessOptimizedQuery, session default and 
+     * query settings that could not be altered without re-preparing the query.
+     * Called when the query is prepared or in case usesResultSetAccessOptimization hasn't been set yet.
+     * Throws exception if isResultSetAccessOptimizedQuery==true cannot be accommodated because of a conflict with the query settings.
+     * In case of isResultSetAccessOptimizedQuery hasn't been set and session default conflicting with the the query settings
+     * the optimization is turned off.
+     */
+    protected void prepareResultSetAccessOptimization() {
+        // if ResultSet optimization is used then ResultSet Access optimization is ignored. 
+        if (this.isResultSetOptimizedQuery) {
+            return;
+        }
+        if (this.isResultSetAccessOptimizedQuery != null) {
+            this.usesResultSetAccessOptimization = this.isResultSetAccessOptimizedQuery;
+            if (this.usesResultSetAccessOptimization) {
+                if (!supportsResultSetAccessOptimizationOnPrepare() || !supportsResultSetAccessOptimizationOnExecute()) {
+                    this.usesResultSetAccessOptimization = null;
+                    throw QueryException.resultSetAccessOptimizationIsNotPossible(this);
+                }
+            }
+        } else {
+            if (getSession().shouldOptimizeResultSetAccess() && supportsResultSetAccessOptimizationOnPrepare() && supportsResultSetAccessOptimizationOnExecute()) {
+                this.usesResultSetAccessOptimization = Boolean.TRUE;
+            } else {
+                this.usesResultSetAccessOptimization = Boolean.FALSE;
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Sets usesResultSetAccessOptimization each time when the query is executed.
+     * Unless usesResultSetAccessOptimization hasn't been set yet  
+     * checks only query settings that could be altered without re-preparing the query.
+     * Throws exception if isResultSetAccessOptimizedQuery==true cannot be accommodated because of a conflict with the query settings.
+     * In case of isResultSetAccessOptimizedQuery hasn't been set and session default conflicting with the the query settings
+     * the optimization is turned off.
+     */
+    public void checkResultSetAccessOptimization() {
+        if (this.usesResultSetAccessOptimization == null) {
+            prepareResultSetAccessOptimization();
+        } else {
+            if (this.usesResultSetAccessOptimization.booleanValue() && !supportsResultSetAccessOptimizationOnExecute()) {
+                if (this.isResultSetAccessOptimizedQuery == null) {
+                    usesResultSetAccessOptimization = Boolean.FALSE;
+                } else {
+                    throw QueryException.resultSetAccessOptimizationIsNotPossible(this);                        
+                }
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void clearUsesResultSetAccessOptimization() {
+        this.usesResultSetAccessOptimization = null;
     }
     
     /**
@@ -2710,9 +2805,28 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * singleton primary key, direct mapped, simple type, no inheritance, uow isolated objects.
      */
     public void setIsResultSetOptimizedQuery(boolean isResultSetOptimizedQuery) {
-        if (this.isResultSetOptimizedQuery != isResultSetOptimizedQuery) {
-            setIsPrepared(false);
-            this.isResultSetOptimizedQuery = isResultSetOptimizedQuery;
+        this.isResultSetOptimizedQuery = isResultSetOptimizedQuery;
+    }
+    
+    /**
+     * ADVANCED:
+     * Set if the query should be optimized to build directly from the result set.
+     */
+    public void setIsResultSetAccessOptimizedQuery(boolean isResultSetAccessOptimizedQuery) {
+        if (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery.booleanValue() != isResultSetOptimizedQuery) {
+            this.isResultSetAccessOptimizedQuery = isResultSetAccessOptimizedQuery;
+            this.usesResultSetAccessOptimization = null;
+        }
+    }
+    
+    /**
+     * ADVANCED:
+     * Clear the flag set by setIsResultSetOptimizedQuery method, allow to use default set on the session instead.
+     */
+    public void clearIsResultSetOptimizedQuery(boolean isResultSetOptimizedQuery) {
+        if (this.isResultSetAccessOptimizedQuery != null) {
+            this.isResultSetAccessOptimizedQuery = null;
+            this.usesResultSetAccessOptimization = null;
         }
     }
     
@@ -2735,6 +2849,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public boolean isDefaultPropertiesQuery() {
         return super.isDefaultPropertiesQuery()
             && (!this.isResultSetOptimizedQuery)
+            && (this.isResultSetAccessOptimizedQuery == null || this.isResultSetAccessOptimizedQuery.equals(isResultSetAccessOptimizedQueryDefault))
             && (isDefaultLock())
             && (!hasAdditionalFields())
             && (!hasPartialAttributeExpressions())
@@ -3165,5 +3280,32 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         return str;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether the query can use ResultSet optimization.
+     * The method is called when the query is prepared, 
+     * so it should refer only to the attributes that cannot be altered without re-preparing the query.
+     * If the query is a clone and the original has been already prepared
+     * this method will be called to set a (transient and therefore set to null) usesResultSetAccessOptimization attribute. 
+     */
+    public boolean supportsResultSetAccessOptimizationOnPrepare() {
+        return getCall() != null && ((DatabaseCall)getCall()).getReturnsResultSet() && // must return ResultSet
+            (!hasJoining() || !this.joinedAttributeManager.isToManyJoin()) && 
+            (!this.descriptor.hasInheritance() || 
+                    !this.descriptor.getInheritancePolicy().hasClassExtractor() &&  // ClassExtractor requires the whole row
+                    (shouldOuterJoinSubclasses() || !this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() || this.descriptor.getInheritancePolicy().hasView())); // don't know how to handle select class type call - ResultSet optimization breaks it.
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether the query can use ResultSet optimization.
+     * Note that the session must be already set.
+     * The method is called when the query is executed, 
+     * so it should refer only to the attributes that can be altered without re-preparing the query.
+     */
+    public boolean supportsResultSetAccessOptimizationOnExecute() {
+        return !getSession().isConcurrent();
     }
 }

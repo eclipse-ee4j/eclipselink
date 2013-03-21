@@ -739,6 +739,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
         initializeFieldToTransformers(session);
         setFields(collectFields());
         this.indirectionPolicy.initialize();
+        if (usesIndirection()) {
+            for (DatabaseField field : this.fields) {
+                field.setKeepInRow(true);
+            }
+        }
     }
  
     /**

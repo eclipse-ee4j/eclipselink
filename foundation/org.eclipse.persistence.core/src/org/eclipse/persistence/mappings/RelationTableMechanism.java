@@ -700,6 +700,9 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected void initializeSourceKeys(ForeignReferenceMapping mapping) {
         for (int index = 0; index < getSourceKeyFields().size(); index++) {
             DatabaseField field = mapping.getDescriptor().buildField(getSourceKeyFields().get(index));
+            if (((ForeignReferenceMapping)mapping).usesIndirection()) {
+                field.setKeepInRow(true);
+            }
             getSourceKeyFields().set(index, field);
         }
     }
@@ -711,7 +714,11 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
     protected void initializeSourceKeysWithDefaults(DatabaseMapping mapping) {
         List<DatabaseField> primaryKeyFields = mapping.getDescriptor().getPrimaryKeyFields();
         for (int index = 0; index < primaryKeyFields.size(); index++) {
-            getSourceKeyFields().addElement(primaryKeyFields.get(index));
+            DatabaseField field = primaryKeyFields.get(index);
+            if (((ForeignReferenceMapping)mapping).usesIndirection()) {
+                field.setKeepInRow(true);
+            }
+            getSourceKeyFields().addElement(field);
         }
     }
 

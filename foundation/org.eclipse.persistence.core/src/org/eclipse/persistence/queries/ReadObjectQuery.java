@@ -24,10 +24,12 @@ import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.queries.CallQueryMechanism;
+import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ResultSetRecord;
+import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -334,7 +336,13 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         }
         
         if (this.isCustomQueryUsed.booleanValue()) {
-            return this.descriptor.getQueryManager().getReadObjectQuery();
+            ReadObjectQuery customQuery = this.descriptor.getQueryManager().getReadObjectQuery();
+            if (this.accessors != null) {
+                customQuery = (ReadObjectQuery) customQuery.clone();
+                customQuery.setIsExecutionClone(true);
+                customQuery.setAccessors(this.accessors);
+            }
+            return customQuery;
         } else {
             return null;
         }
@@ -440,26 +448,91 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
         }
         
-        AbstractRecord row = null;
+        boolean shouldSetRowsForJoins = hasJoining() && this.joinedAttributeManager.isToManyJoin();
         AbstractSession session = getSession();
-        // If using 1-m joins, must select all rows.
-        if (hasJoining() && getJoinedAttributeManager().isToManyJoin()) {
-            List rows = getQueryMechanism().selectAllRows();
-            if (rows.size() > 0) {
-                row = (AbstractRecord)rows.get(0);
-            }
-            getJoinedAttributeManager().setDataResults(rows, session);
-        } else {
-            row = getQueryMechanism().selectOneRow();
-        }
-        
-        this.executionTime = System.currentTimeMillis();
         Object result = null;
-        if (row != null) {
-            if (session.isUnitOfWork()) {
-                result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, this.translationRow, true);
+        AbstractRecord row = null;
+        
+        checkResultSetAccessOptimization();
+        
+        if (this.usesResultSetAccessOptimization) {
+            DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
+            this.executionTime = System.currentTimeMillis();
+            boolean exceptionOccured = false;
+            ResultSet resultSet = call.getResult();
+            DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
+            try {
+                if (resultSet.next()) {
+                    ResultSetMetaData metaData = call.getResult().getMetaData();
+                    boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
+                    if (useSimple) {
+                        row = new SimpleResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession());
+                        if (this.descriptor.isDescriptorTypeAggregate()) {
+                            // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
+                            ((SimpleResultSetRecord)row).setShouldKeepValues(true);
+                        }
+                    } else {
+                        row = new ResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession());
+                    }
+                    if (session.isUnitOfWork()) {
+                        result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, this.translationRow, true);
+                    } else {
+                        result = buildObject(row);
+                    }
+                        
+                    if (!useSimple && !((ResultSetRecord)row).hasResultSet() && this.descriptor.getObjectBuilder().shouldKeepRow()) {
+                        ((ResultSetRecord)row).removeNonIndirectionValues();
+                    }
+                }
+            } catch (SQLException exception) {
+                exceptionOccured = true;
+                DatabaseException commException = dbAccessor.processExceptionForCommError(session, exception, call);
+                if (commException != null) {
+                    throw commException;
+                }
+                throw DatabaseException.sqlException(exception, call, getAccessor(), session, false);
+            } finally {
+                try {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                    if (dbAccessor != null) {
+                        if (call.getStatement() != null) {
+                            dbAccessor.releaseStatement(call.getStatement(), call.getSQLString(), call, session);
+                        }
+                    }
+                    if (call.hasAllocatedConnection()) {
+                        getExecutionSession().releaseConnectionAfterCall(this);
+                    }
+                } catch (RuntimeException cleanupException) {
+                    if (!exceptionOccured) {
+                        throw cleanupException;
+                    }
+                } catch (SQLException cleanupSQLException) {
+                    if (!exceptionOccured) {
+                        throw DatabaseException.sqlException(cleanupSQLException, call, dbAccessor, session, false);
+                    }
+                }
+            }
+        } else {
+            // If using 1-m joins, must select all rows.
+            if (shouldSetRowsForJoins) {
+                List rows = getQueryMechanism().selectAllRows();
+                if (rows.size() > 0) {
+                    row = (AbstractRecord)rows.get(0);
+                }
+                getJoinedAttributeManager().setDataResults(rows, session);
             } else {
-                result = buildObject(row);
+                row = getQueryMechanism().selectOneRow();
+            }
+            
+            this.executionTime = System.currentTimeMillis();
+            if (row != null) {
+                if (session.isUnitOfWork()) {
+                    result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, this.translationRow, true);
+                } else {
+                    result = buildObject(row);
+                }
             }
         }
         if ((result == null) && shouldCacheQueryResults()) {
@@ -493,9 +566,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     protected Object executeObjectLevelReadQueryFromResultSet() throws DatabaseException {
         AbstractSession session = this.session;
         DatabasePlatform platform = session.getPlatform();
-        DatabaseCall call = (DatabaseCall)((CallQueryMechanism)this.queryMechanism).getCall();
-        call.returnCursor();
-        call = this.queryMechanism.cursorSelectAllRows();
+        DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
         Statement statement = call.getStatement();
         ResultSet resultSet = call.getResult();
         DatabaseAccessor accessor = (DatabaseAccessor)((List<Accessor>)this.accessors).get(0);
@@ -681,6 +752,9 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         } else {
             getQueryMechanism().prepareSelectOneRow();
         }
+
+        // should be called after prepareSelectRow so that the call knows whether it returns ResultSet
+        prepareResultSetAccessOptimization();
     }
     
     /**
