@@ -183,8 +183,10 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             return true;
         }
         String mimeType = this.xmlBinaryDataCollectionMapping.getMimeType(object);
+        String attachmentType = mimeType;
         if(mimeType == null) {
             mimeType = Constants.EMPTY_STRING;
+            attachmentType = "application/octet-stream";
         }
         Marshaller marshaller = marshalRecord.getMarshaller();
         objectValue = xmlBinaryDataCollectionMapping.convertObjectValueToDataValue(objectValue, session, marshaller);
@@ -216,7 +218,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                 byte[] bytes = null;
                 if (objectValue.getClass() == CoreClassConstants.APBYTE) {
                     bytes = (byte[]) objectValue;
-                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataCollectionMapping.getMimeType(object), lastFrag.getLocalName(), lastFrag.getNamespaceURI());
+                    c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, attachmentType, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else if (xmlBinaryDataCollectionMapping.getAttributeElementClass() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                     c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, lastFrag.getLocalName(), lastFrag.getNamespaceURI());
                 } else {

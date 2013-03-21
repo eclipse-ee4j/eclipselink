@@ -3139,10 +3139,10 @@ public class MappingsGenerator {
 	                  mapping.setAttributeClassification(attributeClassification);
 
 	              	  mapping.setShouldInlineBinaryData(false);
-	              	  if(nextElement.getTypeMappingInfo() != null) {
+	              	  //if(nextElement.getTypeMappingInfo() != null) {
 	              	      mapping.setSwaRef(nextElement.isXmlAttachmentRef());
 	              	      mapping.setMimeType(nextElement.getXmlMimeType());
-	              	  }
+	              	  //}
 	                  desc.addMapping((CoreMapping)mapping);
 
 	              }else{
