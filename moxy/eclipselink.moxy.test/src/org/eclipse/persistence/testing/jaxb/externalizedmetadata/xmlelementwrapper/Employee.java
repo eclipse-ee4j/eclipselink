@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -58,5 +60,10 @@ public class Employee {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee [digits=" + Arrays.toString(digits) + ", thing=" + thing + "]";
     }
 }
