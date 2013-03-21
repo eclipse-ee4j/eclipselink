@@ -688,9 +688,21 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			Expression parentExpression = queryExpression;
 
 			// Now create the actual expression
-			String lastPath = pathExpression.getPath(pathExpression.pathSize() - 1);
-			queryExpression = new ExpressionBuilder().equal(entityExpression);
-			queryExpression = parentExpression.noneOf(lastPath, queryExpression);
+			Expression newBuilder = new ExpressionBuilder();
+			Expression collectionBase = newBuilder;
+            for (int i = 1; i < pathExpression.pathSize() - 1; i++) {
+                // nested paths must be single valued.
+                collectionBase = collectionBase.get(pathExpression.getPath(i));
+            }
+            String lastPath = pathExpression.getPath(pathExpression.pathSize() - 1);
+            // The following code is copied from Expression.noneOf and altered a bit
+            Expression criteria = newBuilder.equal(parentExpression).and(collectionBase.anyOf(lastPath).equal(entityExpression));
+            ReportQuery subQuery = new ReportQuery();
+            subQuery.setShouldRetrieveFirstPrimaryKey(true);
+            subQuery.setSelectionCriteria(criteria);
+            // subQuery has the same reference class as parentExpression (which is an ExpressionBuilder).
+            subQuery.setReferenceClass(((ExpressionBuilder)parentExpression).getQueryClass());
+            queryExpression = parentExpression.notExists(subQuery);
 		}
 		else {
 			// Create the expression for the collection-valued path expression

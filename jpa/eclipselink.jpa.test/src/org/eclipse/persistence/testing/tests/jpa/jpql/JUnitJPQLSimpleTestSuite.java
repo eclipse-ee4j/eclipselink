@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 
 /**
@@ -157,6 +159,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectPhoneUsingALLTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectSimpleMemberOfWithParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectSimpleNotMemberOfWithParameterTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("selectSimpleNotMemberOfWithParameterNestedTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("selectDirectCollectionNotMemberTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("selectDirectCollectionNonMemberNestedTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectSimpleBetweenWithParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectSimpleInWithParameterTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectAverageQueryForByteColumnTest"));
@@ -1951,6 +1956,97 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         Assert.assertTrue("Select simple Not member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+    }
+
+    public void selectSimpleNotMemberOfWithParameterNestedTest() {
+        EntityManager em = createEntityManager();
+
+        String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
+        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();        
+        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        PhoneNumber phone = null;
+        for (Project project : allProjectsWithTeamLeader) {
+            if (project.getTeamLeader().getPhoneNumbers().size() > 0) {
+                phone = (PhoneNumber)project.getTeamLeader().getPhoneNumbers().iterator().next();
+                break;
+            }
+        }
+        Assert.assertTrue("Not a single teamLeader has a phone!", phone != null);
+        
+        String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.phoneNumbers";
+        List result1 = em.createQuery(ejbqlString1).setParameter("1", phone).getResultList();        
+        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        
+        String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.phoneNumbers";
+        List result2 = em.createQuery(ejbqlString2).setParameter("1", phone).getResultList();
+        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        
+        List union = new ArrayList(result1);
+        union.addAll(result2);                
+        Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
+        
+        for (int i=0; i < result2.size(); i++) {
+            if (result1.contains(result2.get(i))) {
+                fail("results of MEMBER OF and NON MEMBER OF intersect");
+            }
+         }
+    }
+
+    public void selectDirectCollectionNotMemberTest() {
+        EntityManager em = createEntityManager();
+
+        Collection allEmps = getServerSession().readAllObjects(Employee.class);
+        String ejbqlString1 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' MEMBER OF e.responsibilities";
+        List result1 = em.createQuery(ejbqlString1).getResultList();        
+        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        
+        String ejbqlString2 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' NOT MEMBER OF e.responsibilities";
+        List result2 = em.createQuery(ejbqlString2).getResultList();
+        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        
+        List union = new ArrayList(result1);
+        union.addAll(result2);                
+        Assert.assertTrue("Union of results of MEMBER OF and NOT MEMBER OF not equal to all employees", comparer.compareObjects(union, allEmps));
+        
+        for (int i=0; i < result2.size(); i++) {
+            if (result1.contains(result2.get(i))) {
+                fail("results of MEMBER OF and NOT MEMBER OF intersect");
+            }
+         }
+    }
+
+    public void selectDirectCollectionNonMemberNestedTest() {
+        EntityManager em = createEntityManager();
+
+        String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
+        List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();        
+        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        String responsibility = null;
+        for (Project project : allProjectsWithTeamLeader) {
+            if (project.getTeamLeader().getResponsibilities().size() > 0) {
+                responsibility = (String)project.getTeamLeader().getResponsibilities().iterator().next();
+                break;
+            }
+        }
+        Assert.assertTrue("Not a single teamLeader has any responsibilities!", responsibility != null);
+        
+        String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.responsibilities";
+        List result1 = em.createQuery(ejbqlString1).setParameter("1", responsibility).getResultList();        
+        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        
+        String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.responsibilities";
+        List result2 = em.createQuery(ejbqlString2).setParameter("1", responsibility).getResultList();
+        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        
+        List union = new ArrayList(result1);
+        union.addAll(result2);                
+        Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
+        
+        for (int i=0; i < result2.size(); i++) {
+            if (result1.contains(result2.get(i))) {
+                fail("results of MEMBER OF and NON MEMBER OF intersect");
+            }
+         }
     }
 
     public void selectUsingLockModeQueryHintTest() {
