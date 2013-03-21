@@ -354,7 +354,7 @@ public class SDODataObjectGetStringConversion extends SDODataObjectConversionTes
         //dataObject.setString(property, "2001-01-01");// add it to instance list
         dataObject.setDate(property, bi);// add it to instance list
 
-        this.assertEquals("2001-01-01T00:00:00.0Z", dataObject.getString(property));
+        this.assertEquals("2001-01-01T00:00:00Z", dataObject.getString(property));
     }
 
     //23. purpose: getString with Undefined date Property

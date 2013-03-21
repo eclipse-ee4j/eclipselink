@@ -9,7 +9,7 @@
 	 "theString":["15"],
          "theTime":[{
  	    "type":"time",
-	    "value":"09:30:45.0"
+	    "value":"09:30:45"
 	 }],
 	 "someChild":["Child3",{}],
          "blah":[{

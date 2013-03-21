@@ -221,7 +221,7 @@ public class SDODataObjectGetStringWithIndexConversionTest extends SDODataObject
         //dataObject.setString(property, "2001-01-01");// add it to instance list
         dataObject.setDate(property, bi);// add it to instance list
 
-        this.assertEquals("2001-01-01T00:00:00.0Z", dataObject.getString(PROPERTY_INDEX));
+        this.assertEquals("2001-01-01T00:00:00Z", dataObject.getString(PROPERTY_INDEX));
 
     }
 

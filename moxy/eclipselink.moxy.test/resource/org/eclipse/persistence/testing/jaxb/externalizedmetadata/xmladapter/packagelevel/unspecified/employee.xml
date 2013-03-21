@@ -3,11 +3,11 @@
     <id>66</id>
     <firstName>Joe</firstName>
     <lastname>Smith</lastname>
-    <birthday>2011-02-01T00:00:00.0</birthday>
+    <birthday>2011-02-01T00:00:00</birthday>
 	<address>
 	    <id>1</id>
         <cityName>Ottawa</cityName>
-		<effectiveDate>2011-02-01T00:00:00.0</effectiveDate>
+		<effectiveDate>2011-02-01T00:00:00</effectiveDate>
     </address>
 </employee>
 

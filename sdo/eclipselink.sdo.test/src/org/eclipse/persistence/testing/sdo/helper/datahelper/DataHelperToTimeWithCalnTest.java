@@ -40,7 +40,7 @@ public class DataHelperToTimeWithCalnTest extends DataHelperTestCases {
         controlCalendar.clear();
         controlCalendar.set(Calendar.ZONE_OFFSET, 0);
         String tm = dataHelper.toTime(controlCalendar);
-        this.assertEquals("00:00:00.0Z", tm);
+        this.assertEquals("00:00:00Z", tm);
     }
 
     public void testToTimeWithNullInput() {

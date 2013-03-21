@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<ns0:EMPLOYEEROOT id="10" BIRTHDAYATTR="2005-05-24T16:06:53.0" xmlns:ns0="myuri">
+<ns0:EMPLOYEEROOT id="10" BIRTHDAYATTR="2005-05-24T16:06:53" xmlns:ns0="myuri">
    <FIRSTNAMEELEM>Bob</FIRSTNAMEELEM>
    <lastname>Smith</lastname>
    <ADDRESSELEM>

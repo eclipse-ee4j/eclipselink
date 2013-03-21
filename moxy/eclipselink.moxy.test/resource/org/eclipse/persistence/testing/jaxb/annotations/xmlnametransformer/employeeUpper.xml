@@ -1,5 +1,5 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
-<x:employee-data id="10" BIRTHDAY="2005-05-24T16:06:53.0" xmlns:x="examplenamespace">
+<x:employee-data id="10" BIRTHDAY="2005-05-24T16:06:53" xmlns:x="examplenamespace">
    <FIRSTNAME>Bob</FIRSTNAME>
    <lastname>Smith</lastname>
    <ADDRESS>
