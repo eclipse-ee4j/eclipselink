@@ -27,10 +27,13 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
+import org.eclipse.persistence.testing.models.jpa.inheritance.CitrusFruit;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
 import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
 import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Seed;
+import org.eclipse.persistence.testing.models.jpa.inheritance.SeededFruit;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SeniorEngineer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
@@ -77,6 +80,8 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityManagerJUnitTestCase("testUpateTireInfo"));
         // EL bug 336486
         suite.addTest(new EntityManagerJUnitTestCase("testCacheExpiryInitializationForInheritance"));
+        // Bug 404071
+        suite.addTest(new EntityManagerJUnitTestCase("testJoinedInheritanceOneToManyJoinFetch"));
         
         return suite;
     }
@@ -541,4 +546,34 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             mapping.setUseLazyInstantiationForIndirectCollection(lazyIndirection);
         }
     }
+    
+    // Bug 404071
+    public void testJoinedInheritanceOneToManyJoinFetch() {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            
+            CitrusFruit fruit = new CitrusFruit();
+            fruit.setName("Orange");
+            fruit.setRipe(true);
+            for (int i = 0; i < 4; i++) {
+                fruit.addSeed(new Seed());
+            }
+            em.persist(fruit);
+            
+            commitTransaction(em);
+            em.clear();
+            clearCache();
+            
+            // query on superclass
+            SeededFruit fruitRead = em.find(SeededFruit.class, fruit.getId());
+            
+            assertNotNull("Fruit should not be null", fruitRead);
+            assertNotNull("Fruit's seeds should not be null", fruitRead.getSeeds());
+            assertTrue("Fruit's seeds should contain 4 elements", fruitRead.getSeeds().size() == 4);
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
 }
