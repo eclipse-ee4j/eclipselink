@@ -44,7 +44,7 @@ public class DataHelperToDateTimeTest extends DataHelperTestCases {
         controlCalendar.setTimeZone(TimeZone.getTimeZone("GMT"));
         Date controlDate = controlCalendar.getTime();
         String dt = dataHelper.toDateTime(controlDate);
-        this.assertEquals("1970-01-01T00:00:00.0Z", dt);
+        this.assertEquals("1970-01-01T00:00:00Z", dt);
     }
 
     public void testToDateTimeWithNullInput() {

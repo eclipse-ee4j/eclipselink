@@ -2,7 +2,7 @@
    "id":10,
    "firstName":"Bob",
    "lastName":"Smith",
-   "birthday":"2005-05-24T16:06:53.0",
+   "birthday":"2005-05-24T16:06:53",
    "address":{
        "id":10,
        "cityName":"Ottawa"

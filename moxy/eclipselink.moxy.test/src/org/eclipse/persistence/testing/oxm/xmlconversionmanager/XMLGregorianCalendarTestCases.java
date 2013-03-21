@@ -160,8 +160,8 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         String gYearString      = "2009+03:00";
         String gYearMonthString = "2009-02+03:00";
         String dateString       = "2009-02-17+03:00";
-        String timeString       = "07:30:00.0+03:00";
-        String dateTimeString   = "2009-02-17T07:30:00.0+03:00";
+        String timeString       = "07:30:00+03:00";
+        String dateTimeString   = "2009-02-17T07:30:00+03:00";
         
         testString = (String) getXmlConversionManager().convertObject(aCal, String.class, XMLConstants.G_DAY_QNAME);
         assertEquals("Object to String conversion failed.", gDayString, testString);

@@ -1,6 +1,6 @@
 {"employee-data":{
    "id":10,
-   "BIRTHDAY":"2005-05-24T16:06:53.0",
+   "BIRTHDAY":"2005-05-24T16:06:53",
    "FIRSTNAME":"Bob",
    "lastname":"Smith",
    "ADDRESS":{

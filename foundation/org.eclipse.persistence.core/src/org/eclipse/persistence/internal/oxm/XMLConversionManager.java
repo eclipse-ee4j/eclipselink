@@ -1099,11 +1099,15 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         // Time
         if (XMLConstants.TIME_QNAME.equals(schemaTypeQName)) {
+            int milliseconds = cal.get(Calendar.MILLISECOND);
+            if(0 == milliseconds) {
+                milliseconds = DatatypeConstants.FIELD_UNDEFINED;
+            }
             xgc.setTime(
                     cal.get(Calendar.HOUR_OF_DAY),
                     cal.get(Calendar.MINUTE),
                     cal.get(Calendar.SECOND),
-                    cal.get(Calendar.MILLISECOND));
+                    milliseconds);
             return truncateMillis(xgc.toXMLFormat());
         }
         // DateTime
@@ -1114,11 +1118,15 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         }
         xgc.setMonth(cal.get(Calendar.MONTH) + 1);
         xgc.setDay(cal.get(Calendar.DATE));
+        int milliseconds = cal.get(Calendar.MILLISECOND);
+        if(0 == milliseconds) {
+            milliseconds = DatatypeConstants.FIELD_UNDEFINED;
+        }
         xgc.setTime(
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE),
                 cal.get(Calendar.SECOND),
-                cal.get(Calendar.MILLISECOND));
+                milliseconds);
 
         return truncateMillis(xgc.toXMLFormat());
     }
@@ -1148,7 +1156,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                 truncIndex--;
             }
             milliStr = new String(numbChar, 0, truncIndex + 1);
-            if (milliStr.length() > 0) {
+            if (milliStr.length() > 0 && !"0".equals(milliStr)) {
                 milliStr = '.' + milliStr;
                 result = pre + milliStr + post;
             } else {
@@ -2048,7 +2056,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     private String appendNanos(String string, Timestamp ts) {
         StringBuilder strBldr = new StringBuilder(string);
         int nanos = ts.getNanos();
-        strBldr.append(nanos==0 ? ".0" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS)).toString();
+        strBldr.append(nanos==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(nanos, TOTAL_NS_DIGITS)).toString();
         return strBldr.toString();
     }
 
@@ -2067,7 +2075,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
             // adjust for negative time values, i.e. before Epoch
             msns = msns + 1000;
         }
-        strBldr.append(msns==0 ? ".0" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
+        strBldr.append(msns==0 ? "" : '.' + Helper.buildZeroPrefixAndTruncTrailZeros(msns, TOTAL_MS_DIGITS)).toString();
         return strBldr.toString();
     }
 

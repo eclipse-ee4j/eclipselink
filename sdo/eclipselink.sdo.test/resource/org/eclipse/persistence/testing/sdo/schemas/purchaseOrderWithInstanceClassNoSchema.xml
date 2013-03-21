@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<purchaseOrder comment="Hurry, my lawn is going wild!" orderDate="2001-12-17T01:01:01.0">
+<purchaseOrder comment="Hurry, my lawn is going wild!" orderDate="2001-12-17T01:01:01">
    <items>
       <item theMimeType="image" productName="Lawnmower" quantity="1" partNum="872-AA">
          <porder>123</porder>

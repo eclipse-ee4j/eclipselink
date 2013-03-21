@@ -413,7 +413,7 @@ public class SDODataObjectGetStringConversionWithPathTest extends SDODataObjectC
         //dataObject.setString(property, "2001-01-01");// add it to instance list
         dataObject_a.setDate(propertyPath_a_b_c, bi);// add it to instance list
 
-        this.assertEquals("2001-01-01T00:00:00.0Z", dataObject_a.getString(propertyPath_a_b_c));
+        this.assertEquals("2001-01-01T00:00:00Z", dataObject_a.getString(propertyPath_a_b_c));
     }
 
     //23. purpose: getString with Undefined date Property
