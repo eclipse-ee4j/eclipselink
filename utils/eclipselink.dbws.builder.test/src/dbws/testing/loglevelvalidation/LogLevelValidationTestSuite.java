@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 //EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.XMLSessionConfigProject_11_1_1;
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
+import org.eclipse.persistence.internal.sessions.factories.model.login.DatabaseLoginConfig;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -63,6 +64,7 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     final static String password =
         System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+    static String encryptedPassword;
     final static String url =
         System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
     final static String VERSION = "SOME_VERSION";
@@ -70,9 +72,11 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     final static String off_level = "off";
     final static String stageDir = "./";
 
+    static String SESSIONS_XML;
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
+    DatabaseLoginConfig dlc = new DatabaseLoginConfig();
 
     @BeforeClass
     public static void setUp() throws WSDLException {
@@ -162,6 +166,12 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
             }
         });
         DBWSTestSuite.setUp(stageDir);
+        
+        // need to get the encrypted version of the DB password
+        DatabaseLoginConfig dlc = new DatabaseLoginConfig();
+        dlc.setEncryptedPassword(builder.getPassword());
+        encryptedPassword = dlc.getEncryptedPassword();
+        SESSIONS_XML = buildSessionsXML();
     }
 
     @AfterClass
@@ -171,17 +181,17 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
         }
     }
 
-    static String SESSIONS_XML =
-    	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+    static String buildSessionsXML() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
     	"<sessions xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\""+VERSION+"\">" +
     		"<session xsi:type=\"database-session\">" +
     			"<name>logLevelValidation-dbws-or-session</name>" +
     			"<logging xsi:type=\"eclipselink-log\" />" +
-    			"<primary-project xsi:type=\"xml\">eclipselink-dbws-or.xml</primary-project>" +
+                "<primary-project xsi:type=\"xml\">eclipselink-dbws-or.xml</primary-project>" +
     			"<login xsi:type=\"database-login\">" +
     				"<platform-class>org.eclipse.persistence.platform.database.MySQLPlatform</platform-class>" +
     				"<user-name>"+username+"</user-name>" +
-    				"<password>"+password+"</password>" +
+    				"<password>"+encryptedPassword+"</password>" +
     				"<driver-class>"+DATABASE_DRIVER+"</driver-class>" +
     				"<connection-url>"+url+"</connection-url>" +
     				"<byte-array-binding>false</byte-array-binding>" +
@@ -190,14 +200,15 @@ public class LogLevelValidationTestSuite extends DBWSTestSuite {
     				"<trim-strings>false</trim-strings>" +
     			"</login>" +
     		"</session>" +
-    		"<session xsi:type=\"database-session\">" +
-    			"<name>logLevelValidation-dbws-ox-session</name>" +
-    			"<logging xsi:type=\"eclipselink-log\">" +
-    			"<log-level>"+off_level+"</log-level>" +
-    			"</logging>" +
-    			"<primary-project xsi:type=\"xml\">eclipselink-dbws-ox.xml</primary-project>" +
-    		"</session>" +
+            "<session xsi:type=\"database-session\">" +
+                "<name>logLevelValidation-dbws-ox-session</name>" +
+                "<logging xsi:type=\"eclipselink-log\">" +
+                    "<log-level>off</log-level>" +
+                 "</logging>" +
+                 "<primary-project xsi:type=\"xml\">eclipselink-dbws-ox.xml</primary-project>" +
+             "</session>" +
     	"</sessions>";
+    }
 
     @Test
     /**
