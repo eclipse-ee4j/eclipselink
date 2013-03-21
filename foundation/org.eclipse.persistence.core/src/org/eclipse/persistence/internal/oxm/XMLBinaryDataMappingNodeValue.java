@@ -137,8 +137,10 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         String c_id = null;
         byte[] bytes = null;
         String mimeType = this.xmlBinaryDataMapping.getMimeType(object);
+        String attachmentType = mimeType;
         if(mimeType == null) {
             mimeType = "";
+            attachmentType = "application/octet-stream";
         }
         if (xmlBinaryDataMapping.isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
             //object value should be a DataHandler
@@ -167,7 +169,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
             if (objectValue.getClass() == ClassConstants.APBYTE) {
                 bytes = (byte[]) objectValue;
-                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, this.xmlBinaryDataMapping.getMimeType(object), localName, namespaceUri);
+                c_id = marshaller.getAttachmentMarshaller().addMtomAttachment(bytes, 0, bytes.length, attachmentType, localName, namespaceUri);
             } else if (xmlBinaryDataMapping.getAttributeClassification() == XMLBinaryDataHelper.getXMLBinaryDataHelper().DATA_HANDLER) {
                 c_id = marshaller.getAttachmentMarshaller().addMtomAttachment((DataHandler) objectValue, localName, namespaceUri);
             } else {

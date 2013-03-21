@@ -3681,6 +3681,13 @@ public class AnnotationsProcessor {
                 declaration.setJavaType(helper.getJavaClass(declJavaType));
                 declaration.setAdaptedJavaType(type);
             }
+            if (helper.isAnnotationPresent(next, XmlMimeType.class)) {
+                XmlMimeType mimeType = (XmlMimeType)helper.getAnnotation(next, XmlMimeType.class);
+                declaration.setXmlMimeType(mimeType.value());
+            }
+            if (helper.isAnnotationPresent(next, XmlAttachmentRef.class)) {
+                declaration.setXmlAttachmentRef(true);
+            }
             HashMap<QName, ElementDeclaration> elements = getElementDeclarationsForScope(scopeClass.getName());
             if (elements == null) {
                 elements = new HashMap<QName, ElementDeclaration>();
