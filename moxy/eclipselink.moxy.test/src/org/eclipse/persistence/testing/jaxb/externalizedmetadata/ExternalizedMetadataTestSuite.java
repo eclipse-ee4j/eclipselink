@@ -69,6 +69,9 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.XmlElementRefWithWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.XmlElementsTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElemenetWrapperNilTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperDefaultNameTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperElementOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumQualifiedTestCases;
@@ -173,6 +176,9 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlCustomizerTestCases.class);
         suite.addTestSuite(XmlCustomizerWithOverrideTestCases.class);
         suite.addTestSuite(XmlElementWrapperTestCases.class);
+        suite.addTestSuite(XmlElemenetWrapperNilTestCases.class);
+        suite.addTestSuite(XmlElementWrapperDefaultNameTestCases.class);
+        suite.addTestSuite(XmlElementWrapperElementOverrideTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlValueCdnPriceTestCases.class);
         suite.addTestSuite(XmlValueInternationalPriceTestCases.class);

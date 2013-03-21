@@ -1,0 +1,20 @@
+{
+   "company" : {
+      "name" : "ACME Inc.",
+      "employees" : {
+         "employee" : [ {
+            "my-digits" : null,
+            "thing" : {
+               "type" : "string",
+               "value" : "Elmer"
+            }
+         }, {
+            "my-digits" : null,
+            "thing" : {
+               "type" : "string",
+               "value" : "Sylvester"
+            }
+         } ]
+      }
+   }
+}

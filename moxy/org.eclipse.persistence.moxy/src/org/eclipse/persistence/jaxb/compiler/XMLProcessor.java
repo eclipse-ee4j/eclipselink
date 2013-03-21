@@ -46,6 +46,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRef;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementRefs;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElements;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;
@@ -1083,10 +1084,14 @@ public class XMLProcessor {
             // no xml-path, so use name/namespace from xml-element, and process wrapper
             name = xmlElement.getName();
             namespace = xmlElement.getNamespace();
-            if (xmlElement.getXmlElementWrapper() != null) {
+            XmlElementWrapper xmlElementWrapper = xmlElement.getXmlElementWrapper();
+            if (xmlElementWrapper != null) {
+                if (DEFAULT.equals(xmlElementWrapper.getName())) {
+                    xmlElementWrapper.setName(typeInfo.getXmlNameTransformer().transformElementName(oldProperty.getPropertyName()));
+                }
                 oldProperty.setXmlElementWrapper(xmlElement.getXmlElementWrapper());
-                if(oldProperty.isMap()){
-                	name = xmlElement.getXmlElementWrapper().getName();
+                if (oldProperty.isMap()) {
+                    name = xmlElement.getXmlElementWrapper().getName();
                     namespace = xmlElement.getXmlElementWrapper().getNamespace();
                 }
             }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<company>
+   <name>ACME Inc.</name>
+   <employees>
+      <employee>
+         <my-digits xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+         <thing xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Elmer</thing>
+      </employee>
+      <employee>
+         <my-digits xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+         <thing xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Sylvester</thing>
+      </employee>
+   </employees>
+</company>
