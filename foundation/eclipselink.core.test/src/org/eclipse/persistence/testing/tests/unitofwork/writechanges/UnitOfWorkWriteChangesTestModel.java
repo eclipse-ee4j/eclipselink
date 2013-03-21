@@ -11,7 +11,6 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
 /* $Header: UnitOfWorkWriteChangesTestModel.java 17-nov-2005.13:31:29 gyorke Exp $ */
-/* Copyright (c) 2004, 2005, Oracle. All rights reserved.  */
 /*
    DESCRIPTION
     <short description of component this file declares/defines>

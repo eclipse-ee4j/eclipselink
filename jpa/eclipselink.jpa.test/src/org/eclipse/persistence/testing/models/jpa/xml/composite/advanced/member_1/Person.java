@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 12010 Oracle. All rights reserved.
+ * Copyright (c) 2010, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,7 +12,7 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  ******************************************************************************/ 
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1;
-
+    
 public class Person {
     private Integer id;
     
