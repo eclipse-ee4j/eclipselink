@@ -1389,14 +1389,20 @@ public class MappingsGenerator {
         if (property.isLax() || property.isReference()) {
             mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
         } else {
-            mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+            if (property.isAny()) {
+                mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT);
+            } else {
+                mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT);
+            }
         }
 
         mapping.setMixedContent(isMixed);
         if (isMixed) {
             mapping.setPreserveWhitespaceForMixedContent(true);
         }
-        mapping.setUseXMLRoot(true);
+        if (property.isAny()) {
+            mapping.setUseXMLRoot(true);
+        }
 
         JavaClass collectionType = property.getType();
         if (collectionType.isArray()){

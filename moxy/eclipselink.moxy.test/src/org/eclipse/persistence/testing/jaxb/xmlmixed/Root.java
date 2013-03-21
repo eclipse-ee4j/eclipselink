@@ -63,5 +63,10 @@ public class Root {
         Root root = (Root)obj;
         return root.getAttr().equals(getAttr()) && root.getElem().equals(getElem()) && root.getObjects().equals(getObjects());
     }
+
+    @Override
+    public String toString() {
+        return "Root [attr=" + attr + ", objects=" + objects + ", elem=" + elem + "]";
+    }
     
 }
