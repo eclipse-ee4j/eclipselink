@@ -1284,12 +1284,12 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * @return vector containing database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
-    protected Vector selectAllRowUsingCustomMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException {
+    protected Vector selectAllRowUsingCustomMultipleTableSubclassRead(ObjectLevelReadQuery query) throws DatabaseException {
         Vector rows = new Vector();
         // CR#3701077, it must either have a filter only instances expression, or not have subclasses.
         // This method recurses, so even though this is only called when shouldReadSubclasses is true, it may be false for subclasses.
         if ((getOnlyInstancesExpression() != null)  || (! shouldReadSubclasses())) {
-            ReadAllQuery concreteQuery = (ReadAllQuery)query.clone();
+            ObjectLevelReadQuery concreteQuery = (ObjectLevelReadQuery)query.clone();
             concreteQuery.setReferenceClass(getDescriptor().getJavaClass());
             concreteQuery.setDescriptor(getDescriptor());
 
@@ -1317,7 +1317,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * @return vector containing database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
-    protected Vector selectAllRowUsingDefaultMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException, QueryException {
+    protected Vector selectAllRowUsingDefaultMultipleTableSubclassRead(ObjectLevelReadQuery query) throws DatabaseException, QueryException {
         // Get all rows for the given class indicator field
         // The indicator select is prepared in the original query, so can just be executed.
         List<AbstractRecord> classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
@@ -1375,7 +1375,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
             if (concretePolicy.hasChildren() && !concretePolicy.hasMultipleTableChild()) {
                 removeChildren(concreteDescriptor, uniqueClasses, subclasses);
             }
-            ReadAllQuery concreteQuery = (ReadAllQuery)query.clone();
+            ObjectLevelReadQuery concreteQuery = (ObjectLevelReadQuery)query.clone();
             concreteQuery.setReferenceClass(concreteClass);
             concreteQuery.setDescriptor(concreteDescriptor);
             Vector concreteRows = ((ExpressionQueryMechanism)concreteQuery.getQueryMechanism()).selectAllRowsFromConcreteTable();
@@ -1420,7 +1420,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * @return vector containing database rows.
      * @exception  DatabaseException - an error has occurred on the database.
      */
-    public Vector selectAllRowUsingMultipleTableSubclassRead(ReadAllQuery query) throws DatabaseException {
+    public Vector selectAllRowUsingMultipleTableSubclassRead(ObjectLevelReadQuery query) throws DatabaseException {
         if (hasClassExtractor()) {
             return selectAllRowUsingCustomMultipleTableSubclassRead(query);
         } else {

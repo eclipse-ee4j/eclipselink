@@ -87,6 +87,11 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildJOINED_SUPERCLASSTable());
         addTableDefinition(buildJOINED_SUBCLASSTable());
         addTableDefinition(buildSTI_SUPERCLASSTable());
+        
+        // Bug 404071
+        addTableDefinition(buildCMP3_SEEDTable());
+        addTableDefinition(buildCMP3_SEEDED_FRUITTable());
+        addTableDefinition(buildCMP3_CITRUS_FRUITTable());
     }
     
     public TableDefinition buildSTI_SUPERCLASSTable() {
@@ -2117,6 +2122,109 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldNAME.setShouldAllowNull(true);
         table.addField(fieldNAME);
 
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_SEEDED_FRUITTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_SEEDED_FRUIT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(255);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldCLASS_TYPE = new FieldDefinition();
+        fieldCLASS_TYPE.setName("CLASS_TYPE");
+        fieldCLASS_TYPE.setTypeName("VARCHAR");
+        fieldCLASS_TYPE.setSize(1);
+        fieldCLASS_TYPE.setIsPrimaryKey(false);
+        fieldCLASS_TYPE.setIsIdentity(false);
+        fieldCLASS_TYPE.setUnique(false);
+        fieldCLASS_TYPE.setShouldAllowNull(true);
+        table.addField(fieldCLASS_TYPE);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_CITRUS_FRUITTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_CITRUS_FRUIT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setForeignKeyFieldName("CMP3_SEEDED_FRUIT.ID");
+        table.addField(fieldID);
+        
+        FieldDefinition fieldRIPE = new FieldDefinition();
+        fieldRIPE.setName("RIPE");
+        fieldRIPE.setTypeName("NUMBER");
+        fieldRIPE.setSize(1);
+        fieldRIPE.setIsPrimaryKey(false);
+        fieldRIPE.setIsIdentity(false);
+        fieldRIPE.setUnique(false);
+        fieldRIPE.setShouldAllowNull(true);
+        table.addField(fieldRIPE);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCMP3_SEEDTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_SEED");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(10);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(64);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+        
+        FieldDefinition fieldSEEDEDFRUIT_ID = new FieldDefinition();
+        fieldSEEDEDFRUIT_ID.setName("SEEDEDFRUIT_ID");
+        fieldSEEDEDFRUIT_ID.setTypeName("NUMBER");
+        fieldSEEDEDFRUIT_ID.setSize(10);
+        fieldSEEDEDFRUIT_ID.setIsPrimaryKey(false);
+        fieldSEEDEDFRUIT_ID.setIsIdentity(false);
+        fieldSEEDEDFRUIT_ID.setUnique(false);
+        fieldSEEDEDFRUIT_ID.setShouldAllowNull(true);
+        fieldSEEDEDFRUIT_ID.setForeignKeyFieldName("CMP3_SEEDED_FRUIT.ID");
+        table.addField(fieldSEEDEDFRUIT_ID);
+        
         return table;
     }
     

@@ -2653,7 +2653,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (!((ObjectLevelReadQuery)this.query).shouldOuterJoinSubclasses()) {
             ClassDescriptor descriptor = getDescriptor();
             if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead() && (!descriptor.getInheritancePolicy().hasView())) {
-                return descriptor.getInheritancePolicy().selectAllRowUsingMultipleTableSubclassRead((ReadAllQuery)this.query);
+                return descriptor.getInheritancePolicy().selectAllRowUsingMultipleTableSubclassRead((ObjectLevelReadQuery)this.query);
             }
         }
         return selectAllRowsFromTable();
