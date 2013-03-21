@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Pervasive Software Inc. All Rights Reserved
+ * Copyright (c) 2012, 2013 Pervasive Software Inc. All Rights Reserved
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
