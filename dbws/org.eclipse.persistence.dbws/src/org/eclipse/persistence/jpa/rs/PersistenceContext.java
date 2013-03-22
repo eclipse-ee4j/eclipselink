@@ -53,6 +53,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -1192,14 +1193,22 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()) {
                     if (mapping.isForeignReferenceMapping()) {
                         ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
-
                         RelationshipInfo info = new RelationshipInfo();
-
                         info.setAttributeName(frMapping.getAttributeName());
                         info.setOwningEntity(entity);
                         info.setOwningEntityAlias(descriptor.getAlias());
                         info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
                         ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
+                    } else if (mapping.isEISMapping()) {
+                        if (mapping instanceof EISCompositeCollectionMapping) {
+                            EISCompositeCollectionMapping eisMapping = (EISCompositeCollectionMapping)mapping;
+                            RelationshipInfo info = new RelationshipInfo();
+                            info.setAttributeName(eisMapping.getAttributeName());
+                            info.setOwningEntity(entity);
+                            info.setOwningEntityAlias(descriptor.getAlias());
+                            info.setPersistencePrimaryKey(descriptor.getObjectBuilder().extractPrimaryKeyFromObject(entity, (AbstractSession) getJpaSession()));
+                            ((PersistenceWeavedRest) entity)._persistence_getRelationships().add(info);
+                        }
                     }
                 }
             }

@@ -13,9 +13,12 @@ package org.eclipse.persistence.jpa.rs.resources.common;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -66,7 +69,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                 return Response.status(Status.NOT_FOUND).type(StreamingOutputMarshaller.getResponseMediaType(hh)).build();
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
-                Descriptor returnDescriptor = buildDescriptor(app, persistenceUnit, descriptor, baseURI.toString(), version);
+                Descriptor returnDescriptor = buildDescriptor(app, persistenceUnit, descriptor, baseURI.toString());
                 String result = null;
                 try {
                     result = marshallMetadata(returnDescriptor, mediaType);
@@ -174,13 +177,18 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     protected void addMapping(Descriptor descriptor, DatabaseMapping mapping) {
         String target = null;
         String collectionName = null;
         if (mapping.isCollectionMapping()) {
             if (mapping.isEISMapping()) {
                 EISCompositeCollectionMapping collectionMapping = (EISCompositeCollectionMapping) mapping;
-                String collectionType = mapping.getContainerPolicy().getContainerClass().getSimpleName();
+                Class collectionClass = collectionMapping.getContainerPolicy().getContainerClass();
+                String collectionType = getSimplePublicCollectionTypeName(collectionClass);
+                if (collectionType == null) {
+                    collectionType = collectionClass.getSimpleName();
+                }
                 if (collectionMapping.getReferenceClass() != null) {
                     collectionName = collectionMapping.getReferenceClass().getSimpleName();
                 } 
@@ -188,22 +196,28 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
                     collectionName = collectionMapping.getAttributeClassification().getSimpleName();
                 }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
-                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
+                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().getClass().getSimpleName();
                     target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
                     target = collectionType + "<" + collectionName + ">";
                 }
             } else {
                 CollectionMapping collectionMapping = (CollectionMapping) mapping;
-                String collectionType = collectionMapping.getContainerPolicy().getContainerClass().getSimpleName();
-                if (collectionMapping.getReferenceClass() != null) {
+                Class collectionClass = collectionMapping.getContainerPolicy().getContainerClass();
+
+                String collectionType = getSimplePublicCollectionTypeName(collectionClass);
+                if (collectionType == null) {
+                    collectionType = collectionClass.getSimpleName();
+                }
+
+               if (collectionMapping.getReferenceClass() != null) {
                     collectionName = collectionMapping.getReferenceClass().getSimpleName();
-                } 
+                }
                 if ((collectionName == null) && (collectionMapping.getAttributeClassification() != null)) {
                     collectionName = collectionMapping.getAttributeClassification().getSimpleName();
                 }
                 if (collectionMapping.getContainerPolicy().isMapPolicy()) {
-                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().toString();
+                    String mapKeyType = ((MapContainerPolicy) collectionMapping.getContainerPolicy()).getKeyType().getClass().getSimpleName();
                     target = collectionType + "<" + mapKeyType + ", " + collectionName + ">";
                 } else {
                     target = collectionType + "<" + collectionName + ">";
@@ -214,6 +228,7 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         } else {
             target = mapping.getAttributeClassification().getSimpleName();
         }
+        
         descriptor.getAttributes().add(new Attribute(mapping.getAttributeName(), target));
     }
     
@@ -236,14 +251,15 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
         }
     }
 
-    protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri, String version) {
+    protected Descriptor buildDescriptor(PersistenceContext app, String persistenceUnit, ClassDescriptor descriptor, String baseUri) {
         Descriptor returnDescriptor = new Descriptor();
-        returnDescriptor.setName(descriptor.getAlias());
-        returnDescriptor.setType(descriptor.getJavaClass().getSimpleName());
-        
+        String name = descriptor.getAlias();
+        returnDescriptor.setName(name);
+
+        String version = app.getVersion();
         if (version != null) {
             version = version + "/";
-            returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + version + persistenceUnit +  "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
+            returnDescriptor.getLinkTemplates().add(new LinkTemplate("find", "get", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
             returnDescriptor.getLinkTemplates().add(new LinkTemplate("persist", "put", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias()));
             returnDescriptor.getLinkTemplates().add(new LinkTemplate("update", "post", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias()));
             returnDescriptor.getLinkTemplates().add(new LinkTemplate("delete", "delete", baseUri + version + persistenceUnit + "/entity/" + descriptor.getAlias() + "/{primaryKey}"));
@@ -310,5 +326,42 @@ public class AbstractPersistenceUnitResource extends AbstractResource {
             returnQuery.getReturnTypes().add(query.getReferenceClassName() == null ? "" : query.getReferenceClass().getSimpleName());
         }
         return returnQuery;
+    }
+    
+    private String getSimplePublicCollectionTypeName(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+        LinkedHashSet<Class<?>> all = new LinkedHashSet<Class<?>>();
+        getInterfaces(clazz, all);
+        ArrayList<Class<?>> list =  new ArrayList<Class<?>>(all);
+        for (int i=0; i<all.size(); i++) {
+            Class<?> clas =  list.get(i);
+            if (clas.getName().equals(List.class.getName())) {
+                return List.class.getSimpleName();
+            }
+            if (clas.getName().equals(Map.class.getName())) {
+                return Map.class.getSimpleName();
+            }
+            if (clas.getName().equals(Set.class.getName())) {
+                return Set.class.getSimpleName();
+            }
+        }
+        return null;
+    }
+
+    private void getInterfaces(Class<?> clazz, HashSet<Class<?>> interfaceList) {
+        // java.lang.Class.getInterfaces returns all directly implemented interfaces 
+        // and it doesn't walk the hierarchy to get all interfaces of all parent types. 
+        // we walk through the hierarchy here
+        while (clazz != null) {
+            Class<?>[] interfaces = clazz.getInterfaces();
+            for (Class<?> i : interfaces) {
+                if (interfaceList.add(i)) {
+                    getInterfaces(i, interfaceList);
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
     }
 }
