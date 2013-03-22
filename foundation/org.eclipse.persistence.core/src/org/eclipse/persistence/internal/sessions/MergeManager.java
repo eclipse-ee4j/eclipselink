@@ -548,11 +548,14 @@ public class MergeManager {
             registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone, shouldForceCascade());
         }
 
-        if (registeredObject == rmiClone && !shouldForceCascade()) {
+        //adding isAlreadyMerged/recoredMerge check to prevent the uow clone from being merged into twice from the same tree
+        //bug 404171
+        if ((registeredObject == rmiClone || isAlreadyMerged(registeredObject, this.session)) && !shouldForceCascade()) {
             //need to find better better fix.  prevents merging into itself.
-            return rmiClone;
+            return registeredObject;
         }
-
+        recordMerge(registeredObject, registeredObject, this.session);
+        
         ClassDescriptor descriptor = this.session.getDescriptor(rmiClone);
         try {
             ObjectBuilder builder = descriptor.getObjectBuilder();
