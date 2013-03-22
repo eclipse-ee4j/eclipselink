@@ -16,4 +16,4 @@ CLASSPATH=`dirname $0`/../jlib/moxy/javax.xml.stream_1.0.1.v201004272200.jar:\
 `dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"
 
-${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}
+${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} -Djava.endorsed.dirs=../jlib/moxy org.eclipse.persistence.jaxb.xjc.MOXyXJC ${JAVA_ARGS}
