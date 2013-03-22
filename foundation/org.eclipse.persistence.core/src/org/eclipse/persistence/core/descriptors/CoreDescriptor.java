@@ -23,6 +23,11 @@ import org.eclipse.persistence.internal.core.descriptors.CoreObjectBuilder;
 import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
+/**
+ * INTERNAL
+ * A abstraction of descriptor capturing behavior common to all persistence 
+ * types.
+ */
 public abstract class CoreDescriptor<
     ATTRIBUTE_GROUP extends CoreAttributeGroup,
     DESCRIPTOR_EVENT_MANAGER extends CoreDescriptorEventManager,

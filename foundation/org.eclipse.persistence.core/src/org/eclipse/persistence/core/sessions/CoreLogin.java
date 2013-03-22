@@ -14,6 +14,10 @@ package org.eclipse.persistence.core.sessions;
 
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 
+/**
+ * INTERNAL
+ * A abstraction of login capturing behavior common to all persistence types.
+ */
 public interface CoreLogin<PLATFORM extends CorePlatform> {
 
     public PLATFORM getDatasourcePlatform();

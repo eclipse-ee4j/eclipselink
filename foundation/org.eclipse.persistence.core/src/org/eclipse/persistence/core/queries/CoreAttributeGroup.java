@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
+ * INTERNAL
  * <b>Purpose</b>: A generic super class for AttributeGroup and other subclasses
  * 
  * @see AttributeGroup

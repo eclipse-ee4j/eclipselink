@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.core.descriptors;
 
+/**
+ * INTERNAL
+ * A abstraction of descriptor event capturing behavior common to all 
+ * persistence types.
+ */
 public interface CoreDescriptorEvent {
 
 }

@@ -14,6 +14,11 @@ package org.eclipse.persistence.core.mappings;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 
+/**
+ * INTERNAL
+ * A abstraction of attribute accessor capturing behavior common to all 
+ * persistence types.
+ */
 public interface CoreAttributeAccessor {
 
     /**

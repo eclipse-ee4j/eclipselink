@@ -16,6 +16,10 @@ import java.io.Serializable;
 import java.util.List;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 
+/**
+ * INTERNAL
+ * A abstraction of project capturing behavior common to all persistence types.
+ */
 public abstract class CoreProject <
    DESCRIPTOR extends CoreDescriptor,
    LOGIN extends CoreLogin,
@@ -32,7 +36,7 @@ public abstract class CoreProject <
     public abstract void convertClassNamesToClasses(ClassLoader classLoader);
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Factory method to create session.
      * This returns an implementor of the CoreSession interface, which can be used to login
      * and add descriptors from other projects.  The CoreSession interface however should be used for

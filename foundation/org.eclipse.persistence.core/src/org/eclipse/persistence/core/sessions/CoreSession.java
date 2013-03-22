@@ -16,6 +16,10 @@ import java.util.Map;
 import org.eclipse.persistence.core.descriptors.CoreDescriptor;
 import org.eclipse.persistence.internal.core.databaseaccess.CorePlatform;
 
+/**
+ * INTERNAL
+ * A abstraction of session capturing behavior common to all persistence types.
+ */
 public interface CoreSession<
     DESCRIPTOR extends CoreDescriptor,
     LOGIN extends CoreLogin,

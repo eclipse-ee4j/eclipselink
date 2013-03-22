@@ -19,6 +19,10 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
+/**
+ * INTERNAL
+ * A abstraction of mapping capturing behavior common to all persistence types.
+ */
 public abstract class CoreMapping<
     ATTRIBUTE_ACCESSOR extends CoreAttributeAccessor,
     ABSTRACT_SESSION extends CoreAbstractSession,

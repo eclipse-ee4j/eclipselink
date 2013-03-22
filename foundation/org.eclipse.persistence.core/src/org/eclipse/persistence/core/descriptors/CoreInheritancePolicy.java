@@ -19,6 +19,11 @@ import org.eclipse.persistence.internal.core.helper.CoreField;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractRecord;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 
+/**
+ * INTERNAL
+ * A abstraction of inheritance policy capturing behavior common to all 
+ * persistence types.
+ */
 public abstract class CoreInheritancePolicy<
     ABSTRACT_RECORD extends CoreAbstractRecord,
     ABSTRACT_SESSION extends CoreAbstractSession,

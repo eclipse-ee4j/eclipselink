@@ -14,6 +14,11 @@ package org.eclipse.persistence.core.sessions;
 
 import java.util.EventListener;
 
+/**
+ * INTERNAL
+ * A abstraction of session event listener capturing behavior common to all 
+ * persistence types.
+ */
 public interface CoreSessionEventListener extends EventListener {
 
 }

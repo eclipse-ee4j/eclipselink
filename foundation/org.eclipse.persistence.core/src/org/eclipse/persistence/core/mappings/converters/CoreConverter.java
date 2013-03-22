@@ -15,6 +15,11 @@ package org.eclipse.persistence.core.mappings.converters;
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.core.sessions.CoreSession;
 
+/**
+ * INTERNAL
+ * A abstraction of converter capturing behavior common to all persistence 
+ * types.
+ */
 public interface CoreConverter<
     MAPPING extends CoreMapping, 
     SESSION extends CoreSession> {

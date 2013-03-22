@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.core.sessions;
 
+/**
+ * INTERNAL
+ * A abstraction of sessuin event manager capturing behavior common to all 
+ * persistence types.
+ */
 public abstract class CoreSessionEventManager<
     SESSION_EVENT_LISTENER extends CoreSessionEventListener> {
 
