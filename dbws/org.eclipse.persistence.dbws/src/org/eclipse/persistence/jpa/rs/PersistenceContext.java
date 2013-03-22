@@ -187,7 +187,7 @@ public class PersistenceContext {
         return version;
     }
 
-    protected void setVersion(String version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
