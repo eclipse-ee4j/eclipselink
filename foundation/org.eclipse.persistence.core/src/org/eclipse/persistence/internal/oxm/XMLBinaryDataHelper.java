@@ -370,16 +370,14 @@ public class XMLBinaryDataHelper {
                 }
             }
         } else if (obj instanceof byte[]) {
-            ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) obj);
-            return new StreamSource(stream);
+            return new ByteArraySource((byte[])obj);
         } else if (obj instanceof Byte[]) {
             Byte[] objectBytes = (Byte[]) obj;
             byte[] bytes = new byte[objectBytes.length];
             for (int i = 0; i < objectBytes.length; i++) {
                 bytes[i] = objectBytes[i].byteValue();
             }
-            ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-            return new StreamSource(stream);
+            return new ByteArraySource(bytes);
         } else if(obj instanceof InputStream) {
             return new StreamSource((InputStream)obj);
         }
