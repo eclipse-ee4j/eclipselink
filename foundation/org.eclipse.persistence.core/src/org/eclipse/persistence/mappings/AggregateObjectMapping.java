@@ -25,6 +25,7 @@ package org.eclipse.persistence.mappings;
 import java.beans.PropertyChangeListener;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -91,7 +92,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * attribute to database field override.
      * @see addFieldTranslation()
      */
-    protected Map<String, DatabaseField> nestedFieldTranslations;
+    protected transient Map<String, Object[]> nestedFieldTranslations;
     
     /** 
      * List of many to many mapping overrides to apply at initialize time to 
@@ -121,7 +122,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public AggregateObjectMapping() {
         aggregateToSourceFields = new HashMap(5);
-        nestedFieldTranslations = new HashMap<String, DatabaseField>();
+        nestedFieldTranslations = new HashMap<String, Object[]>();
         mapsIdMappings = new ArrayList<DatabaseMapping>();
         overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
         overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
@@ -219,7 +220,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         // through the attribute name. This method signature is to  satisfy the 
         // Embeddable interface. AggregateCollectionMapping uses the aggregate 
         // field name.
-        nestedFieldTranslations.put(attributeName, sourceField);
+        nestedFieldTranslations.put(attributeName, new Object[]{sourceField, aggregateFieldName});
     }
 
     /**
@@ -1320,6 +1321,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         }
         
         initializeReferenceDescriptor(clonedDescriptor, referenceSession);
+        //must translate before initializing because this mapping may have nested translations.
+        translateNestedFields(clonedDescriptor, referenceSession);
         clonedDescriptor.preInitialize(referenceSession);
         clonedDescriptor.initialize(referenceSession);
         
@@ -1833,40 +1836,40 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * is done here. The aggregate field name is converted to source field name from the
      * field name mappings stored.
      */
-    protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
+    protected void translateNestedFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
+        if (nestedFieldTranslations == null){
+            //this only happens when using Metadata Caching
+            return;
+        }
         // Once the cloned descriptor is initialized, go through our nested 
         // field name translations. Any errors are silently ignored as
         // validation is assumed to be done before hand (JPA metadata processing
         // does validate any nested field translation)
-        for (String attributeName : nestedFieldTranslations.keySet()) {
+        for (Entry<String, Object[]> translations : nestedFieldTranslations.entrySet()) {
+            String attributeName = translations.getKey();
             DatabaseMapping mapping = null;
-            ClassDescriptor currentDescriptor = clonedDescriptor;
+            ClassDescriptor nestedDescriptor = clonedDescriptor;
             String currentAttributeName = attributeName.substring(0, attributeName.indexOf("."));
             String remainingAttributeName = attributeName.substring(attributeName.indexOf(".")+ 1);
-            
-            while (currentAttributeName != null || currentDescriptor != null) {
-                mapping = currentDescriptor.getMappingForAttributeName(currentAttributeName);
-                currentDescriptor = mapping.getReferenceDescriptor();
-                
-                // Keep breaking down the dot notation name.
-                if (remainingAttributeName != null && remainingAttributeName.contains(".")) {
-                    currentAttributeName = remainingAttributeName.substring(0, remainingAttributeName.indexOf("."));
-                    remainingAttributeName = remainingAttributeName.substring(remainingAttributeName.indexOf(".")+ 1);
-                } else {
-                    currentAttributeName = remainingAttributeName;
-                    // Null out the dot notation name to break the loop.
-                    remainingAttributeName = null;
+            mapping = clonedDescriptor.getMappingForAttributeName(currentAttributeName);
+            if (mapping.isAggregateObjectMapping()){
+                if (remainingAttributeName != null && remainingAttributeName.contains(".")){
+                    //This should be the case otherwise the metadata validation would have validated
+                    ((AggregateObjectMapping)mapping).addNestedFieldTranslation(remainingAttributeName, (DatabaseField)translations.getValue()[0], (String)translations.getValue()[1]);
+                }else{
+                    ((AggregateObjectMapping)mapping).addFieldTranslation((DatabaseField) translations.getValue()[0], (String)translations.getValue()[1]);
                 }
             }
-            
-            // This shouldn't be possible since we validate in metadata processing. That is
-			// the mapping can't be null and can't be anything but a direct to field mapping.
-            if (mapping != null && mapping.isDirectToFieldMapping()) {
-                // Translate the mapping field with the override field.
-                translateField(nestedFieldTranslations.get(attributeName), ((AbstractDirectMapping) mapping).getField(), clonedDescriptor);
-            }
         }
-        
+    }
+    
+    /**
+     * INTERNAL:
+     * If field names are different in the source and aggregate objects then the translation
+     * is done here. The aggregate field name is converted to source field name from the
+     * field name mappings stored.
+     */
+    protected void translateFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
         // EL Bug 326977
         Vector fieldsToTranslate = (Vector) clonedDescriptor.getFields().clone();
         for (Iterator qkIterator = clonedDescriptor.getQueryKeys().values().iterator(); qkIterator.hasNext();) {
