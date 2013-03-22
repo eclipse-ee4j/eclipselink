@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,7 +11,6 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
 /* $Header: UnitOfWorkWriteChangesTestModel.java 17-nov-2005.13:31:29 gyorke Exp $ */
-/* Copyright (c) 2004, 2005, Oracle. All rights reserved.  */
 /*
    DESCRIPTION
     <short description of component this file declares/defines>

@@ -1,19 +1,6 @@
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 JPQL.g 2010-10-07 15:45:34
-
-    package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
-
-    import java.util.List;
-    import java.util.ArrayList;
-
-    import static org.eclipse.persistence.internal.jpa.parsing.NodeFactory.*;
-    import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierException;
-
-
-import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
-
-import java.util.Stack;
 /*******************************************************************************
- * Copyright (c) 1998, 2008 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +11,18 @@ import java.util.Stack;
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/
+package org.eclipse.persistence.internal.jpa.parsing.jpql.antlr;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import static org.eclipse.persistence.internal.jpa.parsing.NodeFactory.*;
+import org.eclipse.persistence.internal.jpa.parsing.jpql.InvalidIdentifierException;
+
+import org.eclipse.persistence.internal.libraries.antlr.runtime.*;
+
+import java.util.Stack;
+
 public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser {
     public static final String[] tokenNames = new String[] {
         "<invalid>", "<EOR>", "<DOWN>", "<UP>", "ABS", "ALL", "AND", "ANY", "AS", "ASC", "AVG", "BETWEEN", "BOTH", "BY", "CASE", "COALESCE", "CONCAT", "COUNT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "DESC", "DELETE", "DISTINCT", "ELSE", "EMPTY", "END", "ENTRY", "ESCAPE", "EXISTS", "FALSE", "FETCH", "FUNC", "FROM", "GROUP", "HAVING", "IN", "INDEX", "INNER", "IS", "JOIN", "KEY", "LEADING", "LEFT", "LENGTH", "LIKE", "LOCATE", "LOWER", "MAX", "MEMBER", "MIN", "MOD", "NEW", "NOT", "NULL", "NULLIF", "OBJECT", "OF", "OR", "ORDER", "OUTER", "SELECT", "SET", "SIZE", "SQRT", "SOME", "SUBSTRING", "SUM", "THEN", "TRAILING", "TREAT", "TRIM", "TRUE", "TYPE", "UNKNOWN", "UPDATE", "UPPER", "VALUE", "WHEN", "WHERE", "IDENT", "COMMA", "EQUALS", "LEFT_ROUND_BRACKET", "RIGHT_ROUND_BRACKET", "DOT", "NOT_EQUAL_TO", "GREATER_THAN", "GREATER_THAN_EQUAL_TO", "LESS_THAN", "LESS_THAN_EQUAL_TO", "PLUS", "MINUS", "MULTIPLY", "DIVIDE", "INTEGER_LITERAL", "LONG_LITERAL", "FLOAT_LITERAL", "DOUBLE_LITERAL", "STRING_LITERAL_DOUBLE_QUOTED", "STRING_LITERAL_SINGLE_QUOTED", "DATE_LITERAL", "TIME_LITERAL", "TIMESTAMP_LITERAL", "POSITIONAL_PARAM", "NAMED_PARAM", "WS", "LEFT_CURLY_BRACKET", "RIGHT_CURLY_BRACKET", "TEXTCHAR", "HEX_DIGIT", "HEX_LITERAL", "INTEGER_SUFFIX", "OCTAL_LITERAL", "NUMERIC_DIGITS", "DOUBLE_SUFFIX", "EXPONENT", "FLOAT_SUFFIX", "DATE_STRING", "TIME_STRING"
