@@ -121,6 +121,21 @@ public class ServerEmployeeTest {
     }
 
     /**
+     * Test create employee with address json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testCreateEmployeeWithAddressJSON() throws Exception {
+        String msg = RestUtils.getJSONMessage("employee-with-address.json");
+        String employee = RestUtils.restUpdate(msg, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        assertNotNull(employee);
+        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress";
+        assertTrue(employee.contains(addressLink));
+    }
+     
+    
+    /**
      * Test update employee with manager json.
      *
      * @throws Exception the exception
@@ -1260,7 +1275,7 @@ public class ServerEmployeeTest {
         // delete
         RestUtils.restDelete(employee.getId(), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
-
+    
     private void updateEmployeeWithEmploymentPeriod(MediaType mediaType) throws Exception {
         Employee employee = new Employee();
         employee.setId(10234);
