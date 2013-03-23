@@ -121,6 +121,21 @@ public class ServerEmployeeTest {
     }
 
     /**
+     * Test create employee with address json.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testCreateEmployeeWithAddressJSON() throws Exception {
+        String msg = RestUtils.getJSONMessage("employee-with-address.json");
+        String employee = RestUtils.restUpdate(msg, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
+        assertNotNull(employee);
+        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress";
+        assertTrue(employee.contains(addressLink));
+    }
+
+
+    /**
      * Test update employee with manager json.
      *
      * @throws Exception the exception

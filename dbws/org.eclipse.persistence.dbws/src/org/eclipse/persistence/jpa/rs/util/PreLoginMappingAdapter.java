@@ -125,7 +125,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                         if (inverseDescriptor != null) {
                                             DatabaseMapping inverseMapping = inverseDescriptor.getMappingForAttributeName(jpaMapping.getMappedBy());
                                             if (inverseMapping != null) {
-                                                convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping.getAttributeName());
+                                                convertMappingToXMLInverseReferenceMapping(inverseDescriptor, inverseMapping, jpaMapping);
                                             }
                                         }
                                     }
@@ -234,13 +234,13 @@ public class PreLoginMappingAdapter extends SessionEventListener {
      * @param mapping
      * @param mappedBy
      */
-    private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, String mappedBy) {
+    private static void convertMappingToXMLInverseReferenceMapping(ClassDescriptor jaxbDescriptor, DatabaseMapping mapping, ForeignReferenceMapping jpaMapping) {
         if ((mapping != null) && (jaxbDescriptor != null)) {
             if (!(mapping.isXMLMapping())) {
                 return;
             }
 
-            if ((mapping.isAggregateCollectionMapping()) || (mapping.isAggregateMapping())) {
+            if ((jpaMapping.isAggregateCollectionMapping()) || (jpaMapping.isAggregateMapping())) {
                 return;
             }
 
@@ -248,7 +248,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             copyAccessorToMapping(mapping, jaxbInverseMapping);
             jaxbInverseMapping.setProperties(mapping.getProperties());
             jaxbInverseMapping.setIsReadOnly(mapping.isReadOnly());
-            jaxbInverseMapping.setMappedBy(mappedBy);
+            jaxbInverseMapping.setMappedBy(jpaMapping.getAttributeName());
 
             if (mapping.isAbstractCompositeCollectionMapping()) {
                 jaxbInverseMapping.setContainerPolicy(mapping.getContainerPolicy());

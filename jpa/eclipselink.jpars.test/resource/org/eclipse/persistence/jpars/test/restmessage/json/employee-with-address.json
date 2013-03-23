@@ -1,0 +1,9 @@
+{
+   "firstName": "Debbie",
+   "gender": "Female",
+   "lastName": "Smith",
+   "address": {
+         "city": "Maine",
+         "country": "USA"
+    }
+}
