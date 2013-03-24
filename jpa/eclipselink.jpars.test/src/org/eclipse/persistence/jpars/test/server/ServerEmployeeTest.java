@@ -130,8 +130,10 @@ public class ServerEmployeeTest {
         String msg = RestUtils.getJSONMessage("employee-with-address.json");
         String employee = RestUtils.restUpdate(msg, Employee.class.getSimpleName(), DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
         assertNotNull(employee);
-        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress";
+        String addressLink = "\"address\":{\"_link\":{\"href\":\"" + RestUtils.getServerURI() + DEFAULT_PU + "/entity/EmployeeAddress/201404";
         assertTrue(employee.contains(addressLink));
+        
+        RestUtils.restDelete(new Integer(20130), Employee.class.getSimpleName(), Employee.class, DEFAULT_PU, null, null, MediaType.APPLICATION_JSON_TYPE);
     }
      
     
