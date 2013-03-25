@@ -1926,18 +1926,15 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.extendedPersistenceContext.setShouldCascadeCloneToJoinedRelationship(true);
             this.extendedPersistenceContext.setShouldStoreByPassCache(this.cacheStoreBypass);
             if (txn != null) {
-                // if there is an active txn we must register with it on
-                // creation of PC
-                transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
+                // if there is a txn, it means we have been marked to join with it.  
+                // All that is left is to register the UOW with the transaction
+                transaction.registerIfRequired(this.extendedPersistenceContext);
             }
             if (client.shouldLog(SessionLog.FINER, SessionLog.TRANSACTION)) {
                 client.log(SessionLog.FINER, SessionLog.TRANSACTION, "acquire_unit_of_work_with_argument", String.valueOf(System.identityHashCode(this.extendedPersistenceContext)));
             }
         }
         if (this.beginEarlyTransaction && txn != null && !this.extendedPersistenceContext.isInTransaction()) {
-            if (!this.isJoinedToTransaction()){
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("cannot_read_through_txn_for_unsynced_pc"));
-            }
             // gf3334, force persistence context early transaction
             this.extendedPersistenceContext.beginEarlyTransaction();
         }
@@ -2011,8 +2008,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * Return the current transaction object. If validateExistence is true throw
-     * an error if there is no transaction, otherwise return null.
+     * Return the current, joined transaction object. If validateExistence is true throw
+     * an error if there is no joined transaction, otherwise return null.
      */
     protected Object checkForTransaction(boolean validateExistence) {
         Object txn = this.transaction.checkForTransaction(validateExistence);
@@ -2051,14 +2048,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void joinTransaction() {
         try {
             verifyOpen();
-            //Use the transaction's checkForTransaction to avoid the isJoinToTransaction validation check
-            transaction.checkForTransaction(true);
-            if(this.hasActivePersistenceContext()) {
-                transaction.registerUnitOfWorkWithTxn(this.extendedPersistenceContext);
-            } else {
-                // extendedPersistenceContext will be registered with transaction when created.
-                transaction.verifyRegisterUnitOfWorkWithTxn();
-            }
+            //An EntityTransactionWrapper throws an exception, while
+            //if using JTA and extendedPersistenceContext is active, then this will have the UOW register with the transaction.
+            //If there is no context, the JTATransactionWrapper will register a listener with the transaction to keep track of when
+            //it completes.  Any UOW created while the transaction is still active will then automatically register/join with it.
+            transaction.registerIfRequired(this.extendedPersistenceContext);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -2125,6 +2119,14 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
     protected void setJTATransactionWrapper() {
         transaction = new JTATransactionWrapper(this);
+        //if this is not unsynchronized and there is a transaction, this EM needs to join it
+        if (syncType == null || syncType.equals(SynchronizationType.SYNCHRONIZED)) {
+            //use the wrapper's checkForTransaction as this.checkForTransaction does an unnecessary isJoined check
+            if (transaction.checkForTransaction(false) != null) {
+                //extendedPersistenceContext should be null, which will force the wrapper to register with the transaction
+                transaction.registerIfRequired(this.extendedPersistenceContext);
+            }
+        }
     }
 
     /**
