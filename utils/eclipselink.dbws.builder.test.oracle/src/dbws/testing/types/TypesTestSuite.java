@@ -689,7 +689,7 @@ public class TypesTestSuite extends DBWSTestSuite {
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
         "<simple-xml-format>" +
            "<simple-xml>" +
-              "<result>2009-12-03T00:00:00.0</result>" +
+              "<result>2009-12-03T00:00:00</result>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 

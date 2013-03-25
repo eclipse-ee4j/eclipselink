@@ -294,7 +294,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>SMITH</ename>" +
               "<job>CLERK</job>" +
               "<mgr>7902</mgr>" +
-              "<hiredate>1980-12-17T00:00:00.0</hiredate>" +
+              "<hiredate>1980-12-17T00:00:00</hiredate>" +
               "<sal>800.88</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>20</deptno>" +
@@ -304,7 +304,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>ALLEN</ename>" +
               "<job>SALESMAN</job>" +
               "<mgr>7698</mgr>" +
-              "<hiredate>1981-02-20T00:00:00.0</hiredate>" +
+              "<hiredate>1981-02-20T00:00:00</hiredate>" +
               "<sal>1600</sal>" +
               "<comm>300</comm>" +
               "<deptno>30</deptno>" +
@@ -314,7 +314,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>WARD</ename>" +
               "<job>SALESMAN</job>" +
               "<mgr>7698</mgr>" +
-              "<hiredate>1981-02-22T00:00:00.0</hiredate>" +
+              "<hiredate>1981-02-22T00:00:00</hiredate>" +
               "<sal>1250</sal>" +
               "<comm>500</comm>" +
               "<deptno>30</deptno>" +
@@ -324,7 +324,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>JONES</ename>" +
               "<job>MANAGER</job>" +
               "<mgr>7839</mgr>" +
-              "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
+              "<hiredate>1981-04-02T00:00:00</hiredate>" +
               "<sal>2975</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>20</deptno>" +
@@ -334,7 +334,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>MARTIN</ename>" +
               "<job>SALESMAN</job>" +
               "<mgr>7698</mgr>" +
-              "<hiredate>1981-09-28T00:00:00.0</hiredate>" +
+              "<hiredate>1981-09-28T00:00:00</hiredate>" +
               "<sal>1250</sal>" +
               "<comm>1400</comm>" +
               "<deptno>30</deptno>" +
@@ -344,7 +344,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>BLAKE</ename>" +
               "<job>MANAGER</job>" +
               "<mgr>7839</mgr>" +
-              "<hiredate>1981-05-01T00:00:00.0</hiredate>" +
+              "<hiredate>1981-05-01T00:00:00</hiredate>" +
               "<sal>2850</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>30</deptno>" +
@@ -354,7 +354,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>CLARK</ename>" +
               "<job>MANAGER</job>" +
               "<mgr>7839</mgr>" +
-              "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
+              "<hiredate>1981-06-09T00:00:00</hiredate>" +
               "<sal>2450</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>10</deptno>" +
@@ -364,7 +364,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>SCOTT</ename>" +
               "<job>ANALYST</job>" +
               "<mgr>7566</mgr>" +
-              "<hiredate>1981-06-09T00:00:00.0</hiredate>" +
+              "<hiredate>1981-06-09T00:00:00</hiredate>" +
               "<sal>3000</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>20</deptno>" +
@@ -374,7 +374,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>KING</ename>" +
               "<job>PRESIDENT</job>" +
               "<mgr xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
-              "<hiredate>1981-11-17T00:00:00.0</hiredate>" +
+              "<hiredate>1981-11-17T00:00:00</hiredate>" +
               "<sal>5000.99</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>10</deptno>" +
@@ -384,7 +384,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>TURNER</ename>" +
               "<job>SALESMAN</job>" +
               "<mgr>7698</mgr>" +
-              "<hiredate>1981-09-08T00:00:00.0</hiredate>" +
+              "<hiredate>1981-09-08T00:00:00</hiredate>" +
               "<sal>1500</sal>" +
               "<comm>0</comm>" +
               "<deptno>30</deptno>" +
@@ -394,7 +394,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>ADAMS</ename>" +
               "<job>CLERK</job>" +
               "<mgr>7788</mgr>" +
-              "<hiredate>1987-05-23T00:00:00.0</hiredate>" +
+              "<hiredate>1987-05-23T00:00:00</hiredate>" +
               "<sal>1100</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>20</deptno>" +
@@ -404,7 +404,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>JAMES</ename>" +
               "<job>CLERK</job>" +
               "<mgr>7698</mgr>" +
-              "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+              "<hiredate>1981-12-03T00:00:00</hiredate>" +
               "<sal>950</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>30</deptno>" +
@@ -414,7 +414,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>FORD</ename>" +
               "<job>ANALYST</job>" +
               "<mgr>7566</mgr>" +
-              "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+              "<hiredate>1981-12-03T00:00:00</hiredate>" +
               "<sal>3000</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>20</deptno>" +
@@ -424,7 +424,7 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
               "<ename>MILLER</ename>" +
               "<job>CLERK</job>" +
               "<mgr>7782</mgr>" +
-              "<hiredate>1982-01-23T00:00:00.0</hiredate>" +
+              "<hiredate>1982-01-23T00:00:00</hiredate>" +
               "<sal>1300</sal>" +
               "<comm xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
               "<deptno>10</deptno>" +
@@ -480,12 +480,12 @@ public class SecondarySQLTestSuite extends DBWSTestSuite {
              "<empType xmlns=\"urn:secondarySQL\">" +
                  "<empno>7566</empno>" +
                  "<ename>JONES</ename>" +
-                 "<hiredate>1981-04-02T00:00:00.0</hiredate>" +
+                 "<hiredate>1981-04-02T00:00:00</hiredate>" +
              "</empType>" +
              "<empType xmlns=\"urn:secondarySQL\">" +
                  "<empno>7900</empno>" +
                  "<ename>JAMES</ename>" +
-                 "<hiredate>1981-12-03T00:00:00.0</hiredate>" +
+                 "<hiredate>1981-12-03T00:00:00</hiredate>" +
              "</empType>" +
          "</collection>";
 
