@@ -50,11 +50,9 @@ public abstract class TransactionWrapperImpl  {
             this.localUOW.clear(true);
         }
     }
-    
-    public abstract void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow);
-    
-    public abstract void verifyRegisterUnitOfWorkWithTxn();
-    
+
+    public abstract void registerIfRequired(UnitOfWorkImpl uow);
+  
     public abstract boolean isJoinedToTransaction(UnitOfWorkImpl uow);
     
     public UnitOfWorkImpl getLocalUnitOfWork(){

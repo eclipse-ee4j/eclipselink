@@ -345,11 +345,15 @@ public abstract class JUnitTestCase extends TestCase {
     
     /**
      * Begin a transaction on the entity manager.
-     * This allows the same code to be used on the server where JTA is used.
+     * This allows the same code to be used on the server where JTA is used,
+     * and will join the EntityManager to the transaction.
      */
     public void beginTransaction(EntityManager entityManager) {
         if (isOnServer() && isJTA()) {
             getServerPlatform().beginTransaction();
+            //bug 404294 - the EM is required to join the transaction to be able to 
+            //    use transactions started after it was created.
+            entityManager.joinTransaction();
         } else {
             entityManager.getTransaction().begin();
         }

@@ -60,21 +60,13 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
      * Lazy initialize the EntityTransaction.
      * There can only be one EntityTransaction at a time.
      */
-      public EntityTransaction getTransaction(){
-          if (entityTransaction == null){
-              entityTransaction = new EntityTransactionImpl(this);
-          }
-          return entityTransaction;
-      }
-      
-    public void registerUnitOfWorkWithTxn(UnitOfWorkImpl uow){
-        throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
+    public EntityTransaction getTransaction(){
+        if (entityTransaction == null){
+            entityTransaction = new EntityTransactionImpl(this);
+        }
+        return entityTransaction;
     }
-    
-    public void verifyRegisterUnitOfWorkWithTxn(){
-        throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
-    }
-    
+
     public boolean isJoinedToTransaction(UnitOfWorkImpl uow){
         return (entityTransaction != null) && entityTransaction.isActive();
     }
@@ -94,4 +86,8 @@ public class EntityTransactionWrapper extends TransactionWrapperImpl implements 
     protected void throwCheckTransactionFailedException() {
         throw new TransactionRequiredException(TransactionException.transactionNotActive().getMessage());
     }    
+
+    public void registerIfRequired(UnitOfWorkImpl uow){
+        throw new TransactionRequiredException(ExceptionLocalization.buildMessage("join_trans_called_on_entity_trans"));// no JTA transactions availab
+    }
 }
