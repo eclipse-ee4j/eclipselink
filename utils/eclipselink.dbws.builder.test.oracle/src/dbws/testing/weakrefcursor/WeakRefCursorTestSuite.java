@@ -265,12 +265,12 @@ public class WeakRefCursorTestSuite extends DBWSTestSuite {
            "<simple-xml>" +
               "<ID>1</ID>" +
               "<NAME>mike</NAME>" +
-              "<SINCE>2001-12-25T00:00:00.0</SINCE>" +
+              "<SINCE>2001-12-25T00:00:00</SINCE>" +
            "</simple-xml>" +
            "<simple-xml>" +
               "<ID>4</ID>" +
               "<NAME>mikey</NAME>" +
-              "<SINCE>2010-01-01T00:00:00.0</SINCE>" +
+              "<SINCE>2010-01-01T00:00:00</SINCE>" +
            "</simple-xml>" +
         "</simple-xml-format>";
 
