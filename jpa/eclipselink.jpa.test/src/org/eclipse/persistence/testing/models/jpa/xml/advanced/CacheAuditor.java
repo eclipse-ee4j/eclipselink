@@ -130,5 +130,11 @@ public class CacheAuditor extends CacheInterceptor {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
 

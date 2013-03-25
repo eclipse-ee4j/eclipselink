@@ -209,7 +209,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
         
         Object result = containerInstance(pks.length);
-        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
+        Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
 
         
         DatabaseRecord translationRow = new DatabaseRecord();

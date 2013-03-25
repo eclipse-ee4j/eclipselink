@@ -916,7 +916,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
                 addInto(keyObjects.get(i), values[i], result, session);
             }
         } else {
-            Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
+            Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
             DatabaseRecord translationRow = new DatabaseRecord();
             List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
             
