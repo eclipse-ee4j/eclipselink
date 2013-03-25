@@ -108,8 +108,6 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
         if (this.entityManager.hasActivePersistenceContext()) {
             //we have a context initialized, so have it register with the transaction
             uow.registerWithTransactionIfRequired();
-            //TODO -Do we need to unregister now that we have a UnitOfWork to register instead??
-            //isJoined = false; let the old listener set this back to false.
         } else if (!isJoined) {
 
 //        JPA 3.2.4 
@@ -130,7 +128,6 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
 //              this is unsynchronized, so we need to start the active persistence Context.  Or do we?
 //          }
 
-            isJoined = true;
             Object txn = checkForTransaction(true);
 //            duplicating what is done in
 //            TransactionController.registerSynchronizationListener(this, this.parent);
@@ -147,6 +144,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             } catch (Exception e) {
                 throw new PersistenceException(TransactionException.errorBindingToExternalTransaction(e).getMessage(), e);
             }
+            isJoined = true;
         }
     }
     
