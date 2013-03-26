@@ -320,12 +320,12 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
            "<STRC_TABLE>" +
               "<ID>1</ID>" +
               "<NAME>mike</NAME>" +
-              "<SINCE>2001-12-25T00:00:00.0</SINCE>" +
+              "<SINCE>2001-12-25T00:00:00</SINCE>" +
            "</STRC_TABLE>" +
            "<STRC_TABLE>" +
               "<ID>4</ID>" +
               "<NAME>mikey</NAME>" +
-              "<SINCE>2010-01-01T00:00:00.0</SINCE>" +
+              "<SINCE>2010-01-01T00:00:00</SINCE>" +
            "</STRC_TABLE>" +
         "</STR_CURSOR>";
 
@@ -433,17 +433,17 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
            "<EMPREC>" +
               "<ID>3</ID>" +
               "<NAME>rick</NAME>" +
-              "<SINCE>2001-10-30T00:00:00.0</SINCE>" +
+              "<SINCE>2001-10-30T00:00:00</SINCE>" +
            "</EMPREC>" +
            "<EMPREC>" +
               "<ID>5</ID>" +
               "<NAME>richard</NAME>" +
-              "<SINCE>2012-01-03T00:00:00.0</SINCE>" +
+              "<SINCE>2012-01-03T00:00:00</SINCE>" +
            "</EMPREC>" +
            "<EMPREC>" +
                "<ID>6</ID>" +
                "<NAME>rilley</NAME>" +
-               "<SINCE>2012-02-03T00:00:00.0</SINCE>" +
+               "<SINCE>2012-02-03T00:00:00</SINCE>" +
            "</EMPREC>" +
         "</EMPREC_CURSOR>";
 }
