@@ -538,6 +538,8 @@ public class ExpressionTestSuite extends TestSuite {
         test.setSupportedInMemory(false);
         test.setDescription("expression function test");
         test.addUnsupportedPlatform(TimesTenPlatform.class);
+        // MaxDB doesn't support CAST function
+        test.addUnsupportedPlatform(MaxDBPlatform.class);
         addTest(test);
     }
 

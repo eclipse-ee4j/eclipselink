@@ -3328,6 +3328,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             warning("testCast only works with Hermes");
             return;
         }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isMaxDB()) {
+            getServerSession().logMessage("Test testCast skipped for this platform, MaxDB doesn't support CAST function.");
+            return;
+        }
         EntityManager em = createEntityManager();
         try {
            Query query = null;
@@ -3397,6 +3401,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void testExtract() {
         if (!isHermesParser()) {
             warning("testExtract only works with Hermes");
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isMaxDB()) {
+            getServerSession().logMessage("Test testExtract skipped for this platform, MaxDB doesn't support EXTRACT function.");
             return;
         }
         EntityManager em = createEntityManager();
