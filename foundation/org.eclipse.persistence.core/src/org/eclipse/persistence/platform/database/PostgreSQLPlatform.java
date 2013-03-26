@@ -190,6 +190,20 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     }
 
     /**
+     * Calling a stored procedure query on PostgreSQL with no output parameters
+     * always returns true from an execute call regardless if a result set is 
+     * returned or not. This flag will help avoid throwing a JPA mandated 
+     * exception on an executeUpdate call (which calls jdbc execute and checks
+     * the return value to ensure no results sets are returned (true)) 
+     * 
+     * @see PostgreSQLPlatform
+     */
+    @Override
+    public boolean isJDBCExecuteCompliant() {
+        return false;
+    }
+    
+    /**
      * INTERNAL: Answers whether platform is Postgres.
      */
     @Override

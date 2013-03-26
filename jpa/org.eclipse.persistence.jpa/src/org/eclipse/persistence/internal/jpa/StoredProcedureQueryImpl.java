@@ -379,7 +379,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             
             // If the return value is true indicating a result set then throw an exception.
             if (execute()) {
-                throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+                if (getActiveSession().getPlatform().isJDBCExecuteCompliant()) {
+                    throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_execute_update"));
+                } else {
+                    return getUpdateCount();
+                }
             } else {
                 return getUpdateCount();
             }
@@ -481,7 +485,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 } else {
                     return obj;
                 }
-            } catch (SQLException exception) {
+            } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
         }
@@ -512,7 +516,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 } else {
                     return getOutputParameterValue(position);
                 }
-            } catch (SQLException exception) {
+            } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
         }
@@ -540,7 +544,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_spq_query_for_get_result_list"));
                 }
                         
-                // If the return value is true indicating a result set then throw an exception.
+                // If the return value is false indicating no result set then throw an exception.
                 if (execute()) {
                     return getResultList();
                 } else {
