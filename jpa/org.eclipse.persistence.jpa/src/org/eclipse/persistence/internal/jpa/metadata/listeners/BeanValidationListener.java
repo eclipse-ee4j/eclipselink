@@ -124,7 +124,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 attributeName = traversableProperty.getName(); //Refer to section 4.2 of Bean Validation spec for more details about Path.Node
                 DatabaseMapping mapping = getMappingForAttributeName(attributeName);
                 if(mapping != null) {
-                    if(mapping.isForeignReferenceMapping()) {
+                    if(mapping != null && !mapping.isAggregateMapping()) {
                         // For lazy relationships check whether it is instantiated
                         if(mapping.isLazy()) {
                             Object attributeValue = mapping.getAttributeAccessor().getAttributeValueFromObject(traversableObject);
