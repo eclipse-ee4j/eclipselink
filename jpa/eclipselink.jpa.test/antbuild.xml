@@ -115,10 +115,10 @@
     <property name="version.qualifier"     value="qualifier"/>
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
-    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
+    <property name="modelgen.jar" value="${eclipselink.modelgen.prefix}_${version.string}.jar"/>
     <property name="projectcache.dir"       value="pcfile"/>
 
-    <echo message="modelgen.processor.jar       = '${modelgen.processor.jar}'"/>
+    <echo message="modelgen.jar                 = '${modelgen.jar}'"/>
     <echo message="ant.project.name             = '${ant.project.name}'"/>
     <echo message="jpatest.build.location       = '${jpatest.build.location}'"/>
     <echo message="jpatest.2.base.dir           = '${jpatest.2.base.dir}'"/>
@@ -221,7 +221,7 @@
         </and>
     </condition>
 
-    <available file="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}" property="modelgen.jar.exist"/>
+    <available file="${jpatest.2.common.plugins.dir}/${modelgen.jar}" property="modelgen.jar.exist"/>
 
     <available file="../../../extension.lib.external/${validation.impl.jar}" property="validate.jar.exist"/>
 
@@ -454,11 +454,11 @@
             </fileset-->
         </path>
         <echo message="Configuring 'compile.modelgen.path' to:"/>
-        <echo message="   '${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${modelgen.jar}'"/>
         <echo message="   and 'compile.path'"/>
         <echo message="  "/>
         <path id="compile.modelgen.path">
-            <pathelement path="${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${modelgen.jar}"/>
             <path refid="compile.path"/>
         </path>
         <echo message="Configuring 'compile.server.path' to:"/>
@@ -598,7 +598,7 @@
 
     <target name="compile-with-modelgen">
         <!-- ModelGen debug code: should never fail, but in production even if it would we don't want to stop so commented out -->
-        <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.processor.jar}' not found." unless="modelgen.jar.exist"/ -->
+        <!-- fail message="'${jpatest.2.common.plugins.dir}/${modelgen.jar}' not found." unless="modelgen.jar.exist"/ -->
         <copy todir="${jpatest.build.location}/${classes.dir}">
             <fileset dir="${jpatest.build.location}/${resource.dir}" includes="eclipselink-canonical-meta-model/persistence.xml"/>
         </copy>
@@ -2965,7 +2965,7 @@
         <delete dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
         <mkdir dir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
         <copy file="/ade_autofs/ade_generic/TOPLINK_12.1.2.0.0_GENERIC.rdd/LATEST/tldev/jlib/tl/toplink-dataservices-web.jar" todir="${jpatest.basedir}/${build.dir}/WEB-INF/lib"/>
-        <zip destfile="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" basedir="${jpatest.basedir}/${build.dir}" 
+        <zip destfile="${jpatest.basedir}/${build.dir}/eclipselink.jpars.test.war" basedir="${jpatest.basedir}/${build.dir}"
         includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
     <!-- Build server test ear. -->
@@ -3358,7 +3358,7 @@
 
     <target name="server-test-jpa21-advanced">
         <copy todir="${jpatest.basedir}/resource/eclipselink-jpa21-model/server" overwrite="true" filtering="true">
-            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/" 
+            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/"
                      includes="*orm.xml
                                *.jdbc"/>
         </copy>
@@ -3374,7 +3374,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <delete>
-            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/server" 
+            <fileset dir="${jpatest.basedir}/resource/eclipselink-jpa21-model/server"
                      includes="*orm.xml
                               *.jdbc"/>
         </delete>

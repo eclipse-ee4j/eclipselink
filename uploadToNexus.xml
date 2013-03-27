@@ -63,6 +63,10 @@
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
 
+    <!-- Tool version definitions -->
+    <property name="gpg.plugin.version"   value="1.4"/>
+    <property name="wagon.http.version"   value="2.4"/>
+
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="sonatype-nexus-staging"/>
@@ -294,7 +298,6 @@
         <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.modelgen"  value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.jpa.processor" value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen.processor${dep.ver}${maven.version}${dep.type}jar${dep.scope}runtime${dep.opt}false${dep.foot}"/>
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -304,13 +307,13 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/> <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
-        <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
+        <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
@@ -454,14 +457,6 @@
             <param name="artifactName"    value="EclipseLink JPA-RS"/>
             <param name="dependencies"    value=""/>
         </antcall>
-        <antcall target="upload-artifact-no-src">
-            <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen.processor"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact"        value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen_${version.string}.jar"/>
-            <param name="artifactName"    value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
-            <param name="dependencies"    value=""/>
-        </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen"/>
@@ -536,7 +531,7 @@
     </target>
     <target name="ua-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
+        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
         <!-- Deploy Artifact to repote repo, attach source -->
         <artifact:deploy file="${artifact}">
           <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
@@ -552,7 +547,7 @@
     </target>
     <target name="uawj-snapshot" unless="sign">
         <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
+        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
         <!-- Deploy Artifact to repote repo, attach source and javadoc -->
         <artifact:deploy file="${artifact}">
           <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
@@ -562,25 +557,11 @@
         </artifact:deploy>
     </target>
 
-    <target name="upload-artifact-no-src" depends="prepare-pom, uans-snapshot, ua-staging">
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
-    </target>
-    <target name="uans-snapshot" unless="sign">
-        <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="2.4"/>
-        <!-- Deploy Artifact to repote repo -->
-        <artifact:deploy file="${artifact}">
-          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
-          <artifact:pom id="maven.project" file="pom.xml" />
-        </artifact:deploy>
-    </target>
-
     <!-- Staging targets -->
     <target name="ua-staging" if="sign">
         <!-- sign and deploy the main artifact -->
         <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
             <arg value="-Durl=${stagingURL}"/>
             <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
@@ -591,7 +572,7 @@
     <target name="us-staging" if="sign">
         <!-- sign and deploy the sources artifact -->
         <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
             <arg value="-Durl=${stagingURL}"/>
             <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
@@ -603,12 +584,11 @@
     <target name="uj-staging" if="sign">
         <!-- sign and deploy the javadoc artifact -->
         <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file"/>
+            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
             <arg value="-Durl=${stagingURL}"/>
             <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
             <arg value="-Dfile=${artifactJavadoc}"/>
-            <arg value="-Dtype=zip"/>
             <arg value="-Dclassifier=javadoc"/>
             <arg value="-Pgpg"/>
         </artifact:mvn>
