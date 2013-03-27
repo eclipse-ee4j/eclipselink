@@ -188,6 +188,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
                 <include name="org/eclipse/persistence/**/*"/>
             </fileset>
         </jar>
