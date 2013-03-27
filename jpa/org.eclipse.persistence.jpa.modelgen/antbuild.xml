@@ -164,6 +164,32 @@
                 <include name="org/eclipse/persistence/**/*.class"/>
             </fileset>
             <fileset dir="${resource.dir}">
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
+                <include name="org/eclipse/persistence/**/*"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${modelgen.2.common.plugins.dir}/temp-jpa-modgen-classes_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JPA ModelGen"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${modelgen.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
                 <include name="org/eclipse/persistence/**/*"/>
             </fileset>
         </jar>
@@ -189,6 +215,7 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${resource.dir}">
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
                 <include name="org/eclipse/persistence/**/*"/>
             </fileset>
         </jar>

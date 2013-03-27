@@ -572,8 +572,9 @@
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
-        <mkdir dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence20.jar}" dest="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"/>
+        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
+        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
+        <unzip src="${eclipselink.jpa.plugins}/${persistence20.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
         <jar jarfile="${eclipselink.jar}" duplicate="preserve">
              <manifest>
                 <attribute name="Specification-Title"    value="${eclipselink.specification.title}"/>
@@ -588,11 +589,13 @@
             </manifest>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
+                <include name="temp-jpa-modgen-classes_${version.string}.jar"/>
                 <include name="org.eclipse.persistence.jpa.jpql*.jar"/>
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
                 <exclude name="*source*.jar"/>
+                <exclude name="*modelgen*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
@@ -600,7 +603,7 @@
             </zipgroupfileset>
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
-                dir="${eclipselink.jpa.plugins}/javax.persistence/${classes.dir}"
+                dir="${build.dir}/javax.persistence/${classes.dir}"
                 includes="
                     javax/persistence/Access.class,
                     javax/persistence/AccessType.class,
@@ -704,6 +707,7 @@
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
         </jar>
+        <delete file="${eclipselink.plugins}/temp-jpa-modgen-classes_${version.string}.jar" failonerror="false"/>
     </target>
 
     <target name="verify-eclipselink-jar-packaging">
