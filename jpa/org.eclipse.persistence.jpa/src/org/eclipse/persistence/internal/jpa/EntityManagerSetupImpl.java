@@ -3325,8 +3325,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (validationMode == ValidationMode.CALLBACK) {
                     throw PersistenceUnitLoadingException.exceptionObtainingRequiredBeanValidatorFactory(e);
                 } // else validationMode == ValidationMode.AUTO. Log a message, Ignore the exception
-                // TODO use proper message string, i18n.
-                session.logMessage("Could not initialize Validation Factory. Encountered following exception: " + e);
+                this.session.log(SessionLog.FINEST, SessionLog.JPA, "validation_factory_not_initialized", new Object[]{ e.getMessage() });
             }
         }
     }

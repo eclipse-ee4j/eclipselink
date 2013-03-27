@@ -429,7 +429,8 @@ public class MetadataProcessor {
                     if (mappingFileURLs.hasMoreElements()) {
                         // Switched to warning, same file can be on the classpath twice in some deployments,
                         // should not be an error.
-                        logThrowable(ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName));
+                        Throwable throwable = ValidationException.nonUniqueMappingFileName(puInfo.getPersistenceUnitName(), mappingFileName);
+                        getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, throwable);
                     }
                     
                     // Read the document through OX and add it to the project.
@@ -452,7 +453,7 @@ public class MetadataProcessor {
         rootUrls.add(puInfo.getPersistenceUnitRootUrl());
         
         for (URL rootURL : rootUrls) {
-            logMessage("Searching for default mapping file in " + rootURL);
+            getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "searching_for_default_mapping_file", new Object[] { ormXMLFile, rootURL }, true);
             URL ormURL = null;
 
             Archive par = null;
@@ -463,7 +464,7 @@ public class MetadataProcessor {
                     ormURL = par.getEntryAsURL(ormXMLFile);
 
                     if (ormURL != null) {
-                        logMessage("Found a default mapping file at " + ormURL + " for root URL " + rootURL);
+                        getSessionLog().log(SessionLog.FINER, SessionLog.METADATA, "found_default_mapping_file", new Object[] { ormURL, rootURL }, true);
 
                         // Read the document through OX and add it to the project., pass persistence unit properties for any orm properties set there
                         XMLEntityMappings entityMappings = XMLEntityMappingsReader.read(ormURL, m_loader, m_project.getPersistenceUnitInfo().getProperties());
@@ -485,27 +486,15 @@ public class MetadataProcessor {
 
     /**
      * INTERNAL:
-     * Log an untranslated message to the EclipseLink log at FINER level.
-     * The message should not contain a bundle key.
+     * Return the SessionLog from the Session. If the session is null,
+     * return the AbstractSessionLog's SessionLog.
+     * @return SessionLog
      */
-    protected void logMessage(String message) {
-        if (m_session == null) {
-            AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.METADATA, message, null, false);
+    protected SessionLog getSessionLog() {
+        if (m_session != null) {
+            return m_session.getSessionLog();
         } else {
-            m_session.log(SessionLog.FINER, SessionLog.METADATA, message, false);
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Log an untranslated message to the EclipseLink log at FINER level.
-     * The message should not contain a bundle key.
-     */
-    protected void logThrowable(Throwable exception) {
-        if (m_session == null) {
-            AbstractSessionLog.getLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, exception);
-        } else {
-            m_session.getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, exception);
+            return AbstractSessionLog.getLog();
         }
     }
     
@@ -522,7 +511,7 @@ public class MetadataProcessor {
             try {
                 customizer.customize(classAccessor.getDescriptor().getClassDescriptor());
             } catch (Exception e) {
-                logThrowable(e);
+                getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, e);
             }
         }
     }

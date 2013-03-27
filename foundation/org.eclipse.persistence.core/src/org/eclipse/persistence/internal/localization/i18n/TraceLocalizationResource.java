@@ -263,6 +263,9 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "cmp_init_initialize", "JavaSECMPInitializer - initializing {0}."},
                                            { "cmp_init_initialize_from_main", "JavaSECMPInitializer - initializing from main."},
                                            { "cmp_init_initialize_from_agent", "JavaSECMPInitializer - initializing from agent."},
+                                           { "validation_factory_not_initialized", "Bean Validation Factory was not initialized: [{0}]."},
+                                           { "searching_for_default_mapping_file", "Searching for mapping file: [{0}] at root URL: [{1}]."},
+                                           { "found_default_mapping_file", "Found mapping file: [{0}] at root URL: [{1}]."},
 
                                            { "dbPlatformHelper_detectedVendorPlatform", "Detected database platform: {0}"},
                                            { "dbPlatformHelper_regExprDbPlatform", "Database platform: {1}, regular expression: {0}"},
