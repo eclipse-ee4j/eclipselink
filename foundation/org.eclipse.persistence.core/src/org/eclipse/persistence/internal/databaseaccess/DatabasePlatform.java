@@ -245,6 +245,9 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /** Allows auto-indexing for foreign keys to be set. */
     protected boolean shouldCreateIndicesOnForeignKeys;
+    
+    protected Boolean useJDBCStoredProcedureSyntax;
+    protected String driverName;
 
     public DatabasePlatform() {
         this.tableQualifier = "";
@@ -267,8 +270,9 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.castSizeForVarcharParameter = 32672;
         this.startDelimiter = "\"";
         this.endDelimiter = "\"";
+        this.useJDBCStoredProcedureSyntax = null;
     }
-
+    
     /**
      * Initialize operators to avoid concurrency issues.
      */
@@ -1525,6 +1529,16 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean isInformixOuterJoin() {
         return false;
     }
+    
+    /**
+     * Returns true if this platform complies with the expected behavior from
+     * a jdbc execute call. Most platforms do, some have issues:
+     * 
+     * @see PostgreSQLPlatform
+     */
+    public boolean isJDBCExecuteCompliant() {
+        return true;
+    }
 
     /**
      * Return true is the given exception occurred as a result of a lock
@@ -1762,6 +1776,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.cursorCode = cursorCode;
     }
     
+    /**
+     * During auto-detect, the driver name is set on the platform.
+     */
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+    
     protected void setFieldTypes(Hashtable theFieldTypes) {
         fieldTypes = theFieldTypes;
     }
@@ -1883,6 +1904,13 @@ public class DatabasePlatform extends DatasourcePlatform {
         transactionIsolation = isolationLevel;
     }
 
+    /**
+     * Return true if JDBC syntax should be used for stored procedure calls.
+     */
+    public void setUseJDBCStoredProcedureSyntax(Boolean useJDBCStoredProcedureSyntax) {
+        this.useJDBCStoredProcedureSyntax = useJDBCStoredProcedureSyntax;
+    }
+    
     public void setUsesBatchWriting(boolean usesBatchWriting) {
         this.usesBatchWriting = usesBatchWriting;
     }

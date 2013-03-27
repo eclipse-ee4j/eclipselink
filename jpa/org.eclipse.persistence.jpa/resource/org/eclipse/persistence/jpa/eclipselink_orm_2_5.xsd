@@ -2914,7 +2914,7 @@
                  * Optimized cache key type that allows composite and complex values.
                  * This is the default for composite or complex Ids.
                  */
-                CACHE_KEY,
+                CACHE_ID,
             
                 /**
                  * The cache key type is automatically configured depending on what is optimal for the class.
@@ -2927,7 +2927,7 @@
 
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="ID_VALUE"/>
-      <xsd:enumeration value="CACHE_KEY"/>
+      <xsd:enumeration value="CACHE_ID"/>
       <xsd:enumeration value="AUTO"/>
     </xsd:restriction>
   </xsd:simpleType>
