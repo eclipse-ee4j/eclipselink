@@ -290,7 +290,6 @@
         <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.modelgen"  value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.jpa.processor" value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen.processor${dep.ver}${maven.version}${dep.type}jar${dep.scope}runtime${dep.opt}false${dep.foot}"/>
         <property name="dep.moxy"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.moxy${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdo"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.sdo${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.eclipselink"   value="${dep.grp}org.eclipse.persistence${dep.art}eclipselink${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -300,13 +299,13 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/> <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
-        <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
+        <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
@@ -444,14 +443,6 @@
             <param name="artifactName"    value="EclipseLink JPA-RS"/>
             <param name="dependencies"    value=""/>
         </antcall>
-        <antcall target="upload-artifact-no-src">
-            <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen.processor"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact"        value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen_${version.string}.jar"/>
-            <param name="artifactName"    value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
-            <param name="dependencies"    value=""/>
-        </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen"/>
@@ -555,18 +546,6 @@
           <pom refid="maven.project"/>
           <artifact:attach file="${artifactSrc}" classifier="sources"/>
           <artifact:attach file="${artifactJavadoc}" classifier="javadoc"/>
-        </artifact:deploy>
-        <!-- cleanup -->
-        <delete file="pom.xml"/>
-    </target>
-
-    <!-- Uploads a single artifact without src to maven repository -->
-    <target name="upload-artifact-no-src" depends="prepare-pom">
-        <!-- Deploy the jar to maven repository along with sources -->
-        <artifact:pom id="maven.project" file="pom.xml" />
-        <artifact:deploy file="${artifact}">
-          <remoteRepository refid="${target.repository}"/>
-          <pom refid="maven.project"/>
         </artifact:deploy>
         <!-- cleanup -->
         <delete file="pom.xml"/>

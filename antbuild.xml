@@ -153,8 +153,6 @@
     <property name="version.string"      value="${release.version}.${version.qualifier}"/>
     <property name="release.designation" value="EclipseLink DeveloperBuild"/>
 
-    <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
-
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
@@ -594,6 +592,7 @@
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
                 <exclude name="*.jpa.jpql*.jar"/>
                 <exclude name="*source*.jar"/>
+                <exclude name="*modelgen*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
@@ -710,7 +709,7 @@
                     javax/persistence/StoredProcedureQuery.class,
                     javax/persistence/SynchronizationType.class,
                     javax/persistence/AttributeConverter.class,
-					javax/persistence/ConstraintMode.class,
+                    javax/persistence/ConstraintMode.class,
                     javax/persistence/Convert.class,
                     javax/persistence/Converter.class,
                     javax/persistence/Converts.class,
@@ -1236,7 +1235,7 @@
                 <include name="readme.html"/>
             </zipfileset>
             <!-- modelgen processor jar -->
-            <zipfileset dir="${eclipselink.plugins}/" includes="${modelgen.processor.jar}" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}*_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 1.0 jar -->
             <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence10.jar}" prefix="eclipselink/jlib/jpa"/ -->
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
