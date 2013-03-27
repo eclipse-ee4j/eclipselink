@@ -84,7 +84,7 @@
                  hudson.workspace- WORKSPACE as defined by the Hudson slave
                  M2_HOME         - location of Maven3 install (on build server)
         -->
-        <property name="branch" value="master"/>
+        <property name="branch" value="2.5"/>
 
         <condition property="git.exec"   value="${env.GIT_EXEC}">
             <isset property="env.GIT_EXEC"/>
