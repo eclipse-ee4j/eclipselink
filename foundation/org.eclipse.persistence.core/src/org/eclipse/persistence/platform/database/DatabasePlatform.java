@@ -30,39 +30,7 @@ package org.eclipse.persistence.platform.database;
 public class DatabasePlatform extends org.eclipse.persistence.internal.databaseaccess.DatabasePlatform {
     public static final int DEFAULT_VARCHAR_SIZE = 255;
     
-    protected Boolean useJDBCStoredProcedureSyntax;
-    protected String driverName;
-    
     public DatabasePlatform() {
     	super();
-    	useJDBCStoredProcedureSyntax = null;
-    }
-    
-    /**
-     * Returns true if this platform complies with the expected behavior from
-     * a jdbc execute call. Most platforms do, some have issues:
-     * 
-     * @see PostgreSQLPlatform
-     */
-    public boolean isJDBCExecuteCompliant() {
-        return true;
-    }
-    
-    /**
-     * During auto-detect, the driver name is set on the platform.
-     */
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-    
-    /**
-     * Return true if JDBC syntax should be used for stored procedure calls.
-     */
-    public boolean useJDBCStoredProcedureSyntax() {
-        if (useJDBCStoredProcedureSyntax == null) {
-            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
-        }
-        
-        return useJDBCStoredProcedureSyntax;
     }
 }

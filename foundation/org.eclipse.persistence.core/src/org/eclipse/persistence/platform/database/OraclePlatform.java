@@ -872,6 +872,17 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return connection;
     }
     
+    /**
+     * Return true if JDBC syntax should be used for stored procedure calls.
+     */
+    public boolean useJDBCStoredProcedureSyntax() {
+        if (useJDBCStoredProcedureSyntax == null) {
+            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
+        }
+        
+        return useJDBCStoredProcedureSyntax;
+    }
+    
     //Oracle Rownum support
     protected String SELECT = "SELECT * FROM (SELECT ";
     protected String HINT = "/*+ FIRST_ROWS */ ";
