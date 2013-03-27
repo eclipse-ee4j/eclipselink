@@ -269,6 +269,9 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public Object executeStoredProcedure(DatabaseCall dbCall, PreparedStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
+        if (useJDBCStoredProcedureSyntax()){
+            return super.executeStoredProcedure(dbCall, statement, accessor, session);
+        }
         Object result = null;
         ResultSet resultSet = null;
         if (!dbCall.getReturnsResultSet()) {
@@ -409,7 +412,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getOutputProcedureToken() {
-        return "OUTPUT";
+        return useJDBCStoredProcedureSyntax() ? "" : "OUTPUT";
     }
 
     /**
@@ -425,7 +428,21 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getProcedureCallHeader() {
-        return "EXECUTE ";
+        return useJDBCStoredProcedureSyntax() ? "{Call " : "EXECUTE ";
+    }
+    public String getProcedureCallTail() {
+        return useJDBCStoredProcedureSyntax() ? "}" : "";
+    }
+    /**
+     * Return true if this platform is to use the JDBC supported syntax for executing stored procedures.
+     * If the driver is known to be the DataDirec driver, and the value is not set, then set to true and return.
+     */
+    public boolean useJDBCStoredProcedureSyntax() {
+    
+        if (useJDBCStoredProcedureSyntax == null) {
+            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Sybase");
+        }
+        return useJDBCStoredProcedureSyntax;
     }
 
     @Override
@@ -671,7 +688,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public boolean requiresProcedureCallBrackets() {
-        return false;
+        return useJDBCStoredProcedureSyntax();
     }
 
     /**
