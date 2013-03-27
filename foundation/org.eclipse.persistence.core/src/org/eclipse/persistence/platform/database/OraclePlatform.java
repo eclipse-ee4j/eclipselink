@@ -394,7 +394,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getProcedureCallHeader() {
-        return "BEGIN ";
+        return useJDBCStoredProcedureSyntax() ? "{CALL " : "BEGIN ";  
     }
 
     /**
@@ -402,7 +402,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getProcedureCallTail() {
-        return "; END;";
+        return useJDBCStoredProcedureSyntax() ? "}" : "; END;";
     }
     
     /**

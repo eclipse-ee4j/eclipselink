@@ -218,6 +218,8 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         throw classNotFound;
                     }
                 }
+                
+                getLogin().getPlatform().setDriverName(conn.getMetaData().getDriverName());
             } catch (SQLException ex) {
                 if (throwException) {
                     DatabaseException dbEx =  DatabaseException.errorRetrieveDbMetadataThroughJDBCConnection();
