@@ -212,7 +212,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa21_invalid_call_on_un_executed_query", "The query must be executed before calling this method."},
                                            { "jpa21_invalid_call_with_no_output_parameters", "Invalid call on a query that does not return OUT parameters."},
                                            { "jpa21_invalid_call_with_no_result_sets_returned", "Invalid call on a query that does not return result sets."},
-                                           { "jpa21-ddl-source-script-not-found", "The source script: {0} for the generateSchema call was not found."},
+                                           { "jpa21-ddl-source-script-not-found", "The source script: {0} for the generateSchema call was not found. Ensure you have specified a valid string URL that uses the 'file:' protocol or that the string file name represents a valid resource available from the classpath."},
                                            { "jpa21-ddl-source-script-sql-exception", "An error occured executing {0} from the source ddl generation script: {1}."},
                                            { "jpa21-ddl-source-script-io-exception", "An IO error occured with the source ddl generation script: {0}."},
                                            { "jpa21-ddl-invalid-source-script-type", "The source script provided {0} is of an invalid type {0}. Valid source script types are: java.io.Reader or a string designating a file URL."},
