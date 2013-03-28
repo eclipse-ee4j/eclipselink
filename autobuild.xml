@@ -598,7 +598,7 @@
     <target name="regen-installer-archive">
         <!--     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again. -->
         <echo message="     THIS IS NOT DONE. Unless we start signing eclipselink.jar or DBWS Utils again."/>
-        <echo message="However, we still need a copy of eclipslink.jar for maven. Extracting from original InstallerZip for later copy..."/>
+        <echo message="However, we still need a copy of eclipslink.jar and javadocs for maven. Extracting from original InstallerZip for later copy..."/>
         <!-- unzip original InstallerZip to working dir -->
         <!-- echo message="Creating signed versions of InstallerZip archive..."/ -->
         <unzip dest="${temp.rebuild.dir}/install" src="${promote.source.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}">
@@ -663,8 +663,12 @@
         <mkdir dir="${tmp.maven.dir}"/>
         <!-- get eclipselink source zip -->
         <copy file="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
+        <!-- get eclipselink.jar and javadoc (from temp InstallerZip location, so will work if signed or unsigned) -->
         <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar}"/>
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/eclipselink-javadocs.zip"/>
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/eclipselink-jpars-javadocs.zip"/>
+        <!-- get nosql javadoc (from temp NoSQL PluginInstaller location, so will work if signed or unsigned) -->
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/nosqlzip/nosql-javadocs.zip"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}" flatten="true">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
@@ -675,9 +679,6 @@
                 <include name="org.eclipse.persistence.*.jar"/>
                 <include name="*modelgen*.jar"/>
                 <exclude name="*oracleddl*.jar"/>
-            </fileset>
-            <fileset dir="${temp.rebuild.dir}/bundlezip">
-                <include name="eclipselink-jpa-modelgen*.jar"/>
             </fileset>
         </copy>
         <!-- get javax.persistence* -->
