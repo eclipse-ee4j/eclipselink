@@ -758,7 +758,16 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return "SYSDATE";
     }
 
-
+    /**
+     * INTERNAL:
+     * Should the variable name of a stored procedure call be printed as part of the procedure call
+     * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
+     */
+    @Override
+    public boolean shouldPrintStoredProcedureArgumentNameInCall() {
+        return ! useJDBCStoredProcedureSyntax();
+    }
+    
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
