@@ -37,6 +37,9 @@ public class Engine {
     @OneToMany (cascade=CascadeType.ALL, mappedBy = "engine", targetEntity=SparkPlug.class)
     @PrivateOwned
     protected List<SparkPlug> sparkPlugs; // private-owned 1:M
+
+    @Version
+    protected int version;
     
     public Engine() {
         super();
@@ -80,6 +83,14 @@ public class Engine {
     public void removeSparkPlug(SparkPlug sparkPlug) {
         getSparkPlugs().remove(sparkPlug);
         sparkPlug.setEngine(null);
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
     
 }
