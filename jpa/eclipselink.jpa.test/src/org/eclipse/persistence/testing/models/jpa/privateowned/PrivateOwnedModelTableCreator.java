@@ -166,6 +166,16 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldSERIALNUMBER.setUnique(false);
         table.addField(fieldSERIALNUMBER);
         
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMERIC");
+        fieldVersion.setSize(15);
+        fieldVersion.setShouldAllowNull(true);
+        fieldVersion.setIsPrimaryKey(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setIsIdentity(false);
+        table.addField(fieldVersion);
+        
         return table;
     }
     
@@ -260,6 +270,16 @@ public class PrivateOwnedModelTableCreator extends TableCreator {
         fieldENGINE.setShouldAllowNull(true);
         fieldENGINE.setUnique(false);
         table.addField(fieldENGINE);
+        
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMERIC");
+        fieldVersion.setSize(15);
+        fieldVersion.setShouldAllowNull(true);
+        fieldVersion.setIsPrimaryKey(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setIsIdentity(false);
+        table.addField(fieldVersion);
         
         // ALTER TABLE CMP3_PO_SPARK_PLUG ADD CONSTRAINT CMP3_PO_SPARK_PLUG_ENGINE_ID FOREIGN KEY (ENGINE_ID) REFERENCES CMP3_PO_ENGINE (ID)
         ForeignKeyConstraint foreignKeySPARKPLUG_ENGINE = new ForeignKeyConstraint();
