@@ -623,7 +623,7 @@
         <copy file="${promote.source.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" tofile="${tmp.maven.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <!-- get eclipselink.jar and javadoc (from temp InstallerZip location, so will work if signed or unsigned) -->
         <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar}"/>
-        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/eclipselink-javadocs.jar"/>
+        <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/eclipselink-javadocs.zip"/>
         <!-- get bundles -->
         <copy todir="${tmp.maven.dir}" flatten="true">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
