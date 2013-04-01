@@ -34,6 +34,9 @@ public class SparkPlug {
     
     protected long serialNumber;
 
+    @Version
+    protected int version;
+    
     public SparkPlug() {
         super();
     }
@@ -65,6 +68,14 @@ public class SparkPlug {
 
     public void setSerialNumber(long serialNumber) {
         this.serialNumber = serialNumber;
+    }
+    
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
     
 }
