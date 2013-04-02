@@ -670,12 +670,7 @@ public class XMLMarshaller implements Cloneable {
         }
         writerRecord.setMarshaller(this);
 
-        String rootName = null;
-        String rootNamespace = null;
-     
         if(isXMLRoot){
-            rootName = ((XMLRoot)object).getLocalName();
-            rootNamespace = ((XMLRoot)object).getNamespaceURI();
         	if(session == null || xmlDescriptor == null){
 	            try{
 	                session = xmlContext.getSession(((XMLRoot)object).getObject());
@@ -728,22 +723,25 @@ public class XMLMarshaller implements Cloneable {
         } else {
             try {
                 Node xmlDocument = null;
+                String rootUri = null;
+                String rootLocalName = null;
                 if(isXMLRoot && session == null) {
                     xmlDocument = (Node)((XMLRoot)object).getObject();
+                    rootUri = ((XMLRoot)object).getNamespaceURI();
+                    rootLocalName = ((XMLRoot)object).getLocalName();
                 } else {
                     xmlDocument = objectToXMLNode(object, session, xmlDescriptor, isXMLRoot);
                 }
                 writerRecord.setSession(session);
                 if (isFragment()) {
                     if(xmlDescriptor == null){
-                        writerRecord.node(xmlDocument, null,  rootNamespace, rootName);    
+                        writerRecord.node(xmlDocument, null, rootUri, rootLocalName );
                     }else{
-                        writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootNamespace, rootName);
+                        writerRecord.node(xmlDocument, xmlDescriptor.getNamespaceResolver(), rootUri, rootLocalName );
                     }
-                    
                 } else {
                     writerRecord.startDocument(encoding, version);
-                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver(), rootNamespace, rootName);
+                    writerRecord.node(xmlDocument, writerRecord.getNamespaceResolver(), rootUri, rootLocalName);
                     writerRecord.endDocument();
                 }
             } catch (XMLPlatformException e) {

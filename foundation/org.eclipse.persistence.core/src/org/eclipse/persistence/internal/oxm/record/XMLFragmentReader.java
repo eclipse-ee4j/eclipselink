@@ -13,10 +13,10 @@
 package org.eclipse.persistence.internal.oxm.record;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -24,7 +24,9 @@ import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -101,6 +103,7 @@ public class XMLFragmentReader extends DOMReader {
      * URI locally.
      * 
      */
+    @Override
     protected void handlePrefixedAttribute(Element elem) throws SAXException {
         // Need to determine if the URI for the prefix needs to be 
         // declared locally:
@@ -112,19 +115,44 @@ public class XMLFragmentReader extends DOMReader {
            prefix = XMLConstants.EMPTY_STRING;
         }
         String uri = resolveNamespacePrefix(prefix);
-        if(prefix == XMLConstants.EMPTY_STRING && uri == null) {
-            return;
-        }
-        if (uri == null || !uri.equals(elem.getNamespaceURI())) {
+        if ((uri == null && elem.getNamespaceURI() != null) || (uri != null && !uri.equals(elem.getNamespaceURI()))) {
+        
             NamespaceResolver tmpresolver = getTempResolver(elem);
             tmpresolver.put(prefix, elem.getNamespaceURI());
             if (!nsresolverList.contains(tmpresolver)) {
                 nsresolverList.add(tmpresolver);
             }
-            getContentHandler().startPrefixMapping(prefix, elem.getNamespaceURI());
+            String namespaceURI = elem.getNamespaceURI();
+            if(null == namespaceURI) {
+                namespaceURI = XMLConstants.EMPTY_STRING;
+            }
+            getContentHandler().startPrefixMapping(prefix, namespaceURI);
+        }
+        NamedNodeMap attributes = elem.getAttributes();
+        if(attributes != null) {
+            for(int x=0; x < attributes.getLength(); x++) {
+               Node attribute = attributes.item(x);
+               if(XMLConstants.XMLNS.equals(attribute.getPrefix())) {
+                   NamespaceResolver tmpresolver = getTempResolver(elem);
+                   tmpresolver.put(attribute.getLocalName(), attribute.getNodeValue());
+                   if (!nsresolverList.contains(tmpresolver)) {
+                       nsresolverList.add(tmpresolver);
+                   }
+               } else if(XMLConstants.XMLNS.equals(attribute.getNodeName())) {
+                   NamespaceResolver tmpresolver = getTempResolver(elem);
+                   String namespace = attribute.getNodeValue();
+                   if(null == namespace) {
+                       namespace = XMLConstants.EMPTY_STRING;
+                   }
+                   tmpresolver.put(XMLConstants.EMPTY_STRING, namespace);
+                   if (!nsresolverList.contains(tmpresolver)) {
+                       nsresolverList.add(tmpresolver);
+                   }
+               }
+            }
         }
     }
-    
+
     /**
      * If there is a temporary namespace resolver for a given element,
      * each entry contains a prefix that requires an endPrefixMapping
@@ -133,9 +161,15 @@ public class XMLFragmentReader extends DOMReader {
     protected void endPrefixMappings(Element elem) throws SAXException {
         NamespaceResolver tmpresolver = getTempResolver(elem);
         if (tmpresolver != null) {
-            Enumeration<String> prefixes = tmpresolver.getPrefixes();  
-            while (prefixes.hasMoreElements()) {
-                getContentHandler().endPrefixMapping(prefixes.nextElement());
+            ContentHandler contentHandler = getContentHandler();
+            String defaultNamespace = tmpresolver.getDefaultNamespaceURI();
+            if(null != defaultNamespace) {
+                contentHandler.endPrefixMapping(XMLConstants.EMPTY_STRING);
+            }
+            if(tmpresolver.hasPrefixesToNamespaces()) {
+                for(Entry<String, String> entry : tmpresolver.getPrefixesToNamespaces().entrySet()) {
+                    contentHandler.endPrefixMapping(entry.getKey());
+                }
             }
         }
     }
