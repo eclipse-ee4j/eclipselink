@@ -292,6 +292,7 @@ public class QueryHintsHandler {
             addHint(new CompositeMemberHint());
             addHint(new AllowNativeSQLQueryHint());
             addHint(new BatchWriteHint());
+            addHint(new ApplyConverterMinMaxHint());
         }
         
         Hint(String name, String defaultValue) {
@@ -1953,6 +1954,26 @@ public class QueryHintsHandler {
     
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setSessionName((String)valueToApply);
+            return query;
+        }
+    }
+    
+    /**
+     * Configure whether this query will apply converters to MIN/MAX functions
+     */
+    protected static class ApplyConverterMinMaxHint extends Hint {
+        ApplyConverterMinMaxHint() {
+            super(QueryHints.APPLY_CONVERTERS_TO_FUNCTION_RESULTS, HintValues.FALSE);
+            valueArray = new Object[][] { 
+                    {HintValues.FALSE, Boolean.FALSE},
+                    {HintValues.TRUE, Boolean.TRUE}
+                };
+        }
+    
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isReportQuery()) {
+                ((ReportQuery)query).setShouldApplyConvertersToMinMax((Boolean)valueToApply);
+            }
             return query;
         }
     }

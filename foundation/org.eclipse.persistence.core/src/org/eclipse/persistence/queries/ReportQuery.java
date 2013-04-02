@@ -108,6 +108,12 @@ public class ReportQuery extends ReadAllQuery {
     protected Set<Object> returnedKeys;
 
     /**
+     * When set to true, a ReportItem with a mapping with a converter will have
+     * have the converter applied prior to returning
+     */
+    protected boolean shouldApplyConvertersToMinMax = false;
+    
+    /**
      * INTERNAL:
      * The builder should be provided.
      */
@@ -1335,6 +1341,16 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * PUBLIC:
+     * Set whether this query will apply converters to ReportItems which are functions
+     * that operate on mappings with converters
+     */
+    public void setShouldApplyConvertersToMinMax(
+            boolean shouldApplyConvertersToMinMax) {
+        this.shouldApplyConvertersToMinMax = shouldApplyConvertersToMinMax;
+    }
+
+    /**
+     * PUBLIC:
      * Set if the query results should contain the primary keys or each associated object.
      * This make retrieving the real object easier.
      * By default they are not retrieved.
@@ -1408,6 +1424,17 @@ public class ReportQuery extends ReadAllQuery {
         }
     }
 
+
+    /**
+     * PUBLIC:
+     * Return whether this query will apply converters to ReportItems which are functions
+     * that operate on mappings with converters
+     * @return
+     */
+    public boolean shouldApplyConvertersToMinMax() {
+        return shouldApplyConvertersToMinMax;
+    }
+    
     /**
      * PUBLIC:
      * Return if the query results should contain the primary keys or each associated object.

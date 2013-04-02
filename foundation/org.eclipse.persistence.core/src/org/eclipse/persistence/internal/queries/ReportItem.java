@@ -127,6 +127,12 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         if (this.mapping == null) {
             if (this.attributeExpression != null) {
                 DatabaseMapping mapping = this.attributeExpression.getLeafMapping(query, query.getDescriptor(), query.getSession());
+                if (query.shouldApplyConvertersToMinMax() && mapping == null && this.attributeExpression.isFunctionExpression() && this.getResultType() == null){
+                    FunctionExpression expression = ((FunctionExpression)this.attributeExpression);
+                    if (expression.getOperator().equals(ExpressionOperator.maximum()) || expression.getOperator().equals(ExpressionOperator.minimum())){
+                        mapping = expression.getBaseExpression().getLeafMapping(query, query.getDescriptor(), query.getSession());
+                    }
+                }
                 if (mapping == null){
                     if (this.attributeExpression.isExpressionBuilder()) {
                         Class resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
