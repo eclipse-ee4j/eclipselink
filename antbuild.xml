@@ -1277,6 +1277,7 @@
         <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="*nosql*"/>
+                <include name="javax.resource*.jar"/>
             </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
