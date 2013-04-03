@@ -56,22 +56,17 @@ public abstract class EclipseLinkLocalization {
                 }
             }
         }
-
-       	bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
-
+        
         try {
+            bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n." + localizationClassName + "Resource", Locale.getDefault());
             message = bundle.getString(key);
         } catch (java.util.MissingResourceException mre) {
-            // Found bundle, but couldn't find translation.
-            // Get the current language's NoTranslationForThisLocale message.
-            bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
-            String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
-
-            if(translate) {
-            	return MessageFormat.format(message, arguments) + noTranslationMessage;
-            } else {
-            	// For FINE* logs there is no translation
-            	return MessageFormat.format(message, arguments);
+            if (translate) {
+                // Found bundle, but couldn't find translation.
+                // Get the current language's NoTranslationForThisLocale message.
+                bundle = ResourceBundle.getBundle("org.eclipse.persistence.internal.localization.i18n.EclipseLinkLocalizationResource", Locale.getDefault());
+                String noTranslationMessage = bundle.getString("NoTranslationForThisLocale");
+               	return MessageFormat.format(message, arguments) + noTranslationMessage;
             }
         }
         return MessageFormat.format(message, arguments);

@@ -993,15 +993,6 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             //body, we assume it needs to be formatted.
             if (entry.getParameters()!=null && entry.getParameters().length>0 && message.indexOf("{0") >= 0) {
                 message = java.text.MessageFormat.format(message, entry.getParameters());
-            } else {
-            	/*
-            	 * Bug 222698 Look for message ID in TraceLocalization (untranslated at FINE, FINER, FINEST levels)
-            	 * If the key is already transformed to a value containing {N} then do not use it as a key
-            	 * For cases where a message is a single word - we cannot differentiate whether it is a value or a key.
-            	 */            	
-            	if(message.indexOf("{") == -1) { // invalid calls with translate=false and parameters like {0} are not modified
-            		message = TraceLocalization.buildMessage(message, false);
-            	}
             }
         }
         return message;
