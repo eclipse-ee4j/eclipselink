@@ -63,7 +63,7 @@ public class Vehicle implements Serializable {
     int version;
 
     @ManyToMany
-    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN) })
+    @JoinTable(name = "TMP_VEHICLE_PROFILE", joinColumns = { @JoinColumn(name = "VEHICLE_ID") }, inverseJoinColumns = { @JoinColumn(name = "PROFILE_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN_NOT_NULL) })
     private Set<TravelProfile> profiles;
     
 

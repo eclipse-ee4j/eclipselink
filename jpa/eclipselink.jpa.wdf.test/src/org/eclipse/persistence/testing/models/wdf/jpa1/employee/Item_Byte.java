@@ -34,7 +34,7 @@ import org.eclipse.persistence.testing.framework.wdf.customizer.AdjustArrayTypeC
 @Customizer(AdjustArrayTypeCustomizer.class)
 public class Item_Byte implements Serializable {
     @Id
-    @Column(name = "ITEM_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN)
+    @Column(name = "ITEM_ID", columnDefinition=TravelProfile.BINARY_16_COLUMN_NOT_NULL)
     private byte[] itemId;
     private String namespace;
     private String text;
