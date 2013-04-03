@@ -27,6 +27,13 @@
          version="@VERSION@.@QUALIFIER@"/>
 
    <plugin
+         id="javax.resource"
+         download-size="0"
+         install-size="0"
+         version="@RESOURCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.orbit.mongodb"
          download-size="0"
          install-size="0"
