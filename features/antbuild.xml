@@ -218,7 +218,9 @@
         <property name="mail.prefix" value="javax.mail"/>
         <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
         <property name="persistence.prefix" value="javax.persistence"/>
-        <property name="persistence.criteria" value="[2.0.0,2.1.0)"/>
+        <property name="persistence.criteria" value="[2.0.100,2.2.0)"/>
+        <property name="resource.prefix" value="javax.resource"/>
+        <property name="resource.criteria" value="[1.4.0,1.6.0)"/>
         <property name="servlet.prefix" value="javax.servlet"/>
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
@@ -296,6 +298,9 @@
         <selectbundle basename="${persistence.prefix}" directory="${feature.2.jpa.plugins.dir}"
                      criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
         />
+        <selectbundle basename="${resource.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${resource.criteria}" property="resource.version" versiononly="true"
+        />
         <selectbundle basename="${servlet.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${servlet.criteria}" property="servlet.version" versiononly="true"
         />
@@ -348,6 +353,8 @@
         <say  message="   '${activation.prefix}_${activation.criteria}.jar' not found! Generated features will be invalid."   unless="activation.version"/>
         <say  message="   mail.version        = '${mail.version}'"                                                            if="mail.version"/>
         <say  message="   '${mail.prefix}_${mail.criteria}.jar' not found! Generated features will be invalid."               unless="mail.version"/>
+        <say  message="   resource.version    = '${resource.version}'"                                                        if="resource.version"/>
+        <say  message="   '${resource.prefix}_${resource.criteria}.jar' not found! Generated features will be invalid."       unless="resource.version"/>
         <say  message="   servlet.version     = '${servlet.version}'"                                                         if="servlet.version"/>
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
         <say  message="   xml.bind.version    = '${xml.bind.version}'"                                                        if="xml.bind.version"/>
@@ -364,9 +371,9 @@
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                 unless="asm.version"/>
         <say  message="   hermes.version      = '${hermes.version}'"                                                          if="hermes.version"/>
         <say  message="   '${hermes.prefix}_${hermes.criteria}.jar' not found! Generated features will be invalid."           unless="hermes.version"/>
-        <say  message="   oracle.version   = '${oracle.version}'"                                                             if="oracle.version"/>
+        <say  message="   oracle.version      = '${oracle.version}'"                                                          if="oracle.version"/>
         <say  message="   '${oracle.prefix}_${oracle.criteria}.jar' not found! Generated features will be invalid."           unless="oracle.version"/>
-        <say  message="   oraclenosql.version   = '${oraclenosql.version}'"                                                   if="oraclenosql.version"/>
+        <say  message="   oraclenosql.version = '${oraclenosql.version}'"                                                     if="oraclenosql.version"/>
         <say  message="   '${oraclenosql.prefix}_${oraclenosql.criteria}.jar' not found! Generated features will be invalid." unless="oraclenosql.version"/>
     </target>
 
@@ -382,6 +389,7 @@
         <filter token="MAIL_VERSION"        value="${mail.version}"/>
         <filter token="PERSISTENCE_VERSION" value="${persistence.version}"/>
         <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
+        <filter token="RESOURCE_VERSION"    value="${resource.version}"/>
         <filter token="WSDL_VERSION"        value="${wsdl.version}"/>
         <filter token="JAXRS_VERSION"       value="${jaxrs.version}"/>
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
@@ -556,7 +564,6 @@
                           *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
-                          *javax.resource*.jar,
                           *javax.transaction*.jar,
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
