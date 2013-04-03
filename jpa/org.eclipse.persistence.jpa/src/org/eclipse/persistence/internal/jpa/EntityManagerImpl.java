@@ -2852,7 +2852,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return new EntityGraphImpl<T>(new AttributeGroup(null, rootType, true), descriptor);
     }
 
-    public EntityGraph<?> createEntityGraph(String graphName) {
+    public EntityGraph createEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             return null;
@@ -2861,7 +2861,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         return new EntityGraphImpl(group.clone(), descriptor);
     }
 
-    public <T> EntityGraph<T> getEntityGraph(String graphName) {
+    public EntityGraph getEntityGraph(String graphName) {
         AttributeGroup group = this.getAbstractSession().getAttributeGroups().get(graphName);
         if (group == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("no_entity_graph_of_name", new Object[]{graphName}));
