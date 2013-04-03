@@ -760,7 +760,7 @@
                      minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
       <xsd:attribute name="version" type="orm:supported-versions-type" 
-                     default="2.3" use="optional"/>
+                     default="2.4" use="optional"/>
     </xsd:complexType>
   </xsd:element>
 
