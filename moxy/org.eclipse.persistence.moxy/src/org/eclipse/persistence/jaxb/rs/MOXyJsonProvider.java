@@ -70,6 +70,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.JSONWithPadding;
 
 /**
  * <p>This is an implementation of <i>MessageBodyReader</i>/<i>MessageBodyWriter
@@ -194,10 +195,11 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
  * </pre>
  * @since 2.4
  */
-@Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+@Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD, "application/x-javascript"})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
  
+    private static final String APPLICATION_XJAVASCRIPT = "application/x-javascript";
     private static final String CHARSET = "charset";
     private static final String JSON = "json";
     private static final String PLUS_JSON = "+json";
@@ -472,6 +474,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * </ul>
      */
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        if(type == JSONWithPadding.class && APPLICATION_XJAVASCRIPT.equals(mediaType.toString())) {
+            return true;
+        }
         if(!supportsMediaType(mediaType)) {
             return false;
         } else if(CoreClassConstants.APBYTE == type || CoreClassConstants.STRING == type) {
