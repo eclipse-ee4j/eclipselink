@@ -24,6 +24,8 @@
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  *     04/04/2013-2.4.3 Guy Pelletier 
  *       - 388564: Generated DDL does not match annotation
+ *     04/04/2013-2.4.3 Guy Pelletier 
+ *       - 388564: Generated DDL does not match annotation
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
