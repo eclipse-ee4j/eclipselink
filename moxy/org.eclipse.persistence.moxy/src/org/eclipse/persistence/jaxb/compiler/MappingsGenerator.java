@@ -287,6 +287,10 @@ public class MappingsGenerator {
                         List<CoreAttributeGroup> nestedGroups = subgraphs.get(nextAttributeNode.getSubgraph());
                         if(nestedGroups == null || nestedGroups.isEmpty()) {
                             Property property = info.getProperties().get(nextAttributeNode.getName());
+                            if(property == null) {
+                                //if there's no property associated with the attributeNode, just ignore it
+                                continue;
+                            }
                             JavaClass cls = property.getActualType();
                             TypeInfo referenceType = typeInfo.get(cls.getQualifiedName());
                             if(referenceType != null) {
