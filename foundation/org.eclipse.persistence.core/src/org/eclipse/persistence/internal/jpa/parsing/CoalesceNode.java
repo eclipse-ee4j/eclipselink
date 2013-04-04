@@ -91,4 +91,20 @@ public class CoalesceNode extends Node implements AliasableNode {
     public boolean isAliasableNode(){
         return true;
     }
+    
+    public String toString(int indent) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("COALESCE");
+        buffer.append("(");
+
+        Iterator i = clauses.iterator();
+        while (i.hasNext()) {
+            Node n = (Node) i.next();
+            buffer.append(n.toString(indent));
+            buffer.append("\r\n");
+        }
+        toStringIndent(indent, buffer);
+        buffer.append(")");
+        return buffer.toString();
+    }
 }
