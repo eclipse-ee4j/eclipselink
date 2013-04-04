@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010  Laird Nelson . All rights reserved.
+ * Copyright (c) 2010, 2013 Oracle and/or its affiliates, Laird Nelson. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *       - 282075: DDL generation is unpredictable
  *     11/17/2010-2.2.0 Chris Delahunt 
  *       - 214519: Allow appending strings to CREATE TABLE statements
+ *     04/04/2013-2.4.3 Guy Pelletier 
+ *       - 388564: Generated DDL does not match annotation
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
@@ -36,7 +38,7 @@ public class Many implements Serializable {
     private List<Many> many;
 
     @ManyToOne
-    @JoinColumn(name = "o", referencedColumnName = "id")
+    @JoinColumn(name = "o", referencedColumnName = "id", columnDefinition = "NUMERIC(10) NULL")
     private One one;
 
     public Many() {
