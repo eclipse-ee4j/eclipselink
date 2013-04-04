@@ -24,6 +24,8 @@
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  *     12/07/2012-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     04/04/2013-2.4.3 Guy Pelletier 
+ *       - 388564: Generated DDL does not match annotation
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -896,13 +898,17 @@ public class DefaultTableGenerator {
                         sourceTableDef.addField(fkFieldDef);
                     }
                 }
+                
+                // Set the fkFieldDef type definition to the that of the target if one is not set.
+                if (fkFieldDef.getTypeDefinition() == null || fkFieldDef.getTypeDefinition().trim().equals("")) {
+                    fkFieldDef.setTypeDefinition(targetFieldDef.getTypeDefinition());
+                }
+                
                 // Also ensure that the type, size and subsize of the foreign key field is 
                 // same as that of the original field.
                 fkFieldDef.setType(targetFieldDef.getType());
-                fkFieldDef.setTypeDefinition(targetFieldDef.getTypeDefinition());
                 fkFieldDef.setSize(targetFieldDef.getSize()); 
                 fkFieldDef.setSubSize(targetFieldDef.getSubSize());
-                
             }
         }
 
