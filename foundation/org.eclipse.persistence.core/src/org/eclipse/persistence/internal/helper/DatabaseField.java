@@ -276,8 +276,6 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
     }
     
     /**
-    
-    /**
      * Get the SQL fragment that is used when generating the DDL for the column.
      */
     public String getColumnDefinition() {
