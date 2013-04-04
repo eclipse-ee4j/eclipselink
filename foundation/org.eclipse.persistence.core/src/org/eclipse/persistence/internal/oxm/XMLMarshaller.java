@@ -644,7 +644,15 @@ public abstract class XMLMarshaller<
             }
             return;
         }
-        marshalRecord.beforeContainmentMarshal(object);
+      
+        if(isXMLRoot){
+            if(descriptor != null){
+                marshalRecord.beforeContainmentMarshal(root.getObject());
+            }
+        }else{
+            marshalRecord.beforeContainmentMarshal(object);
+        }
+        
         if (!isFragment()) {
             String encoding = getEncoding();
             String version = DEFAULT_XML_VERSION;
@@ -771,7 +779,13 @@ public abstract class XMLMarshaller<
         if (!isFragment() ) {
             marshalRecord.endDocument();
         }
-        marshalRecord.afterContainmentMarshal(null, isXMLRoot ? root : object);
+        if(isXMLRoot){
+            if(descriptor != null){
+                marshalRecord.afterContainmentMarshal(null, root.getObject());
+            }
+        }else{
+            marshalRecord.afterContainmentMarshal(null, object);
+        }              
     }
 
     /**
