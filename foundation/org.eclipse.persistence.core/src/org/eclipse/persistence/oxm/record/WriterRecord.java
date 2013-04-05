@@ -96,7 +96,6 @@ public class WriterRecord extends MarshalRecord<XMLMarshaller> {
                 writer.write('\"');
             }
             writer.write("?>");
-            writer.write(Helper.cr());
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

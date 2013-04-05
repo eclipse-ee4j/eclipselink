@@ -79,6 +79,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
     }
 
     /**
+     * INTERNAL:
+     */
+    public void startDocument(String encoding, String version) {
+        super.startDocument(encoding, version);
+        outputStreamWrite(CR);
+    }
+
+    /**
      * INTERNAL
      */
     public void writeHeader() {

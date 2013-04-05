@@ -141,7 +141,6 @@ public class OutputStreamRecord extends MarshalRecord<XMLMarshaller> {
                 outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
             }
             outputStreamWrite(CLOSE_PI);
-            outputStreamWrite(CR);
         } catch(UnsupportedEncodingException e) {
             throw XMLMarshalException.marshalException(e);
         }
