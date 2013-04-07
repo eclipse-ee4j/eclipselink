@@ -5,6 +5,7 @@
 eclipselink*.jar
 org.eclipse.persistence*jar
 bin/
+p2repo/
 target/
 class/
 classes/
