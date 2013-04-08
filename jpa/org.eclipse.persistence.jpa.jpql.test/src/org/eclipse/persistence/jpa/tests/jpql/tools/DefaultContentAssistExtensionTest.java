@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
+import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 
 /**
  * Unit-test for {@link ContentAssistExtension} when the JPQL grammar is based on the JPA spec.
@@ -25,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
  * @since 2.5
  * @author Pascal Filion
  */
+@UniqueSignature
 public final class DefaultContentAssistExtensionTest extends AbstractContentAssistExtensionTest {
 
 	/**

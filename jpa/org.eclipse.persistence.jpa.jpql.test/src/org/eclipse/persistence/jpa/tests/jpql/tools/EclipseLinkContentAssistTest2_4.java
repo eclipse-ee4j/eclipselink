@@ -173,7 +173,7 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
 			List<String> proposals = new ArrayList<String>();
 
 			if (afterIdentifier == FROM) {
-				proposals.addAll(joinIdentifiers());
+				proposals.addAll(super.fromClauseInternalClauses(FROM));
 				proposals.add(START_WITH);
 				proposals.add(CONNECT_BY);
 				proposals.add(ORDER_SIBLINGS_BY);
@@ -377,6 +377,11 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
 		String jpqlQuery = "Select cast(e.firstName + as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
 		int position = "Select cast(e.firstName + ".length();
 		testDoesNotHaveTheseProposals(jpqlQuery, position, AS);
+	}
+
+	@Test
+	public final void test_CompoundFunction_001() {
+		test_CompoundFunction("LEFT e.employees emps ON");
 	}
 
 	@Test
@@ -698,6 +703,41 @@ public final class EclipseLinkContentAssistTest2_4 extends AbstractContentAssist
 		CollectionTools.addAll(proposals, bnfAccessor.scalarExpressionFunctions());
 
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public final void test_On_01() {
+		test_ConditionalClause_01(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_02() {
+		test_ConditionalClause_02(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_03() {
+		test_ConditionalClause_03(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_04() {
+		test_ConditionalClause_04(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_05() {
+		test_ConditionalClause_05(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_06() {
+		test_ConditionalClause_06(ON, "JOIN e.employees emps ");
+	}
+
+	@Test
+	public final void test_On_07() {
+		test_ConditionalClause_07(ON, "JOIN e.employees emps ");
 	}
 
 	@Test

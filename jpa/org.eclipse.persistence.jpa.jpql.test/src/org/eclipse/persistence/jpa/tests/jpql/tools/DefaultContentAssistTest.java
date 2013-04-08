@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.tools;
 
 import java.util.Collections;
 import java.util.List;
+import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 
 /**
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
@@ -24,6 +25,7 @@ import java.util.List;
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 public final class DefaultContentAssistTest extends AbstractContentAssistTest {
 
 	/**

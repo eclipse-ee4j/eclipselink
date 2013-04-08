@@ -173,7 +173,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 			List<String> proposals = new ArrayList<String>();
 
 			if (afterIdentifier == FROM) {
-				proposals.addAll(joinIdentifiers());
+				proposals.addAll(super.fromClauseInternalClauses(FROM));
 				proposals.add(START_WITH);
 				proposals.add(CONNECT_BY);
 				proposals.add(ORDER_SIBLINGS_BY);
@@ -728,9 +728,9 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 
 	@Test
 	public final void test_Invalid_001() {
-		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name";
-		int position = "SELECT e FROM Employee CONNECT BY e.name O ".length();
-		testHasOnlyTheseProposals(jpqlQuery, position, ORDER_SIBLINGS_BY);
+		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O";
+		int position = "SELECT e FROM Employee CONNECT BY e.name O".length();
+		testHasOnlyTheseProposals(jpqlQuery, position, ORDER_SIBLINGS_BY, ORDER_BY);
 	}
 
 	@Test
@@ -762,7 +762,7 @@ public final class EclipseLinkContentAssistTest2_5 extends AbstractContentAssist
 	}
 
 	@Test
-	public final void test_Invalid_07() {
+	public final void test_Invalid_006() {
 		String jpqlQuery = "SELECT e FROM Employee CONNECT BY e.name O WHERE e.name IS e.name WHERE";
 		int position = jpqlQuery.length();
 		testHasNoProposals(jpqlQuery, position);

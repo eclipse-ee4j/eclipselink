@@ -529,7 +529,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(DELETE_FROM,           IdentifierRole.CLAUSE);
 		registerIdentifierRole(DESC,                  IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(DISTINCT,              IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(EMPTY,                 IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(EMPTY,                 IdentifierRole.COMPOUND_FUNCTION);  // x IS EMPTY
 		registerIdentifierRole(ESCAPE,                IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(EXISTS,                IdentifierRole.FUNCTION);           // EXISTS(x)
 		registerIdentifierRole(FALSE,                 IdentifierRole.FUNCTION);
@@ -543,7 +543,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(LEADING,               IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(LEFT,                  IdentifierRole.COMPLETEMENT);
 		registerIdentifierRole(LENGTH,                IdentifierRole.FUNCTION);           // LENGTH(x)
-		registerIdentifierRole(LIKE,                  IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LIKE,                  IdentifierRole.COMPOUND_FUNCTION);  // x LIKE y [ESCAPE z]
 		registerIdentifierRole(LOCATE,                IdentifierRole.FUNCTION);           // LOCATE(x, y [, z]))
 		registerIdentifierRole(LOWER,                 IdentifierRole.FUNCTION);           // LOWER(x)
 		registerIdentifierRole(MAX,                   IdentifierRole.FUNCTION);           // MAX(x)

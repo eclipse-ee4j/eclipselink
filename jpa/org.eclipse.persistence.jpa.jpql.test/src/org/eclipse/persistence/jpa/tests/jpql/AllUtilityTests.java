@@ -20,10 +20,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 @SuiteClasses({
-	DefaultContentAssistProposalsTest.class,
-	XmlEscapeCharacterConverterTest.class,
-	ExpressionToolsTest.class,
 	WordParserTest.class,
+	ExpressionToolsTest.class,
+	DefaultContentAssistProposalsTest.class,
+	XmlEscapeCharacterConverterTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllUtilityTests {

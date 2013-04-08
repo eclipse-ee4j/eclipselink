@@ -17,12 +17,14 @@ import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistProposals.ClassType;
+import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 
 /**
  * @version 2.5
  * @since 2.5
  * @author Pascal Filion
  */
+@UniqueSignature
 public final class DefaultDefaultContentAssistExtensionTest extends AbstractContentAssistTest {
 
 	/**

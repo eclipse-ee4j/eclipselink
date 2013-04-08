@@ -155,7 +155,7 @@ public final class EclipseLinkEclipseLinkContentAssistExtensionTest extends Abst
 			List<String> proposals = new ArrayList<String>();
 
 			if (afterIdentifier == FROM) {
-				proposals.addAll(joinIdentifiers());
+				proposals.addAll(super.fromClauseInternalClauses(FROM));
 				proposals.add(START_WITH);
 				proposals.add(CONNECT_BY);
 				proposals.add(ORDER_SIBLINGS_BY);

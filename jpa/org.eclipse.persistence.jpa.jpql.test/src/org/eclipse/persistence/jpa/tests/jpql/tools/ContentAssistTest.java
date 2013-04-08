@@ -28,8 +28,6 @@ import jpql.query.EnumType;
 import jpql.query.Project;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPAVersion;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.tools.AbstractJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.tools.ContentAssistExtension;
@@ -62,27 +60,39 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	protected AbstractJPQLQueryHelper queryHelper;
 	protected JavaQuery virtualQuery;
 
+	/**
+	 * Returns the return type associated with the given JPQL identifier. Only JPQL identifiers mark
+	 * with {@link org.eclipse.persistence.jpa.jpql.parser.IdentifierRole#FUNCTION} have a return
+	 * type.
+	 *
+	 * @param identifier The JPQL identifier for which its expected return type should be returned
+	 * @return Either the return type for the given JPQL identifier or <code>null</code> if the
+	 * expression does not return a value
+	 */
 	protected Class<?> acceptableType(String identifier) {
 		return null;
 	}
 
-	protected final void addIdentifiers(List<String> identifiers, String... expressionFactoryIds) {
-
-		ExpressionRegistry registry = getGrammar().getExpressionRegistry();
-
-		for (String id : expressionFactoryIds) {
-			ExpressionFactory factory = registry.getExpressionFactory(id);
-
-			for (String identifier : factory.identifiers()) {
-				identifiers.add(identifier);
-			}
-		}
-	}
-
+	/**
+	 * Creates a new {@link ContentAssistExtension} that can be used to provide additional
+	 * information that is outside the scope of simply providing JPA metadata information,
+	 * such as table names, column names, class names.
+	 *
+	 * @return By default, {@link ContentAssistExtension.NULL_HELPER} is returned
+	 */
 	protected ContentAssistExtension buildContentAssistExtension() {
 		return ContentAssistExtension.NULL_HELPER;
 	}
 
+	/**
+	 * Retrieves the possibles choices that can complete the query from the given position of the
+	 * cursor within the JPQL query.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and for which content assist proposals will be
+	 * calculated based on the position of the cursor within that query
+	 * @param position The position of the cursor within the given JPQL query
+	 * @return The list of valid proposals regrouped by categories
+	 */
 	protected final ContentAssistProposals buildContentAssistProposals(String jpqlQuery, int position) {
 		virtualQuery.setExpression(jpqlQuery);
 		queryHelper.setQuery(virtualQuery);
@@ -90,8 +100,17 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	}
 
 	/**
-	 * 0 : proposals that were not found by content assist but that are expected.<br/>
-	 * 1 : proposals that were found by content assist but that are not expected.<br/>
+	 * Creates an array of two elements containing the result of calculating the valid proposals.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and for which content assist proposals will be
+	 * calculated based on the position of the cursor within that query
+	 * @param position The position of the cursor within the given JPQL query
+	 * @param proposals The collection of expected proposals
+	 * @return The result based on what was found and what is expected:
+	 * <ul>
+	 * <li>Index 0: Proposals that were not found by content assist but that are expected;</li>
+	 * <li>Index 1: Proposals that were found by content assist but that are not expected.</li>
+	 * </ul>
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<String>[] buildResults(String jpqlQuery,
@@ -550,6 +569,10 @@ public abstract class ContentAssistTest extends JPQLCoreTest {
 	protected final void testHasOnlyTheseProposals(String jpqlQuery,
 	                                               int position,
 	                                               String... proposals) {
+
+		if (proposals.length == 0) {
+			fail("The list of expected proposals cannot be empty");
+		}
 
 		testHasOnlyTheseProposals(jpqlQuery, position, CollectionTools.list(proposals));
 	}

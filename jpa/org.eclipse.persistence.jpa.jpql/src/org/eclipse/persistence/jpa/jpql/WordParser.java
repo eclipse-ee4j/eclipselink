@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -272,6 +272,47 @@ public final class WordParser {
 	 */
 	public String moveForward(CharSequence word) {
 		return moveForward(word.length());
+	}
+
+	/**
+	 * Moves the position of the cursor by the length of the given word and ignore any different in
+	 * whitespace count. If the text has more than one whitespace and the given word usually has one,
+	 * then only one will be part of the returned substring.
+	 *
+	 * @param word The word used to determine how much to move the position forward
+	 * @return The actual portion of the text that was skipped
+	 * @since 2.4.2
+	 */
+	public String moveForwardIgnoreWhitespace(CharSequence word) {
+
+		StringBuilder sb = new StringBuilder();
+		int pc = word.length();
+		int po = 0;
+
+		while (--pc >= 0) {
+
+			char c1 = text.charAt(cursor++);
+			char c2 = word.charAt(po++);
+
+			// Handle testing
+			// 1. "... GROUP    BY" and "GROUP BY"
+			// 2. "... GROUP\nBY" and "GROUP BY"
+			if (Character.isWhitespace(c1)) {
+
+				if (Character.isWhitespace(c2)) {
+					sb.append(' ');
+					continue;
+				}
+
+				pc++;
+				po--;
+				continue;
+			}
+
+			sb.append(c1);
+		}
+
+		return sb.toString();
 	}
 
 	/**
@@ -724,22 +765,71 @@ public final class WordParser {
 	 */
 	public boolean startsWithIdentifier(CharSequence identifier, int position) {
 
-		// First check to see if the text matches the characters
-		if (startsWithIgnoreCase(identifier, position)) {
+		int pc = identifier.length();
 
-			int nextCharacterIndex = position + identifier.length();
+		// Note: offset might be near -1 >>> 1
+		if ((position < 0) || (position > length - pc)) {
+			return false;
+		}
 
-			// End of the text
-			if (nextCharacterIndex == length) {
-				return true;
+		int po = 0;
+		int to = position;
+
+		while (--pc >= 0) {
+
+			char c1 = text.charAt(to++);
+			char c2 = identifier.charAt(po++);
+
+			if (c1 == c2) {
+				continue;
 			}
 
-			// Check to see if the next character is a word separator
-			char character = text.charAt(nextCharacterIndex);
+			// Handle testing
+			// 1. "... GROUP    BY" and "GROUP BY"
+			// 2. "... GROUP\nBY" and "GROUP BY"
+			if (Character.isWhitespace(c1)) {
 
-			if (isWordSeparator(character)) {
-				return true;
+				if (Character.isWhitespace(c2)) {
+					continue;
+				}
+
+				if (to == length) {
+					return false;
+				}
+
+				pc++;
+				po--;
+				continue;
 			}
+
+			// If characters don't match but case may be ignored, try converting
+			// both characters to uppercase. If the results match, then the
+			// comparison scan should continue
+			char u1 = Character.toUpperCase(c1);
+			char u2 = Character.toUpperCase(c2);
+
+			if (u1 != u2) {
+				return false;
+			}
+
+			// Unfortunately, conversion to uppercase does not work properly for
+			// the Georgian alphabet, which has strange rules about case
+			// conversion. So we need to make one last check before exiting
+			if (Character.toLowerCase(u1) != Character.toLowerCase(u2)) {
+				return false;
+			}
+		}
+
+		// End of the text
+		if (to == length) {
+			return true;
+		}
+
+		// Check to see if the next character is a word separator
+		char character = text.charAt(to);
+
+		if (isWordSeparator(character)) {
+			return true;
 		}
 
 		return false;
@@ -794,6 +884,7 @@ public final class WordParser {
 		int to = offset;
 
 		while (--pc >= 0) {
+
 			char c1 = text.charAt(to++);
 			char c2 = prefix.charAt(po++);
 

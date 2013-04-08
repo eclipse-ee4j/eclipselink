@@ -34,12 +34,15 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalConcatExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalFromClauseBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InternalSimpleFromClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.utility.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.utility.iterable.ArrayIterable;
 
 /**
@@ -236,6 +239,18 @@ public class JPQLQueryBNFAccessor {
 
 	private Iterable<String> internalConcatExpressionIdentifiers() {
 		return getIdentifiers(InternalConcatExpressionBNF.ID);
+	}
+
+	public Iterable<String> internalFromClauseIdentifiers() {
+		return getIdentifiers(InternalFromClauseBNF.ID);
+	}
+
+	public Iterable<String> internalSimpleFromClauseIdentifiers() {
+		return getIdentifiers(InternalSimpleFromClauseBNF.ID);
+	}
+
+	public Iterable<String> logicalIdentifiers() {
+		return CollectionTools.list(Expression.AND, Expression.OR);
 	}
 
 	public Iterable<String> patternValueFunctions() {

@@ -17,6 +17,8 @@ import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
@@ -86,6 +88,14 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 	@Override
 	protected AcceptableTypeVisitor buildAcceptableTypeVisitor() {
 		return new AcceptableTypeVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected JPQLGrammar getLatestGrammar() {
+		return DefaultJPQLGrammar.instance();
 	}
 
 	/**

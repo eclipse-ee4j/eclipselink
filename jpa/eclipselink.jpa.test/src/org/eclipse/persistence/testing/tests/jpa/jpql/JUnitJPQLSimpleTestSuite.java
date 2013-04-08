@@ -182,6 +182,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("testMultipleSubqueries"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testDirectCollectionComparison"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleQueryWithFirstUnusedEntity"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testSimpleGroupByOrderByClauses"));
 
         return suite;
     }
@@ -2324,5 +2325,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
    	 for (Object item : resultList) {
    		 assertTrue(item instanceof org.eclipse.persistence.testing.models.jpa.advanced.Buyer);
    	 }
+    }
+
+    /** Test for bug#404509 */
+    public void testSimpleGroupByOrderByClauses() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select e.firstName from Employee e group  by e.firstName  order   by e.firstName");
+        query.getResultList();
     }
 }

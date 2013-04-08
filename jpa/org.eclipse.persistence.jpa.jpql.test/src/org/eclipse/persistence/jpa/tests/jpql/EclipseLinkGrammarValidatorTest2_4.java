@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  *
  * @see EclipseLinkGrammarValidator
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -1721,5 +1721,23 @@ public final class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarVal
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public void test_ValidQuery_001() throws Exception {
+
+		// SELECT  l
+		// FROM  LastFirstID l
+		// WHERE  l.IDNumber IN (SELECT DISTINCT u.IDNumber
+		//                       FROM Username u
+		//                       WHERE (     (LOWER(TRIM(FROM u.loginID)) LIKE :usernamePattern)
+		//                               AND
+		//                                   (TRIM(FROM u.userStatus) IN :userStatusList))
+		//                      )
+		// ORDER BY FUNC('TRANSLATE_CHAR', LOWER( FUNC('NVL', l.lastName, ' '))),
+		//          FUNC('TRANSLATE_CHAR', LOWER( FUNC('NVL', l.firstName,' ')))
+		String jpqlQuery = "SELECT  l  FROM  LastFirstID l  WHERE  l.IDNumber IN (SELECT DISTINCT u.IDNumber                          FROM Username u                         WHERE ( ( LOWER(TRIM(FROM u.loginID   )) LIKE :usernamePattern )                             AND   (       TRIM(FROM u.userStatus)    IN :userStatusList  ) ) ) ORDER  BY FUNC('TRANSLATE_CHAR', LOWER( FUNC('NVL', l.lastName, ' ') )),            FUNC('TRANSLATE_CHAR', LOWER( FUNC('NVL', l.firstName,' ') ))  ";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 }

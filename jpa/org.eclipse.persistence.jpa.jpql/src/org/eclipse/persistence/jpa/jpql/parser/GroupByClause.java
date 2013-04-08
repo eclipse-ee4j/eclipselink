@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>groupby_clause ::= GROUP BY groupby_item {, groupby_item}*</code><p>
  *
- * @version 2.5
+ * @version 2.5.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -180,7 +180,7 @@ public final class GroupByClause extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'GROUP BY'
-		identifier = wordParser.moveForward(GROUP_BY);
+		identifier = wordParser.moveForwardIgnoreWhitespace(GROUP_BY);
 
 		hasSpace = wordParser.skipLeadingWhitespace() > 0;
 

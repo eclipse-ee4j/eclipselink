@@ -29,6 +29,10 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code>
  * <p>
+ * EclipseLink 2.4
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>join_spec { abstract_schema_name | join_association_path_expression } [AS] identification_variable [join_condition]</code>
+ * <p>
  *
  * @version 2.5
  * @since 2.3
