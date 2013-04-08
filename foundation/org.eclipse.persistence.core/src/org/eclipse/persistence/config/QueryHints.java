@@ -837,14 +837,5 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ModifyQuery#setIsBatchExecutionSupported(boolean)
      */
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
-    
-    /**
-     * "eclipselink.apply-converter-to-min-max"
-     * <p>Allows converters to be applied on query result use the functions MIN and MAX.  When this is set
-     * to true, any query that uses the function MIN or MAX will have any converters set on the mapping applied
-     * to the result prior to return
-     * @see org.eclipse.persistence.queries.ReportQuery.setShouldApplyConvertersToFunctionResults(boolean)
-     * 
-     */
-    public static final String APPLY_CONVERTERS_TO_FUNCTION_RESULTS = "eclipselink.apply-converter-to-min-max";
+
 }

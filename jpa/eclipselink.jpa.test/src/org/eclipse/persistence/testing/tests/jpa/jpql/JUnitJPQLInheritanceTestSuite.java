@@ -269,7 +269,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
             em.persist(aaa);
             em.flush();
             String ejbqlString = "SELECT MAX(aaa.id) FROM AAA aaa";
-            Object result = em.createQuery(ejbqlString).setHint(QueryHints.APPLY_CONVERTERS_TO_FUNCTION_RESULTS, true).getSingleResult();
+            Object result = em.createQuery(ejbqlString).getSingleResult();
             if (!(result.getClass() == String.class)) {
                 fail("Converter not applied");
             }
