@@ -216,6 +216,15 @@ public class MySQLPlatform extends DatabasePlatform {
     }
 
     /**
+     * INTERNAL:
+     * Used for unique constraint deletion.
+     */
+    @Override
+    public String getUniqueConstraintDeletionString() {
+    	return " DROP KEY ";
+    }
+    
+    /**
      * Used for stored function calls.
      */
     @Override
