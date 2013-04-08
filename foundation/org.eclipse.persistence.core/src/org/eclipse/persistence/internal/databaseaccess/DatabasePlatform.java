@@ -994,6 +994,15 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String getConstraintDeletionString() {
         return " DROP CONSTRAINT ";
     }
+
+    /**
+     * Used for constraint deletion.
+     */
+    public String getUniqueConstraintDeletionString() {
+        return getConstraintDeletionString();
+    }
+
+    /**
     
     /**
      * Used for view creation.

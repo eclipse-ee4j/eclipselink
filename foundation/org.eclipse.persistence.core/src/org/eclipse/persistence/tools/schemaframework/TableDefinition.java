@@ -320,7 +320,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public Writer buildUniqueConstraintDeletionWriter(AbstractSession session, UniqueKeyConstraint uniqueKey, Writer writer) throws ValidationException {
         try {
             writer.write("ALTER TABLE " + getFullName());
-            writer.write(session.getPlatform().getConstraintDeletionString() + uniqueKey.getName());
+            writer.write(session.getPlatform().getUniqueConstraintDeletionString() + uniqueKey.getName());
         } catch (IOException ioException) {
             throw ValidationException.fileError(ioException);
         }
