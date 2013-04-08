@@ -837,4 +837,5 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ModifyQuery#setIsBatchExecutionSupported(boolean)
      */
     public static final String BATCH_WRITING = "eclipselink.jdbc.batch-writing";
+
 }

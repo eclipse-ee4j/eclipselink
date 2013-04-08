@@ -256,6 +256,26 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testConverter(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            AAA aaa = new AAA();
+            em.persist(aaa);
+            aaa = new AAA();
+            em.persist(aaa);
+            em.flush();
+            String ejbqlString = "SELECT MAX(aaa.id) FROM AAA aaa";
+            Object result = em.createQuery(ejbqlString).getSingleResult();
+            if (!(result.getClass() == String.class)) {
+                fail("Converter not applied");
+            }
+        } finally{
+            rollbackTransaction(em);
+        }
+
+    }
+    
     // Helper methods and classes for constructor query test cases
     public static boolean equals(Object o1, Object o2) {
         if (o1 == o2) {

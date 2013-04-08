@@ -127,6 +127,12 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         if (this.mapping == null) {
             if (this.attributeExpression != null) {
                 DatabaseMapping mapping = this.attributeExpression.getLeafMapping(query, query.getDescriptor(), query.getSession());
+                if (mapping == null && this.attributeExpression.isFunctionExpression() && this.getResultType() == null){
+                    FunctionExpression expression = ((FunctionExpression)this.attributeExpression);
+                    if (expression.getOperator().equals(ExpressionOperator.maximum()) || expression.getOperator().equals(ExpressionOperator.minimum())){
+                        mapping = expression.getBaseExpression().getLeafMapping(query, query.getDescriptor(), query.getSession());
+                    }
+                }
                 if (mapping == null){
                     if (this.attributeExpression.isExpressionBuilder()) {
                         Class resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
@@ -140,7 +146,7 @@ public class ReportItem implements Cloneable, java.io.Serializable {
                         }
                     }
                 } else {
-                    if (mapping.isAbstractDirectMapping() || this.attributeExpression.isMapEntryExpression() || mapping.isAggregateObjectMapping()){
+                    if (mapping.isAbstractDirectMapping() || this.attributeExpression.isMapEntryExpression() || mapping.isAggregateObjectMapping() || mapping.isDirectCollectionMapping()){
                             setMapping(mapping);
                     //Bug4942640  Widen the check to support collection mapping too
                     } else if (mapping.isForeignReferenceMapping()) {

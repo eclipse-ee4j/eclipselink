@@ -1956,4 +1956,5 @@ public class QueryHintsHandler {
             return query;
         }
     }
+
 }

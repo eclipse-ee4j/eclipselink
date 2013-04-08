@@ -106,7 +106,7 @@ public class ReportQuery extends ReadAllQuery {
      * Used when distinct has been set on the query.  For use in TCK
      */
     protected Set<Object> returnedKeys;
-
+    
     /**
      * INTERNAL:
      * The builder should be provided.
@@ -1407,7 +1407,7 @@ public class ReportQuery extends ReadAllQuery {
             dontReturnWithoutReportQueryResult();
         }
     }
-
+    
     /**
      * PUBLIC:
      * Return if the query results should contain the primary keys or each associated object.
