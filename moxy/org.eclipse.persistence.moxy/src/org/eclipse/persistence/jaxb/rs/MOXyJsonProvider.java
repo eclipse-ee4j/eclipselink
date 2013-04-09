@@ -294,7 +294,10 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(null != jaxbContext) {
             return jaxbContext;
         }
-        ContextResolver<JAXBContext> resolver = providers.getContextResolver(JAXBContext.class, mediaType);
+        ContextResolver<JAXBContext> resolver = null;
+        if(null != providers) {
+            resolver = providers.getContextResolver(JAXBContext.class, mediaType);
+        }
         if(null == resolver || null == (jaxbContext = resolver.getContext(domainClass))) {
             jaxbContext = JAXBContextFactory.createContext(new Class[] {domainClass}, null);
             contextCache.put(domainClass, jaxbContext);
@@ -405,9 +408,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } else if(Object.class == type) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
-            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
+            Class domainClass = getDomainClass(genericType);
+            return isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass;
         } else if(Collection.class.isAssignableFrom(type)) {
-            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
+            Class domainClass = getDomainClass(genericType);
+            return isReadable(domainClass, null, annotations, mediaType) || String.class == domainClass;
         } else {
             return true;
         }
@@ -490,9 +495,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } else if(Object.class == type) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
-            return isReadable(getDomainClass(genericType), null, annotations, mediaType);
+            Class domainClass = getDomainClass(genericType);
+            return isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class;
         } else if(Collection.class.isAssignableFrom(type)) {
-            return isWriteable(getDomainClass(genericType), null, annotations, mediaType);
+            Class domainClass = getDomainClass(genericType);
+            return isWriteable(domainClass, null, annotations, mediaType) || domainClass == String.class;
          } else {
             return true;
         }
