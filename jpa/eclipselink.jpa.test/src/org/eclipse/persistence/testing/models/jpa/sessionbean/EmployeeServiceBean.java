@@ -39,7 +39,9 @@ public class EmployeeServiceBean implements EmployeeService {
     
     public Employee findById(int id) {
         Employee employee = entityManager.find(Employee.class, new Integer(id));
-        employee.getAddress();
+        if (employee != null) {
+            employee.getAddress();
+        }
         return employee;
     }
     

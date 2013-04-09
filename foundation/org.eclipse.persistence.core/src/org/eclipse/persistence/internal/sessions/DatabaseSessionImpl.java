@@ -1007,7 +1007,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 try {
                     // Give the failover time to recover.
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
-                    log(SessionLog.INFO, "communication_failure_attempting_query_retry", (Object[])null, null);
+                    log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", (Object[])null, null);
                 } catch (InterruptedException intEx) {
                     break;
                 }

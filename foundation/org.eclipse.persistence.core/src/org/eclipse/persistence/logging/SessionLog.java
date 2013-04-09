@@ -112,6 +112,8 @@ public interface SessionLog extends Cloneable {
     public static final String DMS = "dms";
     public static final String METADATA = "metadata";
     public static final String MONITORING = "monitoring";
+    public static final String MISC = "misc";
+    
     /**
      * @deprecated use {@link #METADATA}
      */

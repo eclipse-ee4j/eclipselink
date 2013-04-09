@@ -192,15 +192,12 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         Command newCommand;
         CommandPropagator propagator;
 
-        if (commandConverter != null) {
+        if (this.commandConverter != null) {
             // Use the converter if we have one
             Object[] args = { command };
             logDebug("converting_to_toplink_command", args);
-            //for dms profiling
-            if (isCommandProcessorASession()) {
-                getCommandProcessor().processCommand(new ProfileMessageSentCommand());
-            }
-            newCommand = commandConverter.convertToEclipseLinkCommand(command);
+            this.commandProcessor.incrementProfile(SessionProfiler.RcmSent);
+            newCommand = this.commandConverter.convertToEclipseLinkCommand(command);
         } else if (command instanceof Command) {
             // If converter is not set then maybe it just doesn't need converting
             newCommand = (Command)command;
@@ -231,10 +228,8 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
     public void processCommandFromRemoteConnection(Command command) {
         Object[] args = { command.getClass().getName(), command.getServiceId() };
         logDebug("received_remote_command", args);
-        //for dms profiling
-        if (isCommandProcessorASession()) {
-            getCommandProcessor().processCommand(new ProfileMessageReceiveCommand());
-        }
+        
+        this.commandProcessor.incrementProfile(SessionProfiler.RcmReceived);
 
         // If the command is internal then execute it on this RCM
         if (command.isInternalCommand() || command instanceof RCMCommand) {
@@ -252,10 +247,9 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
         // process command with command processor
         logDebug("processing_remote_command", args);
-        commandProcessor.processCommand(newCommand);
-        if (isCommandProcessorASession()) {
-            getCommandProcessor().processCommand(new ProfileRemoteChangeSetCommand());
-        }
+        this.commandProcessor.processCommand(newCommand);
+        
+        this.commandProcessor.incrementProfile(SessionProfiler.RemoteChangeSet);
     }
 
     public CommandProcessor getCommandProcessor() {

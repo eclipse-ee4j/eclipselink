@@ -96,6 +96,18 @@ public interface CommandProcessor {
 
     /**
      * PUBLIC:
+     * Log the profile event.
+     */
+    public void incrementProfile(String counter);
+    
+    /**
+     * PUBLIC:
+     * Log the profile event.
+     */
+    public void updateProfile(String info, Object value);    
+    
+    /**
+     * PUBLIC:
      * Allow the implementation class to handle an exception thrown in in the remote
      * command service. The implementation may choose to simply rethrow the
      * exception if it does not want to handle it.

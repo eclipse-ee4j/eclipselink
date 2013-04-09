@@ -2385,6 +2385,20 @@ public class PersistenceUnitProperties {
     public static final String TUNING = "eclipselink.tuning";
 
     /**
+     * The <code>"eclipselink.memory.free-metadata"</code>property configures the JPA
+     * internal deployment metadata to be released after deployment.
+     * This conserves memory, as the metadata is no longer required, but make
+     * future deployments of any other application take longer, as the metadata must be re-allocated.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"true"
+     * <li>"false" (DEFAULT)
+     * </ul>
+     */
+    public static final String FREE_METADATA = "eclipselink.memory.free-metadata";
+    
+    /**
      * The <code>"eclipselink.transaction.join-existing"</code> property Set to
      * "true" this property forces persistence context to read through
      * JTA-managed ("write") connection in case there is an active

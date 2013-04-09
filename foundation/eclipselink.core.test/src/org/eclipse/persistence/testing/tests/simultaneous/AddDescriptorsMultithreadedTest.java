@@ -157,7 +157,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             // if numberOfTests = 10 then the first test uses k = 0, 10, 20 etc; the second k = 1, 11, 21 etc. 
             for (int k = testNumber; k < nSize; k = k + numberOfTests) {
                 ClassDescriptor descriptor = project.getOrderedDescriptors().get(k);
-                getAbstractSession().log(SessionLog.FINEST, "AddDescriptorsTest adding descriptor for class = " + Helper.getShortClassName(descriptor.getJavaClass()), new Object[]{}, null, false);
+                getAbstractSession().log(SessionLog.FINEST, SessionLog.MISC, "AddDescriptorsTest adding descriptor for class = " + Helper.getShortClassName(descriptor.getJavaClass()), new Object[]{}, null, false);
                 DatabaseField sequenceNumberField = descriptor.getMappingForAttributeName("id").getField();
                 descriptor.setSequenceNumberField(sequenceNumberField);
                 String seqName = "SEQ_" + sequenceNumberField.getTableName();

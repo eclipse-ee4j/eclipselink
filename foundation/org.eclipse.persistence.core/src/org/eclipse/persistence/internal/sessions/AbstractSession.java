@@ -684,7 +684,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 DatabaseException exceptionToThrow = databaseException;
                 Object[] args = new Object[1];
                 args[0] = databaseException;
-                log(SessionLog.INFO, "communication_failure_attempting_begintransaction_retry", args, null);
+                log(SessionLog.INFO, SessionLog.TRANSACTION, "communication_failure_attempting_begintransaction_retry", args, null);
                 // Attempt to reconnect connection.
                 exceptionToThrow = retryTransaction(accessor, databaseException, 0, this);
                 if (exceptionToThrow == null) {
@@ -729,7 +729,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
                     args[0] = databaseException;
-                    log(SessionLog.INFO, "communication_failure_attempting_begintransaction_retry", args, null);
+                    log(SessionLog.INFO, SessionLog.TRANSACTION, "communication_failure_attempting_begintransaction_retry", args, null);
                 } catch (InterruptedException intEx) {
                     break;
                 }
@@ -1829,7 +1829,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     if (databaseException.isCommunicationFailure()) {
                         Object[] args = new Object[1];
                         args[0] = databaseException;
-                        log(SessionLog.INFO, "communication_failure_attempting_query_retry", args, null);
+                        log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);
                         Object result = retryQuery(query, row, databaseException, retryCount, this);
                         if (result instanceof DatabaseException) {
                             exception = (DatabaseException)result;
@@ -3492,7 +3492,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (this.isLoggingOff) {
             return;
         }
-        log(SessionLog.FINER, message, (Object[])null, null, false);
+        log(SessionLog.FINER, SessionLog.MISC, message, (Object[])null, null, false);
     }
 
     /**
@@ -4421,7 +4421,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 level = SessionLog.ALL;
                 ;
             }
-            log(level, message, null, null, false);
+            log(level, SessionLog.PROPAGATION, message, null, null, false);
         }
     }
 
@@ -4689,7 +4689,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * </p><p>
      * @param accessor  the connection that generated the log entry
      * </p>
+     * @deprecated since 2.6 replaced by log with category, log(int, String, String, Object[], Accessor)
      */
+    @Deprecated
     public void log(int level, String message, Object[] params, Accessor accessor) {
         if (this.isLoggingOff) {
             return;
@@ -4713,7 +4715,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * </p><p>
      * @param shouldTranslate  true if the message needs to be translated.
      * </p>
+     * @deprecated since 2.6 replaced by log with category, log(int, String, String, Object[], Accessor, boolean)
      */
+    @Deprecated
     public void log(int level, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
         if (this.isLoggingOff) {
             return;

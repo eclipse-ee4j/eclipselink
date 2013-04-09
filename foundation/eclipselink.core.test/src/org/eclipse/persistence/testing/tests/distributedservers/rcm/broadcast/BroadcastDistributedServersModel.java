@@ -22,6 +22,10 @@ public abstract class BroadcastDistributedServersModel extends RCMDistributedSer
     // maximum wait time to give a chance to remote command recipient to process it before verification.
     public long timeToWaitBeforeVerify;
 
+    public void addSuperTests() {
+        super.addTests();
+    }
+    
     public void addTests() {
         super.addTests();
 

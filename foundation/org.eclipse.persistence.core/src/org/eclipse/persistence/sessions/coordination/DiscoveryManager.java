@@ -16,6 +16,7 @@ import java.net.*;
 import java.io.IOException;
 import org.eclipse.persistence.exceptions.DiscoveryException;
 import org.eclipse.persistence.internal.sessions.coordination.*;
+import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p>
@@ -116,9 +117,7 @@ public class DiscoveryManager implements Runnable {
      * Announce the local service and join the cluster
      */
     public void startDiscovery() {
-        if (rcm.isCommandProcessorASession()) {
-            rcm.getCommandProcessor().processCommand(new ProfileDiscoveryStartedCommand());
-        }
+        this.rcm.getCommandProcessor().updateProfile(SessionProfiler.RcmStatus, "Started");
 
         // Only start if we are currently stopped
         if (this.isDiscoveryStopped()) {
@@ -132,16 +131,15 @@ public class DiscoveryManager implements Runnable {
      * Note that this does not remove the local service from the cluster.
      */
     public void stopDiscovery() {
-        if (rcm.isCommandProcessorASession()) {
-            this.rcm.getCommandProcessor().processCommand(new ProfileDiscoveryStoppedCommand());
-        }
+        this.rcm.getCommandProcessor().updateProfile(SessionProfiler.RcmStatus, "Stopped");
+
         stopListening();
         try {
             // Put in a sleep to give the listener thread a chance to stop
             Thread.sleep(500);
         } catch (InterruptedException exception) {
         }
-        communicationSocket = null;
+        this.communicationSocket = null;
     }
 
     /**
