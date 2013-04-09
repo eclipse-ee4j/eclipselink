@@ -34,6 +34,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -60,6 +62,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.Birthday;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.Alpine;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa.inherited.Bluish;
 import org.eclipse.persistence.testing.models.jpa.inherited.BuildingBylaw;
 import org.eclipse.persistence.testing.models.jpa.inherited.Committee;
 import org.eclipse.persistence.testing.models.jpa.inherited.CommitteeDates;
@@ -153,6 +156,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
         suite.addTest(new InheritedModelJunitTest("testNodeImplWeaving"));
         suite.addTest(new InheritedModelJunitTest("testEmbeddaleCollectionMapEmbeddableRead"));
+        suite.addTest(new InheritedModelJunitTest("testInterfaces"));
         
         return suite;
     }
@@ -1873,4 +1877,30 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
     }
     
+    public void testInterfaces(){
+        // ensure weaving has occured
+        EntityManager em = createEntityManager();
+        em.getCriteriaBuilder();
+        Class[] testClasses = new Class[]{BeerConsumer.class, Alpine.class, NoviceBeerConsumer.class, Bluish.class, Blue.class, Corona.class, ExpertBeerConsumer.class, Heineken.class};
+        
+        for (int index = 0;index<testClasses.length;index++){
+            Class[] interfaces = testClasses[index].getInterfaces();
+            Type[] genericInterfaces = testClasses[index].getGenericInterfaces();
+            
+            if (interfaces.length != genericInterfaces.length){
+                fail("Weaving failed to correctly update interfaces for " + testClasses[index]);
+            }
+            
+            for (int i=0;i<interfaces.length;i++){
+                String comparisonString = null;
+                if (genericInterfaces[i] instanceof Class<?>){
+                    comparisonString = ((Class<?>)genericInterfaces[i]).getCanonicalName();
+                } else if (genericInterfaces[i] instanceof ParameterizedType){
+                    comparisonString = ((Class<?>)((ParameterizedType)genericInterfaces[i]).getRawType()).getCanonicalName();
+                }
+                
+                assertEquals("Mismatched interface on " + testClasses[index] + ": " + interfaces[i].getCanonicalName() + " != " + comparisonString, interfaces[i].getCanonicalName(), comparisonString);
+            }
+        }
+    }
 }

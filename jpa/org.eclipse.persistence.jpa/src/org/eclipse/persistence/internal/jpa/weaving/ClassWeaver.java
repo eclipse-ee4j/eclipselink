@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.libraries.asm.signature.SignatureReader;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -1319,7 +1320,19 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
         }
         
-        cv.visit(version, access, name, signature, superName, newInterfaces);
+        String newSignature = null;
+        // fix the signature to include any new methods we weave
+        if (signature != null){
+            StringBuffer newSignatureBuf = new StringBuffer();
+            newSignatureBuf.append(signature);
+            
+            for (int i = interfaces.length;i<newInterfaces.length;i++){
+                newSignatureBuf.append("L" + newInterfaces[i] + ";");
+            }
+            newSignature = newSignatureBuf.toString();
+        }
+        
+        cv.visit(version, access, name, newSignature, superName, newInterfaces);
     } 
 
     /**
