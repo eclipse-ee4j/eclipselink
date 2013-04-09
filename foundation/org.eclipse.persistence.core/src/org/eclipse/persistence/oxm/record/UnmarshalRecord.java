@@ -442,6 +442,7 @@ public class UnmarshalRecord extends XMLRecord implements org.eclipse.persistenc
 
     @Override
     public void setCurrentObject(Object object) {
+        this.currentObject = object;
         this.unmarshalRecord.setCurrentObject(object);
     }
 
