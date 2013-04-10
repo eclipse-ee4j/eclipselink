@@ -565,7 +565,7 @@ public class XMLContext {
         T value = getValueByXPath(object, xmlDescriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
         if (null == value) {
             DatabaseMapping selfMapping = xmlDescriptor.getObjectBuilder().getMappingForField(new XMLField(String.valueOf(XMLConstants.DOT)));
-            if (null != selfMapping) {
+            if (null != selfMapping && selfMapping.getReferenceDescriptor() != null) {
                 return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(),
                         new StringTokenizer(xPath, XMLConstants.XPATH_SEPARATOR), ((XMLDescriptor) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
             }

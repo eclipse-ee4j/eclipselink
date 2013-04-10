@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.jaxb.nomappings.NoMappingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.ns.XmlElementRefWithNamespaceTests;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.prefix.XmlElementRefPrefixesTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayWithIdTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueWithAttributesTestCases;
@@ -54,6 +55,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlattribute.ObjectTestCases.class);
         suite.addTestSuite(XmlValueTestCases.class);
         suite.addTestSuite(XmlValueByteArrayTestCases.class);
+        suite.addTestSuite(XmlValueByteArrayWithIdTestCases.class);
         suite.addTestSuite(XmlValueWithAttributesTestCases.class);
         suite.addTestSuite(XmlValueListTestCases.class);
         suite.addTestSuite(InvalidTestCases.class);
