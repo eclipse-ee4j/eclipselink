@@ -40,7 +40,8 @@
     <property name="env" environment="env" value="env"/>
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/weblogic.properties"/>
-    <property file="test.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
     
     <!-- WebLogic ant tasks -->
@@ -143,10 +144,10 @@
                 fork="true"
                 failonerror="true">
                 <jvmarg value="-server"/>
-				<jvmarg value="-Xms512m"/>
-				<jvmarg value="-Xmx960m"/>
-				<jvmarg value="-XX:PermSize=512m"/>
-				<jvmarg value="-XX:MaxPermSize=960m"/>
+                <jvmarg value="-Xms512m"/>
+                <jvmarg value="-Xmx960m"/>
+                <jvmarg value="-XX:PermSize=512m"/>
+                <jvmarg value="-XX:MaxPermSize=960m"/>
                 <!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
                 <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                 <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
@@ -171,10 +172,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-						<jvmarg value="-Xms512m"/>
-						<jvmarg value="-Xmx960m"/>
-						<jvmarg value="-XX:PermSize=512m"/>
-						<jvmarg value="-XX:MaxPermSize=960m"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:PermSize=512m"/>
+                        <jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -198,10 +199,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-						<jvmarg value="-Xms512m"/>
-						<jvmarg value="-Xmx960m"/>
-						<jvmarg value="-XX:PermSize=512m"/>
-						<jvmarg value="-XX:MaxPermSize=960m"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:PermSize=512m"/>
+                        <jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -225,10 +226,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-						<jvmarg value="-Xms512m"/>
-						<jvmarg value="-Xmx960m"/>
-						<jvmarg value="-XX:PermSize=512m"/>
-						<jvmarg value="-XX:MaxPermSize=960m"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:PermSize=512m"/>
+                        <jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -273,8 +274,8 @@
             </classpath>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
-			<jvmarg value="-XX:PermSize=512m"/>
-			<jvmarg value="-XX:MaxPermSize=960m"/>
+            <jvmarg value="-XX:PermSize=512m"/>
+            <jvmarg value="-XX:MaxPermSize=960m"/>
         </wlserver>
         <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
             <create type="Cluster" name="${rcm.wls.cluster.name}"/>
