@@ -520,7 +520,7 @@ public abstract class Context<
         T value = getValueByXPath(object, descriptor.getObjectBuilder(), stringTokenizer, namespaceResolver, returnType);
         if (null == value) {
             CoreMapping selfMapping = descriptor.getObjectBuilder().getMappingForField(createField(String.valueOf(Constants.DOT)));
-            if (null != selfMapping) {
+            if (null != selfMapping && selfMapping.getReferenceDescriptor() != null) {            
                 return getValueByXPath(selfMapping.getAttributeValueFromObject(object), selfMapping.getReferenceDescriptor().getObjectBuilder(),
                         new StringTokenizer(xPath, Constants.XPATH_SEPARATOR),  ((DESCRIPTOR) selfMapping.getReferenceDescriptor()).getNamespaceResolver(), returnType);
             }
