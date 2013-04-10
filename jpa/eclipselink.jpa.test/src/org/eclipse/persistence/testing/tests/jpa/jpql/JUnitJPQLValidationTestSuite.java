@@ -1198,38 +1198,38 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }   
     }
 
-    public void testInvalidSetClause()
-    {
+    public void testInvalidSetClause() {
         String ejbqlString;
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        try {            
-            try 
-            {
-                ejbqlString = "UPDATE Employee e SET e.projects = NULL";
-                em.createQuery(ejbqlString).executeUpdate();
-                fail ("Failed to throw expected IllegalArgumentException for query " + 
-                      " updating a collection valued relationship.");
-            } catch(IllegalArgumentException ex)
-            {
-                Assert.assertTrue(ex.getCause() instanceof JPQLException);
-            }   
-    
-            try 
-            {
-                ejbqlString = "UPDATE Employee e SET e.department.name = 'CHANGED'";
-                em.createQuery(ejbqlString).executeUpdate();
-                fail ("Failed to throw expected IllegalArgumentException for query " + 
-                      " updating a sate field of a related instance.");
-            } catch(IllegalArgumentException ex)
-            {
-                Assert.assertTrue(ex.getCause() instanceof JPQLException);
-            }
+        try {
+            ejbqlString = "UPDATE Employee e SET e.projects = NULL";
+            em.createQuery(ejbqlString).executeUpdate();
+            fail ("Failed to throw expected IllegalArgumentException for query " + 
+                    " updating a collection valued relationship.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
         } finally {
-            rollbackTransaction(em);
+            closeEntityManagerAndTransaction(em);
+        }
+
+        //above exception would have marked the transaction for rollback, 
+        //so the test needs to start a new one
+        em = createEntityManager();
+        beginTransaction(em);
+
+        try 
+        {
+            ejbqlString = "UPDATE Employee e SET e.department.name = 'CHANGED'";
+            em.createQuery(ejbqlString).executeUpdate();
+            fail ("Failed to throw expected IllegalArgumentException for query " + 
+                    " updating a sate field of a related instance.");
+        } catch(IllegalArgumentException ex) {
+            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
     }
-        
 
     public void testUnsupportedCountDistinctOnOuterJoinedCompositePK() {
         try  {
