@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.tests.jpa;
 
 import org.eclipse.persistence.testing.framework.TestModel;
 import org.eclipse.persistence.testing.tests.jpa.FullRegressionTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.remote.RemoteEntityManagerTestSuite;
 
 /**
  * <p><b>Purpose</b>: Test run for all CMP3 tests.
@@ -32,5 +33,6 @@ public class AllCMP3TestRunModel extends TestModel {
         public AllCMP3TestRunModel() {
             addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.JPAAdvancedTestModel());
             addTest(FullRegressionTestSuite.suite());
+            addTest(RemoteEntityManagerTestSuite.suite());
         }
 }

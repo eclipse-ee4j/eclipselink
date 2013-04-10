@@ -48,8 +48,10 @@
         <antcall target="build-deploy-cachecoordination-wls"/>
         <antcall target="runclient-cachecoordination-wls"/>
         <ant antfile="${jpatest.basedir}/antbuild.xml" target="generate-report" inheritRefs="true"/>
-        <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true"/>
-        <ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/>
+        <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true">
+            <param name="application.name" value="eclipselink-sessionbean-model"/>
+        </antcall>
+        <!--ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/-->
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${weblogic.domain}/servers/${rcm.wls.server3.name}/tmp"/>
             <fileset dir="${weblogic.domain}/servers/${rcm.wls.server2.name}/tmp"/>
@@ -67,7 +69,7 @@
                 <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
                 <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
                 <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
-                <param name="EAR_NAME" value="eclipselink-sessionbean-model-server1"/>
+                <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
                 <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTestsRCM"/>
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
@@ -86,7 +88,7 @@
             <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
             <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
-            <param name="EAR_NAME" value="eclipselink-sessionbean-model-server2"/>
+            <param name="EAR_NAME" value="eclipselink-sessionbean-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTestsRCM"/>
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
@@ -106,7 +108,7 @@
                 <param name="MODEL_NAME" value="jpa-performance"/>
                 <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/performance"/>
                 <param name="TEST_NAME" value="jpa-performance"/>
-                <param name="EAR_NAME" value="jpa-performance-server1"/>
+                <param name="EAR_NAME" value="jpa-performance"/>
                 <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.performance.concurrency.JPAClusteredConcurrencyComparisonModel"/>
                 <param name="eclipselink.jpa.test.dir" value="."/>
             </antcall>
@@ -144,16 +146,8 @@
         <replace file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
     </target>
 
-    <target name="session-customizer-rmi" if="is.rmi">
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
-        <replace file="${jpatest.basedir}/${resource.dir}/server/persistence.xml" token='%%current-server-url%%' value="${current.server.url}"/>
-    </target>
-
     <target name="cachecoordination-build-and-deploy-cluster" depends="set-app-name-cachecoordination">
         <copy overwrite="true" file="${jpatest.basedir}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
-        <antcall target="session-customizer-rmi" inheritRefs="true">
-             <param name="current.server.url" value="${rcm.wls.server1.url}"/>
-        </antcall>
         <ant antfile="${jpatest.basedir}/antbuild.xml" target="server-build" inheritRefs="true"/>
         <delete file="${jpatest.basedir}/${resource.dir}/server/persistence.xml"/>
         <antcall target="server-deploy-cachecoordination-cluster" inheritRefs="true">
@@ -173,7 +167,7 @@
     <target name="server-undeploy-cachecoordination-cluster">
         <ant antfile="${jpatest.basedir}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
-        <property name="target.server" value="${rcm.wls.cluster.name}"/>
+            <property name="target.server" value="${rcm.wls.cluster.name}"/>
         </ant>
     </target>
 

@@ -1575,6 +1575,20 @@
         </antcall>
     </target>
 
+    <!-- Runs Remote (RMI) JPA tests. -->
+    <target name="test-remote-jpa" depends="clean-test,config-classpath">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.remote.RemoteEntityManagerTestSuite"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.classpath"/>
+            <param name="DB_URL" value="${db.url}"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+    
     <!-- Runs JPA Oracle NoSQL tests. -->
     <target name="oracle-nosql-test" depends="clean-test, config-classpath">
         <antcall target="run-test" inheritRefs="true">

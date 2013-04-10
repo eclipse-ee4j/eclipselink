@@ -299,7 +299,8 @@ public class FullRegressionTestSuite extends TestSuite {
         fullSuite.addTest(PartitionedXMLTestSuite.suite());
         fullSuite.addTest(PLSQLTestSuite.suite());
         fullSuite.addTest(XMLPLSQLTestSuite.suite());
-        fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
+        // Has security manager issues on some JVMs.
+        //fullSuite.addTest(RemoteEntityManagerTestSuite.suite());
 
         // Composite tests.
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());

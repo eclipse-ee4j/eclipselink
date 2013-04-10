@@ -132,14 +132,21 @@
         <delete file="${rcm.wls.server1.name}.log"/>
         <delete file="${rcm.wls.server2.name}.log"/>
         <delete file="${rcm.wls.server3.name}.log"/>
+        <delete file="${rcm.wls.server1.name}.err"/>
+        <delete file="${rcm.wls.server2.name}.err"/>
+        <delete file="${rcm.wls.server3.name}.err"/>
+        <delete file="${rcm.wls.admin.name}.log"/>
+        <delete file="${rcm.wls.admin.name}.err"/>
         <parallel>
             <echo message="*** starting WebLogic AdminServer"/>
             <java classname="weblogic.Server" 
                 fork="true"
                 failonerror="true">
                 <jvmarg value="-server"/>
-                <jvmarg value="-Xms512m"/>
-                <jvmarg value="-Xmx960m"/>
+				<jvmarg value="-Xms512m"/>
+				<jvmarg value="-Xmx960m"/>
+				<jvmarg value="-XX:PermSize=512m"/>
+				<jvmarg value="-XX:MaxPermSize=960m"/>
                 <!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
                 <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                 <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
@@ -148,7 +155,7 @@
                 <sysproperty key="bea.home" value="${bea.root.dir}"/>
                 <sysproperty key="weblogic.management.username" value="${server.user}"/>
                 <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-                <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
                 <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
                 <sysproperty key="weblogic.Stdout" value="${rcm.wls.admin.name}.log"/>
                 <sysproperty key="weblogic.Stderr" value="${rcm.wls.admin.name}.err"/>
@@ -164,9 +171,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-                        <jvmarg value="-Xms512m"/>
-                        <jvmarg value="-Xmx960m"/>
-                        <jvmarg value="-XX:MaxPermSize=256m"/>
+						<jvmarg value="-Xms512m"/>
+						<jvmarg value="-Xmx960m"/>
+						<jvmarg value="-XX:PermSize=512m"/>
+						<jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -175,7 +183,7 @@
                         <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
                         <sysproperty key="weblogic.management.username" value="${server.user}"/>
                         <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
                         <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
                         <sysproperty key="weblogic.Stdout" value="${rcm.wls.server1.name}.log"/>
                         <sysproperty key="weblogic.Stderr" value="${rcm.wls.server1.name}.err"/>
@@ -190,9 +198,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-                        <jvmarg value="-Xms512m"/>
-                        <jvmarg value="-Xmx960m"/>
-                        <jvmarg value="-XX:MaxPermSize=256m"/>
+						<jvmarg value="-Xms512m"/>
+						<jvmarg value="-Xmx960m"/>
+						<jvmarg value="-XX:PermSize=512m"/>
+						<jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -201,7 +210,7 @@
                         <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
                         <sysproperty key="weblogic.management.username" value="${server.user}"/>
                         <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
                         <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
                         <sysproperty key="weblogic.Stdout" value="${rcm.wls.server2.name}.log"/>
                         <sysproperty key="weblogic.Stderr" value="${rcm.wls.server2.name}.err"/>
@@ -216,9 +225,10 @@
                         fork="true"
                         failonerror="true">
                         <jvmarg value="-server"/>
-                        <jvmarg value="-Xms512m"/>
-                        <jvmarg value="-Xmx960m"/>
-                        <jvmarg value="-XX:MaxPermSize=256m"/>
+						<jvmarg value="-Xms512m"/>
+						<jvmarg value="-Xmx960m"/>
+						<jvmarg value="-XX:PermSize=512m"/>
+						<jvmarg value="-XX:MaxPermSize=960m"/>
                         <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
                         <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
                         <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
@@ -227,7 +237,7 @@
                         <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
                         <sysproperty key="weblogic.management.username" value="${server.user}"/>
                         <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
-                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="java.security.policy" value='"${weblogic.home}/lib/weblogic.policy"'/>
                         <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
                         <sysproperty key="weblogic.Stdout" value="${rcm.wls.server3.name}.log"/>
                         <sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
@@ -263,19 +273,24 @@
             </classpath>
             <jvmarg value="-Xms512m"/>
             <jvmarg value="-Xmx960m"/>
+			<jvmarg value="-XX:PermSize=512m"/>
+			<jvmarg value="-XX:MaxPermSize=960m"/>
         </wlserver>
         <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
             <create type="Cluster" name="${rcm.wls.cluster.name}"/>
             <query domain="mydomain" type="Cluster" name="${rcm.wls.cluster.name}" property="cluster"/>
             <create type="Server" name="${rcm.wls.server1.name}">
+                <set attribute="ListenAddress" value="${rcm.wls.server1.httphost}"/>
                 <set attribute="ListenPort" value="${rcm.wls.server1.port}"/>
                 <set attribute="Cluster" value="${cluster}"/>
             </create>
             <create type="Server" name="${rcm.wls.server2.name}">
+                <set attribute="ListenAddress" value="${rcm.wls.server2.httphost}"/>
                 <set attribute="ListenPort" value="${rcm.wls.server2.port}"/>
                 <set attribute="Cluster" value="${cluster}"/>
             </create>
             <create type="Server" name="${rcm.wls.server3.name}">
+                <set attribute="ListenAddress" value="${rcm.wls.server3.httphost}"/>
                 <set attribute="ListenPort" value="${rcm.wls.server3.port}"/>
                 <set attribute="Cluster" value="${cluster}"/>
             </create>
@@ -330,16 +345,16 @@
             </create>
 
             <create type="JMSConnectionFactory" name="EclipseLinkTopicConnectionFactory">
-              <set attribute="JNDIName" value="jms/EclipseLinkTopicConnectionFactory"/>
-              <set attribute="XAServerEnabled" value="false"/>
-              <set attribute="Targets" value="${cluster}"/>
-           </create>
-           <create type="JMSServer" name="EclipseLinkJMSServer">
-              <set attribute="Targets" value="${server1}"/>
+               <set attribute="JNDIName" value="jms/EclipseLinkTopicConnectionFactory"/>
+               <set attribute="XAServerEnabled" value="false"/>
+               <set attribute="Targets" value="${cluster}"/>
+            </create>
+            <create type="JMSServer" name="EclipseLinkJMSServer">
+               <set attribute="Targets" value="${server1}"/>
                <create type="JMSTopic" name="EclipseLinkTopic">
                   <set attribute="JNDIName" value="jms/EclipseLinkTopic"/>
                </create>
-           </create>
+            </create>
 
         </wlconfig>
     </target>
