@@ -2206,15 +2206,15 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
         fieldID.setForeignKeyFieldName("CMP3_SEEDED_FRUIT.ID");
         table.addField(fieldID);
         
-        FieldDefinition fieldRIPE = new FieldDefinition();
-        fieldRIPE.setName("RIPE");
-        fieldRIPE.setTypeName("NUMBER");
-        fieldRIPE.setSize(1);
-        fieldRIPE.setIsPrimaryKey(false);
-        fieldRIPE.setIsIdentity(false);
-        fieldRIPE.setUnique(false);
-        fieldRIPE.setShouldAllowNull(true);
-        table.addField(fieldRIPE);
+        FieldDefinition fieldGRADE = new FieldDefinition();
+        fieldGRADE.setName("GRADE");
+        fieldGRADE.setTypeName("NUMBER");
+        fieldGRADE.setSize(10);
+        fieldGRADE.setIsPrimaryKey(false);
+        fieldGRADE.setIsIdentity(false);
+        fieldGRADE.setUnique(false);
+        fieldGRADE.setShouldAllowNull(true);
+        table.addField(fieldGRADE);
         
         return table;
     }
