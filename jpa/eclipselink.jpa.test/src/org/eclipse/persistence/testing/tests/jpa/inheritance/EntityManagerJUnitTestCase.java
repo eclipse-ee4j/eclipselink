@@ -555,7 +555,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
             
             CitrusFruit fruit = new CitrusFruit();
             fruit.setName("Orange");
-            fruit.setRipe(true);
+            fruit.setGrade(1);
             for (int i = 0; i < 4; i++) {
                 fruit.addSeed(new Seed());
             }
