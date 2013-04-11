@@ -277,7 +277,7 @@ public class QueryTestSuite extends JUnitTestCase {
     public void testQueryExceptionOnClosedEM() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e");
-        em.close();
+        closeEntityManager(em);
         List<String> failedMethodList = new ArrayList();
         try{
             query.getLockMode();
