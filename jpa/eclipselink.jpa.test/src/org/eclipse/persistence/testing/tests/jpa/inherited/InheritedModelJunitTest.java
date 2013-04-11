@@ -156,7 +156,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
         suite.addTest(new InheritedModelJunitTest("testNodeImplWeaving"));
         suite.addTest(new InheritedModelJunitTest("testEmbeddaleCollectionMapEmbeddableRead"));
-        suite.addTest(new InheritedModelJunitTest("testInterfaces"));
+        if (!isJPA10()) {
+            suite.addTest(new InheritedModelJunitTest("testInterfaces"));
+        }
         
         return suite;
     }
