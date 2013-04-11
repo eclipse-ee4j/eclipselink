@@ -21,18 +21,18 @@ import javax.persistence.Table;
 @DiscriminatorValue("C")
 public class CitrusFruit extends SeededFruit {
     
-    protected boolean ripe;
+    protected int grade;
     
     public CitrusFruit() {
         super();
     }
 
-    public boolean isRipe() {
-        return ripe;
+    public int getGrade() {
+        return this.grade;
     }
 
-    public void setRipe(boolean ripe) {
-        this.ripe = ripe;
+    public void setGrade(int grade) {
+        this.grade = grade;
     }
 
 }
