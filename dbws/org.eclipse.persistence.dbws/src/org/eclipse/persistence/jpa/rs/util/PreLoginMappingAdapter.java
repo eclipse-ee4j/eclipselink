@@ -323,6 +323,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
                         xmlChoiceMapping.addChoiceElement(attributeName, refDesc.getJavaClass());
 
+                        xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
                         jaxbDescriptor.addMapping(xmlChoiceMapping);

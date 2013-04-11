@@ -15,7 +15,9 @@ import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.LAZY;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -131,7 +133,7 @@ public class Employee {
     private List<String> responsibilities = new ArrayList<String>();
 
     @OneToMany(mappedBy="employee", cascade=CascadeType.ALL)
-    private List<Expertise> expertiseAreas = new ArrayList<Expertise>();
+    private Set<Expertise> expertiseAreas = new HashSet<Expertise>();
     
     @ManyToOne(cascade = PERSIST, fetch = LAZY)
     @JoinColumn(name = "OFFICE_ID")
@@ -297,11 +299,11 @@ public class Employee {
         getResponsibilities().remove(responsibility);
     }
 
-    public List<Expertise> getExpertiseAreas() {
+    public Set<Expertise> getExpertiseAreas() {
         return expertiseAreas;
     }
 
-    public void setExpertiseAreas(List<Expertise> expertiseAreas) {
+    public void setExpertiseAreas(Set<Expertise> expertiseAreas) {
         this.expertiseAreas = expertiseAreas;
     }
 
