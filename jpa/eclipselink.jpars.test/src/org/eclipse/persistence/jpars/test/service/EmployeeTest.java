@@ -32,6 +32,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.employee.Employee;
 import org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress;
 import org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod;
+import org.eclipse.persistence.jpars.test.model.employee.Expertise;
 import org.eclipse.persistence.jpars.test.model.employee.Gender;
 import org.eclipse.persistence.jpars.test.model.employee.PhoneNumber;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
@@ -95,8 +96,13 @@ public class EmployeeTest {
         for (PhoneNumber ph:phoneNumbers){
             ph.setEmployee(employee);
         }
-
+        
         em.persist(employee);
+        
+        Expertise expertise = new Expertise();
+        expertise.setSubject("REST");
+        em.persist(expertise);
+        
         em.getTransaction().commit();
 
         Employee manager = new Employee();
@@ -109,6 +115,9 @@ public class EmployeeTest {
         manager.setManagedEmployees(managedEmployees);
         employee.setManager(manager);
 
+        expertise.setEmployee(manager);
+        manager.getExpertiseAreas().add(expertise);
+        
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_JSON_TYPE);
         Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_JSON_TYPE);
 
@@ -121,6 +130,8 @@ public class EmployeeTest {
                 assertTrue("Unmarshalled employee first name is incorrect.", "John".equals(firstName));
             }
         }
+        
+        assertTrue("Incorrectly marshallet Set of Expertise Areas", mgr.getExpertiseAreas().size() == 1);
 
         DBUtils.dbDelete(employee, em);
     }
@@ -159,6 +170,11 @@ public class EmployeeTest {
         }
 
         em.persist(employee);
+        
+        Expertise expertise = new Expertise();
+        expertise.setSubject("REST");
+        em.persist(expertise);
+        
         em.getTransaction().commit();
 
         Employee manager = new Employee();
@@ -170,7 +186,10 @@ public class EmployeeTest {
         managedEmployees.add(employee);
         manager.setManagedEmployees(managedEmployees);
         employee.setManager(manager);
-
+        
+        expertise.setEmployee(manager);
+        manager.getExpertiseAreas().add(expertise);
+        
         String mgrMsg = RestUtils.marshal(context, manager, MediaType.APPLICATION_XML_TYPE);
         Employee mgr = RestUtils.unmarshal(context, mgrMsg, Employee.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
 
@@ -183,7 +202,8 @@ public class EmployeeTest {
                 assertTrue("Unmarshalled employee first name is incorrect.", "John".equals(firstName));
             }
         }
-
+        assertTrue("Incorrectly marshalled Set of Expertise Areas", mgr.getExpertiseAreas().size() == 1);
+        
         DBUtils.dbDelete(employee, em);
     }
 }
