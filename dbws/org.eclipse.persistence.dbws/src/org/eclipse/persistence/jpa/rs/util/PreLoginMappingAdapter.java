@@ -307,8 +307,9 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                         xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
 
-                        xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
-                        xmlChoiceMapping.addChoiceElement(attributeName, refDesc.getJavaClass());
+                        XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping) jaxbMapping;
+                        xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), Link.class);
+                        xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
                         jaxbDescriptor.removeMappingForAttributeName(jaxbMapping.getAttributeName());
@@ -320,8 +321,9 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                         copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                         xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
 
-                        xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
-                        xmlChoiceMapping.addChoiceElement(attributeName, refDesc.getJavaClass());
+                        XMLCompositeCollectionMapping compositeMapping = (XMLCompositeCollectionMapping) jaxbMapping;
+                        xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), Link.class);
+                        xmlChoiceMapping.addChoiceElement(compositeMapping.getXPath(), refDesc.getJavaClass());
 
                         xmlChoiceMapping.setContainerPolicy(jaxbMapping.getContainerPolicy());
                         xmlChoiceMapping.setConverter(new XMLJavaTypeConverter(Class.forName(adapterClassName, true, cl)));
