@@ -92,7 +92,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * attribute to database field override.
      * @see addFieldTranslation()
      */
-    protected transient Map<String, Object[]> nestedFieldTranslations;
+    protected Map<String, Object[]> nestedFieldTranslations;
     
     /** 
      * List of many to many mapping overrides to apply at initialize time to 
