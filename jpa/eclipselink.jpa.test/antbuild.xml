@@ -1496,6 +1496,7 @@
             <param name="RUN_PATH" value="run.extended.classpath"/>
             <param name="DB_URL" value="${db.url}"/>
         </antcall>
+        <antcall target="test-remote-jpa" inheritRefs="true"/>
         <antcall target="run-bean-validation-tests" inheritRefs="true"/>
         <antcall target="oracle-test" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>

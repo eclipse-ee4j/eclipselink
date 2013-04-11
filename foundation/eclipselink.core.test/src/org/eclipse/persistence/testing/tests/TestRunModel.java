@@ -220,7 +220,7 @@ public class TestRunModel extends TestModel {
      */
     public static TestModel buildJPATestModel() {
         List tests = new ArrayList();
-        tests.add("org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel");
+        tests.add("org.eclipse.persistence.testing.tests.jpa.AllJPATests");
                     
         TestModel model = new TestModel();
         model.setName("JPA Tests");
