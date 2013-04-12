@@ -62,29 +62,36 @@
     </taskdef>
 
     <!-- Stop all servers. -->
-    <target name="weblogic-stop-cachecoordination" depends="weblogic-stop-server3,weblogic-stop-server2,weblogic-stop-server1"/>
+    <target name="weblogic-stop-cachecoordination" depends="stop-server3,stop-server2,stop-server1,stop-adminserver"/>
     <!-- Stop the managed server1 -->
-    <target name="weblogic-stop-server1">
+    <target name="stop-server1">
         <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
             dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server1.name}" port="${rcm.wls.server1.port}"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
     </target>
     <!-- Stop the managed server2 -->
-    <target name="weblogic-stop-server2">
+    <target name="stop-server2">
         <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
             dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server2.name}" port="${rcm.wls.server2.port}"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
     </target>
-    <!-- Stop the admin server -->
-    <target name="weblogic-stop-server3">
+    <!-- Stop the managed server3 -->
+    <target name="stop-server3">
         <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
             dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server3.name}" port="${rcm.wls.server3.port}"
             username="${server.user}" password="${server.pwd}" action="shutdown">
         </wlserver>
     </target>
-    
+    <!-- Stop the admin server -->
+    <target name="stop-adminserver">
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.admin.name}" port="${rcm.wls.admin.port}"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
+
     <!--
         Deploy the application ear to the server.
         Note: WLS server must be running.
@@ -302,7 +309,7 @@
         </wlserver>
     </target>
 
-    <target name="setup-cluster">
+    <target name="weblogic-setup-cluster">
         <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
             <query domain="mydomain" type="JDBCConnectionPool" name="EclipseLinkPool">
                 <delete/>
