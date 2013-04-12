@@ -16,6 +16,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
