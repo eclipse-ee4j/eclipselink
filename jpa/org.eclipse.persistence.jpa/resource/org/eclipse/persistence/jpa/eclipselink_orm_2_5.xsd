@@ -2138,7 +2138,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-        <xsd:element name="column-result" type="orm:column-result" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="column" type="orm:column-result" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="target-class" type="xsd:string" use="required"/>
   </xsd:complexType>
@@ -2326,20 +2326,20 @@
           </xsd:choice>
         </xsd:sequence>
       </xsd:choice>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
       <xsd:choice>
         <xsd:sequence>
-          <xsd:element name="column" type="orm:column" minOccurs="0"/>
           <xsd:choice>
             <xsd:element name="temporal" type="orm:temporal" minOccurs="0"/>
             <xsd:element name="enumerated" type="orm:enumerated" minOccurs="0"/>
             <xsd:element name="lob" type="orm:lob" minOccurs="0"/>
           </xsd:choice>
         </xsd:sequence>
-        <xsd:choice minOccurs="0" maxOccurs="unbounded">
-          <xsd:element name="attribute-override" type="orm:attribute-override"/>
-          <xsd:element name="association-override" type="orm:association-override"/>
-          <xsd:element name="convert" type="orm:convert"/>
-        </xsd:choice>
+        <xsd:sequence>
+          <xsd:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="association-override" type="orm:association-override" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="convert" type="orm:convert" minOccurs="0" maxOccurs="unbounded"/>   
+        </xsd:sequence>
       </xsd:choice>
       <xsd:choice minOccurs="0" maxOccurs="2">
         <xsd:element name="converter" type="orm:converter"/>
@@ -2347,9 +2347,9 @@
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
-      <xsd:choice>
-          <xsd:element name="collection-table" type="orm:collection-table" minOccurs="0"/>
-          <xsd:element name="field" type="orm:field" minOccurs="0"/>
+      <xsd:choice minOccurs="0">
+          <xsd:element name="collection-table" type="orm:collection-table"/>
+          <xsd:element name="field" type="orm:field"/>
       </xsd:choice>
       <xsd:element name="cascade-on-delete" type="xsd:boolean" minOccurs="0"/>
       <xsd:element name="join-fetch" type="orm:join-fetch-type" minOccurs="0"/>
