@@ -761,4 +761,11 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public void setShouldBuildNullForNullPk(boolean shouldBuildNullForNullPk) {
         this.shouldBuildNullForNullPk = shouldBuildNullForNullPk;
     }
+    /**
+     * INTERNAL:
+     * Return if the query uses ResultSet optimization.
+     */
+    public boolean usesResultSetAccessOptimization() {
+        return false;
+    }
 }
