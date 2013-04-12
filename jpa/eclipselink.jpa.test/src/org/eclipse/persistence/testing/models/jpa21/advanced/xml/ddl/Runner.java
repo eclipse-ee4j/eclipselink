@@ -18,6 +18,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Converts;
+import javax.persistence.ElementCollection;
+import javax.persistence.ForeignKey;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter;
+import org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Gender;
 
 public class Runner extends Athlete {
@@ -26,6 +37,23 @@ public class Runner extends Athlete {
     protected RunnerInfo info;
     protected List<Race> races;
     protected Map<ShoeTag, Shoe> shoes;
+
+    // This is mapped here until the JPA schema is corrected. Currently
+    // cannot specify a convert with a column in JPA (with XML validation on)
+    @ElementCollection
+    @Column(name="TIME")
+    @MapKeyColumn(name="DISTANCE")
+    @CollectionTable(
+        name="JPA21_XML_DDL_RUNNER_PBS",
+        joinColumns=@JoinColumn(name="RUNNER_ID"),
+        foreignKey=@ForeignKey(
+                name="XML_Runner_PBS_Foreign_Key",
+                foreignKeyDefinition="FOREIGN KEY (RUNNER_ID) REFERENCES JPA21_XML_DDL_RUNNER (ID)")
+    )
+    @Converts({
+        @Convert(attributeName="key", converter = DistanceConverter.class),
+        @Convert(converter = TimeConverter.class)
+    })
     protected Map<String, String> personalBests;
 
     public Runner() {

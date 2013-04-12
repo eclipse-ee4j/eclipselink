@@ -1031,7 +1031,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(ConstructorResultMetadata.class);
         
         // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getColumnResultsMapping());
+        descriptor.addMapping(getConstructorColumnMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getTargetClassAttributeMapping());
@@ -3231,9 +3231,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(SQLResultSetMappingMetadata.class);
         
         // Element mappings - must remain in order of definition in XML.
-        descriptor.addMapping(getEntityResultsMapping());
-        descriptor.addMapping(getConstructorResultsMapping());
-        descriptor.addMapping(getColumnResultsMapping());
+        descriptor.addMapping(getEntityResultMapping());
+        descriptor.addMapping(getConstructorResultMapping());
+        descriptor.addMapping(getColumnResultMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getNameAttributeMapping());
@@ -4185,7 +4185,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeCollectionMapping getColumnResultsMapping() {
+    protected XMLCompositeCollectionMapping getColumnResultMapping() {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName("m_columnResults");
         mapping.setGetMethodName("getColumnResults");
@@ -4258,7 +4258,20 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeCollectionMapping getConstructorResultsMapping() {
+    protected XMLCompositeCollectionMapping getConstructorColumnMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("m_columnResults");
+        mapping.setGetMethodName("getColumnResults");
+        mapping.setSetMethodName("setColumnResults");
+        mapping.setReferenceClass(ColumnResultMetadata.class);
+        mapping.setXPath("orm:column");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getConstructorResultMapping() {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName("m_constructorResults");
         mapping.setGetMethodName("getConstructorResults");
@@ -4497,7 +4510,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLCompositeCollectionMapping getEntityResultsMapping() {
+    protected XMLCompositeCollectionMapping getEntityResultMapping() {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName("m_entityResults");
         mapping.setGetMethodName("getEntityResults");

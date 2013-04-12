@@ -27,6 +27,15 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
+@ObjectTypeConverter(
+        name="sex",
+        dataType=String.class,
+        objectType=org.eclipse.persistence.testing.models.jpa21.advanced.xml.Employee.Gender.class,
+        conversionValues={
+            @ConversionValue(dataValue="F", objectValue="Female"),
+            @ConversionValue(dataValue="M", objectValue="Male")
+        }
+    )
 public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
@@ -37,6 +46,7 @@ public class Employee implements Serializable, Cloneable {
     private Integer id;
     private Integer version;
     
+    @Convert("sex")
     private Gender gender;
     private EmployeeStatus status;
     

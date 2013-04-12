@@ -111,9 +111,6 @@
                 <table-generator name="XML_DEPT_TABLE_GENERATOR" table="JPA21_XML_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_DEPT_SEQ"/>
             </id>
             <basic name="name"/>
-            <one-to-one name="departmentHead">
-                <join-column name="DEPT_HEAD" nullable="true"/>
-            </one-to-one>
             <one-to-many name="managers">
                 <join-table name="JPA21_XML_DEPT_EMP">
                     <join-column name="DEPT_ID"/>
@@ -124,6 +121,9 @@
                 </cascade>
             </one-to-many>
             <one-to-many name="employees" mapped-by="department"/>
+            <one-to-one name="departmentHead">
+                <join-column name="DEPT_HEAD" nullable="true"/>
+            </one-to-one>
         </attributes>
     </entity>
     
@@ -132,10 +132,6 @@
         <secondary-table name="JPA21_XML_SALARY">
             <primary-key-join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
         </secondary-table>
-        <object-type-converter name="sex" data-type="String" object-type="Employee$Gender">
-            <conversion-value data-value="F" object-value="Female"/>
-            <conversion-value data-value="M" object-value="Male"/>
-        </object-type-converter>
         <named-stored-procedure-query name="XMLReadUsingMultipleResultSetMappings" procedure-name="XML_Read_Multiple_Result_Sets">
             <result-set-mapping>XMLEmployeeResultSetMapping</result-set-mapping>
             <result-set-mapping>XMLAddressResultSetMapping</result-set-mapping>
@@ -143,12 +139,12 @@
             <result-set-mapping>XMLEmployeeConstructorResultSetMapping</result-set-mapping>
         </named-stored-procedure-query>
         <named-stored-procedure-query name="XMLReadUsingUnNamedRefCursor" procedure-name="XML_Read_Using_UnNamed_Cursor">
-            <parameter mode="REF_CURSOR" type="Void"/>   
+            <parameter mode="REF_CURSOR" class="Void"/>   
             <result-class>Employee</result-class>
         </named-stored-procedure-query>
         <named-stored-procedure-query name="XMLReadUsingNamedRefCursors" procedure-name="XML_Read_Using_Named_Cursor">
-            <parameter name="CUR1" mode="REF_CURSOR" type="Void"/>
-            <parameter name="CUR2" mode="REF_CURSOR" type="Void"/>
+            <parameter name="CUR1" mode="REF_CURSOR" class="Void"/>
+            <parameter name="CUR2" mode="REF_CURSOR" class="Void"/>
             <result-class>Employee</result-class>
             <result-class>Address</result-class>
         </named-stored-procedure-query>
@@ -157,10 +153,10 @@
         </sql-result-set-mapping>
         <sql-result-set-mapping name="XMLEmployeeConstructorResultSetMapping">
             <constructor-result target-class="EmployeeDetails">
-                <column-result name="EMP_ID" class="Integer"/>
-                <column-result name="F_NAME" class="String"/>
-                <column-result name="L_NAME" class="String"/>
-                <column-result name="R_COUNT" class="Integer"/>
+                <column name="EMP_ID" class="Integer"/>
+                <column name="F_NAME" class="String"/>
+                <column name="L_NAME" class="String"/>
+                <column name="R_COUNT" class="Integer"/>
             </constructor-result>
         </sql-result-set-mapping>
         <named-entity-graph>
@@ -184,9 +180,6 @@
             </basic>
             <basic name="lastName">
                 <column name="L_NAME"/>
-            </basic>
-            <basic name="gender">
-                <convert>sex</convert>
             </basic>
             <basic name="salary">
                 <column table="JPA21_XML_SALARY"/>
@@ -260,7 +253,6 @@
         <discriminator-value>P</discriminator-value>
         <discriminator-column name="PROJ_TYPE"/>
         <sql-result-set-mapping name="XMLProjectResultSetMapping">
-            <column-result name="BUDGET_SUM"/>
             <entity-result entity-class="Project"/>
             <entity-result entity-class="SmallProject" discriminator-column="SMALL_DESCRIM">
                 <field-result name="id" column="SMALL_ID"/>
@@ -269,13 +261,14 @@
                 <field-result name="teamLeader" column="SMALL_TEAMLEAD"/>
                 <field-result name="version" column="SMALL_VERSION"/>
             </entity-result>
+            <column-result name="BUDGET_SUM"/>
         </sql-result-set-mapping>
         <pre-persist method-name="prePersist"/>
         <post-persist method-name="postPersist"/>
         <pre-remove method-name="preRemove"/>
         <post-remove method-name="postRemove"/>
-        <post-update method-name="postUpdate"/>
         <pre-update method-name="preUpdate"/>
+        <post-update method-name="postUpdate"/>
         <post-load method-name="postLoad"/>
         <attributes>
             <id name="id">
@@ -373,7 +366,9 @@
                     <inverse-join-column name="RACE_ID" referenced-column-name="ID"/>
                 </join-table>
             </many-to-many>
-            <element-collection name="personalBests">
+            <!-- Currently a convert can not be specified with a column as a -->
+            <!-- result of JPA 2.1 xsd bug. Until it is fixed, this is mapped in annotations -->
+            <!-- element-collection name="personalBests">
                 <map-key-convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.DistanceConverter"/>
                 <map-key-column name="DISTANCE"/>
                 <column name="TIME"/>
@@ -381,7 +376,7 @@
                 <collection-table name="JPA21_XML_RUNNER_PBS">
                     <join-column name="RUNNER_ID"/>
                 </collection-table>
-            </element-collection>
+            </element-collection -->
             <embedded name="info">
                 <convert attribute-name="level" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.LevelConverter"/>
                 <convert attribute-name="health" converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.HealthConverter"/>
