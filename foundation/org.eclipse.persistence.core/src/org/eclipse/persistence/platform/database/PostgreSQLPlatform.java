@@ -59,6 +59,18 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         this.cursorCode = 1111; //jdbc.Types.OTHER - PostGreSQL expects this for refCursor types
         this.pingSQL = "SELECT 1";
     }
+    
+    /**
+     * Return the JDBC type for the Java type. For some reason PostgreSQL does
+     * not seem to like the JDBC Blob type (PostgreSQL 8.2).
+     */
+    @Override
+    public int getJDBCType(Class javaType) {
+        if (javaType == ClassConstants.BLOB) {
+            return Types.LONGVARBINARY;
+        }
+        return super.getJDBCType(javaType);
+    }
 
     /**
      * Appends a Boolean value. Refer to :
@@ -311,7 +323,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BYTEA", false));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTEA"));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTE"));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
