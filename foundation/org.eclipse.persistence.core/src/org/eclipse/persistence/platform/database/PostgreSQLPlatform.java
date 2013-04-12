@@ -324,7 +324,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("TEXT", false));
         fieldTypeMapping.put(byte[].class, new FieldTypeDefinition("BYTEA", false));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("TEXT", false));
-        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTE"));
+        fieldTypeMapping.put(java.sql.Blob.class, new FieldTypeDefinition("BYTEA"));
         fieldTypeMapping.put(java.sql.Clob.class, new FieldTypeDefinition("TEXT", false));
 
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
