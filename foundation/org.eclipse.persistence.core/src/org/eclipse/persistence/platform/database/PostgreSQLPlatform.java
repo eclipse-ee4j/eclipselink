@@ -16,6 +16,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -58,6 +59,18 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         super();
         this.cursorCode = 1111; //jdbc.Types.OTHER - PostGreSQL expects this for refCursor types
         this.pingSQL = "SELECT 1";
+    }
+    
+    /**
+     * Return the JDBC type for the Java type. For some reason PostgreSQL does
+     * not seem to like the JDBC Blob type (PostgreSQL 8.2).
+     */
+    @Override
+    public int getJDBCType(Class javaType) {
+        if (javaType == ClassConstants.BLOB) {
+            return Types.LONGVARBINARY;
+        }
+        return super.getJDBCType(javaType);
     }
 
     /**
