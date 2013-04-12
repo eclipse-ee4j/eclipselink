@@ -14,6 +14,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support
  *     02/04/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support
+ *     04/12/2013-2.5 Guy Pelletier 
+ *       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -1065,7 +1067,7 @@ public class SchemaManager {
 
         try {
             // Drop the tables.
-            TableCreator tableCreator = getDefaultTableCreator(false);
+            TableCreator tableCreator = getDefaultTableCreator(true);
             tableCreator.dropTables(this.session, this);
             
             // Drop the sequences.

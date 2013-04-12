@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support))
  *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     04/12/2013-2.5 Guy Pelletier 
+ *       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
@@ -124,9 +126,24 @@ public class Runner extends Athlete {
         @Convert(converter = TimeConverter.class)
     })
     protected Map<String, String> personalBests;
-
+    
+    @ManyToMany
+    @JoinTable(
+        name="JPA21_DDL_RUNNERS_COACHES",
+        joinColumns=@JoinColumn(
+            name="RUNNER_ID",
+            referencedColumnName="ID"
+        ),
+        inverseJoinColumns=@JoinColumn(
+            name="COACH_ID",
+            referencedColumnName="ID"
+        )
+    )
+    protected List<Coach> coaches;
+    
     public Runner() {
         races = new ArrayList<Race>();
+        coaches = new ArrayList<Coach>();
         personalBests = new HashMap<String, String>();
     }
     
@@ -134,10 +151,18 @@ public class Runner extends Athlete {
         personalBests.put(distance, time);
     }
     
+    public void addCoach(Coach coach) {
+        coaches.add(coach);
+    }
+    
     public void addRace(Race race) {
         races.add(race);
     }
     
+    public List<Coach> getCoaches() {
+        return coaches;
+    }
+
     public Gender getGender() { 
         return gender; 
     }
@@ -168,6 +193,10 @@ public class Runner extends Athlete {
     
     public boolean isMale() {
         return gender.equals(Gender.Male);
+    }
+    
+    public void setCoaches(List<Coach> coaches) {
+        this.coaches = coaches;
     }
     
     public void setGender(Gender gender) { 
