@@ -797,6 +797,7 @@
                 <include name="${asm}.source_${version.string}.jar"/>
                 <include name="${antlr}.source_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.source*.jar"/>
+                <include name="eclipselink-moxy-dynamicxjc.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
