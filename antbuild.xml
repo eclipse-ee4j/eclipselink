@@ -245,20 +245,16 @@
                 <available file="${eclipse.install.dir}/plugins" type="dir"/>
             </and>
         </condition>
-        <!-- Test to see if local repo should be generated: if not exist and if can -->
+        <!-- Test to see if local repo should be generated: if local set and if can -->
         <condition property="generate.compdeps">
-            <and>
-                <not>
-                    <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
-                </not>
                 <equals arg1="${local.compdeps}" arg2="true"/>
-            </and>
         </condition>
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
         <echo message="        local.compdeps: '${local.compdeps}'"/>
         <echo message="    Whether a local p2epo needs generating (only true if using local and repo not found):"/>
         <echo message="        generate.compdeps: '${generate.compdeps}'"/>
+        <delete dir="${eclipselink.compdeps}/p2repo" failonerror="false"/>
     </target>
 
     <!-- Cleans all build generated files. -->
