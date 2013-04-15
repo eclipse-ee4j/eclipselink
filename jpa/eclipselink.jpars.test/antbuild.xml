@@ -109,7 +109,7 @@
         <selectbundle basename="javax.xml.bind" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"
         />
-        <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
+        <selectbundle basename="javax.persistence-api" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"
         />
         <selectbundle basename="com.sun.jersey" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"

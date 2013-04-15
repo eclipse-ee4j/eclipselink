@@ -828,6 +828,7 @@
                 <include name="jpa/eclipselink.jpa.modelgen.test/**"/>
                 <include name="jpa/plugins/javax.validation_*.jar"/>
                 <include name="jpa/plugins/javax.persistence_2.*.jar"/>
+                <include name="jpa/plugins/javax.persistence-api_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>
                 <exclude name="**/eclipselink.moxy.test/moxy/**"/>
@@ -1187,7 +1188,6 @@
     <!-- Packages the installer zip. -->
     <target name="package-installer-zip" description="build EclipseLink installer zip - includes utils and javadocs">
         <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${eclipselink.plugins}/javax.persistence_unsigned_for_testing_1.0.0.jar" tofile="${build.dir}/javax.persistence_1.0.0.jar"/>
         <copy file="${eclipselink.plugins}/org.eclipse.persistence.dbws.builder_${version.string}.jar" tofile="${build.dir}/${dbws-util.jar}"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence21.src.jar}" dest="${build.dir}/jpa21/src"/>
         <zip destfile="${eclipselink.install.prefix}${eclipselink.zip.suffix}">
@@ -1233,11 +1233,8 @@
             </zipfileset>
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}*_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
-            <!-- jpa persistence 1.0 jar -->
-            <!-- zipfileset dir="${eclipselink.plugins}/" includes="${persistence10.jar}" prefix="eclipselink/jlib/jpa"/ -->
-            <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
-            <!-- jpa persistence 2.x jars -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence_2.*.jar" excludes="*preview*" prefix="eclipselink/jlib/jpa"/>
+            <!-- jpa persistence 2.1 jars -->
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence-api_*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- JPA RS jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
