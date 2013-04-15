@@ -157,7 +157,7 @@
     <!-- package -->
     <target name="package" depends="init" description="jar non-OSGI bundle">
         <jar jarfile="${dynamic.2.common.plugins.dir}/${dynamic.jar.prefix}_${version.string}.jar">
-             <manifest>
+            <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
@@ -178,7 +178,7 @@
             </fileset>
         </jar>
         <jar jarfile="${dynamic.2.common.plugins.dir}/${dynamic.jar.prefix}.source_${version.string}.jar">
-             <manifest>
+            <manifest>
                 <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
                 <attribute name="Specification-Version"  value="${release.version}"/>
                 <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
