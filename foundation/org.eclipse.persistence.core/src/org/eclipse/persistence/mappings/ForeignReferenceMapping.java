@@ -2177,7 +2177,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 targetQuery.setIsExecutionClone(true);
             }
             targetQuery.setQueryId(sourceQuery.getQueryId());
-            targetQuery.setAccessors(sourceQuery.getAccessors());
+            if (sourceQuery.usesResultSetAccessOptimization()) {
+                targetQuery.setAccessors(sourceQuery.getAccessors());
+            }
             ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
         }
 

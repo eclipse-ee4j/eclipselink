@@ -16,6 +16,8 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     01/23/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     04/12/2013-2.5 Guy Pelletier 
+ *       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -38,6 +40,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
+import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Coach;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Organizer;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Race;
 import org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Responsibility;
@@ -206,6 +209,9 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             runnerInfo.setStatus(runnerStatus);
             runner.setInfo(runnerInfo);
             
+            Coach coach = new Coach();
+            runner.addCoach(coach);
+            
             Race race = new Race();
             race.setName("The Ultimate Marathon");
             race.addRunner(runner);
@@ -223,6 +229,7 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             em.persist(race);
             em.persist(organizer);
             em.persist(runner);
+            em.persist(coach);
             commitTransaction(em);
                 
             // Clear the cache

@@ -298,13 +298,13 @@ public class ClientSession extends AbstractSession {
             exception = caughtException;
         } finally {
             if (call.isFinished() || exception != null) {
+                query.setAccessors(null);
                 // Note that connection could be release only if it has been acquired by the same query,
                 // that allows to execute other queries from postAcquireConnection / preReleaseConnection events
                 // without wiping out connection set by the original query or causing stack overflow, see
                 // bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception 
                 if (shouldReleaseConnection && hasWriteConnection()) {
                     try {
-                        query.setAccessors(null);
                         this.parent.releaseClientSession(this);
                     } catch (RuntimeException releaseException) {
                         if (exception == null) {
