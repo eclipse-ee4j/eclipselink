@@ -581,6 +581,13 @@
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
                 <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
+            <!-- Include license files first to ensure the right ones are included -->
+            <fileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </fileset>
+            <!-- Include all non-duplicate content from bOSGi bundles -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
                 <include name="org.eclipse.persistence.asm*.jar"/>
@@ -599,6 +606,14 @@
                 <include name="**/*"/>
                 <exclude name="**/tools*/**"/>
             </fileset>
+            <!-- Include Moxy Dynamicxjc classes -->
+            <fileset
+                dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
+                includes="**/*.class,"/>
+            <!-- Include necessary JAXB classes -->
+            <fileset
+                dir="${eclipselink.util.jaxb}/${classes.dir}"
+                includes="**/*.class,"/>
             <!-- JPA 2.0/2.1 concurrent dev solution: New classes from javax.persistence 2.0 & 2.1 -->
             <fileset
                 dir="${build.dir}/javax.persistence/${classes.dir}"
@@ -723,12 +738,6 @@
                     javax/persistence/criteria/CriteriaUpdate.class,
                     javax/persistence/criteria/CommonAbstractCriteria.class
             "/>
-            <fileset
-                dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
-                includes="**/*.class,"/>
-            <fileset
-                dir="${eclipselink.util.jaxb}/${classes.dir}"
-                includes="**/*.class,"/>
         </jar>
     </target>
 
@@ -752,9 +761,15 @@
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
+            <!-- Include license files first to ensure the right ones are included -->
+            <zipfileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </zipfileset>
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
-                <exclude name="javax.persistence*1.0.0.jar"/>
+                <exclude name="javax.persistence*.jar"/>
                 <exclude name="*nosql*"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.v200906010428.jar"/>
@@ -762,12 +777,7 @@
                 <exclude name="com.sun*.jar"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir=".">
-                <include name="${about-file}"/>
-                <include name="${readme-file}"/>
-                <include name="${license-files}"/>
-            </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence-api*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
@@ -793,6 +803,12 @@
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Release-Designation"    value="${release.designation}"/>
             </manifest>
+            <!-- Include license files first to ensure the right ones are included -->
+            <zipfileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+            </zipfileset>
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="${asm}.source_${version.string}.jar"/>
                 <include name="${antlr}.source_${version.string}.jar"/>

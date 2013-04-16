@@ -278,15 +278,15 @@
 
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
-        <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}javax.persistence${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}commonj.sdo${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
-        <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.antlr${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}${hermes.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.oracle${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}${oraclebndl.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.modelgen"  value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -361,10 +361,10 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="org.eclipse.persistence.jpa.jpql"/>
+            <param name="artifactId"      value="${hermes.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql_${hermes.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql.source_${hermes.version}.jar"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/${hermes.prefix}_${hermes.version}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${hermes.prefix}.source_${hermes.version}.jar"/>
             <param name="artifactName"    value="${hermes.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -406,7 +406,7 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="org.eclipse.persistence.oracle.nosql"/>
+            <param name="artifactId"      value="${oraclenosql.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}_${oraclenosql.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}.source_${oraclenosql.version}.jar"/>
