@@ -23,6 +23,8 @@ public class JTATransactionWrapper extends TransactionWrapper {
     public void beginTransaction(EntityManager em) {
         AbstractSession session = JpaHelper.getEntityManagerFactory(em).getDatabaseSession();
         session.getExternalTransactionController().beginTransaction(session);
+        // EMs obtained outside the transaction is now prevented from participating or flushing to the trans unless join is called.  
+        em.joinTransaction();
     }
 
     @Override
@@ -35,7 +37,5 @@ public class JTATransactionWrapper extends TransactionWrapper {
     public void rollbackTransaction(EntityManager em) {
         AbstractSession session = JpaHelper.getEntityManagerFactory(em).getDatabaseSession();
         session.getExternalTransactionController().rollbackTransaction(session);
-
     }
-
 }
