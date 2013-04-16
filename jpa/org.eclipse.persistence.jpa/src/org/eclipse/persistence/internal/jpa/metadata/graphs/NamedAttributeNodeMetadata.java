@@ -58,7 +58,7 @@ public class NamedAttributeNodeMetadata extends ORMetadata {
         super(namedAttributeNode, accessor);
         
         m_name = (String) namedAttributeNode.getAttribute("value");
-        m_subgraph = (String) namedAttributeNode.getAttribute("subgraph");
+        m_subgraph = (String) namedAttributeNode.getAttribute("subgraphName");
         m_keySubgraph = (String) namedAttributeNode.getAttribute("key-subgraph");
     }
     
