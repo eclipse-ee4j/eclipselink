@@ -96,8 +96,8 @@
                 </join-table>
             </many-to-many>
             <element-collection name="honors">
-                <collection-table name="XML_CANDIDATE_HONORS"/>
                 <column name="HONOR"/>
+                <collection-table name="XML_CANDIDATE_HONORS"/>
             </element-collection>
         </attributes>
     </entity>

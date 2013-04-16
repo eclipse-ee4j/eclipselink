@@ -36,14 +36,17 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 /**
@@ -214,6 +217,26 @@ public class XMLEntityMappingsReader {
      */
     private static void useLocalSchemaForUnmarshaller(XMLUnmarshaller unmarshaller, Schema schema) {
         try {
+
+            unmarshaller.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {
+                    if (exception.getException() instanceof EclipseLinkException) {
+                        throw (EclipseLinkException) exception.getCause();
+                    }
+                }
+            });
+            
             unmarshaller.setSchema(schema);
         } catch (UnsupportedOperationException ex) {
             // Some parsers do not support setSchema.  In that case, setup validation another way.
