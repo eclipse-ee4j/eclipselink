@@ -15,7 +15,6 @@
  
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -712,7 +711,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Assert.assertNotNull("testMultipleCoalesce Test Failed - Unable to fetch employee data", result);
         Assert.assertFalse("testMultipleCoalesce Test Failed - Unable to fetch employee data", result.isEmpty());
         Object[] aggregateResult = (Object[])result.get(0);
-        Assert.assertFalse("testMultipleCoalesce Test Failed ", ((BigDecimal)aggregateResult[0]).equals((BigDecimal)aggregateResult[1]));
+        Assert.assertFalse("testMultipleCoalesce Test Failed ", aggregateResult[0].equals(aggregateResult[1]));
         closeEntityManager(em);
     }
 }
