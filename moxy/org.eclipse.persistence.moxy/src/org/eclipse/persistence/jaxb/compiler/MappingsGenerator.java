@@ -536,7 +536,8 @@ public class MappingsGenerator {
 
         xmlDescriptor.setInstantiationPolicy(policy);
         JavaClass paramClass = helper.getJavaClass(factoryMethodParamTypes[0]);
-        if(helper.isBuiltInJavaType(paramClass)){
+        boolean isObject = paramClass.getName().equals("java.lang.Object");        
+        if(helper.isBuiltInJavaType(paramClass) && !isObject ){
             if(isBinaryData(paramClass)){
                 BinaryDataMapping mapping = new XMLBinaryDataMapping();
                 mapping.setAttributeName("value");
@@ -590,7 +591,11 @@ public class MappingsGenerator {
             mapping.setGetMethodName("getValue");
             mapping.setSetMethodName("setValue");
             mapping.setXPath(".");
-            mapping.setReferenceClassName(factoryMethodParamTypes[0]);
+            if(isObject){
+            	mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);                
+            }else{
+            	mapping.setReferenceClassName(factoryMethodParamTypes[0]);
+            }
             xmlDescriptor.addMapping((CoreMapping)mapping);
         }
         xmlDescriptor.setNamespaceResolver(nsr);
