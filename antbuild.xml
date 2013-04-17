@@ -1285,15 +1285,15 @@
     <target name="package-eclipselink-nosql-install">
         <delete file="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
-            <zipfileset dir="${eclipselink.plugins}">
-                <include name="*nosql*"/>
-                <include name="javax.resource*.jar"/>
-            </zipfileset>
             <zipfileset dir=".">
                 <include name="${about-file}"/>
                 <include name="${readme-file}"/>
                 <include name="${license-files}"/>
                 <include name="${nosql.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+            </zipfileset>
+            <zipfileset dir="${eclipselink.plugins}">
+                <include name="*nosql*"/>
+                <include name="javax.resource*.jar"/>
             </zipfileset>
         </zip>
     </target>
