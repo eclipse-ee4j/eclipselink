@@ -181,5 +181,12 @@ public class SpringPlatform implements ServerPlatform {
         }
         return context;
     }
+
+    /**
+     * Join the transaction if required 
+     */
+    public void joinTransaction(EntityManager em) {
+        //bug 405308:a shared EM will throw an exception if joinTransaction is called on it.
+    }
     
 }

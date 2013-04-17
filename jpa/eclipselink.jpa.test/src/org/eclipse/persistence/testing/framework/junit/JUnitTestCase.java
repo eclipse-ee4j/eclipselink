@@ -353,7 +353,7 @@ public abstract class JUnitTestCase extends TestCase {
             getServerPlatform().beginTransaction();
             //bug 404294 - the EM is required to join the transaction to be able to 
             //    use transactions started after it was created.
-            entityManager.joinTransaction();
+            getServerPlatform().joinTransaction(entityManager);
         } else {
             entityManager.getTransaction().begin();
         }
