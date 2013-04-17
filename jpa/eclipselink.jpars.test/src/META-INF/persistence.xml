@@ -27,10 +27,10 @@
         <properties>
             <property name="eclipselink.logging.level" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@ottvm035.ca.oracle.com:1521:TOPLINK"/>
-            <property name="javax.persistence.jdbc.password" value="password"/>
-            <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-            <property name="javax.persistence.jdbc.user" value="gonural"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
@@ -44,10 +44,10 @@
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
             <property name="eclipselink.metadata-source.xml.file" value="META-INF/auction-orm.xml"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@ottvm035.ca.oracle.com:1521:TOPLINK"/>
-            <property name="javax.persistence.jdbc.password" value="password"/>
-            <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-            <property name="javax.persistence.jdbc.user" value="gonural"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
@@ -59,10 +59,10 @@
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
             <property name="eclipselink.metadata-source.xml.file" value="META-INF/phonebook-orm.xml"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:oracle:thin:@ottvm035.ca.oracle.com:1521:TOPLINK"/>
-            <property name="javax.persistence.jdbc.password" value="password"/>
-            <property name="javax.persistence.jdbc.driver" value="oracle.jdbc.OracleDriver"/>
-            <property name="javax.persistence.jdbc.user" value="gonural"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
