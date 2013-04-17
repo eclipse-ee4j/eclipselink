@@ -191,5 +191,12 @@ public class JEEPlatform implements ServerPlatform {
             }
         }
     }
-    
+
+    /**
+     * Join the transaction if required 
+     */
+    public void joinTransaction(EntityManager em) {
+        em.joinTransaction();
+    }
+
 }

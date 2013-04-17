@@ -83,6 +83,11 @@ public interface ServerPlatform {
     boolean isClustered();
     
     /**
+     * Join the transaction if required 
+     */
+    void joinTransaction(EntityManager em);
+    
+    /**
      * Return the managed EntityManager for the persistence unit.
      */
     EntityManager getEntityManager(String persistenceUnit);
