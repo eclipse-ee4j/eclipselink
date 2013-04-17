@@ -62,21 +62,25 @@ public class EntityManagerTestSuite extends JUnitTestCase {
     
     public void testGetLockModeForObject(){
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("select e from Employee e where e.firstName = 'Sarah' and e.lastName = 'Way'");
-        query.setLockMode(LockModeType.OPTIMISTIC);
-        beginTransaction(em);
-        Employee emp = (Employee)query.getSingleResult();
-        commitTransaction(em);
-        try{
-            em.getLockMode(emp);
-            fail("TransactionRequiredException not thrown for getLockMode() with no transction open.");
-        } catch (TransactionRequiredException e){}
-        clearCache();
-        try{
-            em.find(Employee.class, emp.getId(), LockModeType.OPTIMISTIC);
-            fail("TransactionRequiredException not thrown for find(Class, Object, LockModeType) with no transction open.");
+        try {
+            Query query = em.createQuery("select e from Employee e where e.firstName = 'Sarah' and e.lastName = 'Way'");
+            query.setLockMode(LockModeType.OPTIMISTIC);
+            beginTransaction(em);
+            Employee emp = (Employee)query.getSingleResult();
+            commitTransaction(em);
+            try{
+                em.getLockMode(emp);
+                fail("TransactionRequiredException not thrown for getLockMode() with no transction open.");
+            } catch (TransactionRequiredException e){}
+            clearCache();
+            try{
+                em.find(Employee.class, emp.getId(), LockModeType.OPTIMISTIC);
+                fail("TransactionRequiredException not thrown for find(Class, Object, LockModeType) with no transction open.");
 
-        } catch (TransactionRequiredException e){}
+            } catch (TransactionRequiredException e){}
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
     }
     
     public void testNonInsertableAndUpdatable121Mappings() {
