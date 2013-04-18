@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+<entity-mappings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.4"
     xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm http://www.eclipse.org/eclipselink/xsds/eclipselink_orm_2_4.xsd">
     <named-query name="Person.findAll">
