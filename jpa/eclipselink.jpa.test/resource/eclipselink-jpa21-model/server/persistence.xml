@@ -77,6 +77,7 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Endorser</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Athlete</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Race</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.ddl.Coach</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AccomplishmentConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.AgeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.DateConverter</class>
