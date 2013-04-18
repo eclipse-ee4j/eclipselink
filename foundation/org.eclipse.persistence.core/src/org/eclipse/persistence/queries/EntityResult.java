@@ -191,6 +191,7 @@ public class EntityResult extends SQLResult {
         }
         query.setReferenceClass(this.entityClass);
         query.setDescriptor(descriptor);
+        //TODO : support prefetchedCacheKeys in ResultSetMappingQuery
         return descriptor.getObjectBuilder().buildObject(query, entityRecord, null);
     }
 

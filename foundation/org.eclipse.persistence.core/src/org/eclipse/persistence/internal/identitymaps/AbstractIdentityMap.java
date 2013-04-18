@@ -281,6 +281,28 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     }
 
     /**
+     * ADVANCED:
+     * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
+     * In certain circumstances this can have large performance improvements over loading each item individually.
+     * @param pkList List of Entity PKs to extract from the cache
+     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @return Map of Entity PKs associated to the Entities that were retrieved
+     * @throws QueryException
+     */
+    public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
+        HashMap<Object, CacheKey> map = new HashMap<Object, CacheKey>();
+        CacheKey cachedObject = null;
+        long currentTime = System.currentTimeMillis();
+        for (Object pk : pkList){
+            cachedObject = getCacheKey(pk, false);
+            if ((cachedObject != null && cachedObject.getObject() != null && !descriptor.getCacheInvalidationPolicy().isInvalidated(cachedObject, currentTime))){
+                map.put(pk, cachedObject);
+            }
+        }
+        return map;
+    }
+
+    /**
      * Get the cache key (with object) for the primary key.
      */
     public abstract CacheKey getCacheKey(Object primaryKey, boolean forMerge);

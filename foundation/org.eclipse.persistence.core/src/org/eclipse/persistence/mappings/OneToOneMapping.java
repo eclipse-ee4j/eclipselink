@@ -517,7 +517,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
         List<Object> orderedResult = new ArrayList<Object>(keyInfo.length);
-        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
+        Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
         DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
         
@@ -1758,6 +1758,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         ObjectLevelReadQuery nestedQuery = prepareNestedJoinQueryClone(row, null, joinManager, sourceQuery, executionSession);
         nestedQuery.setTranslationRow(targetRow);
         nestedQuery.setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+        nestedQuery.setPrefetchedCacheKeys(sourceQuery.getPrefetchedCacheKeys());
         referenceObject = this.referenceDescriptor.getObjectBuilder().buildObject(nestedQuery, targetRow);
 
         // For bug 3641713 buildObject doesn't wrap if called on a UnitOfWork for performance reasons,

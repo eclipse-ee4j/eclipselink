@@ -840,6 +840,20 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this, null, true);
             } else {
                 boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
+                if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys()
+                        && shouldMaintainCache() 
+                        && ! shouldRetrieveBypassCache()
+                        && ((!(unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
+                                && ! unitOfWork.wasTransactionBegunPrematurely()
+                                && !this.descriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()
+                                && ! this.descriptor.getCachePolicy().shouldIsolateProtectedObjectsInUnitOfWork())
+                                || (unitOfWork.isClassReadOnly(this.getReferenceClass(), this.getDescriptor())))){
+                    Object[] pkList = new Object[size];
+                    for (int i = 0; i< size; ++i){
+                        pkList[i] = getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow((AbstractRecord)rows.get(i), session);
+                    }
+                    setPrefetchedCacheKeys(unitOfWork.getParentIdentityMapSession(this).getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
+                }
                 for (int index = 0; index < size; index++) {
                     AbstractRecord row = rows.get(index);
 

@@ -599,6 +599,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             AbstractSession session, ClassDescriptor concreteDescriptor, InheritancePolicy inheritancePolicy, boolean isUnitOfWork,
             boolean shouldCacheQueryResults, boolean shouldUseWrapperPolicy) {
         Object domainObject = null;
+        CacheKey prefechedCacheKey = null;
         Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
         // Check for null primary key, this is not allowed.
         if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
@@ -613,6 +614,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
             }
         }
+        if (query.getPrefetchedCacheKeys() != null){
+            prefechedCacheKey = query.getPrefetchedCacheKeys().get(primaryKey);
+        }
         if ((inheritancePolicy != null) && inheritancePolicy.shouldReadSubclasses()) {
             Class classValue = inheritancePolicy.classFromRow(databaseRow, session);
             concreteDescriptor = inheritancePolicy.getDescriptor(classValue);
@@ -626,10 +630,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (isUnitOfWork) {
             // Do not wrap yet if in UnitOfWork, as there is still much more
             // processing ahead.
-            domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
+                domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, prefechedCacheKey, concreteDescriptor);
         } else {
-            domainObject = buildObject(false, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
-            if (shouldCacheQueryResults) {
+                domainObject = buildObject(false, query, databaseRow, session, primaryKey, prefechedCacheKey, concreteDescriptor, joinManager);
+                if (query.shouldCacheQueryResults()) {
                 query.cacheResult(domainObject);
             }
 
@@ -709,7 +713,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * shared cache) or buildWorkingCopyCloneNormally (placing the result in the
      * shared cache).
      */
-    protected Object buildObjectInUnitOfWork(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, ClassDescriptor concreteDescriptor) throws DatabaseException, QueryException {
+    protected Object buildObjectInUnitOfWork(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor) throws DatabaseException, QueryException {
         // When in transaction we are reading via the write connection
         // and so do not want to corrupt the shared cache with dirty objects.
         // Hence we build and refresh clones directly from the database row.
@@ -723,11 +727,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     || query.shouldStoreBypassCache())
                         && (!unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor))) {
                 // It is easier to switch once to the correct builder here.
-                return concreteDescriptor.getObjectBuilder().buildWorkingCopyCloneFromRow(query, joinManager, databaseRow, unitOfWork, primaryKey);
+                return concreteDescriptor.getObjectBuilder().buildWorkingCopyCloneFromRow(query, joinManager, databaseRow, unitOfWork, primaryKey, preFetchedCacheKey);
             }
         }
 
-        return buildWorkingCopyCloneNormally(query, databaseRow, unitOfWork, primaryKey, concreteDescriptor, joinManager);
+        return buildWorkingCopyCloneNormally(query, databaseRow, unitOfWork, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
     }
 
     /**
@@ -743,7 +747,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * <p>
      * Represents the way TopLink has always worked.
      */
-    protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         // First check local unit of work cache.
         CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
         Object clone = unitOfWorkCacheKey.getObject();
@@ -765,7 +769,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 query.setSession(session);
                 if (session.isUnitOfWork()) {
                     // If a nested unit of work, recurse.
-                    original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
+                    original = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, preFetchedCacheKey, concreteDescriptor);
                     //GFBug#404  Pass in joinManager or not based on if shouldCascadeCloneToJoinedRelationship is set to true 
                     if (unitOfWork.shouldCascadeCloneToJoinedRelationship()) {
                         return query.registerIndividualResult(original, primaryKey, unitOfWork, joinManager, concreteDescriptor);
@@ -774,7 +778,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     }
                 } else {
                     // PERF: This optimizes the normal case to avoid duplicate cache access.
-                    CacheKey parentCacheKey = (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+                    CacheKey parentCacheKey = (CacheKey)buildObject(true, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
                     original = parentCacheKey.getObject();
                     if (query.shouldCacheQueryResults()) {
                         query.cacheResult(original);
@@ -817,10 +821,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         boolean isProtected = concreteDescriptor.getCachePolicy().isProtectedIsolation();
         if (isProtected && session.isIsolatedClientSession()){
-            return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+            return buildProtectedObject(returnCacheKey, query, databaseRow, session, primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
         }
         Object domainObject = null;
         
@@ -832,8 +836,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
+                if (preFetchedCacheKey == null){
                 cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
+                }else{
+                    cacheKey = preFetchedCacheKey;
+                    cacheKey.acquireLock(query);
+                }
+                if (cacheKey != null){
                 domainObject = cacheKey.getObject();
+                }
                 domainWasMissing = domainObject == null;
             }
 
@@ -950,7 +961,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    protected Object buildProtectedObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
+    protected Object buildProtectedObject(boolean returnCacheKey, ObjectBuildingQuery query, AbstractRecord databaseRow, AbstractSession session, Object primaryKey, CacheKey preFetchedCacheKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         Object cachedObject = null;
         Object protectedObject = null;
         
@@ -994,9 +1005,14 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 
                 // The object must be registered before building its attributes to resolve circular dependencies.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
+                    if (preFetchedCacheKey == null){
                     sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
+                    }else{
+                        sharedCacheKey = preFetchedCacheKey;
+                        cacheKey.acquireLock(query);
+                    }
                     if (sharedCacheKey.getObject() == null){
-                        sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
+                        sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
                         cachedObject = sharedCacheKey.getObject();
                     }
                 }
@@ -1024,7 +1040,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 cachedObject = sharedCacheKey.getObject();
                 if (cachedObject == null){
-                    sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
+                    sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, preFetchedCacheKey, concreteDescriptor, joinManager);
                     cachedObject = sharedCacheKey.getObject();
                 }
 
@@ -1154,6 +1170,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (query.hasJoining()) {
                     joinManager = query.getJoinedAttributeManager();
                 }
+            if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys() && query.shouldMaintainCache() && ! query.shouldRetrieveBypassCache()){
+                Object[] pkList = new Object[size];
+                for (int i = 0; i< size; ++i){
+                    pkList[i] = extractPrimaryKeyFromRow((AbstractRecord)databaseRows.get(i), session);
+                }
+                query.setPrefetchedCacheKeys(session.getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
+            }
                 ContainerPolicy policy = query.getContainerPolicy();
                 if (policy.shouldAddAll()) {
                     List domainObjectsIn = new ArrayList(size);
@@ -1852,7 +1875,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * cache.  This is because we might violate transaction isolation by
      * putting uncommitted versions of objects in the shared cache.
      */
-    protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey) throws DatabaseException, QueryException {
+    protected Object buildWorkingCopyCloneFromRow(ObjectBuildingQuery query, JoinedAttributeManager joinManager, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, CacheKey preFetchedCacheKey) throws DatabaseException, QueryException {
         ClassDescriptor descriptor = this.descriptor;
 
         // If the clone already exists then it may only need to be refreshed or returned.
@@ -1884,7 +1907,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             // If not refreshing can get the object from the cache.
             if ((!isARefresh) && (!isIsolated) && !query.shouldRetrieveBypassCache() && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
+                if (preFetchedCacheKey == null){
                 originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, false);
+                }else{
+                    originalCacheKey = preFetchedCacheKey;
+                    originalCacheKey.acquireLock(query);
+                }
                 if (originalCacheKey != null) {
                     // PERF: Read-lock is not required on object as unit of work will acquire this on clone and object cannot gc and object identity is maintained.
                     original = originalCacheKey.getObject();
@@ -1945,7 +1973,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if (descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()){
                 // we are at this point because we have isolated protected entities to the UnitOfWork
                 // we should ensure that we populate the cache as well.
-                originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, descriptor, joinManager);
+                originalCacheKey = (CacheKey) buildObject(true, query, databaseRow, unitOfWork.getParentIdentityMapSession(descriptor, false, true), primaryKey, preFetchedCacheKey, descriptor, joinManager);
             }
             //If we are unable to access the shared cache because of any of the above settings at this point
             // the cachekey will be null so the attribute building will not be able to access the shared cache.
