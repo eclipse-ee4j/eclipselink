@@ -849,7 +849,7 @@ public class MergeManager {
                 // #6, 7 - referenced objects
                 // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.                
             } else if (descriptor.getFullyMergeEntity() && objectChangeSet.hasChanges()){
-                objectBuilder.mergeIntoObject(original, objectChangeSet, false, clone, this, targetSession, false, true, true);
+                objectBuilder.mergeIntoObject(original, objectChangeSet, false, clone, this, targetSession, false, false, true);
             } else {
                 // #1, 2, 3 existing objects, new objects with originals
                 // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
