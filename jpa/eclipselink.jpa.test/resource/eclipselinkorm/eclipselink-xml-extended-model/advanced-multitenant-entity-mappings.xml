@@ -50,6 +50,7 @@
             <basic name="firstName"/>
             <basic name="lastName"/>
             <basic name="gender">
+                <convert>gender</convert>
                 <object-type-converter name="gender" data-type="String" object-type="Mafioso$Gender">
                     <conversion-value data-value="F" object-value="Female"/>
                     <conversion-value data-value="M" object-value="Male"/>
