@@ -250,6 +250,25 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
 
     /**
      * INTERNAL:
+     * Return a clone of the specified container.
+     */
+    @Override
+    public Object cloneFor(Object container) {
+        if (container == null) {
+            return null;
+        }
+        if (container instanceof java.lang.Cloneable) {
+            return super.cloneFor(container);
+        }
+
+        Map original = (Map)container;
+        Map clone = (Map)containerInstance(original.size());
+        clone.putAll(original);
+        return clone;
+    }
+
+    /**
+     * INTERNAL:
      * Return true if keys are the same in the source as the backup.  False otherwise
      * in the case of read-only compare against the original
      */
