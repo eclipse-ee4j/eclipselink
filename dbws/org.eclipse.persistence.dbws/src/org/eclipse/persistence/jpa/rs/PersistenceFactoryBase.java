@@ -41,7 +41,7 @@ import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
  */
 public class PersistenceFactoryBase implements PersistenceContextFactory {
     
-    private Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
+    protected Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
 
     
     /**
@@ -66,7 +66,9 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
         for (String key: dynamicPersistenceContexts.keySet()){
             dynamicPersistenceContexts.get(key).stop();
         }
-        dynamicPersistenceContexts.clear();
+        synchronized (this) {
+            dynamicPersistenceContexts.clear();
+        }
     }
     
     /**
@@ -74,10 +76,12 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
      * @param name
      */
     public void closePersistenceContext(String name){
-        PersistenceContext context = dynamicPersistenceContexts.get(name);
-        if (context != null){
-            context.getEmf().close();
-            dynamicPersistenceContexts.remove(name);
+        synchronized (this) {
+            PersistenceContext context = dynamicPersistenceContexts.get(name);
+            if (context != null){
+                context.stop();
+                dynamicPersistenceContexts.remove(name);
+            }
         }
     }
     
@@ -127,6 +131,11 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
     
                 if (factory != null){
                     app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, version, true);
+                    if (app != null){
+                        synchronized (this) {
+                            dynamicPersistenceContexts.put(persistenceUnit, app);
+                        }
+                    }
                 }
             } catch (Exception e){
                 JPARSLogger.exception("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()}, e);
