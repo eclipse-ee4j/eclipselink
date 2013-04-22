@@ -19,6 +19,8 @@ import java.util.Set;
 public interface PersistenceContextFactory {
 
     public void close();
+    
+    public void closePersistenceContext(String persistenceUnit);
 
     public PersistenceContext get(String persistenceUnit, URI defaultURI, String version, Map<String, Object> initializationProperties);
 
