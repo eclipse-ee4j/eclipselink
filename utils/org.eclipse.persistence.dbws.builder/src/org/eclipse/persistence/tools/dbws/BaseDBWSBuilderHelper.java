@@ -80,6 +80,7 @@ import org.eclipse.persistence.internal.xr.XmlBindingsModel;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormat;
 import org.eclipse.persistence.internal.xr.sxf.SimpleXMLFormatProject;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -133,6 +134,7 @@ import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.Ele
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
 import static org.eclipse.persistence.tools.dbws.Util.AT_SIGN;
 import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
+import static org.eclipse.persistence.tools.dbws.Util.COMMA;
 import static org.eclipse.persistence.tools.dbws.Util.CHAR_STR;
 import static org.eclipse.persistence.tools.dbws.Util.DATE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
@@ -230,8 +232,15 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String SELECT_FROM_STR = "SELECT * FROM ";
     public static final String WHERE_STR = " WHERE ";
     public static final String AND_STR = " AND ";
+    public static final String SET_STR = " SET ";
+    public static final String VALUES_STR = " VALUES ";
+    public static final String UPDATE_STR = "UPDATE ";
+    public static final String INSERT_STR = "INSERT INTO ";
+    public static final String DELETE_STR = "DELETE FROM ";
+    public static final String COMMA_SPACE_STR = COMMA + SINGLE_SPACE;
     public static final String EQUALS_BINDING1_STR = " = ?1";
     public static final String EQUALS_BINDING_STR = " = ?";
+    public static final String QUESTION_STR = "?";
     public static final String TIMESTAMP_CLASS = "oracle.sql.TIMESTAMP";
     public static final String USER_STR = "user";
     public static final String PASSWORD_STR = "password";
@@ -247,6 +256,8 @@ public abstract class BaseDBWSBuilderHelper {
     protected Map<String, ClassDescriptor> createdORDescriptors = new HashMap<String, ClassDescriptor>();
     protected List<String> referencedORDescriptors = new ArrayList<String>();
     protected List<CompositeDatabaseType> complextypes = new ArrayList<CompositeDatabaseType>();
+    
+    protected Map<String, Map<String, String>> crudOps = new HashMap<String, Map<String, String>>();
 
     public BaseDBWSBuilderHelper(DBWSBuilder dbwsBuilder) {
         this.dbwsBuilder = dbwsBuilder;
@@ -260,7 +271,7 @@ public abstract class BaseDBWSBuilderHelper {
         return dbStoredProcedures;
     }
 
-    //abstract methods - platform-specific behaviour in JDBCHelper, OracleHelper
+    //abstract methods - platform-specific behavior in JDBCHelper, OracleHelper
     public abstract boolean hasTables();
 
     public abstract boolean hasComplexProcedureArgs();
@@ -717,18 +728,41 @@ public abstract class BaseDBWSBuilderHelper {
     @SuppressWarnings({"rawtypes"})
     public void buildDBWSModel(NamingConventionTransformer nct, OutputStream dbwsServiceStream) {
         Project orProject = dbwsBuilder.getOrProject();
-        Project oxProject = dbwsBuilder.getOxProject();
         if (!isNullStream(dbwsServiceStream)) {
             for (Iterator i = orProject.getOrderedDescriptors().iterator(); i.hasNext();) {
                 ClassDescriptor desc = (ClassDescriptor)i.next();
                 String tablenameAlias = desc.getAlias();
                 if (dbwsBuilder.requireCRUDOperations.contains(tablenameAlias)) {
                     String schemaAlias = tablenameAlias.concat(TYPE_STR);
+                    String tableName = desc.getTableName();
+                    Map<String, String> ops;
+                    if (!crudOps.containsKey(tableName)) {
+                        ops = new HashMap<String, String>();
+                        crudOps.put(tableName, ops);
+                    }
+                    ops = crudOps.get(tableName);
+                    
+                    String pks = null;
+                    int pkCount = 0;
+                    for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
+                        DatabaseField field = (DatabaseField)j.next();
+                        if (pkCount++ == 0) {
+                            pks = OPEN_BRACKET + field.getName() + EQUALS_BINDING1_STR;
+                        } else {
+                            pks = pks.concat(AND_STR + field.getName() + EQUALS_BINDING_STR + pkCount++);
+                        }
+                    }
+                    if (pks != null) {
+                       pks = pks.concat(CLOSE_BRACKET);
+                    }
+                    
+                    // findByPk
+                    String crudOpName = Util.PK_QUERYNAME + UNDERSCORE + schemaAlias;
                     QueryOperation findByPKQueryOperation = new QueryOperation();
-                    findByPKQueryOperation.setName(Util.PK_QUERYNAME + UNDERSCORE + schemaAlias);
+                    findByPKQueryOperation.setName(crudOpName);
                     findByPKQueryOperation.setUserDefined(false);
                     NamedQueryHandler nqh1 = new NamedQueryHandler();
-                    nqh1.setName(Util.PK_QUERYNAME + UNDERSCORE + schemaAlias);
+                    nqh1.setName(crudOpName);
                     nqh1.setDescriptor(tablenameAlias);
                     Result result = new Result();
                     QName theInstanceType = new QName(dbwsBuilder.getTargetNamespace(), schemaAlias, TARGET_NAMESPACE_PREFIX);
@@ -743,30 +777,80 @@ public abstract class BaseDBWSBuilderHelper {
                         findByPKQueryOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(findByPKQueryOperation.getName(), findByPKQueryOperation);
+                                        
+                    // find all
+                    crudOpName = FINDALL_QUERYNAME + UNDERSCORE + schemaAlias;
                     QueryOperation findAllOperation = new QueryOperation();
-                    findAllOperation.setName(FINDALL_QUERYNAME + UNDERSCORE + schemaAlias);
+                    findAllOperation.setName(crudOpName);
                     findAllOperation.setUserDefined(false);
                     NamedQueryHandler nqh2 = new NamedQueryHandler();
-                    nqh2.setName(FINDALL_QUERYNAME + UNDERSCORE + schemaAlias);
+                    nqh2.setName(crudOpName);
                     nqh2.setDescriptor(tablenameAlias);
                     Result result2 = new CollectionResult();
                     result2.setType(theInstanceType);
                     findAllOperation.setResult(result2);
                     findAllOperation.setQueryHandler(nqh2);
                     dbwsBuilder.xrServiceModel.getOperations().put(findAllOperation.getName(), findAllOperation);
+
+                    // create
+                    crudOpName = CREATE_OPERATION_NAME + UNDERSCORE + schemaAlias;
                     InsertOperation insertOperation = new InsertOperation();
-                    insertOperation.setName(CREATE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    insertOperation.setName(crudOpName);
                     Parameter theInstance = new Parameter();
                     theInstance.setName(THE_INSTANCE_NAME);
                     theInstance.setType(theInstanceType);
                     insertOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(insertOperation.getName(), insertOperation);
+                    
+                    String sqlStmt = INSERT_STR + tableName + SINGLE_SPACE + OPEN_BRACKET;
+                    int idx = 1;
+                    String cols = "";
+                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
+                        DatabaseMapping mapping = (DatabaseMapping) j.next();
+                        cols += mapping.getField().getName();
+                        if (j.hasNext()) {
+                            cols += COMMA_SPACE_STR;
+                        }
+                        idx++;
+                    }
+                    sqlStmt += cols + CLOSE_BRACKET + VALUES_STR + OPEN_BRACKET;
+                    String vals = "";
+                    for (int k=1; k<idx; k++) {
+                        vals += QUESTION_STR + k;
+                        if (k+1 < idx) {
+                            vals += COMMA_SPACE_STR;
+                        }
+                    }
+                    sqlStmt += vals + CLOSE_BRACKET;
+                    ops.put(crudOpName, sqlStmt);
+                    
+                    // update
+                    crudOpName = UPDATE_OPERATION_NAME + UNDERSCORE + schemaAlias;
                     UpdateOperation updateOperation = new UpdateOperation();
-                    updateOperation.setName(UPDATE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    updateOperation.setName(crudOpName);
                     updateOperation.getParameters().add(theInstance);
                     dbwsBuilder.xrServiceModel.getOperations().put(updateOperation.getName(), updateOperation);
+                    
+                    sqlStmt = UPDATE_STR + tableName + SET_STR;
+                    idx = pkCount;
+                    for (Iterator j = desc.getMappings().iterator(); j.hasNext();) {
+                        DatabaseMapping mapping = (DatabaseMapping) j.next();
+                        DatabaseField field = mapping.getField();
+                        if (!desc.getPrimaryKeyFields().contains(field)) {
+                            sqlStmt += mapping.getField().getName() + EQUALS_BINDING_STR + (++idx);
+                            if (j.hasNext()) {
+                                sqlStmt += COMMA_SPACE_STR;
+                            }                            
+                        }
+                    }
+                    
+                    sqlStmt += WHERE_STR + pks;
+                    ops.put(crudOpName, sqlStmt);
+                    
+                    // delete
+                    crudOpName = REMOVE_OPERATION_NAME + UNDERSCORE + schemaAlias;
                     DeleteOperation deleteOperation = new DeleteOperation();
-                    deleteOperation.setName(REMOVE_OPERATION_NAME + UNDERSCORE + schemaAlias);
+                    deleteOperation.setName(crudOpName);
                     deleteOperation.setDescriptorName(tablenameAlias);
                     for (Iterator j = desc.getPrimaryKeyFields().iterator(); j.hasNext();) {
                         DatabaseField field = (DatabaseField)j.next();
@@ -776,6 +860,9 @@ public abstract class BaseDBWSBuilderHelper {
                         deleteOperation.getParameters().add(p);
                     }
                     dbwsBuilder.xrServiceModel.getOperations().put(deleteOperation.getName(), deleteOperation);
+                    
+                    sqlStmt = DELETE_STR + tableName + WHERE_STR + pks;
+                    ops.put(crudOpName, sqlStmt);
                 }
             }
             // check for additional operations
@@ -785,7 +872,7 @@ public abstract class BaseDBWSBuilderHelper {
                     if (tableModel.additionalOperations != null && tableModel.additionalOperations.size() > 0) {
                         for (OperationModel additionalOperation : tableModel.additionalOperations) {
                             if (additionalOperation.hasBuildSql()) {
-                                addToOROXProjectsForBuildSql((ModelWithBuildSql) additionalOperation, orProject, oxProject, nct);
+                                addToOROXProjectsForBuildSql((ModelWithBuildSql) additionalOperation, orProject, dbwsBuilder.getOxProject(), nct);
                             } else {
                                 additionalOperation.buildOperation(dbwsBuilder);
                             }
@@ -804,7 +891,7 @@ public abstract class BaseDBWSBuilderHelper {
             dbwsBuilder.getPackager().closeServiceStream(dbwsServiceStream);
         }
     }
-
+    
     public void writeAttachmentSchema(OutputStream swarefStream) {
         if (!isNullStream(swarefStream)) {
             dbwsBuilder.logMessage(FINEST, "writing " + WSI_SWAREF_XSD_FILE);
@@ -881,7 +968,7 @@ public abstract class BaseDBWSBuilderHelper {
             writeORProject = true;
         }
         if (!writeORProject) {
-            // check for any named queries - SimpleXMLFormatProject's sometimes need them
+            // check for any named queries - SimpleXMLFormatProject sometimes need them
             if (orProject.getQueries().size() > 0) {
                 writeORProject = true;
             }
@@ -896,13 +983,23 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
         }
-        if (writeORProject && !isNullStream(dbwsOrStream)) {
+        // TODO:  we will always have at least one operation, so this check may be unnecessary
+        if ((writeORProject || !dbwsBuilder.xrServiceModel.getOperations().isEmpty()) && !isNullStream(dbwsOrStream)) {
             XMLContext context = new XMLContext(workbenchXMLProject);
             context.getSession(orProject).getEventManager().addListener(new MissingDescriptorListener());
-            XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes);
+            
+            // TODO:  two issues - 1. need to write out JPA query metadata for all procs/funcs, not just the 
+            //        complex ones, and 2. need to write out JPA query metadata for CRUD ops
+            // TODO:  there is also a bug with prepended packages (PrependedPackageTestSuite) resulting
+            //        in two procedures being processed by the parser (one qualified with package name - correct - 
+            //        and one w/o package prepended - incorrect.
+            
+            XMLEntityMappings mappings = XmlEntityMappingsGenerator.generateXmlEntityMappings(orProject, complextypes, crudOps);
             if (mappings != null) {
                 XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
-                writer.write(mappings, dbwsOrStream); 
+                writer.write(mappings, dbwsOrStream);
+                
+                //writer.write(mappings, System.out);
             }
         }
         if (!isNullStream(dbwsOxStream)) {

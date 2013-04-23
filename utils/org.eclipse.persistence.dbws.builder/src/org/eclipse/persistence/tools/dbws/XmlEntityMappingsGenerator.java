@@ -114,7 +114,7 @@ public class XmlEntityMappingsGenerator {
      * @param complexTypes list of composite database types used to generate metadata for advanced Oracle and PL/SQL types
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static XMLEntityMappings generateXmlEntityMappings(Project orProject, List<CompositeDatabaseType> complexTypes) {
+    public static XMLEntityMappings generateXmlEntityMappings(Project orProject, List<CompositeDatabaseType> complexTypes, Map<String, Map<String, String>> crudOperations) {
         List<ClassDescriptor> descriptors = orProject.getOrderedDescriptors();
         List<DatabaseQuery> queries = orProject.getQueries();
         
@@ -179,7 +179,21 @@ public class XmlEntityMappingsGenerator {
         List<NamedStoredProcedureQueryMetadata> storedProcs = null;
         List<NamedStoredFunctionQueryMetadata> storedFuncs = null;
         List<NamedNativeQueryMetadata> namedNativeQueries = null;
-        
+
+        // process CRUD operations
+        /*
+        for (String opName : crudOperations.keySet()) {
+            String crudSql = crudOperations.get(opName);
+            NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
+            crudQuery.setName(opName);
+            crudQuery.setQuery(crudSql);
+            if (namedNativeQueries == null) {
+                namedNativeQueries = new ArrayList<NamedNativeQueryMetadata>();
+            }
+            namedNativeQueries.add(crudQuery);
+        }
+        */
+        // process database queries set on the descriptor
         for (DatabaseQuery query : queries) {
             if (query.getCall().isStoredFunctionCall()) {
                 if (query.getCall() instanceof PLSQLStoredFunctionCall) {
@@ -408,6 +422,7 @@ public class XmlEntityMappingsGenerator {
                 List<NamedNativeQueryMetadata> namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
                 NamedNativeQueryMetadata namedQuery;
                 DatabaseQuery dbQuery;
+                // process findAll and findByPk queries
                 for (Iterator<DatabaseQuery> queryIt = cdesc.getQueryManager().getAllQueries().iterator(); queryIt.hasNext();) {
                     dbQuery = queryIt.next();
                     namedQuery = new NamedNativeQueryMetadata();
@@ -415,6 +430,20 @@ public class XmlEntityMappingsGenerator {
                     namedQuery.setQuery(dbQuery.getSQLString());
                     namedQuery.setResultClassName(dbQuery.getReferenceClassName());
                     namedNatQueries.add(namedQuery);
+                }
+                // now create/update/delete operations
+                Map<String, String> crudOps = crudOperations.get(cdesc.getTableName());
+                if (!crudOps.isEmpty()) {
+                    for (String opName : crudOps.keySet()) {
+                        String crudSql = crudOps.get(opName);
+                        NamedNativeQueryMetadata crudQuery = new NamedNativeQueryMetadata();
+                        crudQuery.setName(opName);
+                        crudQuery.setQuery(crudSql);
+                        if (namedNatQueries == null) {
+                            namedNatQueries = new ArrayList<NamedNativeQueryMetadata>();
+                        }
+                        namedNatQueries.add(crudQuery);
+                    }
                 }
                 if (namedNatQueries.size() > 0) {
                     ((EntityAccessor)classAccessor).setNamedNativeQueries(namedNatQueries);

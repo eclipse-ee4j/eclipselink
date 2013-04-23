@@ -18,6 +18,10 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -36,6 +40,9 @@ import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
@@ -44,6 +51,10 @@ import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.BaseDBWSBuilderHelper;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
@@ -281,6 +292,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         invocation.setParameter("theInstance", firstPerson);
         op = xrService.getOperation(invocation.getName());
         op.invoke(xrService, invocation);
+        xrService.getORSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
     @Test
@@ -334,6 +346,221 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         assertNull("Result is not null after delete call", result);
     }
 
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testUpdateSQL() {
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        InputSource inputSource = new InputSource(new StringReader(ONE_PERSON_XML));
+        XRDynamicEntity firstPerson = (XRDynamicEntity) unmarshaller.unmarshal(inputSource);
+        Float originalSal = firstPerson.get("sal");
+        String originalC = firstPerson.get("c");
+        firstPerson.set("sal", 112000.99);
+        firstPerson.set("c", "ababababababababababababababab");
+        
+        DatabaseQuery updateQuery = xrService.getORSession().getQuery("update_tabletypeType");
+
+        // map property names to parameter binding values
+        Map<String, Integer> propOrder = new HashMap<String, Integer>();
+        propOrder.put("id", 1);
+        propOrder.put("name", 2);
+        propOrder.put("deptno", 3);
+        propOrder.put("deptname", 4);
+        propOrder.put("section", 5);
+        propOrder.put("sal", 6);
+        propOrder.put("commission", 7);
+        propOrder.put("sales", 8);
+        propOrder.put("binid", 9);
+        propOrder.put("b", 10);
+        propOrder.put("c", 11);
+        propOrder.put("r", 12);
+        
+        List<String> args = new ArrayList<String>();
+        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
+        List<Object> argVals = new ArrayList<Object>();
+        
+        for (String prop : firstPerson.getPropertiesMap().keySet()) {
+            args.add(propOrder.get(prop).toString());
+            argVals.add(firstPerson.get(prop));
+            fieldVector.add(new DatabaseField(prop.toUpperCase(), "TABLETYPE"));
+        }
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        DataModifyQuery query = new DataModifyQuery();
+        query.setIsUserDefined(updateQuery.isUserDefined());
+        query.copyFromQuery(updateQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) updateQuery.getDatasourceCall().clone());
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession().getActiveSession(), row);
+        query.setSession((AbstractSession) xrService.getORSession().getActiveSession());
+        
+        // execute the update
+        query.executeDatabaseQuery();
+
+        // verify update operation
+        DatabaseQuery findQuery = xrService.getORSession().getActiveSession().getQuery("findByPrimaryKey_tabletypeType");
+        findQuery.setIsPrepared(false);
+        args = new ArrayList<String>();
+        fieldVector = new Vector<DatabaseField>(12);
+        argVals = new ArrayList<Object>();
+        
+        argVals.add(1);
+        args.add("1");
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        
+        findQuery.setArguments(args);
+        findQuery.setArgumentValues(argVals);
+        ((SQLCall) findQuery.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        row = findQuery.rowFromArguments(argVals, (AbstractSession) xrService.getORSession().getActiveSession());
+        findQuery.setTranslationRow(row);
+        findQuery.prepareCall(xrService.getORSession().getActiveSession(), row);
+        findQuery.setSession((AbstractSession) xrService.getORSession().getActiveSession());
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+        
+        // execute the FindByPk
+        Object result = findQuery.executeDatabaseQuery();
+
+        assertTrue("Expected Vector, but result was " + result.getClass().getName(), result instanceof Vector);
+        Vector resultVector = (Vector) result;
+        assertTrue("Expected vector of size 1, but was " + resultVector.size(), resultVector.size() == 1);
+        result = resultVector.get(0);
+        assertTrue("Expected TableType (XRDynamicEntity) but was " + result.getClass().getName(), result instanceof XRDynamicEntity);
+        
+        // verify that 'sal' and 'c' fields were updated successfully
+        XRDynamicEntity tableTypeEntity = (XRDynamicEntity) result;
+        assertTrue("Expected [sal] '112000.99' but was '" + tableTypeEntity.get("sal") + "'", Float.compare(((Float) tableTypeEntity.get("sal")), new Float(112000.99)) == 0);
+        
+        Character[] chars = tableTypeEntity.get("c");
+        StringBuilder sb = new StringBuilder(chars.length);
+        for (Character c : chars) {
+            sb.append(c.charValue());
+        }
+        String charStr = sb.toString();
+        assertTrue("Expected [c] 'ababababababababababababababab' but was '" + tableTypeEntity.get("c") + "'", charStr.equals("ababababababababababababababab"));
+
+        // reset original value
+        firstPerson.set("sal", originalSal);
+        firstPerson.set("c", originalC);
+        Invocation invocation = new Invocation("update_tabletypeType");
+        invocation.setParameter("theInstance", firstPerson);
+        Operation op = xrService.getOperation(invocation.getName());
+        op.invoke(xrService, invocation);        
+    }
+        
+    @Test
+    public void testCreateAndDeleteSQL() {
+        xrService.getORSession().getActiveSession().getIdentityMapAccessor().initializeIdentityMaps();
+        DatabaseQuery createQuery = xrService.getORSession().getQuery("create_tabletypeType");
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        DataModifyQuery query = new DataModifyQuery();
+        query.setIsUserDefined(createQuery.isUserDefined());
+        query.copyFromQuery(createQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) createQuery.getDatasourceCall().clone());
+        
+        List<String> args = new ArrayList<String>();
+        Vector<DatabaseField> fieldVector = new Vector<DatabaseField>(12);
+        List<Object> argVals = new ArrayList<Object>();
+        
+        argVals.add(99);
+        argVals.add("Joe Black");
+        argVals.add("22");
+        argVals.add("Janitor");
+        argVals.add("q");
+        argVals.add(19000);
+        argVals.add(333);
+        argVals.add(1.00);
+        argVals.add("1111");
+        argVals.add("040404040404040404040404040404");
+        argVals.add("dddddddddddddddddddddddddddddd");
+        argVals.add("040404");
+        
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("NAME", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("DEPTNO", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("DEPTNAME", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SECTION", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SAL", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("COMMISSION", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("SALES", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("BINID", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("B", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("C", "TABLETYPE"));
+        fieldVector.add(new DatabaseField("R", "TABLETYPE"));
+        
+        for (int i=1; i<=argVals.size(); i++) {
+            args.add(String.valueOf(i));
+        }
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        AbstractRecord row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession(), query.getTranslationRow());
+        query.setSession((AbstractSession) xrService.getORSession());
+        query.executeDatabaseQuery();
+        
+        // verify create call succeeded
+        Invocation invocation = new Invocation("findByPrimaryKey_tabletypeType");
+        invocation.setParameter("id", 99);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("Result is null after create call", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NEW_PERSON2_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "but was:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+        
+        // delete
+        DatabaseQuery deleteQuery = xrService.getORSession().getQuery("delete_tabletypeType");
+        
+        // by default, JPA will create a DataReadQuery, but we want a DataModifyQuery
+        query = new DataModifyQuery();
+        query.setIsUserDefined(deleteQuery.isUserDefined());
+        query.copyFromQuery(deleteQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) deleteQuery.getDatasourceCall().clone());
+
+        args = new ArrayList<String>();
+        fieldVector = new Vector<DatabaseField>(12);
+        argVals = new ArrayList<Object>();
+        
+        argVals.add(99);
+        args.add("1");
+        fieldVector.add(new DatabaseField("ID", "TABLETYPE"));
+        
+        query.setArguments(args);
+        query.setArgumentValues(argVals);
+        ((SQLCall) query.getDatasourceCall()).setFields(fieldVector);
+        
+        // need to create/set a translation row
+        row = query.rowFromArguments(argVals, (AbstractSession) xrService.getORSession());
+        query.setTranslationRow(row);
+        query.prepareCall(xrService.getORSession(), query.getTranslationRow());
+        query.setSession((AbstractSession) xrService.getORSession());
+        query.executeDatabaseQuery();
+        
+        // verify delete call succeeded
+        result = op.invoke(xrService, invocation);
+        assertNull("Result not null after delete call", result);
+    }
+    
     @Test
     public void validateSchema() {
         Document testDoc = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
@@ -776,6 +1003,15 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n    <orm:named-native-query name=\"findAll_tabletypeType\" result-class=\"tabletype.Tabletype\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE</orm:query>" +
         "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"update_tabletypeType\">" +
+        "\n      <orm:query>UPDATE TABLETYPE SET NAME = ?2, DEPTNO = ?3, DEPTNAME = ?4, SECTION = ?5, SAL = ?6, COMMISSION = ?7, SALES = ?8, BINID = ?9, B = ?10, C = ?11, R = ?12 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"create_tabletypeType\">" +
+        "\n      <orm:query>INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"delete_tabletypeType\">" +
+        "\n      <orm:query>DELETE FROM TABLETYPE WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
         "\n    <orm:attributes>" +
         "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
         "\n        <orm:column name=\"ID\"/>" +
@@ -823,6 +1059,15 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n    <orm:named-native-query name=\"findAll_tabletype2Type\" result-class=\"tabletype.Tabletype2\">" +
         "\n      <orm:query>SELECT * FROM TABLETYPE2</orm:query>" +
         "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"delete_tabletype2Type\">" +
+        "\n      <orm:query>DELETE FROM TABLETYPE2 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"create_tabletype2Type\">" +
+        "\n      <orm:query>INSERT INTO TABLETYPE2 (ID, LR) VALUES (?1, ?2)</orm:query>" +
+        "\n    </orm:named-native-query>" +
+        "\n    <orm:named-native-query name=\"update_tabletype2Type\">" +
+        "\n      <orm:query>UPDATE TABLETYPE2 SET LR = ?2 WHERE (ID = ?1)</orm:query>" +
+        "\n    </orm:named-native-query>" +
         "\n    <orm:attributes>" +
         "\n      <orm:id attribute-type=\"java.math.BigInteger\" name=\"id\">" +
         "\n        <orm:column name=\"ID\"/>" +
@@ -833,192 +1078,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "\n    </orm:attributes>" +
         "\n  </orm:entity>" +
         "\n</orm:entity-mappings>";
-    
-    /*
-    protected static final String OR_PROJECT =
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-        "<object-persistence xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:eclipselink=\"http://www.eclipse.org/eclipselink/xsds/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"Eclipse Persistence Services - " + releaseVersion + "\">\n" +
-           "<name>tabletype-dbws-or</name>\n" +
-           "<class-mapping-descriptors>\n" +
-              "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype</class>\n" +
-                 "<alias>tabletype</alias>\n" +
-                 "<primary-key>\n" +
-                    "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                 "</primary-key>\n" +
-                 "<events/>\n" +
-                 "<querying>\n" +
-                    "<queries>\n" +
-                       "<query name=\"findByPrimaryKey\" xsi:type=\"read-object-query\">\n" +
-                          "<criteria operator=\"equal\" xsi:type=\"relation-expression\">\n" +
-                             "<left xsi:type=\"field-expression\">\n" +
-                                "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                                "<base xsi:type=\"base-expression\"/>\n" +
-                             "</left>\n" +
-                             "<right xsi:type=\"parameter-expression\">\n" +
-                                "<parameter name=\"id\" xsi:type=\"column\"/>\n" +
-                             "</right>\n" +
-                          "</criteria>\n" +
-                          "<arguments>\n" +
-                             "<argument name=\"id\">\n" +
-                                "<type>java.lang.Object</type>\n" +
-                             "</argument>\n" +
-                          "</arguments>\n" +
-                          "<reference-class>tabletype.Tabletype</reference-class>\n" +
-                       "</query>\n" +
-                       "<query name=\"findAll\" xsi:type=\"read-all-query\">\n" +
-                          "<reference-class>tabletype.Tabletype</reference-class>\n" +
-                          "<container xsi:type=\"list-container-policy\">\n" +
-                             "<collection-type>java.util.Vector</collection-type>\n" +
-                          "</container>\n" +
-                       "</query>\n" +
-                    "</queries>\n" +
-                 "</querying>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>name</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"NAME\" sql-typecode=\"12\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>deptno</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"DEPTNO\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>deptname</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"DEPTNAME\" sql-typecode=\"12\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.String</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>section</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SECTION\" sql-typecode=\"1\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Character</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>sal</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SAL\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>commission</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"COMMISSION\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>sales</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"SALES\" sql-typecode=\"6\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.lang.Float</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>binid</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"BINID\" sql-typecode=\"2004\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>b</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"B\" sql-typecode=\"2004\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>c</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"C\" sql-typecode=\"2005\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[Ljava.lang.Character;</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>r</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"R\" sql-typecode=\"-3\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>independent</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<tables>\n" +
-                    "<table name=\"TABLETYPE\"/>\n" +
-                 "</tables>\n" +
-              "</class-mapping-descriptor>\n" +
-              "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
-                 "<class>tabletype.Tabletype2</class>\n" +
-                 "<alias>tabletype2</alias>\n" +
-                 "<primary-key>\n" +
-                    "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                 "</primary-key>\n" +
-                 "<events/>\n" +
-                 "<querying>\n" +
-                    "<queries>\n" +
-                       "<query name=\"findByPrimaryKey\" xsi:type=\"read-object-query\">\n" +
-                          "<criteria operator=\"equal\" xsi:type=\"relation-expression\">\n" +
-                             "<left xsi:type=\"field-expression\">\n" +
-                                "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                                "<base xsi:type=\"base-expression\"/>\n" +
-                             "</left>\n" +
-                             "<right xsi:type=\"parameter-expression\">\n" +
-                                "<parameter name=\"id\" xsi:type=\"column\"/>\n" +
-                             "</right>\n" +
-                          "</criteria>\n" +
-                          "<arguments>\n" +
-                             "<argument name=\"id\">" +
-                                "<type>java.lang.Object</type>\n" +
-                             "</argument>\n" +
-                          "</arguments>\n" +
-                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
-                       "</query>\n" +
-                       "<query name=\"findAll\" xsi:type=\"read-all-query\">\n" +
-                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
-                          "<container xsi:type=\"list-container-policy\">\n" +
-                             "<collection-type>java.util.Vector</collection-type>\n" +
-                          "</container>\n" +
-                       "</query>\n" +
-                    "</queries>\n" +
-                 "</querying>\n" +
-                 "<attribute-mappings>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>id</attribute-name>\n" +
-                       "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
-                       "<attribute-name>lr</attribute-name>\n" +
-                       "<field table=\"TABLETYPE2\" name=\"LR\" sql-typecode=\"-4\" xsi:type=\"column\"/>\n" +
-                       "<attribute-classification>[B</attribute-classification>\n" +
-                    "</attribute-mapping>\n" +
-                 "</attribute-mappings>\n" +
-                 "<descriptor-type>independent</descriptor-type>\n" +
-                 "<caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</caching>\n" +
-                 "<remote-caching>\n" +
-                    "<cache-type>weak-reference</cache-type>\n" +
-                    "<cache-size>-1</cache-size>\n" +
-                 "</remote-caching>\n" +
-                 "<instantiation/>\n" +
-                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<tables>\n" +
-                    "<table name=\"TABLETYPE2\"/>\n" +
-                 "</tables>\n" +
-              "</class-mapping-descriptor>\n" +
-           "</class-mapping-descriptors>\n" +
-           "<login xsi:type=\"database-login\">\n" +
-              "<platform-class>org.eclipse.persistence.platform.database.DatabasePlatform</platform-class>\n" +
-              "<connection-url></connection-url>\n" +
-           "</login>\n" +
-        "</object-persistence>";
-    */
             
     protected static final String OX_PROJECT =
         "<?xml version = '1.0' encoding = 'UTF-8'?>" +
@@ -1167,6 +1226,23 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "<b xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
             "<c>adadadadadadadadadadadadadadad</c>" +
             "<r xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+        "</tabletypeType>";
+    
+    protected static final String NEW_PERSON2_XML =
+        REGULAR_XML_HEADER +
+        "<tabletypeType xmlns=\"urn:tabletype\">" +
+            "<id>99</id>" +
+            "<name>Joe Black</name>" +
+            "<deptno>22</deptno>" +
+            "<deptname>Janitor</deptname>" +
+            "<section>q</section>" +
+            "<sal>19000.0</sal>" +
+            "<commission>333.0</commission>" +
+            "<sales>1.0</sales>" +
+            "<binid>ERE=</binid>" +
+            "<b>BAQEBAQEBAQEBAQEBAQE</b>" +
+            "<c>dddddddddddddddddddddddddddddd</c>" +
+            "<r>BAQE</r>" +
         "</tabletypeType>";
 
     protected static final String ALL_PEOPLE_XML =
