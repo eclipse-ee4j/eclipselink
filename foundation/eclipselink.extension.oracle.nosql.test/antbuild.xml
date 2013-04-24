@@ -174,7 +174,7 @@
         <mkdir dir="${ora_nosql_test.report.dir}"/ -->
 
         <!-- Determine availability of compile dependencies   -->
-        <selectbundle basename="javax.persistence-api" directory="${ora_nosql_test.build.location}/${ora_nosql_test.2.jpa.plugins.dir}" separator="_"
+        <selectbundle basename="javax.persistence" directory="${ora_nosql_test.build.location}/${ora_nosql_test.2.jpa.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
         />
         <selectbundle basename="${antlr}" directory="${ora_nosql_test.build.location}/${ora_nosql_test.2.common.plugins.dir}" separator="_"

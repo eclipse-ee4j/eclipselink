@@ -160,7 +160,7 @@
     </target>
 
     <target name="discover-static-built-info" depends="init">
-        <property name="jpaapi.prefix"        value="javax.persistence-api"/>
+        <property name="jpaapi.prefix"        value="javax.persistence"/>
         <property name="jpaapi.criteria"      value="[2.0.100, 2.1.100)"/>
         <property name="jpaapi.name"          value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
@@ -285,6 +285,9 @@
         <property name="deps.foot" value="&lt;/dependencies&gt;"/>
 
         <!-- These use above, in order, to define a single library for an artifact dependency -->
+        <!-- Public APIs we depend upon that can be found on Maven Central -->
+        <!-- Add as nosql dependency -->
+        <!-- property name="dep.resource"         value="${dep.grp}org.glassfish.main.connectors${dep.art}javax.resource${dep.ver}3.1.2.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/ -->
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>

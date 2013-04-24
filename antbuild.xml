@@ -777,7 +777,7 @@
                 <exclude name="com.sun*.jar"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence-api*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistenc_2.1*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
@@ -844,7 +844,6 @@
                 <include name="jpa/eclipselink.jpa.modelgen.test/**"/>
                 <include name="jpa/plugins/javax.validation_*.jar"/>
                 <include name="jpa/plugins/javax.persistence_2.*.jar"/>
-                <include name="jpa/plugins/javax.persistence-api_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>
                 <exclude name="**/eclipselink.moxy.test/moxy/**"/>
@@ -1250,7 +1249,7 @@
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}*_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.1 jars -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence-api_*.jar" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*2.1*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- JPA RS jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
