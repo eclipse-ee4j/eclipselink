@@ -31,14 +31,14 @@
 *     eric.gwin - initial API and implementation (checked in by Tware)
 #******************************************************************************/-->
 
-<!-- =============================================================================
+<!-- ==============================================================================
 *  General Comments
 *  This buildfile contains branch and automation specific instructions for the
 *  automated build process using Hudson for EclipseLink at Eclipse and is intended
 *  to be called by Hudson (generic user).
 *
 *  All publishing commands are now external to this file (see eclipselink.releng: publish.sh)
-*================================================================================= -->
+*================================================================================== -->
 <project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
     <dirname  property="build.location_temp" file="${ant.file.AutoBuild}"/>
