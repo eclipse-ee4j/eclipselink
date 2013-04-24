@@ -47,10 +47,10 @@ Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.6.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.naming;resolution:=optional,
- javax.persistence;jpa="2.0";version="[1.1.0,2.2)",
- javax.persistence.criteria;jpa="2.0";version="[1.1.0,2.2)",
- javax.persistence.metamodel;jpa="2.0";version="[1.1.0,2.2)",
- javax.persistence.spi;jpa="2.0";version="[1.1.0,2.2)",
+ javax.persistence;jpa="2.1";version="[1.1.0,2.2)",
+ javax.persistence.criteria;jpa="2.1";version="[1.1.0,2.2)",
+ javax.persistence.metamodel;jpa="2.1";version="[1.1.0,2.2)",
+ javax.persistence.spi;jpa="2.1";version="[1.1.0,2.2)",
  javax.sql;resolution:=optional,
  javax.transaction;version="1.1.0";resolution:=optional,
  javax.transaction.xa;version="1.1.0";resolution:=optional,
