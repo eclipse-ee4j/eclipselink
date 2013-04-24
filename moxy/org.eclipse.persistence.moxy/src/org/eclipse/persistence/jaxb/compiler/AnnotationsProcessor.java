@@ -3185,12 +3185,30 @@ public class AnnotationsProcessor {
             XmlEnum xmlEnum = (XmlEnum) helper.getAnnotation(javaClass, XmlEnum.class);
             restrictionClass = xmlEnum.value();
       	    JavaClass restrictionJavaClass= helper.getJavaClass(restrictionClass);
-
       	    boolean restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
+
       	    if(!restrictionIsEnum){
-        	     restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));                  
-            }else{
-	            while (restrictionIsEnum) {
+      	    	 if(helper.isBuiltInJavaType(restrictionJavaClass)){  
+      	    		restrictionBase = getSchemaTypeFor(helper.getJavaClass(restrictionClass));          
+      	    	 }else{
+      	    		TypeInfo restrictionInfo = typeInfo.get(restrictionJavaClass.getQualifiedName());
+          	    	if(restrictionInfo == null){
+          	    		 JavaClass[] jClasses = new JavaClass[] { restrictionJavaClass };
+                         buildNewTypeInfo(jClasses);
+                         restrictionInfo = typeInfo.get(restrictionJavaClass.getQualifiedName());
+          	    	}else if(restrictionInfo != null && !restrictionInfo.isPostBuilt()){
+          	    		postBuildTypeInfo(new JavaClass[] { restrictionJavaClass });
+          	    	}
+          	    	
+          	    	Property xmlValueProp  =restrictionInfo.getXmlValueProperty();
+          	    	if(xmlValueProp != null){
+          	    		restrictionJavaClass = xmlValueProp.getActualType();      	    		
+          	    	    restrictionBase = getSchemaTypeFor(restrictionJavaClass);
+          	    	    restrictionClass = helper.getClassForJavaClass(restrictionJavaClass);
+          	    	}      	
+      	    	 }
+      	    }else{
+      	    	while (restrictionIsEnum) {
 	            	
 	                  TypeInfo restrictionTypeInfo = typeInfo.get(restrictionJavaClass.getQualifiedName());
 	                  if(restrictionTypeInfo == null && shouldGenerateTypeInfo(restrictionJavaClass)){
@@ -3205,7 +3223,7 @@ public class AnnotationsProcessor {
 	                 restrictionJavaClass= helper.getJavaClass(restrictionClass);
 	                 restrictionIsEnum = helper.isAnnotationPresent(restrictionJavaClass, XmlEnum.class);
 	            }
-            }
+      	    }      	    
         } 
         info.setRestrictionBase(restrictionBase);
      
