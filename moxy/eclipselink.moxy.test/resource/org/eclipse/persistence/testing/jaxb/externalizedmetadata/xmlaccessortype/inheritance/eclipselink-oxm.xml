@@ -8,5 +8,6 @@
                 <xml-element java-attribute="calculatedValue"/>
             </java-attributes>
         </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance.TestSuperclass" xml-accessor-type="PROPERTY"/>
     </java-types>
 </xml-bindings>

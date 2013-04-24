@@ -48,4 +48,12 @@ public class AnnotationHelper {
         return elem.isAnnotationPresent(annotationClass);
     }
 
+    /**
+     * Get all annotations that are defined directly on the AnnotatedElement
+     * (excluding inherited annotations).
+     */
+    public Annotation[] getDeclaredAnnotations(AnnotatedElement elem) {
+       return elem.getDeclaredAnnotations();
+    }
+
 }
