@@ -14,6 +14,7 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance;
 
 public abstract class A {
+
     public abstract String getX();
-    
+
 }

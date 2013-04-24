@@ -1,1 +1,17 @@
-{"b":{"a":{"b":{"c":"Hello World"}},"calculatedValue":"CalculatedValue"}}
+{
+   "b" : {
+      "a" : {
+         "b" : {
+            "c" : "Hello World"
+         }
+      },
+      "calculatedValue" : "Calculated Value",
+      "testSub" : {
+         "bar" : "property",
+         "foo" : "property"
+      },
+      "testSuper" : {
+         "bar" : "property"
+      }
+   }
+}

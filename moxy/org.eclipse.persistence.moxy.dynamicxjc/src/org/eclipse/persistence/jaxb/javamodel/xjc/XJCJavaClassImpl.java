@@ -764,14 +764,14 @@ public class XJCJavaClassImpl implements JavaClass {
      * Not supported.
      */
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
-        throw new UnsupportedOperationException("getDeclaredAnnotation");
+        return getAnnotation(arg0);
     }
 
     /**
      * Not supported.
      */
     public Collection<JavaAnnotation> getDeclaredAnnotations() {
-        throw new UnsupportedOperationException("getDeclaredAnnotations");
+        return getAnnotations();
     }
 
     /**

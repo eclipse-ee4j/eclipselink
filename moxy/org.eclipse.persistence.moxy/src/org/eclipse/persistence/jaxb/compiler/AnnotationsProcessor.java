@@ -1532,7 +1532,7 @@ public class AnnotationsProcessor {
      */
     private void preProcessXmlAccessorType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessType;
-        if (helper.isAnnotationPresent(javaClass, XmlAccessorType.class)) {
+        if (javaClass.getDeclaredAnnotation(helper.getJavaClass(XmlAccessorType.class)) != null) {
             XmlAccessorType accessorType = (XmlAccessorType) helper.getAnnotation(javaClass, XmlAccessorType.class);
             xmlAccessType = org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(accessorType.value().name());
             info.setXmlAccessType(xmlAccessType);
@@ -1551,6 +1551,11 @@ public class AnnotationsProcessor {
             JavaClass next = helper.getJavaClass(info.getJavaClassName()).getSuperclass();
             while (next != null && !(next.getName().equals(JAVA_LANG_OBJECT))) {
                 TypeInfo parentInfo = this.typeInfo.get(next.getName());
+                // If parentInfo is null, hasn't been processed yet
+                if (shouldGenerateTypeInfo(next)) {
+                    buildNewTypeInfo(new JavaClass[] { next });
+                    parentInfo = this.typeInfo.get(next.getName());
+                }
                 if (parentInfo != null && parentInfo.isSetXmlAccessType()) {
                     info.setXmlAccessType(parentInfo.getXmlAccessType());
                     break;

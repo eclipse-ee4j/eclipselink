@@ -524,12 +524,29 @@ public class JavaClassImpl implements JavaClass {
         }      
     }
 
-    //---------------- unimplemented methods ----------------//
     public JavaAnnotation getDeclaredAnnotation(JavaClass arg0) {
+        // the only annotation we will return if isMetadataComplete == true is XmlRegistry
+        if (arg0 != null && (!isMetadataComplete || arg0.getQualifiedName().equals(XML_REGISTRY_CLASS_NAME))) {
+            Class annotationClass = ((JavaClassImpl) arg0).getJavaClass();
+            Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
+            for (Annotation annotation : annotations) {
+                if (annotation.annotationType().equals(annotationClass)) {
+                    return new JavaAnnotationImpl(annotation);
+                }
+            }
+        }
         return null;
     }
 
     public Collection getDeclaredAnnotations() {
-        return null;
+        ArrayList<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        if (!isMetadataComplete) {
+            Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
+            for (Annotation annotation : annotations) {
+                annotationCollection.add(new JavaAnnotationImpl(annotation));
+            }
+        }
+        return annotationCollection;
     }
+
 }
