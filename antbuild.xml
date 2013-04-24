@@ -258,7 +258,7 @@
     <!-- Cleans all build generated files. -->
     <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
 
-    <target name="clean-runtime" depends="clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
+    <target name="clean-runtime" depends="generate-local-compdeps, clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
     <!--   This allows testing to call a specific target that won't remove the default
            (or dropped-in copy of) eclipselink and the persistence jar, while still
            allowing unchanged operation by developers and users to clean all built artifacts. -->
