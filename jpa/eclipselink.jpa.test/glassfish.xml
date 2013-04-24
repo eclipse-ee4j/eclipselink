@@ -120,7 +120,6 @@
         </delete>
         <copy todir="${glassfish.home}/modules" overwrite="true" failonerror="false">
             <fileset dir="${jpatest.basedir}/../plugins/">
-                <include name="javax.persistence-api_2*.jar"/>
                 <include name="javax.persistence_2*.jar"/>
                 <exclude name="javax.persistence_2*_preview.jar"/>
             </fileset>

@@ -217,7 +217,7 @@
         <property name="activation.criteria" value="[1.1.0,1.2.0)"/>
         <property name="mail.prefix" value="javax.mail"/>
         <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
-        <property name="persistence.prefix" value="javax.persistence-api"/>
+        <property name="persistence.prefix" value="javax.persistence"/>
         <property name="persistence.criteria" value="[2.0.100,2.2.0)"/>
         <property name="resource.prefix" value="javax.resource"/>
         <property name="resource.criteria" value="[1.4.0,1.6.0)"/>

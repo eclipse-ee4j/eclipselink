@@ -158,7 +158,7 @@
         <selectbundle basename="org.eclipse.orbit.mongodb" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="mongo.lib" includepath="true"
         />
-        <selectbundle basename="javax.persistence-api" directory="${nosql_test.build.location}/${nosql_test.2.jpa.plugins.dir}" separator="_"
+        <selectbundle basename="javax.persistence" directory="${nosql_test.build.location}/${nosql_test.2.jpa.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
         />
         <selectbundle basename="javax.resource" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"

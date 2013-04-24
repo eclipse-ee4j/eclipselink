@@ -37,7 +37,7 @@
          unpack="false"/>
 
    <plugin
-         id="javax.persistence-api"
+         id="javax.persistence"
          download-size="0"
          install-size="0"
          version="@PERSISTENCE_VERSION@"
