@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,24 +13,37 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance;
 
-public class B extends A
-{
+import javax.xml.bind.annotation.XmlElement;
+
+public class B extends A {
+
     String x;
 
     public B() {
         x = "Hello World";
     }
-    
+
     @Override
     public String getX() {
         return x;
     }
 
+    @XmlElement
+    public TestClass getTestSub() {
+        return new TestClass();
+    }
+
+    @XmlElement
+    public TestSuperclass getTestSuper() {
+        return new TestSuperclass();
+    }
+
     public String getCalculatedValue() {
         return "Calculated Value";
     }
-    
+
     public boolean equals(Object b) {
-        return x.equals(((B)b).getX());
+        return x.equals(((B) b).getX());
     }
+
 }
