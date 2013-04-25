@@ -3,6 +3,7 @@
       <xsd:sequence>
          <xsd:element minOccurs="0" name="name" type="xsd:string"/>
          <xsd:element minOccurs="0" name="department-number" type="department"/>
+         <xsd:element minOccurs="0" name="roundingMode" type="roundingMode"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="employee" type="employeeSingleDepartment"/>
@@ -14,4 +15,16 @@
          <xsd:enumeration value="4"/>
       </xsd:restriction>
    </xsd:simpleType>
+   <xsd:simpleType name="roundingMode">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="UP"/>
+         <xsd:enumeration value="DOWN"/>
+         <xsd:enumeration value="CEILING"/>
+         <xsd:enumeration value="FLOOR"/>
+         <xsd:enumeration value="HALF_UP"/>
+         <xsd:enumeration value="HALF_DOWN"/>
+         <xsd:enumeration value="HALF_EVEN"/>
+         <xsd:enumeration value="UNNECESSARY"/>
+      </xsd:restriction>
+   </xsd:simpleType>   
 </xsd:schema>

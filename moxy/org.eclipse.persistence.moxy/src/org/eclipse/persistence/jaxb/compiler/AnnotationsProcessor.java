@@ -1800,7 +1800,7 @@ public class AnnotationsProcessor {
                 return true;
             }
         }
-        if (helper.isBuiltInJavaType(javaClass)) {
+        if (helper.isBuiltInJavaType(javaClass) && !javaClass.isEnum()) {
             return false;
         }
         if (helper.isCollectionType(javaClass) || helper.isMapType(javaClass)) {

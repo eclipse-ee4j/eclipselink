@@ -9,27 +9,34 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlenum;
+
+import java.math.RoundingMode;
 
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement(name="employee")
+@XmlRootElement(name = "employee")
 public class EmployeeSingleDepartment {
+
     public String name;
-    
-    @XmlElement(name="department-number")
+
+    @XmlElement(name = "department-number")
     public Department department;
-    
+
+    public RoundingMode roundingMode;
+
     public boolean equals(Object o) {
-        if(!(o instanceof EmployeeSingleDepartment) || o == null) {
+        if (!(o instanceof EmployeeSingleDepartment) || o == null) {
             return false;
         } else {
-            return ((EmployeeSingleDepartment)o).department == this.department;
+            EmployeeSingleDepartment e = ((EmployeeSingleDepartment) o);
+            return (e.department == this.department) && (e.roundingMode == this.roundingMode);
         }
     }
-    
+
     public String toString() {
-        return "EMPLOYEE(" + department + ")";
-    }    
+        return "EMPLOYEE(" + department + ", " + roundingMode + ")";
+    }
+
 }
