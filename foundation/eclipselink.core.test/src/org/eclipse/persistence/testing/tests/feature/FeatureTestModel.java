@@ -153,6 +153,7 @@ public class FeatureTestModel extends TestModel {
         suite.setName("CopyingTestSuite");
         suite.setDescription("This tests object copying.");
         suite.addTest(new ObjectCopyingTest());
+        suite.addTest(new ContainerCloningTest());
         return suite;
     }
 

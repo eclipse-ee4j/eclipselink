@@ -407,7 +407,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testNestedBatchQueryHints");
         tests.add("testReplaceElementCollection");
         tests.add("testProviderPropertySetting");
-        tests.add("testCopyNotCloneableCollection");
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -9097,43 +9096,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                         getResultList();
         emps.toString();
         closeEntityManager(em);
-    }
-
-    /*
-     * Added for bug 241322 - JPA Collection mapping assumes clone is implemented/supported
-     * tests java.util.Arrays$ArrayList from java.util.Arrays.asList()
-     * and java.util.WeakHashMap() neither of which implement cloneable.
-     */
-    public void testCopyNotCloneableCollection() {
-
-        EntityManagerImpl em = (EntityManagerImpl)createEntityManager().getDelegate();
-        try {
-            CopyGroup copyGroup = new CopyGroup();
-            copyGroup.addAttribute("managedEmployees");
-
-            Employee emp = new Employee();
-            emp.setFirstName("Manager");
-            emp.setManagedEmployees(java.util.Arrays.asList(new Employee()));
-
-            Employee empCopy = (Employee)em.copy(emp, copyGroup);
-            this.assertTrue("Copy didn't return a new collection", 
-                    (empCopy.getManagedEmployees()!=null && empCopy.getManagedEmployees() != emp.getManagedEmployees()));
-
-            Department d = new Department();
-            Equipment e = new Equipment();
-            e.setId(1);
-            d.setEquipment(new java.util.WeakHashMap());
-            d.addEquipment(e);
-
-            copyGroup = new CopyGroup();
-            copyGroup.addAttribute("equipment");
-            Department depCopy = (Department)em.copy(d, copyGroup);
-            this.assertTrue("Copy didn't return a new Map", 
-                    (depCopy.getEquipment()!=null && depCopy.getEquipment() != d.getEquipment()));
-
-        } finally {
-            closeEntityManager(em);
-        }
     }
 
     // Bug 237281 - ensure we throw the correct exception when trying to persist a non-entity subclass of an entity
