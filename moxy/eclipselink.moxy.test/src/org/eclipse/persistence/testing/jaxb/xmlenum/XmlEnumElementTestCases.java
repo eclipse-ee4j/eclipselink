@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
@@ -34,6 +35,7 @@ public class XmlEnumElementTestCases extends JAXBTestCases {
         EmployeeSingleDepartment emp = new EmployeeSingleDepartment();
         emp.name = CONTROL_NAME;
         emp.department = Department.J2EE;
+        emp.roundingMode = RoundingMode.CEILING;
         return emp;
     }
 }
