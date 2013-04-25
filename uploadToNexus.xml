@@ -161,7 +161,7 @@
 
     <target name="discover-static-built-info" depends="init">
         <property name="jpaapi.prefix"        value="javax.persistence"/>
-        <property name="jpaapi.criteria"      value="[2.0.100, 2.1.100)"/>
+        <property name="jpaapi.criteria"      value="[2.0.100, 2.2)"/>
         <property name="jpaapi.name"          value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
@@ -221,12 +221,9 @@
         <!-- Below is a fail-safe to ensure EclipseLink cannot be released while javax.persistence   -->
         <!-- retains the 2.0.10x OSGi versioning.                                                    -->
         <condition property="jpaapi.prerelease.ok">
-            <and>
-                <contains string="${jpaapi.version}" substring="2.0."/>
                 <not>
                     <equals arg1="${jpaapi.mvn.version}" arg2="2.1.0-RELEASE"/>
                 </not>
-            </and>
         </condition>
         <fail message="Attempting to RELEASE a pre-release version '${jpaapi.version}' of javax.persistence. Aborting..." unless="jpaapi.prerelease.ok"/>
 
