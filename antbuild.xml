@@ -777,7 +777,7 @@
                 <exclude name="com.sun*.jar"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistenc_2.1*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.1*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
