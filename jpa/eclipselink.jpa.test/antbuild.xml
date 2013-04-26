@@ -4050,6 +4050,7 @@
     </target>
 
     <target name="server-test-mongo" if="is.glassfish">
+        <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-dynamic.xml" todir="${jpatest.basedir}/resource/eclipselink-mongo-model/server"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="mongo"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/mongo"/>
@@ -4060,9 +4061,11 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.mongo.MongoTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.nosql.test"/>
         </antcall>
+        <delete file="${jpatest.basedir}/resource/eclipselink-mongo-model/server/mongo-dynamic.xml" failonerror="false"/>
     </target>
 
     <target name="server-test-mongo-xml" if="is.glassfish">
+        <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-orm.xml" todir="${jpatest.basedir}/resource/eclipselink-mongo-model-xml/server"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="mongo-xml"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/mongo"/>
@@ -4073,6 +4076,7 @@
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.mongo.MongoXMLTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.nosql.test"/>
         </antcall>
+        <delete file="${jpatest.basedir}/resource/eclipselink-mongo-model-xml/server/mongo-orm.xml" failonerror="false"/>
     </target>
 
     <target name="server-test-jgeometry" if="is.oracle">
