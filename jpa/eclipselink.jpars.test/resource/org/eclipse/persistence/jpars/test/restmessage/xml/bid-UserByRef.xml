@@ -2,8 +2,6 @@
 <staticBid>
    <amount>110.0</amount>
    <id>1001</id>
-   <_relationships href="http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/1001/auction" rel="auction"/>
-   <_relationships href="http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/1001/user" rel="user"/>
    <user>
        <_link href="http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticUser/2002" method="GET" rel="self"/>
    </user>
