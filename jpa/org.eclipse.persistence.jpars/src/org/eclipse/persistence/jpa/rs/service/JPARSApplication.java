@@ -14,11 +14,15 @@ package org.eclipse.persistence.jpa.rs.service;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
+import javax.annotation.PreDestroy;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceContextFactoryProvider;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.DatabaseExceptionMapper;
@@ -45,7 +49,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.RollbackExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.TransactionRequiredExceptionMapper;
 
 /**
- * Config class for JPA-RS REST service.  This class should remain dependant only on classes from 
+ * Config class for JPA-RS REST service.  This class should remain dependent only on classes from 
  * the specification since it is designed to work with both Jersey 1.x and Jersey 2.x.
  * 
  * @see ServicePathDefinition
@@ -57,6 +61,9 @@ public class JPARSApplication extends Application {
 
     private final Set<Class<?>> classes;
 
+    /**
+     * Instantiates a new jPARS application.
+     */
     public JPARSApplication() {
         HashSet<Class<?>> c = new HashSet<Class<?>>();
 
@@ -103,8 +110,28 @@ public class JPARSApplication extends Application {
         classes = Collections.unmodifiableSet(c);
     }
 
+    /* (non-Javadoc)
+     * @see javax.ws.rs.core.Application#getClasses()
+     */
     @Override
     public Set<Class<?>> getClasses() {
         return classes;
+    }
+
+
+    /**
+     * Clean up.
+     */
+    @PreDestroy
+    public void preDestroy() {
+        ServiceLoader<PersistenceContextFactoryProvider> persistenceContextFactoryProviderLoader =
+                ServiceLoader.load(PersistenceContextFactoryProvider.class, Thread.currentThread().getContextClassLoader());
+
+        for (PersistenceContextFactoryProvider persistenceContextFactoryProvider : persistenceContextFactoryProviderLoader) {
+            PersistenceContextFactory persistenceContextFactory = persistenceContextFactoryProvider.getPersistenceContextFactory(null);
+            if (persistenceContextFactory != null) {
+                persistenceContextFactory.close();
+            }
+        }
     }
 }
