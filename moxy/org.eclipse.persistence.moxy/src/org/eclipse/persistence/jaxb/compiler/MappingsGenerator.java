@@ -860,7 +860,7 @@ public class MappingsGenerator {
         if (isCollection) {
             JavaClass collectionType = property.getType();
             collectionType = containerClassImpl(collectionType);
-            invMapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
+            invMapping.useCollectionClass(org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(collectionType.getQualifiedName(), helper.getClassLoader()));
         }
         
         if(property.isWriteableInverseReference()){
@@ -1251,14 +1251,15 @@ public class MappingsGenerator {
         }  
         for (ElementDeclaration element:referencedElements) {
             QName elementName = element.getElementName();
-            JavaClass pType = element.getJavaType();
+            JavaClass	pType = element.getJavaType();
+            String	pTypeName = element.getJavaTypeName();
             boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
             boolean isText = pType.isEnum() || (!isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME)));
             String xPath = wrapperXPath;
 
             Field xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
             //ensure byte[] goes to base64 instead of the default hex.
-            if(helper.getXMLToJavaTypeMap().get(element.getJavaType().getRawName()) == Constants.BASE_64_BINARY_QNAME) {
+            if(helper.getXMLToJavaTypeMap().get(pType.getRawName()) == Constants.BASE_64_BINARY_QNAME) {
                 xmlField.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
             if(areEquals(pType, Object.class)) {
@@ -1268,7 +1269,7 @@ public class MappingsGenerator {
             AbstractNullPolicy nullPolicy = null;
             if(isCollection){
                 ChoiceCollectionMapping xmlChoiceCollectionMapping = (ChoiceCollectionMapping) mapping;
-                xmlChoiceCollectionMapping.addChoiceElement(xmlField, element.getJavaTypeName());
+                xmlChoiceCollectionMapping.addChoiceElement(xmlField, pTypeName);
                 nestedMapping = (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
                 if(nestedMapping.isAbstractCompositeCollectionMapping()){
                     ((CompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
@@ -1284,7 +1285,7 @@ public class MappingsGenerator {
                     }
                     if(element.isList()){
                         XMLListConverter listConverter = new XMLListConverter();
-                        listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
+                        listConverter.setObjectClassName(pType.getQualifiedName());
                         ((DirectCollectionMapping)nestedMapping).setValueConverter(listConverter); 
                     }
                 }else if(nestedMapping instanceof BinaryDataCollectionMapping){
@@ -1294,7 +1295,7 @@ public class MappingsGenerator {
               
             } else {
                 ChoiceObjectMapping xmlChoiceObjectMapping = (ChoiceObjectMapping) mapping;
-                xmlChoiceObjectMapping.addChoiceElement(xmlField, element.getJavaTypeName());
+                xmlChoiceObjectMapping.addChoiceElement(xmlField, pTypeName);
                 nestedMapping = (Mapping) xmlChoiceObjectMapping.getChoiceElementMappings().get(xmlField);
                 if(pType.isEnum()) {
                     TypeInfo enumTypeInfo = typeInfo.get(pType.getQualifiedName());
@@ -1321,17 +1322,32 @@ public class MappingsGenerator {
                 if (scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
                     scopeClass = JAXBElement.GlobalScope.class;
                 }
-                Class declaredType = helper.getClassForJavaClass(element.getJavaType());
+                
+                Class declaredType = null;
+                if(element.getAdaptedJavaType() != null){
+                	declaredType =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(element.getAdaptedJavaType().getQualifiedName(), helper.getClassLoader());
+                }else{
+                	declaredType =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(pType.getQualifiedName(), helper.getClassLoader());
+                }
+                
                 JAXBElementConverter converter = new JAXBElementConverter(xmlField, declaredType, scopeClass);
                 if (isCollection){
                     ChoiceCollectionMapping xmlChoiceCollectionMapping = (ChoiceCollectionMapping) mapping;
-                    CoreConverter originalConverter = xmlChoiceCollectionMapping.getConverter(xmlField);
-                    converter.setNestedConverter(originalConverter);
+                    if(element.getJavaTypeAdapterClass() != null){                	                	
+                    	converter.setNestedConverter(new XMLJavaTypeConverter(element.getJavaTypeAdapterClass().getName()));
+                    }else{
+                    	CoreConverter originalConverter = xmlChoiceCollectionMapping.getConverter(xmlField);
+                        converter.setNestedConverter(originalConverter);	
+                    }                    
                     xmlChoiceCollectionMapping.addConverter(xmlField, converter);
                 } else {
                     ChoiceObjectMapping xmlChoiceObjectMapping = (ChoiceObjectMapping) mapping;
-                    CoreConverter originalConverter = xmlChoiceObjectMapping.getConverter(xmlField);
-                    converter.setNestedConverter(originalConverter);
+                    if(element.getJavaTypeAdapterClass() != null){                	                	
+                    	converter.setNestedConverter(new XMLJavaTypeConverter(element.getJavaTypeAdapterClass().getName()));
+                    }else{
+                    	CoreConverter originalConverter = xmlChoiceObjectMapping.getConverter(xmlField);
+                        converter.setNestedConverter(originalConverter);	
+                    }  
                     xmlChoiceObjectMapping.addConverter(xmlField, converter);
                 }
             }
@@ -1388,7 +1404,7 @@ public class MappingsGenerator {
             mapping.setWrapperNullPolicy(getWrapperNullPolicyFromProperty(property));
         }
 
-        Class declaredType = helper.getClassForJavaClass(property.getActualType());
+        Class declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
         if (property.getDomHandlerClassName() != null) {
@@ -1572,7 +1588,7 @@ public class MappingsGenerator {
             // Try to get the actual Class
             try {
                 JavaClass actualJavaClass = helper.getJavaClass(theClass);
-                Class actualClass = helper.getClassForJavaClass(actualJavaClass);
+                Class actualClass =  org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(actualJavaClass.getQualifiedName(), helper.getClassLoader());
                 mapping.setAttributeClassification(actualClass);
             } catch (Exception e) {
                 // Couldn't find Class (Dynamic?), so set class name instead.
@@ -1879,7 +1895,7 @@ public class MappingsGenerator {
             mapping.setField(new XMLField(property.getXmlPath()));
         }
 
-        Class declaredType = helper.getClassForJavaClass(property.getActualType());
+        Class declaredType = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getActualType().getQualifiedName(), helper.getClassLoader());
         JAXBElementRootConverter jaxbElementRootConverter = new JAXBElementRootConverter(declaredType);
         mapping.setConverter(jaxbElementRootConverter);
         if (property.getDomHandlerClassName() != null) {
@@ -2278,7 +2294,7 @@ public class MappingsGenerator {
         }
 
         if (property.isXmlElementType() && property.getGenericType()!=null ){
-        	Class theClass = helper.getClassForJavaClass(property.getGenericType());
+        	Class theClass = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(property.getGenericType().getQualifiedName(), helper.getClassLoader());
         	mapping.setAttributeElementClass(theClass);
         }
 
