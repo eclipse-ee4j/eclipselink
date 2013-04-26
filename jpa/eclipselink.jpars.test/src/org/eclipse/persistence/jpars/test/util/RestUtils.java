@@ -237,7 +237,7 @@ public class RestUtils {
     /**
      * Rest update.
      *
-     * @param object the object
+     * @param message the message
      * @param type the type
      * @param persistenceUnit the persistence unit
      * @param tenantId the tenant id
@@ -324,6 +324,16 @@ public class RestUtils {
     }
 
     
+    /**
+     * Rest create with sequence.
+     *
+     * @param object the object
+     * @param type the type
+     * @param persistenceUnit the persistence unit
+     * @param tenantId the tenant id
+     * @param mediaType the media type
+     * @throws URISyntaxException the uRI syntax exception
+     */
     public static void restCreateWithSequence(String object, String type, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
         StringBuilder uri = new StringBuilder();
         uri.append(RestUtils.getServerURI() + persistenceUnit);
@@ -343,6 +353,20 @@ public class RestUtils {
         }
     }
 
+    /**
+     * Rest create.
+     *
+     * @param <T> the generic type
+     * @param context the context
+     * @param object the object
+     * @param type the type
+     * @param resultClass the result class
+     * @param persistenceUnit the persistence unit
+     * @param tenantId the tenant id
+     * @param mediaType the media type
+     * @return the t
+     * @throws URISyntaxException the uRI syntax exception
+     */
     @SuppressWarnings("unchecked")
     public static <T> T  restCreate(PersistenceContext context, String object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType mediaType) throws URISyntaxException  {
         StringBuilder uri = new StringBuilder();
@@ -377,6 +401,7 @@ public class RestUtils {
      * @param type the type
      * @param resultClass the result class
      * @param persistenceUnit the persistence unit
+     * @param attribute the attribute
      * @param tenantId the tenant id
      * @param mediaType the media type
      * @throws RestCallFailedException the rest call failed exception
@@ -460,7 +485,6 @@ public class RestUtils {
      * Rest named single result query.
      *
      * @param queryName the query name
-     * @param returnType the return type
      * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
@@ -535,10 +559,10 @@ public class RestUtils {
      * Rest update query.
      *
      * @param queryName the query name
-     * @param returnType the return type
      * @param persistenceUnit the persistence unit
      * @param parameters the parameters
      * @param hints the hints
+     * @param mediaType the media type
      * @return the object
      * @throws URISyntaxException the uRI syntax exception
      */
@@ -611,8 +635,8 @@ public class RestUtils {
      * @param sendLinks the send links
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
-     * @throws JAXBException the jAXB exception
      * @throws URISyntaxException the uRI syntax exception
+     * @throws JAXBException the jAXB exception
      */
     public static String restUpdateBidirectionalRelationship(PersistenceContext context, String objectId, String type, String relationshipName, Object newValue,
             String persistenceUnit, MediaType mediaType, String partner, boolean sendLinks)
@@ -638,7 +662,6 @@ public class RestUtils {
     /**
      * Rest remove bidirectional relationship.
      *
-     * @param context the context
      * @param objectId the object id
      * @param type the type
      * @param relationshipName the relationship name
@@ -646,7 +669,6 @@ public class RestUtils {
      * @param mediaType the media type
      * @param partner the partner
      * @param listItemId the list item id
-     * @param sendLinks the send links
      * @return the string
      * @throws RestCallFailedException the rest call failed exception
      * @throws URISyntaxException the uRI syntax exception
@@ -725,7 +747,6 @@ public class RestUtils {
     /**
      * Rest find attribute.
      *
-     * @param context the context
      * @param id the id
      * @param type the type
      * @param attribute the attribute
@@ -758,8 +779,33 @@ public class RestUtils {
 
     
     /**
+     * Rest named paged multi result query.
+     *
+     * @param queryName the query name
+     * @param persistenceUnit the persistence unit
+     * @param parameters the parameters
+     * @param hints the hints
+     * @param outputMediaType the output media type
+     * @return the string
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public static String restNamedPagedMultiResultQuery(String queryName, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType) throws URISyntaxException {
+        StringBuilder resourceURL = new StringBuilder();
+        resourceURL.append(RestUtils.getServerURI() + persistenceUnit + "/query/" + queryName);
+        appendParametersAndHints(resourceURL, parameters, hints);
+        WebResource webResource = client.resource(resourceURL.toString());
+        ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK) {
+            throw new RestCallFailedException(status);
+        }
+        return response.getEntity(String.class);
+    }
+    
+    /**
      * Test get contexts.
      *
+     * @param mediaType the media type
      * @return the string
      * @throws Exception the exception
      */
@@ -777,6 +823,14 @@ public class RestUtils {
         return result;
     }
     
+    /**
+     * Rest get types.
+     *
+     * @param persistenceUnit the persistence unit
+     * @param mediaType the media type
+     * @return the string
+     * @throws Exception the exception
+     */
     public static String restGetTypes(String persistenceUnit, MediaType mediaType) throws Exception {
         StringBuffer uri = new StringBuffer();
         uri.append(RestUtils.getServerURI() + persistenceUnit + "/metadata");
@@ -831,10 +885,10 @@ public class RestUtils {
         }
         if (hints != null && !hints.isEmpty()) {
             boolean firstElement = true;
-
             for (String key : hints.keySet()) {
                 if (firstElement) {
                     resourceURL.append("?");
+                    firstElement = false;
                 } else {
                     resourceURL.append("&");
                 }
