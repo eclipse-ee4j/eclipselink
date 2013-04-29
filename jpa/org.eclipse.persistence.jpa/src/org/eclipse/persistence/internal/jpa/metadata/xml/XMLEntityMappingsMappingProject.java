@@ -1066,7 +1066,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: id
+     * XSD: convert
      */
     protected ClassDescriptor buildConvertDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
@@ -6211,7 +6211,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
      */
     protected XMLDirectMapping getTextMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("m_Text");
+        mapping.setAttributeName("m_text");
         mapping.setGetMethodName("getText");
         mapping.setSetMethodName("setText");
         mapping.setXPath("text()");
