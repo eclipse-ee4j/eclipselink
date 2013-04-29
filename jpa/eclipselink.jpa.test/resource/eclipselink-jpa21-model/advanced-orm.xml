@@ -355,7 +355,10 @@
                 <generated-value/>
             </id>
             <basic name="gender">
-                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter"/>
+                <convert converter="org.eclipse.persistence.testing.models.jpa21.advanced.converters.GenderConverter">  
+                
+                
+                </convert>
             </basic>
             <one-to-many name="shoes" mapped-by="runner">
                 <map-key-join-column name="TAG_IG"/>

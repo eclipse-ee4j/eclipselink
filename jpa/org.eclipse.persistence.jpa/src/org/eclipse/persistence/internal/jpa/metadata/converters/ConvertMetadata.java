@@ -62,7 +62,7 @@ public class ConvertMetadata extends ORMetadata {
      * Used for XML loading.
      */
     public ConvertMetadata() {
-        super("<convert");
+        super("<convert>");
     }
     
     /**
@@ -173,6 +173,11 @@ public class ConvertMetadata extends ORMetadata {
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Trim any leading and trailing white spaces from the text if specified.
+        if (m_text != null) {
+            m_text = m_text.trim();
+        }
         
         // Initialize the converter class name.
         m_converterClass = initXMLClassName(m_converterClassName);
