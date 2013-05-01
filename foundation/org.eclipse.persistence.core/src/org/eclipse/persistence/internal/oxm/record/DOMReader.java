@@ -171,7 +171,8 @@ public class DOMReader extends XMLReaderAdapter {
                      String defaultNamespace = elem.getAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS);
             
                      if(defaultNamespace == null){
-                         prefix = tmpNR.generatePrefix();    
+                         prefix = tmpNR.generatePrefix();
+                                                  
                          contentHandler.startPrefixMapping(prefix, namespaceUri);
                      }else if(defaultNamespace != namespaceUri){
                          prefix = tmpNR.generatePrefix();
@@ -187,17 +188,14 @@ public class DOMReader extends XMLReaderAdapter {
             }
            
         }
-        
-      
-        
         contentHandler.startElement(namespaceUri, lname, qname, attributes);
        
         handleChildNodes(elem.getChildNodes());
         contentHandler.endElement(namespaceUri, lname, qname);
         endPrefixMappings(elem);
     }
- 
-    protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {
+
+	protected IndexedAttributeList buildAttributeList(Element elem) throws SAXException {
         IndexedAttributeList attributes = new IndexedAttributeList();
         NamedNodeMap attrs = elem.getAttributes();
         for (int i = 0, length = attrs.getLength(); i < length; i++) {
@@ -214,6 +212,7 @@ public class DOMReader extends XMLReaderAdapter {
                 }
                 if(name != null && name.equals(XMLConstants.XMLNS)) {
                     contentHandler.startPrefixMapping(XMLConstants.EMPTY_STRING, next.getValue());
+                    handleXMLNSPrefixedAttribute(elem, next);
                 }
             }
             if(next.getNamespaceURI() != null && next.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL) && next.getLocalName().equals("type")) {
