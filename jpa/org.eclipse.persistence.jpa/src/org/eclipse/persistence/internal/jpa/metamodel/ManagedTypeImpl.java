@@ -1122,6 +1122,14 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
          * abstract superclass of List, Set and Map (with Map not really a Collection).
          * We therefore need to treat Collection here as a peer of the other "collections" while also treating it as a non-instantiated superclass.
          */
+        
+        // this could have been initialized earlier if it is an inheriting subclass of a MappedSuperclassType
+        // See MappedSuperclassType.getMemberFromInheritingType()
+        if (null != this.members) {
+            //this is already initialized
+            return;
+        }
+           
         this.members = new HashMap<String, Attribute<X, ?>>();
         // Get and process all mappings on the relationalDescriptor
         for (DatabaseMapping mapping : getDescriptor().getMappings()) {
