@@ -798,6 +798,13 @@ public class EmployeePopulator {
         return proc;
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadNoAddresses() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_No_Addresses");
+        // no statement
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadAllEmployees() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_All_Employees");
@@ -1468,6 +1475,7 @@ public class EmployeePopulator {
                 
                 if (platform.isMySQL()) {
                     schema.replaceObject(buildMySQLResultSetProcedure());
+                    schema.replaceObject(buildStoredProcedureReadNoAddresses());
                 }
             } finally {
                 if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {

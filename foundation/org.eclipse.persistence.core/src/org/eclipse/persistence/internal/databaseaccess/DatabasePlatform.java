@@ -2296,14 +2296,21 @@ public class DatabasePlatform extends DatasourcePlatform {
                 resultSet = (ResultSet)((CallableStatement)statement).getObject(dbCall.getCursorOutIndex());
             } else {
                 accessor.executeDirectNoSelect(statement, dbCall, session);
-                result = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);
-
-                //ReadAllQuery may be returning just output params, or they may be executing a DataReadQuery, which also
-                //assumes a vector
-                if (dbCall.areManyRowsReturned()) {
-                    Vector tempResult = new Vector();
-                    tempResult.add(result);
-                    result = tempResult;
+                
+                // Meaning we have at least one out parameter (or out cursors).
+                if (dbCall.shouldBuildOutputRow() || dbCall.hasOutputCursors()) {
+                    result = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);
+                    
+                    // ReadAllQuery may be returning just output params, or they 
+                    // may be executing a DataReadQuery, which also assumes a vector
+                    if (dbCall.areManyRowsReturned()) {
+                        Vector tempResult = new Vector();
+                        tempResult.add(result);
+                        result = tempResult;
+                    }
+                } else {
+                    // No out params whatsover, return an empty list.
+                    result = new Vector(); 
                 }
             }
         } else {
@@ -2311,6 +2318,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             // output params in the case where the user is returning both.  this is a driver limitation
             resultSet = accessor.executeSelect(dbCall, statement, session);
         }
+        
         if (resultSet != null) {
             dbCall.matchFieldOrder(resultSet, accessor, session);
 
@@ -2319,9 +2327,18 @@ public class DatabasePlatform extends DatasourcePlatform {
                 dbCall.setResult(resultSet);
                 return dbCall;
             }
+        
             result = accessor.processResultSet(resultSet, dbCall, statement, session);
-
         }
+        
+        // If the output is not allowed with the result set, we must hold off till the result set has
+        // been processed before accessing the out parameters.
+        if (dbCall.shouldBuildOutputRow() && ! isOutputAllowWithResultSet()) {
+            AbstractRecord outputRow = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);
+            dbCall.getQuery().setProperty("output", outputRow);
+            session.getEventManager().outputParametersDetected(outputRow, dbCall);
+        }
+        
         return result;
     }
     
@@ -2704,6 +2721,14 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Override this if the platform cannot handle NULL in select clause.
      */
     public boolean isNullAllowedInSelectClause() {
+        return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if output parameters can be built with result sets.
+     */
+    public boolean isOutputAllowWithResultSet() {
         return true;
     }
     

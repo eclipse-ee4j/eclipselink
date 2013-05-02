@@ -36,6 +36,7 @@ import javax.persistence.StoredProcedureQuery;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.Address;
@@ -66,9 +67,32 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultClass"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryExecuteOnStoredProcQueryBuiltFromJPAThatDoesNothing"));
 
         return suite;
     }  
+    
+    /**
+     * Tests an execute update on a named stored procedure that does a select.
+     * NamedStoredProcedure defines a result class.
+     */
+    public void testQueryExecuteOnStoredProcQueryBuiltFromJPAThatDoesNothing() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                getServerSession(getPersistenceUnitName()).executeQuery(((StoredProcedureQueryImpl) em.createNamedStoredProcedureQuery("ReadNoAddresses")).getDatabaseQuery());
+            } catch (Exception e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                fail("Exception was caught: " + e);
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
     
     /**
      * Tests an execute update on a named stored procedure that does a select.

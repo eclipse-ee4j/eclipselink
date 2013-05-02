@@ -53,6 +53,11 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         name = "ReadAllAddressesWithNoResultClass",
         procedureName = "Read_All_Addresses"
     ),
+    
+    @NamedStoredProcedureQuery(
+        name = "ReadNoAddresses",
+        procedureName = "Read_No_Addresses"
+    ),
          
     @NamedStoredProcedureQuery(
         name = "ReadAddressWithResultClass",
