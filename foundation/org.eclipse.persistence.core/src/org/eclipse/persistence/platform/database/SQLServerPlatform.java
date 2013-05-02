@@ -15,21 +15,15 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.SessionProfiler;
 
 /**
  * <p><b>Purpose</b>: Provides SQL Server specific behavior.
@@ -343,56 +337,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
     }
 
     /**
-     * because each platform has different requirements for accessing stored procedures and
-     * the way that we can combine resultsets and output params the stored procedure call
-     * is being executed on the platform.  This entire process needs some serious refactoring to eliminate
-     * the chance of bugs.
-     */
-    public Object executeStoredProcedure(DatabaseCall dbCall, PreparedStatement statement, DatabaseAccessor accessor, AbstractSession session) throws SQLException {
-        Object result = null;
-        ResultSet resultSet = null;
-        if (!dbCall.getReturnsResultSet()) {
-            accessor.executeDirectNoSelect(statement, dbCall, session);
-            result = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);
-
-            //ReadAllQuery may be returning just output params, or they may be executing a DataReadQuery, which also
-            //assumes a vector
-            if (dbCall.areManyRowsReturned()) {
-                Vector tempResult = new Vector();
-                (tempResult).add(result);
-                result = tempResult;
-            }
-        } else {
-            // start the process of processing the result set and the output params.  this is specific to Sybase JConnect 5.5
-            // as we must process the result set before the output params.
-            session.startOperationProfile(SessionProfiler.StatementExecute, dbCall.getQuery(), SessionProfiler.ALL);
-            try {
-                resultSet = statement.executeQuery();
-            } finally {
-                session.endOperationProfile(SessionProfiler.StatementExecute, dbCall.getQuery(), SessionProfiler.ALL);
-            }
-            dbCall.matchFieldOrder(resultSet, accessor, session);
-
-            // cursored result set and output params not supported because of database limitation
-            if (dbCall.isCursorReturned()) {
-                dbCall.setStatement(statement);
-                dbCall.setResult(resultSet);
-                return dbCall;
-            }
-            result = accessor.processResultSet(resultSet, dbCall, statement, session);
-
-            if (dbCall.shouldBuildOutputRow()) {
-                AbstractRecord outputRow = accessor.buildOutputRow((CallableStatement)statement, dbCall, session);
-                dbCall.getQuery().setProperty("output", outputRow);
-                session.getEventManager().outputParametersDetected(outputRow, dbCall);
-            }
-            return result;
-            // end special sybase behavior.
-        }
-        return result;
-    }
-
-    /**
      * INTERNAL:
      * Indicates whether locking clause should be printed after where clause by SQLSelectStatement.
      * Example: 
@@ -516,6 +460,15 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         return exOperator;
     }
 
+    /**
+     * INTERNAL:
+     * Return true if output parameters can be built with result sets.
+     */
+    @Override
+    public boolean isOutputAllowWithResultSet() {
+        return false;
+    }
+    
     public boolean isSQLServer() {
         return true;
     }

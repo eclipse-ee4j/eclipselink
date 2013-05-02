@@ -1006,7 +1006,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         }
 
         // Allow for procs with outputs to be raised as events for error handling.
-        if (call.shouldBuildOutputRow()) {
+        if (call.shouldBuildOutputRow() && getPlatform().isOutputAllowWithResultSet()) {
             AbstractRecord outputRow = buildOutputRow((CallableStatement)statement, call, session);
             call.getQuery().setProperty("output", outputRow);
             if (session.hasEventManager()) {
