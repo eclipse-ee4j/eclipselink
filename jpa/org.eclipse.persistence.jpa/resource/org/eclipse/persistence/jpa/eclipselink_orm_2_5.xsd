@@ -945,6 +945,7 @@
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="serialized-object" type="orm:serialized-object" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator" minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
       <xsd:element name="uuid-generator" type="orm:uuid-generator" minOccurs="0"/>
@@ -4955,6 +4956,35 @@
     <xsd:attribute name="schema" type="xsd:string"/>
     <xsd:attribute name="initial-value" type="xsd:int"/>
     <xsd:attribute name="allocation-size" type="xsd:int"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="serialized-object">
+    <xsd:annotation>
+      <xsd:documentation>
+
+		@Target({TYPE})
+		@Retention(RUNTIME)
+		public @interface SerializedObject {
+		    /**
+		     * The Class that implements org.eclipse.persistence.descriptors.SerializedObjectPolicy interface.
+		     * This class must be specified. 
+		     */ 
+		    Class value();
+		    
+		    /**
+		     * (Optional) The column that holds the serialized object. By default it's a BLOB column named "SOP" in entity's main table. 
+		     */
+		    Column column() default @Column(name="SOP");
+		}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="class" type="xsd:string" use="required"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->

@@ -234,6 +234,9 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                 return null;
             }
         }
+        if (shouldReadFromSopObject(row)) {
+            return getAttributeValueFromObject(row.getSopObject());
+        }
         Object fieldValue = row.get(this.field);
 
         // BUG#2667762 there could be whitespace in the row instead of null

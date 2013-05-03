@@ -31,6 +31,7 @@ import org.eclipse.persistence.internal.sessions.SimpleResultSetRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
@@ -427,9 +428,14 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         if (this.descriptor.hasTablePerClassPolicy() && this.descriptor.isAbstract()) {
             result = this.containerPolicy.containerInstance();
         } else {
-            checkResultSetAccessOptimization();
+            Object sopObject = getTranslationRow().getSopObject();
+            boolean useOptimization = false;
+            if (sopObject == null) {
+                checkResultSetAccessOptimization();
+                useOptimization = this.usesResultSetAccessOptimization; 
+            }        
             
-            if (this.usesResultSetAccessOptimization) {
+            if (useOptimization) {
                 DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
                 this.executionTime = System.currentTimeMillis();
                 Statement statement = call.getStatement();
@@ -474,17 +480,31 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     }
                 }                
             } else {
-                List<AbstractRecord> rows = getQueryMechanism().selectAllRows();
-                this.executionTime = System.currentTimeMillis();
-                
-                // If using 1-m joins, must set all rows.
-                if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
-                    this.joinedAttributeManager.setDataResults(rows, this.session);
+                List<AbstractRecord> rows;
+                if (sopObject != null) {
+                    Object valuesIterator = this.containerPolicy.iteratorFor(getTranslationRow().getSopObject());
+                    int size = this.containerPolicy.sizeFor(sopObject);
+                    rows =  new ArrayList<AbstractRecord>(size);
+                    while (this.containerPolicy.hasNext(valuesIterator)) {
+                        Object memberSopObject = this.containerPolicy.next(valuesIterator, this.session);
+                        DatabaseRecord memberRow = new DatabaseRecord(0);
+                        memberRow.setSopObject(memberSopObject);
+                        rows.add(memberRow);                        
+                    }
+                    this.executionTime = System.currentTimeMillis();
+                } else {
+                    rows = getQueryMechanism().selectAllRows();
+                    this.executionTime = System.currentTimeMillis();
+                    
+                    // If using 1-m joins, must set all rows.
+                    if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                        this.joinedAttributeManager.setDataResults(rows, this.session);
+                    }
+                    // Batch fetching in IN requires access to the rows to build the id array.
+                    if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
+                        this.batchFetchPolicy.setDataResults(rows);
+                    }
                 }
-                // Batch fetching in IN requires access to the rows to build the id array.
-                if ((this.batchFetchPolicy != null) && this.batchFetchPolicy.isIN()) {
-                    this.batchFetchPolicy.setDataResults(rows);
-                }                        
         
                 if (this.session.isUnitOfWork()) {
                     result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
@@ -497,7 +517,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                     this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
                 }
         
-                if (this.shouldIncludeData) {
+                if (this.shouldIncludeData && (sopObject == null)) {
                     ComplexQueryResult complexResult = new ComplexQueryResult();
                     complexResult.setResult(result);
                     complexResult.setData(rows);

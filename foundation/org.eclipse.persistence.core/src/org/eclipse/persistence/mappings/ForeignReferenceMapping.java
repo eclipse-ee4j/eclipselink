@@ -347,7 +347,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             setAttributeValueInObject(clone, clonedAttributeValue);
         }
-        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY)) {
+        if((joinManager != null && joinManager.isAttributeJoined(this.descriptor, this)) || (isExtendingPessimisticLockScope(sourceQuery) && extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) || shouldReadFromSopObject(databaseRow)) {
             // need to instantiate to extended the lock beyond the source object table(s).
             this.indirectionPolicy.instantiateObject(clone, clonedAttributeValue);
         }
@@ -1450,6 +1450,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * return value as this value will have been converted to the appropriate type for
      * the object.
      */
+    @Override
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
         Boolean[] wasCacheUsed = new Boolean[]{Boolean.FALSE};
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected, wasCacheUsed);
@@ -1461,7 +1462,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
             attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);
         }
-        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
+        if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult() || shouldReadFromSopObject(databaseRow)){
             // check whether the attribute is fully build before calling getAttributeValueFromObject because that
             // call may fully build the attribute
             boolean wasAttributeValueFullyBuilt = isAttributeValueFullyBuilt(targetObject);
@@ -2107,6 +2108,14 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
+        if (shouldReadFromSopObject(row)) {
+            // DirectCollection or AggregateCollection: no need to build members back into cache - just return the whole collection from sopObject.
+            if (getReferenceDescriptor() == null || getReferenceDescriptor().isDescriptorTypeAggregate()) {
+                return getAttributeValueFromObject(row.getSopObject());
+            } else {
+                return valueFromRowInternal(row, null, sourceQuery, executionSession, true);
+            }
+        }
         // PERF: Direct variable access.
         // If the query uses batch reading, return a special value holder
         // or retrieve the object from the query property.
@@ -2117,7 +2126,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         if (shouldUseValueFromRowWithJoin(joinManager, sourceQuery)) {
             return valueFromRowInternalWithJoin(row, joinManager, sourceQuery, cacheKey, executionSession, isTargetProtected);
         } else {
-            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession);
+            return valueFromRowInternal(row, joinManager, sourceQuery, executionSession, false);
         }
     }
     
@@ -2145,8 +2154,43 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Check whether the mapping's attribute should be optimized through batch and joining.
      */
     protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession) throws DatabaseException {
+        return valueFromRowInternal(row, joinManager, sourceQuery, executionSession, false);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the value of the reference attribute or a value holder.
+     * Check whether the mapping's attribute should be optimized through batch and joining.
+     * @param shouldUseSopObject indicates whether sopObject stored in the row should be used to extract the value (and fields/values stored in the row ignored).
+     */
+    protected Object valueFromRowInternal(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean shouldUseSopObject) throws DatabaseException {
         // PERF: Direct variable access.
         ReadQuery targetQuery = this.selectionQuery;
+        if (shouldUseSopObject) {
+            Object sopAttribute = getAttributeValueFromObject(row.getSopObject());
+            Object sopRealAttribute;
+            if (isCollectionMapping()) {
+                if (sopAttribute == null) {
+                    return getContainerPolicy().containerInstance();
+                }
+                sopRealAttribute = getIndirectionPolicy().getRealAttributeValueFromObject(row.getSopObject(), sopAttribute);
+                if (getContainerPolicy().isEmpty(sopRealAttribute)) {
+                    return sopAttribute;
+                }
+            } else {
+                if (sopAttribute == null) {
+                    return this.indirectionPolicy.nullValueFromRow();
+                }
+                // As part of SOP object the indirection should be already triggered
+                sopRealAttribute = getIndirectionPolicy().getRealAttributeValueFromObject(row.getSopObject(), sopAttribute);
+                if (sopRealAttribute == null) {
+                    return sopAttribute;
+                }
+            }
+            DatabaseRecord sopRow = new DatabaseRecord(0);
+            sopRow.setSopObject(sopRealAttribute);
+            row = sopRow;
+        }
 
         // Copy nested fetch group from the source query 
         if (targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
@@ -2167,7 +2211,8 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         
         // CR #4365, 3610825 - moved up from the block below, needs to be set with 
         // indirection off. Clone the query and set its id.
-        if (!this.indirectionPolicy.usesIndirection()) {
+        // All indirections are triggered in sopObject, therefore if sopObject is used then indirection on targetQuery to be triggered, too.
+        if (!this.indirectionPolicy.usesIndirection() || shouldUseSopObject) {
             if (targetQuery == this.selectionQuery) {
                 // perf: bug#4751950, first prepare the query before cloning.
                 if (targetQuery.shouldPrepare()) {

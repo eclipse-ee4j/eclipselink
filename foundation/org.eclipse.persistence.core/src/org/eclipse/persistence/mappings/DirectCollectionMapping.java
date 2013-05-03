@@ -3113,6 +3113,9 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 return this.indirectionPolicy.buildIndirectObject(new ValueHolder(null));
             }
         }
+        if (shouldReadFromSopObject(row)) {
+            return getAttributeValueFromObject(row.getSopObject());
+        }
         if (sourceQuery.isObjectLevelReadQuery() && (((ObjectLevelReadQuery)sourceQuery).isAttributeBatchRead(this.descriptor, getAttributeName())
                 || (sourceQuery.isReadAllQuery() && shouldUseBatchReading()))) {
             return batchedValueFromRow(row, (ObjectLevelReadQuery)sourceQuery, cacheKey);

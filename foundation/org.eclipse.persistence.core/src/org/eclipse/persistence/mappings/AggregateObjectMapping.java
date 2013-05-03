@@ -46,7 +46,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
@@ -317,6 +316,14 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Otherwise, simply create a new aggregate object and return it.
      */
     public Object buildAggregateFromRow(AbstractRecord databaseRow, Object targetObject, CacheKey cacheKey, JoinedAttributeManager joinManager, ObjectBuildingQuery sourceQuery, boolean buildShallowOriginal, AbstractSession executionSession, boolean targetIsProtected) throws DatabaseException {
+        if (shouldReadFromSopObject(databaseRow)) {
+            Object sopAggregate = getAttributeValueFromObject(databaseRow.getSopObject());
+            if ((targetObject != null) && (targetObject != databaseRow.getSopObject())) {
+                setAttributeValueInObject(targetObject, sopAggregate);
+            }
+            return sopAggregate;
+        }
+        
         // check for all NULLs
         if (isNullAllowed() && allAggregateFieldsAreNull(databaseRow)) {
             return null;

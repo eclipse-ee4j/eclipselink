@@ -1070,10 +1070,18 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (owner.getExecutionFetchGroup() != null) {
             fields.addAll(owner.getFetchGroupSelectionFields());
         } else {
-            if (includeAllSubclassFields) {
-                fields.addAll(getDescriptor().getAllFields());
+            if (this.query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)this.query).shouldUseSerializedObjectPolicy() && this.query.getDescriptor().hasSerializedObjectPolicy()) {
+                if (includeAllSubclassFields) {
+                    fields.addAll(this.query.getDescriptor().getSerializedObjectPolicy().getAllFieldsToSelect());
+                } else {
+                    fields.addAll(this.query.getDescriptor().getSerializedObjectPolicy().getFieldsToSelect());
+                }
             } else {
-                fields.add(statement.getExpressionBuilder());
+                if (includeAllSubclassFields) {
+                    fields.addAll(getDescriptor().getAllFields());
+                } else {
+                    fields.add(statement.getExpressionBuilder());
+                }
             }
         }
         // Add joined fields.

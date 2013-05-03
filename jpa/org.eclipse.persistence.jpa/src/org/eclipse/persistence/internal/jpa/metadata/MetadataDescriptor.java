@@ -173,6 +173,7 @@ public class MetadataDescriptor {
     private boolean m_hasReadOnly;
     private boolean m_hasCopyPolicy;
     private boolean m_hasPrimaryKey;
+    private boolean m_hasSerializedObjectPolicy;
     
     // Default access methods are used for VIRTUAL mapping attributes when
     // the attributes do not specify their own access methods.
@@ -253,6 +254,7 @@ public class MetadataDescriptor {
         m_hasReadOnly = false;
         m_hasCopyPolicy = false;
         m_hasPrimaryKey = false;
+        m_hasSerializedObjectPolicy = false;
         m_isCascadePersist = false;
         
         m_defaultAccessMethods = new AccessMethodsMetadata();
@@ -1379,6 +1381,15 @@ public class MetadataDescriptor {
     
     /**
      * INTERNAL:
+     * Indicates that a SerializedObject annotation or serialized-object element has been 
+     * processed for this descriptor.
+     */
+    public boolean m_hasSerializedObjectPolicy() {
+        return m_hasSerializedObjectPolicy;
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that an explicit cacheable value of true has been set for 
      * this descriptor.
      */
@@ -1731,6 +1742,14 @@ public class MetadataDescriptor {
      */
     public void setHasCopyPolicy() {
         m_hasCopyPolicy = true;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a serialized object annotation or serialized object xml element.
+     */
+    public void setHasSerializedObjectPolicy() {
+        m_hasSerializedObjectPolicy = true;
     }
 
     /**

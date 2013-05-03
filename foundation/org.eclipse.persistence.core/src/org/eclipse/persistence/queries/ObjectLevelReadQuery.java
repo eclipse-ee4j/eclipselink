@@ -218,6 +218,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Allow a query's results to be unioned (UNION, INTERSECT, EXCEPT) with another query results.
      */
     protected List<Expression> unionExpressions;
+    
+    /** Indicates whether the query should use SerializedObjectPolicy if descriptor has it.*/
+    protected boolean shouldUseSerializedObjectPolicy;
 
     /**
      * INTERNAL:
@@ -2824,7 +2827,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * ADVANCED:
      * Clear the flag set by setIsResultSetOptimizedQuery method, allow to use default set on the session instead.
      */
-    public void clearIsResultSetOptimizedQuery(boolean isResultSetOptimizedQuery) {
+    public void clearIsResultSetOptimizedQuery() {
         if (this.isResultSetAccessOptimizedQuery != null) {
             this.isResultSetAccessOptimizedQuery = null;
             this.usesResultSetAccessOptimization = null;
@@ -3308,5 +3311,22 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {
         return !getSession().isConcurrent();
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates whether the query should use SerializedObjectPolicy if descriptor has it.
+     */
+    @Override
+    public boolean shouldUseSerializedObjectPolicy() {
+        return this.shouldUseSerializedObjectPolicy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set a flag that indicates whether the query should use SerializedObjectPolicy if descriptor has it.
+     */
+    public void setShouldUseSerializedObjectPolicy(boolean shouldUseSerializedObjectPolicy) {
+        this.shouldUseSerializedObjectPolicy = shouldUseSerializedObjectPolicy;
     }
 }

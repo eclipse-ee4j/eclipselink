@@ -629,6 +629,9 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                 return null;
             }
         }
+        if (shouldReadFromSopObject(row)) {
+            return getAttributeValueFromObject(row.getSopObject());
+        }
         ContainerPolicy cp = this.getContainerPolicy();
 
         Object fieldValue = row.getValues(this.getField());

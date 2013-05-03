@@ -833,6 +833,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Keep track if we actually built/refresh the object.
         boolean cacheHit = true;
         boolean domainWasMissing = true;
+        boolean hasSetSopObjectIntoRow = false;
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
@@ -855,8 +856,22 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (domainObject == null || query.shouldStoreBypassCache()) {
                     if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                         domainObject = ((ReadObjectQuery)query).getSelectionObject();
+                        if (query.shouldUseSerializedObjectPolicy() && concreteDescriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
+                            hasSetSopObjectIntoRow = true;
+                            // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
+                            // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
+                            concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
+                        }
                     } else {
-                        domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                        if (query.shouldUseSerializedObjectPolicy() && concreteDescriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
+                            hasSetSopObjectIntoRow = true;
+                            // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
+                            // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
+                            domainObject = concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
+                        }
+                        if (domainObject == null) {
+                            domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                        }
                     }
                 }
 
@@ -935,6 +950,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 } else {
                     cacheKey.release();
                 }
+            }
+            if (hasSetSopObjectIntoRow) {
+                databaseRow.setSopObject(null);
             }
         }
         if (!cacheHit) {
@@ -1712,8 +1730,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         }
 
         // If the session uses multi-tenancy, add the tenant id field.
-        if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        if (this.descriptor.hasMultitenantPolicy()) {
+            this.descriptor.getMultitenantPolicy().addFieldsToRow(databaseRow, session);            
+        }
+        
+        if (this.descriptor.hasSerializedObjectPolicy()) {
+            databaseRow.put(this.descriptor.getSerializedObjectPolicy().getField(), null);
         }
         
         // remove any fields from the databaseRow
@@ -1751,6 +1773,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             this.descriptor.getOptimisticLockingPolicy().addLockFieldsToUpdateRow(databaseRow, session);
         }
 
+        if (this.descriptor.hasSerializedObjectPolicy()) {
+            databaseRow.put(this.descriptor.getSerializedObjectPolicy().getField(), null);
+        }
+        
         return databaseRow;
     }
 
@@ -1886,6 +1912,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         Object workingClone = unitOfWorkCacheKey.getObject();
         FetchGroup fetchGroup = query.getExecutionFetchGroup(descriptor);
         FetchGroupManager fetchGroupManager = descriptor.getFetchGroupManager();
+        boolean hasSetSopObjectIntoRow = false;
         try {
             // If there is a clone, and it is not a refresh then just return it.
             boolean wasAClone = workingClone != null;
@@ -1940,8 +1967,18 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     // intentionally put nothing in clones to originals, unless really was one.
                     unitOfWork.getCloneToOriginals().put(workingClone, original);
                 } else {
-                    // What happens if a copy policy is defined is not pleasant.
-                    workingClone = instantiateWorkingCopyCloneFromRow(databaseRow, query, primaryKey, unitOfWork);
+                    if (query.shouldUseSerializedObjectPolicy() && descriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
+                        hasSetSopObjectIntoRow = true;
+                        // serialized sopObject is a value corresponding to sopField in the row, row.sopObject==null;
+                        // the following line sets deserialized sopObject into row.sopObject variable and sets sopField's value to null;
+                        workingClone = descriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, unitOfWork);
+                    } 
+                    if (workingClone == null) {
+                        // What happens if a copy policy is defined is not pleasant.
+                        //workingClone = instantiateWorkingCopyCloneFromRow(databaseRow, query, primaryKey, unitOfWork);
+                        // Create a new instance instead. The object is populated later by buildAttributesIntoWorkingCopyClone method.
+                        workingClone = buildNewInstance();
+                    }
                 }
     
                 // This must be registered before it is built to avoid cycles.
@@ -2003,6 +2040,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } finally {
             unitOfWorkCacheKey.release();            
+            if (hasSetSopObjectIntoRow) {
+                databaseRow.setSopObject(null);
+            }
         }
         instantiateEagerMappings(workingClone, unitOfWork);
 
@@ -2808,6 +2848,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * null is returned if the row does not contain the key.
      */
     public Object extractPrimaryKeyFromRow(AbstractRecord databaseRow, AbstractSession session) {
+        if (databaseRow.hasSopObject()) {
+            // Entity referencing ForeignReferenceMapping has set attribute extracted from sopObject as a sopObject into a new empty row.
+            return extractPrimaryKeyFromObject(databaseRow.getSopObject(), session);
+        }
         List<DatabaseField> primaryKeyFields = this.descriptor.getPrimaryKeyFields();
         if(null == primaryKeyFields) {
             return null;

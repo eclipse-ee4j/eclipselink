@@ -36,6 +36,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
@@ -448,14 +449,18 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
         }
         
-        boolean shouldSetRowsForJoins = hasJoining() && this.joinedAttributeManager.isToManyJoin();
         AbstractSession session = getSession();
         Object result = null;
         AbstractRecord row = null;
         
-        checkResultSetAccessOptimization();
+        Object sopObject = getTranslationRow().getSopObject();
+        boolean useOptimization = false;
+        if (sopObject == null) {
+            checkResultSetAccessOptimization();
+            useOptimization = this.usesResultSetAccessOptimization; 
+        }        
         
-        if (this.usesResultSetAccessOptimization) {
+        if (useOptimization) {
             DatabaseCall call = ((DatasourceCallQueryMechanism)this.queryMechanism).selectResultSet();
             this.executionTime = System.currentTimeMillis();
             boolean exceptionOccured = false;
@@ -515,15 +520,20 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 }
             }
         } else {
-            // If using 1-m joins, must select all rows.
-            if (shouldSetRowsForJoins) {
-                List rows = getQueryMechanism().selectAllRows();
-                if (rows.size() > 0) {
-                    row = (AbstractRecord)rows.get(0);
-                }
-                getJoinedAttributeManager().setDataResults(rows, session);
+            if (sopObject != null) {
+                row = new DatabaseRecord(0);
+                row.setSopObject(sopObject);
             } else {
-                row = getQueryMechanism().selectOneRow();
+                // If using 1-m joins, must select all rows.
+                if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                    List rows = getQueryMechanism().selectAllRows();
+                    if (rows.size() > 0) {
+                        row = (AbstractRecord)rows.get(0);
+                    }
+                    getJoinedAttributeManager().setDataResults(rows, session);
+                } else {
+                    row = getQueryMechanism().selectOneRow();
+                }
             }
             
             this.executionTime = System.currentTimeMillis();
@@ -547,7 +557,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
         }                
 
-        if (this.shouldIncludeData) {
+        if (this.shouldIncludeData && (sopObject == null)) {
             ComplexQueryResult complexResult = new ComplexQueryResult();
             complexResult.setResult(result);
             complexResult.setData(row);

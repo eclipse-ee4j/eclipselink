@@ -28,6 +28,7 @@ import java.sql.SQLException;
 
 import org.eclipse.persistence.core.mappings.CoreMapping;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.SerializedObjectPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.indirection.*;
@@ -149,7 +150,8 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
     //used by the object build/merge code to control building/merging into the 
     //shared cache.
     protected boolean isCacheable = true;
-
+    /** Indicates whether the mapping should be included or excluded in/from reading and writing from/into a row using SerializedObjectPolicy. */ 
+    protected int sopParticipation;
 
     /**
      * PUBLIC:
@@ -1776,6 +1778,46 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      */
     public Object valueFromRow(AbstractRecord row, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey cacheKey, AbstractSession session, boolean isTargetProtected, Boolean[] wasCacheUsed) throws DatabaseException {
         return null;
+    }
+    
+    /**
+     * INTERNAL:
+     * see SerializeObjectPolicy
+     */
+    public boolean shouldReadFromSopObject(AbstractRecord row) {
+        if (row.hasSopObject()) {
+            if (row.isEmpty()) {
+                return true;
+            } else {
+                return this.sopParticipation == SerializedObjectPolicy.INCLUDE;
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * see SerializeObjectPolicy
+     */
+    public boolean shouldWriteIntoSopObject() {
+        return this.sopParticipation == SerializedObjectPolicy.INCLUDE || this.sopParticipation == SerializedObjectPolicy.INCLUDE_WRITE_EXCLUDE_READ; 
+    }
+
+    /**
+     * INTERNAL:
+     * see SerializeObjectPolicy
+     */
+    public boolean shouldReadFromSopObject() {
+        return this.sopParticipation == SerializedObjectPolicy.INCLUDE; 
+    }
+
+    /**
+     * INTERNAL:
+     * see SerializeObjectPolicy
+     */
+    public void setSopParticipation(int sopParticipation) {
+        this.sopParticipation = sopParticipation; 
     }
     
     /**
