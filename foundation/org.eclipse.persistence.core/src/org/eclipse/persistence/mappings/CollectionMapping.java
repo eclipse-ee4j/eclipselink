@@ -258,8 +258,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         while (this.containerPolicy.hasNext(valuesIterator)) {
             Object originalValue = this.containerPolicy.next(valuesIterator, group.getSession());
             Object copyValue = originalValue;
+            Object originalKey = this.containerPolicy.keyFromIterator(valuesIterator); 
+            Object copyKey = originalKey;
             if (group.shouldCascadeAllParts() || (group.shouldCascadePrivateParts() && isPrivateOwned()) || group.shouldCascadeTree()) {
-                copyValue = group.getSession().copyInternal(originalValue, group);
+                copyValue = copyElement(originalValue, group);
+                copyKey = group.getSession().copyInternal(originalKey, group);
             } else {
                 // Check for backrefs to copies.
                 copyValue = group.getCopies().get(originalValue);
@@ -267,11 +270,19 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     copyValue = originalValue;
                 }
             }
-            this.containerPolicy.addInto(copyValue, attributeValue, group.getSession());
+            this.containerPolicy.addInto(copyKey, copyValue, attributeValue, group.getSession());
         }
         // if value holder is used, then the value holder shared with original substituted for a new ValueHolder.
         getIndirectionPolicy().reset(copy);
         setRealAttributeValueInObject(copy, attributeValue);
+    }
+    
+    /**
+     * INTERNAL:
+     * Copies member's value
+     */
+    protected Object copyElement(Object original, CopyGroup group) {
+        return group.getSession().copyInternal(original, group);
     }
 
     /**

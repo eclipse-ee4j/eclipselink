@@ -79,6 +79,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -1150,6 +1151,24 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         getContainerPolicy().compareCollectionsForChange(backupCollection, cloneCollection, changeRecord, session, remoteReferenceDescriptor);
         
         return changeRecord;
+    }
+
+    /**
+     * INTERNAL:
+     * Copies member's value
+     */
+    @Override
+    protected Object copyElement(Object original, CopyGroup group) {
+        if (original == null) {
+            return null;
+        }
+
+        ClassDescriptor descriptor = getReferenceDescriptor(original.getClass(), group.getSession());
+        if (descriptor == null) {
+            return original;
+        }
+
+        return descriptor.getObjectBuilder().copyObject(original, group);
     }
 
     /**

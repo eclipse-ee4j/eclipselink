@@ -44,6 +44,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -53,6 +55,8 @@ import junit.framework.*;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
@@ -156,6 +160,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
         suite.addTest(new InheritedModelJunitTest("testNodeImplWeaving"));
         suite.addTest(new InheritedModelJunitTest("testEmbeddaleCollectionMapEmbeddableRead"));
+        suite.addTest(new InheritedModelJunitTest("testCopyMapKeyMap"));
         if (!isJPA10()) {
             suite.addTest(new InheritedModelJunitTest("testInterfaces"));
         }
@@ -1903,6 +1908,41 @@ public class InheritedModelJunitTest extends JUnitTestCase {
                 
                 assertEquals("Mismatched interface on " + testClasses[index] + ": " + interfaces[i].getCanonicalName() + " != " + comparisonString, interfaces[i].getCanonicalName(), comparisonString);
             }
+        }
+    }
+
+    // Bug 406957 - Copy fails on AggregateCollectionMapping and on map with @MapKeyColumn
+    public void testCopyMapKeyMap() {
+        Calendar cal = Calendar.getInstance();
+        BeerConsumer consumer = new BeerConsumer();
+        consumer.setId(1);
+        consumer.setName("A");
+        Heineken heineken  = new Heineken();
+        heineken.setAlcoholContent(5.0);
+        heineken.setId(11);
+        Date date = cal.getTime();
+        consumer.addHeinekenBeerToConsume(heineken, date);
+        EntityManager em = createEntityManager();
+        CopyGroup copyAll = new CopyGroup();
+        copyAll.cascadeAllParts();
+        BeerConsumer consumerCopy = (BeerConsumer)((JpaEntityManager)em).copy(consumer, copyAll);
+        if (consumerCopy.getHeinekenBeersToConsume().size() != consumer.getHeinekenBeersToConsume().size()) {
+            fail("consumerCopy.getHeinekenBeersToConsume().size() = " + consumerCopy.getHeinekenBeersToConsume().size() + "; "+consumer.getHeinekenBeersToConsume().size()+" was expected");
+        }
+        if (consumerCopy.getHeinekenBeersToConsume() == consumer.getHeinekenBeersToConsume()) {
+            fail("consumerCopy.getHeinekenBeersToConsume() == consumer.getHeinekenBeersToConsume()");
+        }
+        Map.Entry<Date, Heineken> entry = (Map.Entry<Date, Heineken>)consumerCopy.getHeinekenBeersToConsume().entrySet().iterator().next();
+        Date dateCopy = entry.getKey();
+        Heineken heinekenCopy = entry.getValue();
+        if (!date.equals(dateCopy)) {
+            fail("!date.equals(dateCopy)");
+        }
+        if (heineken == heinekenCopy) {
+            fail("heineken == heinekenCopy");
+        }
+        if (heineken.getAlcoholContent() != heinekenCopy.getAlcoholContent()) {
+            fail("heineken.getAlcoholContent() != heinekenCopy.getAlcoholContent()");
         }
     }
 }
