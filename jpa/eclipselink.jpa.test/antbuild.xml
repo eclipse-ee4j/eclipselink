@@ -4069,7 +4069,7 @@
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="mongo-xml"/>
             <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/mongo"/>
-            <param name="MODEL_NAME" value="eclipselink-mongo-model"/>
+            <param name="MODEL_NAME" value="eclipselink-mongo-model-xml"/>
             <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/mongo"/>
             <param name="TEST_NAME" value="eclipselink-mongo-model-xml"/>
             <param name="EAR_NAME" value="eclipselink-mongo-model-xml"/>
