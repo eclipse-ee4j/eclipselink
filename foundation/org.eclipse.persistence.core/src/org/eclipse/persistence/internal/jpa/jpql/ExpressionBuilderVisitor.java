@@ -149,7 +149,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.
  * Expression EclipseLink Expression}.
  *
- * @version 2.5
+ * @version 2.6
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -1569,7 +1569,16 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		// Instantiate a Number object with the value
 		type[0] = queryContext.getType(expression);
-		Number number = queryContext.newInstance(type[0], String.class, expression.getText());
+
+		// Special case for a long number, Long.parseLong() does not handle 'l|L'
+		// but Double.parseDouble() and Float.parseFloat() do handle 'd|D' and 'f|F', respectively
+		String text = expression.getText();
+
+		if ((type[0] == Long.class) && (text.endsWith("L") || text.endsWith("l"))) {
+			text = text.substring(0, text.length() - 1);
+		}
+
+		Number number = queryContext.newInstance(type[0], String.class, text);
 
 		// Now create the numeric expression
 		queryExpression = new ConstantExpression(number, queryContext.getBaseExpression());
