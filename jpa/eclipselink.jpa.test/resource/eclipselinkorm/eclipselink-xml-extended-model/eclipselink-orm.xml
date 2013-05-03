@@ -512,9 +512,15 @@
     <embeddable class="ShovelSections" access="VIRTUAL">
         <access-methods get-method="getMaterial" set-method="setMaterial"/>
         <attributes>
-            <basic name="handle" attribute-type="ShovelSections$MaterialType"/>
-            <basic name="shaft" attribute-type="ShovelSections$MaterialType"/>
-            <basic name="scoop" attribute-type="ShovelSections$MaterialType"/>
+            <basic name="handle" attribute-type="ShovelSections$MaterialType">
+                <enumerated>STRING</enumerated>
+            </basic>
+            <basic name="shaft" attribute-type="ShovelSections$MaterialType">
+                <enumerated>STRING</enumerated>
+            </basic>
+            <basic name="scoop" attribute-type="ShovelSections$MaterialType">
+                <enumerated>STRING</enumerated>
+            </basic>
         </attributes>
     </embeddable>
     <embeddable class="Name" access="FIELD">
