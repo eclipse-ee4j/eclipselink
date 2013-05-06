@@ -27,4 +27,5 @@ public class CacheCoordinationProtocol {
     public static final String RMIIIOP = "rmi-iiop";
     public static final String JMS = "jms";
     public static final String JMSPublishing = "jms-publishing";
+    public static final String JGROUPS = "jgroups";
 }

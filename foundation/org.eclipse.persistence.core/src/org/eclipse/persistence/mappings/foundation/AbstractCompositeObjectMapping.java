@@ -222,7 +222,7 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                     }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
                     Integer refreshCascade = null;
-                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && sourceQuery.shouldRefreshIdentityMapResult()){
                         refreshCascade = sourceQuery.getCascadePolicy();
                     }
                     //get the clone root.

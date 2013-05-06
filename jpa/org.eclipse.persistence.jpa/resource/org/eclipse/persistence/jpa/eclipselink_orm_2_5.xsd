@@ -719,6 +719,7 @@
             <xsd:element name="converter" type="orm:mixed-converter"/>
             <xsd:element name="type-converter" type="orm:type-converter"/>
             <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+            <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
             <xsd:element name="struct-converter" type="orm:struct-converter"/>
             <xsd:element name="sequence-generator" type="orm:sequence-generator"/>
             <xsd:element name="table-generator" type="orm:table-generator"/>
@@ -941,6 +942,7 @@
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="serialized-converter" type="orm:serialized-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
@@ -1143,6 +1145,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="table-generator" type="orm:table-generator" minOccurs="0"/>
@@ -1196,6 +1199,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
@@ -1268,6 +1272,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>    
       <xsd:element name="collection-table" type="orm:eclipselink-collection-table" minOccurs="0"/>
@@ -2346,6 +2351,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:choice minOccurs="0">
@@ -2423,6 +2429,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>
@@ -2463,6 +2470,7 @@
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="serialized-converter" type="orm:serialized-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
@@ -2811,6 +2819,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="table-generator" type="orm:table-generator" 
@@ -3208,6 +3217,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:choice>
@@ -3408,6 +3418,7 @@
       <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="type-converter" type="orm:type-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="object-type-converter" type="orm:object-type-converter" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="serialized-converter" type="orm:serialized-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="struct-converter" type="orm:struct-converter" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
@@ -4257,6 +4268,7 @@
        <xsd:element name="converter" type="orm:converter"/>
        <xsd:element name="type-converter" type="orm:type-converter"/>
        <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+       <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
        <xsd:element name="struct-converter" type="orm:struct-converter"/>
      </xsd:choice>
      <xsd:choice>
@@ -5773,6 +5785,58 @@
 
   <!-- **************************************************** -->
 
+  <xsd:complexType name="serialized-converter">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        /** 
+         * A SerializedConverter is used to serialize an object's value into a database binary, character, or XML field.
+         * This annotation allows a named converter that can be used in mappings.
+         * 
+         * A converter must be be uniquely identified by name and can be defined at 
+         * the class level and can be specified within an Entity, 
+         * MappedSuperclass and Embeddable class.
+         * 
+         * The usage of a SerializedConverter is always specified via the Converter annotation and 
+         * is supported on a Basic, or ElementCollection mapping.
+         * 
+         * @see org.eclipse.persistence.annotations.Serialize
+         * @see org.eclipse.persistence.sessions.serializers.Serializer
+         * @author James Sutherland
+         * @since EclipseLink 2.6 
+         */ 
+        @Target({TYPE, METHOD, FIELD})
+        @Retention(RUNTIME)
+        public @interface SerializedConverter {
+            /**
+             * (Required) Name this converter. The name should be unique across the 
+             * whole persistence unit.
+             */
+            String name();
+            
+            /**
+             * Allows a package name to be passed to the serializer.
+             * This is used by some serializers such as XML, JSON to initialize the 
+             * JAXB context from the classes in the package or a jaxb.index file.
+             */
+            String serializerPackage() default "";
+        
+            /**
+             * The serializer class to be used. This class must implement the
+             * org.eclipse.persistence.sessions.serializers.Serializer interface.
+             */
+            Class serializerClass() default JavaSerializer.class; 
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="serializer-class" type="xsd:string"/>
+    <xsd:attribute name="serializer-package" type="xsd:string"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
   <xsd:complexType name="unique-constraint">
     <xsd:annotation>
       <xsd:documentation>
@@ -5906,6 +5970,7 @@
         <xsd:element name="converter" type="orm:converter"/>
         <xsd:element name="type-converter" type="orm:type-converter"/>
         <xsd:element name="object-type-converter" type="orm:object-type-converter"/>
+        <xsd:element name="serialized-converter" type="orm:serialized-converter"/>
         <xsd:element name="struct-converter" type="orm:struct-converter"/>
       </xsd:choice>
       <xsd:element name="property" type="orm:property" minOccurs="0" maxOccurs="unbounded"/>

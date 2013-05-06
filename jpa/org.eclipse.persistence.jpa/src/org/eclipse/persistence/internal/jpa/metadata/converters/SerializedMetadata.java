@@ -39,8 +39,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 
 /**
  * INTERNAL:
- * Abstract converter class that parents both the JPA and Eclipselink 
- * converters.
+ * This class processes the reserve "serialized" converter specified through @Convert.
  * 
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the

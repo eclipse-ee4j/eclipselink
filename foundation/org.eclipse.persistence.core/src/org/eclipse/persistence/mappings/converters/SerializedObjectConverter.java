@@ -12,29 +12,46 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.converters;
 
-import java.io.*;
+import java.security.AccessController;
+
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.serializers.JSONSerializer;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
+import org.eclipse.persistence.sessions.serializers.XMLSerializer;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database blob field.
- * It uses the Java serializer so the target must be serializable.
+ * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database binary or character field.
+ * By default it uses the Java serializer so the target must be serializable.
+ * A custom Serializer can also be specified, such as XML, JSON or Kryo.
  *
+ * @see Serializer
+ * @see XMLSerializer
+ * @see JSONSerializer
+ * @see org.eclipse.persistence.sessions.serializers.KryoSerializer
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class SerializedObjectConverter implements Converter {
+public class SerializedObjectConverter implements Converter, ClassNameConversionRequired {
     protected DatabaseMapping mapping;
+    protected Serializer serializer;
+    protected String serializerClassName;
+    protected String serializerPackage;
 
     /**
      * PUBLIC:
      * Default constructor.
      */
     public SerializedObjectConverter() {
+        this.serializer = new JavaSerializer();
     }
 
     /**
@@ -43,6 +60,49 @@ public class SerializedObjectConverter implements Converter {
      */
     public SerializedObjectConverter(DatabaseMapping mapping) {
         this.mapping = mapping;
+        this.serializer = new JavaSerializer();
+    }
+
+    /**
+     * PUBLIC:
+     * Default constructor.
+     */
+    public SerializedObjectConverter(DatabaseMapping mapping, Serializer serializer) {
+        this.mapping = mapping;
+        this.serializer = serializer;
+    }
+
+    /**
+     * PUBLIC:
+     * Default constructor.
+     */
+    public SerializedObjectConverter(DatabaseMapping mapping, String serializerClassName) {
+        this.mapping = mapping;
+        this.serializerClassName = serializerClassName;
+    }
+
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this converter to actual class-based
+     * settings. This method is used when converting a project that has been built
+     * with class names to a project with classes.
+     * This method is implemented by subclasses as necessary.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        try{
+            if (this.serializerClassName != null) {
+                Class serializerClass = null;
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    serializerClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(this.serializerClassName, true, classLoader));
+                } else {
+                    serializerClass = PrivilegedAccessHelper.getClassForName(this.serializerClassName, true, classLoader);
+                }
+                this.serializer = (Serializer)serializerClass.newInstance();
+            }
+        } catch (Exception exception){
+            throw ValidationException.classNotFoundWhileConvertingClassNames(this.serializerClassName, exception);
+        }
     }
 
     /**
@@ -55,27 +115,33 @@ public class SerializedObjectConverter implements Converter {
         if (fieldValue == null) {
             return null;
         }
-        byte[] bytes;
-        try {
-            bytes = (byte[])((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
-        } catch (ConversionException e) {
-            throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
+        Object data = fieldValue;
+        if (this.serializer.getType() == ClassConstants.APBYTE) {
+            byte[] bytes;
+            try {
+                bytes = (byte[])((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
+            } catch (ConversionException exception) {
+                throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
+            }    
+            if ((bytes == null) || (bytes.length == 0)) {
+                return null;
+            }
+        } else if (this.serializer.getType() == ClassConstants.STRING) {
+            String text;
+            try {
+                text = (String)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+            } catch (ConversionException exception) {
+                throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
+            }    
+            if ((text == null) || (text.length() == 0)) {
+                return null;
+            }
         }
-
-        if ((bytes == null) || (bytes.length == 0)) {
-            return null;
-        }
-        ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
-        Object object = null;
         try {
-            // BUG# 2813583
-            CustomObjectInputStream objectIn = new CustomObjectInputStream(byteIn, session);
-            object = objectIn.readObject();
+            return this.serializer.deserialize(data, session);
         } catch (Exception exception) {
             throw DescriptorException.notDeserializable(getMapping(), exception);
         }
-
-        return object;
     }
 
     /**
@@ -86,15 +152,11 @@ public class SerializedObjectConverter implements Converter {
         if (attributeValue == null) {
             return null;
         }
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
-            ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-            objectOut.writeObject(attributeValue);
-            objectOut.flush();
-        } catch (IOException exception) {
+            return this.serializer.serialize(attributeValue, session);
+        } catch (Exception exception) {
             throw DescriptorException.notSerializable(getMapping(), exception);
         }
-        return byteOut.toByteArray();
     }
 
     /**
@@ -109,7 +171,7 @@ public class SerializedObjectConverter implements Converter {
 
             // Allow user to specify field type to override computed value. (i.e. blob, nchar)
             if (directMapping.getFieldClassification() == null) {
-                directMapping.setFieldClassification(ClassConstants.APBYTE);
+                directMapping.setFieldClassification(getSerializer().getType());
             }
         }
     }
@@ -130,5 +192,47 @@ public class SerializedObjectConverter implements Converter {
      */
     public boolean isMutable() {
         return true;
+    }
+
+    /**
+     * Return the serialize used for this converter.
+     */
+    public Serializer getSerializer() {
+        return serializer;
+    }
+
+    /**
+     * Set the serialize used for this converter.
+     */
+    public void setSerializer(Serializer serializer) {
+        this.serializer = serializer;
+    }
+
+    /**
+     * Return the class name of the serializer.
+     */
+    public String getSerializerClassName() {
+        return serializerClassName;
+    }
+
+    /**
+     * Set the class name of the serializer.
+     */
+    public void setSerializerClassName(String serializerClassName) {
+        this.serializerClassName = serializerClassName;
+    }
+
+    /**
+     * Return the package used for XML and JSON serialization JAXBContext.
+     */
+    public String getSerializerPackage() {
+        return serializerPackage;
+    }
+
+    /**
+     * Set the package used for XML and JSON serialization JAXBContext.
+     */
+    public void setSerializerPackage(String serializerPackage) {
+        this.serializerPackage = serializerPackage;
     }
 }

@@ -29,4 +29,5 @@ import java.rmi.RemoteException;
  */
 public interface RMIRemoteCommandConnection extends Remote {
     public Object executeCommand(Command command) throws RemoteException;
+    public Object executeCommand(byte[] command) throws RemoteException;
 }

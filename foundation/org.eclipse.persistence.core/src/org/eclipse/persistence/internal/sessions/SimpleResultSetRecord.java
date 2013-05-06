@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 
@@ -55,31 +56,171 @@ public class SimpleResultSetRecord extends ResultSetRecord {
         super();
     }
     
-    public SimpleResultSetRecord(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, DatabaseAccessor accessor, AbstractSession session) {
-        super(fields, fieldsArray, resultSet, metaData, accessor, session);
+    public SimpleResultSetRecord(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, DatabaseAccessor accessor, AbstractSession session, DatabasePlatform platform, boolean optimizeData) {
+        super(fields, fieldsArray, resultSet, metaData, accessor, session, platform, optimizeData);
     }    
     
     /**
-     * Obtains the value corresponding to the passed index from resultSet.
-     * Should not be called if resultSet is not null.
+     * Obtains all the value from resultSet and removes it.
+     * resultSet must be non null.
      */
-    @Override
-    protected Object getValue(int index, DatabaseField field) {
-        Object value = this.valuesArray[index];
-        if (value != null) {
-            if (!this.isPopulatingObject) {
-                this.isPopulatingObject = true;
-            }
-            if (!this.shouldKeepValues) {
-                this.valuesArray[index] = null;
-            }
-        } else {
-            value = getValueFromResultSet(index, field);
-            if (!this.isPopulatingObject || this.shouldKeepValues) {
-                this.valuesArray[index] = value;
+    public void loadAllValuesFromResultSet() {
+        int size = this.valuesArray.length;
+        for (int index = 0; index < size; index++) {
+            if (this.valuesArray[index] == null) {
+                DatabaseField field = this.fieldsArray[index];
+                // Field can be null for fetch groups.
+                if (field != null) {
+                    this.valuesArray[index] = getValueFromResultSet(index, field);
+                }
             }
         }
-        return value;
+        this.resultSet = null;
+        this.metaData = null;
+        this.accessor = null;
+        this.platform = null;
+        this.session = null;
+    }
+    
+    /**
+     * INTERNAL:
+     * Retrieve the value for the field. If missing null is returned.
+     */
+    @Override
+    public Object get(DatabaseField key) {
+        if (this.fieldsArray != null) {
+            // Optimize check.
+            int index = key.index;
+            if ((index < 0) || (index > this.size)) {
+                index = 0;
+            }            
+            DatabaseField field = this.fieldsArray[index];
+            if ((field != key) && !field.equals(key)) {
+                for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                    field = this.fieldsArray[fieldIndex];
+                    if ((field == key) || field.equals(key)) {
+                        // PERF: If the fields index was not set, then set it.
+                        if (key.index == -1) {
+                            key.setIndex(fieldIndex);
+                        }
+                        index = fieldIndex;
+                        break;
+                    }
+                }                
+            }
+            if (this.resultSet != null) {
+                Object value = this.valuesArray[index];
+                if (value != null) {
+                    if (!this.isPopulatingObject) {
+                        this.isPopulatingObject = true;
+                    }
+                    if (!this.shouldKeepValues) {
+                        this.valuesArray[index] = null;
+                    }
+                } else {
+                    if (this.shouldUseOptimization) {
+                        try {
+                            Class fieldType = field.getType(); 
+                            if (fieldType == ClassConstants.STRING) {
+                                value = resultSet.getString(index + 1);
+                            } else if (fieldType == ClassConstants.LONG) {
+                                value = resultSet.getLong(index + 1);
+                            } else if (fieldType == ClassConstants.INTEGER) {
+                                value = resultSet.getInt(index + 1);
+                            } else {
+                                value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                            }
+                        } catch (SQLException exception) {
+                            DatabaseException commException = this.accessor.processExceptionForCommError(session, exception, null);
+                            if (commException != null) {
+                                throw commException;
+                            }
+                            throw DatabaseException.sqlException(exception, accessor, session, false);
+                        }            } else {
+                        value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                    }
+                    if (!this.isPopulatingObject || this.shouldKeepValues) {
+                        this.valuesArray[index] = value;
+                    }
+                }
+                return value;
+            } else {
+                return this.valuesArray[index];
+            }
+        } else {
+            return super.get(key);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.
+     * PERF: This method is a clone of get() for performance.
+     */
+    @Override
+    public Object getIndicatingNoEntry(DatabaseField key) {
+        if (this.fieldsArray != null) {
+            // Optimize check.
+            int index = key.index;
+            if ((index < 0) || (index > this.size)) {
+                index = 0;
+            }            
+            DatabaseField field = this.fieldsArray[index];
+            if ((field != key) && !field.equals(key)) {
+                for (int fieldIndex = 0; fieldIndex < this.size; fieldIndex++) {
+                    field = this.fieldsArray[fieldIndex];
+                    if ((field == key) || field.equals(key)) {
+                        // PERF: If the fields index was not set, then set it.
+                        if (key.index == -1) {
+                            key.setIndex(fieldIndex);
+                        }
+                        index = fieldIndex;
+                        break;
+                    }
+                }                
+            }
+            if (this.resultSet != null) {
+                Object value = this.valuesArray[index];
+                if (value != null) {
+                    if (!this.isPopulatingObject) {
+                        this.isPopulatingObject = true;
+                    }
+                    if (!this.shouldKeepValues) {
+                        this.valuesArray[index] = null;
+                    }
+                } else {
+                    if (this.shouldUseOptimization) {
+                        try {
+                            Class fieldType = field.getType(); 
+                            if (fieldType == ClassConstants.STRING) {
+                                value = resultSet.getString(index + 1);
+                            } else if (fieldType == ClassConstants.LONG) {
+                                value = resultSet.getLong(index + 1);
+                            } else if (fieldType == ClassConstants.INTEGER) {
+                                value = resultSet.getInt(index + 1);
+                            } else {
+                                value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                            }
+                        } catch (SQLException exception) {
+                            DatabaseException commException = this.accessor.processExceptionForCommError(session, exception, null);
+                            if (commException != null) {
+                                throw commException;
+                            }
+                            throw DatabaseException.sqlException(exception, accessor, session, false);
+                        }            } else {
+                        value = this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
+                    }
+                    if (!this.isPopulatingObject || this.shouldKeepValues) {
+                        this.valuesArray[index] = value;
+                    }
+                }
+                return value;
+            } else {
+                return this.valuesArray[index];
+            }
+        } else {
+            return super.get(key);
+        }
     }
     
     protected Object getValueFromResultSet(int index, DatabaseField field) {
@@ -101,20 +242,22 @@ public class SimpleResultSetRecord extends ResultSetRecord {
                 throw DatabaseException.sqlException(exception, accessor, session, false);
             }
         }
-        return super.getValueFromResultSet(index, field);
+        return this.accessor.getObject(this.resultSet, field, this.metaData, index + 1, this.platform, this.optimizeData, this.session);
     }
     
     public void reset() {
         if (this.isPopulatingObject) {
             this.isPopulatingObject = false;
             if (this.shouldKeepValues) {
-                for (int index = 0; index < this.valuesArray.length; index++) {
+                int size = this.valuesArray.length;
+                for (int index = 0; index < size; index++) {
                     this.valuesArray[index] = null;
                 }
             }
         } else {
             // TODO: this row hasn't been used to populate object, so values for all fields are null except for primary key fields and, possibly, version field.
-            for (int index = 0; index < this.valuesArray.length; index++) {
+            int size = this.valuesArray.length;
+            for (int index = 0; index < size; index++) {
                 this.valuesArray[index] = null;
             }
         }

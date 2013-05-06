@@ -15,6 +15,11 @@ package org.eclipse.persistence.testing.models.jpa.lob;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.SerializedConverter;
+import org.eclipse.persistence.annotations.SerializedConverters;
+import org.eclipse.persistence.sessions.serializers.JSONSerializer;
+import org.eclipse.persistence.sessions.serializers.XMLSerializer;
+
 /**
  * Model class used to test Lobs and Lazy Basics.
  */
@@ -23,6 +28,7 @@ import javax.persistence.*;
 @Table(name="CMP3_IMAGE")
 @SecondaryTable(name="CMP3_CLIP")
 @PrimaryKeyJoinColumn(name="ID", referencedColumnName="ID")
+@SerializedConverter(name="json2", serializerClass=JSONSerializer.class, serializerPackage="org.eclipse.persistence.testing.models.jpa.lob")
 public class Image implements Serializable {
     private int id;
     private byte[] audio;
@@ -31,6 +37,49 @@ public class Image implements Serializable {
     private String script;
     private SerializableNonEntity customAttribute1;
     private SerializableNonEntity customAttribute2;
+    private SerializableNonEntity xml1;
+    private SerializableNonEntity json1;
+    private SerializableNonEntity xml2;
+    private SerializableNonEntity json2;
+
+    @org.eclipse.persistence.annotations.Convert("xml2")
+    @SerializedConverters({
+        @SerializedConverter(name="xml2", serializerClass=XMLSerializer.class, serializerPackage="org.eclipse.persistence.testing.models.jpa.lob")
+    })
+    public SerializableNonEntity getXml2() {
+        return xml2;
+    }
+
+    public void setXml2(SerializableNonEntity xml2) {
+        this.xml2 = xml2;
+    }
+
+    @org.eclipse.persistence.annotations.Convert("json2")
+    public SerializableNonEntity getJson2() {
+        return json2;
+    }
+
+    public void setJson2(SerializableNonEntity json2) {
+        this.json2 = json2;
+    }
+
+    @org.eclipse.persistence.annotations.Convert(org.eclipse.persistence.annotations.Convert.XML)
+    public SerializableNonEntity getXml1() {
+        return xml1;
+    }
+
+    public void setXml1(SerializableNonEntity xml) {
+        this.xml1 = xml;
+    }
+
+    @org.eclipse.persistence.annotations.Convert(org.eclipse.persistence.annotations.Convert.JSON)
+    public SerializableNonEntity getJson1() {
+        return json1;
+    }
+
+    public void setJson1(SerializableNonEntity json) {
+        this.json1 = json;
+    }
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

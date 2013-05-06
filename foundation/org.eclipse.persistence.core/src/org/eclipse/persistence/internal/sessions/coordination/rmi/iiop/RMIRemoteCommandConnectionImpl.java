@@ -62,4 +62,26 @@ public class RMIRemoteCommandConnectionImpl extends PortableRemoteObject impleme
         // Success - return null
         return null;
     }
+
+    /**
+     * INTERNAL:
+     * No support currently exists for returning the result of the command execution.
+     * Currently only null is returned on success. On failure an error string is
+     * returned (to avoid returning an object/exception that may not exist on the
+     * sending side).
+     */
+    public Object executeCommand(byte[] command) throws RemoteException {
+        try {
+            rcm.processCommandFromRemoteConnection(command);
+        } catch (Exception e) {
+            // Log the problem
+            Object[] args = { Helper.getShortClassName(command), Helper.printStackTraceToString(e) };
+            rcm.logDebug("error_executing_remote_command", args);
+            // Return the string in case the exception doesn't exist on the other side
+            return e.toString();
+        }
+
+        // Success - return null
+        return null;
+    }
 }

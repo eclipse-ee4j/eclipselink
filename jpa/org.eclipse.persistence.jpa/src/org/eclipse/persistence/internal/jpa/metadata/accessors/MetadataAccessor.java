@@ -79,6 +79,8 @@ import org.eclipse.persistence.annotations.Partitioning;
 import org.eclipse.persistence.annotations.PinnedPartitioning;
 import org.eclipse.persistence.annotations.RangePartitioning;
 import org.eclipse.persistence.annotations.ReplicationPartitioning;
+import org.eclipse.persistence.annotations.SerializedConverter;
+import org.eclipse.persistence.annotations.SerializedConverters;
 import org.eclipse.persistence.annotations.StructConverter;
 import org.eclipse.persistence.annotations.StructConverters;
 import org.eclipse.persistence.annotations.TypeConverter;
@@ -103,6 +105,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColum
 
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
@@ -149,6 +152,7 @@ public abstract class MetadataAccessor extends ORMetadata {
     private List<ObjectTypeConverterMetadata> m_objectTypeConverters = new ArrayList<ObjectTypeConverterMetadata>();
     private List<StructConverterMetadata> m_structConverters = new ArrayList<StructConverterMetadata>();
     private List<TypeConverterMetadata> m_typeConverters = new ArrayList<TypeConverterMetadata>();
+    private List<SerializedConverterMetadata> m_serializedConverters = new ArrayList<SerializedConverterMetadata>();
     private List<PropertyMetadata> m_properties = new ArrayList<PropertyMetadata>();
     
     private MetadataDescriptor m_descriptor;
@@ -207,6 +211,10 @@ public abstract class MetadataAccessor extends ORMetadata {
             }
             
             if (! valuesMatch(m_typeConverters, accessor.getTypeConverters())) {
+                return false;
+            }
+            
+            if (! valuesMatch(m_serializedConverters, accessor.getSerializedConverters())) {
                 return false;
             }
             
@@ -545,6 +553,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<SerializedConverterMetadata> getSerializedConverters() {
+        return m_serializedConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public UnionPartitioningMetadata getUnionPartitioning() {
         return m_unionPartitioning;
     }
@@ -646,6 +662,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         initXMLObjects(m_objectTypeConverters, accessibleObject);
         initXMLObjects(m_structConverters, accessibleObject);
         initXMLObjects(m_typeConverters, accessibleObject);
+        initXMLObjects(m_serializedConverters, accessibleObject);
         initXMLObjects(m_properties, accessibleObject);
     }
     
@@ -693,6 +710,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         m_objectTypeConverters = mergeORObjectLists(m_objectTypeConverters, accessor.getObjectTypeConverters());
         m_structConverters = mergeORObjectLists(m_structConverters, accessor.getStructConverters());
         m_typeConverters = mergeORObjectLists(m_typeConverters, accessor.getTypeConverters());
+        m_serializedConverters = mergeORObjectLists(m_serializedConverters, accessor.getSerializedConverters());
         m_properties = mergeORObjectLists(m_properties, accessor.getProperties());
         
         m_partitioned = (String) mergeSimpleObjects(m_partitioned, accessor.getPartitioned(), accessor, "<partitioned>");
@@ -726,6 +744,9 @@ public abstract class MetadataAccessor extends ORMetadata {
         
         // Process the type converters if defined.
         processTypeConverters();
+        
+        // Process the serialized converters if defined.
+        processSerializedConverters();
         
         // Process the struct converters if defined
         processStructConverters();
@@ -1019,6 +1040,30 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Process a the XML defined serialized converters and check for a SerializedConverter 
+     * annotation. 
+     */
+    protected void processSerializedConverters() {
+        // Check for XML defined serialized converters.
+        for (SerializedConverterMetadata serializedConverter : m_serializedConverters) {
+            getProject().addConverter(serializedConverter);
+        }
+        
+        // Check for a SerializedConverters annotation
+        if (isAnnotationPresent(SerializedConverters.class)) {
+            for (Object serializedConverter : getAnnotation(SerializedConverters.class).getAttributeArray("value")) {
+                getProject().addConverter(new SerializedConverterMetadata((MetadataAnnotation) serializedConverter, this));
+            }
+        }
+        
+        // Check for an TypeConverter annotation.
+        if (isAnnotationPresent(SerializedConverter.class)) {
+            getProject().addConverter(new SerializedConverterMetadata(getAnnotation(SerializedConverter.class), this));
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setAccess(String access) {
@@ -1144,6 +1189,14 @@ public abstract class MetadataAccessor extends ORMetadata {
      */
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSerializedConverters(List<SerializedConverterMetadata> serializedConverters) {
+        m_serializedConverters = serializedConverters;
     }
     
     /**

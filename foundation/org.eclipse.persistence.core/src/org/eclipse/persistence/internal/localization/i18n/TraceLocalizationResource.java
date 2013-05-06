@@ -131,6 +131,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "dropping_connection", "Dropping connection: {0}" },
                                            { "attempting_to_reconnect_to_JMS_service", "Attempting to reconnect to JMS service" },
                                            { "retreived_remote_message_from_JMS_topic", "Retreived remote message from JMS topic: {0}" },
+                                           { "retreived_remote_message_from_jgroup_channel", "Retreived remote message from JGroups channel: {0}" },
                                            { "processing_topLink_remote_command", "Processing TopLink remote command" },
                                            { "JMS_exception_thrown", "JMSException thrown" },
                                            { "announcement_sent_from", "Announcement sent from {0}" },

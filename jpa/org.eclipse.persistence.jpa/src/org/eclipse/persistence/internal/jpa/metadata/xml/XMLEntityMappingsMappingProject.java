@@ -144,6 +144,7 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetada
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
@@ -350,6 +351,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         addDescriptor(buildConverterDescriptor());
         addDescriptor(buildMixedConverterDescriptor());
         addDescriptor(buildTypeConverterDescriptor());
+        addDescriptor(buildSerializedConverterDescriptor());
         addDescriptor(buildObjectTypeConverterDescriptor());
         addDescriptor(buildConversionValueDescriptor());
         addDescriptor(buildStructConverterDescriptor());
@@ -394,6 +396,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         DOMPlatform platform = new DOMPlatform();
         xmlLogin.setDatasourcePlatform(platform);
         this.setDatasourceLogin(xmlLogin);
+    }
+    
+
+    protected void addConverterMappings(ClassDescriptor descriptor) {
+        descriptor.addMapping(getConverterMapping());
+        descriptor.addMapping(getTypeConverterMapping());
+        descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getSerializedConverterMapping());
+        descriptor.addMapping(getStructConverterMapping());
     }
     
     /**
@@ -632,10 +643,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getValueColumnMapping());
         descriptor.addMapping(getConvertMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
@@ -671,10 +679,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getEnumeratedMapping());
         descriptor.addMapping(getConvertMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getUuidGeneratorMapping());
@@ -726,11 +731,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         valueConverterMapping.setSetMethodName("setValueConverter");
         valueConverterMapping.setXPath("orm:value-converter/text()");
         descriptor.addMapping(valueConverterMapping);
-        
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
         descriptor.addMapping(getJoinFetchMapping());
@@ -1241,10 +1243,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getConvertMapping());
         descriptor.addMapping(getAttributeOverrideMapping());
         descriptor.addMapping(getAssociationOverrideMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCollectionTableMapping());
         descriptor.addMapping(getFieldMapping());
         descriptor.addMapping(getCascadeOnDeleteMapping());
@@ -1290,10 +1289,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getEnumeratedMapping());
         descriptor.addMapping(getLobMapping());
         descriptor.addMapping(getConvertMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -1322,10 +1318,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getChangeTrackingMapping());
         descriptor.addMapping(getStructMapping());
         descriptor.addMapping(getNoSqlMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
@@ -1474,10 +1467,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getCacheIndexesMapping());
         descriptor.addMapping(getFetchGroupMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
@@ -1597,6 +1587,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMixedConverterMapping());
         descriptor.addMapping(getTypeConverterMapping());
         descriptor.addMapping(getObjectTypeConverterMapping());
+        descriptor.addMapping(getSerializedConverterMapping());
         descriptor.addMapping(getStructConverterMapping());
 
         XMLCompositeCollectionMapping sequenceGeneratorsMapping = new XMLCompositeCollectionMapping();
@@ -1927,10 +1918,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getEnumeratedMapping());
         descriptor.addMapping(getConvertMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getUuidGeneratorMapping());
@@ -2117,10 +2105,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
         descriptor.addMapping(getMapKeyForeignKeyMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinFieldMapping());
         descriptor.addMapping(getCascadeMapping());
@@ -2231,10 +2216,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCacheIndexesMapping());
         descriptor.addMapping(getCacheInterceptorMapping());
         descriptor.addMapping(getFetchGroupMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
@@ -2607,10 +2589,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getMapKeyColumnMapping());
         descriptor.addMapping(getMapKeyJoinColumnMapping());
         descriptor.addMapping(getMapKeyForeignKeyMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getJoinTableMapping());
         descriptor.addMapping(getJoinColumnMapping());
         descriptor.addMapping(getForeignKeyMapping());
@@ -3577,6 +3556,27 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
+     * XSD: type-converter
+     */
+    protected ClassDescriptor buildSerializedConverterDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(SerializedConverterMetadata.class);
+    
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getClassAttributeMapping());
+
+        XMLDirectMapping packageMapping = new XMLDirectMapping();
+        packageMapping.setAttributeName("m_serializerPackage");
+        packageMapping.setGetMethodName("getSerializerPackage");
+        packageMapping.setSetMethodName("setSerializerPackage");
+        packageMapping.setXPath("@serializer-package");
+        descriptor.addMapping(packageMapping);
+        
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
      * XSD: union-partitioning
      */
     protected ClassDescriptor buildUnionPartitioningDescriptor() {
@@ -3715,10 +3715,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getColumnMapping());
         descriptor.addMapping(getTemporalMapping());
         descriptor.addMapping(getConvertMapping());
-        descriptor.addMapping(getConverterMapping());
-        descriptor.addMapping(getTypeConverterMapping());
-        descriptor.addMapping(getObjectTypeConverterMapping());
-        descriptor.addMapping(getStructConverterMapping());
+        addConverterMappings(descriptor);
         descriptor.addMapping(getPropertyMapping());
         descriptor.addMapping(getAccessMethodsMapping());
         
@@ -6271,6 +6268,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         typeConvertersMapping.setSetMethodName("setTypeConverters");
         typeConvertersMapping.setReferenceClass(TypeConverterMetadata.class);
         typeConvertersMapping.setXPath("orm:type-converter");
+        return typeConvertersMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getSerializedConverterMapping() {
+        XMLCompositeCollectionMapping typeConvertersMapping = new XMLCompositeCollectionMapping();
+        typeConvertersMapping.setAttributeName("m_serializedConverters");
+        typeConvertersMapping.setGetMethodName("getSerializedConverters");
+        typeConvertersMapping.setSetMethodName("setSerializedConverters");
+        typeConvertersMapping.setReferenceClass(SerializedConverterMetadata.class);
+        typeConvertersMapping.setXPath("orm:serialized-converter");
         return typeConvertersMapping;
     }
     

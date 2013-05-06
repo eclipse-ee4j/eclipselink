@@ -355,7 +355,7 @@ public class DefaultTableGenerator {
                     
                     if (converter instanceof SerializedObjectConverter) {
                         //serialized object mapping field should be BLOB/IMAGE
-                        getFieldDefFromDBField(mapping.getField()).setType(Byte[].class);
+                        getFieldDefFromDBField(mapping.getField()).setType(((SerializedObjectConverter)converter).getSerializer().getType());
                     }
                 }
             } else if (mapping.isAggregateCollectionMapping()) {

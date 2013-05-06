@@ -38,6 +38,12 @@ public abstract class RemoteConnection implements java.io.Serializable {
      * Execute the remote command. The result of execution is returned.
      */
     public abstract Object executeCommand(Command command) throws CommunicationException;
+    
+    /**
+     * INTERNAL:
+     * Execute the remote command. The result of execution is returned.
+     */
+    public abstract Object executeCommand(byte[] command) throws CommunicationException;
 
     /**
      * INTERNAL:

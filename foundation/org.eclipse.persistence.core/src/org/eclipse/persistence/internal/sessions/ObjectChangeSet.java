@@ -63,8 +63,8 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** Contains optimisticReadLockObject corresponding to the clone, non-null indicates forced changes **/
     protected Boolean shouldModifyVersionField;
     /** For CMP only: indicates that the object should be force updated (whether it has OptimisticLocking or not): getCmpPolicy().getForcedUpdate()==true**/
-    protected boolean hasCmpPolicyForcedUpdate;
-    protected boolean hasChangesFromCascadeLocking;
+    protected transient boolean hasCmpPolicyForcedUpdate;
+    protected transient boolean hasChangesFromCascadeLocking;
     
     /**
      * This is used during attribute level change tracking when a particular
@@ -86,7 +86,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     protected transient ClassDescriptor descriptor;
     
     /** return whether this change set should be recalculated after an event changes the object */
-    protected boolean shouldRecalculateAfterUpdateEvent = true;
+    protected transient boolean shouldRecalculateAfterUpdateEvent = true;
     
     //This controls how long the thread can wait for other thread to put Entity instance in cache
     //This is not final to allow a way for the value to be changed without supporting API

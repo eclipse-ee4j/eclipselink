@@ -180,7 +180,7 @@ public class CORBAConnection extends RemoteConnection {
         remoteCursoredStream.setPolicy(policy);
 
         if (policy.getQuery().isReadAllQuery() && (!policy.getQuery().isReportQuery())) {// could be DataReadQuery
-            fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), (DistributedSession)session);
+            fixObjectReferences(transporter, (ObjectLevelReadQuery)policy.getQuery(), session);
         }
         return remoteCursoredStream;
 

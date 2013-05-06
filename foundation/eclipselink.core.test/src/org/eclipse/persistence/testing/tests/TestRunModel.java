@@ -148,6 +148,7 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
+            tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jgroups.JGroupsDistributedServersModel");
 
             // Can take a long time, can deadlock.
             tests.add("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
@@ -196,6 +197,7 @@ public class TestRunModel extends TestModel {
         models.add(buildNoSQLTestModel());
         models.add(buildJPATestModel());
         models.add(buildPerformanceTestModel());
+        models.add(buildJPAPerformanceTestModel());
 
         Vector manualTest = new Vector();
         manualTest.add("org.eclipse.persistence.testing.tests.stress.StressTestModel");
@@ -394,7 +396,7 @@ public class TestRunModel extends TestModel {
     }
 
     /**
-     * Build and return a model of all performance tests.
+     * Build and return a model of all core performance tests.
      */
     public static TestModel buildPerformanceTestModel() {
         Vector performanceTests = new Vector();
@@ -404,11 +406,29 @@ public class TestRunModel extends TestModel {
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyComparisonTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.ConcurrencyRegressionTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.performance.JavaPerformanceComparisonModel");
+                    
+        TestModel performanceModel = new TestModel();
+        performanceModel.setName("Performance Tests");
+        for (int index = 0; index < performanceTests.size(); ++index) {
+            try {
+                performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).newInstance());
+            } catch (Exception exception) {
+                System.out.println("Failed to set up " + performanceTests.elementAt(index) + " \n" + exception);
+            }
+        }
+        return performanceModel;
+    }
+
+    /**
+     * Build and return a model of all JPA performance tests.
+     */
+    public static TestModel buildJPAPerformanceTestModel() {
+        Vector performanceTests = new Vector();
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceTestModel");
         performanceTests.add("org.eclipse.persistence.testing.tests.jpa.memory.JPAMemoryTestModel");
                     
         TestModel performanceModel = new TestModel();
-        performanceModel.setName("Performance Tests");
+        performanceModel.setName("JPA Performance Tests");
         for (int index = 0; index < performanceTests.size(); ++index) {
             try {
                 performanceModel.addTest((TestModel)Class.forName((String)performanceTests.elementAt(index)).newInstance());

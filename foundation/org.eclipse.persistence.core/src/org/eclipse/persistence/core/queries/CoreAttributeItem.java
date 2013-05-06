@@ -266,7 +266,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         while(result == null && !type.equals(ClassConstants.Object_Class)){
             type = type.getSuperclass();
             if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type.toString(), this.attributeName}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
             }
             result = this.subGroups.get(type);
         }
@@ -292,7 +292,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         while(result == null && !type.equals(ClassConstants.Object_Class)){
             type = type.getSuperclass();
             if (type == null){
-                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type.toString(), this.attributeName}));
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("subclass_sought_not_a_managed_type", new Object[]{type, this.attributeName}));
             }
             result = this.keyGroups.get(type);
         }

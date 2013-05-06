@@ -72,7 +72,7 @@ public class ConvertMetadata extends ORMetadata {
     public ConvertMetadata(MetadataAnnotation convert, MetadataAccessor accessor) {
         super(convert, accessor);
         
-        m_converterClass = getMetadataClass((String) convert.getAttributeClass("converter", Void.class));
+        m_converterClass = getMetadataClass(convert.getAttributeClass("converter", Void.class));
         m_attributeName = convert.getAttributeString("attributeName");
         m_disableConversion = convert.getAttributeBooleanDefaultFalse("disableConversion");  
     }

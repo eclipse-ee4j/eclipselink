@@ -810,6 +810,10 @@
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.annotation.model}/META-INF">
             <fileset dir="${jpatest.basedir}/resource/${eclipselink.annotation.model}" includes="*.xml"/>
         </copy>
+        <!-- copy jaxb index, properties files -->
+        <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.annotation.model}/">
+            <fileset dir="${jpatest.basedir}/resource/${eclipselink.annotation.model}" includes="org/eclipse/persistence/testing/models/jpa/lob/*"/>
+        </copy>
         <copy todir="${jpatest.basedir}/${build.dir}/${eclipselink.annotation.model}">
             <!-- 248780: exclude copies of classes from this eclipselink-annotation-model.jar if weaving is disabled in any other jar -->
             <fileset dir="${jpatest.basedir}/${classes.dir}"

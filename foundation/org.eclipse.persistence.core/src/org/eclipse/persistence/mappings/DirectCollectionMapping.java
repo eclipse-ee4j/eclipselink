@@ -888,10 +888,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 ((TypeConversionConverter)valueConverter).convertClassNamesToClasses(classLoader);
                 // Set the attribute classification from the type converter (ignoring any attribute classification name).
                 attributeClassification = ((TypeConversionConverter) valueConverter).getObjectClass();
-            } else if (valueConverter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter) valueConverter).convertClassNamesToClasses(classLoader);
+            } else if (valueConverter instanceof ClassNameConversionRequired) {
+                ((ClassNameConversionRequired) valueConverter).convertClassNamesToClasses(classLoader);
             }
         }
         

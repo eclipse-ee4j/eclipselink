@@ -61,6 +61,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminator
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.MixedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ObjectTypeConverterMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
 
@@ -132,6 +133,7 @@ public class XMLEntityMappings extends ORMetadata {
     private List<StructConverterMetadata> m_structConverters;
     private List<TableGeneratorMetadata> m_tableGenerators;
     private List<TypeConverterMetadata> m_typeConverters;
+    private List<SerializedConverterMetadata> m_serializedConverters;
     private List<PartitioningMetadata> m_partitioning;
     private List<RangePartitioningMetadata> m_rangePartitioning;
     private List<ValuePartitioningMetadata> m_valuePartitioning;
@@ -532,6 +534,14 @@ public class XMLEntityMappings extends ORMetadata {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<SerializedConverterMetadata> getSerializedConverters() {
+        return m_serializedConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<UnionPartitioningMetadata> getUnionPartitioning() {
         return m_unionPartitioning;
     }
@@ -700,9 +710,15 @@ public class XMLEntityMappings extends ORMetadata {
         }
         
         // Add the XML object type converters to the project.
-        for (TypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
+        for (ObjectTypeConverterMetadata objectTypeConverter : m_objectTypeConverters) {
             objectTypeConverter.initXMLObject(m_file, this);
             m_project.addConverter(objectTypeConverter);
+        }
+        
+        // Add the XML serialized converters to the project.
+        for (SerializedConverterMetadata serializedConverter : m_serializedConverters) {
+            serializedConverter.initXMLObject(m_file, this);
+            m_project.addConverter(serializedConverter);
         }
         
         // Add the XML struct converters to the project.
@@ -1281,6 +1297,14 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public void setTypeConverters(List<TypeConverterMetadata> typeConverters) {
         m_typeConverters = typeConverters;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setSerializedConverters(List<SerializedConverterMetadata> serializedConverters) {
+        m_serializedConverters = serializedConverters;
     }
     
     /**

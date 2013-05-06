@@ -53,6 +53,9 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
     //JMS PUBLISHING 
     public static final int RCM_UNINITIALIZED_OR_CLOSED = 22117;
 
+    // JGroups
+    public static final int ERROR_CREATING_JGROUPS_CONNECTION = 22118;
+
     public RemoteCommandManagerException() {
         super();
     }
@@ -178,6 +181,16 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         Object[] args = { topicName, topicFactory };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_LOCAL_JMS_CONNECTION, args));
         ex.setErrorCode(ERROR_CREATING_LOCAL_JMS_CONNECTION);
+        if (internalEx != null) {
+            ex.setInternalException(internalEx);
+        }
+        return ex;
+    }
+
+    public static RemoteCommandManagerException errorCreatingJGroupsConnection(String configFile, Throwable internalEx) {
+        Object[] args = { configFile };
+        RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_CREATING_JGROUPS_CONNECTION, args));
+        ex.setErrorCode(ERROR_CREATING_JGROUPS_CONNECTION);
         if (internalEx != null) {
             ex.setInternalException(internalEx);
         }

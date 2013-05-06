@@ -478,7 +478,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             cloneQuery.fetchGroup = this.fetchGroup.clone();
             // don't clone immutable entityFetchGroup
         }
-        cloneQuery.clearUsesResultSetAccessOptimization();
         return cloneQuery;
     }
 
@@ -782,7 +781,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     @Override
     public Object buildObject(AbstractRecord row) {
-        return this.descriptor.getObjectBuilder().buildObject(this, row);
+        return this.descriptor.getObjectBuilder().buildObject(this, row, this.joinedAttributeManager);
     }
 
     /**
@@ -2736,7 +2735,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Otherwise - if the session demand optimization and it is possible - optimizes (returns true),
      * otherwise false.
      */
-    @Override
     public boolean usesResultSetAccessOptimization() {
         return this.usesResultSetAccessOptimization != null && this.usesResultSetAccessOptimization;
     }
@@ -2764,33 +2762,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
         } else {
-            if (getSession().shouldOptimizeResultSetAccess() && supportsResultSetAccessOptimizationOnPrepare() && supportsResultSetAccessOptimizationOnExecute()) {
+            if (this.session.shouldOptimizeResultSetAccess() && supportsResultSetAccessOptimizationOnPrepare() && supportsResultSetAccessOptimizationOnExecute()) {
                 this.usesResultSetAccessOptimization = Boolean.TRUE;
             } else {
                 this.usesResultSetAccessOptimization = Boolean.FALSE;
-            }
-        }
-    }
-    
-    /**
-     * INTERNAL:
-     * Sets usesResultSetAccessOptimization each time when the query is executed.
-     * Unless usesResultSetAccessOptimization hasn't been set yet  
-     * checks only query settings that could be altered without re-preparing the query.
-     * Throws exception if isResultSetAccessOptimizedQuery==true cannot be accommodated because of a conflict with the query settings.
-     * In case of isResultSetAccessOptimizedQuery hasn't been set and session default conflicting with the the query settings
-     * the optimization is turned off.
-     */
-    public void checkResultSetAccessOptimization() {
-        if (this.usesResultSetAccessOptimization == null) {
-            prepareResultSetAccessOptimization();
-        } else {
-            if (this.usesResultSetAccessOptimization.booleanValue() && !supportsResultSetAccessOptimizationOnExecute()) {
-                if (this.isResultSetAccessOptimizedQuery == null) {
-                    usesResultSetAccessOptimization = Boolean.FALSE;
-                } else {
-                    throw QueryException.resultSetAccessOptimizationIsNotPossible(this);                        
-                }
             }
         }
     }
@@ -3295,7 +3270,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * this method will be called to set a (transient and therefore set to null) usesResultSetAccessOptimization attribute. 
      */
     public boolean supportsResultSetAccessOptimizationOnPrepare() {
-        return getCall() != null && ((DatabaseCall)getCall()).getReturnsResultSet() && // must return ResultSet
+        DatabaseCall call = getCall();
+        return ((call != null) && call.getReturnsResultSet()) && // must return ResultSet
             (!hasJoining() || !this.joinedAttributeManager.isToManyJoin()) && 
             (!this.descriptor.hasInheritance() || 
                     !this.descriptor.getInheritancePolicy().hasClassExtractor() &&  // ClassExtractor requires the whole row
@@ -3310,7 +3286,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * so it should refer only to the attributes that can be altered without re-preparing the query.
      */
     public boolean supportsResultSetAccessOptimizationOnExecute() {
-        return !getSession().isConcurrent();
+        return !this.session.isConcurrent();
     }
     
     /**

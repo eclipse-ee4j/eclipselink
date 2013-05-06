@@ -40,6 +40,10 @@ public class ImageSimulator {
         generatedImage.setCommentary(initCharArrayBase(clobSize));
         generatedImage.setCustomAttribute1(new SerializableNonEntity(new Long(Long.MAX_VALUE)));
         generatedImage.setCustomAttribute2(new SerializableNonEntity(new Long(Long.MAX_VALUE)));
+        generatedImage.setXml1(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
+        generatedImage.setXml2(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
+        generatedImage.setJson1(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
+        generatedImage.setJson2(new SerializableNonEntity(new Long(Long.MIN_VALUE)));
 
         return generatedImage;
     }

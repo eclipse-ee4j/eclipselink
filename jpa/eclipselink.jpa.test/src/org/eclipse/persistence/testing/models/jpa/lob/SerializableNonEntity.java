@@ -14,10 +14,13 @@ package org.eclipse.persistence.testing.models.jpa.lob;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * This class is used to test serialization to persistent fields in other entities,
  * such as mapping attributes of this type to String or blob field types.
  */
+@XmlRootElement
 public class SerializableNonEntity implements Serializable {
     Long someValue;
 

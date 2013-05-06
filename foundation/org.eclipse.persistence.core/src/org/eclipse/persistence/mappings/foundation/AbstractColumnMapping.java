@@ -24,6 +24,7 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -34,8 +35,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
-import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -133,12 +132,8 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
         }
         
         if (converter != null) {
-            if (converter instanceof TypeConversionConverter) {
-                ((TypeConversionConverter)converter).convertClassNamesToClasses(classLoader);
-            } else if (converter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter) converter).convertClassNamesToClasses(classLoader);
+            if (converter instanceof ClassNameConversionRequired) {
+                ((ClassNameConversionRequired)converter).convertClassNamesToClasses(classLoader);
             }
         } 
         
@@ -156,13 +151,13 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
                     }
                     
                     try {
-                        converter = (Converter) AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
+                        converter = (Converter)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(converterClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exception.getException());
                     }
                 } else {
                     converterClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(converterClassName, true, classLoader);
-                    converter = (Converter) org.eclipse.persistence.internal.security.PrivilegedAccessHelper.newInstanceFromClass(converterClass);
+                    converter = (Converter)PrivilegedAccessHelper.newInstanceFromClass(converterClass);
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(converterClassName, exc);

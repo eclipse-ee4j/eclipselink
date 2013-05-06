@@ -97,6 +97,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -131,9 +132,12 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverte
 import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.JSONMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.KryoMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.XMLMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
@@ -176,10 +180,6 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since EclipseLink 1.0
  */
 public abstract class MappingAccessor extends MetadataAccessor {
-    // Reserved converter names
-    private static final String CONVERT_NONE = "none";
-    private static final String CONVERT_SERIALIZED = "serialized";
-    private static final String CONVERT_CLASS_INSTANCE = "class-instance";
 
     // Used for looking up attribute overrides for a map accessor. 
     protected static final String KEY_DOT_NOTATION = "key.";
@@ -1485,10 +1485,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * to the given mapping.
      */
     protected void processConvert(DatabaseMapping mapping, String converterName, MetadataClass referenceClass, boolean isForMapKey, boolean hasConverts) {
-        if (converterName.equals(CONVERT_SERIALIZED)) {
+        if (converterName.equals(Convert.SERIALIZED)) {
             processSerialized(mapping, referenceClass, isForMapKey);
-        } else if (converterName.equals(CONVERT_CLASS_INSTANCE)){
+        } else if (converterName.equals(Convert.CLASS_INSTANCE)){
             new ClassInstanceMetadata().process(mapping, this, referenceClass, isForMapKey);
+        } else if (converterName.equals(Convert.XML)){
+            new XMLMetadata().process(mapping, this, referenceClass, isForMapKey);
+        } else if (converterName.equals(Convert.JSON)){
+            new JSONMetadata().process(mapping, this, referenceClass, isForMapKey);
+        } else if (converterName.equals(Convert.KRYO)){
+            new KryoMetadata().process(mapping, this, referenceClass, isForMapKey);
         } else {
             AbstractConverterMetadata converter = getProject().getConverter(converterName);
                 
@@ -1715,7 +1721,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         
         // A convert value is an EclipseLink extension and it takes precedence
         // over all JPA converters so check for it first.
-        if (convertValue != null && ! convertValue.equals(CONVERT_NONE)) {
+        if (convertValue != null && ! convertValue.equals(Convert.NONE)) {
             processConvert(mapping, convertValue, referenceClass, isForMapKey, hasConverts);
         } else if (hasConverts) {
             // If we have JPA converts, apply them.

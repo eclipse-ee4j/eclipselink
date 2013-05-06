@@ -122,6 +122,31 @@ public class LobTableCreator extends org.eclipse.persistence.tools.schemaframewo
         fieldCUSTOMATTRIBUTE2.setUnique(false);
         fieldCUSTOMATTRIBUTE2.setShouldAllowNull(true);
         table.addField(fieldCUSTOMATTRIBUTE2);
+
+        FieldDefinition fieldXML1 = new FieldDefinition();
+        fieldXML1.setName("XML1");
+        fieldXML1.setTypeName("CLOB");
+        fieldXML1.setSize(4500);
+        table.addField(fieldXML1);
+
+        FieldDefinition fieldXML2 = new FieldDefinition();
+        fieldXML2.setName("XML2");
+        fieldXML2.setTypeName("CLOB");
+        fieldXML2.setSize(4500);
+        table.addField(fieldXML2);
+
+        FieldDefinition fieldJSON1 = new FieldDefinition();
+        fieldJSON1.setName("JSON1");
+        fieldJSON1.setTypeName("CLOB");
+        fieldJSON1.setSize(4500);
+        table.addField(fieldJSON1);
+
+        FieldDefinition fieldJSON2 = new FieldDefinition();
+        fieldJSON2.setName("JSON2");
+        fieldJSON2.setTypeName("CLOB");
+        fieldJSON2.setSize(4500);
+        table.addField(fieldJSON2);
+        
         return table;
     }
 

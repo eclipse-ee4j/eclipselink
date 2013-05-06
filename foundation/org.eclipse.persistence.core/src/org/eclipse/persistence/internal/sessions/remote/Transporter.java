@@ -68,7 +68,7 @@ public class Transporter implements Serializable {
      */
     public void expand(AbstractSession session) {
         if (session.getSerializer() != null) {
-            this.object = session.getSerializer().deserialize((byte[])this.object, session);
+            this.object = session.getSerializer().deserialize(this.object, session);
         }
     }
 

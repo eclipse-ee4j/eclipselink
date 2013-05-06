@@ -47,7 +47,25 @@ public class RMIRemoteConnection extends RemoteConnection {
      */
     public Object executeCommand(Command command) throws CommunicationException {
         try {
-            return connection.executeCommand(command);
+            return this.connection.executeCommand(command);
+        } catch (RemoteException exception) {
+            throw CommunicationException.errorInInvocation(exception);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This method invokes the remote object with the Command argument, and causes
+     * it to execute the command in the remote VM. The result is currently assumed
+     * to be either null if successful, or an exception string if an exception was
+     * thrown during execution.
+     *
+     * If a RemoteException occurred then a communication problem occurred. In this
+     * case the exception will be wrapped in a CommunicationException and re-thrown.
+     */
+    public Object executeCommand(byte[] command) throws CommunicationException {
+        try {
+            return this.connection.executeCommand(command);
         } catch (RemoteException exception) {
             throw CommunicationException.errorInInvocation(exception);
         }

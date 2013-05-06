@@ -462,7 +462,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if(descriptorEventManager.hasAnyEventListeners()) {
                 // Need to run post build or refresh selector, currently check with the query for this,
                 // I'm not sure which should be called it case of refresh building a new object, currently refresh is used...
-                org.eclipse.persistence.descriptors.DescriptorEvent event = new org.eclipse.persistence.descriptors.DescriptorEvent(domainObject);
+                org.eclipse.persistence.descriptors.DescriptorEvent event = new DescriptorEvent(domainObject);
                 event.setQuery(query);
                 event.setSession(query.getSession());
                 event.setRecord(databaseRow);
@@ -630,10 +630,10 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (isUnitOfWork) {
             // Do not wrap yet if in UnitOfWork, as there is still much more
             // processing ahead.
-                domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, prefechedCacheKey, concreteDescriptor);
+            domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, prefechedCacheKey, concreteDescriptor);
         } else {
-                domainObject = buildObject(false, query, databaseRow, session, primaryKey, prefechedCacheKey, concreteDescriptor, joinManager);
-                if (query.shouldCacheQueryResults()) {
+            domainObject = buildObject(false, query, databaseRow, session, primaryKey, prefechedCacheKey, concreteDescriptor, joinManager);
+            if (shouldCacheQueryResults) {
                 query.cacheResult(domainObject);
             }
 
@@ -834,26 +834,30 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         boolean cacheHit = true;
         boolean domainWasMissing = true;
         boolean hasSetSopObjectIntoRow = false;
+        boolean shouldMaintainCache = query.shouldMaintainCache();
+        ObjectBuilder concreteObjectBuilder = concreteDescriptor.getObjectBuilder();
         try {
+            boolean shouldRetrieveBypassCache = query.shouldRetrieveBypassCache();
+            boolean shouldStoreBypassCache = query.shouldStoreBypassCache();
             // Check if the objects exists in the identity map.
-            if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
+            if (shouldMaintainCache && (!shouldRetrieveBypassCache || !shouldStoreBypassCache)) {
                 if (preFetchedCacheKey == null){
-                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
+                    cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 }else{
                     cacheKey = preFetchedCacheKey;
                     cacheKey.acquireLock(query);
                 }
                 if (cacheKey != null){
-                domainObject = cacheKey.getObject();
+                    domainObject = cacheKey.getObject();
                 }
                 domainWasMissing = domainObject == null;
             }
 
             FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
 
-            if (domainWasMissing || query.shouldRetrieveBypassCache()) {
+            if (domainWasMissing || shouldRetrieveBypassCache) {
                 cacheHit = false;
-                if (domainObject == null || query.shouldStoreBypassCache()) {
+                if (domainObject == null || shouldStoreBypassCache) {
                     if (query.isReadObjectQuery() && ((ReadObjectQuery)query).shouldLoadResultIntoSelectionObject()) {
                         domainObject = ((ReadObjectQuery)query).getSelectionObject();
                         if (query.shouldUseSerializedObjectPolicy() && concreteDescriptor.hasSerializedObjectPolicy() && !databaseRow.hasSopObject()) {
@@ -870,26 +874,26 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             domainObject = concreteDescriptor.getSerializedObjectPolicy().getObjectFromRow(databaseRow, session);
                         }
                         if (domainObject == null) {
-                            domainObject = concreteDescriptor.getObjectBuilder().buildNewInstance();
+                            domainObject = concreteObjectBuilder.buildNewInstance();
                         }
                     }
                 }
 
                 // The object must be registered before building its attributes to resolve circular dependencies.
-                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()){
+                if (shouldMaintainCache && !shouldStoreBypassCache) {
                     if (domainWasMissing) {  // may have build a new domain even though there is one in the cache
                         cacheKey.setObject(domainObject);
                     }
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
-                } else if (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache())) {
+                } else if (cacheKey == null || (domainWasMissing && shouldRetrieveBypassCache)) {
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
-                concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
+                concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                 if (isProtected && (cacheKey != null)) {
                     cacheForeignKeyValues(databaseRow, cacheKey, session);
                 }
-                if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
+                if (shouldMaintainCache && !shouldStoreBypassCache) {
                     // Set the fetch group to the domain object, after built.
                     if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
                         EntityFetchGroup entityFetchGroup = concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup);
@@ -910,19 +914,23 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
                 //check if the cached object has been invalidated
                 boolean isInvalidated = concreteDescriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey, query.getExecutionTime());
-
+                FetchGroupManager concreteFetchGroupManager = null;
+                if (concreteDescriptor.hasFetchGroupManager()) {
+                    concreteFetchGroupManager = concreteDescriptor.getFetchGroupManager();
+                }
+                
                 //CR #4365 - Queryid comparison used to prevent infinite recursion on refresh object cascade all
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
                 if ((cacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated ) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.isLockedByMergeManager()))) {
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, cacheKey, cacheKey.getObject(), query, joinManager, databaseRow, session, false);
-                } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup))))) {
+                } else if ((concreteFetchGroupManager != null) && (concreteFetchGroupManager.isPartialObject(domainObject) && (!concreteFetchGroupManager.isObjectValidForFetchGroup(domainObject, concreteFetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
                     cacheHit = false;
                     // The fetched object is not sufficient for the fetch group of the query 
                     // refresh attributes of the query's fetch group.
-                    concreteDescriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(domainObject, concreteDescriptor.getFetchGroupManager().getEntityFetchGroup(fetchGroup), session, false);
-                    concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
+                    concreteFetchGroupManager.unionEntityFetchGroupIntoObject(domainObject, concreteFetchGroupManager.getEntityFetchGroup(fetchGroup), session, false);
+                    concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
                     if (cacheKey != null){
                         cacheForeignKeyValues(databaseRow, cacheKey, session);
                     }
@@ -936,7 +944,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
             }
         } finally {
-            if (query.shouldMaintainCache() && (cacheKey != null)) {
+            if (shouldMaintainCache && (cacheKey != null)) {
                 // bug 2681401:
                 // in case of exception (for instance, thrown by buildNewInstance())
                 // cacheKey.getObject() may be null.
@@ -956,8 +964,8 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
         if (!cacheHit) {
-            concreteDescriptor.getObjectBuilder().instantiateEagerMappings(domainObject, session);
-            if (query.shouldMaintainCache() && (cacheKey != null)) {
+            concreteObjectBuilder.instantiateEagerMappings(domainObject, session);
+            if (shouldMaintainCache && (cacheKey != null)) {
                 concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session, !domainWasMissing);
             }
         }
@@ -1024,7 +1032,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 // The object must be registered before building its attributes to resolve circular dependencies.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
                     if (preFetchedCacheKey == null){
-                    sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
+                        sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                     }else{
                         sharedCacheKey = preFetchedCacheKey;
                         cacheKey.acquireLock(query);
@@ -1188,13 +1196,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 if (query.hasJoining()) {
                     joinManager = query.getJoinedAttributeManager();
                 }
-            if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys() && query.shouldMaintainCache() && ! query.shouldRetrieveBypassCache()){
-                Object[] pkList = new Object[size];
-                for (int i = 0; i< size; ++i){
-                    pkList[i] = extractPrimaryKeyFromRow((AbstractRecord)databaseRows.get(i), session);
+                if (this.descriptor.getCachePolicy().shouldPrefetchCacheKeys() && query.shouldMaintainCache() && ! query.shouldRetrieveBypassCache()){
+                    Object[] pkList = new Object[size];
+                    for (int i = 0; i< size; ++i){
+                        pkList[i] = extractPrimaryKeyFromRow((AbstractRecord)databaseRows.get(i), session);
+                    }
+                    query.setPrefetchedCacheKeys(session.getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
                 }
-                query.setPrefetchedCacheKeys(session.getIdentityMapAccessorInstance().getAllCacheKeysFromIdentityMapWithEntityPK(pkList, descriptor));
-            }
                 ContainerPolicy policy = query.getContainerPolicy();
                 if (policy.shouldAddAll()) {
                     List domainObjectsIn = new ArrayList(size);
@@ -1263,9 +1271,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 ResultSetRecord row = null;
                 AbstractSession executionSession = query.getExecutionSession();
                 DatabaseAccessor dbAccessor = (DatabaseAccessor)query.getAccessor();
+                DatabasePlatform platform = dbAccessor.getPlatform();
+                boolean optimizeData = platform.shouldOptimizeDataConversion();
                 if (this.isSimple) {
                     // None of the fields are relational - the row could be reused, just clear all the values.
-                    row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                     if (this.descriptor.isDescriptorTypeAggregate()) {
                         // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
                         ((SimpleResultSetRecord)row).setShouldKeepValues(true);
@@ -1273,7 +1283,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 }
                 while (hasNext) {
                     if (!this.isSimple) {
-                        row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                        row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                     }
                     Object domainObject = buildObject(query, row, joinManager, session, this.descriptor, inheritancePolicy,
                             isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy);
@@ -1935,7 +1945,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             if ((!isARefresh) && (!isIsolated) && !query.shouldRetrieveBypassCache() && !unitOfWork.shouldReadFromDB() && (!unitOfWork.shouldForceReadFromDB(query, primaryKey))) {
                 AbstractSession session = unitOfWork.getParentIdentityMapSession(query);            
                 if (preFetchedCacheKey == null){
-                originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, false);
+                    originalCacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, false);
                 }else{
                     originalCacheKey = preFetchedCacheKey;
                     originalCacheKey.acquireLock(query);

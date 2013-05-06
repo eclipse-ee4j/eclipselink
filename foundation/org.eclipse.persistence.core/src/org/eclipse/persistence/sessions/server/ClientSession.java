@@ -103,6 +103,7 @@ public class ClientSession extends AbstractSession {
         this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
         this.queryTimeoutDefault = parent.getQueryTimeoutDefault();
         this.isConcurrent = parent.isConcurrent();
+        this.shouldOptimizeResultSetAccess = parent.shouldOptimizeResultSetAccess();
         this.properties = properties;
         this.multitenantContextProperties = parent.getMultitenantContextProperties();
         

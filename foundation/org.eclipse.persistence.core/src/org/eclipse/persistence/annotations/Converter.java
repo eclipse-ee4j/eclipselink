@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * MappedSuperclass and Embeddable class.
  * 
  * The usage of a Converter is always specified via the Convert annotation and 
- * is supported on a Basic, BasicMap or BasicCollection mapping.
+ * is supported on a Basic, or ElementCollection mapping.
  * 
  * @see org.eclipse.persistence.annotations.Convert
  * @author Guy Pelletier

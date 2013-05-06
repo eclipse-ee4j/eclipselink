@@ -21,6 +21,7 @@ import java.util.*;
 
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.descriptors.TypeMapping;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
@@ -40,7 +41,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author James Sutherland
  * @since Toplink 10
  */
-public class ObjectTypeConverter implements Converter {
+public class ObjectTypeConverter implements Converter, ClassNameConversionRequired {
     // String type names and values set from JPA processing.
     protected String converterName;
     protected Class dataType;

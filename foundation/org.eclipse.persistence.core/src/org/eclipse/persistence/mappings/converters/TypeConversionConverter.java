@@ -20,6 +20,7 @@ import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -31,7 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class TypeConversionConverter implements Converter {
+public class TypeConversionConverter implements Converter, ClassNameConversionRequired {
     protected DatabaseMapping mapping;
 
     /** Field type */
@@ -100,7 +101,7 @@ public class TypeConversionConverter implements Converter {
         } catch (ClassNotFoundException exc){
             throw ValidationException.classNotFoundWhileConvertingClassNames(objectClassName, exc);
         }
-    };
+    }
 
     /**
      * INTERNAL:

@@ -449,6 +449,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             }
         }
         
+        boolean shouldSetRowsForJoins = hasJoining() && this.joinedAttributeManager.isToManyJoin();
         AbstractSession session = getSession();
         Object result = null;
         AbstractRecord row = null;
@@ -456,8 +457,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         Object sopObject = getTranslationRow().getSopObject();
         boolean useOptimization = false;
         if (sopObject == null) {
-            checkResultSetAccessOptimization();
-            useOptimization = this.usesResultSetAccessOptimization; 
+            useOptimization = usesResultSetAccessOptimization(); 
         }        
         
         if (useOptimization) {
@@ -469,15 +469,17 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
             try {
                 if (resultSet.next()) {
                     ResultSetMetaData metaData = call.getResult().getMetaData();
-                    boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
+                    boolean useSimple = this.descriptor.getObjectBuilder().isSimple(); 
+                    DatabasePlatform platform = dbAccessor.getPlatform();
+                    boolean optimizeData = platform.shouldOptimizeDataConversion();
                     if (useSimple) {
-                        row = new SimpleResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession());
+                        row = new SimpleResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession(), platform, optimizeData);
                         if (this.descriptor.isDescriptorTypeAggregate()) {
                             // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
                             ((SimpleResultSetRecord)row).setShouldKeepValues(true);
                         }
                     } else {
-                        row = new ResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession());
+                        row = new ResultSetRecord(call.getFields(), call.getFieldsArray(), resultSet, metaData, dbAccessor, getExecutionSession(), platform, optimizeData);
                     }
                     if (session.isUnitOfWork()) {
                         result = registerResultInUnitOfWork(row, (UnitOfWorkImpl)session, this.translationRow, true);
@@ -525,7 +527,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 row.setSopObject(sopObject);
             } else {
                 // If using 1-m joins, must select all rows.
-                if (hasJoining() && this.joinedAttributeManager.isToManyJoin()) {
+                if (shouldSetRowsForJoins) {
                     List rows = getQueryMechanism().selectAllRows();
                     if (rows.size() > 0) {
                         row = (AbstractRecord)rows.get(0);

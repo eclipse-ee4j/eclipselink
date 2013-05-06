@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.serializers;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,7 +44,7 @@ public class XMLSerializer implements Serializer {
         this.context = context;
     }
     
-    public byte[] serialize(Object object, Session session) {
+    public Object serialize(Object object, Session session) {
         try {
             if (this.context == null) {
                 String packageName = object.getClass().getPackage().getName();
@@ -52,26 +52,30 @@ public class XMLSerializer implements Serializer {
             }
             Marshaller marshaller = this.context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            marshaller.marshal(object, stream);
-            return stream.toByteArray();
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(object, writer);
+            return writer.toString();
         } catch (JAXBException exception) {
             throw new RuntimeException(exception);
         }
     }
     
-    public Object deserialize(byte[] bytes, Session session) {
+    public Object deserialize(Object xml, Session session) {
         try {
             if (this.context == null) {
                 String packageName = session.getDescriptors().keySet().iterator().next().getPackage().getName();
                 this.context = JAXBContext.newInstance(packageName);
             }
             Unmarshaller unmarshaller = this.context.createUnmarshaller();
-            ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-            return unmarshaller.unmarshal(stream);
+            StringReader reader = new StringReader((String)xml);
+            return unmarshaller.unmarshal(reader);
         } catch (JAXBException exception) {
             throw new RuntimeException(exception);
         }
+    }
+    
+    public Class getType() {
+        return String.class;
     }
     
     public String toString() {

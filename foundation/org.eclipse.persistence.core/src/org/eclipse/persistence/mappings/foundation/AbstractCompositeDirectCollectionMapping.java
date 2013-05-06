@@ -682,12 +682,8 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         this.containerPolicy.convertClassNamesToClasses(classLoader);
         
         if (this.valueConverter != null) {
-            if (this.valueConverter instanceof TypeConversionConverter) {
-                ((TypeConversionConverter)this.valueConverter).convertClassNamesToClasses(classLoader);
-            } else if (this.valueConverter instanceof ObjectTypeConverter) {
-                // To avoid 1.5 dependencies with the EnumTypeConverter check
-                // against ObjectTypeConverter.
-                ((ObjectTypeConverter)this.valueConverter).convertClassNamesToClasses(classLoader);
+            if (this.valueConverter instanceof ClassNameConversionRequired) {
+                ((ClassNameConversionRequired)this.valueConverter).convertClassNamesToClasses(classLoader);
             }
         }         
     }

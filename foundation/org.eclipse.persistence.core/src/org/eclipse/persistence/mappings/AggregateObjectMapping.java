@@ -391,17 +391,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 // Computed nested batch attribute expressions.
                 nestedObjectQuery.getBatchFetchPolicy().setAttributeExpressions(extractNestedExpressions(objectQuery.getBatchReadAttributeExpressions(), nestedObjectQuery.getExpressionBuilder(), false));
             }
-            FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(descriptor);
-            if (sourceFG != null) {
-                if(nestedObjectQuery == objectQuery) {
+            FetchGroup parentQueryFetchGroup = sourceQuery.getExecutionFetchGroup(descriptor);
+            if (parentQueryFetchGroup != null) {
+                if (nestedObjectQuery == objectQuery) {
                     // A nested query must be built to pass to the descriptor that looks like the real query execution would.
                     nestedObjectQuery = (ObjectLevelReadQuery)nestedObjectQuery.clone();
                 }
-                targetFetchGroup = sourceFG.getGroup(getAttributeName());
-                if(targetFetchGroup != null && sourceQuery.getDescriptor().hasFetchGroupManager()) {
+                targetFetchGroup = parentQueryFetchGroup.getGroup(getAttributeName());
+                if (targetFetchGroup != null && sourceQuery.getDescriptor().hasFetchGroupManager()) {
                     //if the parent object has a fetchgroup manager then aggregates can support a fetchgroup manager
-                    ((ObjectLevelReadQuery)nestedObjectQuery).setFetchGroup(targetFetchGroup);
-                }else{
+                    nestedObjectQuery.setFetchGroup(targetFetchGroup);
+                } else {
                     targetFetchGroup = null;
                     nestedObjectQuery.setFetchGroup(null);
                     nestedObjectQuery.setFetchGroupName(null);
@@ -409,7 +409,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
                 nestedObjectQuery.setShouldUseDefaultFetchGroup(false);
                 nestedObjectQuery.prepareFetchGroup();
             }
-            if (descriptor.hasFetchGroupManager()){
+            if (refreshing && descriptor.hasFetchGroupManager()) {
                 descriptor.getFetchGroupManager().unionEntityFetchGroupIntoObject(aggregate, descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup), executionSession, true);
                 //merge fetchgroup into aggregate fetchgroup that may have been there from previous read.
             }
@@ -1844,7 +1844,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * field name mappings stored.
      */
     protected void translateNestedFields(ClassDescriptor clonedDescriptor, AbstractSession session) {
-        if (nestedFieldTranslations == null){
+        if (this.nestedFieldTranslations == null) {
             //this only happens when using Metadata Caching
             return;
         }
@@ -1852,18 +1852,17 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         // field name translations. Any errors are silently ignored as
         // validation is assumed to be done before hand (JPA metadata processing
         // does validate any nested field translation)
-        for (Entry<String, Object[]> translations : nestedFieldTranslations.entrySet()) {
+        for (Entry<String, Object[]> translations : this.nestedFieldTranslations.entrySet()) {
             String attributeName = translations.getKey();
             DatabaseMapping mapping = null;
-            ClassDescriptor nestedDescriptor = clonedDescriptor;
             String currentAttributeName = attributeName.substring(0, attributeName.indexOf("."));
             String remainingAttributeName = attributeName.substring(attributeName.indexOf(".")+ 1);
             mapping = clonedDescriptor.getMappingForAttributeName(currentAttributeName);
-            if (mapping.isAggregateObjectMapping()){
+            if (mapping.isAggregateObjectMapping()) {
                 if (remainingAttributeName != null && remainingAttributeName.contains(".")){
                     //This should be the case otherwise the metadata validation would have validated
                     ((AggregateObjectMapping)mapping).addNestedFieldTranslation(remainingAttributeName, (DatabaseField)translations.getValue()[0], (String)translations.getValue()[1]);
-                }else{
+                } else {
                     ((AggregateObjectMapping)mapping).addFieldTranslation((DatabaseField) translations.getValue()[0], (String)translations.getValue()[1]);
                 }
             }

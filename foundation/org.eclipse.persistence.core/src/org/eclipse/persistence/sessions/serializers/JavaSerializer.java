@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.eclipse.persistence.internal.helper.CustomObjectInputStream;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -25,7 +26,7 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  */
 public class JavaSerializer implements Serializer {
-    public byte[] serialize(Object object, Session session) {
+    public Object serialize(Object object, Session session) {
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
             ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
@@ -37,10 +38,14 @@ public class JavaSerializer implements Serializer {
         return byteOut.toByteArray();        
     }
     
-    public Object deserialize(byte[] bytes, Session session) {
-        ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
+    public Class getType() {
+        return byte[].class;
+    }
+    
+    public Object deserialize(Object bytes, Session session) {
+        ByteArrayInputStream byteIn = new ByteArrayInputStream((byte[])bytes);
         try {
-            ObjectInputStream objectIn = new ObjectInputStream(byteIn);
+            ObjectInputStream objectIn = new CustomObjectInputStream(byteIn, session);
             return objectIn.readObject();
         } catch (Exception exception) {
             throw new RuntimeException(exception);

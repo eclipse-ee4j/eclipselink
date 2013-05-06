@@ -13,11 +13,17 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions.coordination.jms;
 
+import java.io.Serializable;
+
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
-import org.eclipse.persistence.sessions.coordination.Command;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+
+import javax.jms.BytesMessage;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -131,13 +137,14 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public boolean isLocal() {
         return isLocal;
     }
-    
+        
     /**
      * INTERNAL:
      * Execute the remote command. The result of execution is returned.
      * This method is used only by external (publishing) connection.
      */
-    protected Object executeCommandInternal(Command command) throws Exception {
+    @Override
+    protected Object executeCommandInternal(Object command) throws Exception {
         TopicConnection jmsConnection = null;
         try {
             TopicPublisher topicPublisher = this.publisher;
@@ -149,11 +156,17 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 topicPublisher = publishingSession.createPublisher(topic);
             }
 
-            ObjectMessage message = publishingSession.createObjectMessage();
-            message.setObject(command);
+            Message message;
+            if (command instanceof byte[]) {
+                message = publishingSession.createBytesMessage();
+                ((BytesMessage)message).writeBytes((byte[])command);
+            } else {
+                message = publishingSession.createObjectMessage();
+                ((ObjectMessage)message).setObject((Serializable)command);                
+            }
                 
             Object[] debugInfo = null;
-            if(rcm.shouldLogDebugMessage()) {
+            if (rcm.shouldLogDebugMessage()) {
                 // null passed because JMSMessageId is not yet created.
                 debugInfo = logDebugBeforePublish(null);
             }
@@ -161,15 +174,15 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             topicPublisher.publish(message);
                 
             // debug logging is on
-            if(debugInfo != null) {
+            if (debugInfo != null) {
                 // now messageId has been created - let's use it.
                 logDebugAfterPublish(debugInfo, message.getJMSMessageID());
             }
             
             return null;
-        }finally {
+        } finally {
             //only need to close the topicConnection, not the session or publisher, and only if it was created in this method.
-            if (jmsConnection!=null){
+            if (jmsConnection != null) {
                 jmsConnection.close();
             }
         }
@@ -183,7 +196,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
     public void onMessage(Message message) {
         String topic = null;
         String messageId = "";
-        if(rcm.shouldLogDebugMessage()) {
+        if (rcm.shouldLogDebugMessage()) {
             try {
                 messageId = message.getJMSMessageID();
                 logDebugOnReceiveMessage(messageId);
@@ -192,29 +205,36 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
                 // ignore
             }
         }
-        
-        ObjectMessage objectMessage = null;
-        if (message instanceof ObjectMessage) {
-            objectMessage = (ObjectMessage)message;        
-        } else {
-            if(rcm.shouldLogWarningMessage() && topic == null) {
-                try {
-                    topic = ((Topic)message.getJMSDestination()).getTopicName();
-                } catch (JMSException ex) {
-                    // ignore
-                    topic = "";
-                }
-                Object[] args = { message.getClass().getName(), topic };
-                rcm.logWarningWithoutLevelCheck("received_unexpected_message_type", args);
-            }
-            return;
-        }
-        
+
         Object object = null;
         try {
-            object = objectMessage.getObject();
+            if (message instanceof ObjectMessage) {
+                object = ((ObjectMessage)message).getObject();
+            } else if (message instanceof BytesMessage) {
+                BytesMessage byteMessage = (BytesMessage)message;
+                byte[] bytes = new byte[(int)byteMessage.getBodyLength()];
+                byteMessage.readBytes(bytes);
+                AbstractSession session = (AbstractSession)this.rcm.getCommandProcessor();
+                Serializer serializer = session.getSerializer();
+                if (serializer == null) {
+                    serializer = new JavaSerializer();
+                }
+                object = serializer.deserialize(bytes, session);
+            } else {
+                if (this.rcm.shouldLogWarningMessage() && (topic == null)) {
+                    try {
+                        topic = ((Topic)message.getJMSDestination()).getTopicName();
+                    } catch (JMSException ex) {
+                        // ignore
+                        topic = "";
+                    }
+                    Object[] args = { message.getClass().getName(), topic };
+                    this.rcm.logWarningWithoutLevelCheck("received_unexpected_message_type", args);
+                }
+                return;
+            }
         } catch (Exception exception) {
-            if(messageId.length() == 0) {
+            if (messageId.length() == 0) {
                 try {
                     messageId = message.getJMSMessageID();
                 } catch (JMSException ex) {

@@ -431,8 +431,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             Object sopObject = getTranslationRow().getSopObject();
             boolean useOptimization = false;
             if (sopObject == null) {
-                checkResultSetAccessOptimization();
-                useOptimization = this.usesResultSetAccessOptimization; 
+                useOptimization = usesResultSetAccessOptimization(); 
             }        
             
             if (useOptimization) {
@@ -945,33 +944,30 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             DatabaseAccessor dbAccessor = (DatabaseAccessor)getAccessor();
             boolean useSimple = this.descriptor.getObjectBuilder().isSimple();  
             AbstractSession executionSession = getExecutionSession();
+            DatabasePlatform platform = dbAccessor.getPlatform();
+            boolean optimizeData = platform.shouldOptimizeDataConversion();
             if (useSimple) {
                 // None of the fields are relational - the row could be reused, just clear all the values.
-                SimpleResultSetRecord row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                SimpleResultSetRecord row = new SimpleResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                 if (this.descriptor.isDescriptorTypeAggregate()) {
                     // Aggregate Collection may have an unmapped primary key referencing the owner, the corresponding field will not be used when the object is populated and therefore may not be cleared.
                     row.setShouldKeepValues(true);
                 }
-                if (quickAdd) {
-                    while (hasNext) {
-                        Object clone = buildObject(row);
+                while (hasNext) {
+                    Object clone = buildObject(row);
+                    if (quickAdd) {
                         ((Collection)clones).add(clone);
-                        row.reset(); 
-                        hasNext = resultSet.next(); 
-                    }
-                } else {
-                    while (hasNext) {
-                        Object clone = buildObject(row);
+                    } else {
                         // TODO: investigate is it possible to support MappedKeyMapPolicy - this policy currently is not compatible with ResultSet optimization
-                        cp.addInto(clone, clones, unitOfWork);
-                        row.reset();                
-                        hasNext = resultSet.next(); 
+                        cp.addInto(clone, clones, unitOfWork);                            
                     }
+                    row.reset(); 
+                    hasNext = resultSet.next(); 
                 }
             } else {
                 boolean shouldKeepRow = this.descriptor.getObjectBuilder().shouldKeepRow();
                 while (hasNext) {
-                    ResultSetRecord row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession);
+                    ResultSetRecord row = new ResultSetRecord(fields, fieldsArray, resultSet, metaData, dbAccessor, executionSession, platform, optimizeData);
                     Object clone = buildObject(row);
                     if (quickAdd) {
                         ((Collection)clones).add(clone);

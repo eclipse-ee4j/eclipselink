@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.Session;
  * @author James Sutherland
  */
 public interface Serializer {
-    byte[] serialize(Object object, Session session);
-    Object deserialize(byte[] bytes, Session session);
+    Object serialize(Object object, Session session);
+    Object deserialize(Object bytes, Session session);
+    Class getType();
 }

@@ -618,7 +618,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                     }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
                     Integer refreshCascade = null;
-                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && sourceQuery.shouldRefreshIdentityMapResult()) {
                         refreshCascade = sourceQuery.getCascadePolicy();
                     }
                     return buildClonePart(cached, null, cacheKey, attributeValue, refreshCascade, executionSession);

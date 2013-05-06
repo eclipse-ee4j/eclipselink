@@ -113,7 +113,7 @@ public class DatabaseField implements Cloneable, Serializable, CoreField  {
      * Indicates whether the field should be kept in the record after the object is created.
      * Used by ObjectLevelReadQuery ResultSetAccessOptimization.
      */
-    protected boolean keepInRow;
+    public boolean keepInRow;
 
     public DatabaseField() {
         this("", new DatabaseTable());

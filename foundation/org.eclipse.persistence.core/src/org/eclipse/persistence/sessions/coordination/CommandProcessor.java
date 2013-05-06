@@ -95,16 +95,24 @@ public interface CommandProcessor {
     public void logMessage(int logLevel, String message);
 
     /**
-     * PUBLIC:
      * Log the profile event.
      */
     public void incrementProfile(String counter);
     
     /**
-     * PUBLIC:
      * Log the profile event.
      */
-    public void updateProfile(String info, Object value);    
+    public void updateProfile(String info, Object value);
+
+    /**
+     * Profile the operation.
+     */
+    public void startOperationProfile(String operationName);
+
+    /**
+     * Profile the operation.
+     */
+    public void endOperationProfile(String operationName);
     
     /**
      * PUBLIC:

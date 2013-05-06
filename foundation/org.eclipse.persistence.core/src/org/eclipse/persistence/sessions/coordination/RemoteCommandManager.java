@@ -17,10 +17,12 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.RCMCommand;
 import org.eclipse.persistence.internal.sessions.coordination.CommandPropagator;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
-import org.eclipse.persistence.internal.sessions.coordination.*;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.platform.server.ServerPlatform;
@@ -192,33 +194,71 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         Command newCommand;
         CommandPropagator propagator;
 
-        if (this.commandConverter != null) {
-            // Use the converter if we have one
-            Object[] args = { command };
-            logDebug("converting_to_toplink_command", args);
-            this.commandProcessor.incrementProfile(SessionProfiler.RcmSent);
-            newCommand = this.commandConverter.convertToEclipseLinkCommand(command);
-        } else if (command instanceof Command) {
-            // If converter is not set then maybe it just doesn't need converting
-            newCommand = (Command)command;
-        } else {
-            // We can't convert the thing - we may as well chuck it!
-            Object[] args = { command };
-            logWarning("missing_converter", args);
-            return;
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordination);
+        try {
+            if (this.commandConverter != null) {
+                // Use the converter if we have one
+                Object[] args = { command };
+                logDebug("converting_to_toplink_command", args);
+                this.commandProcessor.incrementProfile(SessionProfiler.RcmSent);
+                newCommand = this.commandConverter.convertToEclipseLinkCommand(command);
+            } else if (command instanceof Command) {
+                // If converter is not set then maybe it just doesn't need converting
+                newCommand = (Command)command;
+            } else {
+                // We can't convert the thing - we may as well chuck it!
+                Object[] args = { command };
+                logWarning("missing_converter", args);
+                return;
+            }
+    
+            // Set our service id on the command to indicate that it came from us
+            newCommand.setServiceId(getServiceId());
+    
+            // PERF: Support plugable serialization.
+            AbstractSession session = (AbstractSession)getCommandProcessor();
+            Serializer serializer = session.getSerializer();
+            byte[] commandBytes = null;
+            if (serializer != null) {
+                this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
+                try {
+                    commandBytes = (byte[])serializer.serialize(command, session);
+                } finally {
+                    this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
+                }
+            }
+    
+            // Propagate the command (synchronously or asynchronously)
+            propagator = new CommandPropagator(this, newCommand, commandBytes);
+    
+            if (shouldPropagateAsynchronously()) {
+                propagator.asynchronousPropagateCommand();
+            } else {
+                propagator.synchronousPropagateCommand();
+            }
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
         }
+    }
 
-        // Set our service id on the command to indicate that it came from us
-        newCommand.setServiceId(getServiceId());
-
-        // Propagate the command (synchronously or asynchronously)
-        propagator = new CommandPropagator(this, newCommand);
-
-        if (shouldPropagateAsynchronously()) {
-            propagator.asynchronousPropagateCommand();
-        } else {
-            propagator.synchronousPropagateCommand();
+    /**
+     * INTERNAL:
+     * Deserialize the command and execute it.
+     */
+    public void processCommandFromRemoteConnection(byte[] commandBytes) {
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordinationSerialize);
+        Command command = null;
+        try {
+            AbstractSession session = (AbstractSession)getCommandProcessor();
+            Serializer serializer = session.getSerializer();
+            if (serializer == null) {
+                serializer = new JavaSerializer();
+            }
+            command = (Command)serializer.deserialize(commandBytes, session);
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordinationSerialize);            
         }
+        processCommandFromRemoteConnection(command);
     }
 
     /**
@@ -230,25 +270,28 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         logDebug("received_remote_command", args);
         
         this.commandProcessor.incrementProfile(SessionProfiler.RcmReceived);
-
-        // If the command is internal then execute it on this RCM
-        if (command.isInternalCommand() || command instanceof RCMCommand) {
-            logDebug("processing_internal_command", args);
-            ((RCMCommand)command).executeWithRCM(this);
-            return;
+        this.commandProcessor.startOperationProfile(SessionProfiler.CacheCoordination);
+        try {
+            // If the command is internal then execute it on this RCM
+            if (command.isInternalCommand() || command instanceof RCMCommand) {
+                logDebug("processing_internal_command", args);
+                ((RCMCommand)command).executeWithRCM(this);
+                return;
+            }
+    
+            // Convert command if neccessary
+            Object newCommand = command;
+            if (commandConverter != null) {
+                logDebug("converting_to_user_command", args);
+                newCommand = commandConverter.convertToUserCommand(command);
+            }
+    
+            // process command with command processor
+            logDebug("processing_remote_command", args);
+            this.commandProcessor.processCommand(newCommand);
+        } finally {
+            this.commandProcessor.endOperationProfile(SessionProfiler.CacheCoordination);            
         }
-
-        // Convert command if neccessary
-        Object newCommand = command;
-        if (commandConverter != null) {
-            logDebug("converting_to_user_command", args);
-            newCommand = commandConverter.convertToUserCommand(command);
-        }
-
-        // process command with command processor
-        logDebug("processing_remote_command", args);
-        this.commandProcessor.processCommand(newCommand);
-        
         this.commandProcessor.incrementProfile(SessionProfiler.RemoteChangeSet);
     }
 
@@ -269,6 +312,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
 
     public void setTransportManager(TransportManager newTransportManager) {
         transportManager = newTransportManager;
+        newTransportManager.setRemoteCommandManager(this);
         discoveryManager = transportManager.createDiscoveryManager();
     }
 

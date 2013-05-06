@@ -59,6 +59,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.tuning.SafeModeTuner;
@@ -2571,6 +2572,7 @@ public class PersistenceUnitProperties {
      * <li>"jms-publishing"
      * <li>"rmi"
      * <li>"rmi-iiop"
+     * <li>"jgroups"
      * <li>a <package.class> name of a subclass implementation of the TransportManager abstract class.
      * </ul>
      * by default the cache is not coordinated.
@@ -2581,6 +2583,17 @@ public class PersistenceUnitProperties {
      */
     public static final String COORDINATION_PROTOCOL = "eclipselink.cache.coordination.protocol";
 
+    /**
+     * The <code>"eclipselink.cache.coordination.jgroups.config"</code> property
+     * configures cache coordination for a clustered environment. Only used for
+     * JGroups coordination. Sets the JGroups config XML file location.
+     * If not set the default JGroups config will be used.
+     * 
+     * @see #COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager#setConfigFile(String)
+     */
+    public static final String COORDINATION_JGROUPS_CONFIG = "eclipselink.cache.coordination.jgroups.config";
+    
     /**
      * The <code>"eclipselink.cache.coordination.jms.host"</code> property
      * configures cache coordination for a clustered environment. Only used for
@@ -2784,10 +2797,24 @@ public class PersistenceUnitProperties {
     public static final String COORDINATION_THREAD_POOL_SIZE = "eclipselink.cache.coordination.thread.pool.size";
     
     /**
+     * the <code>"eclipselink.cache.coordination.serializer"</code> property
+     * configures how cache coordination serializes message sent between nodes.
+     * By default Java serialization is used.  Other serializer can be used for improved performance
+     * or integration with other systems.
+     * The full class name of the serializer class should be provided.
+     * 
+     * @see #COORDINATION_PROTOCOL
+     * @see Serializer
+     * @see org.eclipse.persistence.sessions.Session#setSerializer(Serializer)
+     */
+    public static final String COORDINATION_SERIALIZER = "eclipselink.cache.coordination.serializer";
+    
+    /**
      * the <code>"eclipselink.cache.coordination.channel"</code> property
-     * configures cache coordination for a clustered environment. Set if the
+     * configures cache coordination for a clustered environment. Set the
      * channel for this cluster. All server's in the same channel will be
      * coordinated.  The default channel name is "EclipseLinkCommandChannel".
+     * If multiple EclipseLink deployment reside on the same network, they should use different channels.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setChannel(String)

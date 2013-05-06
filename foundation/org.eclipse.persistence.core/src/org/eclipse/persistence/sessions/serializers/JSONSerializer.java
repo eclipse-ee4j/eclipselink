@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.serializers;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,7 +28,18 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class JSONSerializer extends XMLSerializer {
     
-    public byte[] serialize(Object object, Session session) {
+    public JSONSerializer() {
+    }
+    
+    public JSONSerializer(String packageName) {
+        super(packageName);
+    }
+    
+    public JSONSerializer(JAXBContext context) {
+        super(context);
+    }
+    
+    public Object serialize(Object object, Session session) {
         try {
             if (this.context == null) {
                 String packageName = object.getClass().getPackage().getName();
@@ -36,15 +47,15 @@ public class JSONSerializer extends XMLSerializer {
             }
             Marshaller marshaller = this.context.createMarshaller();
             marshaller.setProperty("eclipselink.media-type", "application/json");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            marshaller.marshal(object, stream);
-            return stream.toByteArray();
+            StringWriter writer = new StringWriter();
+            marshaller.marshal(object, writer);
+            return writer.toString();
         } catch (JAXBException exception) {
             throw new RuntimeException(exception);
         }
     }
     
-    public Object deserialize(byte[] bytes, Session session) {
+    public Object deserialize(Object json, Session session) {
         try {
             if (this.context == null) {
                 String packageName = session.getDescriptors().keySet().iterator().next().getPackage().getName();
@@ -52,8 +63,8 @@ public class JSONSerializer extends XMLSerializer {
             }
             Unmarshaller unmarshaller = this.context.createUnmarshaller();
             unmarshaller.setProperty("eclipselink.media-type", "application/json");
-            ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-            return unmarshaller.unmarshal(stream);
+            StringReader reader = new StringReader((String)json);
+            return unmarshaller.unmarshal(reader);
         } catch (JAXBException exception) {
             throw new RuntimeException(exception);
         }

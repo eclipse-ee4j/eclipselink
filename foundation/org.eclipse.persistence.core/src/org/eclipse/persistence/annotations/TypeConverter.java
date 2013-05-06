@@ -30,7 +30,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * MappedSuperclass and Embeddable class.
  * 
  * The usage of an TypeConverter is always specified via the Convert annotation 
- * and is supported on a Basic, BasicMap or BasicCollection mapping.
+ * and is supported on a Basic, or ElementCollection mapping.
  * 
  * @see org.eclipse.persistence.annotations.Convert
  * @author Guy Pelletier

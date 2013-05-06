@@ -2535,6 +2535,11 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             
             // For each rows, extract the target row and build the target object and add to the collection.
+            ObjectBuilder referenceBuilder = getReferenceDescriptor().getObjectBuilder();
+            JoinedAttributeManager referenceJoinManager = null;
+            if (nestedQuery.hasJoining()) {
+                referenceJoinManager = nestedQuery.getJoinedAttributeManager();
+            }
             for (int index = 0; index < size; index++) {
                 AbstractRecord sourceRow = rows.get(index);
                 AbstractRecord targetRow = sourceRow;
@@ -2545,7 +2550,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 
                 // Partial object queries must select the primary key of the source and related objects.
                 // If the target joined rows in null (outerjoin) means an empty collection.
-                Object targetKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(targetRow, executionSession);
+                Object targetKey = referenceBuilder.extractPrimaryKeyFromRow(targetRow, executionSession);
                 if (targetKey == null) {
                     // A null primary key means an empty collection returned as nulls from an outerjoin.
                     return this.indirectionPolicy.valueFromRow(value);
@@ -2555,7 +2560,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                 if (!targetPrimaryKeys.contains(targetKey)) {
                     nestedQuery.setTranslationRow(targetRow);
                     targetPrimaryKeys.add(targetKey);
-                    Object targetObject = getReferenceDescriptor().getObjectBuilder().buildObject(nestedQuery, targetRow);
+                    Object targetObject = referenceBuilder.buildObject(nestedQuery, targetRow, referenceJoinManager);
                     Object targetMapKey = this.containerPolicy.buildKeyFromJoinedRow(targetRow, joinManager, nestedQuery, parentCacheKey, executionSession, isTargetProtected);
                     nestedQuery.setTranslationRow(null);
                     if (targetMapKey == null){
