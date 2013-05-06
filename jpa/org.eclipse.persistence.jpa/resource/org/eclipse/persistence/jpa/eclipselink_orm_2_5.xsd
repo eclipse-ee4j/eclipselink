@@ -3423,6 +3423,7 @@
       <xsd:element name="copy-policy" type="orm:copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="instantiation-copy-policy" type="orm:instantiation-copy-policy" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="clone-copy-policy" type="orm:clone-copy-policy" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="serialized-object" type="orm:serialized-object" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="sequence-generator" type="orm:sequence-generator" 
                    minOccurs="0"/>
       <xsd:element name="table-generator" type="orm:table-generator" 

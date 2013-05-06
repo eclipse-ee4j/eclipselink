@@ -1536,6 +1536,12 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             if (isAnnotationPresent(SerializedObject.class)) {
                 new SerializedObjectPolicyMetadata(getAnnotation(SerializedObject.class), this).process(getDescriptor());
             }
+        } else {
+            if (isAnnotationPresent(SerializedObject.class)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(SerializedObject.class), getJavaClassName(), getLocation());
+            }
+            
+            m_serializedObjectPolicy.process(getDescriptor());
         }
     }
     

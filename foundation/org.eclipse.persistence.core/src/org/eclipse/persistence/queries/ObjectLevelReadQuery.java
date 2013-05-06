@@ -3303,6 +3303,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set a flag that indicates whether the query should use SerializedObjectPolicy if descriptor has it.
      */
     public void setShouldUseSerializedObjectPolicy(boolean shouldUseSerializedObjectPolicy) {
-        this.shouldUseSerializedObjectPolicy = shouldUseSerializedObjectPolicy;
+        if (this.shouldUseSerializedObjectPolicy != shouldUseSerializedObjectPolicy) {
+            this.shouldUseSerializedObjectPolicy = shouldUseSerializedObjectPolicy;
+            setIsPrepared(false);
+        }
     }
 }

@@ -1471,6 +1471,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getSerializedObjectPolicyMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getUuidGeneratorMapping());
@@ -2220,6 +2221,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getCustomCopyPolicyMapping());
         descriptor.addMapping(getInstantiationCopyPolicyMapping());
         descriptor.addMapping(getCloneCopyPolicyMapping());
+        descriptor.addMapping(getSerializedObjectPolicyMapping());
         descriptor.addMapping(getSequenceGeneratorMapping());
         descriptor.addMapping(getTableGeneratorMapping());
         descriptor.addMapping(getUuidGeneratorMapping());
@@ -6056,6 +6058,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         sequenceGeneratorMapping.setReferenceClass(SequenceGeneratorMetadata.class);
         sequenceGeneratorMapping.setXPath("orm:sequence-generator");
         return sequenceGeneratorMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getSerializedObjectPolicyMapping() {
+        XMLCompositeObjectMapping serializedObjectPolicyMapping = new XMLCompositeObjectMapping();
+        serializedObjectPolicyMapping.setAttributeName("m_serializedObjectPolicy");
+        serializedObjectPolicyMapping.setGetMethodName("getSerializedObjectPolicy");
+        serializedObjectPolicyMapping.setSetMethodName("setSerializedObjectPolicy");
+        serializedObjectPolicyMapping.setReferenceClass(SerializedObjectPolicyMetadata.class);
+        serializedObjectPolicyMapping.setXPath("orm:serialized-object");
+        return serializedObjectPolicyMapping;
     }
     
     /**
