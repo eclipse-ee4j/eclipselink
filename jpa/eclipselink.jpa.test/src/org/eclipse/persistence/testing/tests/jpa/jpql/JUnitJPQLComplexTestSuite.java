@@ -3869,6 +3869,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setParameter("attrKey",   "test");
         query.setParameter("attrValue", 0);
         query.getResultList();
+        query = em.createQuery("select g from Golfer g join g.sponsorDollars sd where key(sd) = :attrKey and value(sd) = :attrValue");
+        query.setParameter("attrKey",   "oracle");
+        query.setParameter("attrValue", 20);
+        query.getResultList();
         closeEntityManager(em);
     }
 
