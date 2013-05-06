@@ -253,10 +253,10 @@ public class PLSQLTestSuite extends JUnitTestCase {
         try {
             Query query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
             query.setParameter("P_VARCHAR", "test");
-            query.getSingleResult();
+            query.executeUpdate();
             query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
             query.setParameter("P_BOOLEAN", true);
-            query.getSingleResult();
+            query.executeUpdate();
             query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
             query.setParameter("P_VARCHAR", "test");
             query.setParameter("P_BOOLEAN", true);
@@ -270,11 +270,11 @@ public class PLSQLTestSuite extends JUnitTestCase {
             query.setParameter("P_POSITIVEN", 1);
             query.setParameter("P_SIGNTYPE", 1);
             query.setParameter("P_NUMBER", 1);
-            query.getSingleResult();
-            query.getSingleResult();
+            query.executeUpdate();
+            query.executeUpdate();
             query = em.createNamedQuery("PLSQL_SIMPLE_IN_DEFAULTS");
             query.setParameter("P_BOOLEAN", true);
-            query.getSingleResult();
+            query.executeUpdate();
         } finally {
             closeEntityManagerAndTransaction(em);
         }
