@@ -4047,13 +4047,13 @@
         </antcall>
     </target>
 
-    <target name="server-test-mongotest" depends="clean-test" if="is.glassfish">
+    <target name="server-test-mongotest" depends="clean-test" if="is.glassfish.or.weblogic">
         <antcall target="server-test-mongo" inheritRefs="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <target name="server-test-mongo" if="is.glassfish">
+    <target name="server-test-mongo" if="is.glassfish.or.weblogic">
         <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-dynamic.xml" todir="${jpatest.basedir}/resource/eclipselink-mongo-model/server"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="mongo"/>
@@ -4068,7 +4068,7 @@
         <delete file="${jpatest.basedir}/resource/eclipselink-mongo-model/server/mongo-dynamic.xml" failonerror="false"/>
     </target>
 
-    <target name="server-test-mongo-xml" if="is.glassfish">
+    <target name="server-test-mongo-xml" if="is.glassfish.or.weblogic">
         <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-orm.xml" todir="${jpatest.basedir}/resource/eclipselink-mongo-model-xml/server"/>
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="mongo-xml"/>
