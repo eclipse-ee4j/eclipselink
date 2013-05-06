@@ -206,6 +206,11 @@ public class AbstractMarshalRecordImpl<
                 if (xmlRef == null) {
                     return false;
                 }
+            
+	    if (xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()) {
+                    return false;
+                }
+
                 String xmlRootLocalName = xr.getLocalName();
                 String xmlRootUri = xr.getNamespaceURI();
 
@@ -219,10 +224,6 @@ public class AbstractMarshalRecordImpl<
                     }
                     return false;
 
-                }
-
-                if (xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()) {
-                    return false;
                 }
 
                 boolean writeTypeAttribute = true;

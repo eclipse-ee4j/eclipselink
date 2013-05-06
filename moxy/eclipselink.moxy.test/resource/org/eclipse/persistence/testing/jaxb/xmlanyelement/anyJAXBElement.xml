@@ -1,0 +1,9 @@
+<root>
+   <something><name>thing1name</name></something>
+   <address>
+      <name>thing2name</name>
+   </address>
+   <thing>
+      <name>thing3name</name>
+   </thing>
+</root>
