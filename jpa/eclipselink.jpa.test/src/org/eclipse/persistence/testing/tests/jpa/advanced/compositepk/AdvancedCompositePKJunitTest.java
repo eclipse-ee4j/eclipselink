@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import junit.framework.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.CopyGroup;
@@ -980,7 +980,7 @@ public class AdvancedCompositePKJunitTest extends JUnitTestCase {
 
         EntityManager em = createEntityManager();
         CopyGroup privatelyOwned = new CopyGroup();
-        Department departmentCopy = (Department)((JpaEntityManager)em).copy(department, privatelyOwned);
+        Department departmentCopy = (Department)JpaHelper.getEntityManager(em).copy(department, privatelyOwned);
         if (departmentCopy.getCompetencies().size() != department.getCompetencies().size()) {
             fail("departmentCopy.getCompetencies().size() = " + departmentCopy.getCompetencies().size() + "; "+department.getCompetencies().size()+" was expected");
         }

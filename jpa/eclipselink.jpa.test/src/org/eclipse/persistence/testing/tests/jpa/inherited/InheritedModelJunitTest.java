@@ -55,7 +55,7 @@ import junit.framework.*;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
-import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
@@ -1925,7 +1925,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         CopyGroup copyAll = new CopyGroup();
         copyAll.cascadeAllParts();
-        BeerConsumer consumerCopy = (BeerConsumer)((JpaEntityManager)em).copy(consumer, copyAll);
+        BeerConsumer consumerCopy = (BeerConsumer)JpaHelper.getEntityManager(em).copy(consumer, copyAll);
         if (consumerCopy.getHeinekenBeersToConsume().size() != consumer.getHeinekenBeersToConsume().size()) {
             fail("consumerCopy.getHeinekenBeersToConsume().size() = " + consumerCopy.getHeinekenBeersToConsume().size() + "; "+consumer.getHeinekenBeersToConsume().size()+" was expected");
         }
