@@ -1439,8 +1439,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		DatabaseMapping mapping = declaration.getMapping();
 
 		if (mapping.isDirectMapMapping()) {
+
 			DirectMapMapping mapMapping = (DirectMapMapping) mapping;
 			type = mapMapping.getValueClass();
+
+			if (type == null) {
+				type = mapMapping.getDirectField().getType();
+			}
 		}
 		else {
 			type = calculateMappingType(declaration.getMapping());
