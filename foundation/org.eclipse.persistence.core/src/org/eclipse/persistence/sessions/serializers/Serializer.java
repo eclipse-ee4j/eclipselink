@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.sessions.serializers;
 
+import java.io.Serializable;
+
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -19,7 +21,7 @@ import org.eclipse.persistence.sessions.Session;
  * Allows for a plugable serializer for Remote, Cache Coordination, Converters.
  * @author James Sutherland
  */
-public interface Serializer {
+public interface Serializer extends Serializable, Cloneable {
     Object serialize(Object object, Session session);
     Object deserialize(Object bytes, Session session);
     Class getType();
