@@ -303,7 +303,8 @@
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
-        <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
+        <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
@@ -411,7 +412,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}.source_${oraclenosql.version}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="${oraclenosql.name}"/>
-            <param name="dependencies"    value="${nosql.dependencies}"/>
+            <param name="dependencies"    value="${ora.nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -421,7 +422,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="EclipseLink NoSQL database Extensions"/>
-            <param name="dependencies"    value="${jpa.dependencies}"/>
+            <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
