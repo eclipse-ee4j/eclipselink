@@ -14,7 +14,6 @@ package org.eclipse.persistence.internal.jpa.metadata.converters;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
-import org.eclipse.persistence.sessions.serializers.KryoSerializer;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
@@ -73,6 +72,7 @@ public class KryoMetadata extends MetadataConverter {
      */
     @Override
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
-        setConverter(mapping, new SerializedObjectConverter(mapping, new KryoSerializer()), isForMapKey);
+        SerializedObjectConverter converter = new SerializedObjectConverter(mapping, "org.eclipse.persistence.sessions.serializers.kryo.KryoSerializer");
+        setConverter(mapping, converter, isForMapKey);
     }
 }

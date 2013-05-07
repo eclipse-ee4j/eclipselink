@@ -10,7 +10,7 @@
  * Contributors:
  *      Oracle - initial impl
  ******************************************************************************/
-package org.eclipse.persistence.sessions.serializers;
+package org.eclipse.persistence.sessions.serializers.kryo;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

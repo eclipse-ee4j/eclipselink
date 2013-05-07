@@ -2028,7 +2028,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         try {
             if (protocol != null) {
                 RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
-                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
+                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JGROUPS)) {
+                    property = PersistenceUnitProperties.COORDINATION_PROTOCOL;                    
+                    value = "org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager";
+                    // Avoid compile and runtime dependency.
+                    Class transportClass = findClassForProperty(value, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
+                    TransportManager transport = (TransportManager)transportClass.newInstance();
+                    rcm.setTransportManager(transport);                    
+                    String config = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JGROUPS_CONFIG, m, this.session);
+                    if (config != null) {
+                        transport.setConfig(config);
+                    }                    
+                } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
                     JMSPublishingTransportManager transport = null;
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)) {
                          transport = new JMSTopicTransportManager(rcm);

@@ -1,0 +1,14 @@
+Export-Package: org.eclipse.persistence*;version="${release.version}";-noimport:=true,
+Bundle-Name: EclipseLink Extensions
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
+Bundle-Vendor: ${implementation.vendor}
+Fragment-Host: org.eclipse.persistence.core;bundle-version="${release.version}"
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${extension.2.base.dir}/about.html,\
+ ${extension.2.base.dir}/readme.html,\
+ ${extension.2.base.dir}/license.html
+Import-Package:\
+ org.jgroups;resolution:=optional,\
+ org.eclipse.persistence.*;version="${release.version}", *
