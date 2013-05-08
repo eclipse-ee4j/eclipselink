@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dealer {
+public class Dealer extends BusinessPerson {
     private Integer id;
     private Integer version;
     private String firstName;

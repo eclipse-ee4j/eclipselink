@@ -415,6 +415,16 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         field4.setIsIdentity(false);
         table.addField(field4);
         
+        FieldDefinition field5 = new FieldDefinition();
+        field5.setName("BID");
+        field5.setTypeName("VARCHAR");
+        field5.setSize(10);
+        field5.setShouldAllowNull(true);
+        field5.setIsPrimaryKey(false);
+        field5.setUnique(false);
+        field5.setIsIdentity(false);
+        table.addField(field5);
+        
         return table;
     }
     
