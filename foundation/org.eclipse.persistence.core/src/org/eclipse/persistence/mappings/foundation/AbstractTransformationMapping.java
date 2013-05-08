@@ -1096,7 +1096,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 return null;
             }
         }
-        if (shouldReadFromSopObject(row)) {
+        if (row != null && shouldReadFromSopObject(row)) {
             return getAttributeValueFromObject(row.getSopObject());
         }
         Object attributeValue = this.indirectionPolicy.valueFromMethod(object, row, query.getSession());
