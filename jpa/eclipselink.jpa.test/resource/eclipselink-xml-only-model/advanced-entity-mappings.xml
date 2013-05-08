@@ -243,6 +243,9 @@
             <basic name="lastName">
                 <column name="L_NAME"/>
             </basic>
+            <basic name="businessId" access="FIELD">
+                <column name="BID"/>
+            </basic>
             <basic name="status"/>
             <version name="version">
                 <column name="VERSION"/>
