@@ -158,7 +158,8 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_AddRemoveTarget", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testUnidirectionalTargetLocking_DeleteSource", persistenceUnit));
         suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testXMLEntityMappingsWriteOut", persistenceUnit));
-        
+        suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testInheritFromNonMapped", persistenceUnit));
+
         if (persistenceUnit.equals("extended-advanced")) {
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testSexObjectTypeConverterDefaultValue", persistenceUnit));
             suite.addTest(new EntityMappingsAdvancedJUnitTestCase("testExistenceCheckingSetting", persistenceUnit));
@@ -2051,5 +2052,29 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
         ClassDescriptor descriptor = (ClassDescriptor)descriptors.get(Department.class);
         OneToManyMapping mapping = (OneToManyMapping)descriptor.getMappingForAttributeName("equipment");
         assertFalse("<delete-all> xml did not work correctly", mapping.mustDeleteReferenceObjectsOneByOne());
+    }
+    
+    public void testInheritFromNonMapped(){
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        
+        Dealer dealer = new Dealer();
+        dealer.setBusinessId("112233");
+
+        try {
+            em.persist(dealer);
+            
+            commitTransaction(em);
+        } catch (Exception exception ) {
+            fail("Error persisting dealer: " + exception.getMessage());
+        }
+        
+        clearCache(m_persistenceUnit);
+        em.clear();
+        em = createEntityManager(m_persistenceUnit);
+        
+        dealer = em.find(Dealer.class, dealer.getId());
+        assertTrue("An inherited attribute from a non-mapped object was not persisted.", "112233".equals(dealer.getBusinessId()));
+        
     }
 }
