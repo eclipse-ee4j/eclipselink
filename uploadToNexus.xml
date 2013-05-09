@@ -264,6 +264,9 @@
         <property name="deps.foot" value="&lt;/dependencies&gt;"/>
 
         <!-- These use above, in order, to define a single library for an artifact dependency -->
+        <!-- Public APIs we depend upon that can be found on Maven Central -->
+        <!-- Add as nosql dependency -->
+        <property name="dep.resource"      value="${dep.grp}javax.resource${dep.art}connector-api${dep.ver}1.5${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -296,7 +299,8 @@
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
-        <property name="nosql.dependencies"       value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
+        <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="osgi.dependencies"        value="${deps.head}${dep.jpa}${deps.foot}"/>
         <property name="weaving.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
@@ -315,7 +319,8 @@
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        <antcall target="upload-artifact">
+        <echo message="Skipping upload of static artifacts to Nexus..."/>
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -323,10 +328,10 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- antcall target="upload-release-artifact" -->
-        <antcall target="upload-artifact">
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
@@ -334,7 +339,7 @@
             <param name="artifactSrc"     value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}.source_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
     </target>
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
@@ -402,7 +407,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}.source_${oraclenosql.version}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="${oraclenosql.name}"/>
-            <param name="dependencies"    value="${nosql.dependencies}"/>
+            <param name="dependencies"    value="${ora.nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -412,7 +417,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="EclipseLink NoSQL database Extensions"/>
-            <param name="dependencies"    value="${jpa.dependencies}"/>
+            <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -431,6 +436,15 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpars.source_${version.string}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/eclipselink-jpars-javadocs.zip"/>
             <param name="artifactName"    value="EclipseLink JPA-RS"/>
+            <param name="dependencies"    value=""/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen.processor"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen.source.jar"/>
+            <param name="artifactName"    value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
             <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
