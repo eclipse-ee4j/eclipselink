@@ -3699,7 +3699,7 @@
     <target name="server-test-jpars-core">
         <echo message="jpars url is ${jpars.url}"/>
         <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original"/>
-        <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java"/>
+        <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
         <copy file="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml" tofile="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" overwrite="true"/>
         <replace file="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='Glassfish' value="${server.platform}"/>
         <property name="MODEL_NAME" value="eclipselink-jpars-model"/>
@@ -3721,7 +3721,7 @@
             <fileset dir="${jpatest.basedir}/../eclipselink.jpars.test/reports" includes="*.*"/>
         </copy>
         <move file="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" tofile="${jpatest.basedir}/../eclipselink.jpars.test/src/META-INF/persistence.xml" overwrite="true"/>
-        <delete file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" failonerror="false"/>
+        <move file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
     </target>
 
     <target name="server-test-plsql">
@@ -4054,12 +4054,11 @@
     <!-- Since in nightly GlassFish 4 and WebLogic testing, the property is.JTA can't be passed to server, so we force isJTA() returns false in JUnitTestCase.java -->
     <target name="server-test-mongotest" depends="clean-test" if="is.glassfish.or.weblogic">
         <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original"/>
-        <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java"/>
+        <copy file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
         <antcall target="server-test-mongo" inheritRefs="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
-        <delete file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" failonerror="false"/>
-        <antcall target="generate-report" inheritRefs="true"/>
-    </target>
+        <move file="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" tofile="${jpatest.basedir}/src/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>    </target>
 
     <target name="server-test-mongo" if="is.glassfish.or.weblogic">
         <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-dynamic.xml" todir="${jpatest.basedir}/resource/eclipselink-mongo-model/server"/>
