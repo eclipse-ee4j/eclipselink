@@ -258,7 +258,8 @@
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
-        <antcall target="upload-artifact">
+        <echo message="Skipping upload of static artifacts to Nexus..."/>
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
             <param name="artifactVersion" value="${jpaapi.mvn.version}"/>
@@ -266,10 +267,10 @@
             <param name="artifactSrc"     value="${maven.2.jpa.plugins.dir}/${jpaapi.prefix}.source_${jpaapi.version}.jar"/>
             <param name="artifactName"    value="${jpaapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- antcall target="upload-release-artifact" -->
-        <antcall target="upload-artifact">
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
@@ -277,7 +278,7 @@
             <param name="artifactSrc"     value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}.source_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
     </target>
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
@@ -336,6 +337,15 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA"/>
             <param name="dependencies"    value="${jpa.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.jpa.modelgen.processor"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/eclipselink-jpa-modelgen.source.jar"/>
+            <param name="artifactName"    value="EclipseLink JPA Modelgen Processor (non-OSGi)"/>
+            <param name="dependencies"    value=""/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -483,7 +493,6 @@
         <!-- sign and deploy the javadoc artifact -->
         <artifact:mvn>
             <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-e"/>
             <arg value="-Durl=${stagingURL}"/>
             <arg value="-DrepositoryId=${stagingId}"/>
             <arg value="-DpomFile=${maven.build.location}/pom.xml"/>

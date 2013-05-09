@@ -90,7 +90,8 @@
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
         <!-- Generate name for processor jar -->
-        <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
+        <property name="modelgen.processor.jar"     value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
+        <property name="modelgen.processor.src.jar" value="${eclipselink.modelgen.processor.prefix}.source.jar"/>
 
         <!-- dependency properties -->
         <property name="persistence.lib"    value="${modelgen.2.jpa.plugins.dir}/${persistence20.jar}"/>
@@ -128,6 +129,7 @@
                includes="org/eclipse/persistence/**/*.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -203,6 +205,28 @@
                 <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac"/>
                 <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
                 <attribute name="Bundle-Version"         value="${version.string}"/>
+            </manifest>
+            <fileset dir="${modelgen.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="META-INF/services/javax.annotation.processing.Processor"/>
+            </fileset>
+        </jar>
+        <jar jarfile="${modelgen.2.common.plugins.dir}/${modelgen.processor.src.jar}" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JPA Canonical Model Processing Service (source)"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.cac.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name}.cac;version=&quot;${version.string}&quot;"/>
             </manifest>
             <fileset dir="${modelgen.2.base.dir}">
                 <include name="about.html"/>
