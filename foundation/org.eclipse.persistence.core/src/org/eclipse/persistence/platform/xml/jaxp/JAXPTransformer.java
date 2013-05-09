@@ -181,10 +181,8 @@ public class JAXPTransformer implements XMLTransformer {
     }
 
     private static class TransformerFactoryHelper {
-        //http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html helper class
-        private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
         static TransformerFactory getTransformerFactory() {
-            return transformerFactory;
+            return TransformerFactory.newInstance();
         }
     }
 

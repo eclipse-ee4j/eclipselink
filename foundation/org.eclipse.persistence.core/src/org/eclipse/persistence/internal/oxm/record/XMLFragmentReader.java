@@ -89,9 +89,17 @@ public class XMLFragmentReader extends DOMReader {
      */
     protected void handleXMLNSPrefixedAttribute(Element elem, Attr attr) {
         String uri = resolveNamespacePrefix(elem.getPrefix());
-        if (uri == null || !uri.equals(attr.getLocalName())) {
+        if (uri == null || !uri.equals(attr.getValue())) {
             NamespaceResolver tmpresolver = getTempResolver(elem);
-            tmpresolver.put(attr.getLocalName(), attr.getValue());
+            if(XMLConstants.XMLNS.equals(attr.getNodeName())) {
+            	String namespace = attr.getValue();
+            	if(namespace == null) {
+            		namespace = XMLConstants.EMPTY_STRING;
+            	}
+            	tmpresolver.put(XMLConstants.EMPTY_STRING, namespace);
+            } else {
+            	tmpresolver.put(attr.getLocalName(), attr.getValue());
+            }
             if (!nsresolverList.contains(tmpresolver)) {
                 nsresolverList.add(tmpresolver);
             }

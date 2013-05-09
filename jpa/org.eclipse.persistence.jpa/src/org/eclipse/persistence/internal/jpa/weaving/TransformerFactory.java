@@ -108,16 +108,7 @@ public class TransformerFactory {
             return;
         }
         
-        // We need to check that the superClz is actually a mapped superclass
-        // and to determine that we will ask the session for the mapped super
-        // class descriptor. If there is no mapped superclass descriptor then
-        // bail. NOTE: it is still possible at this point to have 
-        // unMappedAttributes left however. This will be true in a table per
-        // class scenerio.
         ClassDescriptor mappedSuperclassDescriptor = ((AbstractSession) session).getMappedSuperclass(superClz.getName());
-        if (mappedSuperclassDescriptor == null) {
-            return;
-        }
         
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
@@ -125,9 +116,11 @@ public class TransformerFactory {
         ClassDetails superClassDetails = createClassDetails(superClz, weaveValueHolders, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
         superClassDetails.setIsMappedSuperClass(true);
         
-        if (! mappedSuperclassDescriptor.usesPropertyAccessForWeaving()) {
+        if (mappedSuperclassDescriptor != null && ! mappedSuperclassDescriptor.usesPropertyAccessForWeaving()) {
             superClassDetails.useAttributeAccess();
-        } 
+        } else if (!initialDescriptor.usesPropertyAccessForWeaving()){
+            superClassDetails.useAttributeAccess();
+        }
         
         if (!classDetailsMap.containsKey(superClassDetails.getClassName())){
             stillUnMappedMappings = storeAttributeMappings(superClz, superClassDetails, unMappedAttributes, weaveValueHolders);

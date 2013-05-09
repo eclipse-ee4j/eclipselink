@@ -103,7 +103,10 @@ public class XMLMarshaller implements Cloneable {
     private XMLContext xmlContext;
     private XMLMarshalListener marshalListener;
     private XMLAttachmentMarshaller attachmentMarshaller;
+    private String encoding;
     private ErrorHandler errorHandler;
+    private boolean formattedOutput;
+    private boolean fragment;
     private Properties marshalProperties;
     private Schema schema;
     private MediaType mediaType = MediaType.APPLICATION_XML;
@@ -179,10 +182,9 @@ public class XMLMarshaller implements Cloneable {
     }
 
     private void initialize() {
-        XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        transformer = xmlPlatform.newXMLTransformer();
         setEncoding(XMLConstants.DEFAULT_XML_ENCODING);
         setFormattedOutput(true);
+        setFragment(false);
         marshalProperties = new Properties();
         includeRoot = true;
         marshalEmptyCollections = true;
@@ -219,7 +221,7 @@ public class XMLMarshaller implements Cloneable {
     * @return if this XMLMarshaller should format the XML
     */
     public boolean isFormattedOutput() {
-        return transformer.isFormattedOutput();
+        return formattedOutput;
     }
 
     /**
@@ -228,7 +230,10 @@ public class XMLMarshaller implements Cloneable {
     * @param shouldFormat if this XMLMarshaller should format the XML
     */
     public void setFormattedOutput(boolean shouldFormat) {
-        transformer.setFormattedOutput(shouldFormat);
+        this.formattedOutput = shouldFormat;
+        if(null != transformer) {
+            transformer.setFormattedOutput(shouldFormat);
+        }
     }
 
     /**
@@ -237,7 +242,7 @@ public class XMLMarshaller implements Cloneable {
        * @return the encoding set on this XMLMarshaller
        */
     public String getEncoding() {
-        return transformer.getEncoding();
+        return encoding;
     }
 
     /**
@@ -246,7 +251,10 @@ public class XMLMarshaller implements Cloneable {
        * @param newEncoding the encoding to set on this XMLMarshaller
        */
     public void setEncoding(String newEncoding) {
-        transformer.setEncoding(newEncoding);        
+        this.encoding = newEncoding;
+        if(null != transformer) {
+            transformer.setEncoding(newEncoding);
+        }
     }
 
     /**
@@ -433,7 +441,7 @@ public class XMLMarshaller implements Cloneable {
                 java.io.StringWriter writer = new java.io.StringWriter();
                 marshal(object, writer);
                 javax.xml.transform.stream.StreamSource source = new javax.xml.transform.stream.StreamSource(new java.io.StringReader(writer.toString()));
-                transformer.transform(source, result);
+                getTransformer().transform(source, result);
             }
             return;
         }
@@ -442,6 +450,7 @@ public class XMLMarshaller implements Cloneable {
             
             if ((result instanceof SAXResult) && (isFragment())) {
                 FragmentContentHandler fragmentHandler = new FragmentContentHandler(((SAXResult) result).getHandler());
+                XMLTransformer transformer = getTransformer();
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -489,6 +498,7 @@ public class XMLMarshaller implements Cloneable {
                         throw XMLMarshalException.marshalException(e);
                     }
                 }
+                XMLTransformer transformer = getTransformer();
                 if (isXMLRoot) {
                     String oldEncoding = transformer.getEncoding();
                     String oldVersion = transformer.getVersion();
@@ -1682,7 +1692,10 @@ public class XMLMarshaller implements Cloneable {
     * @param fragment if this should marshal to a fragment or not
     */
     public void setFragment(boolean fragment) {
-        transformer.setFragment(fragment);
+        this.fragment = fragment;
+        if(null != transformer) {
+            transformer.setFragment(fragment);
+        }
     }
 
     /**
@@ -1691,7 +1704,7 @@ public class XMLMarshaller implements Cloneable {
     * @return if this should marshal to a fragment or not
     */
     public boolean isFragment() {
-        return mediaType == MediaType.APPLICATION_XML  && transformer.isFragment();
+        return mediaType == MediaType.APPLICATION_XML  && fragment;
     }
 
     public void setAttachmentMarshaller(XMLAttachmentMarshaller atm) {
@@ -1707,6 +1720,13 @@ public class XMLMarshaller implements Cloneable {
      * @return the transformer instance for this marshaller
      */
     public XMLTransformer getTransformer() {
+        if(null == transformer) {
+            XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
+            transformer = xmlPlatform.newXMLTransformer();
+            transformer.setEncoding(encoding);
+            transformer.setFormattedOutput(formattedOutput);
+            transformer.setFragment(fragment);
+        }
         return transformer;
     }
 
@@ -1724,7 +1744,7 @@ public class XMLMarshaller implements Cloneable {
         clone.setAttachmentMarshaller(attachmentMarshaller);
         clone.setEncoding(getEncoding());
         clone.setFormattedOutput(isFormattedOutput());
-        clone.setFragment(transformer.isFragment());
+        clone.setFragment(isFragment());
         clone.setMediaType(getMediaType());
         clone.setMarshalListener(marshalListener);
         clone.setNoNamespaceSchemaLocation(noNamespaceSchemaLocation);
