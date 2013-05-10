@@ -210,23 +210,6 @@
                      criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
         />
 
-        <!-- Set JPA 2.1 publishing version to align with EclipseLink build.type:                    -->
-        <!--      Javax.persistence will use "upload-artifact" rather than "upload-release-artifact" -->
-        <!--      EclipseLink SNAPSHOTS would cause "2.1.0-SNAPSHOT" to be created                   -->
-        <!--      Milestoning EclipseLink would result in 2.1.0-(EclipseLink_Milestone)              -->
-        <!-- NOTE: This needs to be changed back just prior to javax.persistence 2.1 release         -->
-        <!-- NOTE2: This section needs to occur prior to the StripQualifier task to discover the     -->
-        <!--        jpaapi.mvn.version since its definition needs to supersede it.                   -->
-        <property name="jpaapi.mvn.version" value="2.1.0-${build.type}"/>
-        <!-- Below is a fail-safe to ensure EclipseLink cannot be released while javax.persistence   -->
-        <!-- retains the 2.0.10x OSGi versioning.                                                    -->
-        <condition property="jpaapi.prerelease.ok">
-                <not>
-                    <equals arg1="${jpaapi.mvn.version}" arg2="2.1.0-RELEASE"/>
-                </not>
-        </condition>
-        <fail message="Attempting to RELEASE a pre-release version '${jpaapi.version}' of javax.persistence. Aborting..." unless="jpaapi.prerelease.ok"/>
-
         <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
@@ -284,7 +267,7 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- Public APIs we depend upon that can be found on Maven Central -->
         <!-- Add as nosql dependency -->
-        <!-- property name="dep.resource"         value="${dep.grp}org.glassfish.main.connectors${dep.art}javax.resource${dep.ver}3.1.2.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/ -->
+        <property name="dep.resource"      value="${dep.grp}javax.resource${dep.art}connector-api${dep.ver}1.5${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -311,7 +294,8 @@
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
-        <property name="nosql.dependencies"       value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
+        <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
@@ -327,6 +311,7 @@
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- repo.dir and artifactId should be (bundle).mvn.version from (bundle).version -->
         <!-- (rather than the 4-part OSGi version, we use a stripped down 3-part version) -->
+        <echo message="Skipping upload of static artifacts to Nexus..."/>
         <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${jpaapi.prefix}"/>
@@ -338,7 +323,7 @@
         </antcall -->
         <!-- Removed "upload-release-artifact" because it depended upon filesystem access. See below. -->
         <!-- antcall target="upload-release-artifact" -->
-        <antcall target="upload-artifact">
+        <!-- antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${sdoapi.prefix}"/>
             <param name="artifactVersion" value="${sdoapi.mvn.version}"/>
@@ -346,7 +331,7 @@
             <param name="artifactSrc"     value="${maven.2.sdo.plugins.dir}/${sdoapi.prefix}.source_${sdoapi.version}.jar"/>
             <param name="artifactName"    value="${sdoapi.name}"/>
             <param name="dependencies"    value=""/>
-        </antcall>
+        </antcall -->
     </target>
 
     <target name="upload-eclipselink" depends="upload-maven-init,upload-static-built-jars">
@@ -425,7 +410,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclenosql.prefix}.source_${oraclenosql.version}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="${oraclenosql.name}"/>
-            <param name="dependencies"    value="${nosql.dependencies}"/>
+            <param name="dependencies"    value="${ora.nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
@@ -435,7 +420,7 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
             <param name="artifactJavadoc" value="${maven.2.pojo.dir}/nosql-javadocs.zip"/>
             <param name="artifactName"    value="EclipseLink NoSQL database Extensions"/>
-            <param name="dependencies"    value="${jpa.dependencies}"/>
+            <param name="dependencies"    value="${nosql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
