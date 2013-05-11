@@ -109,6 +109,12 @@ public class TransformerFactory {
         }
         
         ClassDescriptor mappedSuperclassDescriptor = ((AbstractSession) session).getMappedSuperclass(superClz.getName());
+        if (mappedSuperclassDescriptor == null) {
+            ClassDescriptor descriptor = findDescriptor(session.getProject(), clz.getSuperclass().getName());
+            if (descriptor != null) {
+                return;
+            }
+        }
         
         boolean weaveValueHolders = canWeaveValueHolders(superClz, unMappedAttributes);
 
