@@ -126,6 +126,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             if ((bytes == null) || (bytes.length == 0)) {
                 return null;
             }
+            data = bytes;
         } else if (this.serializer.getType() == ClassConstants.STRING) {
             String text;
             try {
@@ -136,6 +137,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
             if ((text == null) || (text.length() == 0)) {
                 return null;
             }
+            data = text;
         }
         try {
             return this.serializer.deserialize(data, session);
